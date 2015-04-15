@@ -1,0 +1,11 @@
+--- LVM2.2.02.108/conf/example.conf.in	2014-07-23 16:21:02.000000000 +0100
++++ LVM2.2.02.108-new/conf/example.conf.in	2014-07-23 23:05:06.000000000 +0100
+@@ -58,7 +58,7 @@
+     # preferred_names = [ ]
+ 
+     # Try to avoid using undescriptive /dev/dm-N names, if present.
+-    # preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
++    preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
+ 
+     # In case no prefererred name matches or if preferred_names are not
+     # defined at all, builtin rules are used to determine the preference.

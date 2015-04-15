@@ -1,0 +1,62 @@
+#!/bin/bash
+
+BUILD_PROPS_FILE=./build.properties
+PHOTON_PKG_LIST=""
+
+find-build-dependencies()
+{
+    :
+}
+
+find-runtime-dependencies()
+{
+    :
+}
+
+find-license()
+{
+    local pkg_name=$1
+    local specs_folder=$2
+    local spec_file=$specs_folder/$pkg_name/$pkg_name.spec
+    local license=""
+
+    if [ ! -f $spec_file ]; then
+        equiv_pkg=`grep -i "^$pkg_name.spec" $BUILD_PROPS_FILE | \
+                   awk -F"=" '{print $2;}' | \
+                   sed "s/^[[:space:]]*//g"`
+        spec_file=$specs_folder/$equiv_pkg/$equiv_pkg.spec
+    fi
+
+    if [ -f $spec_file ]; then
+        license=`grep License $spec_file | \
+                 awk -F":" '{print $2;}' | \
+                 sed "s/^[[:space:]]*//g"`
+    fi
+
+    echo $license
+
+    return 0;
+}
+
+#
+# Main
+#
+
+if [ $# -lt 2 ]; then
+    echo "Usage: genmake <source-path> <specs-path>"
+    exit 1
+fi
+
+SRCS_PATH=$1
+SPECS_PATH=$2
+
+PHOTON_PKG_LIST=`grep package-name $BUILD_PROPS_FILE | \
+                 awk -F"=" '{print $2;}' | \
+                 sort`
+
+for pkg in $PHOTON_PKG_LIST
+do
+    license=$(find-license $pkg $SPECS_PATH)
+    echo $pkg : $license
+done
+

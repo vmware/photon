@@ -1,0 +1,18 @@
+--- open-vm-tools-9.10.0/vgauth/common/VGAuthLog.c	2015-03-19 11:11:07.000000000 -0700
++++ open-vm-tools-9.10.0/vgauth/common/VGAuthLog_modified.c	2015-04-09 14:51:14.404456241 -0700
+@@ -205,15 +205,9 @@
+    g_vsnprintf(buf, sizeof buf, fmt, args);
+    buf[sizeof buf - 1] = '\0';
+ 
+-#ifdef sun
+    strerror_r(code, errMsg, sizeof errMsg);
+    g_warning("[function %s, file %s, line %d], %s, [errno = %d], %s\n",
+              func, file, line, buf, code, errMsg);
+-#else
+-   g_warning("[function %s, file %s, line %d], %s, [errno = %d], %s\n",
+-             func, file, line, buf, code,
+-             strerror_r(code, errMsg, sizeof errMsg));
+-#endif
+ }
+ 
+ #endif

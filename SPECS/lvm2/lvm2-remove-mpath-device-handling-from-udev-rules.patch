@@ -1,0 +1,18 @@
+ udev/10-dm.rules.in | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/udev/10-dm.rules.in b/udev/10-dm.rules.in
+index 2755530..8d7a8ca 100644
+--- a/udev/10-dm.rules.in
++++ b/udev/10-dm.rules.in
+@@ -120,10 +120,6 @@ ENV{DM_UDEV_RULES_VSN}="2"
+ 
+ ENV{DM_UDEV_DISABLE_DM_RULES_FLAG}!="1", ENV{DM_NAME}=="?*", SYMLINK+="(DM_DIR)/$env{DM_NAME}"
+ 
+-# We have to ignore further rule application for inappropriate events
+-# and devices. But still send the notification if cookie exists.
+-ENV{DM_UUID}=="mpath-?*", ENV{DM_ACTION}=="PATH_FAILED", GOTO="dm_disable"
+-
+ # Avoid processing and scanning a DM device in the other (foreign)
+ # rules if it is in suspended state. However, we still keep 'disk'
+ # and 'DM subsystem' related rules enabled in this case.

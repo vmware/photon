@@ -1,0 +1,22 @@
+diff -rupN krb5-1.12.2/src/lib/gssapi/mechglue/g_init_sec_context.c krb5-1.12.2-1/src/lib/gssapi/mechglue/g_init_sec_context.c
+--- krb5-1.12.2/src/lib/gssapi/mechglue/g_init_sec_context.c	2014-08-11 15:46:27.000000000 -0700
++++ krb5-1.12.2-1/src/lib/gssapi/mechglue/g_init_sec_context.c	2015-01-22 21:15:40.413357199 -0800
+@@ -204,6 +204,18 @@ OM_uint32 *		time_rec;
+     input_cred_handle = gssint_get_mechanism_cred(union_cred, selected_mech);
+ 
+     /*
++     * If the mechanism is SPNEGO, and a SPNEGO specific cred could not be
++     * found, then pass the entire cred list through. SPNEGO will send the
++     * right creds to the correct mechanism.
++     */
++    if (input_cred_handle == NULL &&
++        selected_mech->length == 6 &&
++        !memcmp(selected_mech->elements, "\x2b\x06\x01\x05\x05\x02", 6))
++    {
++        input_cred_handle = (gss_cred_id_t) union_cred;
++    }
++    
++    /*
+      * now call the approprate underlying mechanism routine
+      */
+ 

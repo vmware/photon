@@ -1,0 +1,332 @@
+Submitted By:            Igor Živković <contact@igor-zivkovic.from.hr>
+Date:                    2013-08-31
+Initial Package Version: 1.26
+Upstream Status:         Unknown
+Origin:                  Debian
+Description:             Makes tar man page from src/tar.c
+                         Usage: perl tarman > /usr/share/man/man1/tar.1
+
+diff -Naur tar-1.26.orig/tarman tar-1.26/tarman
+--- tar-1.26.orig/tarman	1970-01-01 01:00:00.000000000 +0100
++++ tar-1.26/tarman	2013-08-31 18:19:11.938351028 +0200
+@@ -0,0 +1,320 @@
++#!/usr/bin/env perl
++
++use strict;
++
++my $t = "".localtime(time);
++my $datestr = substr($t,4,3)." ".substr($t,8,2).", ".substr($t,20,4);
++
++@ARGV=qw(src/tar.c);
++my $mode;
++my @operations;
++my $lastoperation;
++my @options;
++my @formats;
++my @short;
++my $examples;
++my $saw_format;
++my @env_vars;
++while (<>) {
++	my $nflag = 0;
++	chomp;
++# print "$mode: $_\n";
++	if (/getenv.*"/) {
++		next if defined($mode);
++		my @c1 = split('"');
++		if ($#c1 > 0) {
++			push @env_vars, $c1[1];
++		}
++	}
++	if (/Main operation mode:/) {
++		$mode = 1;
++		next;
++	}
++	if (/Operation modifiers:/) {
++		$mode = 2;
++		next;
++	}
++	if (/Examples:/) {
++		$mode = 3;
++		next;
++	}
++	if (/define GRID/) {
++		$mode = 2;
++	}
++	if (/undef GRID/) {
++		undef $lastoperation;
++		undef $mode;
++		next;
++	}
++	if ($mode == 1 || $mode == 2) {
++		if (/{"/) {	# }
++			my @j = split(',');
++			my @c1 = split('"', $j[0]);
++			if (/OPTION_ALIAS/) {
++				next unless defined($lastoperation);
++				push @{$$lastoperation{'alias'} }, $c1[1];
++				next;
++			}
++			my %newhash = ();
++			$lastoperation = \%newhash;
++			my $name = $c1[1];
++			if ($name =~ /^  /) {
++				$name =~ s/^  */format=/;
++				push @formats, $lastoperation;
++			} elsif ($mode == 1) {
++				push @operations, $lastoperation;
++			} else {
++				push @options, $lastoperation;
++			}
++			$newhash{'name'} = $name;
++			if ($mode == 2 && $name eq 'format') {
++				$saw_format = $lastoperation;
++			}
++			my @c2 = split("'", $j[1]);
++			if ($#c2 > 0) {
++				$newhash{'short'} = $c2[1];
++				push @short, $c2[1] if ($mode == 1);
++			}
++			if ($j[2] =~ /N_/) {
++				$nflag = 1;
++			}
++		}
++		if (/N_/) {
++			next unless defined($lastoperation);
++			my $nrest = $_;
++			$nrest =~ s/.*N_//;
++			my @c3 = split('"', $nrest);
++			if ($#c3 > 0) {
++				if ($nflag) {
++					$$lastoperation{'operand'} .= $c3[1];
++				} else {
++					$$lastoperation{'description'} .= $c3[1];
++				}
++			}
++		}
++	}
++	if ($mode == 3 ) {
++		my $j = $_;
++		$j =~ s/\\n.*//;
++		my ($c1, $c2) = split('#', $j, 2);
++		$c1 =~ s/  *$//;
++		$c1 =~ s/^  *//;
++$c1 =~ s/-/\\-/g;
++		$c2 =~ s/^  *//;
++$examples .= <<".";
++$c2
++.Bd -literal -offset indent -compact
++$c1
++.Ed
++.
++		# (
++		if (/"\)/) {
++			undef $mode;
++		}
++	}
++}
++
++# for my $q ( @operations) {
++# 	print "\nshort=".$$q{'short'}."\n";
++# 	print "name=".$$q{'name'}."\n";
++# 	print "desc=".$$q{'description'}."\n";
++# 	if (defined($$q{'alias'})) {
++# 		print "alias=".join(',',@{ $$q{'alias'}})."\n";
++# 	}
++# }
++
++sub long2nroff {
++	my $f = shift;
++	if ($f !~ /^-/) {
++		$f = "Fl -$f";
++	}
++	$f =~ s/-/\\-/g;
++	return $f;
++}
++
++sub format_options
++{
++	my $h = shift;
++	my $r;
++	for my $q ( @$h ) {
++		$r .= ".It";
++		my @functions;
++		push @functions, " Fl ".$$q{'short'} if defined($$q{'short'});
++		push @functions, " ".long2nroff($$q{'name'});
++		push @functions, join(' ', '', map {long2nroff $_} @{ $$q{'alias'} })
++			if defined($$q{'alias'});
++		$r .= join(' ,', @functions);
++		if (defined($$q{'operand'})) {
++			if ($#functions > 0) {
++				$r .= " ";
++			} else {
++				$r .= " Ns \\= Ns ";
++			}
++			$r .= "Ar ".$$q{'operand'};
++		}
++		$r .= "\n".$$q{'description'}."\n";
++		$r .= $$q{'extra'};
++	}
++	return $r;
++}
++
++sub optionkeyword
++{
++	my $h = shift;
++	my $k = $$h{'short'};
++	$k = $$h{'name'} if !defined($k);
++	my $l = $k;
++	if ($l =~ s/^no-//) {
++		$l .= "-no";
++	}
++	return ($l,$k);
++}
++
++sub optioncmp
++{
++	my ($x1, $x2) = optionkeyword($a);
++	my ($y1, $y2) = optionkeyword($b);
++	my $r = lc($x1) cmp lc($y1);
++	return $r if $r;
++	$r = $y1 cmp $x1;
++	return $r if $r;
++	return $x2 cmp $y2;
++}
++
++@operations = sort optioncmp @operations;
++@operations = sort optioncmp @operations;
++@options = sort optioncmp @options;
++@formats = sort optioncmp @formats;
++
++if ($#formats >= 0 && !$saw_format) {
++	print STDERR "FIXME: saw --format=X but no root --format!\n";
++	exit(1);
++}
++
++my $function_letters;
++my $short_letters = join('', sort @short);
++my $option_letters;
++my $format_letters;
++my $command_string = <<".";
++.Nm tar
++.
++$command_string .= ".Oo Fl Oc";
++my $env_variables;
++my %env_description = (
++'SIMPLE_BACKUP_SUFFIX' => <<".",
++Backup prefix to use when extracting, if
++.Fl \\-suffix
++is not specified.
++The backup suffix defaults to `~' if neither is specified.
++.
++'TAPE' => <<".",
++Device or file to use for the archive if 
++.Fl \\-file
++is not specified.
++If this environment variable is unset, use stdin or stdout instead.
++.
++'TAR_OPTIONS' => <<".",
++Options to prepend to those specified on the command line, separated by
++whitespace.  Embedded backslashes may be used to escape whitespace or
++backslashes within an option.
++.
++);
++my $sep = "";
++for my $q ( @operations) {
++	$command_string .= " Cm";
++	$command_string .= $sep;
++	$command_string .= " ".$$q{'short'} if defined($$q{'short'});
++	$command_string .= " ".long2nroff($$q{'name'});
++	if (defined($$q{'alias'})) {
++		my $t = join(' ', '', map{long2nroff $_} @{ $$q{'alias'} });
++		$t =~ s/ Fl / /g;
++		$command_string .= $t;
++	}
++	$sep = " \\||\\|";
++}
++$function_letters = ".Bl -tag -width flag\n";
++$function_letters .= format_options(\@operations);
++$function_letters .= ".El";
++if ($#formats >= 0) {
++	$format_letters = ".Bl -tag -width flag\n";
++	$format_letters .= format_options(\@formats);
++	$format_letters .= ".El\n";
++	$$saw_format{'extra'} = $format_letters;
++}
++### Ar Cm Ic Li Nm Op Pa Va
++$option_letters = ".Bl -tag -width flag\n";
++$option_letters .= format_options(\@options);
++$option_letters .= ".El";
++$env_variables .= ".Bl -tag -width Ds\n";
++for my $q ( @env_vars) {
++	$env_variables .= ".It Ev $q\n";
++	$env_variables .= $env_description{$q};
++}
++$env_variables .= ".El";
++
++$examples =~ s/\n$//;
++$function_letters =~ s/\n$//;
++$option_letters =~ s/\n$//;
++$env_variables =~ s/\n$//;
++print <<".";
++.\\" generated by script on $t
++.Dd $datestr
++.Dt TAR 1
++.Sh NAME
++.Nm tar
++.Nd The GNU version of the tar archiving utility
++.Sh SYNOPSIS
++$command_string
++.Op Ar options
++.Op Ar pathname ...
++.Sh DESCRIPTION
++.Nm Tar
++stores and extracts files from a tape or disk archive.
++.Pp
++The first argument to
++tar
++should be a function; either one of the letters
++.Cm $short_letters ,
++or one of the long function names.
++A function letter need not be prefixed with ``\\-'', and may be combined
++with other single-letter options.
++A long function name must be prefixed with
++.Cm \\\\-\\\\- .
++Some options take a parameter; with the single-letter form
++these must be given as separate arguments.
++With the long form, they may be given by appending
++.Cm = Ns Ar value
++to the option.
++.Sh FUNCTION LETTERS
++Main operation mode:
++$function_letters
++.Sh OTHER OPTIONS
++Operation modifiers:
++$option_letters
++.Sh ENVIRONMENT
++The behavior of tar is controlled by the following environment variables,
++among others:
++$env_variables
++.Sh EXAMPLES
++$examples
++.Sh SEE ALSO
++.\\" libarchive
++.Xr tar 5 ,
++.\\" man-pages
++.Xr symlink 7 ,
++.Xr rmt 8
++.Sh HISTORY
++The
++.Nm tar
++command appeared in
++.At v7 .
++.Sh BUGS
++The GNU folks, in general, abhor man pages, and create info documents instead.
++Unfortunately, the info document describing tar is licensed under the GFDL with
++invariant cover texts, which makes it impossible to include any text
++from that document in this man page.
++Most of the text in this document was automatically extracted from the usage
++text in the source.
++It may not completely describe all features of the program.
++.
++__END__

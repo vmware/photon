@@ -1,0 +1,10 @@
+--- src/libostree/ostree-repo.c	2014-11-25 11:00:53.853017693 -0800
++++ src/libostree/ostree-repo_modified.c	2014-11-25 11:00:53.853017693 -0800
+@@ -2181,6 +2181,7 @@
+ gboolean
+ ostree_repo_pull_one_dir (OstreeRepo               *self,
+                           const char               *remote_name,
++			   const char               *dir_to_pull,
+                           char                    **refs_to_fetch,
+                           OstreeRepoPullFlags       flags,
+                           OstreeAsyncProgress      *progress,

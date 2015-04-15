@@ -1,0 +1,10 @@
+{
+	"hostname": "photon-machine",
+	"password": 
+		{
+			"crypted": false,
+			"text": "root"
+		},
+	"disk": "/dev/sdb",
+	"type": "minimal"
+}

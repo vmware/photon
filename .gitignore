@@ -1,0 +1,9 @@
+*.pyc
+*.box
+*.iso
+.DS_Store
+packer-cache/
+.vagrant/
+stage/
+discus-cache/
+output-*/

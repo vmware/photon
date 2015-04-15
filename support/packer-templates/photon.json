@@ -1,0 +1,58 @@
+{
+  "variables": {
+    "iso_file": "../../stage/photon.iso",
+    "iso_checksum_value": ""
+  },
+  "builders": [
+    {
+      "name": "photon",
+      "vm_name": "photon",
+      "vmdk_name": "photon-disk0",
+      "type": "vmware-iso",
+      "headless": true,
+      "disk_size": 20480,
+      "disk_type_id": 0,
+      "guest_os_type": "other3xlinux-64",
+      "iso_url": "{{user `iso_file`}}",
+      "iso_checksum": "{{user `iso_checksum_value`}}",
+      "iso_checksum_type": "sha1",
+      "ssh_username": "root",
+      "ssh_password": "VMware123!",
+      "ssh_wait_timeout": "60m",
+      "shutdown_command": "shutdown -h now",
+      "http_directory": ".",
+      "boot_command": [
+        "<enter>",
+        "<wait5><enter><enter>",
+        "<down><down><enter><wait>",
+        "photon<enter><wait>",
+        "VMware123!<enter><wait>",
+        "<enter>",
+        "<wait10><wait10><wait10><wait10><wait10><wait10>",
+        "root<enter><wait>VMware123!<enter><wait>",
+        "sed -i -e 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config<enter>",
+        "<wait10><wait10><wait10><wait10><wait10><wait10>",
+        "systemctl restart sshd.service<enter>"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "scripts/photon-docker.service",
+      "destination": "/lib/systemd/system/docker.service"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/photon-provisioning.sh"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "compression_level": 9,
+      "vagrantfile_template": "scripts/photon-vagrantfile_template.rb"
+    }
+  ]
+
+}

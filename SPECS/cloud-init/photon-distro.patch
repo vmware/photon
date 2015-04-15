@@ -1,0 +1,139 @@
+=== added file './cloudinit/distros/photon.py'
+--- ./cloudinit/distros/photon.py	1970-01-01 00:00:00 +0000
++++ ./cloudinit/distros/photon.py	2015-03-06 01:28:00 +0000
+@@ -0,0 +1,134 @@
++# vi: ts=4 expandtab
++#
++#    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
++#
++
++import os
++
++from cloudinit import distros
++from cloudinit import helpers
++from cloudinit import log as logging
++from cloudinit import util
++
++from cloudinit.distros.parsers.hostname import HostnameConf
++
++from cloudinit.settings import PER_INSTANCE
++
++LOG = logging.getLogger(__name__)
++
++class Distro(distros.Distro):
++    hostname_conf_fn = "/etc/hostname"
++    locale_conf_fn = "/etc/default/locale"
++    network_conf_fn = "/etc/network/interfaces"
++
++    def __init__(self, name, cfg, paths):
++        distros.Distro.__init__(self, name, cfg, paths)
++        # This will be used to restrict certain
++        # calls from repeatly happening (when they
++        # should only happen say once per instance...)
++        self._runner = helpers.Runners(paths)
++        self.osfamily = 'photon'
++
++    def apply_locale(self, locale, out_fn=None):
++        if not out_fn:
++            out_fn = self.locale_conf_fn
++        util.subp(['locale-gen', locale], capture=False)
++        util.subp(['update-locale', locale], capture=False)
++        # "" provides trailing newline during join
++        lines = [
++            util.make_header(),
++            'LANG="%s"' % (locale),
++            "",
++        ]
++        util.write_file(out_fn, "\n".join(lines))
++
++    def install_packages(self, pkglist):
++        #self.update_package_sources()
++        self.package_command('install', pkgs=pkglist)
++
++    def _write_network(self, settings):
++        util.write_file(self.network_conf_fn, settings)
++        return ['all']
++
++    def _bring_up_interfaces(self, device_names):
++        use_all = False
++        for d in device_names:
++            if d == 'all':
++                use_all = True
++        if use_all:
++            return distros.Distro._bring_up_interface(self, '--all')
++        else:
++            return distros.Distro._bring_up_interfaces(self, device_names)
++
++    def _select_hostname(self, hostname, fqdn):
++        # Prefer the short hostname over the long
++        # fully qualified domain name
++        if not hostname:
++            return fqdn
++        return hostname
++
++    def _write_hostname(self, your_hostname, out_fn):
++        conf = None
++        try:
++            # Try to update the previous one
++            # so lets see if we can read it first.
++            conf = self._read_hostname_conf(out_fn)
++        except IOError:
++            pass
++        if not conf:
++            conf = HostnameConf('')
++        conf.set_hostname(your_hostname)
++        util.write_file(out_fn, str(conf), 0644)
++
++    def _read_system_hostname(self):
++        sys_hostname = self._read_hostname(self.hostname_conf_fn)
++        return (self.hostname_conf_fn, sys_hostname)
++
++    def _read_hostname_conf(self, filename):
++        conf = HostnameConf(util.load_file(filename))
++        conf.parse()
++        return conf
++
++    def _read_hostname(self, filename, default=None):
++        hostname = None
++        try:
++            conf = self._read_hostname_conf(filename)
++            hostname = conf.hostname
++        except IOError:
++            pass
++        if not hostname:
++            return default
++        return hostname
++
++    def _get_localhost_ip(self):
++        return "127.0.1.1"
++
++    def set_timezone(self, tz):
++        distros.set_etc_timezone(tz=tz, tz_file=self._find_tz_file(tz))
++
++    def package_command(self, command, args=None, pkgs=None):
++        if pkgs is None:
++            pkgs = []
++
++        cmd = ['tdnf']
++        # Determines whether or not tdnf prompts for confirmation
++        # of critical actions. We don't want to prompt...
++        cmd.append("-y")
++
++        if args and isinstance(args, str):
++            cmd.append(args)
++        elif args and isinstance(args, list):
++            cmd.extend(args)
++
++        cmd.append(command)
++
++        pkglist = util.expand_package_list('%s-%s', pkgs)
++        cmd.extend(pkglist)
++
++        # Allow the output of this to flow outwards (ie not be captured)
++        util.subp(cmd, capture=False)
++
++    def update_package_sources(self):
++        self._runner.run("update-sources", self.package_command,
++                         ["makecache"], freq=PER_INSTANCE)
++
+
