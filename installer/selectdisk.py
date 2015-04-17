@@ -29,7 +29,7 @@ class SelectDisk(object):
         self.menu_starty = self.win_starty + 6
         self.menu_height = 5
 
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Welcome to the Photon installer', True)
+        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Setup your disk', True)
         self.devices = Device.refresh_devices()
 
     def guided_partitions(self, device_index):

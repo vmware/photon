@@ -13,6 +13,7 @@ from installer import Installer
 from windowstringreader import WindowStringReader
 from jsonwrapper import JsonWrapper
 from selectdisk import SelectDisk
+from license import License
 
 class IsoInstaller(object):
 
@@ -37,6 +38,8 @@ class IsoInstaller(object):
         curses.curs_set(0)
 
         self.install_config = {}
+
+        license_agreement = License(self.maxy, self.maxx)
 
         # skip the disk selection and partitioning if we are running with conf file in test environment.
         if local_install == True:
@@ -73,6 +76,7 @@ class IsoInstaller(object):
                         #(disk_partitioner.display, True),
                         (select_disk.display, True)
                     ] + items
+        items = [(license_agreement.display, False)] + items
 
         index = 0
         params = None
