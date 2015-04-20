@@ -75,7 +75,7 @@ Make sure `/bin/sh` is a symbolic link pointing to `/bin/bash`
 
 If `/bin/sh` is pointing `/bin/dash`, execute the following:
 ```
-rm -f /bin/sh
+mv -f /bin/sh /bin/sh.old
 ln -s /bin/bash /bin/sh
 ```
 
