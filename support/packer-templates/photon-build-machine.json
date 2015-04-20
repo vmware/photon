@@ -49,7 +49,7 @@
       "manifest_dir": "puppet/manifests",
       "module_paths": [
         "puppet/modules"
-      ] 
+      ]
     },
     {
       "type": "shell",
@@ -61,7 +61,7 @@
    {
      "type": "vagrant",
      "compression_level": 9,
-     "output": "{{.BuildName}}-{{.Provider}}.box"
+     "output": "{{.BuildName}}.box"
    }
  ]
 }

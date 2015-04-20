@@ -18,7 +18,7 @@ else
 PHOTON_SOURCES := sources
 endif
 
-.PHONY : all iso clean toolchain toolchain-minimal photon-build-machine photon-vagrant-box \
+.PHONY : all iso clean toolchain toolchain-minimal photon-build-machine photon-vagrant-build photon-vagrant-local \
 check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin
 
 all: iso
@@ -55,7 +55,7 @@ sources:
 	@cd $(PHOTON_PULL_SOURCES_DIR) && \
 	$(PHOTON_PULL_SOURCES) $(PHOTON_SRCS_DIR)
 
-sources-cached: 
+sources-cached:
 	@echo "Using cached SOURCES..."
 	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
 	 $(CP) -rf $(PHOTON_SOURCES_PATH)/* $(PHOTON_SRCS_DIR)/
@@ -140,18 +140,33 @@ photon-build-machine: check-packer check-vagrant
 	@cd $(PHOTON_PACKER_TEMPLATES) && \
 	$(PACKER) build photon-build-machine.json
 	@echo "Adding box to Vagrant boxes..."
-	@$(VAGRANT) box add $(PHOTON_PACKER_TEMPLATES)/photon-build-machine-vmware.box --name photon-build-machine --force && \
-	$(RM) $(PHOTON_PACKER_TEMPLATES)/photon-build-machine-vmware.box
+	@$(VAGRANT) box add $(PHOTON_PACKER_TEMPLATES)/photon-build-machine.box --name photon-build-machine --force && \
+	$(RM) $(PHOTON_PACKER_TEMPLATES)/photon-build-machine.box
 
-photon-vagrant-box: check-packer check-vagrant
-	@echo "Building a photon based Vagrant box with Packer..."
+photon-vagrant-build: check-vagrant
+	@echo "Starting Photon build using Vagrant..."
+	@cd $(SRCROOT) && \
+	$(VAGRANT) up && \
+	$(VAGRANT) destroy -f
+
+ifeq ($(VAGRANT_BUILD),all)
+PACKER_ARGS=""
+else
+PACKER_ARGS="-only=$(VAGRANT_BUILD)"
+endif
+
+photon-vagrant-local: check-packer check-vagrant
+
+	@echo "Building a Photon Vagrant box with Packer..."
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
 		cd $(PHOTON_PACKER_TEMPLATES) && \
-		$(SED) -i "" -e "s#\"iso_checksum_value\":.*#\"iso_checksum_value\": \"$$($(SHASUM) ../../stage/photon.iso | cut -f 1 -d ' ')\"#" photon.json && \
-		$(PACKER) build photon.json && \
-		$(SED) -i "" -e "s#\"iso_checksum_value\":.*#\"iso_checksum_value\": \"\"#" photon.json && \
+		$(SED) -i "" -e "s#\"iso_checksum_value\":.*#\"iso_checksum_value\": \"$$($(SHASUM) ../../stage/photon.iso | cut -f 1 -d ' ')\",#" photon.json && \
+		$(PACKER) build $(PACKER_ARGS) photon.json && \
+		$(SED) -i "" -e "s#\"iso_checksum_value\":.*#\"iso_checksum_value\": \"\",#" photon.json; \
 		echo "Moving boxes to $(PHOTON_STAGE)..." && \
 		$(MV) *.box $(PHOTON_STAGE); \
+	else \
+		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
 	fi
 
 check: check-bison check-g++ check-gawk check-createrepo
@@ -171,7 +186,14 @@ check-createrepo:
 check-vagrant: check-packer
 	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
 
+
+ifeq ($(VAGRANT_BUILD),vcloudair)
 check-packer: check-packer-ovf-plugin
+else ifeq ($(VAGRANT_BUILD),all)
+check-packer: check-packer-ovf-plugin
+else
+check-packer:
+endif
 	@command -v $(PACKER) >/dev/null 2>&1 || { echo "Packer not installed or wrong path, expecting $(PACKER). Aborting" >&2; exit 1; }
 
 check-packer-ovf-plugin:
