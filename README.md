@@ -73,7 +73,7 @@ sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage t
 
 Make sure `/bin/sh` is a symbolic link pointing to `/bin/bash`
 
-If `/bin/sh` is pointing `/bin/dash`, execute the following:
+If `/bin/sh` is pointing `/bin/bash`, execute the following:
 ```
 rm -f /bin/sh
 ln -s /bin/bash /bin/sh
