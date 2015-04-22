@@ -24,6 +24,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.vmx['numvcpus'] = vm_config[:cpu]
   end
 
+  config.vm.provider('virtualbox') do |v|
+    v.memory = vm_config[:ram]
+    v.cpus = vm_config[:cpu]
+  end
+
   # Sync the current folder as /workspaces/photon using rsync.
   config.vm.synced_folder('.', '/workspaces/photon', type: 'rsync',
                           rsync__exclude: ['.git/', 'stage/']) # exclude .git and stage from sync.

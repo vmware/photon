@@ -4,7 +4,7 @@ This directory contains [Packer](http://packer.io) templates for `photon-build-m
 
 `photon-build-machine` is a Ubuntu 14.04.1 that contains all the prerequisites to build Photon from scratch, and is the box referenced by the top-level Vagrantfile, to build this machine you will need:
 
-- VMware Workstation (on Windows and Linux) or Fusion (on Mac OS X)
+- VMware Workstation (on Windows and Linux) or Fusion (on Mac OS X) or Oracle VirtualBox
 - A recent Packer install (tested on v0.7.5)
 
 ### Automatic build machine
