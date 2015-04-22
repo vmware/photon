@@ -31,11 +31,11 @@ class ReadText(Action):
             # Adding all the letters
             self.accepted_chars = range(33, 127)
         else:
-            self.maxlength = 24
+            self.maxlength = 255
 
             self.alpha_chars = range(65, 91)
             self.alpha_chars.extend(range(97,123))
-            
+
             self.accepted_chars = list(self.alpha_chars)
             # Adding the numeric chars
             self.accepted_chars.extend(range(48, 58))
@@ -45,7 +45,7 @@ class ReadText(Action):
 
     def hide(self):
         return
-    
+
     def do_action(self):
         curses.curs_set(1)
 
