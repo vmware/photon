@@ -50,7 +50,6 @@ ln -svfn ../run/lock %{buildroot}/var/lock
 install -vdm 755 %{buildroot}/var/{opt,cache,lib/{color,misc,locate},local}
 
 ln -svfn var/opt %{buildroot}/opt
-
 #
 #	6.6. Creating Essential Files and Symlinks
 #
