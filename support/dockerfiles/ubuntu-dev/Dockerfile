@@ -9,7 +9,14 @@ RUN \
   apt-get update && \
   apt-get -y upgrade && \
   apt-get install -y build-essential && \
-  apt-get install -y bison gawk g++ createrepo python-aptdaemon genisoimage docker.io && \
+  apt-get install -y \
+    bison \
+    createrepo \
+    docker.io \
+    gawk \
+    genisoimage \
+    g++ \
+    python-aptdaemon && \
   rm -f /bin/sh && \
   ln -s /bin/bash /bin/sh && \
   rm -rf /var/lib/apt/lists/*
