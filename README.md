@@ -2,7 +2,9 @@
 
 ## Introduction
 
-Photon is a Linux Distribution that uses RPM as its packaging system.
+Photon is a small RPM-based Linux distribution that is optimized for running containers. This repository is intended for developers wishing to modify Photon and build their own customized ISO images. For those interested in an ISO image that is ready to use, please download from the following location: 
+
+https://dl.bintray.com/vmware/photon/iso/1.0TP1/x86_64/
 
 ## Folder Layout
 ```
