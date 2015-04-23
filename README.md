@@ -14,4 +14,6 @@ This repository is intended for developers wishing to modify Photon and build th
 
 Official ISOs are available for download at [Bintray](https://bintray.com/vmware/photon/iso/view).
 
-An official Vagrant box is available on Hashicorp Atlas, to get started: `vagrant init vmware/photon`.
+An official Vagrant box is available on Hashicorp Atlas, to get started: `vagrant init vmware/photon`. A plugin to support Photon guests in Vagrant is available at https://github.com/vmware/vagrant-guests-photon.
+
+For up-to-date documentation, see the [Docs](docs/) folder.
