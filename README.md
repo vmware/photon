@@ -1,96 +1,19 @@
-# Welcome to the VMware Photon Linux Release!
+![Photon](http://storage.googleapis.com/project-photon/vmw-logo-photon.svg "VMware Photon")
 
-## Introduction
+[ ![Download](https://api.bintray.com/packages/vmware/photon/iso/images/download.svg) ](https://bintray.com/vmware/photon/iso/_latestVersion)
+VMware Photon: Minimal Linux Container Host
+===========================================
 
-Photon is a small RPM-based Linux distribution that is optimized for running containers. This repository is intended for developers wishing to modify Photon and build their own customized ISO images. For those interested in an ISO image that is ready to use, please download from the following location: 
+Photon is a technology preview of a minimal Linux container host. It is designed to have a small footprint and boot extremely quickly on VMware platforms. Photon is intended to invite collaboration around running containerized applications in a virtualized environment.
 
-https://dl.bintray.com/vmware/photon/iso/1.0TP1/x86_64/
+- Optimized for vSphere - Validated on VMware product and provider platforms.
+- Container support - Supports Docker, rkt, and the Pivotal Garden container specifications.
+- Efficient lifecycle management - contains a new, open-source, yum-compatible package manager that will help make the system as small as possible, but preserve the robust yum package management capabilities.
 
-## Folder Layout
-```
-photon/
-├── Makefile
-├── README
-├── SPECS # RPM SPEC files
-├── cloud-init.md
-├── gce.md
-├── installer # Installer used at runtime
-└── support
-```
+This repository is intended for developers wishing to modify Photon and build their own customized ISO images.
 
-## How to build the ISO?
+Official ISOs are available for download at [Bintray](https://bintray.com/vmware/photon/iso/view).
 
-Assuming you checked out the workspace under `$HOME/workspaces/photon`.
-```
-cd $HOME/workspaces/photon
-sudo make iso
-```
-Deliverable will be created at `$HOME/workspaces/photon/stage/photon.iso`
+An official Vagrant box is available on Hashicorp Atlas, to get started: `vagrant init vmware/photon`. A plugin to support Photon guests in Vagrant is available at https://github.com/vmware/vagrant-guests-photon.
 
-## How to use cached toolchain and RPMS?
-```
-mkdir $HOME/photon-cache
-sudo make iso PHOTON_CACHE_PATH=$HOME/photon-cache
-```
-Directory format of `PHOTON_CACHE_PATH` is as follows.
-```
-photon-cache/
-├──tools-build.tar.gz
-├──RPMS/x86-64/*.rpm
-└──RPMX/noarch/*.rpm
-```
-## How to use cached sources?
-```
-mkdir $HOME/photon-sources
-sudo make iso PHOTON_SOURCES_PATH=$HOME/photon-sources
-```
-Directory format of `PHOTON_SOURCES_PATH` is as follows.
-```
-photon-sources/
-├──src1.tar.gz
-├──src2.tar.gz
-└──...
-```
-## How to build the toolchain?
-
-1. Check toolchain pre-requisites
-```
-$HOME/workspaces/photon/support/toolchain/version-check.sh
-```
-2. Make toolchain
-```
-$HOME/workspaces/photon
-sudo make toolchain
-```
-
-Pre-requisites :
-
- * Build O/S : Ubuntu 14.04 (or later) 64 bit
- * Packages: bison, gawk, g++, createrepo, python-aptdaemon, genisoimage, texinfo, python-requests
-```
-sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests
-```
-
-### Settings:
-
-Make sure `/bin/sh` is a symbolic link pointing to `/bin/bash`
-
-If `/bin/sh` is pointing `/bin/dash`, execute the following:
-```
-rm -f /bin/sh
-ln -s /bin/bash /bin/sh
-```
-
-## Where are the build logs?
-```
-$HOME/workspaces/photon/stage/LOGS
-```
-
-## Complete build environment using Vagrant
-A `Vagrantfile` is available to ensure a quick standup of a development/build environment for Photon, this Vagrantfile uses a box called `photon-build-machine` box that is created through a [Packer](http://packer.io) template available under `support/packer-templates`, see the [README.md](https://github.com/vmware/photon/blob/master/support/packer-templates/README.md) for more information on how to build `photon-build-machine`.
-
-## Photon Vagrant box
-As with the build-machine a Packer template is available under `support/packer-templates` to build a Photon based Vagrant box running Docker, see the [README.md](https://github.com/vmware/photon/blob/master/support/packer-templates/README.md) for more information on how to build.
-
-## Automated build environment and Vagrant boxes
-Convenience make targets also exist to build both the `photon-build-machine` and the `photon` Packer templates as well as building a fresh ISO using the `photon-build-machine`. See the [README.md](https://github.com/vmware/photon/blob/master/support/packer-templates/README.md) for more details.
+For up-to-date documentation, see the [Docs](docs/) folder.
