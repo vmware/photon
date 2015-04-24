@@ -13,22 +13,20 @@ To automatically build the `photon-build-machine` and push into the local Vagran
 sudo make photon-build-machine
 ```
 
-### Build an ISO using a Vagrant based build machine
-To automatically build the `photon-build-machine` and push into the local Vagrant box repository use the make target:
-```
-sudo make photon-build-machine
-```
-Running `vagrant up` from the source root will automatically build a new `photon.iso` using the `photon-build-machine` Vagrant box and copy this onto the host into the `stage` directory. The machine will be halted at the completion of the build and can be reused or destroyed using `vagrant destroy`
+### Build an ISO using the photon-build-machine
+Running `vagrant up` from the source root will automatically build a new `photon.iso` using the `photon-build-machine` Vagrant box and copy this onto the host into the `stage` directory. The machine will be halted at the completion of the build and can be reused by running ```vagrant up``` again or destroyed using `vagrant destroy`.
 
 #### Troubleshooting
 
-By default Packer will run headless when building the `photon-build-machine` vm, if your packer build fails, try switching `"headless": true,` to `"headless": false,` in [`photon-build-machine.json`](https://github.com/frapposelli/photon/blob/master/support/packer-templates/photon-build-machine.json#L8), this will open the Workstation/Fusion GUI when the build starts so you can watch the process, make sure not to send any input to the VM during the build as it may interfere with the process.
+By default Packer will run headless when building the `photon-build-machine` vm. If your packer build fails, try switching `"headless": true,` to `"headless": false,` in [`photon-build-machine.json`](https://github.com/vmware/photon/blob/master/support/packer-templates/photon-build-machine.json#L8), this will open the Workstation/Fusion GUI when the build starts so you can watch the process, just make sure not to send any input to the VM during the build as it may interfere with the process.
 
 ## Photon Vagrant box with Docker
 To build a new Photon Vagrant box and make it available in the `stage` directory use the make target from the root of the Photon source:
 ```
 sudo make photon-vagrant-box
 ```
-The Vagrant box is configured to start a Docker service daemon bound to 0.0.0.0:2375 which is remapped to your host for convenience. Export DOCKER_HOST=tcp://127.0.0.1:2375 to use.
+The Vagrant box is configured to start a Docker service daemon bound to 0.0.0.0:2375 which is remapped to your host for convenience.
+
+Run ```export DOCKER_HOST=tcp://127.0.0.1:2375``` before trying to connect to the Docker engine with the Docker client..
 
 The box is configured to match the Vagrant base box standards, however it is not meant as an official Vagrant box build for Photon but rather as a starting point to create your own.
