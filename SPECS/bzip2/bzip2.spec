@@ -30,13 +30,12 @@ make VERBOSE=1 %{?_smp_mflags}
 make PREFIX=%{buildroot}/usr install
 install -vdm 0755 %{buildroot}/%{_lib}
 install -vdm 0755 %{buildroot}/bin
-cp -v bzip2-shared %{buildroot}/bin/bzip2
 cp -av libbz2.so* %{buildroot}/%{_lib}
 install -vdm 755 %{buildroot}%{_libdir}
 ln -sv ../../%{_lib}/libbz2.so.1.0 %{buildroot}%{_libdir}/libbz2.so
 rm -v %{buildroot}%{_bindir}/{bunzip2,bzcat}
-ln -sv bzip2 %{buildroot}/bin/bunzip2
-ln -sv bzip2 %{buildroot}/bin/bzcat
+ln -sv bzip2 %{buildroot}/usr/bin/bunzip2
+ln -sv bzip2 %{buildroot}/usr/bin/bzcat
 find %{buildroot} -name '*.a'  -delete
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -44,9 +43,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %postun	-p /sbin/ldconfig
 %files
 %defattr(-,root,root)
-/bin/bzip2
-/bin/bzcat
-/bin/bunzip2
+%{_bindir}/bzcat
+%{_bindir}/bunzip2
 %{_bindir}/bzless
 %{_bindir}/bzgrep
 %{_bindir}/bzip2
