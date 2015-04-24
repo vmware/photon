@@ -13,6 +13,7 @@ SED=/usr/bin/sed
 SHASUM=/usr/bin/shasum
 PACKER=/usr/local/bin/packer
 VAGRANT=/usr/bin/vagrant
+VAGRANT_BUILD=vagrant
 
 SRCROOT := $(realpath $(SRCROOT))
 MAKEROOT := $(realpath $(MAKEROOT))

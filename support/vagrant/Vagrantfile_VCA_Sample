@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Set our default provider for this Vagrantfile to 'vcloudair'
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'vcloudair'
+
+Vagrant.configure('2') do |config|
+
+  # vCloud Air provider settings
+  config.vm.provider :vcloudair do |vcloudair|
+
+    vcloudair.username = '<username@domain>'
+    vcloudair.password = '<password>'
+
+    # if you're using a vCloud Air Dedicated Cloud, put the cloud id here, if
+    # you're using a Virtual Private Cloud, skip this parameter.
+    vcloudair.cloud_id = '<dedicated cloud id>'
+    vcloudair.vdc_name = '<vdc name>'
+
+    # Set the network to deploy our VM on
+    vcloudair.vdc_network_name = '<vdc network name>'
+
+    # Set our Edge Gateway and the public IP we're going to use.
+    vcloudair.vdc_edge_gateway = '<vdc edge gateway>'
+    vcloudair.vdc_edge_gateway_ip = '<vdc edge gateway public ip>'
+
+    # Catalog that holds our templates.
+    vcloudair.catalog_name = 'Vagrant'
+
+    # Set our Memory and CPU to a sensible value for Docker.
+    vcloudair.memory = 2048
+    vcloudair.cpus = 2
+  end
+
+  #Configure the box to use
+  config.vm.box = 'box-name'
+
+end

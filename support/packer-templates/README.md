@@ -2,23 +2,26 @@
 
 This directory contains [Packer](http://packer.io) templates for `photon-build-machine` and to build a generic `photon` Vagrant box with `docker` binding on `0.0.0.0:2375`.
 
-`photon-build-machine` is a Ubuntu 14.04.1 that contains all the prerequisites to build Photon from scratch, and is the box referenced by the top-level Vagrantfile, to build this machine you will need:
+`photon-build-machine` is a Ubuntu 14.04.2 that contains all the prerequisites to build Photon from scratch, and is the box referenced by the top-level Vagrantfile, to build this machine you will need:
 
 - VMware Workstation (on Windows and Linux) or Fusion (on Mac OS X)
 - A recent Packer install (tested on v0.7.5)
+- Packer OVF Post Processor from [GitHub](https://github.com/gosddc/packer-post-processor-vagrant-vmware-ovf) (Optional for vCloud Air build)
+- Vagrant vCloud Air Provider from [GitHub](https://github.com/gosddc/vagrant-vcloudair) (Optional for vCloud Air usage)
 
 ### Automatic build machine
 To automatically build the `photon-build-machine` and push into the local Vagrant box repository use the make target from the root of the Photon source:
 ```
-sudo make photon-build-machine
+make photon-build-machine
 ```
 
 ### Build an ISO using a Vagrant based build machine
-To automatically build the `photon-build-machine` and push into the local Vagrant box repository use the make target:
+Assuming that the `photon-build-machine` has been created and resides in your local Vagrant repository, running `vagrant up` from the source root will automatically build a new `photon.iso` using the `photon-build-machine` Vagrant box and copy this onto the host into the `stage` directory. The machine will be halted at the completion of the build and can be reused or destroyed using `vagrant destroy`
+
+Alternatively use the convenience make target to run the build process and destroy the machine on completion:
 ```
-sudo make photon-build-machine
+make photon-vagrant-build
 ```
-Running `vagrant up` from the source root will automatically build a new `photon.iso` using the `photon-build-machine` Vagrant box and copy this onto the host into the `stage` directory. The machine will be halted at the completion of the build and can be reused or destroyed using `vagrant destroy`
 
 #### Troubleshooting
 
@@ -27,8 +30,16 @@ By default Packer will run headless when building the `photon-build-machine` vm,
 ## Photon Vagrant box with Docker
 To build a new Photon Vagrant box and make it available in the `stage` directory use the make target from the root of the Photon source:
 ```
-sudo make photon-vagrant-box
+make photon-vagrant-local
 ```
+By default this process will build a Vagrant box using the vmware provider which can be used with VMware Fusion or Workstation. Setting the VAGRANT_BUILD variable allows finer control of the build output:
+
+1. Vagrant only (default) ```make photon-vagrant-local``` OR explicit version ```make photon-vagrant-local VAGRANT_BUILD=vagrant```
+2. vCloud Air or vCloud ```make photon-vagrant-local VAGRANT_BUILD=vcloudair```
+3. All builds ```make photon-vagrant-local VAGRANT_BUILD=all```
+
 The Vagrant box is configured to start a Docker service daemon bound to 0.0.0.0:2375 which is remapped to your host for convenience. Export DOCKER_HOST=tcp://127.0.0.1:2375 to use.
+
+A sample Vagrantfile for use with vCloud Air resides in ```support/vagrant/Vagrantfile_VCA_Sample```, refer to the [vagrant-vcloudair](https://github.com/gosddc/vagrant-vcloudair) for advanced usage details.
 
 The box is configured to match the Vagrant base box standards, however it is not meant as an official Vagrant box build for Photon but rather as a starting point to create your own.

@@ -2,8 +2,8 @@
 
 #################################################
 #	Title:	photon-build-machine-init        			#
-# Date:	2015-03-17                        			#
-# Version:	1.0				                          #
+# Date:	2015-04-16                        			#
+# Version:	1.1				                          #
 # Author:	tmcphail@vmware.com     	            #
 # Options:					                            #
 #################################################
@@ -22,7 +22,9 @@ sudo make toolchain
 sudo make iso
 
 # Remove the old stage directory on the host and copy the newly built one
-if [[ -d ${PHOTON_HOST}/stage ]] ; then
+if [ ! -e ${PHOTON_WORKING}/stage/discus.iso ]; then
+  echo "The build failed..."
+elif [ -d ${PHOTON}/stage ]; then
   echo "Refreshing the host stage directory content..."
   rm -rf ${PHOTON_HOST}/stage
   cp -R ${PHOTON_WORKING}/stage ${PHOTON_HOST}/stage
