@@ -85,7 +85,7 @@ $(PHOTON_TOOLCHAIN): check $(PHOTON_STAGE)
 else
 
 $(PHOTON_TOOLCHAIN): $(PHOTON_STAGE) $(PHOTON_SOURCES)
-	@if [ -a $(PHOTON_TOOLCHAIN) ] ; then \
+	@if [ -f $(PHOTON_TOOLCHAIN) ] ; then \
 		echo "Using already built toolchain"; \
 	else \
 		echo "Building toolchain..."; \
