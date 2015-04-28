@@ -1,16 +1,20 @@
-Summary:	Ruby 
+Summary:	Ruby
 Name:		ruby
 Version:	2.2.1
-Release:	1
+Release:	2
 License:	BSDL
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://cache.ruby-lang.org/pub/ruby/2.2/%{name}-%{version}.tar.gz
+Requires:	ca-certificates
+BuildRequires:	ca-certificates
+Requires:	openssl
+BuildRequires:	openssl-devel
 %description
-BoThe Ruby package contains the Ruby development environment.
-This is useful for object-oriented scripting. 
+The Ruby package contains the Ruby development environment.
+This is useful for object-oriented scripting.
 
 %prep
 %setup -q
@@ -42,6 +46,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Tue Apr 28 2015 Fabio Rapposelli <fabio@vmware.com> 2.2.1-2
+-   Added SSL support
 *   Mon Apr 6 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.2.1-1
 -   Version upgrade to 2.2.1
 *	Thu Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.3-1
