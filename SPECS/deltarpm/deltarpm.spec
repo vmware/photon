@@ -1,7 +1,7 @@
 Summary: Create deltas between rpms
 Name: deltarpm
 Version: 3.6
-Release: 2
+Release: 1
 License: BSD
 Group: Applications/System
 Vendor: VMware, Inc.
