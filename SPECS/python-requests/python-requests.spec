@@ -1,6 +1,6 @@
 Name:           python-requests
 Version:        2.5.1
-Release:        0
+Release:        1
 Url:            http://python-requests.org
 Summary:        Awesome Python HTTP Library That's Actually Usable
 License:        Apache2

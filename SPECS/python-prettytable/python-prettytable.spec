@@ -1,6 +1,6 @@
 Name:           python-prettytable
 Version:        0.7.2
-Release:        0
+Release:        1
 Summary:        Library for displaying tabular data in a visually appealing ASCII format
 License:        BSD-2-Clause
 Group:          Development/Languages/Python

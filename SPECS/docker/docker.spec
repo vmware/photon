@@ -1,7 +1,7 @@
 Summary:	Docker
 Name:		docker
 Version:	1.5.0
-Release:	3
+Release:	1
 License:	ASL 2.0
 URL:		http://docs.docker.com
 Group:		Applications/File
@@ -50,8 +50,4 @@ rm -rf %{buildroot}/*
 #/etc/systemd/system/multi-user.target.wants/docker.service
 %changelog
 *	Mon Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-3
--	Updating the docker package
-*	Mon Feb 9 2015 Divya Thaluru <dthaluru@vmware.com> 1.4.1-2
--	Updating the docker package
-*	Thu Oct 16 2014 Divya Thaluru <dthaluru@vmware.com> 1.2-1
 -	Initial build.	First version
