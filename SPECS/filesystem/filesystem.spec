@@ -31,32 +31,32 @@ install -vdm 755 %{buildroot}/usr/libexec
 install -vdm 755 %{buildroot}/usr/{,local/}share/man/man{1..8}
 install -vdm 644 %{buildroot}/etc/profile.d
 
-ln -sv usr/lib %{buildroot}/lib
-ln -sv usr/bin %{buildroot}/bin
-ln -sv usr/sbin %{buildroot}/sbin
-ln -sv run/media %{buildroot}/media
+ln -svfn usr/lib %{buildroot}/lib
+ln -svfn usr/bin %{buildroot}/bin
+ln -svfn usr/sbin %{buildroot}/sbin
+ln -svfn run/media %{buildroot}/media
 
 #	Symlinks for AMD64
 %ifarch x86_64
-	ln -sv usr/lib %{buildroot}/lib64
-	ln -sv lib %{buildroot}/usr/lib64
-	ln -sv ../lib %{buildroot}/usr/local/lib64
+	ln -svfn usr/lib %{buildroot}/lib64
+	ln -svfn lib %{buildroot}/usr/lib64
+	ln -svfn ../lib %{buildroot}/usr/local/lib64
 %endif
 install -vdm 755 %{buildroot}/var/{log,mail,spool,mnt,srv}
 
-ln -sv var/srv %{buildroot}/srv
-
-ln -sv ../run %{buildroot}/var/run
-ln -sv ../run/lock %{buildroot}/var/lock
+ln -svfn var/srv %{buildroot}/srv
+ln -svfn ../run %{buildroot}/var/run
+ln -svfn ../run/lock %{buildroot}/var/lock
 install -vdm 755 %{buildroot}/var/{opt,cache,lib/{color,misc,locate},local}
 
-ln -sv var/opt %{buildroot}/opt
+ln -svfn var/opt %{buildroot}/opt
 
 #
 #	6.6. Creating Essential Files and Symlinks
 #
 ln -sv /proc/self/mounts %{buildroot}/etc/mtab
 #touch -f %{buildroot}/etc/mtab
+
 touch %{buildroot}/var/log/{btmp,lastlog,wtmp}
 #
 #	Configuration files
@@ -435,7 +435,7 @@ EOF
 %attr(664,root,utmp)	/var/log/lastlog
 %attr(600,root,root)	/var/log/btmp
 /var/lock
-/var/run
+%ghost /var/run
 /var/run/lock
 #	Symlinks for AMD64
 %ifarch x86_64
