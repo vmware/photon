@@ -12,6 +12,7 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 Patch0:		glibc-2.21-fhs-1.patch
 Provides:	rtld(GNU_HASH)
+Requires:   filesystem
 %description
 This library provides the basic routines for allocating memory,
 searching directories, opening and closing files, reading and
