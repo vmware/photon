@@ -55,6 +55,7 @@ ln -svfn var/opt %{buildroot}/opt
 #
 ln -svfn /proc/self/mounts %{buildroot}/etc/mtab
 #touch -f %{buildroot}/etc/mtab
+
 touch %{buildroot}/var/log/{btmp,lastlog,wtmp}
 #
 #	Configuration files
