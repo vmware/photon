@@ -32,6 +32,7 @@ echo Perl `perl -V:version`
 sed --version | head -n1
 tar --version | head -n1
 xz --version | head -n1
+makeinfo --version | head -n1
 
 echo 'main(){}' > dummy.c && g++ -o dummy dummy.c
 if [ -x dummy ]
