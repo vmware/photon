@@ -457,6 +457,7 @@ class BuildSystem(object):
         cmdUtils=commandsUtils()
         cmdUtils.run_command("./cleanup-build-root.sh "+self.build_root)
         
+    # TODO: rename to smth like buildPackage...
     def installPackage(self,package,force_build=False):
         print "Force build option", force_build
         returnVal,listDependentPackages=self.find_package_dependency_tree(package,force_build)
@@ -481,6 +482,14 @@ class BuildSystem(object):
                     return False
             print "Finished building dependent packages"
 
+        # We don't need to build this package if RPM exists && !force_build
+        rpmfile = None
+        if not force_build:
+            rpmfile=self.findRPMFileForGivenPackage(package)
+        if rpmfile is not None:
+            return True
+
+	# Let's build this package
         self.installToolchain()
         self.removeToolsTar()
         del self.listInstalledPackages[:]
@@ -507,17 +516,7 @@ class BuildSystem(object):
                 print "Installed the package:",pkg
             print "Finished installing the dependent packages......"
 
-        rpmfile = None
-        if not force_build:
-            rpmfile=self.findRPMFileForGivenPackage(package)    
-        if rpmfile is None:
-            returnVal=self.buildPackage(package)
-            if not returnVal:
-                print "Stop installing the package",package
-                return False
-            return self.installPackage(package)
-
-        returnVal = self.installRPM(package)
+        returnVal=self.buildPackage(package)
         if not returnVal:
             print "Stop installing the package",package
             return False
