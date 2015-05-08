@@ -50,7 +50,9 @@ if mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then umount ${BUILDROOT}/dev; fi
 echo "Uncompressing the tools tar"
 
 tar -C ${BUILDROOT} -xvf $TOOLS_PATH/tools-build.tar >/dev/null
-tar -C / -xvf $TOOLS_PATH/tools-build.tar >/dev/null
+# YUSTAS_FIXME: rpm still depends on /tools/lib/... Remove this dependency.
+ln -sf ${BUILDROOT}/tools /tools
+
 mkdir -p ${BUILDROOT}/tmp
 mkdir -p ${BUILDROOT}${PARENT}
 mkdir -p ${BUILDROOT}${PARENT}/RPMS
@@ -80,13 +82,16 @@ run_command "Extracting filesystem rpm" "cp ${BUILDROOT}/${PARENT}/RPMS/x86_64/f
 fi
 RPMPKG="$(find $RPM_PATH -name 'filesystem*.rpm' -print)"
 [ -z ${RPMPKG} ] && fail "	Filesystem rpm package missing: Can not continue"
-run_command "	Installing filesystem" "/tools/bin/rpm -Uvh --nodeps --root ${BUILDROOT} ${RPMPKG}" "$LOG_PATH/filesystem.completed"
+run_command "	Installing filesystem" "${BUILDROOT}/tools/bin/rpm -Uvh --nodeps --root ${BUILDROOT} ${RPMPKG}" "$LOG_PATH/filesystem.completed"
 run_command "	Creating symlinks: /tools/bin/{bash,cat,echo,pwd,stty}" "ln -fsv /tools/bin/{bash,cat,echo,pwd,stty} ${BUILDROOT}/bin"   "$LOG_PATH/filesystem.completed"
 run_command "	Creating symlinks: /tools/bin/perl /usr/bin" "ln -fsv /tools/bin/perl ${BUILDROOT}/usr/bin" "$LOG_PATH/filesystem.completed"
 run_command "	Creating symlinks: /tools/lib/libgcc_s.so{,.1}" "ln -fsv /tools/lib/libgcc_s.so{,.1} ${BUILDROOT}/usr/lib" "$LOG_PATH/filesystem.completed"
 run_command "	Creating symlinks: /tools/lib/libstdc++.so{,.6} /usr/lib" "ln -fsv /tools/lib/libstdc++.so{,.6} ${BUILDROOT}/usr/lib"	 "$LOG_PATH/filesystem.completed"
 run_command "	Sed: /usr/lib/libstdc++.la" "sed 's/tools/usr/' ${BUILDROOT}/tools/lib/libstdc++.la > ${BUILDROOT}/usr/lib/libstdc++.la" "$LOG_PATH/filesystem.completed"
 run_command "	Creating symlinks: bash /bin/sh" "ln -fsv bash ${BUILDROOT}/bin/sh" "$LOG_PATH/filesystem.completed"
+# YUSTAS_FIXME: Add security flags for toolchain
+#run_command "	Adding spec file for gcc #1" "cp ${TOOLS_PATH}/../support/toolchain/gcc_specs ${BUILDROOT}/tools/lib/gcc/x86_64-unknown-linux-gnu/4.8.2/specs" "$LOG_PATH/filesystem.completed"
+#run_command "	Adding spec file for gcc #2" "cp ${TOOLS_PATH}/../support/toolchain/gcc_specs ${BUILDROOT}/tools/lib/gcc/x86_64-photon-linux-gnu/4.8.2/specs" "$LOG_PATH/filesystem.completed"
 
 # 	Ommited in the filesystem.spec file - not needed for booting
 [ -e ${BUILDROOT}/dev/console ]	|| mknod -m 600 ${BUILDROOT}/dev/console c 5 1
