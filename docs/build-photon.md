@@ -69,8 +69,7 @@ Make sure `/bin/sh` is a symbolic link pointing to `/bin/bash`
 
 If `/bin/sh` is pointing `/bin/dash`, execute the following:
 ```
-rm -f /bin/sh
-ln -s /bin/bash /bin/sh
+sudo ln -sf /bin/bash /bin/sh
 ```
 
 ## Where are the build logs?

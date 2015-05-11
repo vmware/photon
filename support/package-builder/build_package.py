@@ -130,7 +130,9 @@ class BuildSystem(object):
         self.parent_path="/usr/src/photon"
         self.prepare_buildroot_command = "./prepare-build-root.sh"
         self.run_in_chroot_command = "./run-in-chroot.sh"
+	# do not add '/' at the beginning. It's used for concat.
         self.adjust_tool_chain_script = "adjust-tool-chain.sh"
+        self.adjust_gcc_specs_script = "adjust-gcc-specs.sh"
         self.localegen_script = "./locale-gen.sh"
         self.localegen_config = "./locale-gen.conf"
 
@@ -188,6 +190,18 @@ class BuildSystem(object):
         shutil.copy2(self.localegen_config,  self.build_root+"/etc/locale-gen.conf")
         cmdUtils=commandsUtils()
         returnVal = cmdUtils.run_command("/tmp/"+self.adjust_tool_chain_script,"/var/log/adjust_tool_chain_script.log", self.run_in_chroot_command+" "+self.build_root)
+        return returnVal
+
+    def adjust_gcc_specs(self):
+        shutil.copy2(self.adjust_gcc_specs_script,  self.build_root+"/tmp/"+self.adjust_gcc_specs_script)
+        cmdUtils=commandsUtils()
+        returnVal = cmdUtils.run_command("/tmp/"+self.adjust_gcc_specs_script,"/var/log/adjust_gcc_specs_script.log", self.run_in_chroot_command+" "+self.build_root)
+        return returnVal
+
+    def clean_gcc_specs(self):
+        shutil.copy2(self.adjust_gcc_specs_script,  self.build_root+"/tmp/"+self.adjust_gcc_specs_script)
+        cmdUtils=commandsUtils()
+        returnVal = cmdUtils.run_command("/tmp/"+self.adjust_gcc_specs_script+" clean","/var/log/adjust_gcc_specs_script.log", self.run_in_chroot_command+" "+self.build_root)
         return returnVal
 
     def readPackagesInSpecFiles(self):
@@ -329,6 +343,8 @@ class BuildSystem(object):
         self.listInstalledPackages.append(package)
         if package =="glibc":
             self.adjust_tool_chain()
+        if package =="gcc":
+            self.adjust_gcc_specs()
         return True
 
     def findInstalledPackages(self):
@@ -457,6 +473,7 @@ class BuildSystem(object):
         cmdUtils=commandsUtils()
         cmdUtils.run_command("./cleanup-build-root.sh "+self.build_root)
         
+    # TODO: rename to smth like buildPackage...
     def installPackage(self,package,force_build=False):
         print "Force build option", force_build
         returnVal,listDependentPackages=self.find_package_dependency_tree(package,force_build)
@@ -481,6 +498,14 @@ class BuildSystem(object):
                     return False
             print "Finished building dependent packages"
 
+        # We don't need to build this package if RPM exists && !force_build
+        rpmfile = None
+        if not force_build:
+            rpmfile=self.findRPMFileForGivenPackage(package)
+        if rpmfile is not None:
+            return True
+
+	# Let's build this package
         self.installToolchain()
         self.removeToolsTar()
         del self.listInstalledPackages[:]
@@ -507,17 +532,11 @@ class BuildSystem(object):
                 print "Installed the package:",pkg
             print "Finished installing the dependent packages......"
 
-        rpmfile = None
-        if not force_build:
-            rpmfile=self.findRPMFileForGivenPackage(package)    
-        if rpmfile is None:
-            returnVal=self.buildPackage(package)
-            if not returnVal:
-                print "Stop installing the package",package
-                return False
-            return self.installPackage(package)
+	# linux package does not require sec gcc options
+        if package =="linux":
+            self.clean_gcc_specs()
 
-        returnVal = self.installRPM(package)
+        returnVal=self.buildPackage(package)
         if not returnVal:
             print "Stop installing the package",package
             return False
@@ -538,6 +557,9 @@ class BuildSystem(object):
         return True
     
     def buildAllPackages(self):
+        # in case previous build was terminated.
+        self.cleanBuildRoot()
+
         listFailedPkgs=[]
         list_packages=getListPackages(self.spec_path)
         returnVal=self.installToolchain()

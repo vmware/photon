@@ -50,6 +50,8 @@ if [ -d ${BUILDROOT} ] ; then
 	ln -s bash ${BUILDROOT}/mnt/bin/sh
 	cp ${BUILDROOT}/lib/{libncursesw.so.*,libreadline.so.*} ${BUILDROOT}/mnt/lib/
 	cp ${BUILDROOT}/lib/{libhistory.so.*,libblkid.so.*,libuuid.so.*,libmount.so.*} ${BUILDROOT}/mnt/lib/
+	cp ${BUILDROOT}/usr/lib/libgcc_s.so.1 ${BUILDROOT}/mnt/lib/
+	ln -s libgcc_s.so.1 ${BUILDROOT}/mnt/lib/libgcc_s_so
 	for f in "ld-linux-x86-64.so.2" "libc.so.6" "libdl.so.2" "libpthread.so.0"
 	do
 		orig=$(readlink ${BUILDROOT}/lib/$f)

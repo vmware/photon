@@ -17,7 +17,7 @@ linear algebra, pseudorandom number generation, multithreading, image processing
 %setup -qn boost_1_56_0
 %build
 ./bootstrap.sh --prefix=%{buildroot}%{_prefix}
-./b2 stage threading=multi link=shared
+./b2 %{?_smp_mflags} stage threading=multi link=shared
 %install
 ./b2 install threading=multi link=shared
 %check
