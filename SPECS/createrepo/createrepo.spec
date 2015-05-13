@@ -17,7 +17,7 @@ Requires: bash
 Requires: deltarpm
 BuildRequires: bash
 BuildRequires: deltarpm
-BuildRequires: yum-metadata-parser, yum, python2, rpm-devel, rpm, libxml2, python2, python2-libs
+BuildRequires: yum-metadata-parser, yum, rpm-devel, rpm, libxml2, python2, python2-libs
 %description
 This utility will generate a common metadata repository from a directory of
 rpm packages

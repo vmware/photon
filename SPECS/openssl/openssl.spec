@@ -35,6 +35,7 @@ export CFLAGS="%{optflags}"
 	shared \
 	zlib-dynamic \
 	-Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
+# does not support -j yet
 make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*

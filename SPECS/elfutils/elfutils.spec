@@ -99,7 +99,7 @@ for libelf.
 
 %build
 %configure --program-prefix=%{_programprefix}
-make
+make %{?_smp_mflags}
 
 %install
 rm -rf ${RPM_BUILD_ROOT}

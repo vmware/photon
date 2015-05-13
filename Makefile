@@ -32,7 +32,7 @@ iso: check $(PHOTON_PACKAGES) $(PHOTON_TOOLCHAIN_MINIMAL)
                         -f > \
         $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages: check $(PHOTON_TOOLCHAIN) $(PHOTON_SOURCES)
+packages: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
     $(PHOTON_PACKAGE_BUILDER) -a \
@@ -43,7 +43,7 @@ packages: check $(PHOTON_TOOLCHAIN) $(PHOTON_SOURCES)
                               -p $(PHOTON_STAGE) \
                               -l $(PHOTON_LOGS_DIR)
 
-packages-cached: check $(PHOTON_TOOLCHAIN)
+packages-cached: check $(PHOTON_TOOLCHAIN_MINIMAL)
 	@echo "Using cached RPMS..."
 	@$(RM) -f $(PHOTON_RPMS_DIR_NOARCH)/* && \
      $(RM) -f $(PHOTON_RPMS_DIR_X86_64)/* && \

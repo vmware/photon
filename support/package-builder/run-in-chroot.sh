@@ -26,8 +26,8 @@ shift
 PHOTON_ENV_CMD=/usr/bin/env
 PHOTON_BASH_CMD=/bin/bash
 
-test -x /tools/bin/env && PHOTON_ENV_CMD=/tools/bin/env
-test -x /tools/bin/bash && PHOTON_BASH_CMD=/tools/bin/bash
+test -x ${BUILDROOT}/tools/bin/env && PHOTON_ENV_CMD=/tools/bin/env
+test -x ${BUILDROOT}/tools/bin/bash && PHOTON_BASH_CMD=/tools/bin/bash
 
 #
 #	Goto chroot and run the command specified as parameter.

@@ -32,7 +32,7 @@ run_command() {
 		eval ${_cmd} >> ${_logfile} 2>&1 && print_succeeded_in_green || print_failed_in_red
 	else
 		print_message "${_msg}: "
-		printf "\n%s\n\n" "###       ${_msg}       ###" >> ${_logfile} 2>&1
+		printf "\n%s\ncmd: %s\n\n" "###       ${_msg}       ###" "${_cmd}" >> ${_logfile} 2>&1
 		eval ${_cmd} >> ${_logfile} 2>&1 && print_succeeded_in_green || print_failed_in_red
 		fi
 	return 0
