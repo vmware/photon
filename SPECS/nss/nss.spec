@@ -35,6 +35,7 @@ Header files for doing development with Network Security Services.
 %patch -p1
 %build
 cd nss
+# -j is not supported by nss
 make VERBOSE=1 BUILD_OPT=1 \
 	NSPR_INCLUDE_DIR=%{_includedir}/nspr \
 	USE_SYSTEM_ZLIB=1 \

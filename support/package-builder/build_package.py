@@ -166,11 +166,11 @@ class BuildSystem(object):
             "libpipeline", "gdbm","perl","texinfo","rpm",
             "autoconf","automake", "groff", "man-db", "man-pages","elfutils","cpio"]
 
-        self.list_nodeps_packages = ["glibc","gmp","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
+        self.list_nodeps_packages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
         self.readPackagesInSpecFiles()
 
-    def prepare_build_root(self):
-        process = subprocess.Popen([self.prepare_buildroot_command, self.build_root,  self.spec_path,  self.rpm_path, self.tools_path])
+    def prepare_build_root(self, tools_archive=""):
+        process = subprocess.Popen([self.prepare_buildroot_command, self.build_root,  self.spec_path,  self.rpm_path, self.tools_path, tools_archive])
         returnVal = process.wait()
         if returnVal != 0:
             return False
@@ -192,16 +192,15 @@ class BuildSystem(object):
         returnVal = cmdUtils.run_command("/tmp/"+self.adjust_tool_chain_script,"/var/log/adjust_tool_chain_script.log", self.run_in_chroot_command+" "+self.build_root)
         return returnVal
 
-    def adjust_gcc_specs(self):
-        shutil.copy2(self.adjust_gcc_specs_script,  self.build_root+"/tmp/"+self.adjust_gcc_specs_script)
-        cmdUtils=commandsUtils()
-        returnVal = cmdUtils.run_command("/tmp/"+self.adjust_gcc_specs_script,"/var/log/adjust_gcc_specs_script.log", self.run_in_chroot_command+" "+self.build_root)
-        return returnVal
+    def adjust_gcc_specs(self, package):
+        opt = ""
+        # linux package does not require sec gcc options
+        if package == "linux" or package == "glibc":
+            opt = " clean"
 
-    def clean_gcc_specs(self):
         shutil.copy2(self.adjust_gcc_specs_script,  self.build_root+"/tmp/"+self.adjust_gcc_specs_script)
         cmdUtils=commandsUtils()
-        returnVal = cmdUtils.run_command("/tmp/"+self.adjust_gcc_specs_script+" clean","/var/log/adjust_gcc_specs_script.log", self.run_in_chroot_command+" "+self.build_root)
+        returnVal = cmdUtils.run_command("/tmp/"+self.adjust_gcc_specs_script+opt,"/var/log/adjust_gcc_specs_script.log", self.run_in_chroot_command+" "+self.build_root)
         return returnVal
 
     def readPackagesInSpecFiles(self):
@@ -276,6 +275,8 @@ class BuildSystem(object):
         if specFile is None:
             print "Did not find spec file for package: ", package
             return False
+        self.adjust_gcc_specs(package)
+
         specName=os.path.basename(specFile)
         spec=Specutils(specFile)
         listSourceFiles=[]
@@ -341,10 +342,6 @@ class BuildSystem(object):
             print "Installing " + rpmFile+" rpm is failed"
             return False
         self.listInstalledPackages.append(package)
-        if package =="glibc":
-            self.adjust_tool_chain()
-        if package =="gcc":
-            self.adjust_gcc_specs()
         return True
 
     def findInstalledPackages(self):
@@ -371,6 +368,8 @@ class BuildSystem(object):
             if not returnVal:
                 print "Stopping building toolchain"
                 return False
+            if package =="glibc":
+                self.adjust_tool_chain()
         print "Built toolchain succesfully"
         return True
 
@@ -388,7 +387,7 @@ class BuildSystem(object):
                 return False
 
         self.cleanBuildRoot()
-        self.prepare_build_root()
+        self.prepare_build_root("minimal")
         for package in self.listPkgsToInstallToolChain:
             returnVal=self.installRPM(package)
             if not returnVal:
@@ -466,7 +465,6 @@ class BuildSystem(object):
     def removeToolsTar(self):
         cmdUtils=commandsUtils()
         cmdUtils.run_command("rm -rf "+self.build_root+"/tools")
-        cmdUtils.run_command("rm -rf /tools")
         return True
 
     def cleanBuildRoot(self):
@@ -505,7 +503,7 @@ class BuildSystem(object):
         if rpmfile is not None:
             return True
 
-	# Let's build this package
+        # Let's build this package
         self.installToolchain()
         self.removeToolsTar()
         del self.listInstalledPackages[:]
@@ -531,10 +529,6 @@ class BuildSystem(object):
                     return False
                 print "Installed the package:",pkg
             print "Finished installing the dependent packages......"
-
-	# linux package does not require sec gcc options
-        if package =="linux":
-            self.clean_gcc_specs()
 
         returnVal=self.buildPackage(package)
         if not returnVal:
@@ -575,6 +569,7 @@ class BuildSystem(object):
             print "Some of the packages failed during clean build. Logs are locates in ", self.build_root_log_path," path."
             print "List failed Packages",listFailedPkgs
             return False
+        self.cleanBuildRoot()
         print "Successfully built all packages"
         return True
     

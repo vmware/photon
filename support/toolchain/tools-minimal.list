@@ -1,4 +1,4 @@
-tools/lib64/ld-linux-x86-64.so.2
+tools/lib64
 tools/etc/rpc
 tools/etc/rpm/macros
 tools/bin/bash
@@ -38,6 +38,7 @@ tools/lib/libsqlite3.so
 tools/lib/librpmsign.so.1
 tools/lib/libnss_nisplus.so
 tools/lib/libm.so
+tools/lib/libm-2.21.so
 tools/lib/libnss_files-2.21.so
 tools/lib/librpmsign.la
 tools/lib/libnss_nisplus.so.2
@@ -215,6 +216,7 @@ tools/lib/librt-2.21.so
 tools/lib/libplc4.so
 tools/lib/libnss_db-2.21.so
 tools/lib/liblzma.la
+tools/lib/ld-2.21.so
 tools/lib/ld-linux-x86-64.so.2
 tools/lib/libsoftokn3.so
 tools/lib/libnss_db.so

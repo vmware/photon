@@ -17,6 +17,7 @@ BuildRequires:  	pycurl
 BuildRequires:		python2
 BuildRequires:		python2-libs
 Requires:		python2
+Requires:		curl
 
 %description
 A high-level cross-protocol url-grabber for python supporting HTTP, FTP 

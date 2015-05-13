@@ -933,8 +933,8 @@ build-libstdc++
 build-binutils2
 build-gcc2
 build-tcl
-build-expect
-build-dejagnu
+#build-expect
+#build-dejagnu
 build-check
 build-ncurses
 build-bash
@@ -966,10 +966,10 @@ build-elfutils
 build-rpm
 build-cpio
 #	The following are not used
-#	strip-ToolChain
+strip-ToolChain
 #	change-ownership
 msg "Creating tools tar ball"
-tar -cvhf $DESTDIR/tools-build.tar /tools
+tar -cf $DESTDIR/tools-build.tar -C ${BUILDDIR} tools
 rm -rf ${BUILDDIR}
 rm /tools
 msg "Successfully built the Toolchain"

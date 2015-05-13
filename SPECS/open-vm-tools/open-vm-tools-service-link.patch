@@ -1,0 +1,11 @@
+--- open-vm-tools-9.10.0/vgauth/service/Makefile.in	2015-03-19 11:11:07.000000000 -0700
++++ open-vm-tools-9.10.0/vgauth/service/Makefile.in_	2015-05-12 16:01:37.695680243 -0700
+@@ -322,7 +322,7 @@
+ 	../lib/libvgauth.la @XERCES_LIBS@ @XMLSECURITY_LIBS@ \
+ 	@SSL_LIBS@ -lxerces-c -lxml-security-c -lssl -lcrypto \
+ 	$(am__append_1)
+-@HAVE_ICU_FALSE@VGAuthService_LINK = $(LINK)
++@HAVE_ICU_FALSE@VGAuthService_LINK = $(CXXLINK)
+ @HAVE_ICU_TRUE@VGAuthService_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS)     \
+ @HAVE_ICU_TRUE@                            $(LIBTOOLFLAGS) --mode=link $(CXX)       \
+ @HAVE_ICU_TRUE@                            $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
