@@ -6,22 +6,28 @@ if [ $# -eq 1 -a "x$1" = "xclean" ]; then
 fi
 
 cat <<EOF > `dirname $(gcc --print-libgcc-file-name)`/../specs
+# add sec hardening flags for cc1.
 *cc1:
 + %{!fno-stack-protector:-fstack-protector} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
 
+# add sec hardening flags for cc1.
 *cc1plus:
 + %{!fno-stack-protector:-fstack-protector} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
 
+# add -D_FORTIFY_SOURCE=2 for preprocessor.
 *cpp:
 + %{O1|O2|O3|Os|Ofast:-D_FORTIFY_SOURCE=2}
 
+# add sec hardening flags for linker.
 *link:
-+ %{r|fno-pie|fno-PIE|fpic|fPIC|fno-pic|fno-PIC|shared:;:-pie} %{!norelro:-z relro} %{!nonow:-z now}
++ %{r|fno-pie|fno-PIE|fno-pic|fno-PIC|shared:;:-pie} %{!norelro:-z relro} %{!nonow:-z now}
 
+# sec hardening flags require shared libgcc_s during linking.
 *libgcc:
 + -lgcc_s
 
+# replace default startfile rules to use crt that PIE code requires.
 *startfile:
-%{!mandroid|tno-android-ld:%{!shared: %{pg|p|profile:gcrt1.o%s;:Scrt1.o%s}}    crti.o%s %{static:crtbeginT.o%s;:crtbeginS.o%s};:%{shared: crtbegin_so%O%s;:  %{static: crtbegin_static%O%s;: crtbegin_dynamic%O%s}}}
+%{!shared: %{pg|p|profile:gcrt1.o%s;:Scrt1.o%s}}    crti.o%s %{static:crtbeginT.o%s;:crtbeginS.o%s}
 
 EOF
