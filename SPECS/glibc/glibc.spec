@@ -124,7 +124,7 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %{_sysconfdir}/*
 %ifarch x86_64
 %{_lib64}/*
-%{_lib64dir}/*
+/lib64/*
 %else
 %{_lib}/*
 %endif
@@ -135,9 +135,12 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %{_datadir}/i18n/charmaps/*.gz
 %{_datadir}/i18n/locales/*
 %{_localstatedir}/lib/nss_db/Makefile
+%exclude /usr/bin/mtrace
 
 %files devel
 %defattr(-,root,root)
+# TODO: Excluding for now to remove dependency on PERL
+# /usr/bin/mtrace
 %{_includedir}/*
 
 %files lang

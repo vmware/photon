@@ -74,7 +74,7 @@ rm -f %{buildroot}/sbin/mount.vmhgfs
 %{_sysconfdir}/*
 %{_datadir}/*
 %{_prefix}/etc/*
-%{_lib}/*
+/lib/*
 %{_sbindir}/*
 
 %changelog

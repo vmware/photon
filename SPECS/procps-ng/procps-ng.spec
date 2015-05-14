@@ -34,7 +34,6 @@ make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
 install -vdm 755 %{buildroot}/%{_lib}
 mv -v %{buildroot}/usr/bin/pidof %{buildroot}/bin
-mv -v %{buildroot}%{_libdir}/libprocps.so.* %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}/%{_libdir}/libprocps.so) %{buildroot}/%{_libdir}/libprocps.so
 find %{buildroot} -name '*.la' -delete
 %post	-p /sbin/ldconfig
