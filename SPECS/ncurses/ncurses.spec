@@ -31,13 +31,12 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%{_lib}
-mv -v %{buildroot}%{_libdir}/libncursesw.so.5* %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libncursesw.so) %{buildroot}%{_libdir}/libncursesw.so
 for lib in ncurses form panel menu ; do \
     rm -vf %{buildroot}%{_libdir}/lib${lib}.so ; \
     echo "INPUT(-l${lib}w)" > %{buildroot}%{_libdir}/lib${lib}.so ; \
     ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a ; \
-    ln -sfv ${lib}w.pc %{buildroot}%{_libdir}/pkgconfig/${lib}.pc
+    ln -sfv /lib/pkgconfig/${lib}w.pc %{buildroot}/lib/pkgconfig/${lib}.pc
 done
 ln -sfv libncurses++w.a %{buildroot}%{_libdir}/libncurses++.a
 rm -vf %{buildroot}%{_libdir}/libcursesw.so
@@ -110,15 +109,15 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %{_libdir}/libformw.a
 %{_libdir}/libpanel.a
 %{_libdir}/libmenuw.a
-%{_libdir}/pkgconfig/panelw.pc
-%{_libdir}/pkgconfig/panel.pc
-%{_libdir}/pkgconfig/form.pc
-%{_libdir}/pkgconfig/menu.pc
-%{_libdir}/pkgconfig/ncursesw.pc
-%{_libdir}/pkgconfig/ncurses++w.pc
-%{_libdir}/pkgconfig/menuw.pc
-%{_libdir}/pkgconfig/formw.pc
-%{_libdir}/pkgconfig/ncurses.pc
+/lib/pkgconfig/panelw.pc
+/lib/pkgconfig/panel.pc
+/lib/pkgconfig/form.pc
+/lib/pkgconfig/menu.pc
+/lib/pkgconfig/ncursesw.pc
+/lib/pkgconfig/ncurses++w.pc
+/lib/pkgconfig/menuw.pc
+/lib/pkgconfig/formw.pc
+/lib/pkgconfig/ncurses.pc
 %{_libdir}/libncursesw.a
 %{_libdir}/libcursesw.a
 %{_libdir}/libncurses++w.a

@@ -41,7 +41,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
             --localstatedir=/var                                    \
             --config-cache                                          \
             --with-rootprefix=                                      \
-            --with-rootlibdir=/lib                                  \
+            --with-rootlibdir=/usr/lib                                  \
             --enable-split-usr                                      \
             --disable-gudev                                         \
             --disable-firstboot                                     \
@@ -64,7 +64,6 @@ for tool in runlevel reboot shutdown poweroff halt telinit; do
      ln -sfv ../bin/systemctl %{buildroot}/sbin/${tool}
 done
 ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
-ln -sf /dev/null %{buildroot}%{_lib}/udev/rules.d/80-net-setup-link.rules
 rm -f %{buildroot}%{_var}/log/README
 
 cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
@@ -78,17 +77,8 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
-%{_lib}/*
-%{_libdir}/*.d
-%{_libdir}/kernel/install.d/*.install
-%{_libdir}/*.la
-%{_libdir}/*.so.*
-%{_libdir}/*.so
-%{_libdir}/pkgconfig/*.pc
-%{_libdir}/rpm/macros.d/*
-%{_libdir}/sysctl.d/*
-%{_libdir}/systemd/*
-%{_libdir}/tmpfiles.d/*
+/lib/*
+%{_libdir}/*
 %{_bindir}/*
 /bin/*
 /sbin/*
