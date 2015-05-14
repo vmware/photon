@@ -271,6 +271,7 @@
         <package id="readline"/>
         <package id="readline-devel"
                  spec="readline"/>
+        <package id="rkt"/>         
         <package id="rpm"/>
         <package id="rpm-devel"
                  spec="rpm"/>
@@ -455,7 +456,7 @@
         <pkgref id="util-linux"/>
         <pkgref id="xz"/>
         <pkgref id="zlib"/>
-    </package-group> 
+    </package-group>
     <package-group id="minimal">
         <pkgref id="attr"/>
         <pkgref id="bash"/>
@@ -532,6 +533,7 @@
         <pkgref id="python2-libs"/>
         <pkgref id="pyyaml"/>
         <pkgref id="readline"/>
+        <pkgref id="rkt"/>
         <pkgref id="rpm"/>
         <pkgref id="sed"/>
         <pkgref id="shadow"/>
