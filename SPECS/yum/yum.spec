@@ -13,6 +13,7 @@ BuildRequires:	python2-libs
 BuildRequires:	gettext
 BuildRequires:	intltool
 BuildRequires:	pycurl
+BuildRequires:	urlgrabber
 Requires:	urlgrabber
 Requires:	yum-metadata-parser >= 1.1.0
 Requires:	pycurl
