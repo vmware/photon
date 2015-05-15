@@ -64,7 +64,8 @@
                 "device-mapper-event-libs","libacl","libacl-devel","libselinux-devel","libselinux-python","libselinux-utils","libsepol-devel",
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
-                "haveged", "haveged-devel"]
+                "haveged", "haveged-devel",
+		"postgresql"]
 }
 
 
