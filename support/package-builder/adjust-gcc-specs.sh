@@ -20,7 +20,7 @@ cat <<EOF > `dirname $(gcc --print-libgcc-file-name)`/../specs
 
 # add sec hardening flags for linker.
 *link:
-+ %{r|fno-pie|fno-PIE|fno-pic|fno-PIC|shared:;:-pie} %{!norelro:-z relro} %{!nonow:-z now}
++ %{r|nostdlib|fno-pie|fno-PIE|fno-pic|fno-PIC|shared:;:-pie} %{!norelro:-z relro} %{!nonow:-z now}
 
 # sec hardening flags require shared libgcc_s during linking.
 *libgcc:
