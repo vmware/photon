@@ -1,13 +1,13 @@
 Summary:	Docker
 Name:		docker
-Version:	1.5.0
-Release:	3
+Version:	1.6.0
+Release:	2
 License:	ASL 2.0
 URL:		http://docs.docker.com
 Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	docker-1.5.0.tar.gz
+Source0:	docker-1.6.0.tar.gz
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
@@ -17,6 +17,8 @@ Docker is a platform for developers and sysadmins to develop, ship and run appli
 %install
 install -vdm755 %{buildroot}/bin
 mv -v %{_builddir}/%{name}-%{version}/bin/* %{buildroot}/bin/
+chmod +x %{buildroot}/bin/docker-%{version}
+ln -sfv docker-%{version} %{buildroot}/bin/docker
 install -vd %{buildroot}/lib/systemd/system
 #install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
 #ln -sfv ../../../../lib/systemd/system/docker.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/docker.service
@@ -49,9 +51,7 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker.service
 #/etc/systemd/system/multi-user.target.wants/docker.service
 %changelog
-*	Mon Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-3
--	Updating the docker package
-*	Mon Feb 9 2015 Divya Thaluru <dthaluru@vmware.com> 1.4.1-2
--	Updating the docker package
-*	Thu Oct 16 2014 Divya Thaluru <dthaluru@vmware.com> 1.2-1
+*	Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
+-	Updated to version 1.6
+*	Mon Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
 -	Initial build.	First version
