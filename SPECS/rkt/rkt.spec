@@ -1,7 +1,7 @@
 Summary:        rkt
 Name:           rkt
 Version:        v0.5.5
-Release:        1
+Release:        2
 License:        ASL 2.0
 URL:            https://coreos.com/rkt/docs/
 Group:          Applications/File
