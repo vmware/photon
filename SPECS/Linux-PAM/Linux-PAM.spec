@@ -28,7 +28,7 @@ These are the additional language files of Linux-PAM.
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
         --sysconfdir=/etc   \
-        --enable-securedir=/lib/security \
+        --enable-securedir=/usr/lib/security \
         --docdir=%{_docdir}/%{name}-%{version}
 
 make %{?_smp_mflags}
@@ -38,7 +38,7 @@ make install DESTDIR=%{buildroot}
 chmod -v 4755 %{buildroot}/sbin/unix_chkpwd
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
-find %{buildroot}/lib/ -name '*.la' -delete
+find %{buildroot}/usr/lib/ -name '*.la' -delete
 %{find_lang} Linux-PAM
 
 %{_fixperms} %{buildroot}/*

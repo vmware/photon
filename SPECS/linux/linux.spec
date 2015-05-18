@@ -12,6 +12,7 @@ Source0:	http://www.kernel.org/pub/linux/kernel/v3.x/%{name}-%{version}.tar.xz
 BuildRequires:	bc
 BuildRequires:	kbd
 BuildRequires:	kmod
+Requires:       filesystem
 %description
 The Linux package contains the Linux kernel.
 

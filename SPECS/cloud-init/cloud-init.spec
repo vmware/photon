@@ -81,7 +81,7 @@ fi
 %files
 %license LICENSE
 %{_sysconfdir}/cloud/*
-%{_lib}/systemd/system/*
+/lib/systemd/system/*
 %{_docdir}/cloud-init/*
 %{_libdir}/cloud-init/*
 %{python_sitelib}/*
