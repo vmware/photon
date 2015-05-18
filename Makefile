@@ -169,10 +169,13 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
 	fi
 
-check: check-bison check-g++ check-gawk check-createrepo
+check: check-bison check-g++ check-gawk check-createrepo check-texinfo
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
+
+check-texinfo:
+	@command -v makeinfo >/dev/null 2>&1 || { echo "Package texinfo not installed. Aborting." >&2; exit 1; }
 
 check-g++:
 	@command -v g++ >/dev/null 2>&1 || { echo "Package g++ not installed. Aborting." >&2; exit 1; }
