@@ -15,7 +15,7 @@ KERNEL_VERSION=$(head -n 1 kernel-version.txt)
 PRGNAME=${0##*/}	# script name minus the path
 
 if [ $# -lt 3 ]; then
-   echo "Usage: $PRGNAME <source_path> <log_path> <dest path>"
+   echo "Usage: $PRGNAME <source_path> <spec_path> <log_path> <dest path>"
    exit 1
 fi
 
@@ -147,7 +147,7 @@ build-glibc() {
 	${BUILD_TGT}-gcc dummy.c
 	retval=$(readelf -l a.out | grep ': /tools')
 	rm dummy.c a.out
-	retval=${retval##*: }	# strip [Requesting program interpreter: 
+	retval=${retval##*: }	# strip [Requesting program interpreter:
 	retval=${retval%]}	# strip ]
 	case "${retval}" in
 		"/tools/lib/ld-linux.so.2")		msg_success ;;
@@ -239,7 +239,7 @@ build-gcc2() {
 	${BUILD_TGT}-gcc dummy.c
 	retval=$(readelf -l a.out | grep ': /tools')
 	rm dummy.c a.out
-	retval=${retval##*: }	# strip [Requesting program interpreter: 
+	retval=${retval##*: }	# strip [Requesting program interpreter:
 	retval=${retval%]}	# strip ]
 	case "${retval}" in
 		"/tools/lib/ld-linux.so.2")	     msg_success ;;
@@ -515,7 +515,7 @@ build-grep() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -534,7 +534,7 @@ build-gzip() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -553,7 +553,7 @@ build-m4() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -572,7 +572,7 @@ build-make() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools --without-guile" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -591,7 +591,7 @@ build-patch() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -610,10 +610,10 @@ build-perl() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Patch" "patch -Np1 -i ../../PATCHES/perl-5.18.2-libc-1.patch" ${_logfile}
 	build "	Configure" "sh Configure -des -Dprefix=/tools" ${_logfile}
-	build "	Make" "make ${MKFLAGS}" ${_logfile} 
+	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	cp -v perl cpan/podlators/pod2man /tools/bin" "cp -v perl cpan/podlators/pod2man /tools/bin" ${_logfile}
 	build "	mkdir -pv /tools/lib/perl5/5.18.2" "mkdir -pv /tools/lib/perl5/5.18.2" ${_logfile}
 	build "	cp -Rv lib/* /tools/lib/perl5/5.18.2" "cp -Rv lib/* /tools/lib/perl5/5.18.2" ${_logfile}
@@ -632,7 +632,7 @@ build-sed() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -651,7 +651,7 @@ build-tar() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -670,7 +670,7 @@ build-texinfo() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -689,7 +689,7 @@ build-util-linux() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools --disable-makeinstall-chown --without-systemdsystemunitdir PKG_CONFIG=''" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -708,7 +708,7 @@ build-xz() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -750,7 +750,7 @@ build-zlib() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -820,7 +820,7 @@ build-popt() {
 	build "	Clean build directory" 'rm -rf BUILD/*' ${_logfile}
 	build "	Change directory: BUILD" "pushd BUILD" ${_logfile}
 	unpack "${PWD}" "${_pkgname}-${_pkgver}"
-	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}	
+	build "	Change directory: ${_pkgname}-${_pkgver}" "pushd ${_pkgname}-${_pkgver}" ${_logfile}
 	build "	Configure" "./configure --prefix=/tools --disable-static" ${_logfile}
 	build "	Make" "make ${MKFLAGS}" ${_logfile}
 	build "	Install" "make install" ${_logfile}
@@ -922,10 +922,10 @@ build-cpio() {
 }
 
 #
-#	Main line	
+#	Main line
 #
 msg "Building Tool chain"
-build-binutils1	
+build-binutils1
 build-gcc1
 build-linux-api-headers
 build-glibc
