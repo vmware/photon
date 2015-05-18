@@ -167,6 +167,7 @@ rm -rf %{buildroot}/*
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %dir %{_libdir}/python2.7/config
 %{_libdir}/python2.7/config/*
+%exclude %{_libdir}/python2.7/config/python.o
 %{_libdir}/libpython2.7.so
 %exclude %{_bindir}/smtpd*.py*
 %exclude %{_bindir}/2to3*

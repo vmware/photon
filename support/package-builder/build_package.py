@@ -195,7 +195,7 @@ class BuildSystem(object):
     def adjust_gcc_specs(self, package):
         opt = ""
         # linux package does not require sec gcc options
-        if package == "linux" or package == "glibc":
+        if package == "linux":
             opt = " clean"
 
         shutil.copy2(self.adjust_gcc_specs_script,  self.build_root+"/tmp/"+self.adjust_gcc_specs_script)

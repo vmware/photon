@@ -54,8 +54,9 @@ ln -svfn var/opt %{buildroot}/opt
 #
 #	6.6. Creating Essential Files and Symlinks
 #
-ln -sv /proc/self/mounts %{buildroot}/etc/mtab
+ln -svfn /proc/self/mounts %{buildroot}/etc/mtab
 #touch -f %{buildroot}/etc/mtab
+
 touch %{buildroot}/var/log/{btmp,lastlog,wtmp}
 #
 #	Configuration files
