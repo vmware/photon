@@ -18,10 +18,10 @@ for the directories. This version is for a system configured with systemd.
 #
 #	6.5.  Creating Directories
 #
-install -vdm 755 %{buildroot}/{dev,proc,run/lock,sys}
-install -vdm 755 %{buildroot}/{bin,boot,etc/{opt,sysconfig},home,lib,mnt,opt}
+install -vdm 755 %{buildroot}/{dev,proc,run/{media/{floppy,cdrom},lock},sys}
+install -vdm 755 %{buildroot}/{boot,etc/{opt,sysconfig},home,mnt}
 install -vdm 755 %{buildroot}/etc/systemd/network
-install -vdm 755 %{buildroot}/{media/{floppy,cdrom},sbin,srv,var}
+install -vdm 755 %{buildroot}/{var}
 install -dv -m 0750 %{buildroot}/root
 install -dv -m 1777 %{buildroot}/tmp %{buildroot}/var/tmp
 install -vdm 755 %{buildroot}/usr/{,local/}{bin,include,lib,sbin,src}
@@ -30,16 +30,27 @@ install -vdm 755 %{buildroot}/usr/{,local/}share/{misc,terminfo,zoneinfo}
 install -vdm 755 %{buildroot}/usr/libexec
 install -vdm 755 %{buildroot}/usr/{,local/}share/man/man{1..8}
 install -vdm 644 %{buildroot}/etc/profile.d
+
+ln -svfn usr/lib %{buildroot}/lib
+ln -svfn usr/bin %{buildroot}/bin
+ln -svfn usr/sbin %{buildroot}/sbin
+ln -svfn run/media %{buildroot}/media
+
 #	Symlinks for AMD64
 %ifarch x86_64
-	ln -sv lib %{buildroot}/lib64
-	ln -sv lib %{buildroot}/usr/lib64
-	ln -sv lib %{buildroot}/usr/local/lib64
+	ln -svfn usr/lib %{buildroot}/lib64
+	ln -svfn lib %{buildroot}/usr/lib64
+	ln -svfn ../lib %{buildroot}/usr/local/lib64
 %endif
-install -vdm 755 %{buildroot}/var/{log,mail,spool}
-ln -sv ../run %{buildroot}/var/run
-ln -sv ../run/lock %{buildroot}/var/lock
+install -vdm 755 %{buildroot}/var/{log,mail,spool,mnt,srv}
+
+ln -svfn var/srv %{buildroot}/srv
+ln -svfn ../run %{buildroot}/var/run
+ln -svfn ../run/lock %{buildroot}/var/lock
 install -vdm 755 %{buildroot}/var/{opt,cache,lib/{color,misc,locate},local}
+
+ln -svfn var/opt %{buildroot}/opt
+
 #
 #	6.6. Creating Essential Files and Symlinks
 #
@@ -313,20 +324,21 @@ EOF
 %files
 %defattr(-,root,root)
 #	Root filesystem
-%dir /bin
+/bin
 %dir /boot
 %dir /dev
 %dir /etc
 %dir /home
-%dir /lib
-%dir /media
+/lib
+
+/media
 %dir /mnt
-%dir /opt
+/opt
 %dir /proc
 %dir /root
 %dir /run
-%dir /sbin
-%dir /srv
+/sbin
+/srv
 %dir /sys
 %dir /tmp
 %dir /usr
@@ -352,8 +364,8 @@ EOF
 %config(noreplace) /etc/systemd/network/10-dhcp-eth0.network
 %dir /etc/profile.d
 #	media filesystem
-%dir /media/cdrom
-%dir /media/floppy
+%dir /run/media/cdrom
+%dir /run/media/floppy
 #	run filesystem
 %dir /run/lock
 #	usr filesystem
@@ -413,6 +425,8 @@ EOF
 %dir /var/local
 %dir /var/log
 %dir /var/mail
+%dir /var/mnt
+%dir /var/srv
 %dir /var/opt
 %dir /var/spool
 %dir /var/tmp
@@ -420,7 +434,7 @@ EOF
 %attr(664,root,utmp)	/var/log/lastlog
 %attr(600,root,root)	/var/log/btmp
 /var/lock
-/var/run
+%ghost /var/run
 /var/run/lock
 #	Symlinks for AMD64
 %ifarch x86_64

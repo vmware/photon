@@ -150,12 +150,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %exclude %{_libdir}/libstdc++*
 %exclude %{_libdir}/libgomp*
 %endif
-%exclude %{_datadir}/gdb/auto-load/lib/libstdc++.so.6.0.18-gdb.py
-%exclude %{_libdir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc.a
-%exclude %{_libdir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc_eh.a
-
-
-
 
 %files -n libgcc
 %defattr(-,root,root)
@@ -172,8 +166,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %else
 %{_libdir}/libgcc_s.so
 %endif
-%{_libdir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc.a
-%{_libdir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc_eh.a
+
 
 %files -n libstdc++
 %defattr(-,root,root)
@@ -184,7 +177,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 %dir %{_datarootdir}/gcc-%{version}/python/libstdcxx
 %{_datarootdir}/gcc-%{version}/python/libstdcxx/*
-%{_datadir}/gdb/auto-load/lib/libstdc++.so.6.0.18-gdb.py
 
 %files -n libstdc++-devel
 %defattr(-,root,root)

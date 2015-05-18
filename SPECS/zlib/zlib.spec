@@ -25,7 +25,6 @@ make V=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%{_lib}
-mv -v %{buildroot}/%{_libdir}/libz.so.* %{buildroot}/%{_lib}
 ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libz.so) %{buildroot}%{_libdir}/libz.so
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
