@@ -40,7 +40,7 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root)
 %dir %{_sharedstatedir}/hwclock
 /bin/*
-%{_lib}/*.so.*
+/lib/*.so.*
 /sbin/*
 %{_bindir}/*
 %{_libdir}/*.so
