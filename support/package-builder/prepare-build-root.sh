@@ -10,21 +10,23 @@ set -o nounset
 set +h
 source common.inc
 
-LOGFILE="$(date +%Y-%m-%d).log"
-LOG_PATH=../../stage/LOGS
-PRGNAME=${0##*/}
-LOGFILE=$LOG_PATH/"${PRGNAME}-${LOGFILE}"
-if [ $# -lt 4 ]; then
-    fail "${PRGNAME}: No build root specified. Usage : ${PRGNAME} <build-root> <spec-path> <rpm-path> <tools-path>"
+# Usage check
+if [ $# -lt 6 ]; then
+    fail "${PRGNAME}: Usage : ${PRGNAME} <build-root> <spec-path> <rpm-path> <tools-path> <tools-archive> <log-path>"
 fi
 
-#Clean up our build root first
 BUILDROOT=$1
 SPEC_PATH=$2
 RPM_PATH=$3
 TOOLS_PATH=$4
 TOOLS_ARCHIVE=$5
+LOG_PATH=$6
+LOGFILE="$(date +%Y-%m-%d).log"
+PRGNAME=${0##*/}
+LOGFILE=$LOG_PATH/"${PRGNAME}-${LOGFILE}"
 PARENT=/usr/src/photon
+
+#Clean up our build root first
 rm -rf ${BUILDROOT}/*
 
 #LOGFILE=/dev/null		#	uncomment to disable log file

@@ -126,6 +126,7 @@ class BuildSystem(object):
         self.rpm_path = rpm_path
         self.tools_path = tools_path
         self.build_root = build_root
+        self.log_path = log_path
 
         self.parent_path="/usr/src/photon"
         self.prepare_buildroot_command = "./prepare-build-root.sh"
@@ -139,7 +140,7 @@ class BuildSystem(object):
         self.mapPackageToSpecFile={}
         self.listInstalledPackages=[]
 
-        self.build_root_log_path=log_path
+        self.build_root_log_path=self.log_path
         self.build_root_rpm_path=self.build_root+self.parent_path+"/RPMS"
         self.build_root_source_path=self.build_root+self.parent_path+"/SOURCES"
         self.build_root_spec_path=self.build_root+self.parent_path+"/SPECS"
@@ -170,7 +171,7 @@ class BuildSystem(object):
         self.readPackagesInSpecFiles()
 
     def prepare_build_root(self, tools_archive=""):
-        process = subprocess.Popen([self.prepare_buildroot_command, self.build_root,  self.spec_path,  self.rpm_path, self.tools_path, tools_archive])
+        process = subprocess.Popen([self.prepare_buildroot_command, self.build_root,  self.spec_path,  self.rpm_path, self.tools_path, tools_archive, self.log_path])
         returnVal = process.wait()
         if returnVal != 0:
             return False
@@ -470,7 +471,7 @@ class BuildSystem(object):
     def cleanBuildRoot(self):
         cmdUtils=commandsUtils()
         cmdUtils.run_command("./cleanup-build-root.sh "+self.build_root)
-        
+
     # TODO: rename to smth like buildPackage...
     def installPackage(self,package,force_build=False):
         print "Force build option", force_build
@@ -549,7 +550,7 @@ class BuildSystem(object):
             return False
         print "Clean buils is completed successfully"
         return True
-    
+
     def buildAllPackages(self):
         # in case previous build was terminated.
         self.cleanBuildRoot()
@@ -565,14 +566,14 @@ class BuildSystem(object):
             returnVal=self.installPackage(pkg)
             if not returnVal:
                 listFailedPkgs.append(pkg)
-        if len(listFailedPkgs) != 0:        
+        if len(listFailedPkgs) != 0:
             print "Some of the packages failed during clean build. Logs are locates in ", self.build_root_log_path," path."
             print "List failed Packages",listFailedPkgs
             return False
         self.cleanBuildRoot()
         print "Successfully built all packages"
         return True
-    
+
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -588,7 +589,7 @@ def main():
     parser.add_option("-l",  "--log-path", dest="log_path",  default="../../stage/LOGS")
     parser.add_option("-a",  "--build-all", dest="build_all",  default=False,  action ="store_true")
     parser.add_option("-f",  "--force", dest="force_build",  default=False,  action ="store_true")
-    
+
     (options,  args) = parser.parse_args()
     #if (len(args)) != 1:
     #    parser.error("Incorrect number of arguments")
@@ -616,7 +617,7 @@ def main():
         else:
             returnVal=package_builder.installPackage(args[0],options.force_build)
     return returnVal
-            
+
 
 if __name__ == '__main__':
     main()
