@@ -28,11 +28,6 @@ export JAVA_HOME=/opt/OpenJDK-%{version}-bin
 export PATH="$PATH:/opt/OpenJDK-1.8.0.45-bin/bin"
 EOF
 
-%postun
-rm /etc/profile.d/java-exports.sh
-rm -r /opt/OpenJDK-%{version}-bin/*
-rmdir /opt/OpenJDK-%{version}-bin/
-exit 0
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -40,5 +35,5 @@ rm -rf %{buildroot}/*
 /opt/OpenJDK-%{version}-bin/*
 /etc/profile.d/java-exports.sh
 %changelog
-*	Thu May 18 2015 Sharath George <sharathg@vmware.com> 1.8.0.45-1
+*	Mon May 18 2015 Sharath George <sharathg@vmware.com> 1.8.0.45-1
 -	Initial build.	First version
