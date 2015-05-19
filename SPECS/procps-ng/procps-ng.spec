@@ -1,7 +1,7 @@
 Summary:	Programs for monitoring processes
 Name:		procps-ng
 Version:	3.3.9
-Release:	1
+Release:	2
 License:	GPLv2
 URL:		http://procps.sourceforge.net/
 Group:		Applications/System
@@ -92,5 +92,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
 -	Initial build. First version

@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	4.8.2
-Release:	2
+Release:	3
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -213,6 +213,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-3
+-   Update according to UsrMove.
 *	Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.8.2-2
 -	Packaging .la files
 *	Tue Apr 01 2014 baho-utot <baho-utot@columbus.rr.com> 4.8.2-1

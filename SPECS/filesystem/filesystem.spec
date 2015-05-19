@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	7.5
-Release:	1
+Release:	2
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -444,5 +444,7 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 7.5-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.5-1
 -	Initial build. First version

@@ -1,7 +1,7 @@
 Summary:	DBus for systemd
 Name:		dbus
 Version:	1.8.8
-Release:	1
+Release:	2
 License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File
@@ -45,5 +45,7 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %{_docdir}/*
 %{_sharedstatedir}/*
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.8.8-2
+-   Update according to UsrMove.
 *	Sun Apr 06 2014 Sharath George <sharathg@vmware.com> 1.8.8
 -	Initial build. First version

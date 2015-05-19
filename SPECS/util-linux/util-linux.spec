@@ -1,7 +1,7 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
 Version:	2.24.1
-Release:	1
+Release:	2
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
@@ -56,6 +56,8 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root)
 
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.24.1-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1
 -	Initial build. First version
 

@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	1
+Release:	2
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -86,5 +86,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 216-2
+-   Update according to UsrMove.
 *	Mon Oct 27 2014 Sharath George <sharathg@vmware.com> 216-1
 -	Initial build.	First version

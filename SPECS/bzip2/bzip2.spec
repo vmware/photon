@@ -1,7 +1,7 @@
 Summary:	Contains programs for compressing and decompressing files
 Name:		bzip2
 Version:	1.0.6
-Release:	1
+Release:	2
 License:	BSD
 URL:		http://www.bzip.org/
 Group:		System Environment/Base
@@ -72,5 +72,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files devel
 %{_includedir}/bzlib.h
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.0.6-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.0.6-1
 -	Initial build.	First version

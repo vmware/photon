@@ -3,7 +3,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	1
+Release:	2
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -183,5 +183,7 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %lang(zh_TW) %{_datarootdir}/locale/zh_TW/LC_MESSAGES/libc.mo
 
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.19-1
 -	Initial build. First version
