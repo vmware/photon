@@ -1,7 +1,7 @@
 Summary:	Programs for compressing and decompressing files
 Name:		xz
 Version:	5.0.5
-Release:	1
+Release:	2
 URL:		http://tukaani.org/xz
 License:	GPLv2+ and GPLv3+ and LGPLv2+
 Group:		Applications/File
@@ -28,7 +28,6 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install
 install -vdm 755 %{buildroot}/{bin,%_lib}
 mv -v   %{buildroot}%{_bindir}/{lzma,unlzma,lzcat,xz,unxz,xzcat} %{buildroot}/bin
-mv -v %{buildroot}%{_libdir}/liblzma.so.* %{buildroot}%{_lib}
 ln -svf "../..%{_lib}/$(readlink %{buildroot}%{_libdir}/liblzma.so)" %{buildroot}%{_libdir}/liblzma.so
 find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name}
@@ -85,5 +84,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/liblzma.a
 %{_libdir}/liblzma.so
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 5.0.5-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.0.5-1
 -	Initial build.	First version

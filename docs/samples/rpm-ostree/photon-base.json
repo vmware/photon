@@ -1,0 +1,12 @@
+{
+    "ref": "photon",
+
+    "repos": ["photon-ostree"],
+
+    "selinux": false,
+
+    "bootstrap_packages": ["filesystem"],
+
+    "packages": ["linux", "kmod", "gzip", "cpio", "dracut", "findutils", "grub", "bash", "sed", "grep", 
+"binutils", "dracut-tools", "util-linux"]
+}

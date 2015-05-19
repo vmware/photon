@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	4.8.2
-Release:	1
+Release:	3
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -86,7 +86,6 @@ make %{?_smp_mflags}
 %install
 cd ../gcc-build
 make DESTDIR=%{buildroot} install
-find %{buildroot}%{_libdir} -name '*.la' -delete
 install -vdm 755 %{buildroot}/%_lib
 ln -sv %{_bindir}/cpp %{buildroot}/%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
@@ -146,20 +145,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %exclude %{_lib64dir}/libgcc*
 %exclude %{_lib64dir}/libstdc++*
 %exclude %{_lib64dir}/libgomp*
-%exclude %{_lib64dir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc.a
-%exclude %{_lib64dir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc_eh.a
 %else
 %exclude %{_libdir}/libgcc*
 %exclude %{_libdir}/libstdc++*
 %exclude %{_libdir}/libgomp*
-%exclude %{_libdir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc.a
-%exclude %{_libdir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc_eh.a
 %endif
-
-%exclude %{_datadir}/gdb/auto-load/lib/libstdc++.so.6.0.18-gdb.py
-
-
-
 
 %files -n libgcc
 %defattr(-,root,root)
@@ -176,8 +166,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %else
 %{_libdir}/libgcc_s.so
 %endif
-%{_libdir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc.a
-%{_libdir}/gcc/x86_64-unknown-linux-gnu/%{version}/libgcc_eh.a
+
 
 %files -n libstdc++
 %defattr(-,root,root)
@@ -188,14 +177,15 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 %dir %{_datarootdir}/gcc-%{version}/python/libstdcxx
 %{_datarootdir}/gcc-%{version}/python/libstdcxx/*
-%{_datadir}/gdb/auto-load/lib/libstdc++.so.6.0.18-gdb.py
 
 %files -n libstdc++-devel
 %defattr(-,root,root)
 %ifarch x86_64
 %{_lib64dir}/libstdc++.so
+%{_lib64dir}/libstdc++.la
 %else
 %{_libdir}/libstdc++.so
+%{_libdir}/libstdc++.la
 %endif
 
 %{_includedir}/c++/*
@@ -223,5 +213,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-3
+-   Update according to UsrMove.
+*	Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.8.2-2
+-	Packaging .la files
 *	Tue Apr 01 2014 baho-utot <baho-utot@columbus.rr.com> 4.8.2-1
 -	Initial build. First version
