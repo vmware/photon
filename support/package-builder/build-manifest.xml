@@ -271,7 +271,7 @@
         <package id="readline"/>
         <package id="readline-devel"
                  spec="readline"/>
-        <package id="rkt"/>         
+        <package id="rkt"/>
         <package id="rpm"/>
         <package id="rpm-devel"
                  spec="rpm"/>
@@ -533,7 +533,6 @@
         <pkgref id="python2-libs"/>
         <pkgref id="pyyaml"/>
         <pkgref id="readline"/>
-        <pkgref id="rkt"/>
         <pkgref id="rpm"/>
         <pkgref id="sed"/>
         <pkgref id="shadow"/>
@@ -676,6 +675,7 @@
         <pkgref id="python2-devel"/>
         <pkgref id="python2-tools"/>
         <pkgref id="readline-devel"/>
+        <pkgref id="rkt"/>
         <pkgref id="rpm-devel"/>
         <pkgref id="rpm-ostree"/>
         <pkgref id="rpm-ostree-toolbox"/>

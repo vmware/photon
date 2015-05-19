@@ -39,7 +39,7 @@
                 "photon-release",
                 "sed", "grep", "cpio", "gzip", "nano", "db", "libsolv", "libgpg-error", "hawkey", "libassuan", "gpgme", "librepo", "tdnf",
                 "libdnet", "xerces-c", "xml-security-c", "libmspack", "open-vm-tools",
-                "docker", "rkt",
+                "docker",
                 "libyaml", "PyYAML", "python-requests", "python-prettytable", "python-jsonpointer", "python-jsonpatch", "python-six", "python-configobj", "cloud-init"],
 
     "optional_packages":["unzip", "gmp-devel", "sudo", "bzip2-devel", "XML-Parser", "intltool", "mercurial", "libsigc++", "e2fsprogs-devel", "boost",
@@ -63,6 +63,6 @@
                 "acl","btrfs-progs","btrfs-progs-devel","device-mapper-devel","device-mapper-event","device-mapper-event-devel",
                 "device-mapper-event-libs","libacl","libacl-devel","libselinux-devel","libselinux-python","libselinux-utils","libsepol-devel",
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
-                "rpm-devel","pycurl","urlgrabber","yum-metadata-parser", "yum", "strace", "cracklib-python",
+                "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rkt", "strace", "cracklib-python",
                 "haveged", "haveged-devel"]
 }
