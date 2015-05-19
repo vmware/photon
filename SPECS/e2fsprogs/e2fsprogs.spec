@@ -1,7 +1,7 @@
 Summary:	Contains the utilities for the ext2 file system
 Name:		e2fsprogs
 Version:	1.42.9
-Release:	1
+Release:	2
 License:	GPLv2+
 URL:		http://e2fsprogs.sourceforge.net
 Group:		System Environment/Base
@@ -139,6 +139,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libext2fs.a
 %{_libdir}/libss.so
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
 -	Initial build. First version
 

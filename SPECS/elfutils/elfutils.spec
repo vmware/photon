@@ -2,7 +2,7 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.158
-Release:	1
+Release:	2
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 Source0:	elfutils-%{version}.tar.bz2
@@ -179,6 +179,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 0.158-2
+- Update according to UsrMove.
 * Fri Jan  3 2014 Mark Wielaard <mjw@redhat.com> 0.158-1
 - libdwfl: dwfl_core_file_report has new parameter executable.
   New functions dwfl_module_getsymtab_first_global,
