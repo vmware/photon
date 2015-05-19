@@ -492,10 +492,9 @@ class BuildSystem(object):
         cmdUtils=commandsUtils()
         cmdUtils.run_command("./cleanup-build-root.sh "+self.build_root)
         
-    def buildPackage(self,package,force_build=False, listFailedPkgs=[]):
+    def buildPackage(self,package,force_build, listFailedPkgs=[]):
         # We don't need to build this package if RPM exists && !force_build
         rpmfile = None
-        print "Force build option", force_build
         if not force_build:
             rpmfile=self.findRPMFileForGivenPackage(package)
         if rpmfile is not None:
@@ -527,7 +526,7 @@ class BuildSystem(object):
             print "Dependent packages to be build",listPkgsTobeBuild
             print "Building dependent packages.........."
             for pkg in listPkgsTobeBuild:
-                returnVal = self.buildPackage(pkg,listFailedPkgs)
+                returnVal = self.buildPackage(pkg,force_build,listFailedPkgs)
                 if not returnVal:
                     print "Failed installing package",pkg
                     print "Stop installing package",package
@@ -617,7 +616,7 @@ class BuildSystem(object):
             print "Please fix this error and continue to build all packages"
             return False
         for pkg in list_packages:
-            returnVal=self.buildPackage(pkg,listFailedPkgs)
+            returnVal=self.buildPackage(pkg,False,listFailedPkgs)
             if not returnVal:
                 listFailedPkgs.append(pkg)
         if len(listFailedPkgs) != 0:        
