@@ -502,14 +502,17 @@ class BuildSystem(object):
             return True
 
         if package in listFailedPkgs:
+            print package," package is failed in previous iteration. Not building again."
             return False
         returnVal,listDependentPackages=self.find_package_dependency_tree(package)
         if not returnVal:
+            print "Failed during building the package", package
             return False
         listDependentPackages.remove(package)
         listPkgsTobeBuild=[]
         returnVal,listRunTimeDependentPackages=self.findRunTimeRequiredPackages(package)
         if not returnVal:
+            print "Failed during building the package", package
             return False
 
         for pkg in listDependentPackages:
@@ -541,6 +544,7 @@ class BuildSystem(object):
 
         returnVal,listDependentPackages=self.findBuildTimeRequiredPackages(package)
         if not returnVal:
+            print "Failed during building the package", package
             return False
         
         #if toolchain package called this method, preventing from installing again
