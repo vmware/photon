@@ -3,8 +3,8 @@
 Summary:	A password strength-checking library.
 Name:		cracklib
 Version:	2.9.2
-Release:	1
-Group:		System/Libraries
+Release:	2
+Group:		System Environment/Libraries
 Source:		cracklib-%{version}.tar.gz
 Source1:    cracklib-words-20080507.gz
 URL:		http://sourceforge.net/projects/cracklib/
@@ -40,7 +40,7 @@ package.
 
 %package	dicts
 Summary:	The standard CrackLib dictionaries.
-Group:		System/Libraries
+Group:		System Environment/Utilities
 Requires:   cracklib
 
 %description	dicts
@@ -53,7 +53,7 @@ If you are installing CrackLib, you should also install cracklib-dicts.
 
 %package devel
 Summary:	Cracklib link library & header file
-Group:		Development/C
+Group:		Development/Libraries
 Provides:	cracklib-devel
 Requires:	cracklib
 
@@ -73,7 +73,7 @@ The cracklib python module
 
 %package lang
 Summary:    The CrackLib language pack.
-Group:      System/Libraries
+Group:      System Environment/Libraries
 
 %description lang
 The CrackLib language pack.
@@ -144,5 +144,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/locale/*
 
 %changelog
-
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
+-   Updated group.
 
