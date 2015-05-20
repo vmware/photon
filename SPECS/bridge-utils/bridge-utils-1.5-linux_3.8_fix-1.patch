@@ -1,0 +1,54 @@
+Submitted By:            Bruce Dubbs <bdubbs_at_linuxfromscratch_dot_org>
+Date:                    2013-03-10
+Initial Package Version: 1.5
+Upstream Status:         Unknown
+Origin:                  LFS
+Description:             This patch contains fixes a problem with 
+the omission of a needed include file in the kernel's linux/if_bridge.h.
+It also fixes some autoconf warnings.
+
+
+diff -Naur bridge-utils-1.5.orig/Makefile.in bridge-utils-1.5/Makefile.in
+--- bridge-utils-1.5.orig/Makefile.in	2011-03-28 19:52:54.000000000 -0500
++++ bridge-utils-1.5/Makefile.in	2013-03-10 13:44:41.000000000 -0500
+@@ -9,6 +9,7 @@
+ bindir=@bindir@
+ sbindir=@sbindir@
+ mandir=@mandir@
++datarootdir=@datarootdir@
+ distdir = $(PACKAGE)-$(VERSION)
+ 
+ SUBDIRS=libbridge brctl doc
+diff -Naur bridge-utils-1.5.orig/brctl/Makefile.in bridge-utils-1.5/brctl/Makefile.in
+--- bridge-utils-1.5.orig/brctl/Makefile.in	2011-03-28 19:52:54.000000000 -0500
++++ bridge-utils-1.5/brctl/Makefile.in	2013-03-10 13:44:15.000000000 -0500
+@@ -12,6 +12,7 @@
+ bindir=@bindir@
+ sbindir=@sbindir@
+ mandir=@mandir@
++datarootdir=@datarootdir@
+ 
+ INSTALL=@INSTALL@
+ 
+diff -Naur bridge-utils-1.5.orig/doc/Makefile.in bridge-utils-1.5/doc/Makefile.in
+--- bridge-utils-1.5.orig/doc/Makefile.in	2011-03-28 19:52:54.000000000 -0500
++++ bridge-utils-1.5/doc/Makefile.in	2013-03-10 13:43:39.000000000 -0500
+@@ -9,6 +9,7 @@
+ bindir=@bindir@
+ sbindir=@sbindir@
+ mandir=@mandir@
++datarootdir=@datarootdir@
+ 
+ SUBDIRS=libbridge brctl
+ 
+diff -Naur bridge-utils-1.5.orig/libbridge/libbridge.h bridge-utils-1.5/libbridge/libbridge.h
+--- bridge-utils-1.5.orig/libbridge/libbridge.h	2011-03-28 19:52:54.000000000 -0500
++++ bridge-utils-1.5/libbridge/libbridge.h	2013-03-10 13:46:23.000000000 -0500
+@@ -21,6 +21,7 @@
+ 
+ #include <sys/socket.h>
+ #include <linux/if.h>
++#include <netinet/ip6.h>
+ #include <linux/if_bridge.h>
+ 
+ /* defined in net/if.h but that conflicts with linux/if.h... */
