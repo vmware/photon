@@ -103,7 +103,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 6.6p1-1
--	Initial build.	First version
 *	Tue May 19 2015 Sharath George <sharathg@vmware.com> 6.6p1-2
 -	Bulding ssh server with kerberos 5.
+*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 6.6p1-1
+-	Initial build.	First version
