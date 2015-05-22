@@ -1,7 +1,7 @@
 Summary:	'Free version of the SSH connectivity tools
 Name:		openssh
 Version:	6.6p1
-Release:	1
+Release:	2
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -15,6 +15,7 @@ Requires:	Linux-PAM
 Requires: 	shadow
 BuildRequires:  openssl-devel
 BuildRequires:	Linux-PAM
+BuildRequires:  krb5
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
 useful for encrypting authentication and subsequent traffic over a 
@@ -36,7 +37,8 @@ tar xf %{SOURCE1}
 	--with-md5-passwords \
 	--with-privsep-path=/var/lib/sshd \
     	--with-pam \
-	--with-mantype=man
+	--with-maintype=man \
+	--with-kerberos5=/usr
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -101,5 +103,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*	Tue May 19 2015 Sharath George <sharathg@vmware.com> 6.6p1-2
+-	Bulding ssh server with kerberos 5.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 6.6p1-1
 -	Initial build.	First version
