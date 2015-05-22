@@ -50,6 +50,21 @@ packages-cached: check $(PHOTON_TOOLCHAIN_MINIMAL)
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/noarch/* $(PHOTON_RPMS_DIR_NOARCH)/ && \
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/x86_64/* $(PHOTON_RPMS_DIR_X86_64)/
 
+package: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
+	ifndef PKG_NAME
+		$(error PKG_NAME is undefined)
+	endif
+	@echo "Building package $(PKG_NAME) ..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+    $(PHOTON_PACKAGE_BUILDER) -i \
+                              -b $(PHOTON_CHROOT_PATH) \
+                              -s $(PHOTON_SPECS_DIR) \
+                              -r $(PHOTON_RPMS_DIR) \
+                              -o $(PHOTON_SRCS_DIR) \
+                              -p $(PHOTON_STAGE) \
+                              -l $(PHOTON_LOGS_DIR) \
+                              $(PKG_NAME)
+
 sources:
 	@echo "Pulling sources from bintary..."
 	@cd $(PHOTON_PULL_SOURCES_DIR) && \
