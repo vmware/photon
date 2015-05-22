@@ -67,7 +67,7 @@ package: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
                               $(PKG_NAME)
 
 sources:
-	@echo "Pulling sources from bintary..."
+	@echo "Pulling sources from bintray..."
 	@cd $(PHOTON_PULL_SOURCES_DIR) && \
 	$(PHOTON_PULL_SOURCES) $(PHOTON_SRCS_DIR)
 
