@@ -166,7 +166,7 @@ class BuildSystem(object):
             "libpipeline", "gdbm","perl","texinfo","rpm",
             "autoconf","automake", "groff", "man-db", "man-pages","elfutils","cpio"]
 
-        self.list_nodeps_packages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
+        self.list_nodeps_packages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go","openjdk"]
         self.readPackagesInSpecFiles()
 
     def prepare_build_root(self, tools_archive=""):
