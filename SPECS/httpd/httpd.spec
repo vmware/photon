@@ -7,12 +7,13 @@ URL:        http://httpd.apache.org/
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution: Photon
-Source0:        http://archive.apache.org/dist/httpd/httpd-2.4.12.tar.bz2
+Source0:        http://archive.apache.org/dist/httpd/%{name}-%{version}.tar.bz2
 BuildRequires: openssl
 BuildRequires: openssl-devel
 BuildRequires: pcre-devel
 BuildRequires: apr
 BuildRequires: apr-util
+BuildRequires: expat
 Requires:   pcre
 Requires:   apr-util
 Requires:   openssl
@@ -33,7 +34,7 @@ The Apache HTTP Server.
             --with-suexec-docroot=/srv/www                  \
             --with-suexec-logfile=/var/log/httpd/suexec.log \
             --with-suexec-uidmin=100                        \
-            --with-suexec-userdir=public_html               &&
+            --with-suexec-userdir=public_html
 
 make %{?_smp_mflags}
 

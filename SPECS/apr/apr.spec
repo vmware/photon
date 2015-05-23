@@ -7,7 +7,7 @@ URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
-Source0:    http://archive.apache.org/dist/apr/apr-1.5.2.tar.gz
+Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
 %description
 The Apache Portable Runtime.
 
