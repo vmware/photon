@@ -40,7 +40,7 @@
                 "photon-release",
                 "sed", "grep", "cpio", "gzip", "nano", "db", "libsolv", "libgpg-error", "hawkey", "libassuan", "gpgme", "librepo", "tdnf",
                 "libdnet", "xerces-c", "xml-security-c", "libmspack", "open-vm-tools",
-                "docker",
+                "docker","bridge-utils",
                 "libyaml", "PyYAML", "python-requests", "python-prettytable", "python-jsonpointer", "python-jsonpatch", "python-six", "python-configobj", "cloud-init"],
 
     "optional_packages":["unzip", "gmp-devel", "sudo", "bzip2-devel", "XML-Parser", "intltool", "mercurial", "libsigc++", "e2fsprogs-devel", "boost", 
@@ -66,7 +66,7 @@
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel",
-		        "postgresql", "apr", "apr-util", "httpd"]
+		"postgresql", "openjdk", "apr", "apr-util", "httpd"]
 }
 
 
