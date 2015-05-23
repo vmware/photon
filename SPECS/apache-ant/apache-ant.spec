@@ -10,7 +10,7 @@ Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
 Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
-Requires: openjdk >= 1.8.0.45
+Requires: openjdk >= 1.8.0.45, python2
 BuildRequires: openjdk >= 1.8.0.45
 
 %define _prefix /opt/apache-ant-1.9.4
