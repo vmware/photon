@@ -7,7 +7,7 @@ URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
-Source0:    http://archive.apache.org/dist/apr/apr-util-1.5.4.tar.gz
+Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
 BuildRequires:   apr
 BuildRequires:   openldap
 BuildRequires:   openssl
@@ -37,7 +37,7 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
-
+rm %{buildroot}/usr/lib/libexpat.so
 %clean
 rm -rf $RPM_BUILD_ROOT
 
