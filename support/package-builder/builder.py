@@ -76,7 +76,7 @@ def main():
     #tUtils = ToolChainUtils()
     #tUtils.buildToolChain()
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackages1)
+    pkgManager.buildPackages(listPackages)
     
     '''
     chrUtils=ChrootUtils(options)
