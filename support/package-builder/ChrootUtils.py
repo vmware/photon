@@ -113,8 +113,13 @@ class ChrootUtils(object):
             return False
         cmdUtils=CommandUtils()
         cmdUtils.runCommandInShell("rm -rf "+chrootID)
-        ChrootUtils.lockForTrackingChroots.acquire()
-        ChrootUtils.lockForTrackingChroots.release()
         self.logger.info("Successfully destroyed chroot:"+chrootID)
         return True
-
+    
+    def cleanUpActiveChroots(self):
+        ChrootUtils.lockForTrackingChroots.acquire()
+        listChroots=self.activeChroots[:]
+        ChrootUtils.lockForTrackingChroots.release()
+        for chrootID in listChroots:
+            self.destroyChroot(chrootID)
+        self.logger.info("Successfully destroyed all active chroots")

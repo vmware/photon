@@ -35,7 +35,6 @@ class PackageManager(object):
         except:
             self.logger.error("unable to get sorted list")
             return False
-        
         return True
     
     def getRequiredPackages(self,package):
@@ -101,16 +100,17 @@ class PackageManager(object):
         readyToLaunchMoreThreads = False
         listThreadsObjToRemove=[]
         for t in self.listThreads:
-            self.logger.info("Checking thread "+t)
+            self.logger.debug("Checking thread "+t +", whether it is completed or not")
             #check if any thread is completed. If completed, we can start more threads.
             if self.mapOutputThread.has_key(t):
                 output = self.mapOutputThread[t]
                 self.logger.info("Output of thread "+t+" "+str(output))
                 if not output:
                     self.logger.error("Thread "+ t+" is failed ")
-                    #kill remaining Threads
-                    return False,False
+                    self.logger.error("Unable to build package "+t)
+                    raise Exception("Package builder failed")
                 else:
+                    self.logger.debug("Still running, not completed yet")
                     readyToLaunchMoreThreads=True
                     self.listPackagesToBuild.remove(t)
                     self.listOfPackagesAlreadyBuilt.append(t)
@@ -119,93 +119,106 @@ class PackageManager(object):
                         self.listAvailableCyclicPackages.append(t)
         
         if not readyToLaunchMoreThreads:
-            return True,False
+            return False
             
         for k in listThreadsObjToRemove:
-            self.listThreads.pop(k)
-        
-        return True,True
+            tObj=self.listThreads.pop(k)
+            if tObj.isAlive():
+                self.logger.info("Thread is alive")
+            else:
+                self.logger.info("Thread is dead")
+            self.logger.info(tObj.isAlive())
+
+        return True
     
     def checkIfAnyThreadsAreHanged(self):
         currentTime = time.time()
         listThreadsHanged=[]
         for t in self.listThreads:
-            self.logger.info("Checking thread "+t)
+            self.logger.debug("Checking thread "+t +", whether it is hanged or not")
             if not self.mapOutputThread.has_key(t):
-                self.logger.info("Calculating running time for thread "+t)
+                self.logger.debug("Calculating running time for thread "+t)
                 launchTime = self.mapThreadsLaunchTime[t]
                 if (currentTime - launchTime) > 3600.0:
                     listThreadsHanged.append(t)
             
         if len(listThreadsHanged) > 0:
-            self.logger.info("Looks like following threads are hanged")
+            self.logger.info("Following threads are hanged")
             self.logger.info(listThreadsHanged)
-            #kill all threads
-            return False
-        
-        return True
+            raise Exception("Threads are hanged")
     
     def waitTillNewThreadsCanBeSpawned(self):
         if len(self.listThreads) == 0:
-            return True
-        returnVal = False
+            return
         while True:
-            sucess,Tfail = self.checkIfAnyThreadsAreCompleted()
-            if not sucess:
+            if self.checkIfAnyThreadsAreCompleted():
                 break
-            if sucess and Tfail:
-                returnVal = True
-                break
-            if not self.checkIfAnyThreadsAreHanged():
-                break
+            self.checkIfAnyThreadsAreHanged()
             self.logger.info("Sleeping for 30 seconds")
             time.sleep(30)
-        return returnVal    
+    
+    def buildToolChain(self):
+        try:
+            tUtils=ToolChainUtils()
+            tUtils.buildToolChain()
+        except Exception as e:
+            self.logger.error("Unable to build tool chain")
+            self.logger.error(e)
+            return False
+        
+        return True
         
     def buildPackages (self, listPackages):
         
-        tUtils=ToolChainUtils()
-        tUtils.buildToolChain()
-        
+        if not self.buildToolChain():
+            return False
+
         returnVal=self.calculateParams(listPackages)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
             return False
+        
         returnVal = True
-        while len(self.listPackagesToBuild) > 0:
-            #Free some threads to launch next threads
-            if not self.waitTillNewThreadsCanBeSpawned():
-                returnVal = False
-                break
-            
-            listOfPackagesCanBeBuild=self.findNextPackageToBuild()
-            if len(listOfPackagesCanBeBuild) == 0 and len(self.listPackagesToBuild) != 0:
-                self.logger.info("Waiting for current threads to complete to launch building new packages")
-            
-            for pkg in listOfPackagesCanBeBuild:
-                currentTime = time.time()
-                pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,"build-"+pkg,constants.logPath)
-                t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,self.mapOutputThread,pkg))
-                self.listThreads[pkg]=t
-                self.mapThreadsLaunchTime[pkg]=currentTime
-                self.logger.info("Launching thread for package:"+pkg)
-                t.start()
-                self.logger.info("Started the thread for "+pkg)
-            
-            if len(self.listThreads) == 0 and len(self.listPackagesToBuild) != 0:
-                self.logger.error("Following packages are waiting for unknown package")
-                self.logger.error(self.listPackagesToBuild)
-                self.logger.error("Unexpected error")
-                returnVal = False
-                break
-        
-        if not returnVal:
-            self.logger.error("Failed and exited gracefully")
-            return False
-        
-        self.logger.info( "Successfully built all the packages")
-        return True            
+        try:
+            while len(self.listPackagesToBuild) > 0:
+                #Free some threads to launch next threads
+                self.waitTillNewThreadsCanBeSpawned()
                 
+                listOfPackagesCanBeBuild=self.findNextPackageToBuild()
+                if len(listOfPackagesCanBeBuild) == 0 and len(self.listPackagesToBuild) != 0:
+                    self.logger.info("Waiting for current threads to complete to launch building new packages")
+                
+                for pkg in listOfPackagesCanBeBuild:
+                    currentTime = time.time()
+                    pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,"build-"+pkg,constants.logPath)
+                    t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,self.mapOutputThread,pkg))
+                    self.listThreads[pkg]=t
+                    self.mapThreadsLaunchTime[pkg]=currentTime
+                    self.logger.info("Launching thread for package:"+pkg)
+                    t.start()
+                    self.logger.info("Started the thread for "+pkg)
+                
+                if len(self.listThreads) == 0 and len(self.listPackagesToBuild) != 0:
+                    self.logger.error("Following packages are waiting for unknown package")
+                    self.logger.error(self.listPackagesToBuild)
+                    raise Exception("Invalid Schedule order")
+                    
+            self.logger.info( "Successfully built all the packages")
+
+        except Exception as e:
+            self.logger.error(str(e))
+            self.logger.error("Caught exception.")
+            self.logger.error("Failed and exited gracefully")
+            returnVal = False
+        finally:
+            if len(self.listThreads) > 0:
+                self.killAllThreads()
+        return returnVal
+    
+    def killAllThreads(self):
+        self.logger.info("Killing all remaining threads")
+        return
+    
     def findNextPackageToBuild(self):
         listOfPackagesNextToBuild=[]
         self.logger.info("Checking for next possible packages to build")

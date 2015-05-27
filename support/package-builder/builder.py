@@ -4,14 +4,8 @@ from optparse import OptionParser
 import os.path
 from CommandUtils import CommandUtils
 from Logger import Logger
-from SpecData import SerializableSpecObjectsUtils
-from ChrootUtils import ChrootUtils
-from PackageUtils import PackageUtils
-from ToolChainUtils import ToolChainUtils
 from constants import constants
-from PackageBuildDataGenerator import PackageBuildDataGenerator
 from PackageManager import PackageManager 
-
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -72,61 +66,9 @@ def main():
     constants.initialize(options)
     
     listPackages1=["nano","swig","wget"]
-    
-    #tUtils = ToolChainUtils()
-    #tUtils.buildToolChain()
+
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackages)
-    
-    '''
-    chrUtils=ChrootUtils(options)
-    returnVal,chrootID1=chrUtils.createChroot()
-    logger.info("Obtained chroot"+ chrootID1)
-    if not returnVal:
-        return False
-    chrUtils.prepareChroot(chrootID1)
-    chrUtils.destroyChroot(chrootID1)
-    
-    
-    chrUtils1=ChrootUtils(options)
-    returnVal,chrootID=chrUtils1.createChroot()
-    logger.info("Obtained chroot"+ chrootID)
-    if not returnVal:
-        return False
-    chrUtils1.prepareChroot(chrootID)
-    
-    tUtils.installToolChain(chrootID)
-    #chrUtils1.destroyChroot(chrootID)
-    '''
-    
-    #tUtils=ToolChainUtils()
-    #tUtils.buildToolChain()
-    
-    #pkgUtils=PackageUtils()
-    #pkgUtils.buildPackage("nano")
-    
-    
-    
-    
-
-
-'''
-    package_builder = BuildSystem(options.source_path,  options.spec_path,  options.rpm_path,  options.build_root, options.tools_path, options.log_path)
-
-    returnVal = True
-    if options.clean_build:
-        returnVal=package_builder.doCleanBuild()
-    elif options.build_all:
-        returnVal=package_builder.buildAllPackages()
-    elif options.install_tool_chain:
-        returnVal=package_builder.installToolchain()
-    elif options.install_package:
-        if (len(args)) != 1:
-            parser.error("Incorrect number of arguments")
-            returnVal=False
-        else:
-            returnVal=package_builder.installPackage(args[0],options.force_build)
-    return returnVal
-'''
+ 
 if __name__=="__main__":
     main()

@@ -84,15 +84,13 @@ class ToolChainUtils(object):
             if chrootID is not None:
                 chrUtils.destroyChroot(chrootID)
     
-    #tool chain should be updated before calling this method
+    #Tool chain should be built before calling this method
     def installToolChain(self,chrootID):
         self.logger.info("Installing toolchain.....")
         self.prepareChroot(chrootID,"minimal")
         pkgUtils= PackageUtils(self.logName,self.logPath)
         for package in self.listPkgsToInstallToolChain:
             pkgUtils.installRPM(package, chrootID, True)
-            if package == "glibc":
-                self.adjustToolChain(chrootID)
         cmdUtils=CommandUtils()
         cmdUtils.runCommandInShell("rm -rf "+ chrootID+"/tools")
         cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/x86_64/*")
