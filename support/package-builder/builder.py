@@ -34,11 +34,11 @@ def main():
     
     cmdUtils=CommandUtils()
     if not os.path.isdir(options.logPath):
-        cmdUtils.run_command("mkdir -p "+options.logPath)
+        cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
     
     if not os.path.isdir(options.rpmPath):
-        cmdUtils.run_command("mkdir -p "+options.rpmPath+"/x86_64")
-        cmdUtils.run_command("mkdir -p "+options.rpmPath+"/noarch")
+        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/x86_64")
+        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
     
     logger=Logger.getLogger(options.logPath+"/Main")
     logger.info("Source Path :"+options.sourcePath)

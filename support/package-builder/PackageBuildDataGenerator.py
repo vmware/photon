@@ -3,7 +3,15 @@ from constants import constants
 from sets import Set
 import copy
 
-     
+
+
+def removeDuplicateEntriesInList(myList):
+    myListCopy=[]
+    for p in myList:
+        if p not in myListCopy:
+            myListCopy.append(p)
+    return myListCopy
+      
 class PackageBuildDataGenerator(object):
     
     cycleCount=0
@@ -24,154 +32,129 @@ class PackageBuildDataGenerator(object):
         self.__sortedBuildDependencyGraph={}
     
     def getPackageBuildData(self,listPackages):
-        if not self.__readDependencyGraphAndCyclesForGivenPackages(listPackages):
-            return False,None,None,None
-        
-        self.logger.info("sorted build order")
-        self.logger.info(self.__sortedBuildDependencyGraph)
-        #self.logger.info("Map cycles to package list")
-        #self.logger.info(self.__mapCyclesToPackageList)
+        self.__readDependencyGraphAndCyclesForGivenPackages(listPackages)
+        self.__getSortedBuildOrderListForGivenPackages(listPackages)
+        return self.__mapCyclesToPackageList, self.__mapPackageToCycle, self.__sortedPackageList
 
-        if not self.__getSortedBuildOrderListForGivenPackages(listPackages):
-            return False,None,None,None
+    #todo    
+    def findCompleteListOfPackagesRequiredToBuildGivenPackages(self,listPackages):
+        return self.__buildDependencyGraph.keys()    
+ 
+    def createSortListForPkg(self,pkg):
+        runTimeDepPkgList=self.__runTimeDependencyGraph[pkg]
+        runTimeDepPkgList.append(pkg)
+        sortListForPkg=[]
         
-        return True,self.__mapCyclesToPackageList,self.__mapPackageToCycle,self.__sortedPackageList
+        for p in runTimeDepPkgList:
+            basePkg=constants.specData.getSpecName(p)
+            for bPkg in self.__sortedBuildDependencyGraph[basePkg]:
+                if bPkg not in sortListForPkg:
+                    sortListForPkg.append(bPkg)
         
+        return sortListForPkg
+    
+    def getCircularDependentPackages(self,pkg):
+        circularDependentPackages=[]
+        if self.__mapPackageToCycle.has_key(pkg):
+            circularDependentPackages.extend(self.__mapCyclesToPackageList[self.__mapPackageToCycle[pkg]])
+            circularDependentPackages.remove(pkg)
+        return circularDependentPackages
+    
     def __getSortedBuildOrderListForGivenPackages(self,listPackages):
-        #should not include toolchain packages
         
         alreadyProcessedPackages=[]
-        sList=[]
-        listPackagesCopy=self.__buildDependencyGraph.keys()#listPackages[:]
-        sortedListIndex = 0
+        sortedList=[]
+        completeListPackagesToBuild=self.findCompleteListOfPackagesRequiredToBuildGivenPackages(listPackages)
+        packageIndexInSortedList = 0
+        prevSortListLen=0
         
-        listPkgsRequiredToBuildToolchain=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
-            "binutils","binutils-devel",  "gmp","gmp-devel", "mpfr", "mpfr-devel", "mpc",
-            "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
-            "pkg-config", "ncurses", "bash", "bzip2", "sed","ncurses-devel","procps-ng","coreutils", "m4","grep",
-            "readline", "diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch",
-            "util-linux", "tar", "xz","libtool", "flex",  "bison",
-            "readline-devel", "lua","lua-devel","popt","popt-devel","nspr","sqlite-autoconf","nss","nss-devel",
-            "bzip2-devel","elfutils-libelf","elfutils","elfutils-libelf-devel","elfutils-devel",
-            "expat","libffi","libpipeline", "gdbm","perl","texinfo","autoconf","automake",
-            "openssl","openssl-devel","python2","python2-libs","python2-devel","rpm",
-            "groff", "man-db", "man-pages","cpio"]
-        '''
-        toolChainPackagesCount=0
-        toolChainPackagelist=[]
-        for p in listPkgsRequiredToBuildToolchain:
-            basePkg=constants.specData.getSpecName(p)
-            if basePkg in listPackagesCopy:
-                listPackagesCopy.remove(basePkg)
-                toolChainPackagelist.append(basePkg)
-                toolChainPackagesCount = toolChainPackagesCount + 1
-        '''
-        sListLenBackUp=0
-        while listPackagesCopy:
-            pkg = None
-            lenIndex=len(sList)
-            for  i in range(lenIndex):
-                if sList[i] in alreadyProcessedPackages:
-                    continue
-                pkg = sList[i]
-                sortedListIndex = i
-                break
+        while completeListPackagesToBuild:
             
+            # find next package to process
+            pkg=None
+            index=-1
+            lenList=len(sortedList)
+            for  i in range(lenList):
+                if sortedList[i] in alreadyProcessedPackages:
+                    continue
+                pkg = sortedList[i]
+                packageIndexInSortedList = i
+                break
                 
             if pkg is None:
-                pkg = listPackagesCopy.pop()
-                sortedListIndex = len(sList)
+                pkg = completeListPackagesToBuild.pop()
+                packageIndexInSortedList = len(sortedList)
+
+            #creating sort list for package
+            sortListForPkg=self.createSortListForPkg(pkg)
             
-            rbrList=[]
-            for p in self.__runTimeDependencyGraph[pkg]:
-                if p not in rbrList:
-                    rbrList.append(p)
-            rbrList.append(pkg)
-            brList=[]
-            
-            for p in rbrList:
-                basePkg=constants.specData.getSpecName(p)
-                for bPkg in self.__sortedBuildDependencyGraph[basePkg]:
-                    if bPkg not in brList:
-                        brList.append(bPkg)
-            
-            #remove any cyclic packages in brList if they exists in sList
-            circularDependentPackages=[]
-            if self.__mapPackageToCycle.has_key(pkg):
-                circularDependentPackages.extend(self.__mapCyclesToPackageList[self.__mapPackageToCycle[pkg]])
-                circularDependentPackages.remove(pkg)
-            
+            #remove any cyclic packages in sortListForPkg if they already exists in sortedList
+            circularDependentPackages=self.getCircularDependentPackages(pkg)
             for p in circularDependentPackages:
-                if p in sList:
-                    if p in brList:
-                        brList.remove(p)
+                if p in sortedList and p in sortListForPkg:
+                    sortListForPkg.remove(p)
             
-            index=sortedListIndex
+            # insert sort list of package in global sorted list
+            index=packageIndexInSortedList
             subList=[]
-            if sortedListIndex > 0:
-                subList=sList[:sortedListIndex]
-            for p in brList:
+            if packageIndexInSortedList > 0:
+                subList=sortedList[:packageIndexInSortedList]
+            for p in sortListForPkg:
                 if  p not in subList:
-                    sList.insert(index, p)
+                    sortedList.insert(index, p)
                     index = index + 1
+            
             alreadyProcessedPackages.append(p)
         
-            if (len(sList)-sListLenBackUp) > 100 :
-                self.logger.info("Removing duplicates in sList")
-                sListCopy=[]
-                for p in sList:
-                    if p not in sListCopy:
-                        sListCopy.append(p)
-                sList = sListCopy
+            # Remove duplicate entries in sorted list in intervals
+            if (len(sortedList)-prevSortListLen) > 100 :
+                self.logger.info("Removing duplicates in sortedList")
+                sortedList = removeDuplicateEntriesInList(sortedList)
             else:
-                sListLenBackUp=len(sList)
+                prevSortListLen=len(sortedList)
                 
-        self.logger.info("Only final step remains....")
-        sListCopy=[]
-        for p in sList:
-            #if p in toolChainPackagelist:
-            #    continue
-            if p not in sListCopy:
-                sListCopy.append(p)
-        sList = sListCopy
+        self.logger.info("Removing duplicates in sorted list")
+        sortedList = removeDuplicateEntriesInList(sortedList)
         
-        
-        self.logger.info("sorted list")
-        self.logger.info(sList)
-        self.__sortedPackageList=sList
-        return True
-        
-    def __constructBuildTimeDependencyGraph(self,package):
-        if self.__buildDependencyGraph.has_key(package):
-            return True
-        listDependentRpmPackages=constants.specData.getBuildRequiresForPackage(package)
-        listDependentPackages=[]
-        for rpmPkg in listDependentRpmPackages:
-            basePkg=constants.specData.getSpecName(rpmPkg)
-            if basePkg not in listDependentPackages:
-                listDependentPackages.append(basePkg)
-                
-        self.__buildDependencyGraph[package]=listDependentPackages
-        for basePkg in listDependentPackages:
-            self.__constructBuildTimeDependencyGraph(basePkg)
-            self.__constructRunTimeDependencyGraph(basePkg)
+        self.logger.info("Sorted list:")
+        self.logger.info(sortedList)
+        self.__sortedPackageList=sortedList
     
-    def __constructRunTimeDependencyGraph(self,package):
-        if self.__runTimeDependencyGraph.has_key(package):
-            return True
-        listRpmPackages=constants.specData.getPackages(package)
-        for rpmPkg in listRpmPackages:
-            listDependentRpmPackages=constants.specData.getRequiresAllForPackage(rpmPkg)
-            self.__runTimeDependencyGraph[rpmPkg]=listDependentRpmPackages[:]
-        for rpmPkg in listRpmPackages:
-            for pkg in self.__runTimeDependencyGraph[rpmPkg]:
-                self.__constructRunTimeDependencyGraph(pkg)
-                self.__constructBuildTimeDependencyGraph(pkg)
+    def __constructBuildAndRunTimeDependencyGraph(self,package):
+        
+        basePackage=constants.specData.getSpecName(package)
 
+        addBuildTimeGraph=True
+        addRunTimeGraph=True
+        if self.__buildDependencyGraph.has_key(basePackage):
+            addBuildTimeGraph = False
+        if self.__runTimeDependencyGraph.has_key(basePackage):
+            addRunTimeGraph=False
+        
+        nextPackagesToConstructGraph=[]
+        if addBuildTimeGraph:
+            listDependentRpmPackages=constants.specData.getBuildRequiresForPackage(basePackage)
+            listDependentPackages=[]
+            for rpmPkg in listDependentRpmPackages:
+                basePkg=constants.specData.getSpecName(rpmPkg)
+                if basePkg not in listDependentPackages:
+                    listDependentPackages.append(basePkg)
+            self.__buildDependencyGraph[basePackage]=listDependentPackages
+            nextPackagesToConstructGraph.extend(listDependentPackages)
+        
+        if addRunTimeGraph:
+            listRpmPackages=constants.specData.getPackages(basePackage)
+            for rpmPkg in listRpmPackages:
+                listDependentRpmPackages=constants.specData.getRequiresAllForPackage(rpmPkg)
+                self.__runTimeDependencyGraph[rpmPkg]=listDependentRpmPackages[:]
+                nextPackagesToConstructGraph.extend(listDependentRpmPackages)
+
+        for pkg in nextPackagesToConstructGraph:
+            self.__constructBuildAndRunTimeDependencyGraph(pkg)
+    
     def __readDependencyGraphAndCyclesForGivenPackages(self,listPackages):
         for pkg in listPackages:
-            self.__constructBuildTimeDependencyGraph(pkg)
-            self.__constructRunTimeDependencyGraph(pkg)
+            self.__constructBuildAndRunTimeDependencyGraph(pkg)
         
         packagesToBUild=self.__buildDependencyGraph.keys()
         for pkg in packagesToBUild:
@@ -179,21 +162,20 @@ class PackageBuildDataGenerator(object):
             if len(circularDependentPackages) > 0 :
                 self.logger.error("Found circular dependency")
                 self.logger.error(circularDependentPackages)
-                return False
+                raise Exception("Build Time Circular Dependency")
             self.__sortedBuildDependencyGraph[pkg]=sortedPackageList
         sortedPackageList,circularDependentPackages = self.topologicalSortPackages(self.__runTimeDependencyGraph)
         if len(circularDependentPackages) > 0 :
             self.__findCircularDependencies(circularDependentPackages)
-        return True
     
-    def topologicalSortPackages(self, dependentPackages1, package=None):
+    def topologicalSortPackages(self, dependencyGraph, package=None):
         noDepPackages = Set()
         sortedPackageList = []
         dependentOfPackage = dict()
         
         dependentPackages={}
         if package is None:
-            dependentPackages=copy.deepcopy(dependentPackages1)
+            dependentPackages=copy.deepcopy(dependencyGraph)
         else:
             listDepPkgs= Set()
             listDepPkgs.add(package)
@@ -201,9 +183,10 @@ class PackageBuildDataGenerator(object):
                 pkg = listDepPkgs.pop()
                 if dependentPackages.has_key(pkg):
                     continue
-                dependentPackages[pkg]=dependentPackages1[pkg][:]
-                for depPkg in dependentPackages1[pkg]:
+                dependentPackages[pkg]=dependencyGraph[pkg][:]
+                for depPkg in dependencyGraph[pkg]:
                     listDepPkgs.add(depPkg)
+                    
         #Find packages with no dependencies and generate dependentof_package edge list
         for pkg in dependentPackages:
             if len(dependentPackages[pkg]) == 0:
@@ -226,28 +209,28 @@ class PackageBuildDataGenerator(object):
                     if len(dependentPackages[childPkg])==0:
                         noDepPackages.add(childPkg)
         
-        circularDependentGraph={}
+        # creating circular dependency graph for given dependency graph
+        circularDependencyGraph={}
         listCircularPkg = dependentPackages.keys()
         for pkg in listCircularPkg:
             if len(dependentPackages[pkg]) != 0:
-                circularDependentGraph[pkg]=dependentPackages[pkg]
+                circularDependencyGraph[pkg]=dependentPackages[pkg]
             
         #return (non-circular dependent package in sorted order and circular dependent package list in a dependencyGraph)
-        return sortedPackageList,circularDependentGraph
+        return sortedPackageList,circularDependencyGraph
     
-    def __findCircularDependencies(self,cyclicDependentGraph):
-        if len(cyclicDependentGraph) == 0:
-            return True
-        #step1: construct dependency map from dependency graph
+    
+    def __constructDependencyMap(self,cyclicDependencyGraph):
+        self.logger.info("Constructing dependency map from circular dependency graph.....")
         constructDependencyMap={}
-        listNodes=cyclicDependentGraph.keys()
+        listNodes=cyclicDependencyGraph.keys()
         for node in listNodes:
             tmpDepNodeList=[]
             tmpDepNodeList.append(node)
             depNodeList=[]
             while len(tmpDepNodeList)!=0:
                 currentNode = tmpDepNodeList.pop()
-                addDepNodeList = cyclicDependentGraph[currentNode]
+                addDepNodeList = cyclicDependencyGraph[currentNode]
                 depNodeList.append(currentNode)
                 for depNode in addDepNodeList:
                     if depNode in depNodeList:
@@ -259,8 +242,19 @@ class PackageBuildDataGenerator(object):
             constructDependencyMap[node]=depNodeList
         self.logger.info("Dependency Map:")
         self.logger.info(constructDependencyMap)
+        return constructDependencyMap
         
-        #find cycles in dependency map
+        
+    def __findCircularDependencies(self,cyclicDependencyGraph):
+        if len(cyclicDependencyGraph) == 0:
+            return
+        #step1: construct dependency map from dependency graph
+        constructDependencyMap=self.__constructDependencyMap(cyclicDependencyGraph)
+        
+        #step2: find cycles in dependency map
+        self.logger.info("Finding and adding cycles using constructed dependency map......")
+        cycleCount=0
+        listNodes=cyclicDependencyGraph.keys()
         for node in listNodes:
             listDepPkg=constructDependencyMap[node]
             cycPkgs=[]
@@ -277,9 +271,16 @@ class PackageBuildDataGenerator(object):
                     for x in cycPkgs:
                         self.__mapPackageToCycle[x]=cycleName
                     self.__mapCyclesToPackageList[cycleName]=cycPkgs
-                    self.logger.info("New Circular dependency found")
-                    self.logger.info(cycPkgs)
-        return True
+                    self.logger.info("New circular dependency found:")
+                    self.logger.info(cycleName+" "+ ",".join(cycPkgs))
+                    cycleCount = cycleCount + 1
+        
+        if cycleCount > 0 :
+            self.logger.info("Found "+str(cycleCount) + " cycles.")
+            self.logger.info("Successfully added all detected circular dependencies to list.")
+        else:
+            self.logger.info("No circular dependencies found.")
+        
     
 
     

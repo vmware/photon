@@ -112,7 +112,7 @@ class ChrootUtils(object):
             self.logger.error("Unable to destroy chroot:"+ chrootID +".Unknown error.")
             return False
         cmdUtils=CommandUtils()
-        cmdUtils.run_command("rm -rf "+chrootID)
+        cmdUtils.runCommandInShell("rm -rf "+chrootID)
         ChrootUtils.lockForTrackingChroots.acquire()
         ChrootUtils.lockForTrackingChroots.release()
         self.logger.info("Successfully destroyed chroot:"+chrootID)

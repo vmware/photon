@@ -6,6 +6,7 @@ import time
 from PackageBuilder import PackageBuilder
 import os
 from PackageUtils import PackageUtils
+from ToolChainUtils import ToolChainUtils
 
 class PackageManager(object):
     
@@ -28,10 +29,10 @@ class PackageManager(object):
         self.listPackagesToBuild=[]
         
     def readPackageBuildData(self, listPackages):
-        pkgBuildDataGen = PackageBuildDataGenerator(self.logName,self.logPath)
-        returnVal,self.mapCyclesToPackageList,self.mapPackageToCycle,self.sortedPackageList = pkgBuildDataGen.getPackageBuildData(listPackages)
-        
-        if not returnVal:
+        try:
+            pkgBuildDataGen = PackageBuildDataGenerator(self.logName,self.logPath)
+            self.mapCyclesToPackageList,self.mapPackageToCycle,self.sortedPackageList = pkgBuildDataGen.getPackageBuildData(listPackages)
+        except:
             self.logger.error("unable to get sorted list")
             return False
         
@@ -162,6 +163,10 @@ class PackageManager(object):
         return returnVal    
         
     def buildPackages (self, listPackages):
+        
+        tUtils=ToolChainUtils()
+        tUtils.buildToolChain()
+        
         returnVal=self.calculateParams(listPackages)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")

@@ -8,12 +8,6 @@ from constants import constants
 
 class PackageBuilder(object):
     
-    #logger=None
-    
-    #@staticmethod
-    #def setLog(logPath):
-    #   PackageBuilder.logger=Logger.getLogger(logPath+"/PackageBuilder")
-    
     def __init__(self,mapPackageToCycles,listAvailableCyclicPackages,logName=None,logPath=None):
         if logName is None:
             logName = "PackageBuilder"
@@ -22,22 +16,25 @@ class PackageBuilder(object):
         self.logName=logName
         self.logPath=logPath
         self.logger=Logger.getLogger(logName,logPath)
-        self.runInChrootCommand="./run-in-chroot.sh"
         self.mapPackageToCycles = mapPackageToCycles
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
         self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
     
     #assumes tool chain is already built
     def prepareBuildRoot(self):
-        chrUtils = ChrootUtils(self.logName,self.logPath)
-        returnVal,chrootID = chrUtils.createChroot()
-        if not returnVal:
-            self.logger.error("Unable to build tool chain.")
-            chrUtils.destroyChroot(chrootID)
-            return False 
-        tUtils=ToolChainUtils(self.logName,self.logPath)
-        returnVal = tUtils.installToolChain(chrootID)
-        return returnVal,chrootID
+        chrootID=None
+        try:
+            chrUtils = ChrootUtils(self.logName,self.logPath)
+            returnVal,chrootID = chrUtils.createChroot()
+            if not returnVal:
+                raise Exception("Unable to prepare build root")
+            tUtils=ToolChainUtils(self.logName,self.logPath)
+            tUtils.installToolChain(chrootID)
+        except Exception as e:
+            if chrootID is not None:
+                chrUtils.destroyChroot(chrootID)
+            raise e
+        return chrootID
     
     def findPackageNameFromRPMFile(self,rpmfile):
         rpmfile=os.path.basename(rpmfile)
@@ -53,8 +50,8 @@ class PackageBuilder(object):
         return packageName
     
     def findInstalledPackages(self,chrootID):
-        cmdUtils = CommandUtils()
-        listInstalledRPMs=cmdUtils.find_installed_rpm_packages(self.runInChrootCommand+" "+chrootID)
+        pkgUtils = PackageUtils(self.logName,self.logPath)
+        listInstalledRPMs=pkgUtils.findInstalledRPMPackages(chrootID)
         listInstalledPackages=[]
         for installedRPM in listInstalledRPMs:
             packageName=self.findPackageNameFromRPMFile(installedRPM)
@@ -63,90 +60,74 @@ class PackageBuilder(object):
         return listInstalledPackages
     
     def buildPackageThreadAPI(self,package,outputMap, threadName):
-        returnVal=self.buildPackage(package)
-        outputMap[threadName]=returnVal
+        try:
+            self.buildPackage(package)
+            outputMap[threadName]=True
+        except Exception as e:
+            self.logger.error(e)
+            outputMap[threadName]=False
         
     def buildPackage(self,package):
         #should initialize a logger based on package name
         chrUtils = ChrootUtils(self.logName,self.logPath)
-        returnVal,chrootID = self.prepareBuildRoot()
-        if not returnVal:
-            return False
-        
-        destLogPath=constants.logPath+"/build-"+package
-        if not os.path.isdir(destLogPath):
-            cmdUtils = CommandUtils()
-            cmdUtils.run_command("mkdir -p "+destLogPath)
-        
-        listInstalledPackages=self.findInstalledPackages(chrootID)
-        self.logger.info("List of installed packages")
-        self.logger.info(listInstalledPackages)
-        returnVal,listDependentPackages=self.findBuildTimeRequiredPackages(package)
-        if not returnVal:
-            chrUtils.destroyChroot(chrootID)
-            self.logger.error ("Failed during building the package"+package)
-            return False
-        
-        if len(listDependentPackages) != 0:
-            self.logger.info("Installing the build time dependent packages......")
-            for pkg in listDependentPackages:
-                returnVal = self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
-                if not returnVal:
-                    self.logger.error("Failed while installing the build time dependent package"+pkg)
-                    chrUtils.destroyChroot(chrootID)
-                    return False
-            self.logger.info("Finished installing the build time dependent packages......")
+        chrootID=None
+        try:
+            chrootID = self.prepareBuildRoot()
+            destLogPath=constants.logPath+"/build-"+package
+            if not os.path.isdir(destLogPath):
+                cmdUtils = CommandUtils()
+                cmdUtils.runCommandInShell("mkdir -p "+destLogPath)
+            
+            listInstalledPackages=self.findInstalledPackages(chrootID)
+            self.logger.info("List of installed packages")
+            self.logger.info(listInstalledPackages)
+            listDependentPackages=self.findBuildTimeRequiredPackages(package)
+            
+            if len(listDependentPackages) != 0:
+                self.logger.info("Installing the build time dependent packages......")
+                for pkg in listDependentPackages:
+                    self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
+                self.logger.info("Finished installing the build time dependent packages......")
 
-        pkgUtils = PackageUtils(self.logName,self.logPath)
-        returnVal = pkgUtils.buildRPMSForGivenPackage(package,chrootID,destLogPath)
-        if not returnVal:
-            self.logger.error("Failed while building the package"+package)
-            chrUtils.destroyChroot(chrootID)
-            return False
-        self.logger.info("Successfully built the package:"+package)
-        chrUtils.destroyChroot(chrootID)
-        return True
+            pkgUtils = PackageUtils(self.logName,self.logPath)
+            pkgUtils.buildRPMSForGivenPackage(package,chrootID,destLogPath)
+            self.logger.info("Successfully built the package:"+package)
+        except Exception as e:
+            self.logger.error("Failed while building package:"+package)
+            raise e
+        finally:
+            if chrootID is not None:
+                chrUtils.destroyChroot(chrootID)
+        
         
     def findRunTimeRequiredRPMPackages(self,rpmPackage):
         listRequiredPackages=constants.specData.getRequiresForPackage(rpmPackage)
-        return True,listRequiredPackages
+        return listRequiredPackages
     
     def findBuildTimeRequiredPackages(self,package):
         listRequiredPackages=constants.specData.getBuildRequiresForPackage(package)
-        return True,listRequiredPackages
+        return listRequiredPackages
     
     def installPackage(self,package,chrootID,destLogPath,listInstalledPackages):
-        #if toolchain package called this method, preventing from installing again
         if package in listInstalledPackages:
-            return True
-        returnVal = self.installDependentRunTimePackages(package,chrootID,destLogPath,listInstalledPackages)
-        if not returnVal:
-            return False
+            return
+        self.installDependentRunTimePackages(package,chrootID,destLogPath,listInstalledPackages)
         pkgUtils = PackageUtils(self.logName,self.logPath)
         noDeps=False
         if self.mapPackageToCycles.has_key(package):
             noDeps = True
         if package in self.listNodepsPackages:
             noDeps=True
-        returnVal = pkgUtils.installRPM(package,chrootID,noDeps,destLogPath)
-        if not returnVal:
-            self.logger.error("Stop installing package"+package)
-            return False
+        pkgUtils.installRPM(package,chrootID,noDeps,destLogPath)
         listInstalledPackages.append(package)
         self.logger.info("Installed the package:"+package)
-        return True
 
     def installDependentRunTimePackages(self,package,chrootID,destLogPath,listInstalledPackages):
-        returnVal,listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
-        if not returnVal:
-            return False
+        listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
         if len(listRunTimeDependentPackages) != 0:
             for pkg in listRunTimeDependentPackages:
                 if self.mapPackageToCycles.has_key(pkg) and pkg not in self.listAvailableCyclicPackages:
                     continue
                 if pkg in listInstalledPackages:
                     continue
-                returnVal = self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
-                if not returnVal:
-                    return False
-        return True
+                self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
