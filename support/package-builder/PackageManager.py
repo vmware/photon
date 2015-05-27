@@ -131,6 +131,7 @@ class PackageManager(object):
 
         return True
     
+    #just to be safe, we have this method
     def checkIfAnyThreadsAreHanged(self):
         currentTime = time.time()
         listThreadsHanged=[]
@@ -139,7 +140,7 @@ class PackageManager(object):
             if not self.mapOutputThread.has_key(t):
                 self.logger.debug("Calculating running time for thread "+t)
                 launchTime = self.mapThreadsLaunchTime[t]
-                if (currentTime - launchTime) > 3600.0:
+                if (currentTime - launchTime) > 7200.0:
                     listThreadsHanged.append(t)
             
         if len(listThreadsHanged) > 0:
@@ -154,8 +155,8 @@ class PackageManager(object):
             if self.checkIfAnyThreadsAreCompleted():
                 break
             self.checkIfAnyThreadsAreHanged()
-            self.logger.info("Sleeping for 30 seconds")
-            time.sleep(30)
+            self.logger.info("Sleeping for 10 seconds")
+            time.sleep(10)
     
     def buildToolChain(self):
         try:
@@ -211,14 +212,15 @@ class PackageManager(object):
             self.logger.error("Failed and exited gracefully")
             returnVal = False
         finally:
-            if len(self.listThreads) > 0:
-                self.killAllThreads()
+            self.waitForRemainingThreads()
         return returnVal
     
-    def killAllThreads(self):
-        self.logger.info("Killing all remaining threads")
+    def waitForRemainingThreads(self):
+        self.logger.info("Waiting for all remaining threads to complete")
+        for t in self.listThreads:
+            self.listThreads[t].join()
         return
-    
+
     def findNextPackageToBuild(self):
         listOfPackagesNextToBuild=[]
         self.logger.info("Checking for next possible packages to build")

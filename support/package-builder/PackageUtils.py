@@ -105,9 +105,15 @@ class PackageUtils(object):
         self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
         self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
         
-        listRPMFiles = self.buildRPM(chrootSpecPath+"/"+specName,chrootLogsFilePath, chrootCmd)
-        if destLogPath is not None:
-            shutil.copy2(chrootLogsFilePath, destLogPath)
+        listRPMFiles=[]
+        try:
+            listRPMFiles = self.buildRPM(chrootSpecPath+"/"+specName,chrootLogsFilePath, chrootCmd)
+        except Exception as e:
+            self.logger.error("Failed while building rpm:"+package)
+            raise e
+        finally:
+            if destLogPath is not None:
+                shutil.copy2(chrootLogsFilePath, destLogPath)
 
         for rpmFile in listRPMFiles:
             self.copyRPM(chrootID+"/"+rpmFile, constants.rpmPath)
