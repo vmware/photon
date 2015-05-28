@@ -6,6 +6,7 @@ from CommandUtils import CommandUtils
 from Logger import Logger
 from constants import constants
 from PackageManager import PackageManager 
+from ChrootUtils import ChrootUtils
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -67,6 +68,8 @@ def main():
     
     listPackages1=["nano","swig","wget"]
 
+    chrUtils = ChrootUtils()
+    chrUtils.updateParams()
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackages)
  

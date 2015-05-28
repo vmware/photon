@@ -1,11 +1,9 @@
 import subprocess
 from Logger import Logger
-#from ToolChainUtils import ToolChainUtils
 from CommandUtils import CommandUtils
 import os
 import threading
 import time
-from time import sleep
 from constants import constants
 
 chrootRootPath="/mnt"
@@ -17,6 +15,7 @@ class ChrootUtils(object):
     lockForCreateChroot=threading.Lock()
     activeChroots=[]
     failureFlag=False
+    numChroots=1
     
     def __init__(self,logName=None,logPath=None):
         if logName is None:
@@ -36,6 +35,18 @@ class ChrootUtils(object):
         ChrootUtils.counter = ChrootUtils.counter +1
         ChrootUtils.lockForCounter.release()
         return chrootID
+    
+    def updateParams(self):
+        process = subprocess.Popen(["df" ,chrootRootPath],shell=True,stdout=subprocess.PIPE)
+        retval = process.wait()
+        if retval != 0:
+            self.logger.error("Unable to check free space. Unknown error.")
+            return False
+        output = process.communicate()[0]
+        device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
+        c =  int(available)/600000
+        ChrootUtils.numChroots=int(c)
+        self.logger.info("Updated number of chroots:"+str(ChrootUtils.numChroots))
     
     def checkFreeSpace(self):
         process = subprocess.Popen(["df" ,chrootRootPath],shell=True,stdout=subprocess.PIPE)
@@ -64,10 +75,10 @@ class ChrootUtils(object):
         freeSpaceAvailable=False
         while currentTime < startTime + timeOut:
             #if self.checkFreeSpace():
-            if len(ChrootUtils.activeChroots) < 2:
+            if len(ChrootUtils.activeChroots) < ChrootUtils.numChroots:
                 freeSpaceAvailable=True
                 break
-            sleep(100)
+            time.sleep(100)
             
         if not freeSpaceAvailable:
             self.logger.error("Unable to create chroot. No sufficient free space is available.")
