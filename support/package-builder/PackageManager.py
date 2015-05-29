@@ -7,6 +7,10 @@ from PackageBuilder import PackageBuilder
 import os
 from PackageUtils import PackageUtils
 from ToolChainUtils import ToolChainUtils
+from Scheduler import Scheduler
+from ThreadPool import ThreadPool
+from WorkerThread import WorkerThread
+import subprocess
 
 class PackageManager(object):
     
@@ -168,8 +172,84 @@ class PackageManager(object):
             return False
         
         return True
-        
+    
+    def calculatePossibleNumWorkerThreads(self):
+        process = subprocess.Popen(["df" ,"/mnt"],shell=True,stdout=subprocess.PIPE)
+        retval = process.wait()
+        if retval != 0:
+            self.logger.error("Unable to check free space. Unknown error.")
+            return False
+        output = process.communicate()[0]
+        device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
+        c =  int(available)/600000
+        numChroots=int(c)
+        self.logger.info("Updated number of chroots:"+str(numChroots))
+        return numChroots
+    
     def buildPackages (self, listPackages):
+
+        if not self.buildToolChain():
+            return False
+
+        returnVal=self.calculateParams(listPackages)
+        if not returnVal:
+            self.logger.error("Unable to set paramaters. Terminating the package manager.")
+            return False
+        
+        statusEvent=threading.Event()
+        
+        Scheduler.setLog(self.logName, self.logPath)
+        Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
+        Scheduler.setEvent(statusEvent)
+        
+        numWorkerThreads=self.calculatePossibleNumWorkerThreads()
+        if numWorkerThreads == 0:
+            return False
+         
+        ThreadPool.clear()
+        i=0
+        while i < numWorkerThreads:
+            workerName="WorkerThread"+str(i)
+            w = WorkerThread(statusEvent,workerName,self.mapPackageToCycle,self.listAvailableCyclicPackages,self.logger)
+            ThreadPool.addWorkerThread(workerName, w)
+            w.start()
+            i = i + 1
+        
+        statusEvent.wait()
+        
+        Scheduler.stopScheduling=True
+        
+        setFailFlag=False
+        allPackagesBuilt=False
+        if Scheduler.isAnyPackagesFailedToBuild():
+            setFailFlag=True
+        if Scheduler.isAllPackagesBuilt():
+            allPackagesBuilt=True
+        
+        if setFailFlag:
+            self.logger.error("Some of the packages failed:")
+            self.logger.error(Scheduler.listOfFailedPackages)
+        
+        if not setFailFlag:
+            if allPackagesBuilt:
+                self.logger.info("All packages built successfully")
+            else:
+                self.logger.error("Build stopped unexpectedly.Unknown error.")
+        
+        self.logger.info("Waiting for all remaining worker threads")
+        listWorkerObjs=ThreadPool.getAllWorkerObjects()
+        for w in listWorkerObjs:
+            w.join()
+        
+        self.logger.info("Terminated")
+        
+        
+        
+            
+        
+
+    
+    def buildPackages1 (self, listPackages):
         
         if not self.buildToolChain():
             return False
