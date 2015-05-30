@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	4.8.2
-Release:	3
+Release:	4
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -19,13 +19,13 @@ which includes the C and C++ compilers.
 
 %package -n	libgcc
 Summary:	GNU C Library
-Group:         	System/Libraries
+Group:         	System Environment/Libraries
 %description -n libgcc
 The libgcc package contains GCC shared libraries for gcc .
 
 %package -n	libgcc-devel
 Summary:	GNU C Library
-Group:         	System/Libraries
+Group:         	Development/Libraries
 Requires:       libgcc = %{version}-%{release}
 %description -n libgcc-devel
 The libgcc package contains GCC shared libraries for gcc .
@@ -33,14 +33,14 @@ This package contains development headers and static library for libgcc.
 
 %package -n	libstdc++
 Summary:       	GNU C Library
-Group:         	System/Libraries
+Group:         	System Environment/Libraries
 Requires:	libgcc = %{version}-%{release}
 %description -n libstdc++
 This package contains the GCC Standard C++ Library v3, an ongoing project to implement the ISO/IEC 14882:1998 Standard C++ library.
 
 %package -n	libstdc++-devel
 Summary:       	GNU C Library
-Group:         	System/Libraries
+Group:         	Development/Libraries
 Requires:       libstdc++ = %{version}-%{release}
 %description -n libstdc++-devel
 This is the GNU implementation of the standard C++ libraries.
@@ -48,7 +48,7 @@ This package includes the headers files and libraries needed for C++ development
 
 %package -n	libgomp
 Summary:       	GNU C Library
-Group:         	System/Libraries
+Group:         	System Environment/Libraries
 %description -n libgomp
 An implementation of OpenMP for the C, C++, and Fortran 95 compilers in the GNU Compiler Collection.
 
@@ -213,6 +213,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-4
+-   Updated group.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-3
 -   Update according to UsrMove.
 *	Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.8.2-2

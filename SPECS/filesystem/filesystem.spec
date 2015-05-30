@@ -322,6 +322,18 @@ DISTRIB_RELEASE=1.0 TP1
 DISTRIB_CODENAME=Photon
 DISTRIB_DESCRIPTION=VMware Photon 1.0 TP1
 EOF
+
+cat > %{buildroot}/usr/lib/os-release <<- "EOF"
+NAME=VMware Photon
+VERSION="1.0 TP1"
+ID=photon
+VERSION_ID=1.0
+PRETTY_NAME="VMware Photon/Linux"
+ANSI_COLOR="1;34"
+HOME_URL="https://vmware.github.io/photon/"
+BUG_REPORT_URL="https://github.com/vmware/photon/issues"
+EOF
+
 %files
 %defattr(-,root,root)
 #	Root filesystem
@@ -352,6 +364,7 @@ EOF
 %config(noreplace) /etc/inputrc
 %config(noreplace) /etc/photon-release
 %config(noreplace) /etc/lsb-release
+%config(noreplace) /usr/lib/os-release
 %config(noreplace) /etc/mtab
 %config(noreplace) /etc/passwd
 %config(noreplace) /etc/profile
