@@ -334,6 +334,8 @@ HOME_URL="https://vmware.github.io/photon/"
 BUG_REPORT_URL="https://github.com/vmware/photon/issues"
 EOF
 
+ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
+
 %files
 %defattr(-,root,root)
 #	Root filesystem
@@ -365,6 +367,7 @@ EOF
 %config(noreplace) /etc/photon-release
 %config(noreplace) /etc/lsb-release
 %config(noreplace) /usr/lib/os-release
+%config(noreplace) /etc/os-release
 %config(noreplace) /etc/mtab
 %config(noreplace) /etc/passwd
 %config(noreplace) /etc/profile
