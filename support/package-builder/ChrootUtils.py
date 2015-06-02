@@ -103,7 +103,20 @@ class ChrootUtils(object):
         ChrootUtils.lockForTrackingChroots.release()           
         return True,chrootID
     
+    def createChroot1(self,chrootID):
+        # need to add timeout for this step
+        # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
+        process = subprocess.Popen("mkdir -p "+chrootID,shell=True,stdout=subprocess.PIPE)
+        retval = process.wait()
+        
+        if retval != 0:
+            self.logger.error("Unable to create chroot:"+ chrootID +".Unknown error.")
+            return False,None
+        
+        return True,chrootID
+    
     def destroyChroot(self,chrootID):
+        '''
         validChroot = True
         ChrootUtils.lockForTrackingChroots.acquire()
         if chrootID not in ChrootUtils.activeChroots:
@@ -114,7 +127,7 @@ class ChrootUtils(object):
         if not validChroot:
             self.logger.error("Given chroot:"+chrootID+" is not a valid chroot. It is not created by ChrootUtils.")
             return False
-
+        '''
         # need to add timeout for this step
         # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
         process = subprocess.Popen("./cleanup-build-root.sh "+chrootID,shell=True,stdout=subprocess.PIPE)

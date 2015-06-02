@@ -70,9 +70,11 @@ class Scheduler(object):
     
     @staticmethod
     def getNextPackageToBuild():
+        Scheduler.logger.info("Waiting to acquire scheduler lock")
         Scheduler.lock.acquire()
         
         if Scheduler.stopScheduling:
+            Scheduler.logger.info("Released scheduler lock")
             Scheduler.lock.release()
             return None
         
@@ -85,6 +87,7 @@ class Scheduler(object):
             Scheduler.listOfPackagesNextToBuild=listOfPackagesNextToBuild
             
         if len(Scheduler.listOfPackagesNextToBuild) == 0:
+            Scheduler.logger.info("Released scheduler lock")
             Scheduler.lock.release()
             return None
         
@@ -92,6 +95,7 @@ class Scheduler(object):
         
         if len(Scheduler.listOfPackagesNextToBuild) > 0:
             ThreadPool.activateWorkerThreads(len(Scheduler.listOfPackagesNextToBuild))
+        Scheduler.logger.info("Released scheduler lock")
         Scheduler.lock.release()
         Scheduler.listOfPackagesCurrentlyBuilding.append(package)
         Scheduler.listOfPackagesToBuild.remove(package)

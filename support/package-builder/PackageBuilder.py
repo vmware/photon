@@ -36,6 +36,21 @@ class PackageBuilder(object):
             raise e
         return chrootID
     
+    def prepareBuildRoot1(self,chrootID):
+        #chrootID=None
+        try:
+            chrUtils = ChrootUtils(self.logName,self.logPath)
+            returnVal,chrootID = chrUtils.createChroot1(chrootID)
+            if not returnVal:
+                raise Exception("Unable to prepare build root")
+            tUtils=ToolChainUtils(self.logName,self.logPath)
+            tUtils.installToolChain(chrootID)
+        except Exception as e:
+            if chrootID is not None:
+                chrUtils.destroyChroot(chrootID)
+            raise e
+        return chrootID
+    
     def findPackageNameFromRPMFile(self,rpmfile):
         rpmfile=os.path.basename(rpmfile)
         releaseindex=rpmfile.rfind("-")
@@ -70,9 +85,9 @@ class PackageBuilder(object):
     def buildPackage(self,package):
         #should initialize a logger based on package name
         chrUtils = ChrootUtils(self.logName,self.logPath)
-        chrootID=None
+        chrootID="build-"+package
         try:
-            chrootID = self.prepareBuildRoot()
+            chrootID = self.prepareBuildRoot1(chrootID)
             destLogPath=constants.logPath+"/build-"+package
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()
