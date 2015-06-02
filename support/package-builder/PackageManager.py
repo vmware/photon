@@ -207,12 +207,15 @@ class PackageManager(object):
             return False
          
         ThreadPool.clear()
+        ThreadPool.mapPackageToCycle=self.mapPackageToCycle
+        ThreadPool.listAvailableCyclicPackages=self.listAvailableCyclicPackages
+        ThreadPool.logger=self.logger
+        ThreadPool.statusEvent=statusEvent
         i=0
         while i < numWorkerThreads:
             workerName="WorkerThread"+str(i)
-            w = WorkerThread(statusEvent,workerName,self.mapPackageToCycle,self.listAvailableCyclicPackages,self.logger)
-            ThreadPool.addWorkerThread(workerName, w)
-            w.start()
+            ThreadPool.addWorkerThread(workerName)
+            ThreadPool.startWorkerThread(workerName)
             i = i + 1
         
         statusEvent.wait()

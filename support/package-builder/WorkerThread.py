@@ -1,8 +1,8 @@
 from PackageBuilder import PackageBuilder
 import threading
-from Scheduler import Scheduler
+import Scheduler
 from constants import constants
-from ThreadPool import ThreadPool
+import ThreadPool
  
 class WorkerThread(threading.Thread):
     
@@ -17,11 +17,11 @@ class WorkerThread(threading.Thread):
     
     def run(self):
         buildThreadFailed=False
-        ThreadPool.makeWorkerThreadActive(self.name)
+        ThreadPool.ThreadPool.makeWorkerThreadActive(self.name)
         self.logger.info("Thread "+self.name +" is starting now")
         while True:
             outputMap={}
-            pkg = Scheduler.getNextPackageToBuild()
+            pkg = Scheduler.Scheduler.getNextPackageToBuild()
             if pkg is None:
                 break
             self.logger.info("Thread "+self.name+" is building package:"+ pkg)
@@ -32,21 +32,21 @@ class WorkerThread(threading.Thread):
             if outputMap.has_key(pkg):
                 if outputMap[pkg] == False:
                     buildThreadFailed = True
-                    Scheduler.notifyPackageBuildFailed(pkg)
+                    Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
                     self.logger.info("Thread "+self.name +" stopped building the "+pkg +" package")
                     break
             else:
                 buildThreadFailed = True
-                Scheduler.notifyPackageBuildFailed(pkg)
+                Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
                 self.logger.info("Thread "+self.name +" stopped building the "+pkg +" package")
                 break
             
-            Scheduler.notifyPackageBuildCompleted(pkg)
+            Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)
         
         if buildThreadFailed:
             self.statusEvent.set()
         
-        ThreadPool.makeWorkerThreadInActive(self.name)
+        ThreadPool.ThreadPool.makeWorkerThreadInActive(self.name)
         self.logger.info("Thread "+self.name +" is going to rest")
         
 

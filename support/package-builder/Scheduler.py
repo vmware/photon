@@ -1,4 +1,4 @@
-from ThreadPool import ThreadPool
+import ThreadPool
 from constants import constants
 from Logger import Logger
 import threading 
@@ -94,7 +94,7 @@ class Scheduler(object):
         package=Scheduler.listOfPackagesNextToBuild.pop(0)
         
         if len(Scheduler.listOfPackagesNextToBuild) > 0:
-            ThreadPool.activateWorkerThreads(len(Scheduler.listOfPackagesNextToBuild))
+            ThreadPool.ThreadPool.activateWorkerThreads(len(Scheduler.listOfPackagesNextToBuild))
         Scheduler.logger.info("Released scheduler lock")
         Scheduler.lock.release()
         Scheduler.listOfPackagesCurrentlyBuilding.append(package)

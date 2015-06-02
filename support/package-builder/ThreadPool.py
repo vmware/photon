@@ -1,9 +1,14 @@
 
+import WorkerThread
 class ThreadPool(object):
     
     mapWorkerThreads={}
     activeWorkerThreads=[]
     inactiveWorkerThreads=[]
+    mapPackageToCycle={}
+    listAvailableCyclicPackages=[]
+    logger=None
+    statusEvent=None
     
     @staticmethod
     def clear():
@@ -21,7 +26,8 @@ class ThreadPool(object):
         return listWorkerObjs
         
     @staticmethod
-    def addWorkerThread(workerThreadName,workerThread):
+    def addWorkerThread(workerThreadName):
+        workerThread = WorkerThread.WorkerThread(ThreadPool.statusEvent,workerThreadName,ThreadPool.mapPackageToCycle,ThreadPool.listAvailableCyclicPackages,ThreadPool.logger)
         ThreadPool.mapWorkerThreads[workerThreadName]=workerThread
    
     @staticmethod
@@ -48,6 +54,7 @@ class ThreadPool(object):
     def activateWorkerThreads(numOfThreadsToActivate):
         while len(ThreadPool.inactiveWorkerThreads) > 0 and numOfThreadsToActivate > 0:
             threadName=ThreadPool.inactiveWorkerThreads.pop()
+            ThreadPool.addWorkerThread(threadName)
             ThreadPool.startWorkerThread(threadName)
             ThreadPool.makeWorkerThreadActive(threadName)
             numOfThreadsToActivate = numOfThreadsToActivate -1
