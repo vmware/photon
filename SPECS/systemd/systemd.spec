@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	2
+Release:	3
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -66,8 +66,8 @@ done
 ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
 rm -f %{buildroot}%{_var}/log/README
 
-cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
-cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
+#cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
+#cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
 
 %post	-p /sbin/ldconfig
 %postun	
@@ -85,8 +85,11 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_datadir}/*
 
+
 %changelog
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 216-2
--   Update according to UsrMove.
+*	Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3
+-	Removing packing of PAM configuration files
+*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 216-2
+-   	Update according to UsrMove.
 *	Mon Oct 27 2014 Sharath George <sharathg@vmware.com> 216-1
 -	Initial build.	First version

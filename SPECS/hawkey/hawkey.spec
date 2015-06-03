@@ -1,11 +1,11 @@
 Summary:	Hawkey
 Name:		hawkey
 Version:	2014.1
-Release:	1
+Release:	2
 License:	LGPLv2+
 URL:		http://fedoraproject.org/wiki/Features/Hawkey
 Source0:	https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
-Group:		GeneralUtilities
+Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires: 	libsolv
@@ -66,5 +66,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2014.1.1-2
+-   Updated group.
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.1-1
 -	Initial build. First version

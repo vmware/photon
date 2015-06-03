@@ -166,7 +166,7 @@ class BuildSystem(object):
             "libpipeline", "gdbm","perl","texinfo","rpm",
             "autoconf","automake", "groff", "man-db", "man-pages","elfutils","cpio"]
 
-        self.list_nodeps_packages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
+        self.list_nodeps_packages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go","openjdk"]
         self.readPackagesInSpecFiles()
 
     def prepare_build_root(self, tools_archive=""):
@@ -268,7 +268,7 @@ class BuildSystem(object):
             print "Source path :" + source + " Source filename: " + sourcePath[0]
             shutil.copyfile(sourcePath[0],  self.build_root_source_path+"/"+source)
 
-    def buildPackage(self,package):
+    def buildRPMSForGivenPackage(self,package):
         print "Building package......",package
         specFile=self.findSpecFileForPackage(package)
         print "Spec file for package:",package," is ",specFile
@@ -360,7 +360,7 @@ class BuildSystem(object):
         for package in self.listPkgsRequiredToBuildToolchain:
             rpmfile=self.findRPMFileForGivenPackage(package)
             if rpmfile is None :
-                returnVal=self.buildPackage(package)
+                returnVal=self.buildRPMSForGivenPackage(package)
                 if not returnVal:
                     print "Stopping building toolchain"
                     return False
@@ -397,29 +397,50 @@ class BuildSystem(object):
         return True
 
 
-    def findAllRequiredPackages(self,package,mapPkgNRequiredPkgs,force_build=False):
+    def constructDependencyGraph(self,package,mapPkgNRequiredPkgs):
+        returnVal,listRequiredPackages=self.findBuildTimeRequiredPackages(package)
+        if not returnVal:
+             return False
+        mapPkgNRequiredPkgs[package]=listRequiredPackages
+        for requiredPkg in listRequiredPackages:
+            if not mapPkgNRequiredPkgs.has_key(requiredPkg):
+                returnVal=self.constructDependencyGraph(requiredPkg,mapPkgNRequiredPkgs)
+                if not returnVal:
+                    return False
+        return True
+
+    def findBuildTimeRequiredPackages(self,package):
         specFile=self.findSpecFileForPackage(package)
         print "Spec file for package:",package," is ",specFile
         if specFile is None:
             print "Did not find spec file for package: ", package
-            return False
+            return False,None
         spec=Specutils(specFile)
         listRequiredPackages=[]
-        rpmfile=None
-        if not force_build:
-            rpmfile=self.findRPMFileForGivenPackage(package)
-        if rpmfile is not None:
-            listRequiredPackages=spec.getRequires(package)
-        else:
-            listRequiredPackages=spec.getBuildRequiresAllPackages()
+        listRequiredPackages=spec.getBuildRequiresAllPackages()
+        return True,listRequiredPackages
 
-        mapPkgNRequiredPkgs[package]=listRequiredPackages
-        for requiredPkg in listRequiredPackages:
-            if not mapPkgNRequiredPkgs.has_key(requiredPkg):
-                returnVal=self.findAllRequiredPackages(requiredPkg,mapPkgNRequiredPkgs)
-                if not returnVal:
-                    return False
-        return True
+    def findRunTimeRequiredPackages(self,package):
+        specFile=self.findSpecFileForPackage(package)
+        print "Spec file for package:",package," is ",specFile
+        if specFile is None:
+            print "Did not find spec file for package: ", package
+            return False,None
+        spec=Specutils(specFile)
+        listRequiredPackages=[]
+        listRequiredPackages=spec.getRequiresAllPackages()
+        return True,listRequiredPackages
+
+    def findRunTimeRequiredRPMPackages(self,rpmPackage):
+        specFile=self.findSpecFileForPackage(rpmPackage)
+        print "Spec file for package:",rpmPackage," is ",specFile
+        if specFile is None:
+            print "Did not find spec file for package: ", rpmPackage
+            return False,None
+        spec=Specutils(specFile)
+        listRequiredPackages=[]
+        listRequiredPackages=spec.getRequires(rpmPackage)
+        return True,listRequiredPackages
 
     def topological_sort_packages(self, dependent_packages):
         nodep_packages = Set()
@@ -451,10 +472,10 @@ class BuildSystem(object):
         return sorted_package_list
 
 
-    def find_package_dependency_tree(self, package_name,force_build=False):
+    def find_package_dependency_tree(self, package_name):
         print "finding dependency tree for : " + package_name
         dependent_packages={}
-        returnVal=self.findAllRequiredPackages(package_name, dependent_packages,force_build)
+        returnVal=self.constructDependencyGraph(package_name, dependent_packages)
         if not returnVal:
             print "Not able to find depedendency tree for package ", package_name
             return False, None
@@ -471,16 +492,35 @@ class BuildSystem(object):
         cmdUtils=commandsUtils()
         cmdUtils.run_command("./cleanup-build-root.sh "+self.build_root)
         
-    # TODO: rename to smth like buildPackage...
-    def installPackage(self,package,force_build=False):
-        print "Force build option", force_build
-        returnVal,listDependentPackages=self.find_package_dependency_tree(package,force_build)
+    def buildPackage(self,package,force_build, listFailedPkgs=[]):
+        # We don't need to build this package if RPM exists && !force_build
+        rpmfile = None
+        if not force_build:
+            rpmfile=self.findRPMFileForGivenPackage(package)
+        if rpmfile is not None:
+            print "The given package is already built",package
+            return True
+
+        if package in listFailedPkgs:
+            print package," package is failed in previous iteration. Not building again."
+            return False
+        returnVal,listDependentPackages=self.find_package_dependency_tree(package)
         if not returnVal:
+            print "Failed during building the package", package
             return False
         listDependentPackages.remove(package)
         listPkgsTobeBuild=[]
+        returnVal,listRunTimeDependentPackages=self.findRunTimeRequiredPackages(package)
+        if not returnVal:
+            print "Failed during building the package", package
+            return False
 
         for pkg in listDependentPackages:
+            rpmfile=self.findRPMFileForGivenPackage(pkg)
+            if rpmfile is None :
+                listPkgsTobeBuild.append(pkg)
+
+        for pkg in listRunTimeDependentPackages:
             rpmfile=self.findRPMFileForGivenPackage(pkg)
             if rpmfile is None :
                 listPkgsTobeBuild.append(pkg)
@@ -489,19 +529,12 @@ class BuildSystem(object):
             print "Dependent packages to be build",listPkgsTobeBuild
             print "Building dependent packages.........."
             for pkg in listPkgsTobeBuild:
-                returnVal = self.installPackage(pkg)
+                returnVal = self.buildPackage(pkg,force_build,listFailedPkgs)
                 if not returnVal:
                     print "Failed installing package",pkg
                     print "Stop installing package",package
                     return False
             print "Finished building dependent packages"
-
-        # We don't need to build this package if RPM exists && !force_build
-        rpmfile = None
-        if not force_build:
-            rpmfile=self.findRPMFileForGivenPackage(package)
-        if rpmfile is not None:
-            return True
 
         # Let's build this package
         self.installToolchain()
@@ -509,34 +542,59 @@ class BuildSystem(object):
         del self.listInstalledPackages[:]
         self.listInstalledPackages=self.findInstalledPackages()
 
-        returnVal,listDependentPackages=self.find_package_dependency_tree(package,force_build)
+        returnVal,listDependentPackages=self.findBuildTimeRequiredPackages(package)
         if not returnVal:
+            print "Failed during building the package", package
             return False
-        listDependentPackages.remove(package)
-
+        
         #if toolchain package called this method, preventing from installing again
         if package in self.listInstalledPackages:
             return True
 
         if len(listDependentPackages) != 0:
-            print "Installing dependent packages......"
+            print "Installing the build time dependent packages......"
             for pkg in listDependentPackages:
                 if pkg in self.listInstalledPackages:
                     continue
-                returnVal = self.installRPM(pkg)
+                returnVal = self.installPackage(pkg)
                 if not returnVal:
-                    print "Stop installing package",package
+                    print "Failed while installing the build time dependent package",pkg
                     return False
-                print "Installed the package:",pkg
-            print "Finished installing the dependent packages......"
+            print "Finished installing the build time dependent packages......"
 
-        returnVal=self.buildPackage(package)
+        returnVal=self.buildRPMSForGivenPackage(package)
         if not returnVal:
-            print "Stop installing the package",package
+            print "Failed while building the package",package
+            return False
+        print "Successfully built the package:",package
+        return True
+
+    def installPackage(self,package):
+        #if toolchain package called this method, preventing from installing again
+        if package in self.listInstalledPackages:
+            return True
+        returnVal = self.installDependentRunTimePackages(package)
+        if not returnVal:
+            return False
+        returnVal = self.installRPM(package)
+        if not returnVal:
+            print "Stop installing package",package
             return False
         print "Installed the package:",package
         return True
 
+    def installDependentRunTimePackages(self,package):
+        returnVal,listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
+        if not returnVal:
+            return False
+        if len(listRunTimeDependentPackages) != 0:
+            for pkg in listRunTimeDependentPackages:
+                if pkg in self.listInstalledPackages:
+                    continue
+                returnVal = self.installPackage(pkg)
+                if not returnVal:
+                    return False
+        return True
 
     def doCleanBuild(self):
         cmdUtils=commandsUtils()
@@ -562,7 +620,7 @@ class BuildSystem(object):
             print "Please fix this error and continue to build all packages"
             return False
         for pkg in list_packages:
-            returnVal=self.installPackage(pkg)
+            returnVal=self.buildPackage(pkg,False,listFailedPkgs)
             if not returnVal:
                 listFailedPkgs.append(pkg)
         if len(listFailedPkgs) != 0:        
@@ -614,7 +672,7 @@ def main():
             parser.error("Incorrect number of arguments")
             returnVal=False
         else:
-            returnVal=package_builder.installPackage(args[0],options.force_build)
+            returnVal=package_builder.buildPackage(args[0],options.force_build)
     return returnVal
             
 

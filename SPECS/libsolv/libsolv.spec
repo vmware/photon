@@ -1,11 +1,11 @@
 Summary:	Libsolv-0.6.6
 Name:		libsolv
 Version:	0.6.6
-Release:	1
+Release:	2
 License:	BSD
 URL:		http://www.cmake.org/
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-Group:		GeneralUtilities
+Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	db
@@ -37,5 +37,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/*
 %{_includedir}/*
 %changelog
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 0.6.6-2
+-   Updated group.
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 0.6.6-1
 -	Initial build. First version
