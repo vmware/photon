@@ -66,6 +66,7 @@ class Scheduler(object):
                     break
             if canBuild:
                 listOfPackagesNextToBuild.append(pkg)
+                Scheduler.logger.info("Adding "+ pkg +" to the schedule list")
         return listOfPackagesNextToBuild
     
     @staticmethod

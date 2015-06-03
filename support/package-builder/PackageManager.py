@@ -123,7 +123,7 @@ class PackageManager(object):
         Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
         Scheduler.setEvent(statusEvent)
         
-        numWorkerThreads=8#self.calculatePossibleNumWorkerThreads()
+        numWorkerThreads=self.calculatePossibleNumWorkerThreads()
         if numWorkerThreads == 0:
             return False
          
