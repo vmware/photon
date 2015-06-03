@@ -20,27 +20,11 @@ class PackageBuilder(object):
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
         self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
     
-    #assumes tool chain is already built
-    def prepareBuildRoot(self):
+    def prepareBuildRoot(self,chrootName):
         chrootID=None
         try:
             chrUtils = ChrootUtils(self.logName,self.logPath)
-            returnVal,chrootID = chrUtils.createChroot()
-            if not returnVal:
-                raise Exception("Unable to prepare build root")
-            tUtils=ToolChainUtils(self.logName,self.logPath)
-            tUtils.installToolChain(chrootID)
-        except Exception as e:
-            if chrootID is not None:
-                chrUtils.destroyChroot(chrootID)
-            raise e
-        return chrootID
-    
-    def prepareBuildRoot1(self,chrootID):
-        #chrootID=None
-        try:
-            chrUtils = ChrootUtils(self.logName,self.logPath)
-            returnVal,chrootID = chrUtils.createChroot1(chrootID)
+            returnVal,chrootID = chrUtils.createChroot(chrootName)
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
@@ -85,9 +69,10 @@ class PackageBuilder(object):
     def buildPackage(self,package):
         #should initialize a logger based on package name
         chrUtils = ChrootUtils(self.logName,self.logPath)
-        chrootID="build-"+package
+        chrootName="build-"+package
+        chrootID=None
         try:
-            chrootID = self.prepareBuildRoot1(chrootID)
+            chrootID = self.prepareBuildRoot(chrootName)
             destLogPath=constants.logPath+"/build-"+package
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()

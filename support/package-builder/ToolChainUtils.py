@@ -4,7 +4,6 @@ from Logger import Logger
 from PackageUtils import PackageUtils
 import shutil
 from constants import constants
-import subprocess
 
 class ToolChainUtils(object):
     __built_successfull=False
@@ -44,14 +43,16 @@ class ToolChainUtils(object):
             "libpipeline", "gdbm","perl","texinfo","rpm",
             "autoconf","automake", "groff", "man-db", "man-pages","elfutils","cpio"]
     
-    def prepareChroot(self,chrootID,toolsArchive=""):
-        process = subprocess.Popen([self.prepareBuildRootCmd, chrootID,  constants.specPath,  constants.rpmPath, constants.toolsPath,toolsArchive])
-        returnVal = process.wait()
-        if returnVal != 0:
+    def prepareChroot(self,chrootID,toolsArchive=None):
+        cmdUtils=CommandUtils()
+        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.toolsPath
+        if toolsArchive is not None:
+            prepareChrootCmd=prepareChrootCmd+" "+toolsArchive
+        returnVal=cmdUtils.runCommandInShell(prepareChrootCmd)
+        if not returnVal:
             self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
             raise Exception("Prepare build root script failed")
 
-        cmdUtils=CommandUtils()
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
@@ -64,7 +65,8 @@ class ToolChainUtils(object):
         chrootID=None
         chrUtils = ChrootUtils(self.logName,self.logPath)
         try:
-            returnVal,chrootID = chrUtils.createChroot()
+            chrootName="build-toolchain"
+            returnVal,chrootID = chrUtils.createChroot(chrootName)
             if not returnVal:
                 raise Exception("creating chroot failed")
             self.prepareChroot(chrootID)

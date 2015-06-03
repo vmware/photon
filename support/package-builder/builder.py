@@ -68,8 +68,6 @@ def main():
     
     listPackages1=["nano","swig","wget"]
 
-    chrUtils = ChrootUtils()
-    chrUtils.updateParams()
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackages)
  

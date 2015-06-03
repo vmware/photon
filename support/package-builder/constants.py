@@ -10,6 +10,7 @@ class constants(object):
     topDirPath=""
     specData=None
     testPath="test"
+    buildRootPath="/mnt"
     
     
     @staticmethod

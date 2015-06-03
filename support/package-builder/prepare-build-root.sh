@@ -23,7 +23,10 @@ BUILDROOT=$1
 SPEC_PATH=$2
 RPM_PATH=$3
 TOOLS_PATH=$4
-TOOLS_ARCHIVE=$5
+TOOLS_ARCHIVE=""
+if [ $# -ge 5 ]; then
+    TOOLS_ARCHIVE=$5
+fi
 PARENT=/usr/src/photon
 rm -rf ${BUILDROOT}/*
 
