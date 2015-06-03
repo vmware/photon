@@ -1,7 +1,7 @@
 Summary:	Programs for compressing and decompressing files
 Name:		gzip
 Version:	1.6
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software
 Group:		Applications/File

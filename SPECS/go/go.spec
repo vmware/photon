@@ -10,7 +10,7 @@
 Summary:	Go 
 Name:		go
 Version:	1.3.3
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		https://golang/org
 Group:		System Environment/Security

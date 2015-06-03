@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
 Version:	3.1
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries

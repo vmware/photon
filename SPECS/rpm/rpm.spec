@@ -1,7 +1,7 @@
 Summary:	Package manager
 Name:		rpm
 Version:	4.11.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://rpm.org
 Group:		Applications/System

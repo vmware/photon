@@ -1,7 +1,7 @@
 Summary:	Linux Pluggable Authentication Modules
 Name:		Linux-PAM
 Version:	1.1.8
-Release:	1
+Release:	1%{?dist}
 License:	BSD and GPLv2+
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security

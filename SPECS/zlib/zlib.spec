@@ -1,7 +1,7 @@
 Summary:	Compression and decompression routines
 Name:		zlib
 Version:	1.2.8
-Release:	1
+Release:	1%{?dist}
 URL:		http://www.zlib.net/
 License:	zlib
 Group:		Applications/System

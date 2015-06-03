@@ -1,7 +1,7 @@
 Summary:	A library that provides compression and decompression of file formats used by Microsoft
 Name:		libmspack
 Version:	0.4alpha
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://www.cabextract.org.uk/libmspack/libmspack-0.4alpha.tar.gz
 Group:		Applications/System

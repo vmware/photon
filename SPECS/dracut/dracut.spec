@@ -5,7 +5,7 @@
 
 Name:		dracut
 Version:	041
-Release:	1
+Release:	1%{?dist}
 Group:		System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+

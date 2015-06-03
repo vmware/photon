@@ -3,7 +3,7 @@
 Summary: 	Creates a common metadata repository
 Name: 		createrepo
 Version: 	0.10.3
-Release: 	1
+Release: 	1%{?dist}
 License:	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.

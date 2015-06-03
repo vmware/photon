@@ -1,7 +1,7 @@
 Summary:	Text editor
 Name:		nano
 Version:	2.2.6
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.nano-editor.org/
 Group:		Applications/Editors

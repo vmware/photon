@@ -1,7 +1,7 @@
 Summary:	Docbook-xsl-1.78.1
 Name:		docbook-xsl
 Version:	1.78.1
-Release:	1
+Release:	1%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2

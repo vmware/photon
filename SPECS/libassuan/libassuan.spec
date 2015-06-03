@@ -1,7 +1,7 @@
 Summary:	Provides IPC between GnuPG Components
 Name:		libassuan
 Version:	2.2.0
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/related_software/libassuan/index.html
 Group:		General Libraries

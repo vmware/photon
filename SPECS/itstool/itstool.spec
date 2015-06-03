@@ -1,7 +1,7 @@
 Summary:	Itstool-2.0.2
 Name:		itstool
 Version:	2.0.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://itstool.org
 Source0:	http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2

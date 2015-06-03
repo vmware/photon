@@ -1,7 +1,7 @@
 Summary:	My summary.
 Name:		glibmm
 Version:	2.42.0
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.42/glibmm-2.42.0.tar.xz
 Group:		Applications/System

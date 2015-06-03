@@ -1,7 +1,7 @@
 Summary:	Time zone data
 Name:		tzdata
 Version:	2013i
-Release:	1
+Release:	1%{?dist}
 URL:		http://www.iana.org/time-zones
 License:	Public Domain
 Group:		Applications/System

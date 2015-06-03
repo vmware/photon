@@ -1,7 +1,7 @@
 Summary:	Hawkey
 Name:		hawkey
 Version:	2014.1
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://fedoraproject.org/wiki/Features/Hawkey
 Source0:	https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz

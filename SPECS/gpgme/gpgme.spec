@@ -1,7 +1,7 @@
 Summary:	High-Level Crypto API
 Name:		gpgme
 Version:	1.5.3
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:		Security

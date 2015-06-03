@@ -1,7 +1,7 @@
 Summary: 	Thin provisioning tools
 Name:		thin-provisioning-tools
 Version:	0.4.1
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 Group:		System Environment/Base
 URL:		https://github.com/jthornber/thin-provisioning-tools

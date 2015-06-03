@@ -1,7 +1,7 @@
 Summary:	Ruby
 Name:		ruby
 Version:	2.2.1
-Release:	1
+Release:	1%{?dist}
 License:	BSDL
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security

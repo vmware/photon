@@ -1,7 +1,7 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.21
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.21/%{name}-%{version}.tar.xz

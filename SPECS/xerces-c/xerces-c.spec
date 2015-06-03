@@ -1,7 +1,7 @@
 Summary:	C++ xml parser.
 Name:		xerces-c
 Version:	3.1.1
-Release:	1
+Release:	1%{?dist}
 License:	Apache License
 URL:		http://www.apache.org/dist/xerces/c/3/sources/xerces-c-3.1.1.tar.gz
 Group:		Applications/System

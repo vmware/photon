@@ -4,7 +4,7 @@
 Summary:	Kubernetes cluster management
 Name:		kubernetes
 Version:	0.12.0
-Release:	1
+Release:	1%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/GoogleCloudPlatform/kubernetes
 Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.12.0/%{name}.tar.gz

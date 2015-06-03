@@ -1,7 +1,7 @@
 Summary:	Utilities for loading kernel modules
 Name:		kmod
 Version:	16
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:		Applications/System

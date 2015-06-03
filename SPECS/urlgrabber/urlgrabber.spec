@@ -3,7 +3,7 @@
 Summary:		A high-level cross-protocol url-grabber
 Name: 			urlgrabber
 Version: 		3.10
-Release: 		1
+Release: 		1%{?dist}
 Source0: 		urlgrabber-%{version}.tar.gz
 License: 		LGPLv2+
 Group: 			Development/Libraries

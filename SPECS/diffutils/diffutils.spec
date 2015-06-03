@@ -1,7 +1,7 @@
 Summary:	Programs that show the differences between files or directories
 Name:		diffutils
 Version:	3.3
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/diffutils
 Group:		System Environment/Base

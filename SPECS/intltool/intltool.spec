@@ -1,7 +1,7 @@
 Summary:	Intltool-0.50.2 
 Name:		intltool
 Version:	0.50.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://freedesktop.org/wiki/Software/%{name}l/
 Source0:	http://launchpad.net/intltool/trunk/0.50.2/+download/%{name}-%{version}.tar.gz

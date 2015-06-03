@@ -1,7 +1,7 @@
 Summary:	Displays information about running processes
 Name:		psmisc
 Version:	22.20
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://psmisc.sourceforge.net/
 Group:		Applications/System

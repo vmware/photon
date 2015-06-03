@@ -1,7 +1,7 @@
 Summary:	Attr-2.4.47
 Name:		attr
 Version:	2.4.47
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	http://download.savannah.gnu.org/releases/attr/%{name}-%{version}.src.tar.gz

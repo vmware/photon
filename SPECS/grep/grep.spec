@@ -1,7 +1,7 @@
 Summary:	Programs for searching through files
 Name:		grep
 Version:	2.21
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grep
 Group:		Applications/File

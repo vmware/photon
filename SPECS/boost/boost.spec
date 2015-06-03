@@ -1,7 +1,7 @@
 Summary:	Boost 
 Name:		boost
 Version:	1.56.0
-Release:	1
+Release:	1%{?dist}
 License:	Boost Software License V1
 URL:		http://www.boost.org/
 Group:		System Environment/Security

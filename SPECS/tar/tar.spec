@@ -1,7 +1,7 @@
 Summary:	Archiving program
 Name:		tar
 Version:	1.27.1
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
