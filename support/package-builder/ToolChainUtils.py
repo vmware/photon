@@ -95,6 +95,8 @@ class ToolChainUtils(object):
         pkgUtils= PackageUtils(self.logName,self.logPath)
         for package in constants.listCoreToolChainRPMPackages:
             pkgUtils.installRPM(package, chrootID, True)
+            if package == "glibc":
+                self.adjustToolChain(chrootID)
         cmdUtils=CommandUtils()
         cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/x86_64/*")
         cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/noarch/*")
