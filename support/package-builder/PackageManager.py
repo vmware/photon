@@ -171,11 +171,14 @@ class PackageManager(object):
         if setFailFlag:
             self.logger.error("Some of the packages failed:")
             self.logger.error(Scheduler.listOfFailedPackages)
+            return False
         
         if not setFailFlag:
             if allPackagesBuilt:
                 self.logger.info("All packages built successfully")
             else:
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
+                return False
         
         self.logger.info("Terminated")
+        return True
