@@ -66,10 +66,9 @@ def main():
     
     constants.initialize(options)
     
-    listPackages1=["nano","swig","wget"]
-
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackages)
+    
  
 if __name__=="__main__":
     main()

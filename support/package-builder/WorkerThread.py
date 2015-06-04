@@ -1,7 +1,6 @@
 from PackageBuilder import PackageBuilder
 import threading
 import Scheduler
-from constants import constants
 import ThreadPool
  
 class WorkerThread(threading.Thread):
@@ -13,8 +12,7 @@ class WorkerThread(threading.Thread):
         self.mapPackageToCycle=mapPackageToCycle
         self.listAvailableCyclicPackages=listAvailableCyclicPackages
         self.logger=logger
-    
-    
+        
     def run(self):
         buildThreadFailed=False
         ThreadPool.ThreadPool.makeWorkerThreadActive(self.name)
@@ -25,7 +23,7 @@ class WorkerThread(threading.Thread):
             if pkg is None:
                 break
             self.logger.info("Thread "+self.name+" is building package:"+ pkg)
-            pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,"build-"+pkg,constants.logPath)
+            pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,"build-"+pkg)
             t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))
             t.start()
             t.join()

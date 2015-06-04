@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.9
-Release:	1
+Release:	2
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -31,6 +31,7 @@ Requires:	sqlite-autoconf
 Requires:	expat >= 2.1.0
 Requires:	libffi >= 3.0.13
 Requires:	ncurses
+Requires:	coreutils
 BuildRequires:	expat >= 2.1.0
 BuildRequires:	libffi >= 3.0.13
 BuildRequires:	sqlite-autoconf
@@ -182,5 +183,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-2
+-	Adding coreutils package to run time required package
 *	Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-1
 -	Initial build.	First version

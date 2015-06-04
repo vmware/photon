@@ -86,7 +86,7 @@ class PackageManager(object):
     def buildToolChain(self):
         try:
             tUtils=ToolChainUtils()
-            tUtils.buildToolChain()
+            tUtils.buildCoreToolChainPackages()
         except Exception as e:
             self.logger.error("Unable to build tool chain")
             self.logger.error(e)
@@ -107,32 +107,43 @@ class PackageManager(object):
         self.logger.info("Possible number of worker threads:"+str(numChroots))
         return numChroots
     
-    def buildPackages (self, listPackages):
-
+    def buildToolChainPackages(self):
         if not self.buildToolChain():
             return False
-
-        returnVal=self.calculateParams(listPackages)
-        if not returnVal:
-            self.logger.error("Unable to set paramaters. Terminating the package manager.")
+        return self.buildGivenPackages(constants.listToolChainPackages)
+        
+    def buildPackages(self,listPackages):
+        if not self.buildToolChainPackages():
             return False
-        
-        statusEvent=threading.Event()
-        
-        Scheduler.setLog(self.logName, self.logPath)
-        Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
-        Scheduler.setEvent(statusEvent)
-        
-        numWorkerThreads=self.calculatePossibleNumWorkerThreads()
-        if numWorkerThreads == 0:
-            return False
-         
+        return self.buildGivenPackages(listPackages)
+    
+    def initializeThreadPool(self,statusEvent):
         ThreadPool.clear()
         ThreadPool.mapPackageToCycle=self.mapPackageToCycle
         ThreadPool.listAvailableCyclicPackages=self.listAvailableCyclicPackages
         ThreadPool.logger=self.logger
         ThreadPool.statusEvent=statusEvent
         
+    def initializeScheduler(self,statusEvent):
+        Scheduler.setLog(self.logName, self.logPath)
+        Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
+        Scheduler.setEvent(statusEvent)
+    
+    def buildGivenPackages (self, listPackages):
+        returnVal=self.calculateParams(listPackages)
+        if not returnVal:
+            self.logger.error("Unable to set paramaters. Terminating the package manager.")
+            return False
+        
+        statusEvent=threading.Event()
+        numWorkerThreads=self.calculatePossibleNumWorkerThreads()
+        if numWorkerThreads > 8:
+            numWorkerThreads = 8
+        if numWorkerThreads == 0:
+            return False
+         
+        self.initializeScheduler(statusEvent)
+        self.initializeThreadPool(statusEvent)
         
         i=0
         while i < numWorkerThreads:
@@ -142,8 +153,12 @@ class PackageManager(object):
             i = i + 1
         
         statusEvent.wait()
-        
         Scheduler.stopScheduling=True
+        self.logger.info("Waiting for all remaining worker threads")
+        listWorkerObjs=ThreadPool.getAllWorkerObjects()
+        for w in listWorkerObjs:
+            w.join()
+            
         setFailFlag=False
         allPackagesBuilt=False
         
@@ -162,10 +177,5 @@ class PackageManager(object):
                 self.logger.info("All packages built successfully")
             else:
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
-        
-        self.logger.info("Waiting for all remaining worker threads")
-        listWorkerObjs=ThreadPool.getAllWorkerObjects()
-        for w in listWorkerObjs:
-            w.join()
         
         self.logger.info("Terminated")

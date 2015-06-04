@@ -21,7 +21,7 @@ class CommandUtils(object):
         if logfilePath is None:
             logfilePath=os.devnull
         logfile=open(logfilePath,"w")
-        process = subprocess.Popen("%s" %cmd,shell=True,stdout=logfile)
+        process = subprocess.Popen("%s" %cmd,shell=True,stdout=logfile,stderr=logfile)
         retval = process.wait()
         logfile.close()
         if retval==0:

@@ -20,7 +20,7 @@ class PackageBuilder(object):
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
         self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
     
-    def prepareBuildRoot(self,chrootName):
+    def prepareBuildRoot(self,chrootName,isToolChainPackage=False):
         chrootID=None
         try:
             chrUtils = ChrootUtils(self.logName,self.logPath)
@@ -28,7 +28,10 @@ class PackageBuilder(object):
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
-            tUtils.installToolChain(chrootID)
+            if isToolChainPackage:
+                tUtils.installCoreToolChainPackages(chrootID)
+            else:
+                tUtils.installToolChain(chrootID)
         except Exception as e:
             if chrootID is not None:
                 chrUtils.destroyChroot(chrootID)
@@ -58,7 +61,7 @@ class PackageBuilder(object):
                 listInstalledPackages.append(packageName)
         return listInstalledPackages
     
-    def buildPackageThreadAPI(self,package,outputMap, threadName):
+    def buildPackageThreadAPI(self,package,outputMap, threadName,):
         try:
             self.buildPackage(package)
             outputMap[threadName]=True
@@ -71,8 +74,11 @@ class PackageBuilder(object):
         chrUtils = ChrootUtils(self.logName,self.logPath)
         chrootName="build-"+package
         chrootID=None
+        isToolChainPackage=False
+        if package in constants.listToolChainPackages:
+            isToolChainPackage=True
         try:
-            chrootID = self.prepareBuildRoot(chrootName)
+            chrootID = self.prepareBuildRoot(chrootName,isToolChainPackage)
             destLogPath=constants.logPath+"/build-"+package
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()
@@ -117,6 +123,8 @@ class PackageBuilder(object):
         if self.mapPackageToCycles.has_key(package):
             noDeps = True
         if package in self.listNodepsPackages:
+            noDeps=True
+        if package in constants.noDepsPackageList:
             noDeps=True
         pkgUtils.installRPM(package,chrootID,noDeps,destLogPath)
         listInstalledPackages.append(package)
