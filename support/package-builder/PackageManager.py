@@ -128,6 +128,7 @@ class PackageManager(object):
         Scheduler.setLog(self.logName, self.logPath)
         Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
         Scheduler.setEvent(statusEvent)
+        Scheduler.stopScheduling=False
     
     def buildGivenPackages (self, listPackages):
         returnVal=self.calculateParams(listPackages)

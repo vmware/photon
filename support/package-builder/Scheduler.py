@@ -33,6 +33,7 @@ class Scheduler(object):
                 Scheduler.listOfPackagesToBuild.append(x)
         Scheduler.listOfPackagesCurrentlyBuilding=[]
         Scheduler.listOfPackagesNextToBuild=[]
+        Scheduler.listOfFailedPackages=[]
         
     @staticmethod
     def getRequiredPackages(package):
