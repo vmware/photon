@@ -1,7 +1,7 @@
 Summary:	Gperf-3.0.4
 Name:		gperf
 Version:	3.0.4
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://freedesktop.org/wiki/Software/%{name}l/
 Source0:	http://ftp.gnu.org/gnu/gperf/%{name}-%{version}.tar.gz

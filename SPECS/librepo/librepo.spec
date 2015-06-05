@@ -4,7 +4,7 @@
 Summary:       	Repodata downloading library
 Name:          	librepo
 Version:       	1.17
-Release:       	1
+Release:       	1%{?dist}
 License:       	LGPLv2+
 URL:           	https://github.com/Tojaj/librepo/
 Group:         	System Environment/Libraries

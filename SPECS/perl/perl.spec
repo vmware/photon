@@ -6,7 +6,7 @@
 Summary:	Practical Extraction and Report Language
 Name:		perl
 Version:	5.18.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv1+
 URL:		http://www.perl.org/
 Group:		Development/Languages

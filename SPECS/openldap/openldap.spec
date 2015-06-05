@@ -2,7 +2,7 @@
 Summary:	OpenLdap-2.4.40
 Name:		openldap
 Version:	2.4.40
-Release:	1
+Release:	1%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security

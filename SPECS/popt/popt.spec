@@ -1,7 +1,7 @@
 Summary:	Programs to parse command-line options
 Name:		popt
 Version:	1.16
-Release:	1
+Release:	1%{?dist}
 License:	MIT
 URL:		http://rpm5.org/files/popt
 Group:		Applications/System

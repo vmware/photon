@@ -1,7 +1,7 @@
 Summary:	A network utility to retrieve files from the Web
 Name:		wget
 Version:	1.15
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/wget/wget.html
 Group:		System Environment/NetworkingPrograms

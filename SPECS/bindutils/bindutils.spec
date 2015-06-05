@@ -1,7 +1,7 @@
 Summary:	Domain Name System software
 Name:		bindutils
 Version:	9.10.1
-Release:	P1
+Release:	P1%{?dist}
 License:	ISC
 URL:		http://www.isc.org/downloads/bind/
 Source0:	ftp://ftp.isc.org/isc/bind9/9.10.1-P1/bind-%{version}-%{release}.tar.gz

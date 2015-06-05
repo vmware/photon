@@ -1,7 +1,7 @@
 Summary:	Libcap-2.24
 Name:		libcap
 Version:	2.24
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz

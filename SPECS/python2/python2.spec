@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.9
-Release:	1
+Release:	1%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming

@@ -1,7 +1,7 @@
 Summary:	PostgreSQL database engine
 Name:		postgresql
 Version:	9.4.1
-Release:	1
+Release:	1%{?dist}
 License:	PostgreSQL
 URL:		www.postgresql.org
 Group:		Applications/Databases

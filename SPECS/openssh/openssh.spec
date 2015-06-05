@@ -1,7 +1,7 @@
 Summary:	'Free version of the SSH connectivity tools
 Name:		openssh
 Version:	6.6p1
-Release:	2
+Release:	2%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security

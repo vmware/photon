@@ -1,7 +1,7 @@
 Summary:	The package automatically configure source code
 Name:		autoconf
 Version:	2.69
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/autoconf
 Group:		System Environment/Base

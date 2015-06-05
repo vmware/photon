@@ -1,7 +1,7 @@
 Summary:	GRand Unified Bootloader
 Name:		grub
 Version:	2.00
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grub
 Group:		Applications/System

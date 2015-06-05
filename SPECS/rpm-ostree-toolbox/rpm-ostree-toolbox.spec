@@ -1,7 +1,7 @@
 Summary: 	Extra tools for rpm-ostree
 Name: 		rpm-ostree-toolbox
 Version: 	2015.3
-Release: 	1.0
+Release: 	1.0%{?dist}
 #VCS: https://github.com/cgwalters/rpm-ostree-toolbox
 # This tarball is generated via "make -C packaging -f Makefile.dist-packaging dist-snapshot"
 # which is really just a wrapper for "git archive".

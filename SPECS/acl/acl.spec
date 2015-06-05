@@ -1,7 +1,7 @@
 Summary:	Access control list utilities
 Name:		acl
 Version:	2.2.52
-Release:	1
+Release:	1%{?dist}
 Source0:	http://download.savannah.gnu.org/releases-noredirect/acl/acl-%{version}.src.tar.gz
 License:	GPLv2+
 Group:		System Environment/Base

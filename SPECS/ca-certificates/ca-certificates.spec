@@ -1,7 +1,7 @@
 Summary:	Certificate Authority certificates 
 Name:		ca-certificates
 Version:	20130524
-Release:	1
+Release:	1%{?dist}
 License:	Custom
 URL:		http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
 Group:		System Environment/Security

@@ -1,7 +1,7 @@
 Summary:	Program shows full path of (shell) commands
 Name:		which
 Version:	2.20
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://savannah.gnu.org/projects/which
 Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz

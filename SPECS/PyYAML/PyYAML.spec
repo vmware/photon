@@ -1,6 +1,6 @@
 Name:           PyYAML
 Version:        3.11
-Release:        1
+Release:        1%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT

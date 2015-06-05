@@ -1,7 +1,7 @@
 Summary:	Programs for generating Makefiles
 Name:		automake
 Version:	1.14.1
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/automake/
 Group:		System Environment/Base

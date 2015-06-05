@@ -1,7 +1,7 @@
 Summary:	My summary.
 Name:		libsigc++
 Version:	2.4.0
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.4/libsigc++-2.4.0.tar.xz
 Group:		Applications/System

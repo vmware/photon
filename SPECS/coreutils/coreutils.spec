@@ -1,7 +1,7 @@
 Summary:	Basic system utilities
 Name:		coreutils
 Version:	8.22
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base

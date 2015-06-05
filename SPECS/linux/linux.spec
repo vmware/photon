@@ -1,7 +1,7 @@
 Summary:	Kernel
 Name:		linux
 Version:	3.19.2
-Release:	2
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel

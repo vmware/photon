@@ -1,7 +1,7 @@
 Summary:	DBus for systemd
 Name:		dbus
 Version:	1.8.8
-Release:	2
+Release:	2%{?dist}
 License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File

@@ -1,7 +1,7 @@
 Summary:	Linux-native asynchronous I/O access library
 Name:		libaio
 Version:	0.3.110
-Release: 	1
+Release: 	1%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.

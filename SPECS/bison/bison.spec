@@ -1,7 +1,7 @@
 Summary:	Contains a parser generator
 Name:		bison
 Version:	3.0.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
 Group:		System Environment/Base
