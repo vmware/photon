@@ -2,7 +2,7 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.45
-Release:	1
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools

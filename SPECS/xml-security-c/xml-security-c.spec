@@ -1,7 +1,7 @@
 Summary:	C++ XML Signature and Encryption library.
 Name:		xml-security-c
 Version:	1.5.1
-Release:	1
+Release:	1%{?dist}
 License:	Apache Software License
 URL:		http://pkgs.fedoraproject.org/repo/pkgs/xml-security-c/xml-security-c-1.5.1.tar.gz/2c47c4ec12e8d6abe967aa5e5e99000c/xml-security-c-1.5.1.tar.gz
 Group:		Applications/System

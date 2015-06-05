@@ -1,7 +1,7 @@
 Summary:        Rocket
 Name:           rocket
 Version:        v0.5.1
-Release:        1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://rocket.readthedocs.org/en/latest/
 Group:          Applications/File

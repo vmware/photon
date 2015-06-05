@@ -1,7 +1,7 @@
 Summary:	My summary.
 Name:		dparted
 Version:	0.1
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		dparted-0.1.tar.gz
 Group:		Applications/System

@@ -1,6 +1,6 @@
 Name:           python-jsonpointer
 Version:        1.7
-Release:        1
+Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python

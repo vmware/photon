@@ -1,7 +1,7 @@
 Summary:	Docbook-xml-4.5
 Name:		docbook-xml
 Version:	4.5
-Release:	2
+Release:	2%{?dist}
 License:	MIT
 URL:		http://www.docbook.org
 Source0:	http://www.docbook.org/xml/4.5/%{name}-%{version}.zip

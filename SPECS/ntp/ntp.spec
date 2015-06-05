@@ -1,7 +1,7 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
 Version:	4.2.6p5
-Release:	1
+Release:	1%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms

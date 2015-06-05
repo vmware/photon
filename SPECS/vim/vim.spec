@@ -1,7 +1,7 @@
 Summary:	Text editor
 Name:		vim
 Version:	7.4
-Release:	1
+Release:	1%{?dist}
 License:	Charityware
 URL:		http://www.vim.org
 Group:		Applications/Editors

@@ -1,7 +1,7 @@
 Summary:	Grep for perl compatible regular expressions
 Name:		pcre
 Version:	8.36
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.36.tar.gz
 Group:		Applications/System

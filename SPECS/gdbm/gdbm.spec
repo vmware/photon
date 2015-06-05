@@ -1,7 +1,7 @@
 Summary:	The GNU Database Manager
 Name:		gdbm
 Version:	1.11
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/gdbm
 Group:		Applications/Databases

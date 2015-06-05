@@ -1,7 +1,7 @@
 Summary:	Connects C/C++/Objective C to some high-level programming languages
 Name:		swig
 Version:	3.0.5
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+ and BSD
 URL:		http://swig.sourceforge.net/
 Source0:	http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz

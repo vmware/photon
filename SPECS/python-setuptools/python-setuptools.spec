@@ -1,7 +1,7 @@
 Summary: Download, build, install, upgrade, and uninstall Python packages
 Name: python-setuptools
 Version: 12.4
-Release: 1
+Release: 1%{?dist}
 License: Python or ZPLv2.0
 Group: Development/Languages
 URL: https://pypi.python.org/pypi/setuptools

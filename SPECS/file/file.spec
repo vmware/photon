@@ -1,7 +1,7 @@
 Summary:	Contains a utility for determining file types
 Name:		file
 Version:	5.22
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://www.darwinsys.com/file
 Group:		Applications/File
