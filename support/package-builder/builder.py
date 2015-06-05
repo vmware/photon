@@ -43,10 +43,6 @@ def main():
     logger.info("Log Path :" + options.logPath)
     logger.info("Top Dir Path :" + options.topDirPath)
     
-    if not os.path.isfile(options.toolsPath+"/tools-build.tar"):
-        logger.error("Missing tools-build tar from tools path"+options.toolsPath)
-        logger.error("Please provide correct tools path and continue")
-        return False
         
     listPackages=["acl","attr","autoconf","automake","bash","bc","bindutils","binutils","bison","boost","btrfs-progs","bzip2","ca-certificates","cdrkit","check",
                   "cloud-init","cmake","coreutils","cpio","cracklib","createrepo","curl","cyrus-sasl","db","dbus","deltarpm","diffutils","docbook-xml","docbook-xsl",
