@@ -1,7 +1,7 @@
 Summary:	Stream editor
 Name:		sed
 Version:	4.2.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/sed
 Group:		Applications/Editors

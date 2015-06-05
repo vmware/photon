@@ -1,7 +1,7 @@
 Summary:	A simplified, portable interface to several low-level networking routines
 Name:		libdnet
 Version:	1.11
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://prdownloads.sourceforge.net/libdnet/libdnet-1.11.tar.gz
 Group:		Applications/System

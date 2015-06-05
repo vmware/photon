@@ -1,7 +1,7 @@
 Summary:	Docker
 Name:		docker
 Version:	1.6.0
-Release:	2
+Release:	2%{?dist}
 License:	ASL 2.0
 URL:		http://docs.docker.com
 Group:		Applications/File

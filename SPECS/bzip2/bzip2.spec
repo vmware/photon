@@ -1,7 +1,7 @@
 Summary:	Contains programs for compressing and decompressing files
 Name:		bzip2
 Version:	1.0.6
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://www.bzip.org/
 Group:		System Environment/Base

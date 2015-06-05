@@ -1,7 +1,7 @@
 Summary:	Programs for finding and viewing man pages
 Name:		man-db
 Version:	2.6.6
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.nongnu.org/man-db
 Group:		Applications/System

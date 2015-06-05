@@ -1,7 +1,7 @@
 Summary:	Git for operating system binaries
 Name:		ostree
 Version:	2015.3
-Release:	1
+Release:	1%{?dist}
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.xz
 Source1:	91-ostree.preset
 Patch0:		ostree_syntax_error_fix.patch

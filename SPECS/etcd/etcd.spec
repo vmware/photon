@@ -1,7 +1,7 @@
 Summary:	Etcd-2.0.4
 Name:		etcd
 Version:	2.0.4
-Release:	1
+Release:	1%{?dist}
 License:	Apache License
 URL:		https://github.com/coreos/etcd
 Group:		System Environment/Security

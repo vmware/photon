@@ -1,6 +1,6 @@
 Name:           python-six
 Version:        1.9.0
-Release:        1
+Release:        1%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python

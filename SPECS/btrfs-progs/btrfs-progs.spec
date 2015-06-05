@@ -1,6 +1,6 @@
 Name:		btrfs-progs
 Version:	3.18.2
-Release:	1
+Release:	1%{?dist}
 Summary:	Userspace programs for btrfs
 Group:		System Environment/Base
 License:	GPLv2+

@@ -1,7 +1,7 @@
 Summary:	Programs for monitoring processes
 Name:		procps-ng
 Version:	3.3.9
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://procps.sourceforge.net/
 Group:		Applications/System

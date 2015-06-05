@@ -3,7 +3,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System

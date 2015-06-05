@@ -1,7 +1,7 @@
 Summary:	Libsolv-0.6.6
 Name:		libsolv
 Version:	0.6.6
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://www.cmake.org/
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz

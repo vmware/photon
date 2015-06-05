@@ -1,7 +1,7 @@
 Summary:	An URL retrieval utility and library
 Name:		curl
 Version:	7.41.0
-Release:	1
+Release:	1%{?dist}
 License:	MIT
 URL:		http://curl.haxx.se
 Group:		System Environment/NetworkingLibraries

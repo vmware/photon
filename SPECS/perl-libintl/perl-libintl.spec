@@ -2,7 +2,7 @@
 Summary:	Internationalization library for Perl, compatible with gettext
 Name:		perl-libintl
 Version:	1.23
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv2+
 Group: 		Development/Libraries
 URL: 		http://search.cpan.org/dist/libintl-perl/

@@ -1,7 +1,7 @@
 Summary:	Cmake-3.0.2
 Name:		cmake
 Version:	3.2.1
-Release:	1
+Release:	1%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.2/%{name}-%{version}.tar.gz

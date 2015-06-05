@@ -1,7 +1,7 @@
 Summary:	Check-0.9.14
 Name:		check
 Version:	0.9.14
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://check.sourceforge.net/
 Source0:	http://sourceforge.net/projects/check/files/latest/download/%{name}-%{version}.tar.gz

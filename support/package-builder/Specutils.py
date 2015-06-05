@@ -92,6 +92,12 @@ class Package(object):
         
         if content.find("%{version}") != -1:
             content = content.replace('%{version}',self.version)
+
+        if content.find("%{?dist}") != -1:
+            content = content.replace('%{?dist}',self.distribution)
+
+        if content.find("%{dist}") != -1:
+            content = content.replace('%{dist}',self.distribution)
         
         return content
     

@@ -1,7 +1,7 @@
 Summary:	Basic and advanced IPV4-based networking
 Name:		iproute2
 Version:	3.12.0
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:		Applications/System

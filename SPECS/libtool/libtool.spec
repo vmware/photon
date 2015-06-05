@@ -1,7 +1,7 @@
 Summary:	Shared libraries, portable interface
 Name:		libtool
 Version:	2.4.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/libtool
 Group:		Development/Tools

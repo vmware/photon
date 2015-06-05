@@ -8,7 +8,7 @@
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
 Version:	1.0
-Release:	1
+Release:	1%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	VMware

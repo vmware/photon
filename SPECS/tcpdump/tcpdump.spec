@@ -1,7 +1,7 @@
 Summary:	Packet Analyzer
 Name:		tcpdump
 Version:	4.7.3	
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz

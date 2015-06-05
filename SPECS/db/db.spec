@@ -1,7 +1,7 @@
 Summary:	DB-5.3.28
 Name:		db
 Version:	5.3.28
-Release:	1
+Release:	1%{?dist}
 License:	Sleepycat License
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/%{name}-%{version}.tar.gz
