@@ -1,7 +1,7 @@
 Summary:	Kernel
 Name:		linux
 Version:	3.19.2
-Release:	1
+Release:	2
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
@@ -12,6 +12,7 @@ Source0:	http://www.kernel.org/pub/linux/kernel/v3.x/%{name}-%{version}.tar.xz
 BuildRequires:	bc
 BuildRequires:	kbd
 BuildRequires:	kmod
+Requires:       filesystem
 %description
 The Linux package contains the Linux kernel.
 
@@ -88,5 +89,7 @@ cp Makefile %{buildroot}/lib/modules/%{version}/build/
 /lib/modules/%{version}/build
 
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.13.3-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1
 -	Initial build. First version

@@ -1,11 +1,11 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.21
-Release:	1
+Release:	2
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.21/%{name}-%{version}.tar.xz
-Group:		GeneralUtilities
+Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	libxslt
@@ -37,5 +37,7 @@ make DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
 %{_bindir}/*
 /usr/share/*
 %changelog
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.21.1-2
+-   Updated group.
 *	Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 1.21-1
 -	Initial build. First version

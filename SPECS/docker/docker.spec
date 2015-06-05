@@ -1,7 +1,7 @@
 Summary:	Docker
 Name:		docker
 Version:	1.6.0
-Release:	2
+Release:	3
 License:	ASL 2.0
 URL:		http://docs.docker.com
 Group:		Applications/File
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker.service
 #/etc/systemd/system/multi-user.target.wants/docker.service
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.6.0-3
+-   Update according to UsrMove.
 *	Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
 -	Updated to version 1.6
 *	Mon Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
