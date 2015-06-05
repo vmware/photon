@@ -1,7 +1,7 @@
 Summary:	A utility for generating programs that recognize patterns in text
 Name:		flex
 Version:	2.5.38
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://flex.sourceforge.net
 Group:		Applications/System

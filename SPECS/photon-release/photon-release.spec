@@ -1,7 +1,7 @@
 Summary:	Photon release files
 Name:		photon-release
 Version:	1.0
-Release:	1
+Release:	1%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		http://photon.org

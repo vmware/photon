@@ -1,7 +1,7 @@
 Summary:	Programs for basic networking
 Name:		inetutils
 Version:	1.9.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/inetutils
 Group:		Applications/Communications

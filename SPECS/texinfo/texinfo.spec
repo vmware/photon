@@ -1,7 +1,7 @@
 Summary:	Reading, writing, and converting info pages
 Name:		texinfo
 Version:	5.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/texinfo/
 Group:		Applications/System

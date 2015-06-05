@@ -1,7 +1,7 @@
 Summary:	Utilities for configuring and managing bridge devices
 Name:		bridge-utils
 Version:	1.5
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge
 Group:		System Environment/Base

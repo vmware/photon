@@ -2,7 +2,7 @@
 Summary:	Provide the stuff missing in List::Util
 Name:		perl-List-MoreUtils
 Version:	0.410
-Release:	1
+Release:	1%{?dist}
 License:	GPL+ or Artistic
 URL:		http://search.cpan.org/dist/List-MoreUtils/
 Source0:	http://search.cpan.org/CPAN/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz

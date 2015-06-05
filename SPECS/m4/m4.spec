@@ -1,7 +1,7 @@
 Summary:	A macro processor
 Name:		m4
 Version:	1.4.17
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/m4
 Group:		Development/Tools

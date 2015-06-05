@@ -1,7 +1,7 @@
 Summary:	Contains programs for manipulating text files
 Name:		gawk
 Version:	4.1.0
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gawk
 Group:		Applications/File

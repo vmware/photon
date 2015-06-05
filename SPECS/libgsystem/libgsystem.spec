@@ -1,7 +1,7 @@
 Summary:	GIO-based library with Unix/Linux specific API
 Name:		libgsystem
 Version:	2015.1
-Release:	1
+Release:	1%{?dist}
 Group:		Development/Libraries
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/libgsystem/%{version}/%{name}-%{version}.tar.xz
 License:	LGPLv2+

@@ -1,7 +1,7 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
 Version:	6.3
-Release:	1
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
@@ -31,7 +31,6 @@ make SHLIB_LIBS=-lncurses
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}%{_lib}
-mv -v %{buildroot}%{_libdir}/lib{readline,history}.so.* %{buildroot}%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libreadline.so) %{buildroot}%{_libdir}/libreadline.so
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libhistory.so ) %{buildroot}%{_libdir}/libhistory.so
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
@@ -92,5 +91,7 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/libhistory.so
 %{_libdir}/libreadline.so
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 6.3-2
+-   Update according to UsrMove.
 *	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 6.3-1
 -	Initial build.	First version

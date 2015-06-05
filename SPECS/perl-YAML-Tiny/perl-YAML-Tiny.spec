@@ -2,7 +2,7 @@
 Summary:        Read/Write YAML files with as little code as possible
 Name:           perl-YAML-Tiny
 Version:        1.66
-Release:        1
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML-Tiny/

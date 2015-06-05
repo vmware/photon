@@ -1,7 +1,7 @@
 Summary:	Mercurial-3.1.2
 Name:		mercurial
 Version:	3.1.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -54,6 +54,7 @@ rm -rf %{buildroot}/*
 /bin/hg
 /etc/profile.d/mercurial-exports.sh
 %exclude /opt/%{name}-%{version}/contrib/plan9
+%exclude /opt/%{name}-%{version}/build/temp.*
 %changelog
 *	Mon Oct 13 2014 Divya Thaluru <dthaluru@vmware.com> 3.1.2-1
 -	Initial build.	First version

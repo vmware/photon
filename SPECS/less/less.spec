@@ -1,7 +1,7 @@
 Summary:	Text file viewer
 Name:		less
 Version:	458
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.greenwoodsoftware.com/less
 Group:		Applications/File

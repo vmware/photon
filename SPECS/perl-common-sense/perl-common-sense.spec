@@ -5,7 +5,7 @@
 Summary:	"Common sense" Perl defaults 
 Name:		perl-common-sense
 Version:	3.73
-Release:	1
+Release:	1%{?dist}
 License:	GPL+ or Artistic
 Group:		Development/Libraries
 URL:		http://search.cpan.org/dist/common-sense

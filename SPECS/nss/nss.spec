@@ -1,7 +1,7 @@
 Summary:	Security client
 Name:		nss
 Version:	3.15.4
-Release:	1
+Release:	1%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
 Group:		Applications/System

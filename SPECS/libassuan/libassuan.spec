@@ -1,10 +1,10 @@
 Summary:	Provides IPC between GnuPG Components
 Name:		libassuan
 Version:	2.2.0
-Release:	1
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/related_software/libassuan/index.html
-Group:		General Libraries
+Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.gnupg.org/gcrypt/%{name}/%{name}-%{version}.tar.bz2
@@ -30,5 +30,7 @@ rm -rf %{buildroot}/%{_infodir}
 %{_libdir}/*.so*
 %{_datadir}/aclocal/*
 %changelog
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.2.0-2
+-   Updated group.
 *	Tue Dec 30 2014 Divya Thaluru <dthaluru@vmware.com> 2.2.0-1
 	Initial version

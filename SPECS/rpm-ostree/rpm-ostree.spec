@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2015.3
-Release:        1
+Release:        1%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 License:        LGPLv2+
 URL:            https://github.com/cgwalters/rpm-ostree

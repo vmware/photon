@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        1
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -81,7 +81,7 @@ fi
 %files
 %license LICENSE
 %{_sysconfdir}/cloud/*
-%{_lib}/systemd/system/*
+/lib/systemd/system/*
 %{_docdir}/cloud-init/*
 %{_libdir}/cloud-init/*
 %{python_sitelib}/*
@@ -90,5 +90,7 @@ fi
 
 
 %changelog
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com>
+- Update according to UsrMove.
 * Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Initial packaging for Photon

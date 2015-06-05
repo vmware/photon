@@ -1,7 +1,7 @@
 Summary:	Program for modifying or creating files
 Name:		patch
 Version:	2.7.1
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.xz

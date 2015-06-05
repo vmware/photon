@@ -1,10 +1,10 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.4.21
-Release:	1
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
-Group:		System Environment/ Security
+Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
@@ -72,5 +72,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.4.21-2
+-   Updated group.
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.21-1
 -	Initial build.	First version

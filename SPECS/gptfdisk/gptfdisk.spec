@@ -1,7 +1,7 @@
 Summary:	gptfdisk-0.8.10
 Name:		gptfdisk
 Version:	0.8.10 
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/gptfdisk/
 Group:		System Environment/Filesystem and Disk management
