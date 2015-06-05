@@ -9,17 +9,12 @@ SSH set <code>PermitRootLogin yes</code> in /etc/ssh/sshd_config, and restart th
 
 netstat is deprecated, ss or ip (part of iproute2) should be used instead.
 
-## How do I install new packages?
+#### How do I install new packages?
 #### Why is the yum command not working in a Minimal installation of Photon?
 
-To install packages from cdrom, mount cdrom using following command
+tdnf is default package manager to install new packages.
 
-```
-mount /dev/cdrom /media/cdrom
-```
-
-Then you can use ```tdnf``` to install new pacakges
-
+Example:
 ```
 tdnf install vim
 ```
@@ -48,9 +43,9 @@ Minimal is Micro plus Docker and Cloud-init packages.
 Full contains all the packages shipped with ISO.
 
 #### What packages are included in Micro/Minimal?
-See [package_list.json](installer/package_list.json)
+See [package_list.json](../installer/package_list.json)
 
-#### Why is vi/vim is not working in a Minimal installation of Photon?
+#### Why is vi/vim not working in a Minimal installation of Photon?
 
 We have `nano` installed by default for file editing in Minimal. Use `tdnf` to install `vim`.
 
