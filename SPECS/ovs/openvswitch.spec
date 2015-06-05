@@ -32,7 +32,13 @@ traffic.
 %setup -q
 
 %build
-./configure --prefix=/usr --sysconfdir=/etc --localstatedir=%{_localstatedir} --enable-ssl
+./configure --prefix=%{_prefix} \
+            --bindir=%{_bindir} \
+            --libdir=%{_libdir} \
+            --sysconfdir=/etc \
+            --localstatedir=/var \
+            --enable-ssl
+
 make %{_smp_mflags}
 
 %install
@@ -44,7 +50,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-
 /usr/lib/libofproto.a
 /usr/lib/libofproto.la
 /usr/lib/libopenvswitch.a
@@ -85,27 +90,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/openvswitch/bugtool-plugins/system-configuration.xml
 /usr/share/openvswitch/bugtool-plugins/system-configuration/openvswitch.xml
 /usr/share/openvswitch/bugtool-plugins/system-logs/openvswitch.xml
-/usr/share/openvswitch/scripts/ovs-bugtool-bfd-show
-/usr/share/openvswitch/scripts/ovs-bugtool-bond-show
-/usr/share/openvswitch/scripts/ovs-bugtool-cfm-show
-/usr/share/openvswitch/scripts/ovs-bugtool-coverage-show
-/usr/share/openvswitch/scripts/ovs-bugtool-daemons-ver
-/usr/share/openvswitch/scripts/ovs-bugtool-lacp-show
-/usr/share/openvswitch/scripts/ovs-bugtool-list-dbs
-/usr/share/openvswitch/scripts/ovs-bugtool-memory-show
-/usr/share/openvswitch/scripts/ovs-bugtool-ovs-appctl-dpif
-/usr/share/openvswitch/scripts/ovs-bugtool-ovs-ofctl-dump-flows
-/usr/share/openvswitch/scripts/ovs-bugtool-ovs-ofctl-show
-/usr/share/openvswitch/scripts/ovs-bugtool-ovsdb-dump
-/usr/share/openvswitch/scripts/ovs-bugtool-tc-class-show
-/usr/share/openvswitch/scripts/ovs-bugtool-vsctl-show
-/usr/share/openvswitch/scripts/ovs-check-dead-ifs
-/usr/share/openvswitch/scripts/ovs-ctl
-/usr/share/openvswitch/scripts/ovs-lib
-/usr/share/openvswitch/scripts/ovs-save
-/usr/share/openvswitch/scripts/ovs-vtep
-/usr/share/openvswitch/vswitch.ovsschema
-/usr/share/openvswitch/vtep.ovsschema
 /usr/share/openvswitch/python/ovs/__init__.py
 /usr/share/openvswitch/python/ovs/daemon.py
 /usr/share/openvswitch/python/ovs/db/__init__.py
@@ -140,6 +124,27 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/openvswitch/python/ovstest/udp.py
 /usr/share/openvswitch/python/ovstest/util.py
 /usr/share/openvswitch/python/ovstest/vswitch.py
+/usr/share/openvswitch/scripts/ovs-bugtool-bfd-show
+/usr/share/openvswitch/scripts/ovs-bugtool-bond-show
+/usr/share/openvswitch/scripts/ovs-bugtool-cfm-show
+/usr/share/openvswitch/scripts/ovs-bugtool-coverage-show
+/usr/share/openvswitch/scripts/ovs-bugtool-daemons-ver
+/usr/share/openvswitch/scripts/ovs-bugtool-lacp-show
+/usr/share/openvswitch/scripts/ovs-bugtool-list-dbs
+/usr/share/openvswitch/scripts/ovs-bugtool-memory-show
+/usr/share/openvswitch/scripts/ovs-bugtool-ovs-appctl-dpif
+/usr/share/openvswitch/scripts/ovs-bugtool-ovs-ofctl-dump-flows
+/usr/share/openvswitch/scripts/ovs-bugtool-ovs-ofctl-show
+/usr/share/openvswitch/scripts/ovs-bugtool-ovsdb-dump
+/usr/share/openvswitch/scripts/ovs-bugtool-tc-class-show
+/usr/share/openvswitch/scripts/ovs-bugtool-vsctl-show
+/usr/share/openvswitch/scripts/ovs-check-dead-ifs
+/usr/share/openvswitch/scripts/ovs-ctl
+/usr/share/openvswitch/scripts/ovs-lib
+/usr/share/openvswitch/scripts/ovs-save
+/usr/share/openvswitch/scripts/ovs-vtep
+/usr/share/openvswitch/vswitch.ovsschema
+/usr/share/openvswitch/vtep.ovsschema
 
 %changelog
 *       Fri May 29 2015 Kumar Kaushik <kaushikk@vmware.com> 2.3.1-1
