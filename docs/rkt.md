@@ -1,7 +1,7 @@
-Running Rocket containers on Photon
+Running rkt containers on Photon
 ===================================
 
-Rocket is a new container runtime, created by [CoreOS](http://coreos.com) and designed for composability, security, and speed. 
+rkt is a new container runtime, created by [CoreOS](http://coreos.com) and designed for composability, security, and speed.
 
 rkt (pronounced _"rock-it"_) is a CLI for running app containers, and an implementation of the [App Container Spec](https://github.com/coreos/rkt/blob/master/Documentation/app-container.md).
 
@@ -10,7 +10,7 @@ rkt is available as an optional package in Photon, to install it:
 ```
 mount /dev/cdrom /media/cdrom
 
-tdnf install rocket
+tdnf install rkt
 ```
 
 ### Running an App Container Image (ACI)
