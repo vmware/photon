@@ -50,11 +50,8 @@ packages-cached: check $(PHOTON_TOOLCHAIN_MINIMAL)
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/noarch/* $(PHOTON_RPMS_DIR_NOARCH)/ && \
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/x86_64/* $(PHOTON_RPMS_DIR_X86_64)/
 
-package: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
-	@if [ -z $(PKG_NAME) ]; then \
-		echo "Error: PKG_NAME is undefined"; \
-        exit 1; \
-	fi
+%: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
+	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
     $(PHOTON_PACKAGE_BUILDER) -i \
