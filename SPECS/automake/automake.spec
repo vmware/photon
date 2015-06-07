@@ -1,14 +1,13 @@
 Summary:	Programs for generating Makefiles
 Name:		automake
 Version:	1.14.1
-Release:	2%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/automake/
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
-BuildRequires:	autoconf
+Distribution: Photon
+Source0:		http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
 %description
 Contains programs for generating Makefiles for use with Autoconf.
 %prep
@@ -34,7 +33,5 @@ rm -rf %{buildroot}%{_infodir}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14.1-2
--	Adding autoconf package to build time requires packages
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.14.1-1
 -	Initial build. First version

@@ -1,13 +1,14 @@
 Summary:	Reading, writing, and converting info pages
 Name:		texinfo
 Version:	5.2
-Release:	2%{?dist}
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/texinfo/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	%{name}-%{version}.tar.xz
+Requires:	perl-libintl
 %description
 The Texinfo package contains programs for reading, writing,
 and converting info pages.
@@ -45,7 +46,5 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %lang(pt.us-ascii) %{_datarootdir}/locale/pt.us-ascii/LC_MESSAGES/texinfo_document.mo
 %lang(pt_BR.us-ascii) %{_datarootdir}/locale/pt_BR.us-ascii/LC_MESSAGES/texinfo_document.mo
 %changelog
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 5.2-2
--	Removing perl-libintl package from run-time required packages
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2-1
 -	Upgrade version

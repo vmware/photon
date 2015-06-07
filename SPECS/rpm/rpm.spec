@@ -13,6 +13,7 @@ Source2:	rpm-system-configuring-scripts-2.0.tar.gz
 #Requires: nspr
 Requires: 	nss
 Requires: 	popt
+Requires: 	perl-Module-ScanDeps
 Requires: 	lua
 Requires:	elfutils-libelf
 BuildRequires:	python2
@@ -107,7 +108,5 @@ rm -rf %{buildroot}
 %{_libdir}/librpm.so
 
 %changelog
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-2
--	Removing perl-module-scandeps package from run time required packages
 *	Tue Jan 13 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-1
 -	Initial build. First version

@@ -73,8 +73,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/man1/watch.1.gz
 %{_mandir}/man1/ps.1.gz
 %{_mandir}/man5/sysctl.conf.5.gz
-%{_libdir}/libprocps.so.3
-%{_libdir}/libprocps.so.3.0.0
+%{_lib}/libprocps.so.3
+%{_lib}/libprocps.so.3.0.0
 /sbin/sysctl
 %files devel
 %{_includedir}/proc/sig.h
