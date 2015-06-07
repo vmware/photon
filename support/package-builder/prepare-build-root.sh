@@ -55,7 +55,8 @@ cp ./config* ${BUILDROOT}${PARENT}/
 RPMPKG="$(find $RPM_PATH -name 'filesystem*.rpm' -print)"
 if [ -z ${RPMPKG} ] ; then
 run_command "	Extracting filesystem spec" "cp ${SPEC_PATH}/filesystem/filesystem.spec ${BUILDROOT}/${PARENT}/SPECS" "$LOG_PATH/filesystem.log"
-run_command "	Building filesystem rpm " "rpmbuild -ba --nocheck --root ${BUILDROOT} --define \\\"_topdir ${PARENT}\\\" ${PARENT}/SPECS/filesystem.spec" "$LOG_PATH/filesystem.log"
+run_command "Building filesystem rpm" "rpmbuild -ba --nocheck --define \"_topdir ${BUILDROOT}/${PARENT}\" --define \"_dbpath ${BUILDROOT}/var/lib/rpm\" ${SPEC_PATH}/filesystem/filesystem.spec" "$LOG_PATH/filesystem.log"
+#run_command "	Building filesystem rpm " "rpmbuild -ba --nocheck --root ${BUILDROOT} --define '_topdir ${PARENT}' --define '_dbpath /var/lib/rpm' ${BUILDROOT}${PARENT}/SPECS/filesystem.spec" "$LOG_PATH/filesystem.log"
 run_command "	Extracting filesystem rpm" "cp ${BUILDROOT}/${PARENT}/RPMS/x86_64/filesystem*.rpm ${RPM_PATH}/x86_64/" "$LOG_PATH/filesystem.log"
 fi
 RPMPKGFILE="$(find ${RPM_PATH} -name 'filesystem*.rpm' -printf %f)"

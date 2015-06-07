@@ -5,6 +5,7 @@ from ToolChainUtils import ToolChainUtils
 from CommandUtils import CommandUtils
 import os.path
 from constants import constants
+import shutil
 
 class PackageBuilder(object):
     
@@ -19,7 +20,9 @@ class PackageBuilder(object):
         self.mapPackageToCycles = mapPackageToCycles
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
         self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
-    
+        self.runInChrootCommand="./run-in-chroot.sh"
+        self.adjustGCCSpecScript="adjust-gcc-specs.sh"
+        
     def prepareBuildRoot(self,chrootName,isToolChainPackage=False):
         chrootID=None
         try:
@@ -94,7 +97,7 @@ class PackageBuilder(object):
                 for pkg in listDependentPackages:
                     self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
                 self.logger.info("Finished installing the build time dependent packages......")
-
+            self.adjustGCCSpecs(package, chrootID, destLogPath)
             pkgUtils = PackageUtils(self.logName,self.logPath)
             pkgUtils.buildRPMSForGivenPackage(package,chrootID,destLogPath)
             self.logger.info("Successfully built the package:"+package)
@@ -139,3 +142,19 @@ class PackageBuilder(object):
                 if pkg in listInstalledPackages:
                     continue
                 self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
+
+    def adjustGCCSpecs(self, package, chrootID, logPath):
+        opt = ""
+        # linux package does not require sec gcc options
+        if package == "linux" or package == "glibc":
+            opt = " clean"
+
+        shutil.copy2(self.adjustGCCSpecScript,  chrootID+"/tmp/"+self.adjustGCCSpecScript)
+        cmdUtils=CommandUtils()
+        cmd = "/tmp/"+self.adjustGCCSpecScript+opt
+        logFile = logPath+"adjustGCCSpecScript.log"
+        chrootCmd=self.runInChrootCommand+" "+chrootID
+        returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
+        if not returnVal:
+            self.logger.error("Failed while adjusting gcc specs")
+            raise "Failed while adjusting gcc specs"

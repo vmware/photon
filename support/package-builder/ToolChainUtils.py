@@ -24,28 +24,49 @@ class ToolChainUtils(object):
     #Tool chain should be built before calling this method
     def installToolChain(self,chrootID):
         self.logger.info("Installing toolchain.....")
-        self.installCoreToolChainPackages(chrootID)
+        self.logger.info("Preparing build environment")
+        previousVersionRPMSPath="/workspace1/testTP1RPMS/RPMS"
+        cmdUtils = CommandUtils()
+        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.logPath
+        logFile=constants.logPath+"/prepareBuildRoot.log"
+        returnVal=cmdUtils.runCommandInShell(prepareChrootCmd,logFile)
+        if not returnVal:
+            self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
+            raise Exception("Prepare build root script failed")
+        
+        for package in constants.listToolChainRPMPkgsToInstall:
+            pkgUtils=PackageUtils(self.logName,self.logPath)
+            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            if rpmFile is None:
+                rpmFile=self.findRPMFileInGivenLocation(package, previousVersionRPMSPath)
+                if rpmFile is None:
+                    self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
+                    raise "Input Error"
+            self.logger.debug("Installing rpm:"+rpmFile)
+            cmd="rpm -i --nodeps --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
+            process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
+            retval = process.wait()
+            if retval != 0:
+                self.logger.error("Installing tool chain package "+package+" failed")
+                raise "RPM installation failed"
+        
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SOURCES")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
+        self.logger.info("Successfully prepared chroot:"+chrootID)
         self.logger.info("Installed tool chain successfully on chroot:"+chrootID)
     
     def installCoreToolChainPackages(self,chrootID):
         self.logger.info("Installing toolchain.....")
         self.prepareBuildEnvironmentChroot(chrootID)
-        cmdUtils=CommandUtils()
-        cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/x86_64/*")
-        cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/noarch/*")
+        #cmdUtils=CommandUtils()
+        #cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/x86_64/*")
+        #cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/noarch/*")
         self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)    
     
-    listToolChainRPMPkgs=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
-            "binutils","binutils-devel",  "gmp","gmp-devel", "mpfr", "mpfr-devel", "mpc",
-            "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
-            "pkg-config", "ncurses", "bash", "bzip2", "sed","ncurses-devel","procps-ng","coreutils", "m4","grep",
-            "readline", "diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch",
-            "util-linux", "tar", "xz","libtool", "flex",  "bison",
-            "readline-devel", "lua","lua-devel","popt","popt-devel","nspr","sqlite-autoconf","nss","nss-devel",
-            "bzip2-devel","elfutils-libelf","elfutils","elfutils-libelf-devel","elfutils-devel",
-            "expat","libffi","libpipeline", "gdbm","perl","texinfo","autoconf","automake",
-            "openssl","openssl-devel","python2","python2-libs","python2-devel","rpm",
-            "groff", "man-db", "man-pages","cpio"]
+    
     
     def findRPMFileInGivenLocation(self,package,rpmdirPath):
         cmdUtils = CommandUtils()
@@ -103,7 +124,7 @@ class ToolChainUtils(object):
             self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
             raise Exception("Prepare build root script failed")
         
-        for package in ToolChainUtils.listToolChainRPMPkgs:
+        for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
