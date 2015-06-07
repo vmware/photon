@@ -152,7 +152,7 @@ class PackageBuilder(object):
         shutil.copy2(self.adjustGCCSpecScript,  chrootID+"/tmp/"+self.adjustGCCSpecScript)
         cmdUtils=CommandUtils()
         cmd = "/tmp/"+self.adjustGCCSpecScript+opt
-        logFile = logPath+"adjustGCCSpecScript.log"
+        logFile = logPath+"/adjustGCCSpecScript.log"
         chrootCmd=self.runInChrootCommand+" "+chrootID
         returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
         if not returnVal:
