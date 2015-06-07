@@ -4,6 +4,7 @@ from Logger import Logger
 from PackageUtils import PackageUtils
 from constants import constants
 import subprocess
+import os.path
 
 class ToolChainUtils(object):
     __built_successfull=False
@@ -93,16 +94,23 @@ class ToolChainUtils(object):
         try:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             for package in constants.listCoreToolChainRPMPackages:
+                rpmPkg=pkgUtils.findRPMFileForGivenPackage(package)
+                if rpmPkg is not None:
+                    continue
                 chrUtils = ChrootUtils(self.logName,self.logPath)
                 chrootName="build-core-toolchain"
+                destLogPath=constants.logPath+"/build-"+package
+                if not os.path.isdir(destLogPath):
+                    cmdUtils = CommandUtils()
+                    cmdUtils.runCommandInShell("mkdir -p "+destLogPath)
                 returnVal,chrootID = chrUtils.createChroot(chrootName)
                 if not returnVal:
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
                 self.prepareBuildEnvironmentChroot(chrootID)
-                rpmPkg=pkgUtils.findRPMFileForGivenPackage(package)
-                if rpmPkg is None:
-                    pkgUtils.buildRPMSForGivenPackage(package, chrootID)
+                #rpmPkg=pkgUtils.findRPMFileForGivenPackage(package)
+                #if rpmPkg is None:
+                pkgUtils.buildRPMSForGivenPackage(package, chrootID,destLogPath)
                 chrUtils.destroyChroot(chrootID)
                 chrootID=None
             self.logger.info("Successfully built toolchain")
@@ -133,13 +141,13 @@ class ToolChainUtils(object):
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             self.logger.debug("Installing rpm:"+rpmFile)
-            cmd="rpm -i --nodeps --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
+            cmd="rpm -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
             process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
             retval = process.wait()
             if retval != 0:
                 self.logger.error("Installing tool chain package "+package+" failed")
                 raise "RPM installation failed"
-        
+            
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
