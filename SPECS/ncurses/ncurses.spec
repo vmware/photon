@@ -75,8 +75,8 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %{_mandir}/man5/*
 %{_mandir}/man3/*
 %{_datadir}/terminfo/*
-%{_lib}/libncursesw.so.5
-%{_lib}/libncursesw.so.5.9
+%{_libdir}/libncursesw.so.5
+%{_libdir}/libncursesw.so.5.9
 %{_libdir}/libncurses.so
 %{_libdir}/libform.so
 %{_libdir}/libcursesw.so

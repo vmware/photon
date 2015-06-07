@@ -124,7 +124,7 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %{_sysconfdir}/*
 %ifarch x86_64
 %{_lib64}/*
-/lib64/*
+%{_lib64dir}/*
 %else
 %{_lib}/*
 %endif
