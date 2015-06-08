@@ -36,7 +36,6 @@ packages: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
     $(PHOTON_PACKAGE_BUILDER) -a \
-                              -b $(PHOTON_CHROOT_PATH) \
                               -s $(PHOTON_SPECS_DIR) \
                               -r $(PHOTON_RPMS_DIR) \
                               -o $(PHOTON_SRCS_DIR) \
