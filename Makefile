@@ -85,6 +85,8 @@ publish-rpms-cached:
 
 toolchain-minimal : $(PHOTON_TOOLCHAIN_MINIMAL)
 
+$(PHOTON_TOOLCHAIN_MIN_LIST): ;
+
 $(PHOTON_TOOLCHAIN_MINIMAL) : $(PHOTON_TOOLCHAIN) $(PHOTON_TOOLCHAIN_MIN_LIST)
 	echo "Building minimal toolchain..."
 	@$(RMDIR) $(PHOTON_TOOLS_DIR) && \
