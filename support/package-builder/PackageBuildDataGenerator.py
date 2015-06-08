@@ -121,7 +121,6 @@ class PackageBuildDataGenerator(object):
         self.__sortedPackageList=sortedList
     
     def __constructBuildAndRunTimeDependencyGraph(self,package):
-        
         basePackage=constants.specData.getSpecName(package)
 
         addBuildTimeGraph=True
@@ -153,9 +152,9 @@ class PackageBuildDataGenerator(object):
             self.__constructBuildAndRunTimeDependencyGraph(pkg)
     
     def __readDependencyGraphAndCyclesForGivenPackages(self,listPackages):
+        self.logger.info("Reading dependency graph to check for cycles")
         for pkg in listPackages:
             self.__constructBuildAndRunTimeDependencyGraph(pkg)
-        
         packagesToBUild=self.__buildDependencyGraph.keys()
         for pkg in packagesToBUild:
             sortedPackageList,circularDependentPackages = self.topologicalSortPackages(self.__buildDependencyGraph,pkg)
@@ -246,6 +245,7 @@ class PackageBuildDataGenerator(object):
         
         
     def __findCircularDependencies(self,cyclicDependencyGraph):
+        self.logger.info("Looking for circular dependencies")
         if len(cyclicDependencyGraph) == 0:
             return
         #step1: construct dependency map from dependency graph

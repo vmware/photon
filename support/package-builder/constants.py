@@ -4,12 +4,9 @@ class constants(object):
     specPath=""
     sourcePath=""
     rpmPath=""
-    toolsPath=""
     logPath=""
-    incrementalBuild=False
     topDirPath=""
     specData=None
-    testPath="test"
     buildRootPath="/mnt"
     prevPublishRPMRepo=""
     noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison"]
@@ -53,10 +50,9 @@ class constants(object):
         constants.specPath = options.specPath
         constants.sourcePath = options.sourcePath
         constants.rpmPath = options.rpmPath
-        constants.toolsPath = options.toolsPath
-        constants.incrementalBuild = options.incrementalBuild
         constants.topDirPath = options.topDirPath
         constants.logPath = options.logPath
+        constants.prevPublishRPMRepo=options.publishRPMSPath
         constants.specData = SerializableSpecObjectsUtils(constants.logPath)
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
         

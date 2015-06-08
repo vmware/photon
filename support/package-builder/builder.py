@@ -8,6 +8,7 @@ from constants import constants
 from PackageManager import PackageManager 
 import json
 
+
 def main():
     usage = "Usage: %prog [options] <package name>"
     parser = OptionParser(usage)
@@ -25,6 +26,7 @@ def main():
     logger=Logger.getLogger(options.logPath+"/Main")
     
     errorFlag=False
+    package = None
     if not os.path.isdir(options.sourcePath):
         logger.error("Given Sources Path is not a directory:"+options.sourcePath)
         errorFlag = True
@@ -49,7 +51,7 @@ def main():
         logger.error("Please provide package name")
         errorFlag = True
     
-    package=args[0]
+        package=args[0]
         
     if errorFlag:
         logger.error("Found some errors. Please fix input options and re-run it.")
@@ -112,12 +114,18 @@ def buildAPackage(package):
     pkgManager.buildPackages(listPackages)
 
 def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger):
-    jsonObj = json.load(inputJSONFile)
+    jsonData=open(inputJSONFile)
+    jsonObj = json.load(jsonData)
+    jsonData.close()
     listPackages=jsonObj[buildOption]
+    listPackagesToBuild=[]
+    for pkg in listPackages:
+        p =  pkg.encode('utf-8')
+        listPackagesToBuild.append(str(p))
     logger.info("List of packages to build:")
-    logger.info(listPackages)
+    logger.info(listPackagesToBuild)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackages)
+    pkgManager.buildPackages(listPackagesToBuild)
     
  
 if __name__=="__main__":
