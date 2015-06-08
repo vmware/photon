@@ -11,6 +11,7 @@ class constants(object):
     specData=None
     testPath="test"
     buildRootPath="/mnt"
+    prevPublishRPMRepo=""
     noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison"]
     listToolChainPackages=["linux-api-headers", "glibc","zlib", "file",
         "binutils","gmp","mpfr", "mpc","gcc", "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",

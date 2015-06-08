@@ -12,18 +12,15 @@ def main():
     usage = "Usage: %prog [options] <package name>"
     parser = OptionParser(usage)
     parser.add_option("-s",  "--spec-path",  dest="specPath",  default="/workspace1/myrepos/photon/SPECS")
-    parser.add_option("-o",  "--source-path",  dest="sourcePath",  default="/workspace1/mysources")
+    parser.add_option("-x",  "--source-path",  dest="sourcePath",  default="/workspace1/mysources")
     parser.add_option("-r",  "--rpm-path",  dest="rpmPath",  default="/workspace1/mystage/RPMS")
     parser.add_option("-t",  "--install-tool-chain",  dest="installToolChain",  default=False,  action ="store_true")
     parser.add_option("-i",  "--install-package", dest="installPackage",  default=False,  action ="store_true")
-    parser.add_option("-c",  "--clean-build", dest="cleanBuild",  default=False,  action ="store_true")
-    parser.add_option("-p",  "--tools-path", dest="toolsPath",  default="/workspace1/mystage")
+    parser.add_option("-p",  "--publish-RPMS-path", dest="publishRPMSPath",  default="/workspace1/testTP1RPMS/RPMS")
     parser.add_option("-l",  "--log-path", dest="logPath",  default="/workspace1/LOGS")
-    parser.add_option("-a",  "--build-all", dest="buildAll",  default=False,  action ="store_true")
-    parser.add_option("-f",  "--force", dest="forceBuild",  default=False,  action ="store_true")
-    parser.add_option("-x",  "--incremental-build", dest="incrementalBuild",  default=True,  action ="store_true")
+    parser.add_option("-o",  "--build-option", dest="buildOption",  default=False,  action ="store_true")
     parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
-    
+    parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="input.json")
     
     (options,  args) = parser.parse_args()
     

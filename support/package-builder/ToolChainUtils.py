@@ -7,7 +7,6 @@ import subprocess
 import os.path
 
 class ToolChainUtils(object):
-    __built_successfull=False
     
     def __init__(self,logName=None,logPath=None):
         if logName is None:
@@ -22,11 +21,9 @@ class ToolChainUtils(object):
         self.localegenConfig = "./locale-gen.conf"
         self.prepareBuildRootCmd="./prepare-build-root.sh"
         
-    #Tool chain should be built before calling this method
-    def installToolChain(self,chrootID):
-        self.logger.info("Installing toolchain.....")
+
+    def prepareBuildRoot(self,chrootID):
         self.logger.info("Preparing build environment")
-        previousVersionRPMSPath="/workspace1/testTP1RPMS/RPMS"
         cmdUtils = CommandUtils()
         prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.logPath
         logFile=constants.logPath+"/prepareBuildRoot.log"
@@ -34,12 +31,25 @@ class ToolChainUtils(object):
         if not returnVal:
             self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
             raise Exception("Prepare build root script failed")
+
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SOURCES")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
+        self.logger.info("Successfully prepared chroot:"+chrootID)
+
+    #Tool chain should be built before calling this method
+    def installToolChain(self,chrootID):
+        self.logger.info("Installing toolchain.....")
+        self.prepareBuildRoot(chrootID)
+        cmdUtils = CommandUtils()
         
         for package in constants.listToolChainRPMPkgsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
-                rpmFile=self.findRPMFileInGivenLocation(package, previousVersionRPMSPath)
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
@@ -51,20 +61,27 @@ class ToolChainUtils(object):
                 self.logger.error("Installing tool chain package "+package+" failed")
                 raise "RPM installation failed"
         
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SOURCES")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
-        self.logger.info("Successfully prepared chroot:"+chrootID)
         self.logger.info("Installed tool chain successfully on chroot:"+chrootID)
     
     def installCoreToolChainPackages(self,chrootID):
         self.logger.info("Installing toolchain.....")
-        self.prepareBuildEnvironmentChroot(chrootID)
-        #cmdUtils=CommandUtils()
-        #cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/x86_64/*")
-        #cmdUtils.runCommandInShell("rm "+ chrootID+"/"+constants.topDirPath+"/RPMS/noarch/*")
+        cmdUtils = CommandUtils()
+        self.prepareBuildRoot(chrootID)
+        
+        for package in constants.listToolChainRPMPkgsToBuild:
+            pkgUtils=PackageUtils(self.logName,self.logPath)
+            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            if rpmFile is None:
+                self.logger.error("Unable to find rpm "+ package)
+                raise "Input Error"
+            self.logger.debug("Installing rpm:"+rpmFile)
+            cmd="rpm -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
+            process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
+            retval = process.wait()
+            if retval != 0:
+                self.logger.error("Installing tool chain package "+package+" failed")
+                raise "RPM installation failed"
+            
         self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)    
     
     
@@ -107,9 +124,7 @@ class ToolChainUtils(object):
                 if not returnVal:
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
-                self.prepareBuildEnvironmentChroot(chrootID)
-                #rpmPkg=pkgUtils.findRPMFileForGivenPackage(package)
-                #if rpmPkg is None:
+                self.installToolChainRPMS(chrootID)
                 pkgUtils.buildRPMSForGivenPackage(package, chrootID,destLogPath)
                 chrUtils.destroyChroot(chrootID)
                 chrootID=None
@@ -121,22 +136,15 @@ class ToolChainUtils(object):
             if chrootID is not None:
                 chrUtils.destroyChroot(chrootID)
                 
-    def prepareBuildEnvironmentChroot(self,chrootID):
-        self.logger.info("Preparing build environment")
-        previousVersionRPMSPath="/workspace1/testTP1RPMS/RPMS"
+    def installToolChainRPMS(self,chrootID):
         cmdUtils = CommandUtils()
-        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.logPath
-        logFile=constants.logPath+"/prepareBuildRoot.log"
-        returnVal=cmdUtils.runCommandInShell(prepareChrootCmd,logFile)
-        if not returnVal:
-            self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
-            raise Exception("Prepare build root script failed")
-        
+        self.prepareBuildRoot(chrootID)
+        self.logger.info("Installing Tool Chain RPMS.......")
         for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
-                rpmFile=self.findRPMFileInGivenLocation(package, previousVersionRPMSPath)
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
@@ -148,10 +156,5 @@ class ToolChainUtils(object):
                 self.logger.error("Installing tool chain package "+package+" failed")
                 raise "RPM installation failed"
             
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SOURCES")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
-        self.logger.info("Successfully prepared chroot:"+chrootID)    
+        self.logger.info("Successfully installed all Tool Chain RPMS in Chroot:"+chrootID)    
     
