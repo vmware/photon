@@ -1,7 +1,7 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
 Version:	6.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
@@ -10,6 +10,7 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
 Patch:		http://www.linuxfromscratch.org/patches/lfs/development/readline-6.3-upstream_fixes-3.patch
 BuildRequires:	ncurses-devel
+Requires:	ncurses
 %description
 The Readline package is a set of libraries that offers command-line
 editing and history capabilities.
@@ -40,10 +41,10 @@ rm -rf %{buildroot}%{_infodir}
 %postun	-p /sbin/ldconfig
 %files
 %defattr(-,root,root)
-%{_lib}/libreadline.so.6
-%{_lib}/libhistory.so.6
-%{_lib}/libhistory.so.6.3
-%{_lib}/libreadline.so.6.3
+%{_libdir}/libreadline.so.6
+%{_libdir}/libhistory.so.6
+%{_libdir}/libhistory.so.6.3
+%{_libdir}/libreadline.so.6.3
 %{_datadir}/%{name}/hist_purgecmd.c
 %{_datadir}/%{name}/rltest.c
 %{_datadir}/%{name}/rlversion.c
@@ -91,7 +92,9 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/libhistory.so
 %{_libdir}/libreadline.so
 %changelog
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 6.3-2
--   Update according to UsrMove.
+*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 6.3-3
+-	Adding ncurses to run time require package
+*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 6.3-2
+-   	Update according to UsrMove.
 *	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 6.3-1
 -	Initial build.	First version
