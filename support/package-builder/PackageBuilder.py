@@ -145,9 +145,11 @@ class PackageBuilder(object):
 
     def adjustGCCSpecs(self, package, chrootID, logPath):
         opt = ""
-        # linux package does not require sec gcc options
+        # TODO: reading of hardening flag from spec files
         if package == "linux" or package == "glibc":
             opt = " clean"
+        elif package.startswith("xf86-") or package.startswith("xorg-server") :
+            opt = " nonow"
 
         shutil.copy2(self.adjustGCCSpecScript,  chrootID+"/tmp/"+self.adjustGCCSpecScript)
         cmdUtils=CommandUtils()
