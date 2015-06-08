@@ -4,6 +4,11 @@
 
 SRCROOT := .
 MAKEROOT=$(SRCROOT)/support/make
+
+# do not build these targets as '%'
+$(MAKEROOT)/makedefs.mk: ;
+Makefile: ;
+
 include $(MAKEROOT)/makedefs.mk
 
 ifdef PHOTON_CACHE_PATH
@@ -25,7 +30,8 @@ PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
 .PHONY : all iso clean toolchain toolchain-minimal photon-build-machine photon-vagrant-build photon-vagrant-local \
-check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin
+check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin \
+clean-install clean-chroot
 
 all: iso
 
@@ -129,7 +135,6 @@ $(PHOTON_STAGE):
 	@echo "Building LOGS folder..."
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
 
-
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."
 	@$(RM) -f $(PHOTON_STAGE)/photon.iso
@@ -174,7 +179,6 @@ PACKER_ARGS="-only=$(VAGRANT_BUILD)"
 endif
 
 photon-vagrant-local: check-packer check-vagrant
-
 	@echo "Building a Photon Vagrant box with Packer..."
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
 		cd $(PHOTON_PACKER_TEMPLATES) && \
@@ -220,16 +224,16 @@ endif
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
 
-#%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
-#	$(eval PKG_NAME = $@)
-#	@echo "Building package $(PKG_NAME) ..."
-#	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-#    $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
-#                              -b $(PHOTON_CHROOT_PATH) \
-#                              -s $(PHOTON_SPECS_DIR) \
-#                              -r $(PHOTON_RPMS_DIR) \
-#                              -x $(PHOTON_SRCS_DIR) \
-#                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
-#                              -l $(PHOTON_LOGS_DIR)
+%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+	$(eval PKG_NAME = $@)
+	@echo "Building package $(PKG_NAME) ..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+    $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
+                              -b $(PHOTON_CHROOT_PATH) \
+                              -s $(PHOTON_SPECS_DIR) \
+                              -r $(PHOTON_RPMS_DIR) \
+                              -x $(PHOTON_SRCS_DIR) \
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -l $(PHOTON_LOGS_DIR)
                               
 
