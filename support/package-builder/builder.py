@@ -25,6 +25,10 @@ def main():
     
     
     (options,  args) = parser.parse_args()
+    cmdUtils=CommandUtils()
+    if not os.path.isdir(options.logPath):
+        cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
+    
     logger=Logger.getLogger(options.logPath+"/Main")
     
     errorFlag=False
@@ -59,9 +63,6 @@ def main():
         logger.error("Found some errors. Please fix input options and re-run it.")
         return False
     
-    cmdUtils=CommandUtils()
-    if not os.path.isdir(options.logPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
     
     if not os.path.isdir(options.rpmPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/x86_64")
