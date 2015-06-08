@@ -18,6 +18,12 @@ else
 PHOTON_SOURCES := sources
 endif
 
+ifdef PHOTON_PUBLISH_RPMS_PATH
+PHOTON_PUBLISH_RPMS := publish-rpms-cached
+else
+PHOTON_PUBLISH_RPMS := publish-rpms
+endif
+
 .PHONY : all iso clean toolchain toolchain-minimal photon-build-machine photon-vagrant-build photon-vagrant-local \
 check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin
 
@@ -32,35 +38,36 @@ iso: check $(PHOTON_PACKAGES) $(PHOTON_TOOLCHAIN_MINIMAL)
                         -f > \
         $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
+packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-    $(PHOTON_PACKAGE_BUILDER) -a \
+    $(PHOTON_PACKAGE_BUILDER) -o full \
                               -s $(PHOTON_SPECS_DIR) \
                               -r $(PHOTON_RPMS_DIR) \
-                              -o $(PHOTON_SRCS_DIR) \
-                              -p $(PHOTON_STAGE) \
-                              -l $(PHOTON_LOGS_DIR)
+                              -x $(PHOTON_SRCS_DIR) \
+                              -b $(PHOTON_STAGE) \
+                              -l $(PHOTON_LOGS_DIR) \
+                              -p $(PHOTON_PUBLISH_RPMS_DIR)
 
-packages-cached: check $(PHOTON_TOOLCHAIN_MINIMAL)
+packages-cached:
 	@echo "Using cached RPMS..."
 	@$(RM) -f $(PHOTON_RPMS_DIR_NOARCH)/* && \
      $(RM) -f $(PHOTON_RPMS_DIR_X86_64)/* && \
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/noarch/* $(PHOTON_RPMS_DIR_NOARCH)/ && \
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/x86_64/* $(PHOTON_RPMS_DIR_X86_64)/
 
-%: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
+%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-    $(PHOTON_PACKAGE_BUILDER) -i \
+    $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
                               -b $(PHOTON_CHROOT_PATH) \
                               -s $(PHOTON_SPECS_DIR) \
                               -r $(PHOTON_RPMS_DIR) \
-                              -o $(PHOTON_SRCS_DIR) \
-                              -p $(PHOTON_STAGE) \
-                              -l $(PHOTON_LOGS_DIR) \
-                              $(PKG_NAME)
+                              -x $(PHOTON_SRCS_DIR) \
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -l $(PHOTON_LOGS_DIR)
+                              
 
 sources:
 	@echo "Pulling sources from bintray..."
@@ -71,6 +78,16 @@ sources-cached:
 	@echo "Using cached SOURCES..."
 	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
 	 $(CP) -rf $(PHOTON_SOURCES_PATH)/* $(PHOTON_SRCS_DIR)/
+
+publish-rpms:
+	@echo "Pulling publish rpms from bintray..."
+	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
+	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR)
+
+publish-rpms-cached:
+	@echo "Using cached publish rpms..."
+	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR) && \
+	 $(CP) -rf $(PHOTON_PUBLISH_RPMS_PATH)/* $(PHOTON_PUBLISH_RPMS_DIR)/
 
 toolchain-minimal : $(PHOTON_TOOLCHAIN_MINIMAL)
 
