@@ -58,8 +58,9 @@ packages-cached:
 
 sources:
 	@echo "Pulling sources from bintray..."
-	@cd $(PHOTON_PULL_SOURCES_DIR) && \
-	$(PHOTON_PULL_SOURCES) $(PHOTON_SRCS_DIR)
+	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
+	 cd $(PHOTON_PULL_SOURCES_DIR) && \
+	 $(PHOTON_PULL_SOURCES) $(PHOTON_SRCS_DIR)
 
 sources-cached:
 	@echo "Using cached SOURCES..."
