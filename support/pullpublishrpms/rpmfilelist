@@ -1,6 +1,6 @@
 x86_64/python2-devel-2.7.9-1.x86_64.rpm
 x86_64/nss-devel-3.15.4-1.x86_64.rpm
-noarch/google-startup-scripts-1.2.2-1.noarch.rpm
+x86_64/tar-1.27.1-1.x86_64.rpm
 x86_64/libpipeline-1.2.6-1.x86_64.rpm
 noarch/linux-api-headers-3.19.2-1.noarch.rpm
 x86_64/expat-2.1.0-1.x86_64.rpm
@@ -12,7 +12,7 @@ x86_64/findutils-4.4.2-1.x86_64.rpm
 x86_64/file-5.22-1.x86_64.rpm
 x86_64/popt-1.16-1.x86_64.rpm
 x86_64/gdbm-1.11-1.x86_64.rpm
-noarch/python-jsonpatch-1.9-1.noarch.rpm
+x86_64/patch-2.7.1-1.x86_64.rpm
 x86_64/texinfo-5.2-1.x86_64.rpm
 x86_64/glibc-devel-2.21-1.x86_64.rpm
 x86_64/gcc-4.8.2-1.x86_64.rpm
@@ -25,9 +25,9 @@ x86_64/lua-5.2.3-1.x86_64.rpm
 x86_64/glibc-2.21-1.x86_64.rpm
 x86_64/elfutils-libelf-devel-0.158-1.x86_64.rpm
 x86_64/gettext-0.18.3.2-1.x86_64.rpm
-noarch/perl-Config-IniFiles-2.83-1.noarch.rpm
+x86_64/perl-5.18.2-1.x86_64.rpm
 x86_64/coreutils-8.22-1.x86_64.rpm
-noarch/createrepo-0.10.3-1.noarch.rpm
+x86_64/rpm-4.11.2-1.x86_64.rpm
 x86_64/man-db-2.6.6-1.x86_64.rpm
 x86_64/elfutils-libelf-0.158-1.x86_64.rpm
 x86_64/python2-libs-2.7.9-1.x86_64.rpm

@@ -70,7 +70,11 @@ class ToolChainUtils(object):
         
         for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            rpmFile = None
+            if package in constants.listCoreToolChainRPMPackages:
+                rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            else:
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
             if rpmFile is None:
                 self.logger.error("Unable to find rpm "+ package)
                 raise "Input Error"
