@@ -6,7 +6,7 @@ from CommandUtils import CommandUtils
 from Logger import Logger
 from constants import constants
 from PackageManager import PackageManager 
-from ChrootUtils import ChrootUtils
+import json
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -14,15 +14,46 @@ def main():
     parser.add_option("-s",  "--spec-path",  dest="specPath",  default="/workspace1/myrepos/photon/SPECS")
     parser.add_option("-x",  "--source-path",  dest="sourcePath",  default="/workspace1/mysources")
     parser.add_option("-r",  "--rpm-path",  dest="rpmPath",  default="/workspace1/mystage/RPMS")
-    parser.add_option("-t",  "--install-tool-chain",  dest="installToolChain",  default=False,  action ="store_true")
     parser.add_option("-i",  "--install-package", dest="installPackage",  default=False,  action ="store_true")
     parser.add_option("-p",  "--publish-RPMS-path", dest="publishRPMSPath",  default="/workspace1/testTP1RPMS/RPMS")
     parser.add_option("-l",  "--log-path", dest="logPath",  default="/workspace1/LOGS")
-    parser.add_option("-o",  "--build-option", dest="buildOption",  default=False,  action ="store_true")
+    parser.add_option("-o",  "--build-option", dest="buildOption",  default="full")
     parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
     parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="input.json")
     
     (options,  args) = parser.parse_args()
+    logger=Logger.getLogger(options.logPath+"/Main")
+    
+    errorFlag=False
+    if not os.path.isdir(options.sourcePath):
+        logger.error("Given Sources Path is not a directory:"+options.sourcePath)
+        errorFlag = True
+    if not os.path.isdir(options.specPath):
+        logger.error("Given Specs Path is not a directory:"+options.specPath)
+        errorFlag = True
+    if not os.path.isdir(options.publishRPMSPath):
+        logger.error("Given RPMS Path is not a directory:"+options.publishRPMSPath)
+        errorFlag = True
+    if not os.path.isdir(options.publishRPMSPath+"/x86_64"):
+        logger.error("Given RPMS Path is missing x86_64 sub-directory:"+options.publishRPMSPath)
+        errorFlag = True
+    if not os.path.isdir(options.publishRPMSPath+"/noarch"):
+        logger.error("Given RPMS Path is missing noarch sub-directory:"+options.publishRPMSPath)
+        errorFlag = True
+    
+    if not os.path.isfile(options.inputJSONFile) and not options.installPackage:
+        logger.error("Given JSON File is not a file:"+options.inputJSONFile)
+        errorFlag = True
+    
+    if len(args) != 1 and options.installPackage :
+        logger.error("Please provide package name")
+        errorFlag = True
+    
+    package=args[0]
+        
+    if errorFlag:
+        logger.error("Found some errors. Please fix input options and re-run it.")
+        return False
     
     cmdUtils=CommandUtils()
     if not os.path.isdir(options.logPath):
@@ -32,15 +63,19 @@ def main():
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/x86_64")
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
     
-    logger=Logger.getLogger(options.logPath+"/Main")
+    
     logger.info("Source Path :"+options.sourcePath)
     logger.info("Spec Path :" + options.specPath)
     logger.info("Rpm Path :" + options.rpmPath)
-    logger.info("Tools Path :" + options.toolsPath)
     logger.info("Log Path :" + options.logPath)
     logger.info("Top Dir Path :" + options.topDirPath)
+    logger.info("Publish RPMS Path :" + options.publishRPMSPath)
+    if not options.installPackage:
+        logger.info("JSON File :" + options.inputJSONFile)
+    else:
+        logger.info("Package to build:"+package)
     
-        
+    '''    
     listPackages=["acl","attr","autoconf","automake","bash","bc","bindutils","binutils","bison","boost","btrfs-progs","bzip2","ca-certificates","cdrkit","check",
                   "cloud-init","cmake","coreutils","cpio","cracklib","createrepo","curl","cyrus-sasl","db","dbus","deltarpm","diffutils","docbook-xml","docbook-xsl",
                   "docker","dparted","dracut","e2fsprogs","elfutils","etcd","expat","file","filesystem","findutils","flex","gawk","gcc","gdb","gdbm","gettext","git",
@@ -56,9 +91,31 @@ def main():
                   "python-six","PyYAML","readline","rocket","rpm","rpm-ostree","rpm-ostree-toolbox","ruby","sed","shadow","sqlite-autoconf","strace","sudo",
                   "swig","systemd","tar","tcpdump","tcsh","tdnf","texinfo","thin-provisioning-tools","tzdata","unzip","urlgrabber","util-linux","vim","wget",
                   "which","xerces-c","XML-Parser","xml-security-c","xz","yum","yum-metadata-parser","zlib"]
+    '''
+    try:
+        constants.initialize(options)
+        if options.installPackage:
+            buildAPackage(package)
+        else:
+            buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption,logger)
+    except Exception as e:
+        logger.error("Caught an exception")
+        logger.error(str(e))
+        return False
     
-    constants.initialize(options)
-    
+    return True
+
+def buildAPackage(package):
+    listPackages=[]
+    listPackages.append(package)
+    pkgManager = PackageManager()
+    pkgManager.buildPackages(listPackages)
+
+def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger):
+    jsonObj = json.load(inputJSONFile)
+    listPackages=jsonObj[buildOption]
+    logger.info("List of packages to build:")
+    logger.info(listPackages)
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackages)
     
