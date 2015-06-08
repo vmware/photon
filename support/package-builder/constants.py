@@ -53,6 +53,7 @@ class constants(object):
         constants.topDirPath = options.topDirPath
         constants.logPath = options.logPath
         constants.prevPublishRPMRepo=options.publishRPMSPath
+        constants.buildRootPath=options.buildRootPath
         constants.specData = SerializableSpecObjectsUtils(constants.logPath)
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
         

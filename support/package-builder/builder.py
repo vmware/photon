@@ -21,6 +21,8 @@ def main():
     parser.add_option("-o",  "--build-option", dest="buildOption",  default="full")
     parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
     parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="input.json")
+    parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
+    
     
     (options,  args) = parser.parse_args()
     logger=Logger.getLogger(options.logPath+"/Main")
@@ -65,6 +67,8 @@ def main():
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/x86_64")
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
     
+    if not os.path.isdir(options.buildRootPath):
+        cmdUtils.runCommandInShell("mkdir -p "+options.buildRootPath)
     
     logger.info("Source Path :"+options.sourcePath)
     logger.info("Spec Path :" + options.specPath)
