@@ -56,19 +56,6 @@ packages-cached:
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/noarch/* $(PHOTON_RPMS_DIR_NOARCH)/ && \
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/x86_64/* $(PHOTON_RPMS_DIR_X86_64)/
 
-%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
-	$(eval PKG_NAME = $@)
-	@echo "Building package $(PKG_NAME) ..."
-	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-    $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
-                              -b $(PHOTON_CHROOT_PATH) \
-                              -s $(PHOTON_SPECS_DIR) \
-                              -r $(PHOTON_RPMS_DIR) \
-                              -x $(PHOTON_SRCS_DIR) \
-                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                              -l $(PHOTON_LOGS_DIR)
-                              
-
 sources:
 	@echo "Pulling sources from bintray..."
 	@cd $(PHOTON_PULL_SOURCES_DIR) && \
@@ -140,6 +127,7 @@ $(PHOTON_STAGE):
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
 	@echo "Building LOGS folder..."
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
+
 
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."
@@ -230,3 +218,17 @@ endif
 
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
+
+#%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+#	$(eval PKG_NAME = $@)
+#	@echo "Building package $(PKG_NAME) ..."
+#	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+#    $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
+#                              -b $(PHOTON_CHROOT_PATH) \
+#                              -s $(PHOTON_SPECS_DIR) \
+#                              -r $(PHOTON_RPMS_DIR) \
+#                              -x $(PHOTON_SRCS_DIR) \
+#                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+#                              -l $(PHOTON_LOGS_DIR)
+                              
+
