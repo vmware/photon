@@ -2,7 +2,7 @@
 # Copyright VMware, Inc 2015
 #
 
-SRCROOT := .
+SRCROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 MAKEROOT=$(SRCROOT)/support/make
 
 # do not build these targets as '%'
@@ -66,7 +66,7 @@ sources:
 	@echo "Pulling sources from bintray..."
 	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
 	 cd $(PHOTON_PULL_SOURCES_DIR) && \
-	 $(PHOTON_PULL_SOURCES) $(PHOTON_SRCS_DIR)
+	 $(PHOTON_PULL_SOURCES) -c $(PHOTON_BINTRAY_CONFIG) $(PHOTON_SRCS_DIR)
 
 sources-cached:
 	@echo "Using cached SOURCES..."
