@@ -1,7 +1,7 @@
 Summary:	Data for network services and protocols
 Name:		iana-etc
 Version:	2.30
-Release:	1
+Release:	1%{?dist}
 License:	OSLv3
 URL:		http://freshmeat.net/projects/iana-etc
 Group:		System Environment/Base

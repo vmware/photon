@@ -1,7 +1,7 @@
 Summary:	Build tool
 Name:		pkg-config
 Version:	0.28
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.freedesktop.org/wiki/Software/pkg-config
 Group:		Development/Tools

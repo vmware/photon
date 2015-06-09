@@ -1,7 +1,7 @@
 Summary:	Programs for compressing and decompressing files
 Name:		xz
 Version:	5.0.5
-Release:	2
+Release:	2%{?dist}
 URL:		http://tukaani.org/xz
 License:	GPLv2+ and GPLv3+ and LGPLv2+
 Group:		Applications/File
@@ -60,8 +60,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/lzmainfo
 %{_bindir}/xzgrep
 %{_bindir}/xzdec
-%{_lib}/liblzma.so.5.0.5
-%{_lib}/liblzma.so.5
+%{_libdir}/liblzma.so.5.0.5
+%{_libdir}/liblzma.so.5
 %{_mandir}/man1/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %files devel

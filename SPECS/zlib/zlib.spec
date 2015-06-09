@@ -1,7 +1,7 @@
 Summary:	Compression and decompression routines
 Name:		zlib
 Version:	1.2.8
-Release:	2
+Release:	2%{?dist}
 URL:		http://www.zlib.net/
 License:	zlib
 Group:		Applications/System
@@ -33,8 +33,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 %{_mandir}/man3/zlib.3.gz
-%{_lib}/libz.so.1
-%{_lib}/libz.so.1.2.8
+%{_libdir}/libz.so.1
+%{_libdir}/libz.so.1.2.8
 %files devel
 %{_includedir}/zconf.h
 %{_includedir}/zlib.h

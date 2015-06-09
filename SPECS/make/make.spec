@@ -1,7 +1,7 @@
 Summary:	Program for compiling packages
 Name:		make
 Version:	4.0
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/make
 Group:		Development/Tools

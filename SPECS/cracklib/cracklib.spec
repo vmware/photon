@@ -3,7 +3,7 @@
 Summary:	A password strength-checking library.
 Name:		cracklib
 Version:	2.9.2
-Release:	2
+Release:	2%{?dist}
 Group:		System Environment/Libraries
 Source:		cracklib-%{version}.tar.gz
 Source1:    cracklib-words-20080507.gz

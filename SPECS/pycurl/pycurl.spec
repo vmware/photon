@@ -2,7 +2,7 @@
 
 Name:           pycurl
 Version:        7.19.5.1
-Release:	    1
+Release:	    1%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X

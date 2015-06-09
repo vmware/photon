@@ -1,7 +1,7 @@
 Summary:	Library for manipulating pipelines
 Name:		libpipeline
 Version:	1.2.6
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://libpipeline.nongnu.org
 Group:		Applications/System

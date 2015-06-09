@@ -1,7 +1,7 @@
 Summary:	Google Startup Scripts
 Name:		google-startup-scripts
 Version:	1.2.2
-Release:	1
+Release:	1%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://github.com/GoogleCloudPlatform/compute-image-packages/

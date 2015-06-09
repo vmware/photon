@@ -1,7 +1,7 @@
 Summary:	Contains programs for compressing and decompressing files
 Name:		bzip2
 Version:	1.0.6
-Release:	2
+Release:	3%{?dist}
 License:	BSD
 URL:		http://www.bzip.org/
 Group:		System Environment/Base
@@ -15,6 +15,7 @@ decompressing files.  Compressing text files with bzip2 yields a much better
 compression percentage than with the traditional gzip.
 %package	devel
 Summary:	Header and development files for bzip2
+Requires:	bzip2
 %description	devel
 It contains the libraries and header files to create applications 
 %prep
@@ -72,7 +73,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files devel
 %{_includedir}/bzlib.h
 %changelog
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.0.6-2
--   Update according to UsrMove.
+*	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.6-3
+-	Adding bzip2 package run time required package for bzip2-devel package 
+*	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.0.6-2
+-	Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.0.6-1
 -	Initial build.	First version

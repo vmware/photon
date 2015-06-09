@@ -1,6 +1,6 @@
 Name:           lzo
 Version:        2.09
-Release:        1
+Release:        1%{?dist}
 Summary:        Data compression library with very fast (de)compression
 Group:          System Environment/Libraries
 License:        GPLv2+

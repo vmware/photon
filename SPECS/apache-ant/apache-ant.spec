@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.9.4
-Release:	0
+Release:	0%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System

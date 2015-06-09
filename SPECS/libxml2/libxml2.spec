@@ -1,7 +1,7 @@
 Summary:	Libxml2-2.9.1
 Name:		libxml2
 Version:	2.9.1
-Release:	1
+Release:	1%{?dist}
 License:	MIT
 URL:		http://xmlsoft.org/
 Group:		System Environment/General Libraries

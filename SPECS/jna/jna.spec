@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.1.0
-Release:	0
+Release:	0%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System

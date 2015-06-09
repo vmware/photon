@@ -69,7 +69,7 @@ class pullSources:
 
             if not response.ok:
                 # Something went wrong
-                raise Exception(response.text)
+                raise Exception(response.text + " " + url)
 
             for block in response.iter_content(1024):
                 if not block:

@@ -1,7 +1,7 @@
 Summary:	RPM installer/updater
 Name:		yum
 Version:	3.4.3
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz

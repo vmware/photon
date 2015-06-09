@@ -1,7 +1,7 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
 Version:	4.10
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceforge.net/p/strace/code/ci/master/tree/
 Group:		Development/Debuggers
