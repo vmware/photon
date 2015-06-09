@@ -52,12 +52,13 @@ def main():
     if not os.path.isfile(options.inputJSONFile) and not options.installPackage:
         logger.error("Given JSON File is not a file:"+options.inputJSONFile)
         errorFlag = True
-    
-    if len(args) != 1 and options.installPackage :
-        logger.error("Please provide package name")
-        errorFlag = True
-    
-        package=args[0]
+        
+    if options.installPackage :
+        if len(args) != 1:
+            logger.error("Please provide package name")
+            errorFlag = True
+        else:
+            package=args[0]
         
     if errorFlag:
         logger.error("Found some errors. Please fix input options and re-run it.")
