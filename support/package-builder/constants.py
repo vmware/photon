@@ -9,7 +9,7 @@ class constants(object):
     specData=None
     buildRootPath="/mnt"
     prevPublishRPMRepo=""
-    noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison"]
+    noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison","openjdk","go"]
     listToolChainPackages=["linux-api-headers", "glibc","zlib", "file",
         "binutils","gmp","mpfr", "mpc","gcc", "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
         "readline", "diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch","util-linux", 

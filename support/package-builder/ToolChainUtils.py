@@ -54,7 +54,7 @@ class ToolChainUtils(object):
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             self.logger.debug("Installing rpm:"+rpmFile)
-            cmd="rpm -i --nodeps --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
+            cmd="rpm -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
             process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
             retval = process.wait()
             if retval != 0:
