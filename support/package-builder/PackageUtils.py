@@ -85,7 +85,7 @@ class PackageUtils(object):
             if len(sourcePath) > 1:
                 self.logger.error("Multiple sources found for source:"+source+"\n"+ ",".join(sourcePath) +"\nUnable to determine one.")
                 raise Exception("Multiple sources found")
-            self.logger.info("Source path :" + source + " Source filename: " + sourcePath[0])
+            self.logger.info("Copying... Source path :" + source + " Source filename: " + sourcePath[0])
             shutil.copy2(sourcePath[0],  destDir)
     
     def buildRPMSForGivenPackage(self,package, chrootID,destLogPath=None):

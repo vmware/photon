@@ -60,6 +60,7 @@
                 "Linux-PAM-lang", "make", "bindutils", "gperf", "lua-devel", "which", "less",  
                 "cmake", "gpgme-devel", "parted", "vim", "xz-devel", "xerces-c-devel", "xml-security-c-devel", 
                 "nss-devel", "ncurses-devel", "tzdata", "itstool", "sed-lang", "gptfdisk", "ntp", "flex", "patch", "m4", "dracut", "dracut-tools", 
+                "libarchive", "libsoup", "asciidoc", "mkinitcpio"
                 "ostree", "tdnf-devel", "rpm-ostree", "createrepo", "glibmm", "deltarpm", "cdrkit", "dparted", "libgsystem",
                 "rpm-ostree-toolbox","libsepol","libselinux","device-mapper-libs","device-mapper",
                 "acl","btrfs-progs","btrfs-progs-devel","device-mapper-devel","device-mapper-event","device-mapper-event-devel",
@@ -67,7 +68,7 @@
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel",
-		"postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch"]
+		        "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch"]
 }
 
 

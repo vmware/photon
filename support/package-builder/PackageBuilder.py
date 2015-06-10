@@ -28,6 +28,7 @@ class PackageBuilder(object):
         try:
             chrUtils = ChrootUtils(self.logName,self.logPath)
             returnVal,chrootID = chrUtils.createChroot(chrootName)
+            self.logger.debug("Created new chroot: " + chrootID)
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
@@ -37,6 +38,7 @@ class PackageBuilder(object):
                 tUtils.installToolChain(chrootID)
         except Exception as e:
             if chrootID is not None:
+                self.logger.debug("Deleting chroot: " + chrootID)
                 chrUtils.destroyChroot(chrootID)
             raise e
         return chrootID
@@ -102,11 +104,11 @@ class PackageBuilder(object):
             pkgUtils.buildRPMSForGivenPackage(package,chrootID,destLogPath)
             self.logger.info("Successfully built the package:"+package)
         except Exception as e:
-            self.logger.error("Failed while building package:"+package)
+            self.logger.error("Failed while building package:" + package)
+            self.logger.debug("Chroot with ID: " + chrootID + " not deleted for debugging.")
             raise e
-        finally:
-            if chrootID is not None:
-                chrUtils.destroyChroot(chrootID)
+        if chrootID is not None:
+            chrUtils.destroyChroot(chrootID)
         
         
     def findRunTimeRequiredRPMPackages(self,rpmPackage):
