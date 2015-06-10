@@ -54,8 +54,10 @@ cp ./config* ${BUILDROOT}${PARENT}/
 #	Setup the filesystem for chapter 06
 RPMPKG="$(find $RPM_PATH -name 'filesystem*.rpm' -print)"
 if [ -z ${RPMPKG} ] ; then
-run_command "	Extracting filesystem spec" "cp ${SPEC_PATH}/filesystem/filesystem.spec ${BUILDROOT}/${PARENT}/SPECS" "$LOG_PATH/filesystem.log"
-run_command "Building filesystem rpm" "rpmbuild -ba --nocheck --define \"_topdir ${BUILDROOT}/${PARENT}\" --define \"_dbpath ${BUILDROOT}/var/lib/rpm\" ${SPEC_PATH}/filesystem/filesystem.spec" "$LOG_PATH/filesystem.log"
+FSSPEC="$(find -L $SPEC_PATH -name 'filesystem.spec' -print)"
+test -z ${RPMPKG} || fail "Unable to find filesystem.spec file in $SPEC_PATH"
+#run_command "	Extracting filesystem spec" "cp ${FSSPEC} ${BUILDROOT}/${PARENT}/SPECS" "$LOG_PATH/filesystem.log"
+run_command "Building filesystem rpm" "rpmbuild -ba --nocheck --define \"_topdir ${BUILDROOT}/${PARENT}\" --define \"_dbpath ${BUILDROOT}/var/lib/rpm\" ${FSSPEC}" "$LOG_PATH/filesystem.log"
 #run_command "	Building filesystem rpm " "rpmbuild -ba --nocheck --root ${BUILDROOT} --define '_topdir ${PARENT}' --define '_dbpath /var/lib/rpm' ${BUILDROOT}${PARENT}/SPECS/filesystem.spec" "$LOG_PATH/filesystem.log"
 run_command "	Extracting filesystem rpm" "cp ${BUILDROOT}/${PARENT}/RPMS/x86_64/filesystem*.rpm ${RPM_PATH}/x86_64/" "$LOG_PATH/filesystem.log"
 fi
