@@ -1,9 +1,9 @@
 {
     "iso_packages":["linux-api-headers", "glibc", "zlib", "filesystem", "file",
-                "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp", "bash",
-                "sed", "bzip2", "pkg-config", "ncurses",
+                "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp", "readline",
+                "sed", "bzip2", "pkg-config", "ncurses","bash",
                 "cracklib", "cracklib-dicts", "cracklib-python", "shadow", "procps-ng", 
-                "coreutils", "iana-etc", "grep", "readline", "bc", "libtool",
+                "coreutils", "iana-etc", "grep", "bc", "libtool",
                 "inetutils", "gawk", "findutils",
                 "gettext", "xz", "grub", "iproute2", "kbd", "kmod", "libpipeline",
                 "texinfo", "util-linux", "e2fsprogs",
@@ -33,7 +33,7 @@
                 ],
 
     "minimal_packages":["glibc", "zlib", "filesystem", "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp", 
-                "pkg-config", "ncurses", "bash", "bzip2", "cracklib", "cracklib-dicts", "shadow", "procps-ng", "iana-etc", "readline", "coreutils", "bc", "libtool", "inetutils",
+                "pkg-config", "ncurses", "bzip2", "cracklib", "cracklib-dicts", "shadow", "procps-ng", "iana-etc", "readline", "bash", "coreutils", "bc", "libtool", "inetutils",
                 "findutils", "xz", "grub", "iproute2", "util-linux", "openssl", "linux", "ca-certificates", "curl", "iptables", "Linux-PAM",
                 "attr", "libcap", "kmod", "systemd", "expat", "dbus", "file", "e2fsprogs", "elfutils-libelf", "lua", "popt", "sqlite-autoconf", "nspr", "nss", "rpm",
                 "openssh", "libffi", "gdbm", "python2", "python2-libs", "pcre", "glib", "libxml2",
