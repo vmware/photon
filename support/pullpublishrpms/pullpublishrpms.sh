@@ -20,4 +20,4 @@ if [ ${EUID} -ne 0 ]; then
     exit 1
 fi
 
-wget -c -nv -nc -r -nH --cut-dirs=4 -B https://bintray.com/artifact/download/vmware/photon_release_1.0_TP1_x86_64/ -i rpmfilelist -P ${PUBLISHRPMSPATHDIR}
+wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --cut-dirs=4 -B https://bintray.com/artifact/download/vmware/photon_release_1.0_TP1_x86_64/ -i rpmfilelist -P ${PUBLISHRPMSPATHDIR}
