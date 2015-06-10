@@ -54,7 +54,8 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                               -x $(PHOTON_SRCS_DIR) \
                               -b $(PHOTON_STAGE) \
                               -l $(PHOTON_LOGS_DIR) \
-                              -p $(PHOTON_PUBLISH_RPMS_DIR)
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -j $(PHOTON_PACKAGE_LIST)
 
 packages-cached:
 	@echo "Using cached RPMS..."
