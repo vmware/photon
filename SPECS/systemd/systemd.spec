@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -21,6 +21,8 @@ BuildRequires:	XML-Parser
 BuildRequires:	kbd
 BuildRequires:	kmod
 Requires:	kmod
+BuildRequires:	glib-devel
+Requires:	glib
 %description
 Systemd is an init replacement with better process control and security
 
@@ -43,7 +45,6 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
             --with-rootprefix=                                      \
             --with-rootlibdir=/usr/lib                                  \
             --enable-split-usr                                      \
-            --disable-gudev                                         \
             --disable-firstboot                                     \
             --disable-ldconfig                                      \
             --disable-sysusers                                      \
@@ -87,6 +88,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*	Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
+-	gudev support
 *	Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3
 -	Removing packing of PAM configuration files
 *   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 216-2
