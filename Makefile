@@ -35,7 +35,7 @@ clean-install clean-chroot
 
 all: iso
 
-iso: check $(PHOTON_PACKAGES) $(PHOTON_TOOLCHAIN_MINIMAL)
+iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) $(PHOTON_TOOLCHAIN_MINIMAL)
 	@echo "Building Photon ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
     $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
