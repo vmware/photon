@@ -41,6 +41,7 @@ iso: check $(PHOTON_PACKAGES) $(PHOTON_TOOLCHAIN_MINIMAL)
     $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
                         -w $(PHOTON_STAGE)/photon_iso \
                         -t $(PHOTON_STAGE) \
+                        -p $(PHOTON_INSTALLER_PACKAGE_LIST) \
                         -f > \
         $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
