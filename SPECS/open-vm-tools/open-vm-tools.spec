@@ -58,6 +58,7 @@ EOF
 make DESTDIR=%{buildroot} install
 rm -f %{buildroot}/sbin/mount.vmhgfs
 %post
+ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 /sbin/ldconfig
 /bin/systemctl enable vmtoolsd
 %postun	-p /sbin/ldconfig
