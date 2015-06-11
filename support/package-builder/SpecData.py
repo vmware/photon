@@ -27,8 +27,7 @@ class SerializableSpecObjectsUtils(object):
         self.getListSpecFiles(listSpecFiles,specFilesPath)
         for specFile in listSpecFiles:
             spec=Specutils(specFile)
-            specName=os.path.basename(specFile)
-            specName=specName.replace(".spec","")
+            specName=spec.getBasePackageName()
             specObj=SerializableSpecObject()
             specObj.name=specName
             specObj.buildRequirePackages=spec.getBuildRequiresAllPackages()
@@ -167,7 +166,4 @@ class SerializableSpecObjectsUtils(object):
             self.logger.info(" ")
             self.logger.info(specObj.installRequiresPackages)
             self.logger.info("------------------------------------------------")
-            
-            
-            
-    
+

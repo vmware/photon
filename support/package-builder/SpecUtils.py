@@ -165,6 +165,10 @@ class Specutils(object):
     def getRelease(self):
         pkg = self.spec.packages.get('default')
         return pkg.release
+    
+    def getBasePackageName(self):
+        pkg = self.spec.packages.get('default')
+        return pkg.name
         
 def main():
     spec = Specutils("/workspace1/myrepos/photon/SPECS/docker/docker.spec")
