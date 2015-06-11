@@ -158,7 +158,16 @@ class PackageBuilder(object):
         cmd = "/tmp/"+self.adjustGCCSpecScript+opt
         logFile = logPath+"/adjustGCCSpecScript.log"
         chrootCmd=self.runInChrootCommand+" "+chrootID
-        returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
+        retryCount=10
+        returnVal=False
+        while retryCount > 0:
+            returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
+            if returnVal:
+                return
+            self.logger.error("Failed while adjusting gcc specs")
+            self.logger.error("Retrying again .....")
+            retryCount = retryCount - 1
+            sleep(5)
         if not returnVal:
             self.logger.error("Failed while adjusting gcc specs")
             raise "Failed while adjusting gcc specs"
