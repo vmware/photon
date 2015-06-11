@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.42.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.42/glib-2.42.0.tar.xz
 Group:		Applications/System
@@ -19,6 +19,8 @@ Provides:	pkgconfig(gmodule-2.0)
 Provides:	pkgconfig(gmodule-no-export-2.0)
 Provides:	pkgconfig(gobject-2.0)
 Provides:	pkgconfig(gio-2.0)
+Provides:	pkgconfig(gio-unix-2.0)
+Provides:	pkgconfig(gthread-2.0)
 %description
 The GLib package contains a low-level libraries useful for providing data structure handling for C, portability wrappers and interfaces for such runtime functionality as an event loop, threads, dynamic loading and an object system. Development libs and headers are in glib-devel.
 
@@ -65,5 +67,7 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 %{_datadir}/*
 %changelog
+*	Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
+-	Added more 'Provides: pkgconfig(...)' for base package
 *	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 2.42.0-1
 	Initial version
