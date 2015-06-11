@@ -28,6 +28,7 @@ if [ $# -lt 2 ]
 fi
 ISO_OUTPUT_NAME=$1
 TOOLS_PATH=$2
+PACKAGE_LIST_FILE=$3
 
 
 #- Step 3 Setting up the boot loader
@@ -42,6 +43,8 @@ ln -s isolinux ${BUILDROOT}/boot
 find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${BUILDROOT}/boot/vmlinuz
 
 cp -r ../installer ${BUILDROOT}/${PARENT}
+# replace default package_list with specific one
+cp $PACKAGE_LIST_FILE ${BUILDROOT}/${PARENT}/installer/package_list.json
 rm -f ${BUILDROOT}/${PARENT}/installer/*.pyc
 
 #ID in the initrd.gz now is PHOTON_VMWARE_CD . This is how we recognize that the cd is actually ours. touch this file there.
