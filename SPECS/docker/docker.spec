@@ -26,12 +26,18 @@ install -vd %{buildroot}/lib/systemd/system
 cat > %{buildroot}/lib/systemd/system/docker.service <<- "EOF"
 [Unit]
 Description=Docker Daemon
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 ExecStart=/bin/docker -d -s overlay
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
+MountFlags=slave
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
 
 [Install]
 WantedBy=multi-user.target

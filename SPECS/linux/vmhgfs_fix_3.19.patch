@@ -1,0 +1,49 @@
+diff -Naur open-vm-tools-9.10.0/modules/linux/vmhgfs/inode.c open-vm-tools-9.10.0_change/modules/linux/vmhgfs/inode.c
+--- open-vm-tools-9.10.0/modules/linux/vmhgfs/inode.c	2015-03-19 11:11:07.000000000 -0700
++++ open-vm-tools-9.10.0_change/modules/linux/vmhgfs/inode.c	2015-06-09 15:07:34.573377200 -0700
+@@ -1917,7 +1917,11 @@
+                            p,
+ #endif
+                            &inode->i_dentry,
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
++                           d_u.d_alias) {
++#else
+                            d_alias) {
++#endif
+          int dcount = hgfs_d_count(dentry);
+          if (dcount) {
+             LOG(4, ("Found %s %d \n", dentry->d_name.name, dcount));
+@@ -1970,7 +1974,11 @@
+       /* Find a dentry with valid d_count. Refer bug 587879. */
+       list_for_each(pos, &inode->i_dentry) {
+          int dcount;
+-         struct dentry *dentry = list_entry(pos, struct dentry, d_alias);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
++         struct dentry *dentry = list_entry(pos, struct dentry, d_u.d_alias);
++#else
++	 struct dentry *dentry = list_entry(pos, struct dentry, d_alias);
++#endif
+          dcount = hgfs_d_count(dentry);
+          if (dcount) {
+             LOG(4, ("Found %s %d \n", (dentry)->d_name.name, dcount));
+diff -Naur open-vm-tools-9.10.0/modules/linux/vmhgfs/module.h open-vm-tools-9.10.0_change/modules/linux/vmhgfs/module.h
+--- open-vm-tools-9.10.0/modules/linux/vmhgfs/module.h	2015-03-19 11:11:07.000000000 -0700
++++ open-vm-tools-9.10.0_change/modules/linux/vmhgfs/module.h	2015-06-09 15:02:33.839038322 -0700
+@@ -71,6 +71,17 @@
+ #define HGFS_RESERVED_INO HGFS_ROOT_INO + 1
+ 
+ /*
++ * Since the f_dentry disappeared we do this locally.
++ * It is used quite extensively and only one other driver
++ * is affected by this so it is done locally and not
++ * as part of the common compat_fs.h includes.
++ */
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
++#ifndef f_dentry
++#define f_dentry                         f_path.dentry
++#endif
++#endif
++/*
+  * Macros for accessing members that are private to this code in
+  * sb/inode/file structs.
+  */

@@ -89,6 +89,7 @@ if __name__ == '__main__':
     parser.add_option("-w",  "--working-directory",  dest="working_directory", default="/mnt/photon-root")
     parser.add_option("-t",  "--tools-path",  dest="tools_path", default="../stage")
     parser.add_option("-f", "--force", action="store_true", dest="force", default=False)
+    parser.add_option("-p", "--package-list-file", dest="package_list_file", default="package_list.json")
     
     (options,  args) = parser.parse_args()
     
@@ -133,7 +134,7 @@ if __name__ == '__main__':
 
 
     # Check the installation type
-    package_list = JsonWrapper("package_list.json").read()
+    package_list = JsonWrapper(options.package_list_file).read()
     if config['iso_system']:
         packages = package_list["iso_packages"]
     elif config['type'] == 'micro':

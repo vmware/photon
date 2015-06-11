@@ -38,6 +38,7 @@ chroot "${BUILDROOT}" \
 	TERM="$TERM" \
 	PS1='\u:\w\$ ' \
 	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
+	SHELL=/bin/bash \
 	$PHOTON_BASH_CMD --login +h -c "$*"
 
 exit 0

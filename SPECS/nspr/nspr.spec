@@ -1,6 +1,6 @@
 Summary:	Platform-neutral API
 Name:		nspr
-Version:	4.10.3
+Version:	4.10.8
 Release:	1%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org
@@ -39,5 +39,7 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 %{_datarootdir}/aclocal/*
 %changelog
+*	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 4.10.8-1
+-	Version update. Firefox requirement.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.10.3-1
 -	Initial build. First version
