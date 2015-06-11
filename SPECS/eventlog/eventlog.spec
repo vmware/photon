@@ -7,7 +7,7 @@ URL:		https://www.balabit.com
 Group:		System Environment/Daemons
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	https://www.balabit.com/downloads/files/eventlog/0.2/eventlog_0.2.12.tar.gz
+Source0:	https://www.balabit.com/downloads/files/eventlog/0.2/%{name}_%{version}.tar.gz
 BuildRequires:	bison
 BuildRequires:	flex
 
