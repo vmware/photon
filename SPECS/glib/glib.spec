@@ -14,6 +14,11 @@ BuildRequires:	pkg-config
 BuildRequires:	cmake
 Requires:	pcre
 Requires:	libffi
+Provides:	pkgconfig(glib-2.0)
+Provides:	pkgconfig(gmodule-2.0)
+Provides:	pkgconfig(gmodule-no-export-2.0)
+Provides:	pkgconfig(gobject-2.0)
+Provides:	pkgconfig(gio-2.0)
 %description
 The GLib package contains a low-level libraries useful for providing data structure handling for C, portability wrappers and interfaces for such runtime functionality as an event loop, threads, dynamic loading and an object system. Development libs and headers are in glib-devel.
 
@@ -25,11 +30,6 @@ Provides:	glib-devel
 Provides:	glib-devel(x86-64)
 BuildRequires:	python2 >= 2.7
 BuildRequires:	python2-libs >= 2.7
-Provides:	pkgconfig(glib-2.0)
-Provides:	pkgconfig(gmodule-2.0)
-Provides:	pkgconfig(gmodule-no-export-2.0)
-Provides:	pkgconfig(gobject-2.0)
-Provides:	pkgconfig(gio-2.0)
 Requires:	pcre-devel
 Requires:	python2
 
