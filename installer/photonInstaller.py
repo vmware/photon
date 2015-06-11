@@ -164,7 +164,7 @@ if __name__ == '__main__':
     config['working_directory'] = options.working_directory
 
     # Run the installer
-    package_installer = Installer(config, local_install = not (options.iso_path or options.vmdk_path))
+    package_installer = Installer(config, local_install = not (options.iso_path or options.vmdk_path), tools_path = options.tools_path, rpm_path = options.tools_path + "/RPMS", log_path = options.tools_path + "/LOGS")
     package_installer.install(None)
 
     # Making the iso if needed
