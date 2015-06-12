@@ -8,6 +8,7 @@ URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
+AutoReqProv: 	no
 Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJDK-%{version}-x86_64-bin.tar.xz
 %description
 The OpenJDK package installs java class library and javac java compiler. 
