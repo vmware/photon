@@ -1,14 +1,14 @@
 Summary:	Security client
 Name:		nss
-Version:	3.15.4
-Release:	1
+Version:	3.19
+Release:	1%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
-Patch:		nss-3.15.4-standalone-1.patch
+Patch:		nss-3.19-standalone-1.patch
 Requires:	nspr
 Requires:	sqlite-autoconf
 BuildRequires:	nspr
@@ -70,5 +70,7 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 
 
 %changelog
+*	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19-1
+-	Version update. Firefox requirement.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.15.4-1
 -	Initial build. First version

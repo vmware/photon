@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	1
+Release:	1%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security

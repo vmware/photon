@@ -1,7 +1,7 @@
 Summary:	Docker
 Name:		docker
 Version:	1.6.0
-Release:	2
+Release:	3%{?dist}
 License:	ASL 2.0
 URL:		http://docs.docker.com
 Group:		Applications/File
@@ -26,12 +26,18 @@ install -vd %{buildroot}/lib/systemd/system
 cat > %{buildroot}/lib/systemd/system/docker.service <<- "EOF"
 [Unit]
 Description=Docker Daemon
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 ExecStart=/bin/docker -d -s overlay
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
+MountFlags=slave
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
 
 [Install]
 WantedBy=multi-user.target
@@ -51,6 +57,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker.service
 #/etc/systemd/system/multi-user.target.wants/docker.service
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.6.0-3
+-   Update according to UsrMove.
 *	Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
 -	Updated to version 1.6
 *	Mon Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1

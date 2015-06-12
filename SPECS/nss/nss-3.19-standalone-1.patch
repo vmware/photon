@@ -1,0 +1,245 @@
+Submitted By:            Armin K. <krejzi at email dot com>
+Date:                    2014-09-26
+Initial Package Version: 3.15
+Comment:                 Modified manifest.mn diff (Fernando)
+Upstream Status:         Not applicable
+Origin:                  Based on dj's original patch, rediffed and modified for 3.15
+Description:             Adds auto-generated nss.pc and nss-config script, and allows
+                         building without nspr in the source tree.
+
+--- a/nss/config/Makefile	1970-01-01 01:00:00.000000000 +0100
++++ b/nss/config/Makefile	2013-07-02 14:53:56.684750636 +0200
+@@ -0,0 +1,40 @@
++CORE_DEPTH = ..
++DEPTH      = ..
++
++include $(CORE_DEPTH)/coreconf/config.mk
++
++NSS_MAJOR_VERSION = `grep "NSS_VMAJOR" ../lib/nss/nss.h | awk '{print $$3}'`
++NSS_MINOR_VERSION = `grep "NSS_VMINOR" ../lib/nss/nss.h | awk '{print $$3}'`
++NSS_PATCH_VERSION = `grep "NSS_VPATCH" ../lib/nss/nss.h | awk '{print $$3}'`
++PREFIX = /usr
++
++all: export libs
++
++export:
++	# Create the nss.pc file
++	mkdir -p $(DIST)/lib/pkgconfig
++	sed -e "s,@prefix@,$(PREFIX)," \
++	    -e "s,@exec_prefix@,\$${prefix}," \
++	    -e "s,@libdir@,\$${prefix}/lib," \
++	    -e "s,@includedir@,\$${prefix}/include/nss," \
++	    -e "s,@NSS_MAJOR_VERSION@,$(NSS_MAJOR_VERSION),g" \
++	    -e "s,@NSS_MINOR_VERSION@,$(NSS_MINOR_VERSION)," \
++	    -e "s,@NSS_PATCH_VERSION@,$(NSS_PATCH_VERSION)," \
++	    nss.pc.in > nss.pc
++	chmod 0644 nss.pc
++	ln -sf ../../../../nss/config/nss.pc $(DIST)/lib/pkgconfig
++
++	# Create the nss-config script
++	mkdir -p $(DIST)/bin
++	sed -e "s,@prefix@,$(PREFIX)," \
++	    -e "s,@NSS_MAJOR_VERSION@,$(NSS_MAJOR_VERSION)," \
++	    -e "s,@NSS_MINOR_VERSION@,$(NSS_MINOR_VERSION)," \
++	    -e "s,@NSS_PATCH_VERSION@,$(NSS_PATCH_VERSION)," \
++	    nss-config.in > nss-config
++	chmod 0755 nss-config
++	ln -sf ../../../nss/config/nss-config $(DIST)/bin
++
++libs:
++
++dummy: all export libs
++
+--- a/nss/config/nss-config.in	1970-01-01 01:00:00.000000000 +0100
++++ b/nss/config/nss-config.in	2013-07-02 14:52:58.328084334 +0200
+@@ -0,0 +1,153 @@
++#!/bin/sh
++
++prefix=@prefix@
++
++major_version=@NSS_MAJOR_VERSION@
++minor_version=@NSS_MINOR_VERSION@
++patch_version=@NSS_PATCH_VERSION@
++
++usage()
++{
++	cat <<EOF
++Usage: nss-config [OPTIONS] [LIBRARIES]
++Options:
++	[--prefix[=DIR]]
++	[--exec-prefix[=DIR]]
++	[--includedir[=DIR]]
++	[--libdir[=DIR]]
++	[--version]
++	[--libs]
++	[--cflags]
++Dynamic Libraries:
++	nss
++	nssutil
++	smime
++	ssl
++	softokn
++EOF
++	exit $1
++}
++
++if test $# -eq 0; then
++	usage 1 1>&2
++fi
++
++lib_nss=yes
++lib_nssutil=yes
++lib_smime=yes
++lib_ssl=yes
++lib_softokn=yes
++
++while test $# -gt 0; do
++  case "$1" in
++  -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
++  *) optarg= ;;
++  esac
++
++  case $1 in
++    --prefix=*)
++      prefix=$optarg
++      ;;
++    --prefix)
++      echo_prefix=yes
++      ;;
++    --exec-prefix=*)
++      exec_prefix=$optarg
++      ;;
++    --exec-prefix)
++      echo_exec_prefix=yes
++      ;;
++    --includedir=*)
++      includedir=$optarg
++      ;;
++    --includedir)
++      echo_includedir=yes
++      ;;
++    --libdir=*)
++      libdir=$optarg
++      ;;
++    --libdir)
++      echo_libdir=yes
++      ;;
++    --version)
++      echo ${major_version}.${minor_version}.${patch_version}
++      ;;
++    --cflags)
++      echo_cflags=yes
++      ;;
++    --libs)
++      echo_libs=yes
++      ;;
++    nss)
++      lib_nss=yes
++      ;;
++    nssutil)
++      lib_nssutil=yes
++      ;;
++    smime)
++      lib_smime=yes
++      ;;
++    ssl)
++      lib_ssl=yes
++      ;;
++    softokn)
++      lib_softokn=yes
++      ;;
++    *)
++      usage 1 1>&2
++      ;;
++  esac
++  shift
++done
++
++# Set variables that may be dependent upon other variables
++if test -z "$exec_prefix"; then
++    exec_prefix=`pkg-config --variable=exec_prefix nss`
++fi
++if test -z "$includedir"; then
++    includedir=`pkg-config --variable=includedir nss`
++fi
++if test -z "$libdir"; then
++    libdir=`pkg-config --variable=libdir nss`
++fi
++
++if test "$echo_prefix" = "yes"; then
++    echo $prefix
++fi
++
++if test "$echo_exec_prefix" = "yes"; then
++    echo $exec_prefix
++fi
++
++if test "$echo_includedir" = "yes"; then
++    echo $includedir
++fi
++
++if test "$echo_libdir" = "yes"; then
++    echo $libdir
++fi
++
++if test "$echo_cflags" = "yes"; then
++    echo -I$includedir
++fi
++
++if test "$echo_libs" = "yes"; then
++      libdirs="-L$libdir"
++      if test -n "$lib_nss"; then
++	libdirs="$libdirs -lnss${major_version}"
++      fi
++      if test -n "$lib_nssutil"; then
++        libdirs="$libdirs -lnssutil${major_version}"
++      fi
++      if test -n "$lib_smime"; then
++	libdirs="$libdirs -lsmime${major_version}"
++      fi
++      if test -n "$lib_ssl"; then
++	libdirs="$libdirs -lssl${major_version}"
++      fi
++      if test -n "$lib_softokn"; then
++        libdirs="$libdirs -lsoftokn${major_version}"
++      fi
++      echo $libdirs
++fi      
++
+--- a/nss/config/nss.pc.in	1970-01-01 01:00:00.000000000 +0100
++++ b/nss/config/nss.pc.in	2013-07-02 14:52:58.328084334 +0200
+@@ -0,0 +1,12 @@
++prefix=@prefix@
++exec_prefix=@exec_prefix@
++libdir=@libdir@
++includedir=@includedir@
++
++Name: NSS
++Description: Network Security Services
++Version: @NSS_MAJOR_VERSION@.@NSS_MINOR_VERSION@.@NSS_PATCH_VERSION@
++Requires: nspr >= 4.8
++Libs: -L@libdir@ -lnss@NSS_MAJOR_VERSION@ -lnssutil@NSS_MAJOR_VERSION@ -lsmime@NSS_MAJOR_VERSION@ -lssl@NSS_MAJOR_VERSION@ -lsoftokn@NSS_MAJOR_VERSION@
++Cflags: -I${includedir}
++
+--- a/nss/Makefile	2013-05-28 23:43:24.000000000 +0200
++++ b/nss/Makefile	2013-07-02 14:52:58.328084334 +0200
+@@ -44,7 +44,7 @@
+ # (7) Execute "local" rules. (OPTIONAL).                              #
+ #######################################################################
+ 
+-nss_build_all: build_nspr all
++nss_build_all: all
+ 
+ nss_clean_all: clobber_nspr clobber
+ 
+--- a/nss/manifest.mn.orig	2014-09-26 16:46:44.201965538 -0300
++++ b/nss/manifest.mn	2014-09-26 16:51:11.386336520 -0300
+@@ -10,7 +10,7 @@
+ 
+ RELEASE = nss
+ 
+-DIRS = coreconf lib cmd
++DIRS = coreconf lib cmd config
+ 
+ ifdef NSS_BUILD_GTESTS
+ DIRS += external_tests

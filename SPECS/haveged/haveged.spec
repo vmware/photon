@@ -3,7 +3,7 @@
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.1
-Release:        1.0
+Release:        1.0%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
 Distribution:   Discus

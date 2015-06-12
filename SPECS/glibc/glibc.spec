@@ -3,7 +3,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	1
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -12,6 +12,7 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 Patch0:		glibc-2.21-fhs-1.patch
 Provides:	rtld(GNU_HASH)
+Requires:   filesystem
 %description
 This library provides the basic routines for allocating memory,
 searching directories, opening and closing files, reading and
@@ -134,9 +135,12 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %{_datadir}/i18n/charmaps/*.gz
 %{_datadir}/i18n/locales/*
 %{_localstatedir}/lib/nss_db/Makefile
+%exclude /usr/bin/mtrace
 
 %files devel
 %defattr(-,root,root)
+# TODO: Excluding for now to remove dependency on PERL
+# /usr/bin/mtrace
 %{_includedir}/*
 
 %files lang
@@ -179,5 +183,7 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %lang(zh_TW) %{_datarootdir}/locale/zh_TW/LC_MESSAGES/libc.mo
 
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.19-1
 -	Initial build. First version

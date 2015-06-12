@@ -3,7 +3,7 @@
 Summary:   	Simple package manager built on top of hawkey and librepo
 Name:      	libhif
 Version:   	0.1.7
-Release:   	1
+Release:   	1%{?dist}
 License:   	LGPLv2+
 URL:       	https://github.com/hughsie/libhif
 Source0:   	http://people.freedesktop.org/~hughsient/releases/libhif-%{version}.tar.gz

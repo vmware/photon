@@ -1,7 +1,7 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
 Version:	3.19.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel

@@ -1,7 +1,7 @@
 Summary:	Contains the utilities for the ext2 file system
 Name:		e2fsprogs
 Version:	1.42.9
-Release:	1
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://e2fsprogs.sourceforge.net
 Group:		System Environment/Base
@@ -66,14 +66,14 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sbindir}/filefrag
 %{_sbindir}/e2freefrag
 %{_sbindir}/mklost+found
-%{_lib}/libss.so.2
-%{_lib}/libext2fs.so.2.4
-%{_lib}/libcom_err.so.2.1
-%{_lib}/libss.so.2.0
-%{_lib}/libe2p.so.2.3
-%{_lib}/libcom_err.so.2
-%{_lib}/libe2p.so.2
-%{_lib}/libext2fs.so.2
+/lib/libss.so.2
+/lib/libext2fs.so.2.4
+/lib/libcom_err.so.2.1
+/lib/libss.so.2.0
+/lib/libe2p.so.2.3
+/lib/libcom_err.so.2
+/lib/libe2p.so.2
+/lib/libext2fs.so.2
 /sbin/e2label
 /sbin/e2image
 /sbin/tune2fs
@@ -139,6 +139,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libext2fs.a
 %{_libdir}/libss.so
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
 -	Initial build. First version
 

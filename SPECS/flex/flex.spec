@@ -1,13 +1,15 @@
 Summary:	A utility for generating programs that recognize patterns in text
 Name:		flex
 Version:	2.5.38
-Release:	1
+Release:	2%{?dist}
 License:	BSD
 URL:		http://flex.sourceforge.net
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://prdownloads.sourceforge.net/flex/%{name}-%{version}.tar.bz2
+BuildRequires:	m4
+Requires:	m4
 %description
 The Flex package contains a utility for generating programs
 that recognize patterns in text.
@@ -49,5 +51,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 2.5.38-2
+-	Adding m4 package to build and run time required package 
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.5.38-1
 -	Initial build.	First version

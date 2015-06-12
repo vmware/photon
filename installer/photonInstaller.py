@@ -89,6 +89,7 @@ if __name__ == '__main__':
     parser.add_option("-w",  "--working-directory",  dest="working_directory", default="/mnt/photon-root")
     parser.add_option("-t",  "--tools-path",  dest="tools_path", default="../stage")
     parser.add_option("-f", "--force", action="store_true", dest="force", default=False)
+    parser.add_option("-p", "--package-list-file", dest="package_list_file", default="package_list.json")
     
     (options,  args) = parser.parse_args()
     
@@ -133,7 +134,7 @@ if __name__ == '__main__':
 
 
     # Check the installation type
-    package_list = JsonWrapper("package_list.json").read()
+    package_list = JsonWrapper(options.package_list_file).read()
     if config['iso_system']:
         packages = package_list["iso_packages"]
     elif config['type'] == 'micro':
@@ -163,12 +164,12 @@ if __name__ == '__main__':
     config['working_directory'] = options.working_directory
 
     # Run the installer
-    package_installer = Installer(config, local_install = not (options.iso_path or options.vmdk_path))
+    package_installer = Installer(config, local_install = not (options.iso_path or options.vmdk_path), tools_path = options.tools_path, rpm_path = options.tools_path + "/RPMS", log_path = options.tools_path + "/LOGS")
     package_installer.install(None)
 
     # Making the iso if needed
     if config['iso_system']:
-        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.tools_path])
+        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.tools_path, options.package_list_file])
         retval = process.wait()
 
     # Cleaning up for vmdk

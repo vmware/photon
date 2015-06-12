@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	9.10.0
-Release:	2
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools/archive/stable-9.10.x.zip
 Group:		Applications/System
@@ -58,6 +58,7 @@ EOF
 make DESTDIR=%{buildroot} install
 rm -f %{buildroot}/sbin/mount.vmhgfs
 %post
+ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 /sbin/ldconfig
 /bin/systemctl enable vmtoolsd
 %postun	-p /sbin/ldconfig
@@ -73,7 +74,7 @@ rm -f %{buildroot}/sbin/mount.vmhgfs
 %{_sysconfdir}/*
 %{_datadir}/*
 %{_prefix}/etc/*
-%{_lib}/*
+/lib/*
 %{_sbindir}/*
 
 %changelog

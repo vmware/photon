@@ -1,7 +1,7 @@
 Summary:	Man pages
 Name:		man-pages
 Version:	3.59
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
 Group:		System Environment/Base

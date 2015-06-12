@@ -1,11 +1,11 @@
 Summary:	Unzip-6.0
 Name:		unzip
 Version:	6.0
-Release:	1
+Release:	2%{?dist}
 License:	BSD
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://downloads.sourceforge.net/infozip/unzip60.tar.gz
-Group:		SystemUtilities
+Group:		System Environment/Utilities
 Vendor:		VMware, Inc.
 Distribution: Photon
 %description
@@ -36,5 +36,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %{_bindir}/*
 %changelog
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 6.0.1-2
+-   Updated group.
 *	Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 6.0-1
 -	Initial build. First version

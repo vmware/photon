@@ -1,7 +1,7 @@
 Summary:	Libxml2-2.9.1
 Name:		libxml2
 Version:	2.9.1
-Release:	1
+Release:	2%{?dist}
 License:	MIT
 URL:		http://xmlsoft.org/
 Group:		System Environment/General Libraries
@@ -11,6 +11,7 @@ Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version
 Requires:	python2
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
+Provides:	pkgconfig(libxml-2.0)
 
 %description
 The libxml2 package contains libraries and utilities used for parsing XML files. 
@@ -18,7 +19,6 @@ The libxml2 package contains libraries and utilities used for parsing XML files.
 %package devel
 Summary:    Libraries and header files for libxml
 Requires:	%{name} = %{version}
-Provides:	pkgconfig(libxml-2.0)
 
 %description devel
 Static libraries and header files for the support library for libxml
@@ -62,5 +62,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
 
 %changelog
+*	Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.9.1-2
+-	Moved 'Provides: pkgconfig(...)' into base package
 *	Mon Oct 13 2014 Divya Thaluru <dthaluru@vmware.com> 2.9.1-1
 -	Initial build.	First version

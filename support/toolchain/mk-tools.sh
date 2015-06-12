@@ -41,7 +41,7 @@ PATH=/tools/bin:/bin:/usr/bin
 msg "Install build system: "
 build "	Installing directories" "install -vdm 755 ${BUILDDIR}/{BUILD,SOURCES,PATCHES,LOGS,SCRIPTS}" "${LOGFILE}"
 build "	Copying files" "cp -var ${SOURCE_PATH} ${BUILDDIR}/" "${LOGFILE}"
-build "	Copying files" "find ${SPECS_PATH} -name ""*.patch"" -exec cp ""{}"" ${BUILDDIR}/PATCHES \;" "${LOGFILE}"
+build "	Copying files" "find -L ${SPECS_PATH} -name ""*.patch"" -exec cp ""{}"" ${BUILDDIR}/PATCHES \;" "${LOGFILE}"
 build "	Copying files" "cp -var SCRIPTS ${BUILDDIR}/" "${LOGFILE}"
 cd ${BUILDDIR}
 

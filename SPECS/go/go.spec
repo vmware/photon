@@ -10,7 +10,7 @@
 Summary:	Go 
 Name:		go
 Version:	1.3.3
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		https://golang/org
 Group:		System Environment/Security
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %dir %{gopath}/src/bitbucket.org/
 %dir %{gopath}/src/code.google.com/
 %dir %{gopath}/src/code.google.com/p/
+%exclude %{goroot}/src/pkg/debug/dwarf/testdata
+%exclude %{goroot}/src/pkg/debug/elf/testdata
 %{_bindir}/*
 %changelog
 *	Fri Oct 17 2014 Divya Thaluru <dthaluru@vmware.com> 1.3.3-1

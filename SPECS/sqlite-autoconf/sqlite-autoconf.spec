@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		sqlite-autoconf
 Version:	3080301
-Release:	1
+Release:	1%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries

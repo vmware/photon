@@ -1,7 +1,7 @@
 Summary:	XML-Parser perl module
 Name:		XML-Parser
 Version:	2.41
-Release:	1
+Release:	1%{?dist}
 License:	GPL+
 URL:		http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz

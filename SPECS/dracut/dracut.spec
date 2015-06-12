@@ -5,7 +5,7 @@
 
 Name:		dracut
 Version:	041
-Release:	1
+Release:	1%{?dist}
 Group:		System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -80,8 +80,6 @@ touch $RPM_BUILD_ROOT%{_localstatedir}/log/dracut.log
 mkdir -p $RPM_BUILD_ROOT%{_sharedstatedir}/initramfs
 
 rm -f $RPM_BUILD_ROOT%{_mandir}/man?/*suse*
-rm -f -- $RPM_BUILD_ROOT%{_bindir}/mkinitrd
-rm -f -- $RPM_BUILD_ROOT%{_bindir}/lsinitrd
 
 # create compat symlink
 mkdir -p $RPM_BUILD_ROOT%{_sbindir}
@@ -95,6 +93,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %{!?_licensedir:%global license %%doc}
 %license COPYING lgpl-2.1.txt
 %{_bindir}/dracut
+%{_bindir}/mkinitrd
+%{_bindir}/lsinitrd
 # compat symlink
 %{_sbindir}/dracut
 %{_datadir}/bash-completion/completions/dracut

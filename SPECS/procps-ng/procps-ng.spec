@@ -1,7 +1,7 @@
 Summary:	Programs for monitoring processes
 Name:		procps-ng
 Version:	3.3.9
-Release:	1
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://procps.sourceforge.net/
 Group:		Applications/System
@@ -34,7 +34,6 @@ make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
 install -vdm 755 %{buildroot}/%{_lib}
 mv -v %{buildroot}/usr/bin/pidof %{buildroot}/bin
-mv -v %{buildroot}%{_libdir}/libprocps.so.* %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}/%{_libdir}/libprocps.so) %{buildroot}/%{_libdir}/libprocps.so
 find %{buildroot} -name '*.la' -delete
 %post	-p /sbin/ldconfig
@@ -74,8 +73,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/man1/watch.1.gz
 %{_mandir}/man1/ps.1.gz
 %{_mandir}/man5/sysctl.conf.5.gz
-%{_lib}/libprocps.so.3
-%{_lib}/libprocps.so.3.0.0
+%{_libdir}/libprocps.so.3
+%{_libdir}/libprocps.so.3.0.0
 /sbin/sysctl
 %files devel
 %{_includedir}/proc/sig.h
@@ -93,5 +92,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %changelog
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
+-   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
 -	Initial build. First version

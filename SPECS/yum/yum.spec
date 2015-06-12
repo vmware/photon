@@ -1,7 +1,7 @@
 Summary:	RPM installer/updater
 Name:		yum
 Version:	3.4.3
-Release:	1
+Release:	1%{?dist}
 License:	GPLv2+
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
@@ -12,6 +12,8 @@ BuildRequires:	python2
 BuildRequires:	python2-libs
 BuildRequires:	gettext
 BuildRequires:	intltool
+BuildRequires:	pycurl
+BuildRequires:	urlgrabber
 Requires:	urlgrabber
 Requires:	yum-metadata-parser >= 1.1.0
 Requires:	pycurl

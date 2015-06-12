@@ -1,7 +1,7 @@
 Summary:	Math libraries
 Name:		gmp
 Version:	5.1.3
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv3+
 URL:		http://www.gnu.org/software/gmp
 Group:		Applications/System

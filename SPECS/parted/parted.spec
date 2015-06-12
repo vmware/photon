@@ -1,7 +1,7 @@
 Summary:	My summary.
 Name:		parted
 Version:	3.2
-Release:	1
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:		Applications/System

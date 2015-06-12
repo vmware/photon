@@ -6,7 +6,7 @@
 Summary:	Practical Extraction and Report Language
 Name:		perl
 Version:	5.18.2
-Release:	1
+Release:	2%{?dist}
 License:	GPLv1+
 URL:		http://www.perl.org/
 Group:		Development/Languages
@@ -15,6 +15,7 @@ Distribution:	Photon
 Source0:	http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
 Provides:	perl >= 0:5.003000
 Provides:	perl(getopts.pl)
+Provides:   /bin/perl
 %description
 The Perl package contains the Practical Extraction and
 Report Language.
@@ -53,5 +54,7 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Thu Jun 4 2015 Touseef Liaqat <tliaqat@vmware.com> 5.18.2-2
+-	Provide /bin/perl.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.18.2-1
 -	Initial build. First version

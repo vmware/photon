@@ -164,7 +164,7 @@ class Installer(object):
         tools = tools_list['base_tools']
         # Add the additional iso tools.
         if self.install_config['iso_system']:
-            tools = tools + tools_list['iso_tools']
+            tools = tools + tools_list['iso_tools'] + [self.rpm_path]
 
         self.files_tobecopied = []
         for item in tools:

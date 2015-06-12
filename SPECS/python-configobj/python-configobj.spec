@@ -1,6 +1,6 @@
 Name:           python-configobj
 Version:        5.0.6
-Release:        1
+Release:        1%{?dist}
 Summary:        Config file reading, writing and validation
 License:        BSD
 Group:          Development/Languages/Python

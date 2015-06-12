@@ -13,6 +13,7 @@ import json
 import os
 import hashlib
 import string
+import datetime
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -42,13 +43,19 @@ class pullSources:
             f.close()
         return sha1.hexdigest()
 
-    def downloadFile(self, sources_dir, filename, sha1 = None):
-        file_path = os.path.join(sources_dir, filename)
-        # check if file exists and has the same sha1
-        if os.path.isfile(file_path) and sha1 == self.getFileHash(file_path):
-            return file_path
+    def downloadExistingFilePrompt(self, filename):
+        yes = ['yes', 'y']
+        no = ['no', 'n']
+        while True:
+            prompt = "Found a different local copy of {0}. Do you want to replace it? [y/n]:".format(filename)
+            answer = raw_input(prompt).lower()
+            if answer in yes:
+                return True
+            elif answer in no:
+                return False
 
-        print 'Downloading %s...' % filename
+    def downloadFile(self, filename, file_path):
+        print '%s: Downloading %s...' % (str(datetime.datetime.today()), filename)
 
         #form url: https://dl.bintray.com/vmware/photon_sources/1.0/<filename>.
         url = '%s/%s/%s/%s/%s' % \
@@ -59,32 +66,45 @@ class pullSources:
                filename)
 
         with open(file_path, 'wb') as handle:
-            response = requests.get(url, auth=self._auth)
+            response = requests.get(url, auth=self._auth, stream=True)
 
             if not response.ok:
                 # Something went wrong
-                raise Exception(response.text)
+                raise Exception(response.text + " " + url)
 
             for block in response.iter_content(1024):
                 if not block:
                     break
 
                 handle.write(block)
+            response.close()
         return file_path
 
+    def downloadFileHelper(self, package_name, package_path, package_sha1 = None):
+        self.downloadFile(package_name, package_path)
+        if package_sha1 != self.getFileHash(package_path):
+            raise Exception('Invalid sha1 for package %s' % package_name)
 
     def pull(self, sources_dir):
         #Download the list of sources.
-        package_file_path = self.downloadFile(sources_dir, 'sha1-all')
+        sha1_filename = 'sha1-all'
+        sha1_file_path = os.path.join(sources_dir, sha1_filename)
+        package_file_path = self.downloadFile(sha1_filename, sha1_file_path)
         with open(package_file_path) as f:
             packages = f.readlines()
         for package in packages:
             i = string.rindex(package, '-')
+
             package_name = string.strip(package[:i])
             package_sha1 = string.strip(package[i+1:])
-            package_path = self.downloadFile(sources_dir, package_name, package_sha1)
-            if package_sha1 != self.getFileHash(package_path):
-                raise Exception('Invalid sha1 for package %s' % package_name)
+            package_path = os.path.join(sources_dir, package_name)
+
+            if not os.path.isfile(package_path):
+                self.downloadFileHelper(package_name, package_path, package_sha1)
+
+            elif package_sha1 != self.getFileHash(package_path):
+                    if self.downloadExistingFilePrompt(package_name):
+                        self.downloadFileHelper(package_name, package_path, package_sha1)
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <sources_dir>"
@@ -98,4 +118,5 @@ if __name__ == '__main__':
             parser.error("Incorrect number of arguments")
 
     p = pullSources(options.config_path)
+    print args[0]
     p.pull(args[0])

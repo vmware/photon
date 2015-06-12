@@ -1,7 +1,7 @@
 Summary:	Library for the arithmetic of complex numbers
 Name:		mpc
 Version:	1.0.2
-Release:	1
+Release:	1%{?dist}
 License:	LGPLv3+
 URL:		http://www.multiprecision.org
 Group:		Applications/System

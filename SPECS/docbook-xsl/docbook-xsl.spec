@@ -1,11 +1,11 @@
 Summary:	Docbook-xsl-1.78.1
 Name:		docbook-xsl
 Version:	1.78.1
-Release:	1
+Release:	2%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
-Group:		XML/Languages
+Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	libxml2
@@ -72,5 +72,7 @@ rm -rf /etc/xml/catalog
 %{_docdir}/*
 
 %changelog
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.78.1-2
+-   Updated group.
 *	Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 1.78.1-1
 -	Initial build. First version

@@ -2,8 +2,13 @@
 # Copyright VMware, Inc 2015
 #
 
-SRCROOT := .
+SRCROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 MAKEROOT=$(SRCROOT)/support/make
+
+# do not build these targets as '%'
+$(MAKEROOT)/makedefs.mk: ;
+Makefile: ;
+
 include $(MAKEROOT)/makedefs.mk
 
 ifdef PHOTON_CACHE_PATH
@@ -18,32 +23,41 @@ else
 PHOTON_SOURCES := sources
 endif
 
+ifdef PHOTON_PUBLISH_RPMS_PATH
+PHOTON_PUBLISH_RPMS := publish-rpms-cached
+else
+PHOTON_PUBLISH_RPMS := publish-rpms
+endif
+
 .PHONY : all iso clean toolchain toolchain-minimal photon-build-machine photon-vagrant-build photon-vagrant-local \
-check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin
+check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-package-list \
+clean-install clean-chroot
 
 all: iso
 
-iso: check $(PHOTON_PACKAGES) $(PHOTON_TOOLCHAIN_MINIMAL)
+iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) $(PHOTON_TOOLCHAIN_MINIMAL)
 	@echo "Building Photon ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
     $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
                         -w $(PHOTON_STAGE)/photon_iso \
                         -t $(PHOTON_STAGE) \
+                        -p $(PHOTON_INSTALLER_PACKAGE_LIST) \
                         -f > \
         $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages: check $(PHOTON_TOOLCHAIN_MINIMAL) $(PHOTON_SOURCES)
+packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-    $(PHOTON_PACKAGE_BUILDER) -a \
-                              -b $(PHOTON_CHROOT_PATH) \
+    $(PHOTON_PACKAGE_BUILDER) -o full \
                               -s $(PHOTON_SPECS_DIR) \
                               -r $(PHOTON_RPMS_DIR) \
-                              -o $(PHOTON_SRCS_DIR) \
-                              -p $(PHOTON_STAGE) \
-                              -l $(PHOTON_LOGS_DIR)
+                              -x $(PHOTON_SRCS_DIR) \
+                              -b $(PHOTON_STAGE) \
+                              -l $(PHOTON_LOGS_DIR) \
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -j $(PHOTON_PACKAGE_LIST)
 
-packages-cached: check $(PHOTON_TOOLCHAIN_MINIMAL)
+packages-cached:
 	@echo "Using cached RPMS..."
 	@$(RM) -f $(PHOTON_RPMS_DIR_NOARCH)/* && \
      $(RM) -f $(PHOTON_RPMS_DIR_X86_64)/* && \
@@ -51,16 +65,29 @@ packages-cached: check $(PHOTON_TOOLCHAIN_MINIMAL)
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/x86_64/* $(PHOTON_RPMS_DIR_X86_64)/
 
 sources:
-	@echo "Pulling sources from bintary..."
-	@cd $(PHOTON_PULL_SOURCES_DIR) && \
-	$(PHOTON_PULL_SOURCES) $(PHOTON_SRCS_DIR)
+	@echo "Pulling sources from bintray..."
+	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
+	 cd $(PHOTON_PULL_SOURCES_DIR) && \
+	 $(PHOTON_PULL_SOURCES) -c $(PHOTON_BINTRAY_CONFIG) $(PHOTON_SRCS_DIR)
 
 sources-cached:
 	@echo "Using cached SOURCES..."
 	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
 	 $(CP) -rf $(PHOTON_SOURCES_PATH)/* $(PHOTON_SRCS_DIR)/
 
+publish-rpms:
+	@echo "Pulling publish rpms from bintray..."
+	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
+	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR)
+
+publish-rpms-cached:
+	@echo "Using cached publish rpms..."
+	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR) && \
+	 $(CP) -rf $(PHOTON_PUBLISH_RPMS_PATH)/* $(PHOTON_PUBLISH_RPMS_DIR)/
+
 toolchain-minimal : $(PHOTON_TOOLCHAIN_MINIMAL)
+
+$(PHOTON_TOOLCHAIN_MIN_LIST): ;
 
 $(PHOTON_TOOLCHAIN_MINIMAL) : $(PHOTON_TOOLCHAIN) $(PHOTON_TOOLCHAIN_MIN_LIST)
 	echo "Building minimal toolchain..."
@@ -156,7 +183,6 @@ PACKER_ARGS="-only=$(VAGRANT_BUILD)"
 endif
 
 photon-vagrant-local: check-packer check-vagrant
-
 	@echo "Building a Photon Vagrant box with Packer..."
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
 		cd $(PHOTON_PACKER_TEMPLATES) && \
@@ -169,7 +195,7 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
 	fi
 
-check: check-bison check-g++ check-gawk check-createrepo check-texinfo
+check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-package-list
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
@@ -189,6 +215,8 @@ check-createrepo:
 check-vagrant: check-packer
 	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
 
+check-package-list:
+	json_pp -t null < installer/package_list.json >/dev/null 2>&1 || { echo "Invalid installer/package_list.json. Aborting" >&2; exit 1; }
 
 ifeq ($(VAGRANT_BUILD),vcloudair)
 check-packer: check-packer-ovf-plugin
@@ -201,3 +229,17 @@ endif
 
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
+
+%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+	$(eval PKG_NAME = $@)
+	@echo "Building package $(PKG_NAME) ..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+    $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
+                              -b $(PHOTON_CHROOT_PATH) \
+                              -s $(PHOTON_SPECS_DIR) \
+                              -r $(PHOTON_RPMS_DIR) \
+                              -x $(PHOTON_SRCS_DIR) \
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -l $(PHOTON_LOGS_DIR)
+                              
+
