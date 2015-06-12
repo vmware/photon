@@ -7,7 +7,7 @@ URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-syst
 Group:		System Environment/Daemons
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://my.balabit.com/downloads/syslog-ng/open-source-edition/3.6.2/source/syslog-ng_3.6.2.tar.gz
+Source0:	http://my.balabit.com/downloads/syslog-ng/open-source-edition/%{version}/source/%{name}_%{version}.tar.gz
 Requires:	glib
 Requires:	python2
 BuildRequires:	eventlog
