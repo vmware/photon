@@ -13,6 +13,7 @@ import json
 import os
 import hashlib
 import string
+import datetime
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -54,7 +55,7 @@ class pullSources:
                 return False
 
     def downloadFile(self, filename, file_path):
-        print 'Downloading %s...' % filename
+        print '%s: Downloading %s...' % (str(datetime.datetime.today()), filename)
 
         #form url: https://dl.bintray.com/vmware/photon_sources/1.0/<filename>.
         url = '%s/%s/%s/%s/%s' % \
@@ -65,7 +66,7 @@ class pullSources:
                filename)
 
         with open(file_path, 'wb') as handle:
-            response = requests.get(url, auth=self._auth)
+            response = requests.get(url, auth=self._auth, stream=True)
 
             if not response.ok:
                 # Something went wrong
@@ -76,6 +77,7 @@ class pullSources:
                     break
 
                 handle.write(block)
+            response.close()
         return file_path
 
     def downloadFileHelper(self, package_name, package_path, package_sha1 = None):
