@@ -46,6 +46,9 @@ cp ./locale* ${BUILDROOT}${PARENT}/
 #copy kernel config files
 cp ./config* ${BUILDROOT}${PARENT}/
 
+mkdir ${BUILDROOT}/etc
+cp /etc/resolv.conf ${BUILDROOT}/etc/
+
 #copy our macros and set the processor count
 #NUMPROCS=`nproc`
 #let NUMPROCS=$NUMPROCS+1

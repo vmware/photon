@@ -1,7 +1,7 @@
 {
     "iso_packages":["linux-api-headers", "glibc", "zlib", "filesystem", "file",
-                "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp", "readline",
-                "sed", "bzip2", "pkg-config", "ncurses","bash",
+                "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp", 
+                "sed", "bzip2", "pkg-config", "readline", "ncurses", "bash",
                 "cracklib", "cracklib-dicts", "cracklib-python", "shadow", "procps-ng", 
                 "coreutils", "iana-etc", "grep", "bc", "libtool",
                 "inetutils", "gawk", "findutils",
@@ -33,9 +33,9 @@
                 ],
 
     "minimal_packages":["glibc", "zlib", "filesystem", "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp", 
-                "pkg-config", "ncurses", "bzip2", "cracklib", "cracklib-dicts", "shadow", "procps-ng", "iana-etc", "readline", "bash", "coreutils", "bc", "libtool", "inetutils",
-                "findutils", "xz", "grub", "iproute2", "util-linux", "openssl", "linux", "ca-certificates", "curl", "iptables", "Linux-PAM",
-                "attr", "libcap", "kmod", "systemd", "expat", "dbus", "file", "e2fsprogs", "elfutils-libelf", "lua", "popt", "sqlite-autoconf", "nspr", "nss", "rpm",
+                "pkg-config", "ncurses", "readline", "bash", "bzip2", "cracklib", "cracklib-dicts", "shadow", "procps-ng", "iana-etc", "coreutils", "bc", "libtool", "inetutils",
+                "findutils", "xz", "grub", "iproute2", "util-linux", "openssl", "kmod", "linux", "ca-certificates", "curl", "iptables", "Linux-PAM",
+                "attr", "libcap", "systemd", "expat", "dbus", "file", "e2fsprogs", "elfutils-libelf", "lua", "popt", "sqlite-autoconf", "nspr", "nss", "rpm",
                 "openssh", "libffi", "gdbm", "python2", "python2-libs", "pcre", "glib", "libxml2",
                 "photon-release",
                 "sed", "grep", "cpio", "gzip", "nano", "db", "libsolv", "libgpg-error", "hawkey", "libassuan", "gpgme", "librepo", "tdnf",
@@ -60,6 +60,7 @@
                 "Linux-PAM-lang", "make", "bindutils", "gperf", "lua-devel", "which", "less",  
                 "cmake", "gpgme-devel", "parted", "vim", "xz-devel", "xerces-c-devel", "xml-security-c-devel", 
                 "nss-devel", "ncurses-devel", "tzdata", "itstool", "sed-lang", "gptfdisk", "ntp", "flex", "patch", "m4", "dracut", "dracut-tools", 
+                "libarchive", "libsoup", "asciidoc", "mkinitcpio",
                 "ostree", "tdnf-devel", "rpm-ostree", "createrepo", "glibmm", "deltarpm", "cdrkit", "dparted", "libgsystem",
                 "rpm-ostree-toolbox","libsepol","libselinux","device-mapper-libs","device-mapper",
                 "acl","btrfs-progs","btrfs-progs-devel","device-mapper-devel","device-mapper-event","device-mapper-event-devel",
@@ -67,7 +68,7 @@
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel",
-		"postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng" ]
+                "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng"]
 }
 
 
