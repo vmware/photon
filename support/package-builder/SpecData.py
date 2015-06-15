@@ -52,90 +52,50 @@ class SerializableSpecObjectsUtils(object):
                 self.getListSpecFiles(listSpecFiles,dirEntryPath)
     
     def getBuildRequiresForPackage(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].buildRequirePackages
-        return None
-    
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].buildRequirePackages
+        
     def getRequiresAllForPackage(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].installRequiresAllPackages
-        return None
-    
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].installRequiresAllPackages
+        
     def getRequiresForPackage(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
-                return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
+        specName=self.getSpecName(package)
+        if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
+            return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
         return None
     
     def getRelease(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].release
-        return None
-    
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].release
+        
     def getVersion(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].version
-        return None
-    
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].version
+        
     def getSpecFile(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].specFile
-        return None
-    
-    def getSpecName(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].name
-        return None
-    
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].specFile
+        
     def getPatches(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].listPatches
-        return None
-    
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].listPatches
+        
     def getSources(self, package):
-        specName=""
-        if self.mapPackageToSpec.has_key(package):
-            specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].listSources
-        return None
-    
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].listSources
+        
     def getPackages(self, package):
-        specName=""
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].listPackages
+        
+    def getSpecName(self,package):
         if self.mapPackageToSpec.has_key(package):
             specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
-            return self.mapSerializableSpecObjects[specName].listPackages
-        return None
-    
-    def isValidPackage(self,package):
-        if self.mapPackageToSpec.has_key(package):
-            return True
-        return False
+            if self.mapSerializableSpecObjects.has_key(specName):
+                return specName
+        self.logger.error("Could not able to find "+package+" package from specs")
+        raise Exception("Invalid package:"+package)
     
     def printAllObjects(self):
         listSpecs=self.mapSerializableSpecObjects.keys()
