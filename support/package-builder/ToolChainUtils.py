@@ -88,25 +88,22 @@ class ToolChainUtils(object):
             
         self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)    
     
-    
-    
     def findRPMFileInGivenLocation(self,package,rpmdirPath):
         cmdUtils = CommandUtils()
         listFoundRPMFiles = cmdUtils.findFile(package+"-*.rpm",rpmdirPath)
         listFilterRPMFiles=[]
         for f in listFoundRPMFiles:
-            f1=f.replace(package,"")
-            print f1
-            l = f1.split("-")
-            print l
-            if len(l) == 3:
+            rpmFileName=os.path.basename(f)
+            checkRPMName=rpmFileName.replace(package,"")
+            rpmNameSplit = checkRPMName.split("-")
+            if len(rpmNameSplit) == 3:
                 listFilterRPMFiles.append(f)
         if len(listFilterRPMFiles) == 1 :
             return listFilterRPMFiles[0]
         if len(listFilterRPMFiles) == 0 :
             return None
         if len(listFilterRPMFiles) > 1 :
-            print("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
+            self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
             return None
     
     def buildCoreToolChainPackages(self):
