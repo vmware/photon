@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	7.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -111,9 +111,9 @@ EOF
 #
 #	7.2.2. Creating Network Interface Configuration Files"
 #
-cat > %{buildroot}/etc/systemd/network/10-dhcp-eth0.network <<- "EOF"
+cat > %{buildroot}/etc/systemd/network/10-dhcp-en.network <<- "EOF"
 [Match]
-Name=eth0
+Name=en*
 
 [Network]
 DHCP=yes
@@ -378,7 +378,7 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 %config(noreplace) /etc/sysconfig/console
 %config(noreplace) /etc/sysconfig/network
 %dir /etc/systemd/network
-%config(noreplace) /etc/systemd/network/10-dhcp-eth0.network
+%config(noreplace) /etc/systemd/network/10-dhcp-en.network
 %dir /etc/profile.d
 #	media filesystem
 %dir /run/media/cdrom
@@ -460,6 +460,8 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 /usr/local/lib64
 %endif
 %changelog
+*   Mon Jun 15 2015 Sharath George <sharathg@vmware.com> 7.5-3
+-   Change the network match for dhcp.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 7.5-2
 -   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.5-1
