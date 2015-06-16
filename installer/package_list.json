@@ -68,7 +68,7 @@
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel",
-                "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng"]
+                "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "zookeeper"]
 }
 
 
