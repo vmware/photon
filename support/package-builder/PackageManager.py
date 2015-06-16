@@ -95,13 +95,15 @@ class PackageManager(object):
         return True
     
     def calculatePossibleNumWorkerThreads(self):
-        process = subprocess.Popen(["df" ,constants.buildRootPath],shell=True,stdout=subprocess.PIPE)
+        cmd = "df "+constants.buildRootPath
+        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
         retval = process.wait()
         if retval != 0:
             self.logger.error("Unable to check free space. Unknown error.")
             return False
         output = process.communicate()[0]
         device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
+        self.logger.info("Available space:"+available)
         c =  int(available)/600000
         numChroots=int(c)
         self.logger.info("Possible number of worker threads:"+str(numChroots))

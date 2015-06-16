@@ -1,7 +1,7 @@
 Summary:	Next generation system logger facilty
 Name:		syslog-ng
 Version:	3.6.2
-Release:	1%{dist}
+Release:	1%{?dist}
 License:	GPL + LGPL
 URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-system
 Group:		System Environment/Daemons
