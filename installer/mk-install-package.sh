@@ -25,10 +25,8 @@ if [ $# -ge 2 ]
 fi
 
 [ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
-[ -z ${PARENT} ]	&& fail "${PRGNAME}: PARENT not set: FAILURE"
-[ -z ${BUILDROOT} ]		&& fail "${PRGNAME}: BUILDROOT not set: FAILURE"
 RPMPKG=""
-RPMPKG=$(find RPMS -name "$1-[0-9]*.rpm" -print)
+RPMPKG=$(find ../RPMS -name "$1-[0-9]*.rpm" -print)
 [ -z $RPMPKG ] && fail "installation error: rpm package not found\n"
 case $1 in
 	linux-dev | linux-docs | glibc | gmp | gcc | bzip2 | ncurses | util-linux | e2fsprogs | shadow | bison | perl | texinfo | vim | linux | udev | rpm | dbus)

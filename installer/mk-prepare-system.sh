@@ -28,7 +28,6 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #LOGFILE=/dev/null		#	uncomment to disable log file
 
 [ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
-[ -z ${PARENT} ]	&& fail "${PRGNAME}: PARENT not set: FAILURE"
 [ -z ${BUILDROOT} ]	&& fail "${PRGNAME}: Build root not set: FAILURE"
 
 if mountpoint ${BUILDROOT}/run	>/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
@@ -50,7 +49,7 @@ if mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then umount ${BUILDROOT}/dev; fi
     fi
     PATH=$PATH:/tools/bin
     }
-cd ${BUILDROOT}${PARENT}	|| fail "${PRGNAME}: Change directory: ${BUILDROOT}${PARENT}: FAILURE"
+cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
 #
 #	Setup the filesystem for chapter 06
 #
