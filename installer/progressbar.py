@@ -31,13 +31,16 @@ class ProgressBar(object):
         self.panel.hide()
         panel.update_panels()
 
-    def initialize(self, num_items, init_message):
-        self.num_items = num_items
+    def initialize(self, init_message):
+        self.num_items = 0
         self.message = init_message
         self.time_elapsed = 0
         self.time_remaining = 60
         self.timer = threading.Timer(1, self.update_time)
         self.timer.start()
+
+    def update_num_items(self, num_items):
+        self.num_items = num_items
 
     def update_message(self, message):
         self.message = message
@@ -66,6 +69,8 @@ class ProgressBar(object):
         self.window.refresh()
 
     def render_progress(self):
+        if self.num_items == 0:
+            return
         completed = self.progress * 100 / self.num_items
         completed_width = completed * self.width / 100
         completed_str, remaining_str = self.get_spaces(completed_width, self.width, completed)

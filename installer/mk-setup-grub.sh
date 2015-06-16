@@ -21,7 +21,6 @@ source function.inc		#	commonn functions
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #LOGFILE=/dev/null		#	uncomment to disable log file
 ARCH=$(uname -m)	# host architecture
-RPMDIR=${PARENT}	# where rpms are stored on the host system
 [ ${EUID} -eq 0 ]	|| fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}		#	clear/initialize logfile
 
@@ -72,8 +71,7 @@ EOF
 sed -i "s/UUID_PLACEHOLDER/$UUID/" "$BUILDROOT"/boot/grub/grub.cfg > ${LOGFILE}	
 
 #Cleanup the workspace directory
-#find "$BUILDROOT"/{,usr/}{lib,bin,sbin} -type f -exec strip --strip-debug --strip-unneeded '{}' ';' > /dev/null 2>&1
 rm -rf "$BUILDROOT"/tools
-rm -rf "$BUILDROOT""$PARENT"
+rm -rf "$BUILDROOT"/RPMS
 
 #umount $BUILDROOT

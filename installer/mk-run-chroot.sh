@@ -19,7 +19,6 @@ PRGNAME=${0##*/}	# script name minus the path
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #LOGFILE=/dev/null		#	uncomment to disable log file
 [ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
-[ -z ${PARENT} ]	&& fail "${PRGNAME}: PARENT not set: FAILURE"
 [ -z ${BUILDROOT} ]	&& fail "${PRGNAME}: Build root not set: FAILURE"
 
 # Remove the name of this script from our argument list
@@ -34,6 +33,6 @@ chroot "${BUILDROOT}" \
 	TERM="$TERM" \
 	PS1='\u:\w\$ ' \
 	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
-	/tools/bin/bash --login +h -c "cd ${PARENT};$*"
+	/tools/bin/bash --login +h -c "cd installer;$*"
 
 exit 0

@@ -88,6 +88,7 @@ if __name__ == '__main__':
     parser.add_option("-v", "--vmdk-path", dest="vmdk_path")
     parser.add_option("-w",  "--working-directory",  dest="working_directory", default="/mnt/photon-root")
     parser.add_option("-t",  "--tools-path",  dest="tools_path", default="../stage")
+    parser.add_option("-r",  "--rpm-path",  dest="rpm_path", default="../stage/RPMS")
     parser.add_option("-f", "--force", action="store_true", dest="force", default=False)
     parser.add_option("-p", "--package-list-file", dest="package_list_file", default="package_list.json")
     
@@ -164,12 +165,12 @@ if __name__ == '__main__':
     config['working_directory'] = options.working_directory
 
     # Run the installer
-    package_installer = Installer(config, local_install = not (options.iso_path or options.vmdk_path), tools_path = options.tools_path, rpm_path = options.tools_path + "/RPMS", log_path = options.tools_path + "/LOGS")
+    package_installer = Installer(config, tools_path = options.tools_path, rpm_path = options.rpm_path, log_path = options.tools_path + "/LOGS")
     package_installer.install(None)
 
     # Making the iso if needed
     if config['iso_system']:
-        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.tools_path, options.package_list_file])
+        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.tools_path, options.rpm_path, options.package_list_file])
         retval = process.wait()
 
     # Cleaning up for vmdk
