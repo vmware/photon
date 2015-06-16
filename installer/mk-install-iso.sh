@@ -28,34 +28,25 @@ if [ $# -lt 2 ]
 fi
 ISO_OUTPUT_NAME=$1
 TOOLS_PATH=$2
-PACKAGE_LIST_FILE=$3
+RPMS_PATH=$3
+PACKAGE_LIST_FILE=$4
 
 
 #- Step 3 Setting up the boot loader
+WORKINGDIR=${BUILDROOT}
+BUILDROOT=${BUILDROOT}/photon-chroot
 
-mkdir ${BUILDROOT}/isolinux
-cp BUILD_DVD/isolinux/* ${BUILDROOT}/isolinux/
+mkdir ${WORKINGDIR}/isolinux
+cp BUILD_DVD/isolinux/* ${WORKINGDIR}/isolinux/
 
-mv ${BUILDROOT}/boot/* ${BUILDROOT}/isolinux/
-rmdir ${BUILDROOT}/boot
-ln -s isolinux ${BUILDROOT}/boot
+find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
 
-find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${BUILDROOT}/boot/vmlinuz
-
-cp -r ../installer ${BUILDROOT}/${PARENT}
+rm -f ${BUILDROOT}/installer/*.pyc
 # replace default package_list with specific one
-cp $PACKAGE_LIST_FILE ${BUILDROOT}/${PARENT}/installer/package_list.json
-rm -f ${BUILDROOT}/${PARENT}/installer/*.pyc
+cp $PACKAGE_LIST_FILE ${BUILDROOT}/installer/package_list.json
 
 #ID in the initrd.gz now is PHOTON_VMWARE_CD . This is how we recognize that the cd is actually ours. touch this file there.
-touch ${BUILDROOT}/PHOTON_VMWARE_CD
-
-#- Step 4 - Move /etc /var /root /home to /fake/needwrite
-
-mkdir -p ${BUILDROOT}/fake/{needwrite,ramdisk}
-mv ${BUILDROOT}/var/ ${BUILDROOT}/tmp ${BUILDROOT}/fake/needwrite/
-ln -s fake/needwrite/var ${BUILDROOT}/var
-ln -s fake/needwrite/tmp ${BUILDROOT}/tmp
+touch ${WORKINGDIR}/PHOTON_VMWARE_CD
 
 # Step 4.5 Create necessary devices
 mkfifo ${BUILDROOT}/dev/initctl
@@ -68,7 +59,6 @@ mknod ${BUILDROOT}/dev/sda b 8 0
 
 #- Step 5 - Creating the boot script
 mkdir -p ${BUILDROOT}/etc/systemd/scripts
-cp BUILD_DVD/create_ramdisk ${BUILDROOT}/bin/create_ramdisk
 
 # Step 6 create fstab
 
@@ -78,37 +68,55 @@ cp BUILD_DVD/fstab ${BUILDROOT}/etc/fstab
 
 cat >> ${BUILDROOT}/bin/bootphotoninstaller << EOF
 #!/bin/bash
-create_ramdisk
-cd ${PARENT}/installer
+cd /installer
 ./isoInstaller.py 2> /var/log/installer && shutdown -r now
 /bin/bash
 EOF
 
 chmod 755 ${BUILDROOT}/bin/bootphotoninstaller
 
+cat >> ${BUILDROOT}/init << EOF
+mount -t proc proc /proc
+/lib/systemd/systemd
+EOF
+chmod 755 ${BUILDROOT}/init
+
 #adding autologin to the root user
 sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --noclear %I $TERM/g" ${BUILDROOT}/lib/systemd/system/getty@.service
 
 sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${BUILDROOT}/etc/passwd
 
-mkdir -p ${BUILDROOT}/mnt/photon-root
-cp $TOOLS_PATH/tools.tar.gz ${BUILDROOT}/${PARENT}/
+mkdir -p ${BUILDROOT}/mnt/photon-root/photon-chroot
+rm -rf ${BUILDROOT}/RPMS
+cp -r ${RPMS_PATH} ${WORKINGDIR}/
+cp $TOOLS_PATH/tools.tar.gz ${WORKINGDIR}/
 
 #creating rpm repo in cd..
-createrepo --database ${BUILDROOT}/${PARENT}/RPMS
+createrepo --database ${WORKINGDIR}/RPMS
 
-rm -rf ${BUILDROOT}/${PARENT}/LOGS
+rm -rf ${BUILDROOT}/LOGS
 
 #Remove our rpm database as it fills up the ramdisk
 rm -rf ${BUILDROOT}/var/lib/rpm
-find "$BUILDROOT"/{,usr/}lib -type f -exec strip --strip-debug '{}' ';' > /dev/null 2>&1
-find "$BUILDROOT"/{,usr/}{bin,sbin} -type f -exec strip --strip-unneeded '{}' ';' > /dev/null 2>&1
+# TODO: mbassiouny, Find a clean way to do that
+for i in `ls ${BUILDROOT}/usr/share/`; do
+	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' ]; then
+		rm -rf ${BUILDROOT}/usr/share/$i
+	fi
+done
 rm -rf $BUILDROOT/tools
-#Step 9 Generate the ISO!!!!
+
+# Generate the intird
 pushd $BUILDROOT
+(find . | cpio -o -H newc --quiet | gzip -9 ) > ${WORKINGDIR}/isolinux/initrd.img
+popd
+rm -rf $BUILDROOT
+
+#Step 9 Generate the ISO!!!!
+pushd $WORKINGDIR
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table -V "PHOTON_$(date +%Y%m%d)" \
-		$BUILDROOT >$ISO_OUTPUT_NAME
+		$WORKINGDIR >$ISO_OUTPUT_NAME
 
 popd
 

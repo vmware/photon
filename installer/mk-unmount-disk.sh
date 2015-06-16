@@ -19,7 +19,6 @@ PRGNAME=${0##*/}	# script name minus the path
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #LOGFILE=/dev/null		#	uncomment to disable log file
 [ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
-[ -z ${PARENT} ]	&& fail "${PRGNAME}: PARENT not set: FAILURE"
 [ -z ${BUILDROOT} ]		&& fail "${PRGNAME}: BUILDROOT not set: FAILURE"
 if mountpoint ${BUILDROOT}/run	>/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
 if mountpoint ${BUILDROOT}/sys	>/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
