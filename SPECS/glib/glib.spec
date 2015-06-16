@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.42.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.42/glib-2.42.0.tar.xz
 Group:		Applications/System
@@ -27,7 +27,7 @@ The GLib package contains a low-level libraries useful for providing data struct
 %package devel
 Summary:	Header files for the glib library
 Group:		Development/Libraries
-Requires:	glib
+Requires:	glib glib-schemas
 Provides:	glib-devel
 Provides:	glib-devel(x86-64)
 BuildRequires:	python2 >= 2.7
@@ -37,6 +37,14 @@ Requires:	python2
 
 %description devel
 Static libraries and header files for the support library for the glib library
+
+%package schemas
+Summary:	gsettings schemas compiling tool
+Group:		Development/Libraries
+Requires:	glib
+
+%description schemas
+Gsettings schemas compiling tool
 
 %prep
 %setup -q
@@ -66,7 +74,19 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/glib-*/*
 %{_includedir}/*
 %{_datadir}/*
+%exclude %{_bindir}/glib-compile-schemas
+%exclude %{_bindir}/gsettings
+%exclude %{_datadir}/glib-2.0/schemas/*
+
+%files schemas
+%defattr(-, root, root)
+%{_bindir}/glib-compile-schemas
+%{_bindir}/gsettings
+%{_datadir}/glib-2.0/schemas/*
+
 %changelog
+*	Fri Jun 12 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-3
+-	Added glib-schemas package
 *	Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
 -	Added more 'Provides: pkgconfig(...)' for base package
 *	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 2.42.0-1
