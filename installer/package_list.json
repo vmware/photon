@@ -11,7 +11,7 @@
                 "linux", "patch", "cpio",
                 "Linux-PAM", "attr", "libcap", "systemd", "dbus",
                 "elfutils-libelf", "elfutils-libelf-devel", "sqlite-autoconf", "nspr", "nss-devel", "nss", "popt", "lua", "rpm",
-                "which", "gptfdisk", "tar", "gzip", "python2", "python2-devel", "python2-libs", "python2-tools",
+                "which", "gptfdisk", "tar", "gzip", "openssl", "python2", "python2-devel", "python2-libs", "python2-tools", "python-requests",
                 "pcre", "pcre-devel", "glib", "glib-devel", "parted", "libsigc++", "XML-Parser", "glibmm", "dparted",
                 "libgsystem", "ostree"],
 
