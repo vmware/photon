@@ -30,6 +30,7 @@ Requires:    libmspack
 Requires:    glib
 Requires:    xml-security-c
 Requires:    openssl
+Requires:    filesystem
 
 %description
 The Linux package contains the Linux kernel. Open vmware tools package contains the kernel module vmhgfs
@@ -123,6 +124,7 @@ EOF
 /boot/system.map-%{version}
 /boot/config-%{version}
 /boot/vmlinuz-%{version}
+%config(noreplace) /etc/modules-load.d/vmhgfs.conf
 /lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{version}/build

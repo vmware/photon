@@ -30,7 +30,7 @@ PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
 .PHONY : all iso clean toolchain toolchain-minimal photon-build-machine photon-vagrant-build photon-vagrant-local \
-check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin \
+check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-package-list \
 clean-install clean-chroot
 
 all: iso
@@ -54,7 +54,8 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                               -x $(PHOTON_SRCS_DIR) \
                               -b $(PHOTON_STAGE) \
                               -l $(PHOTON_LOGS_DIR) \
-                              -p $(PHOTON_PUBLISH_RPMS_DIR)
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -j $(PHOTON_PACKAGE_LIST)
 
 packages-cached:
 	@echo "Using cached RPMS..."
@@ -194,7 +195,7 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
 	fi
 
-check: check-bison check-g++ check-gawk check-createrepo check-texinfo
+check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-package-list
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
@@ -214,6 +215,8 @@ check-createrepo:
 check-vagrant: check-packer
 	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
 
+check-package-list:
+	json_pp -t null < installer/package_list.json >/dev/null 2>&1 || { echo "Invalid installer/package_list.json. Aborting" >&2; exit 1; }
 
 ifeq ($(VAGRANT_BUILD),vcloudair)
 check-packer: check-packer-ovf-plugin
