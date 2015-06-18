@@ -141,7 +141,7 @@ class PackageManager(object):
         statusEvent=threading.Event()
         numWorkerThreads=self.calculatePossibleNumWorkerThreads()
         if numWorkerThreads > 8:
-            numWorkerThreads = 8
+            numWorkerThreads = 1
         if numWorkerThreads == 0:
             return False
          
