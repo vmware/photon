@@ -8,7 +8,7 @@
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
 Version:	1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	VMware
@@ -93,6 +93,8 @@ mkdir -p %{buildroot}/var/cache/tdnf
     %{_libdir}/*
 
 %changelog
+*       Thu Jun 18 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-2
+-       Include proxy support
 *       Fri Jan 23 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0
 -       Initial build.  First version
 
