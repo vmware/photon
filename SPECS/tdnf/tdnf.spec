@@ -19,7 +19,9 @@ BuildRequires:	popt-devel
 BuildRequires:	rpm-devel
 BuildRequires:	glib-devel
 BuildRequires:	hawkey-devel
-BuildRequires:	librepo
+BuildRequires:	openssl-devel
+
+BuildRequires:	librepo-devel
 Source0:	%{name}-%{version}.tar.gz
 
 %description
