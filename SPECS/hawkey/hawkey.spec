@@ -1,7 +1,7 @@
 Summary:	Hawkey
 Name:		hawkey
 Version:	2014.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://fedoraproject.org/wiki/Features/Hawkey
 Source0:	https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -23,6 +23,7 @@ packages based on the current state of RPMDB and yum repositories.
 Summary:	A Library providing simplified C and Python API to libsolv
 Group:		Development/Libraries
 Requires:	hawkey = %{version}-%{release}
+Provides:       pkgconfig(hawkey)
 
 %description devel
 Development files for hawkey.
@@ -66,6 +67,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %exclude %{python_sitearch}/*
 
 %changelog
+*	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 2014.1-3
+-	Add pkgconfig Provides directive
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2014.1.1-2
 -   Updated group.
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.1-1
