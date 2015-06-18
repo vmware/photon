@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
