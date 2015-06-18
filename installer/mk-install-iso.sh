@@ -36,12 +36,13 @@ PACKAGE_LIST_FILE=$4
 WORKINGDIR=${BUILDROOT}
 BUILDROOT=${BUILDROOT}/photon-chroot
 
-mkdir ${WORKINGDIR}/isolinux
-cp BUILD_DVD/isolinux/* ${WORKINGDIR}/isolinux/
+cp -r BUILD_DVD/isolinux ${WORKINGDIR}/
+cp sample_ks.cfg ${WORKINGDIR}/isolinux/
 
 find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
 
 rm -f ${BUILDROOT}/installer/*.pyc
+rm -rf ${BUILDROOT}/installer/BUILD_DVD
 # replace default package_list with specific one
 cp $PACKAGE_LIST_FILE ${BUILDROOT}/installer/package_list.json
 

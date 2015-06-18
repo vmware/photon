@@ -11,19 +11,21 @@ import crypt
 import re
 import random
 import string
-import time
 import shutil
 import fnmatch
 import signal
 import sys
+import glob
+import modules.commons
 from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
 from window import Window
 from actionresult import ActionResult
 
 class Installer(object):
-    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, tools_path = "../stage", rpm_path = "../stage/RPMS", log_path = "../stage/LOGS"):
+    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, tools_path = "../stage", rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
         self.install_config = install_config
+        self.ks_config = ks_config
         self.iso_installer = iso_installer
         self.tools_path = tools_path
         self.rpm_path = rpm_path
@@ -45,13 +47,6 @@ class Installer(object):
         self.photon_root = self.working_directory + "/photon-chroot";
 
         self.restart_command = "shutdown"
-        self.hostname_file = self.photon_root + "/etc/hostname"
-        self.hosts_file = self.photon_root + "/etc/hosts"
-        self.passwd_filename = self.photon_root + "/etc/passwd"
-        self.shadow_filename = self.photon_root + "/etc/shadow"
-        self.authorized_keys_dir = self.photon_root + "/root/.ssh"
-        self.authorized_keys_filename = self.authorized_keys_dir + "/authorized_keys"
-        self.sshd_config_filename = self.photon_root + "/etc/ssh/sshd_config"
 
         if self.iso_installer:
             self.output = open(os.devnull, 'w')
@@ -100,6 +95,8 @@ class Installer(object):
             self.progress_bar.initialize('Initializing installation...')
             self.progress_bar.show()
 
+        self.execute_modules(modules.commons.PRE_INSTALL)
+
         self.initialize_system()
 
         #install packages
@@ -121,18 +118,12 @@ class Installer(object):
         self.finalize_system()
 
         if not self.install_config['iso_system']:
+            # Execute post installation modules
+            self.execute_modules(modules.commons.POST_INSTALL)
+
             # install grub
             process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, self.install_config['disk']['disk'], self.install_config['disk']['root']], stdout=self.output)
             retval = process.wait()
-
-            #update root password
-            self.update_root_password()
-
-            #update hostname
-            self.update_hostname()
-
-            #update openssh config
-            self.update_openssh_config()
 
         process = subprocess.Popen([self.unmount_disk_command, '-w', self.photon_root], stdout=self.output)
         retval = process.wait()
@@ -140,7 +131,8 @@ class Installer(object):
         if self.iso_installer:
             self.progress_bar.hide()
             self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
-            self.window.content_window().getch()
+            if self.ks_config == None:
+                self.window.content_window().getch()
 
         return ActionResult(True, None)
 
@@ -186,19 +178,6 @@ class Installer(object):
         process = subprocess.Popen(['cp', '-r', "../installer", self.photon_root], stdout=self.output)
         retval = process.wait()
 
-        # get the RPMS dir form the cd
-        if self.rpm_path == 'cdrom':
-            # Mount the cd to get the RPMS
-            process = subprocess.Popen(['mkdir', '-p', '/mnt/cdrom'], stdout=self.output)
-            retval = process.wait()
-
-            process = subprocess.Popen(['mount', '/dev/cdrom', '/mnt/cdrom'], stdout=self.output)
-            retval = process.wait()
-            if retval != 0:
-                self.exit_gracefully(None, None)
-            self.rpm_path = '/mnt/cdrom/RPMS'
-            self.tools_path = '/mnt/cdrom'
-
         self.copy_rpms()
 
     def initialize_system(self):
@@ -235,47 +214,30 @@ class Installer(object):
         process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.install_package_command, '-w', self.photon_root, package_name, rpm_params],  stdout=self.output)
         return process.wait()
 
-    def replace_string_in_file(self,  filename,  search_string,  replace_string):
-        with open(filename, "r") as source:
-            lines=source.readlines()
-
-        with open(filename, "w") as destination:
-            for line in lines:
-                destination.write(re.sub(search_string,  replace_string,  line))
-
-    def update_root_password(self):
-        shadow_password = self.install_config['password']
-
-        #replace root blank password in passwd file to point to shadow file
-        self.replace_string_in_file(self.passwd_filename,  "root::", "root:x:")
-
-        if os.path.isfile(self.shadow_filename) == False:
-            with open(self.shadow_filename, "w") as destination:
-                destination.write("root:"+shadow_password+":")
-        else:
-            #add password hash in shadow file
-            self.replace_string_in_file(self.shadow_filename, "root::", "root:"+shadow_password+":")
-
-    def update_hostname(self):
-        self.hostname = self.install_config['hostname']
-        outfile = open(self.hostname_file,  'wb')
-        outfile.write(self.hostname)
-        outfile.close()
-
-        self.replace_string_in_file(self.hosts_file, r'127\.0\.0\.1\s+localhost', '127.0.0.1\tlocalhost\n127.0.0.1\t' + self.hostname)
-
-    def update_openssh_config(self):
-        if 'public_key' in self.install_config:
-
-            # Adding the authorized keys
-            if not os.path.exists(self.authorized_keys_dir):
-                os.makedirs(self.authorized_keys_dir)
-            with open(self.authorized_keys_filename, "a") as destination:
-                destination.write(self.install_config['public_key'] + "\n")
-            os.chmod(self.authorized_keys_filename, 0600)
-
-            # Change the sshd config to allow root login
-            process = subprocess.Popen(["sed", "-i", "s/^\\s*PermitRootLogin\s\+no/PermitRootLogin yes/", self.sshd_config_filename], stdout=self.output)
-            return process.wait()
-
-
+    def execute_modules(self, phase):
+        modules = glob.glob('modules/m_*.py')
+        for mod_path in modules:
+            module = mod_path.replace('/', '.', 1)
+            module = os.path.splitext(module)[0]
+            try:
+                __import__(module)
+                mod = sys.modules[module]
+            except ImportError:
+                print >> sys.stderr,  'Error importing module %s' % module
+                continue
+            
+            # the module default is disabled
+            if not hasattr(mod, 'enabled') or mod.enabled == False:
+                print >> sys.stderr,  "module %s is not enabled" % module
+                continue
+            # check for the install phase
+            if not hasattr(mod, 'install_phase'):
+                print >> sys.stderr,  "Error: can not defind module %s phase" % module
+                continue
+            if mod.install_phase != phase:
+                print >> sys.stderr,  "Skipping module %s for phase %s" % (module, phase)
+                continue
+            if not hasattr(mod, 'execute'):
+                print >> sys.stderr,  "Error: not able to execute module %s" % module
+                continue
+            mod.execute(module, self.ks_config, self.install_config, self.photon_root)
