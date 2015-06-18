@@ -1,7 +1,7 @@
 Summary:	Package manager
 Name:		rpm
 Version:	4.11.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://rpm.org
 Group:		Applications/System
@@ -28,6 +28,7 @@ RPM package manager
 %package devel
 Requires:   python2
 Summary:    Libraries and header files for rpm
+Provides:   pkgconfig(rpm)
 
 %description devel
 Static libraries and header files for the support library for rpm
@@ -107,6 +108,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpm.so
 
 %changelog
+*	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 4.11.2-4
+-	Add pkgconfig Provides directive
 *	Thu Jun 18 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-3
 -	Do no strip debug info from .debug files
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-2
