@@ -10,6 +10,7 @@ Source1:        cloud-photon.cfg
 
 Patch0:         photon-distro.patch
 Patch1:         systemd-service.patch
+Patch2:         cloud-init-log.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -33,6 +34,7 @@ ssh keys and to let the user run various scripts.
 %setup -q -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
