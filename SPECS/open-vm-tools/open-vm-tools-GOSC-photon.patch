@@ -1,0 +1,44 @@
+diff -ru open-vm-tools-9.10.0/libDeployPkg/linuxDeployment.c open-vm-tools-9.10.0_copy/libDeployPkg/linuxDeployment.c
+--- open-vm-tools-9.10.0/libDeployPkg/linuxDeployment.c	2015-03-19 18:11:07.000000000 +0000
++++ open-vm-tools-9.10.0_copy/libDeployPkg/linuxDeployment.c	2015-06-16 00:15:59.565882477 +0000
+@@ -549,13 +549,17 @@
+    close(fd);
+ 
+    // Create space and copy the command
+-   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH);
++   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH + 1);
+    if (!*command) {
+       SetDeployError("Error allocating memory.");
+       return FALSE;
+    }
++   
++   // will pad with '\0' if necessary
++   strncpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
++   // hdr.command is a structure of fixed length VMWAREDEPLOYPKG_CMD_LENGTH
++   (*command)[VMWAREDEPLOYPKG_CMD_LENGTH] = '\0';
+ 
+-   memcpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
+    *archiveType = hdr.payloadType;
+ 
+    return TRUE;
+@@ -908,6 +912,19 @@
+       }
+    }
+ 
++
++   free (command);
++
++   const char* CORE_OS_LAUNCH_COMMAND = "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh /tmp/.vmware/linux/deploy/cust.cfg";
++
++   // the command will be parsed alter and can be of arbitrary length
++   command = strdup(CORE_OS_LAUNCH_COMMAND);
++   if (!command) {
++      SetDeployError("Error allocating memory.");
++      return DEPLOY_ERROR;
++   }
++
++
+    // Run the deployment command
+    sLog(log_info, "Launching deployment %s. \n", command);
+    deploymentResult = ForkExecAndWaitCommand(command);
+Only in open-vm-tools-9.10.0_copy/libDeployPkg: linuxDeployment.c~
