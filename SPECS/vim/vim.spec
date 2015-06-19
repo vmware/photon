@@ -1,3 +1,5 @@
+%define debug_package %{nil}
+
 Summary:	Text editor
 Name:		vim
 Version:	7.4
@@ -32,6 +34,7 @@ set nocompatible
 set backspace=2
 set ruler
 syntax on
+color desert
 if (&term == "iterm") || (&term == "putty")
   set background=dark
 endif
@@ -113,5 +116,7 @@ EOF
 %lang(uk.cp1251)  %{_datarootdir}/vim/vim74/lang/uk.cp1251/LC_MESSAGES/vim.mo
 %lang(zh_CN.cp936) %{_datarootdir}/vim/vim74/lang/zh_CN.cp936/LC_MESSAGES/vim.mo
 %changelog
+*	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2
+-	Disable debug package. Use 'desert' colorscheme.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
 -	Initial build.	First version
