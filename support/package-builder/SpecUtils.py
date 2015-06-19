@@ -170,6 +170,9 @@ class Specutils(object):
         pkg = self.spec.packages.get('default')
         return pkg.name
         
+    def getSecurityHardeningOption(self):
+        return self.spec.globalSecurityHardening
+
 def main():
     spec = Specutils("/workspace1/myrepos/photon/SPECS/docker/docker.spec")
     print "packages",spec.getPackageNames()

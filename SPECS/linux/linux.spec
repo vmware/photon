@@ -1,3 +1,4 @@
+%global security_hardening none
 %define    OPENVMTOOLS_NAME            open-vm-tools
 %define    OPENVMTOOLS_VERSION         9.10.0
 Summary:        Kernel
