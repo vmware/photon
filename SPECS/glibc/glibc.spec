@@ -1,3 +1,4 @@
+%global security_hardening none
 %define glibc_target_cpu %{_build}
 
 Summary:	Main C library

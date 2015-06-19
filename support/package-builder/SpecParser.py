@@ -12,6 +12,7 @@ class SpecParser(object):
         self.checkMacro=rpmMacro().setName("check")
         self.packages={}
         self.specAdditionalContent=""
+        self.globalSecurityHardening=""
         
     
     def readPkgNameFromPackageMacro(self,data,basePkgName=None):
@@ -63,6 +64,8 @@ class SpecParser(object):
                     self.packages[packageName].updatePackageMacro(macro)
             elif self.isPackageHeaders(line):
                 self.readPackageHeaders(line, self.packages[currentPkg])
+            elif self.isGlobalSecurityHardening(line):
+                self.readSecurityHardening(line)
             else:
                 self.specAdditionalContent+=line+"\n"
             i=i+1
@@ -187,6 +190,11 @@ class SpecParser(object):
             return True
         return False
 
+    def isGlobalSecurityHardening(self,line):
+        if re.search('^%global *security_hardening',line,flags=re.IGNORECASE) :
+            return True
+        return False
+
     def readHeader(self,line):
         headerSplitIndex=line.find(":")
         if(headerSplitIndex+1 == len(line) ):
@@ -290,3 +298,16 @@ class SpecParser(object):
                     
             return True
         return False
+
+    def readSecurityHardening(self,line):
+        data = line.lower().strip();
+        words=data.split(" ")
+        nrWords = len(words)
+        if (nrWords != 3):
+            print "Error: Unable to parse line: "+line
+            return False
+        if (words[2] != "none" and words[2] != "nonow") :
+            print "Error: Invalid security_hardening value: " + words[2]
+            return False
+        self.globalSecurityHardening = words[2]
+        return True;

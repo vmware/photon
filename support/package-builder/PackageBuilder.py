@@ -147,13 +147,7 @@ class PackageBuilder(object):
                 self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
 
     def adjustGCCSpecs(self, package, chrootID, logPath):
-        opt = ""
-        # TODO: reading of hardening flag from spec files
-        if package == "linux" or package == "glibc":
-            opt = " clean"
-        elif package.startswith("xf86-") or package.startswith("xorg-server") :
-            opt = " nonow"
-
+        opt = " " + constants.specData.getSecurityHardeningOption(package)
         shutil.copy2(self.adjustGCCSpecScript,  chrootID+"/tmp/"+self.adjustGCCSpecScript)
         cmdUtils=CommandUtils()
         cmd = "/tmp/"+self.adjustGCCSpecScript+opt

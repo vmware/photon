@@ -14,6 +14,7 @@ class SerializableSpecObject(object):
         self.specFile=""
         self.listSources=[]
         self.listPatches=[]
+        self.securityHardening=""
 
 class SerializableSpecObjectsUtils(object):
     
@@ -38,6 +39,7 @@ class SerializableSpecObjectsUtils(object):
             specObj.release=spec.getRelease()
             specObj.listSources=spec.getSourceNames()
             specObj.listPatches=spec.getPatchNames()
+            specObj.securityHardening=spec.getSecurityHardeningOption()
             for specPkg in specObj.listPackages:
                 specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
                 self.mapPackageToSpec[specPkg]=specName
@@ -97,6 +99,10 @@ class SerializableSpecObjectsUtils(object):
         self.logger.error("Could not able to find "+package+" package from specs")
         raise Exception("Invalid package:"+package)
     
+    def getSecurityHardeningOption(self, package):
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].securityHardening
+
     def printAllObjects(self):
         listSpecs=self.mapSerializableSpecObjects.keys()
         for spec in listSpecs:
@@ -125,5 +131,6 @@ class SerializableSpecObjectsUtils(object):
             self.logger.info(specObj.installRequiresAllPackages)
             self.logger.info(" ")
             self.logger.info(specObj.installRequiresPackages)
+            self.logger.info("security_hardening: " + specObj.securityHardening)
             self.logger.info("------------------------------------------------")
 
