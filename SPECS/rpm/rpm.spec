@@ -1,7 +1,7 @@
 Summary:	Package manager
 Name:		rpm
 Version:	4.11.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://rpm.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
 Source1:	http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
-Source2:	rpm-system-configuring-scripts-2.0.tar.gz
+Source2:	rpm-system-configuring-scripts-2.1.tar.gz
 #Requires: nspr
 Requires: 	nss
 Requires: 	popt
@@ -107,6 +107,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpm.so
 
 %changelog
+*	Thu Jun 18 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-3
+-	Do no strip debug info from .debug files
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-2
 -	Removing perl-module-scandeps package from run time required packages
 *	Tue Jan 13 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-1
