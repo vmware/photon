@@ -162,6 +162,9 @@ if __name__ == '__main__':
         process = subprocess.Popen(['mkdir', '-p', options.working_directory])
         retval = process.wait()
 
+    process = subprocess.Popen(['mkdir', '-p', os.path.join(options.working_directory, "photon-chroot")])
+    retval = process.wait()
+
     config['working_directory'] = options.working_directory
 
     # Run the installer
