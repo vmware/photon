@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.9
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -16,6 +16,7 @@ Requires:	bzip2
 Requires:  	openssl
 Provides: 	python-sqlite
 Provides: 	python(abi)
+Provides: 	/bin/python
 
 %description
 The Python 2 package contains the Python development environment. It 
@@ -184,6 +185,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 2.7.9-3
+-	Provide /bin/python
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-2
 -	Adding coreutils package to run time required package
 *	Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-1
