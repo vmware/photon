@@ -1,6 +1,8 @@
 #! /bin/bash
 
-if [ $# -eq 1 -a "x$1" = "xclean" ]; then
+echo "Using options:" $@
+
+if [ $# -eq 1 -a "x$1" = "xnone" ]; then
     rm -f `dirname $(gcc --print-libgcc-file-name)`/../specs
     exit 0
 fi
