@@ -173,7 +173,7 @@ if __name__ == '__main__':
 
     # Making the iso if needed
     if config['iso_system']:
-        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.tools_path, options.rpm_path, options.package_list_file])
+        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file])
         retval = process.wait()
 
     # Cleaning up for vmdk

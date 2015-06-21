@@ -22,15 +22,13 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 
 # Grab the name of the iso file 
 if [ $# -lt 2 ]
-	then
-		echo "Usage : " $0 " <output-iso-with-path>  <tools path>"
-		exit 1
+then
+    echo "Usage : " $0 " <output-iso-with-path>  <rpms-path> <pkg-list-path>"
+    exit 1
 fi
 ISO_OUTPUT_NAME=$1
-TOOLS_PATH=$2
-RPMS_PATH=$3
-PACKAGE_LIST_FILE=$4
-
+RPMS_PATH=$2
+PACKAGE_LIST_FILE=$3
 
 #- Step 3 Setting up the boot loader
 WORKINGDIR=${BUILDROOT}
@@ -90,7 +88,6 @@ sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${BUILDRO
 mkdir -p ${BUILDROOT}/mnt/photon-root/photon-chroot
 rm -rf ${BUILDROOT}/RPMS
 cp -r ${RPMS_PATH} ${WORKINGDIR}/
-cp $TOOLS_PATH/tools.tar.gz ${WORKINGDIR}/
 
 #creating rpm repo in cd..
 createrepo --database ${WORKINGDIR}/RPMS
@@ -105,7 +102,6 @@ for i in `ls ${BUILDROOT}/usr/share/`; do
 		rm -rf ${BUILDROOT}/usr/share/$i
 	fi
 done
-rm -rf $BUILDROOT/tools
 
 # Generate the intird
 pushd $BUILDROOT
