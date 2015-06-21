@@ -20,17 +20,16 @@ RPM_PARAMS="-Uvh"
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"
 
 if [ $# -ge 2 ]
-  then
+then
     RPM_PARAMS="-Uvh $2"
 fi
 
 [ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
+
 RPMPKG=""
-RPMPKG=$(find ../RPMS -name "$1-[0-9]*.rpm" -print)
+RPMPKG=$(find ${RPMROOT} -name "$1-[0-9]*.rpm" -print)
 [ -z $RPMPKG ] && fail "installation error: rpm package not found\n"
-case $1 in
-	linux-dev | linux-docs | glibc | gmp | gcc | bzip2 | ncurses | util-linux | e2fsprogs | shadow | bison | perl | texinfo | vim | linux | udev | rpm | dbus)
-		run_command "Installing: $1" "rpm --nodeps ${RPM_PARAMS} ${RPMPKG}" "${LOGFILE}" ;;
-	*)	run_command "Installing: $1" "rpm --nodeps ${RPM_PARAMS} ${RPMPKG}" "${LOGFILE}" ;;
-esac
+
+run_command "Installing: $1" "rpm --nodeps ${RPM_PARAMS} ${RPMPKG}" "${LOGFILE}"
+
 exit 0
