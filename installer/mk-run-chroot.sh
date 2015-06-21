@@ -28,11 +28,11 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #	Goto chroot and run the command specified as parameter.
 #
 chroot "${BUILDROOT}" \
-	/tools/bin/env -i \
+	/usr/bin/env -i \
 	HOME=/root \
 	TERM="$TERM" \
 	PS1='\u:\w\$ ' \
-	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
-	/tools/bin/bash --login +h -c "cd installer;$*"
+	PATH=/bin:/usr/bin:/sbin:/usr/sbin \
+	/usr/bin/bash --login +h -c "cd installer;$*"
 
 exit 0
