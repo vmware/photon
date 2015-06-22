@@ -15,6 +15,7 @@ RUN \
   ln -s /bin/bash /bin/sh && \
   rm -rf /var/lib/apt/lists/*
 
-WORKDIR ~/
+VOLUME  /workspace
+WORKDIR /workspace
 
 CMD ["bash"]
