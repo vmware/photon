@@ -61,7 +61,7 @@
                 "cmake", "gpgme-devel", "parted", "vim", "xz-devel", "xerces-c-devel", "xml-security-c-devel", 
                 "nss-devel", "ncurses-devel", "tzdata", "itstool", "sed-lang", "gptfdisk", "ntp", "flex", "patch", "m4", "dracut", "dracut-tools", 
                 "libarchive", "libsoup", "asciidoc", "mkinitcpio",
-                "ostree", "tdnf-devel", "libhif", "rpm-ostree", "createrepo", "glibmm", "deltarpm", "cdrkit", "dparted", "libgsystem",
+                "ostree", "tdnf-devel", "librepo-devel", "libhif", "libhif-devel", "rpm-ostree", "createrepo", "glibmm", "deltarpm", "cdrkit", "dparted", "libgsystem",
                 "rpm-ostree-toolbox","libsepol","libselinux","device-mapper-libs","device-mapper",
                 "acl","btrfs-progs","btrfs-progs-devel","device-mapper-devel","device-mapper-event","device-mapper-event-devel",
                 "device-mapper-event-libs","libacl","libacl-devel","libselinux-devel","libselinux-python","libselinux-utils","libsepol-devel",
