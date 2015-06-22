@@ -118,7 +118,7 @@ vmhgfs
 EOF
 
 %post
-/sbin/depmod
+/sbin/depmod -aq %{version}
 
 %files
 %defattr(-,root,root)
