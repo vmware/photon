@@ -9,6 +9,8 @@ SSH set <code>PermitRootLogin yes</code> in /etc/ssh/sshd_config, and restart th
 
 netstat is deprecated, ss or ip (part of iproute2) should be used instead.
 
+This [Guide](https://dougvitale.wordpress.com/2011/12/21/deprecated-linux-networking-commands-and-their-replacements/) guide depicts the most common examples.
+
 #### How do I install new packages?
 #### Why is the yum command not working in a Minimal installation of Photon?
 
