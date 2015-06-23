@@ -207,11 +207,19 @@ class Installer(object):
 
     def install_package(self,  package_name):
         rpm_params = ''
-        
+
+        os.environ["RPMROOT"] = self.rpm_path
+        rpm_params = rpm_params + ' --force '
+        rpm_params = rpm_params + ' --root ' + self.photon_root
+
         if ('type' in self.install_config and (self.install_config['type'] in ['micro', 'minimal'])) or self.install_config['iso_system']:
             rpm_params = rpm_params + ' --excludedocs '
 
-        process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.install_package_command, '-w', self.photon_root, package_name, rpm_params],  stdout=self.output)
+        if not self.iso_installer:
+            rpm_params = rpm_params + ' --dbpath ' + self.photon_root + '/var/lib/rpm '
+
+        process = subprocess.Popen([self.install_package_command, '-w', self.photon_root, package_name, rpm_params],  stdout=self.output)
+
         return process.wait()
 
     def execute_modules(self, phase):
