@@ -6,7 +6,6 @@ from CommandUtils import CommandUtils
 import os.path
 from constants import constants
 import shutil
-from time import sleep
 
 class PackageBuilder(object):
     
@@ -22,7 +21,6 @@ class PackageBuilder(object):
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
         self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
         self.runInChrootCommand="./run-in-chroot.sh"
-        self.adjustGCCSpecScript="adjust-gcc-specs.sh"
         
     def prepareBuildRoot(self,chrootName,isToolChainPackage=False):
         chrootID=None
@@ -100,8 +98,8 @@ class PackageBuilder(object):
                 for pkg in listDependentPackages:
                     self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
                 self.logger.info("Finished installing the build time dependent packages......")
-            self.adjustGCCSpecs(package, chrootID, destLogPath)
             pkgUtils = PackageUtils(self.logName,self.logPath)
+            pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
             pkgUtils.buildRPMSForGivenPackage(package,chrootID,destLogPath)
             self.logger.info("Successfully built the package:"+package)
         except Exception as e:
@@ -145,24 +143,3 @@ class PackageBuilder(object):
                 if pkg in listInstalledPackages:
                     continue
                 self.installPackage(pkg,chrootID,destLogPath,listInstalledPackages)
-
-    def adjustGCCSpecs(self, package, chrootID, logPath):
-        opt = " " + constants.specData.getSecurityHardeningOption(package)
-        shutil.copy2(self.adjustGCCSpecScript,  chrootID+"/tmp/"+self.adjustGCCSpecScript)
-        cmdUtils=CommandUtils()
-        cmd = "/tmp/"+self.adjustGCCSpecScript+opt
-        logFile = logPath+"/adjustGCCSpecScript.log"
-        chrootCmd=self.runInChrootCommand+" "+chrootID
-        retryCount=10
-        returnVal=False
-        while retryCount > 0:
-            returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
-            if returnVal:
-                return
-            self.logger.error("Failed while adjusting gcc specs")
-            self.logger.error("Retrying again .....")
-            retryCount = retryCount - 1
-            sleep(5)
-        if not returnVal:
-            self.logger.error("Failed while adjusting gcc specs")
-            raise "Failed while adjusting gcc specs"
