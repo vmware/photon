@@ -19,8 +19,7 @@ PRGNAME=${0##*/}	# script name minus the path
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #LOGFILE=/dev/null		#	uncomment to disable log file
 [ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
-[ -z ${PARENT} ]	&& fail "${PRGNAME}: PARENT not set: FAILURE"
-[ -z ${BUILDROOT} ]	&& fail "${PRGNAME}: Build root not set: FAILURE"
+
 /sbin/ldconfig
 /usr/sbin/pwconv
 /usr/sbin/grpconv

@@ -17,7 +17,7 @@ BuildRequires:	autoconf automake libtool
 # For docs
 BuildRequires: 	gtk-doc
 # BuildRequires: gnome-common
-BuildRequires: 	ostree
+BuildRequires: 	ostree-devel
 BuildRequires: 	libgsystem
 BuildRequires: 	json-glib-devel
 BuildRequires:	which

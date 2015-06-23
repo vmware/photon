@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.1.5.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -43,6 +43,11 @@ make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/passwd %{buildroot}/bin
 sed -i 's/yes/no/' %{buildroot}/etc/default/useradd
+# Use group id 100(users) by default
+sed -i 's/GROUP.*/GROUP=100/' %{buildroot}/etc/default/useradd
+# Disable usergroups. Use "users" group by default (see /etc/default/useradd)
+# for all nonroot users.
+sed -i 's/USERGROUPS_ENAB.*/USERGROUPS_ENAB no/' %{buildroot}/etc/login.defs
 cp etc/{limits,login.access} %{buildroot}/etc
 for FUNCTION in FAIL_DELAY               \
                 FAILLOG_ENAB             \
@@ -89,6 +94,8 @@ done
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
 %changelog
+*	Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
+-	Use group id 100(users) by default
 *	Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-2
 -	Adding PAM support
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-1

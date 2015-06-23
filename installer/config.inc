@@ -1,6 +1,5 @@
 #	Editable variables follow
 BUILDROOT=/mnt/photon-root	# where to build photon
-PARENT="/usr/src/photon"	# where build syetm lives
 #	Edit partition and mnt_point for the correct values.
 #	Failing to do so will cause you grief as in overwriting your host system.
 #	You have been warned!
