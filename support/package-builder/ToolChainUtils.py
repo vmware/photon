@@ -126,6 +126,7 @@ class ToolChainUtils(object):
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
                 self.installToolChainRPMS(chrootID)
+                pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
                 pkgUtils.buildRPMSForGivenPackage(package, chrootID,destLogPath)
                 chrUtils.destroyChroot(chrootID)
                 chrootID=None

@@ -4,7 +4,7 @@ import os
 import shutil
 from constants import constants
 import re
-
+from time import sleep
 
 class PackageUtils(object):
     
@@ -26,6 +26,7 @@ class PackageUtils(object):
         self.rpmbuildNocheckOption = "--nocheck"
         self.queryRpmPackageOptions = "-qa"
         self.forceRpmPackageOptions = "--force"
+        self.adjustGCCSpecScript="adjust-gcc-specs.sh"
     
     def getRPMDestDir(self,rpmName,rpmDir):
         arch=""
@@ -174,3 +175,24 @@ class PackageUtils(object):
         cmdUtils=CommandUtils()
         result=cmdUtils.runCommandInShell2(cmd, chrootCmd)
         return result
+
+    def adjustGCCSpecs(self, package, chrootID, logPath):
+        opt = " " + constants.specData.getSecurityHardeningOption(package)
+        shutil.copy2(self.adjustGCCSpecScript,  chrootID+"/tmp/"+self.adjustGCCSpecScript)
+        cmdUtils=CommandUtils()
+        cmd = "/tmp/"+self.adjustGCCSpecScript+opt
+        logFile = logPath+"/adjustGCCSpecScript.log"
+        chrootCmd=self.runInChrootCommand+" "+chrootID
+        retryCount=10
+        returnVal=False
+        while retryCount > 0:
+            returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
+            if returnVal:
+                return
+            self.logger.error("Failed while adjusting gcc specs")
+            self.logger.error("Retrying again .....")
+            retryCount = retryCount - 1
+            sleep(5)
+        if not returnVal:
+            self.logger.error("Failed while adjusting gcc specs")
+            raise "Failed while adjusting gcc specs"
