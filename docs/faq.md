@@ -20,6 +20,18 @@ Example:
 ```
 tdnf install vim
 ```
+## How to upgrade packages ?
+
+To check available packages upgrades
+
+```
+tdnf check-update
+```
+To upgrade packages 
+
+```
+tdnf upgrade docker
+```
 
 #### How do I build a new RPM package?
 
