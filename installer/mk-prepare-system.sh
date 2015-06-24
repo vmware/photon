@@ -17,13 +17,6 @@ source config.inc
 source function.inc
 PRGNAME=${0##*/}	# script name minus the path
 
-if [ $# -lt 1 ]; then
-   echo "Usage: $PRGNAME <tools path>"
-   exit 1
-fi
-
-TOOLS_PATH=$1
-
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #LOGFILE=/dev/null		#	uncomment to disable log file
 

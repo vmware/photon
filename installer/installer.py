@@ -23,11 +23,10 @@ from window import Window
 from actionresult import ActionResult
 
 class Installer(object):
-    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, tools_path = "../stage", rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
+    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
         self.install_config = install_config
         self.ks_config = ks_config
         self.iso_installer = iso_installer
-        self.tools_path = tools_path
         self.rpm_path = rpm_path
         self.log_path = log_path
         self.mount_command = "./mk-mount-disk.sh"
@@ -189,7 +188,7 @@ class Installer(object):
         self.copy_files()
         
         #Setup the filesystem basics
-        process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, self.tools_path], stdout=self.output)
+        process = subprocess.Popen([self.prepare_command, '-w', self.photon_root], stdout=self.output)
         retval = process.wait()
 
     def finalize_system(self):

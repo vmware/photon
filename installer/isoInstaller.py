@@ -103,7 +103,7 @@ class IsoInstaller(object):
         root_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, True,  'Set up root password',
             'Root password:', 
             2, self.install_config)
-        installer = Installer(self.install_config, self.maxy, self.maxx, True, tools_path=cd_path, rpm_path=os.path.join(cd_path, "RPMS"), log_path="/var/log", ks_config=ks_config)
+        installer = Installer(self.install_config, self.maxy, self.maxx, True, rpm_path=os.path.join(cd_path, "RPMS"), log_path="/var/log", ks_config=ks_config)
 
         # This represents the installer screen, the bool indicated if I can go back to this window or not
         items = []
