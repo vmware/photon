@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -9,8 +9,7 @@ Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{na
 Source1:        cloud-photon.cfg
 
 Patch0:         photon-distro.patch
-Patch1:         systemd-service.patch
-Patch2:         cloud-init-log.patch
+Patch1:         cloud-init-log.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -34,7 +33,6 @@ ssh keys and to let the user run various scripts.
 %setup -q -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
@@ -92,6 +90,8 @@ fi
 
 
 %changelog
+* Thu Jun 25 2015 Kumar Kaushik <kaushikk@vmware.com>
+- Removing systemd-service.patch. No longer needed.
 * Thu Jun 18 2015 Vinay Kulkarni <kulkarniv@vmware.com>
 - Add patch to enable logging to /var/log/cloud-init.log
 * Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com>
