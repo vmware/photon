@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -79,6 +79,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_sysconfdir}/*
 /lib/*
+%exclude %{_libdir}/debug/*
 %{_libdir}/*
 %{_bindir}/*
 /bin/*
@@ -88,6 +89,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-5
+-   Remove debug files.
 *	Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
 -	gudev support
 *	Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3
