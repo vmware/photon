@@ -53,7 +53,7 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                               -s $(PHOTON_SPECS_DIR) \
                               -r $(PHOTON_RPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
-                              -b $(PHOTON_STAGE) \
+                              -b $(PHOTON_CHROOT_PATH) \
                               -l $(PHOTON_LOGS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
                               -j $(PHOTON_PACKAGE_LIST)
