@@ -95,7 +95,7 @@ createrepo --database ${WORKINGDIR}/RPMS
 rm -rf ${BUILDROOT}/LOGS
 
 #Remove our rpm database as it fills up the ramdisk
-rm -rf ${BUILDROOT}/var/lib/rpm
+rm -rf ${BUILDROOT}/home/*
 # TODO: mbassiouny, Find a clean way to do that
 for i in `ls ${BUILDROOT}/usr/share/`; do
 	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' ]; then
