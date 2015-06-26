@@ -14,9 +14,11 @@ import os
 import hashlib
 import string
 import datetime
-
+import copy_reg
+import types
 import requests
 from requests.auth import HTTPBasicAuth
+from multiprocessing import Pool
 
 class pullSources:
 
@@ -92,26 +94,43 @@ class pullSources:
         package_file_path = self.downloadFile(sha1_filename, sha1_file_path)
         with open(package_file_path) as f:
             packages = f.readlines()
-        for package in packages:
-            i = string.rindex(package, '-')
 
-            package_name = string.strip(package[:i])
-            package_sha1 = string.strip(package[i+1:])
-            package_path = os.path.join(sources_dir, package_name)
+        pool = Pool(processes = 10)
+        package_and_source_dir_list = map(lambda package: (package, sources_dir), packages )
+        pool.map(self.ProcessDownload, package_and_source_dir_list)
+        pool.close()
+        pool.join()
 
-            if not os.path.isfile(package_path):
-                self.downloadFileHelper(package_name, package_path, package_sha1)
+    def ProcessDownload(self, package_and_source_dir):
+        package = package_and_source_dir[0]
+        sources_dir = package_and_source_dir[1]
+        i = string.rindex(package, '-')
 
-            elif package_sha1 != self.getFileHash(package_path):
-                    if self.downloadExistingFilePrompt(package_name):
-                        self.downloadFileHelper(package_name, package_path, package_sha1)
+        package_name = string.strip(package[:i])
+        package_sha1 = string.strip(package[i+1:])
+        package_path = os.path.join(sources_dir, package_name)
+
+        if not os.path.isfile(package_path):
+            self.downloadFileHelper(package_name, package_path, package_sha1)
+
+        elif package_sha1 != self.getFileHash(package_path):
+                if self.downloadExistingFilePrompt(package_name):
+                    self.downloadFileHelper(package_name, package_path, package_sha1)
+
+def _pickle(method):
+    if method.im_self is None:
+        return getattr, (method.im_class, method.im_func.func_name)
+    else:
+        return getattr, (method.im_self, method.im_func.func_name)
+
+copy_reg.pickle(types.MethodType, _pickle)
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <sources_dir>"
     parser = OptionParser(usage)
 
     parser.add_option("-c", "--config-path",  dest="config_path", default="./bintray.conf", help="Path to bintray configuation file")
-    
+
     (options,  args) = parser.parse_args()
 
     if (len(args)) != 1:
