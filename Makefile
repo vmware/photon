@@ -176,7 +176,7 @@ check-vagrant: check-packer
 	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
 
 check-package-list:
-	json_pp -t null < installer/package_list.json >/dev/null 2>&1 || { echo "Invalid installer/package_list.json. Aborting" >&2; exit 1; }
+	@json_pp -t null < installer/package_list.json >/dev/null 2>&1 || { echo "Invalid installer/package_list.json. Aborting" >&2; exit 1; }
 
 ifeq ($(VAGRANT_BUILD),vcloudair)
 check-packer: check-packer-ovf-plugin
