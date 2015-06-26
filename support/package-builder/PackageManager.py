@@ -90,9 +90,7 @@ class PackageManager(object):
         except Exception as e:
             self.logger.error("Unable to build tool chain")
             self.logger.error(e)
-            return False
-        
-        return True
+            raise e
     
     def calculatePossibleNumWorkerThreads(self):
         process = subprocess.Popen(["df" ,constants.buildRootPath],shell=True,stdout=subprocess.PIPE)
@@ -108,14 +106,12 @@ class PackageManager(object):
         return numChroots
     
     def buildToolChainPackages(self):
-        if not self.buildToolChain():
-            return False
-        return self.buildGivenPackages(constants.listToolChainPackages)
+        self.buildToolChain()
+        self.buildGivenPackages(constants.listToolChainPackages)
         
     def buildPackages(self,listPackages):
-        if not self.buildToolChainPackages():
-            return False
-        return self.buildGivenPackages(listPackages)
+        self.buildToolChainPackages():
+        self.buildGivenPackages(listPackages)
     
     def initializeThreadPool(self,statusEvent):
         ThreadPool.clear()
@@ -134,14 +130,15 @@ class PackageManager(object):
         returnVal=self.calculateParams(listPackages)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
-            return False
+            raise Exception("Unable to set paramaters")
         
         statusEvent=threading.Event()
         numWorkerThreads=self.calculatePossibleNumWorkerThreads()
         if numWorkerThreads > 8:
             numWorkerThreads = 8
         if numWorkerThreads == 0:
-            return False
+            self.logger.error("Unable to create worker threads. Terminating the package manager.")
+            raise Exception("No Space.")
          
         self.initializeScheduler(statusEvent)
         self.initializeThreadPool(statusEvent)
@@ -172,14 +169,14 @@ class PackageManager(object):
         if setFailFlag:
             self.logger.error("Some of the packages failed:")
             self.logger.error(Scheduler.listOfFailedPackages)
-            return False
+            raise Exception("Failed during building package")
         
         if not setFailFlag:
             if allPackagesBuilt:
                 self.logger.info("All packages built successfully")
             else:
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
-                return False
+                raise Exception("Unknown error")
         
         self.logger.info("Terminated")
-        return True
+
