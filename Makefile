@@ -29,34 +29,34 @@ else
 PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
-.PHONY : all iso clean toolchain toolchain-minimal photon-build-machine photon-vagrant-build photon-vagrant-local \
+.PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local \
 check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-package-list \
 clean-install clean-chroot
 
 all: iso
 
-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) $(PHOTON_TOOLCHAIN_MINIMAL)
+iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
-    $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
-                        -w $(PHOTON_STAGE)/photon_iso \
-                        -l $(PHOTON_STAGE)/LOGS \
-                        -r $(PHOTON_STAGE)/RPMS \
-                        -p $(PHOTON_INSTALLER_PACKAGE_LIST) \
-                        -f > \
-        $(PHOTON_LOGS_DIR)/installer.log 2>&1
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_INSTALLER_PACKAGE_LIST) \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
 packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-    $(PHOTON_PACKAGE_BUILDER) -o full \
-                              -s $(PHOTON_SPECS_DIR) \
-                              -r $(PHOTON_RPMS_DIR) \
-                              -x $(PHOTON_SRCS_DIR) \
-                              -b $(PHOTON_CHROOT_PATH) \
-                              -l $(PHOTON_LOGS_DIR) \
-                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                              -j $(PHOTON_PACKAGE_LIST)
+        $(PHOTON_PACKAGE_BUILDER) -o full \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -j $(PHOTON_PACKAGE_LIST)
 
 packages-cached:
 	@echo "Using cached RPMS..."
@@ -85,47 +85,6 @@ publish-rpms-cached:
 	@echo "Using cached publish rpms..."
 	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR) && \
 	 $(CP) -rf $(PHOTON_PUBLISH_RPMS_PATH)/* $(PHOTON_PUBLISH_RPMS_DIR)/
-
-toolchain-minimal : $(PHOTON_TOOLCHAIN_MINIMAL)
-
-$(PHOTON_TOOLCHAIN_MIN_LIST): ;
-
-$(PHOTON_TOOLCHAIN_MINIMAL) : $(PHOTON_TOOLCHAIN) $(PHOTON_TOOLCHAIN_MIN_LIST)
-	echo "Building minimal toolchain..."
-	@$(RMDIR) $(PHOTON_TOOLS_DIR) && \
-	cd $(PHOTON_STAGE) && \
-	$(TAR) xvf $(PHOTON_TOOLCHAIN) > $(PHOTON_LOGS_DIR)/toolchain-minimal.log 2>&1 && \
-    $(TAR) cvfz \
-           $@ \
-           -T $(PHOTON_TOOLCHAIN_MIN_LIST) >> \
-              $(PHOTON_LOGS_DIR)/toolchain-minimal.log 2>&1 && \
-	$(RMDIR) $(PHOTON_TOOLS_DIR)
-
-toolchain : $(PHOTON_TOOLCHAIN)
-
-ifdef PHOTON_CACHE_PATH
-
-$(PHOTON_TOOLCHAIN): check $(PHOTON_STAGE)
-	@echo "Using cached toolchain..."
-	@$(RM) -f $(PHOTON_TOOLCHAIN) && \
-	 $(CP) -f $(PHOTON_CACHE_PATH)/tools-build.tar $(PHOTON_TOOLCHAIN)
-
-else
-
-$(PHOTON_TOOLCHAIN): $(PHOTON_STAGE) $(PHOTON_SOURCES)
-	@if [ -a $(PHOTON_TOOLCHAIN) ] ; then \
-		echo "Using already built toolchain"; \
-	else \
-		echo "Building toolchain..."; \
-		cd $(PHOTON_TOOLCHAIN_DIR) && \
-				$(PHOTON_TOOLCHAIN_BUILDER) \
-					$(PHOTON_SRCS_DIR) \
-					$(PHOTON_SPECS_DIR) \
-					$(PHOTON_LOGS_DIR) \
-					$(PHOTON_STAGE) ;\
-	fi
-
-endif
 
 $(PHOTON_STAGE):
 	@echo "Creating staging folder..."

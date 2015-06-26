@@ -214,9 +214,6 @@ class Installer(object):
         if ('type' in self.install_config and (self.install_config['type'] in ['micro', 'minimal'])) or self.install_config['iso_system']:
             rpm_params = rpm_params + ' --excludedocs '
 
-        if not self.iso_installer:
-            rpm_params = rpm_params + ' --dbpath ' + self.photon_root + '/var/lib/rpm '
-
         process = subprocess.Popen([self.install_package_command, '-w', self.photon_root, package_name, rpm_params],  stdout=self.output)
 
         return process.wait()
