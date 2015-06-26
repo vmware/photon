@@ -7,7 +7,7 @@ from Logger import Logger
 from constants import constants
 from PackageManager import PackageManager 
 import json
-
+import sys
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -109,9 +109,9 @@ def main():
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
-        return False
+        sys.exit(1)
     
-    return True
+    sys.exit(0)
 
 def buildAPackage(package):
     listPackages=[]
