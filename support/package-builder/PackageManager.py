@@ -110,7 +110,7 @@ class PackageManager(object):
         self.buildGivenPackages(constants.listToolChainPackages)
         
     def buildPackages(self,listPackages):
-        self.buildToolChainPackages():
+        self.buildToolChainPackages()
         self.buildGivenPackages(listPackages)
     
     def initializeThreadPool(self,statusEvent):
