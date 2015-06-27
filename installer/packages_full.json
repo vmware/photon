@@ -1,0 +1,29 @@
+{
+    "packages":["unzip", "gmp-devel", "sudo", "bzip2-devel", "XML-Parser", "intltool", "mercurial", "libsigc++", "boost", 
+                "libgomp-devel", "libstdc++-devel", "libgcc-devel", "gcc", "bison", "gdb", "libpipeline", "python2-devel", 
+                "python2-tools", "linux-api-headers","gawk","check", "libltdl", "libltdl-devel", "pcre-devel", "glib-devel", 
+                "glibc-devel", "glibc-lang", "zlib-devel", "gettext", "git", "git-lang", "autoconf", "perl", "perl-DBI","perl-Config-IniFiles",
+                "perl-DBIx-Simple", "perl-DBD-SQLite","perl-Exporter-Tiny","perl-JSON-XS","perl-List-MoreUtils","perl-Module-Install",
+                "perl-Module-ScanDeps","perl-Types-Serialiser","perl-WWW-Curl","perl-YAML-Tiny","perl-YAML","perl-common-sense","perl-libintl","tcsh",
+                "gobject-introspection", "gobject-introspection-devel", "gobject-introspection-python", "procps-ng-devel", 
+                "bash-lang", "kbd", "coreutils-lang", "libxslt", "docbook-xml", "docbook-xsl", "gtk-doc", "popt-devel", "texinfo", "tar", 
+                "kubernetes", "cyrus-sasl", "openldap", "binutils-devel", "python-iniparse", "psmisc", "etcd", "openssl-devel", 
+                "util-linux-lang", "db-docs", "linux-dev", "linux-docs", "mpc", "json-glib", "json-glib-devel", 
+                "automake", "libpcap", "tcpdump", "elfutils-libelf-devel", "elfutils", "elfutils-devel", "elfutils-devel-static", "elfutils-libelf-devel-static", 
+                "go", "grub-lang", "diffutils", "groff", "man-db", "mpfr-devel", "man-pages", 
+                "hawkey-devel", "python-hawkey", "busybox", "libxml2-devel", "ruby", "readline-devel", "wget", "cifs-utils", 
+                "Linux-PAM-lang", "make", "bindutils", "gperf", "lua-devel", "which", "less",  
+                "cmake", "gpgme-devel", "parted", "vim", "xz-devel", "xerces-c-devel", "xml-security-c-devel", 
+                "nss-devel", "ncurses-devel", "tzdata", "itstool", "sed-lang", "gptfdisk", "ntp", "flex", "patch", "m4", "dracut", "dracut-tools", 
+                "libarchive", "libsoup", "asciidoc", "mkinitcpio",
+                "ostree", "tdnf-devel", "librepo-devel", "libhif", "libhif-devel", "rpm-ostree", "createrepo", "glibmm", "deltarpm", "cdrkit", "dparted", "libgsystem",
+                "rpm-ostree-toolbox","libsepol","libselinux","device-mapper-libs","device-mapper",
+                "acl","btrfs-progs","btrfs-progs-devel","device-mapper-devel","device-mapper-event","device-mapper-event-devel",
+                "device-mapper-event-libs","libacl","libacl-devel","libselinux-devel","libselinux-python","libselinux-utils","libsepol-devel",
+                "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
+                "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
+                "haveged", "haveged-devel",
+                "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "zookeeper", "fuse"]
+}
+
+

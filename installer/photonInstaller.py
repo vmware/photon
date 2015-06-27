@@ -135,15 +135,21 @@ if __name__ == '__main__':
 
 
     # Check the installation type
-    package_list = JsonWrapper(options.package_list_file).read()
+    package_list_iso = JsonWrapper("packages_iso.json").read()
+    package_list_micro = JsonWrapper("packages_micro.json").read()
+    package_list_minimal = JsonWrapper("packages_minimal.json").read()
+    package_list_full = JsonWrapper("packages_full.json").read()
+
+
+
     if config['iso_system']:
-        packages = package_list["iso_packages"]
+        packages = package_list_iso["packages"]
     elif config['type'] == 'micro':
-        packages = package_list["micro_packages"]
+        packages = package_list_micro["packages"]
     elif config['type'] == 'minimal':
-        packages = package_list["minimal_packages"]
+        packages = package_list_minimal["packages"]
     elif config['type'] == 'full':
-        packages = package_list["minimal_packages"] + package_list["optional_packages"]
+        packages = package_list_minimal["packages"] + package_list_full["packages"]
     else:
         #TODO: error
         packages = []
