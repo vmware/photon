@@ -126,8 +126,9 @@ class PackageUtils(object):
         chrootCmd=self.runInChrootCommand+" "+chrootID
         shutil.copyfile(specFile, chrootID+chrootSpecPath+specName )
         
-        if os.geteuid()==0:
-            self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
+# FIXME: some sources are located in SPECS/.. how to mount?
+#        if os.geteuid()==0:
+        self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
         self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
         
         listRPMFiles=[]

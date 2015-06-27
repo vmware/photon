@@ -31,7 +31,8 @@ shift
 if [ ${EUID} -eq 0 ] ; then
     CHROOT_CMD=chroot
 else
-    CHROOT_CMD="contain -b $SOURCES:usr/src/photon/SOURCES,$RPMS:usr/src/photon/RPMS -c"
+#    CHROOT_CMD="contain -b $SOURCES:usr/src/photon/SOURCES,$RPMS:usr/src/photon/RPMS -c"
+    CHROOT_CMD="contain -b $RPMS:usr/src/photon/RPMS -c"
 fi
 
 $CHROOT_CMD "${BUILDROOT}" \
