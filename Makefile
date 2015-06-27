@@ -30,19 +30,32 @@ PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local \
-check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-package-list \
+check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot
 
 all: iso
 
+minimal: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+	@echo "Building Photon ISO..."
+	@cp -f $(PHOTON_INSTALLER_DIR)/build_install_options_minimal.json $(PHOTON_INSTALLER_DIR)/install_options.json
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-minimal.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_INSTALLER_DIR)/install_options.json \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon ISO..."
+	@cp -f $(PHOTON_INSTALLER_DIR)/build_install_options_all.json $(PHOTON_INSTALLER_DIR)/install_options.json
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_INSTALLER_PACKAGE_LIST) \
+                -p $(PHOTON_INSTALLER_DIR)/install_options.json \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -155,7 +168,7 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
 	fi
 
-check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-package-list
+check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
@@ -175,8 +188,8 @@ check-createrepo:
 check-vagrant: check-packer
 	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
 
-check-package-list:
-	@json_pp -t null < installer/package_list.json >/dev/null 2>&1 || { echo "Invalid installer/package_list.json. Aborting" >&2; exit 1; }
+check-sanity:
+	$(SRCROOT)/support/sanity_check.sh
 
 ifeq ($(VAGRANT_BUILD),vcloudair)
 check-packer: check-packer-ovf-plugin
@@ -201,5 +214,3 @@ check-packer-ovf-plugin:
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
                               -l $(PHOTON_LOGS_DIR)
-                              
-

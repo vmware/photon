@@ -1,0 +1,19 @@
+{
+    "packages":["glibc", "zlib", "filesystem",
+                "binutils", "gmp", "mpfr", "libgcc", "libstdc++", 
+                "sed", "bzip2", "pkg-config", "readline", "ncurses", "bash",
+                "cracklib", "cracklib-dicts", "cracklib-python", "shadow", "procps-ng", 
+                "coreutils", "iana-etc", "grep", "bc", "libtool",
+                "inetutils", "findutils",
+                "xz", "grub", "iproute2", "kmod",
+                "util-linux", "e2fsprogs",
+                "libffi", "expat",
+                "linux", "cpio",
+                "Linux-PAM", "attr", "libcap", "systemd", "dbus",
+                "elfutils-libelf", "sqlite-autoconf", "nspr", "nss", "popt", "lua", "rpm",
+                "gptfdisk", "tar", "gzip", "openssl", "python2", "python2-libs", "python-requests",
+                "pcre", "glib", "parted", "libsigc++", "XML-Parser", "glibmm", "dparted",
+                "libgsystem", "ostree"]
+}
+
+

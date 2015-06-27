@@ -79,6 +79,16 @@ def create_vmdk_and_partition(config, vmdk_path):
             count += 1
     
     return partitions_data, count == 2
+def create_rpm_list_to_copy_in_iso(build_install_option):
+    json_wrapper_option_list = JsonWrapper(build_install_option)
+    option_list_json = json_wrapper_option_list.read()
+    options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
+    packages = []
+    for install_option in options_sorted:
+        json_wrapper_package_list = JsonWrapper(install_option[1]["file"])
+        package_list_json = json_wrapper_package_list.read()
+        packages = packages + package_list_json["packages"]
+    return packages
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <config file> <tools path>"
@@ -135,15 +145,21 @@ if __name__ == '__main__':
 
 
     # Check the installation type
-    package_list = JsonWrapper(options.package_list_file).read()
+    package_list_iso = JsonWrapper("packages_iso.json").read()
+    package_list_micro = JsonWrapper("packages_micro.json").read()
+    package_list_minimal = JsonWrapper("packages_minimal.json").read()
+    package_list_full = JsonWrapper("packages_full.json").read()
+
+
+
     if config['iso_system']:
-        packages = package_list["iso_packages"]
+        packages = package_list_iso["packages"]
     elif config['type'] == 'micro':
-        packages = package_list["micro_packages"]
+        packages = package_list_micro["packages"]
     elif config['type'] == 'minimal':
-        packages = package_list["minimal_packages"]
+        packages = package_list_minimal["packages"]
     elif config['type'] == 'full':
-        packages = package_list["minimal_packages"] + package_list["optional_packages"]
+        packages = package_list_minimal["packages"] + package_list_full["packages"]
     else:
         #TODO: error
         packages = []
@@ -173,7 +189,8 @@ if __name__ == '__main__':
 
     # Making the iso if needed
     if config['iso_system']:
-        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file])
+        rpm_list = " ".join(create_rpm_list_to_copy_in_iso(options.package_list_file))
+        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list])
         retval = process.wait()
 
     # Cleaning up for vmdk

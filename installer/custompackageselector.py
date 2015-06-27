@@ -33,20 +33,22 @@ class CustomPackageSelector(object):
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select your Packages', True, self.package_menu)
 
     def load_package_list(self):
-        json_wrapper_package_list = JsonWrapper("package_list.json");
-        self.package_list_json = json_wrapper_package_list.read()
+        json_wrapper_package_list = JsonWrapper("packages_full.json");
+        package_list_json = json_wrapper_package_list.read()
 
-        for package in self.package_list_json["optional_packages"]:
+        for package in package_list_json["packages"]:
             self.menu_items.append((package, self.exit_function))
         self.package_menu = Menu(self.menu_starty,  self.maxx, self.menu_items, height = 18, selector_menu = True)
 
 
     def exit_function(self,  selected_indexes):
+        json_wrapper_package_list = JsonWrapper("packages_miniaml.json");
+        package_list_json = json_wrapper_package_list.read()
         selected_items = []
         for index in selected_indexes:
             selected_items.append(self.menu_items[index][0])
 
-        self.install_config['packages'] = self.package_list_json["minimal_packages"] + selected_items
+        self.install_config['packages'] = package_list_json["packages"] + selected_items
         return ActionResult(True, None)
 
     def display(self, params):

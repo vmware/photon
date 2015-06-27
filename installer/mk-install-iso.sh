@@ -11,10 +11,10 @@
 #	End
 #
 
-set -o errexit		# exit if error...insurance ;)
-set -o nounset		# exit if variable not initalized
-set +h			# disable hashall
-PRGNAME=${0##*/}	# script name minus the path
+set -o errexit          # exit if error...insurance ;)
+set -o nounset          # exit if variable not initalized
+set +h                  # disable hashall
+PRGNAME=${0##*/}	    # script name minus the path
 source config.inc		#	configuration parameters
 source function.inc		#	commonn functions
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
@@ -29,6 +29,7 @@ fi
 ISO_OUTPUT_NAME=$1
 RPMS_PATH=$2
 PACKAGE_LIST_FILE=$3
+RPM_LIST=$4
 
 #- Step 3 Setting up the boot loader
 WORKINGDIR=${BUILDROOT}
@@ -87,7 +88,15 @@ sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${BUILDRO
 
 mkdir -p ${BUILDROOT}/mnt/photon-root/photon-chroot
 rm -rf ${BUILDROOT}/RPMS
-cp -r ${RPMS_PATH} ${WORKINGDIR}/
+
+#cp -r ${RPMS_PATH} ${WORKINGDIR}/
+(
+cd ${RPMS_PATH}
+mkdir ${WORKINGDIR}/RPMS
+for rpm_name in $RPM_LIST; do
+    cp --parent `find . -name "$rpm_name-[0-9]*" -type f` ${WORKINGDIR}/RPMS/;
+done
+)
 
 #creating rpm repo in cd..
 createrepo --database ${WORKINGDIR}/RPMS
