@@ -30,15 +30,18 @@ class PackageSelector(object):
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select Installation', True, self.package_menu)
 
     def load_package_list(self):
-        json_wrapper_package_list = JsonWrapper("package_list.json");
-        self.package_list_json = json_wrapper_package_list.read()
+        json_wrapper_option_list = JsonWrapper("install_options.json")
+        option_list_json = json_wrapper_option_list.read()
+        options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
 
-        self.package_menu_items =   [
-                                        ('1. Photon OS (Micro)', self.exit_function, ['micro', self.package_list_json["micro_packages"]]),
-                                        ('2. Photon Container OS (Minimal)', self.exit_function, ['minimal', self.package_list_json["minimal_packages"]]),
-                                        ('3. Photon Full OS (All)', self.exit_function, ['full', self.package_list_json["minimal_packages"] + self.package_list_json["optional_packages"]]),
-                                        ('4. Photon Custom OS', self.custom_packages, ['custom', None])
-                                    ]
+        self.package_menu_items = []
+
+        for install_option in options_sorted:
+            if install_option[1]["visible"] == True:
+                json_wrapper_package_list = JsonWrapper(install_option[1]["file"])
+                package_list_json = json_wrapper_package_list.read()
+                self.package_menu_items.append((install_option[1]["title"], self.exit_function, [install_option[1]["type"], package_list_json["packages"]] ))
+
         self.package_menu = Menu(self.menu_starty,  self.maxx, self.package_menu_items)
 
     def exit_function(self,  selected_item_params):

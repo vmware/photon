@@ -1,0 +1,33 @@
+{
+    "iso_packages" : {
+        "order" : 0,
+        "type" : "iso",
+        "title" : "ISO Packages",
+        "file" : "packages_iso.json",
+        "visible" : false
+    },
+    "micro_packages" : {
+        "order" : 1,
+        "type" : "micro",
+        "title" : "1. Photon Micro",
+        "file" : "packages_micro.json",
+        "visible" : true
+
+    },
+    "minimal_packages" : {
+        "order" : 2,
+        "type" : "minimal",
+        "title" : "2. Photon Minimal",
+        "file" : "packages_minimal.json",
+        "visible" : true
+    },
+    "full_packages" : {
+        "order" : 3,
+        "type" : "full",
+        "title" : "3. Photon Full",
+        "file" : "packages_full.json",
+        "visible" : true
+    }
+}
+
+
