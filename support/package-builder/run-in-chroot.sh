@@ -17,6 +17,10 @@ if [ $# -lt 1 ]; then
     fail "${PRGNAME}: No build root specified. Usage : ${PRGNAME} <build-root>"
 fi
 
+SOURCES=$1
+shift 
+RPMS=$1
+shift 
 BUILDROOT=$1
 shift 
 
@@ -27,7 +31,7 @@ shift
 if [ ${EUID} -eq 0 ] ; then
     CHROOT_CMD=chroot
 else
-    CHROOT_CMD='contain -c'
+    CHROOT_CMD="contain -b $SOURCES:usr/src/photon/SOURCES,$RPMS:usr/src/photon/RPMS -c"
 fi
 
 $CHROOT_CMD "${BUILDROOT}" \
