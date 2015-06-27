@@ -20,6 +20,11 @@ class ToolChainUtils(object):
         self.localegenScript = "./locale-gen.sh"
         self.localegenConfig = "./locale-gen.conf"
         self.prepareBuildRootCmd="./prepare-build-root.sh"
+        if os.geteuid()==0:
+            self.rpmCommand="rpm"
+        else:
+            self.rpmCommand="fakeroot-ng rpm"
+
         
 
     def prepareBuildRoot(self,chrootID):
@@ -54,7 +59,7 @@ class ToolChainUtils(object):
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             self.logger.debug("Installing rpm:"+rpmFile)
-            cmd="rpm -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
+            cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
             process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
             retval = process.wait()
             if retval != 0:
@@ -79,7 +84,7 @@ class ToolChainUtils(object):
                 self.logger.error("Unable to find rpm "+ package)
                 raise "Input Error"
             self.logger.debug("Installing rpm:"+rpmFile)
-            cmd="rpm -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
+            cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
             process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
             retval = process.wait()
             if retval != 0:
@@ -151,7 +156,7 @@ class ToolChainUtils(object):
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             self.logger.debug("Installing rpm:"+rpmFile)
-            cmd="rpm -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
+            cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
             process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
             retval = process.wait()
             if retval != 0:

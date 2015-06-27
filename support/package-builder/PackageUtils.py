@@ -22,7 +22,7 @@ class PackageUtils(object):
         self.nodepsRPMPackageOptions = "--nodeps"
         
         self.rpmbuildBinary = "rpmbuild"
-        self.rpmbuildBuildallOption = "-ba"
+        self.rpmbuildBuildallOption = "-ba --clean"
         self.rpmbuildNocheckOption = "--nocheck"
         self.queryRpmPackageOptions = "-qa"
         self.forceRpmPackageOptions = "--force"
