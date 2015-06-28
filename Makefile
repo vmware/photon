@@ -38,7 +38,7 @@ all: iso
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
-        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
+        sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
