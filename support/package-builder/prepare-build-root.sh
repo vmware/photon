@@ -70,7 +70,7 @@ RPMPKGFILE="$(find ${RPM_PATH} -name 'filesystem*.rpm' -printf %f)"
 if [ ${EUID} -eq 0 ] ; then
     run_command "	Installing filesystem " "rpm -Uvh --nodeps --define '_dbpath /var/lib/rpm' --root ${BUILDROOT} ${RPM_PATH}/x86_64/${RPMPKGFILE}" "$LOG_PATH/filesystem.completed"
 else
-    run_command "	Installing filesystem " "fakeroot-ng rpm -Uvh --nodeps --define '_dbpath /var/lib/rpm' --root ${BUILDROOT} ${RPM_PATH}/x86_64/${RPMPKGFILE}" "$LOG_PATH/filesystem.completed"
+    run_command "	Installing filesystem " "rpm -Uvh --nodeps --dbpath=${BUILDROOT}/var/lib/rpm --badreloc --relocate /=${BUILDROOT} ${RPM_PATH}/x86_64/${RPMPKGFILE}" "$LOG_PATH/filesystem.completed"
 fi
 
 
