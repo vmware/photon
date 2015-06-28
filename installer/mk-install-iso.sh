@@ -30,7 +30,8 @@ ISO_OUTPUT_NAME=$1
 RPMS_PATH=$2
 PACKAGE_LIST_FILE=$3
 RPM_LIST=$4
-
+PHOTON_COMMON_DIR=$(dirname "${PACKAGE_LIST_FILE}")
+PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 #- Step 3 Setting up the boot loader
 WORKINGDIR=${BUILDROOT}
 BUILDROOT=${BUILDROOT}/photon-chroot
@@ -42,9 +43,8 @@ find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv -
 
 rm -f ${BUILDROOT}/installer/*.pyc
 rm -rf ${BUILDROOT}/installer/BUILD_DVD
-# replace default package_list with specific one
-cp $PACKAGE_LIST_FILE ${BUILDROOT}/installer/package_list.json
-
+# Copy package list json files
+cp -rf $PHOTON_COMMON_DIR ${BUILDROOT}/installer/
 #ID in the initrd.gz now is PHOTON_VMWARE_CD . This is how we recognize that the cd is actually ours. touch this file there.
 touch ${WORKINGDIR}/PHOTON_VMWARE_CD
 
@@ -69,7 +69,7 @@ cp BUILD_DVD/fstab ${BUILDROOT}/etc/fstab
 cat >> ${BUILDROOT}/bin/bootphotoninstaller << EOF
 #!/bin/bash
 cd /installer
-./isoInstaller.py 2> /var/log/installer && shutdown -r now
+./isoInstaller.py --json-file=./data/$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
 /bin/bash
 EOF
 
@@ -94,7 +94,10 @@ rm -rf ${BUILDROOT}/RPMS
 cd ${RPMS_PATH}
 mkdir ${WORKINGDIR}/RPMS
 for rpm_name in $RPM_LIST; do
-    cp --parent `find . -name "$rpm_name-[0-9]*" -type f` ${WORKINGDIR}/RPMS/;
+    FILENAME="`find . -name "$rpm_name-[0-9]*" -type f`"
+    if [ -n "$FILENAME" ]; then
+        cp --parent $FILENAME ${WORKINGDIR}/RPMS/;
+    fi
 done
 )
 

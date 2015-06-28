@@ -6,11 +6,11 @@
         "file" : "packages_iso.json",
         "visible" : false
     },
-    "minimal_packages" : {
+    "micro_packages" : {
         "order" : 1,
         "type" : "micro",
-        "title" : "Photon Minimal",
-        "file" : "packages_minimal.json",
+        "title" : "Photon Micro",
+        "file" : "packages_micro.json",
         "visible" : true
     }
 }

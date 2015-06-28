@@ -5,6 +5,7 @@
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
 import json
+import os
 import curses
 from sets import Set
 from jsonwrapper import JsonWrapper
@@ -13,7 +14,7 @@ from window import Window
 from actionresult import ActionResult
 
 class PackageSelector(object):
-    def __init__(self,  maxy, maxx, install_config):
+    def __init__(self,  maxy, maxx, install_config, options_file):
         self.install_config = install_config
         self.maxx = maxx
         self.maxy = maxy
@@ -25,12 +26,13 @@ class PackageSelector(object):
 
         self.menu_starty = self.win_starty + 3
 
-        self.load_package_list()
+        self.load_package_list(options_file)
 
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select Installation', True, self.package_menu)
 
-    def load_package_list(self):
-        json_wrapper_option_list = JsonWrapper("install_options.json")
+    def load_package_list(self, options_file):
+        base_path = os.path.dirname(options_file)
+        json_wrapper_option_list = JsonWrapper(options_file)
         option_list_json = json_wrapper_option_list.read()
         options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
 
@@ -38,7 +40,8 @@ class PackageSelector(object):
 
         for install_option in options_sorted:
             if install_option[1]["visible"] == True:
-                json_wrapper_package_list = JsonWrapper(install_option[1]["file"])
+                file_path = os.path.join(base_path, install_option[1]["file"])
+                json_wrapper_package_list = JsonWrapper(file_path)
                 package_list_json = json_wrapper_package_list.read()
                 self.package_menu_items.append((install_option[1]["title"], self.exit_function, [install_option[1]["type"], package_list_json["packages"]] ))
 

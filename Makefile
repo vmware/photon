@@ -14,8 +14,12 @@ include $(MAKEROOT)/makedefs.mk
 export PATH := $(SRCROOT)/tools/bin:$(PATH)
 
 ifdef PHOTON_CACHE_PATH
+PHOTON_PACKAGES_MICRO := packages-cached
+PHOTON_PACKAGES_MINIMAL := packages-cached
 PHOTON_PACKAGES := packages-cached
 else
+PHOTON_PACKAGES_MICRO := packages-micro
+PHOTON_PACKAGES_MINIMAL := packages-minimal
 PHOTON_PACKAGES := packages
 endif
 
@@ -40,27 +44,60 @@ clean-install clean-chroot
 
 all: iso
 
-minimal: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
-	@echo "Building Photon ISO..."
-	@cp -f $(PHOTON_INSTALLER_DIR)/build_install_options_minimal.json $(PHOTON_INSTALLER_DIR)/install_options.json
+micro: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
+	@echo "Building Photon Micro ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-micro.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_DATA_DIR)/build_install_options_micro.json \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+	@echo "Building all Micro RPMS..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -o full \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -j $(PHOTON_DATA_DIR)/build_install_options_micro.json
+
+minimal: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+	@echo "Building Photon Minimal ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-minimal.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_INSTALLER_DIR)/install_options.json \
+                -p $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
+packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+	@echo "Building all RPMS..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -o full \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json
+
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
-	@echo "Building Photon ISO..."
-	@cp -f $(PHOTON_INSTALLER_DIR)/build_install_options_all.json $(PHOTON_INSTALLER_DIR)/install_options.json
+	@echo "Building Photon FUll ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_INSTALLER_DIR)/install_options.json \
+                -p $(PHOTON_DATA_DIR)/build_install_options_all.json \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -74,7 +111,7 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_PACKAGE_LIST)
+                -j $(PHOTON_DATA_DIR)/build_install_options_all.json
 
 packages-cached:
 	@echo "Using cached RPMS..."
