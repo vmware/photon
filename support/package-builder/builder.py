@@ -120,10 +120,8 @@ def buildAPackage(package):
     pkgManager.buildPackages(listPackages)
 
 def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger):
-    jsonData=open(inputJSONFile)
-    jsonObj = json.load(jsonData)
-    jsonData.close()
-    listPackages=jsonObj[buildOption]
+    listPackages = get_all_package_names(inputJSONFile)
+
     listPackagesToBuild=[]
     for pkg in listPackages:
         p =  pkg.encode('utf-8')
@@ -133,6 +131,22 @@ def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger):
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackagesToBuild)
     
- 
+def get_all_package_names(build_install_option):
+    base_path = os.path.dirname(build_install_option)
+    jsonData = open(build_install_option)
+    option_list_json = json.load(jsonData)
+    jsonData.close()
+    options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
+    packages = []
+
+    for install_option in options_sorted:
+        filename = os.path.join(base_path, install_option[1]["file"])
+        jsonData=open(filename)
+        package_list_json = json.load(jsonData)
+        jsonData.close()
+        packages = packages + package_list_json["packages"]
+
+    return packages
+
 if __name__=="__main__":
     main()
