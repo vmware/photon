@@ -49,7 +49,9 @@ class ToolChainUtils(object):
         self.logger.info("Installing toolchain.....")
         self.prepareBuildRoot(chrootID)
         cmdUtils = CommandUtils()
-        
+
+        rpmFiles = ""
+        packages = ""
         for package in constants.listToolChainRPMPkgsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
@@ -58,21 +60,26 @@ class ToolChainUtils(object):
                 if rpmFile is None:
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
-            self.logger.debug("Installing rpm:"+rpmFile)
-            cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
-            process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
-            retval = process.wait()
-            if retval != 0:
-                self.logger.error("Installing tool chain package "+package+" failed")
-                raise "RPM installation failed"
+            rpmFiles += " " + rpmFile
+            packages += " " + package
+
+        self.logger.debug("Installing toolchain rpms:" + packages)
+        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
+        retval = process.wait()
+        if retval != 0:
+            self.logger.error("Installing toolchain rpms failed")
+            raise "RPM installation failed"
         
-        self.logger.info("Installed tool chain successfully on chroot:"+chrootID)
+        self.logger.info("Installed toolchain successfully on chroot:"+chrootID)
     
     def installCoreToolChainPackages(self,chrootID):
         self.logger.info("Installing toolchain.....")
         cmdUtils = CommandUtils()
         self.prepareBuildRoot(chrootID)
-        
+
+        rpmFiles = ""
+        packages = ""
         for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile = None
@@ -83,13 +90,16 @@ class ToolChainUtils(object):
             if rpmFile is None:
                 self.logger.error("Unable to find rpm "+ package)
                 raise "Input Error"
-            self.logger.debug("Installing rpm:"+rpmFile)
-            cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
-            process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
-            retval = process.wait()
-            if retval != 0:
-                self.logger.error("Installing tool chain package "+package+" failed")
-                raise "RPM installation failed"
+            rpmFiles += " " + rpmFile
+            packages += " " + package
+
+        self.logger.debug("Installing core toolchain rpms:" + packages)
+        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
+        retval = process.wait()
+        if retval != 0:
+            self.logger.error("Installing toolchain rpms failed")
+            raise "RPM installation failed"
             
         self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)    
     
@@ -147,6 +157,8 @@ class ToolChainUtils(object):
         cmdUtils = CommandUtils()
         self.prepareBuildRoot(chrootID)
         self.logger.info("Installing Tool Chain RPMS.......")
+        rpmFiles = ""
+        packages = ""
         for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
@@ -155,13 +167,16 @@ class ToolChainUtils(object):
                 if rpmFile is None:
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
-            self.logger.debug("Installing rpm:"+rpmFile)
-            cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFile
-            process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
-            retval = process.wait()
-            if retval != 0:
-                self.logger.error("Installing tool chain package "+package+" failed")
-                raise "RPM installation failed"
+            rpmFiles += " " + rpmFile
+            packages += " " + package
+
+        self.logger.debug("Installing rpms:"+packages)
+        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
+        retval = process.wait()
+        if retval != 0:
+            self.logger.error("Installing tool chain  failed")
+            raise "RPM installation failed"
             
         self.logger.info("Successfully installed all Tool Chain RPMS in Chroot:"+chrootID)    
     
