@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
 Source1:	http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
-Source2:	rpm-system-configuring-scripts-2.1.tar.gz
+Source2:	rpm-system-configuring-scripts-2.2.tar.gz
 #Requires: nspr
 Requires: 	nss
 Requires: 	popt
@@ -108,6 +108,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpm.so
 
 %changelog
+*	Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
+-	Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.
 *	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 4.11.2-4
 -	Add pkgconfig Provides directive
 *	Thu Jun 18 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-3
