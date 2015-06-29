@@ -105,13 +105,13 @@ class PackageManager(object):
         self.logger.info("Possible number of worker threads:"+str(numChroots))
         return numChroots
     
-    def buildToolChainPackages(self):
+    def buildToolChainPackages(self, parallelBuild):
         self.buildToolChain()
-        self.buildGivenPackages(constants.listToolChainPackages)
+        self.buildGivenPackages(constants.listToolChainPackages, parallelBuild)
         
-    def buildPackages(self,listPackages):
-        self.buildToolChainPackages()
-        self.buildGivenPackages(listPackages)
+    def buildPackages(self,listPackages, parallelBuild):
+        self.buildToolChainPackages(parallelBuild)
+        self.buildGivenPackages(listPackages, parallelBuild)
     
     def initializeThreadPool(self,statusEvent):
         ThreadPool.clear()
@@ -126,7 +126,11 @@ class PackageManager(object):
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling=False
     
-    def buildGivenPackages (self, listPackages):
+    def buildGivenPackages (self, listPackages, parallelBuild):
+        defaultThreads = 1
+        if parallelBuild == True:
+            defaultThreads = 8
+
         returnVal=self.calculateParams(listPackages)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
@@ -135,11 +139,11 @@ class PackageManager(object):
         statusEvent=threading.Event()
         numWorkerThreads=self.calculatePossibleNumWorkerThreads()
         if numWorkerThreads > 8:
-            numWorkerThreads = 1
+            numWorkerThreads = defaultThreads
         if numWorkerThreads == 0:
             self.logger.error("Unable to create worker threads. Terminating the package manager.")
             raise Exception("No Space.")
-         
+
         self.initializeScheduler(statusEvent)
         self.initializeThreadPool(statusEvent)
         
