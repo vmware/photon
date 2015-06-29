@@ -131,7 +131,6 @@ class PackageBuilder(object):
             noDeps=True
         pkgUtils.installRPM(package,chrootID,noDeps,destLogPath)
         listInstalledPackages.append(package)
-        self.logger.info("Installed the package:"+package)
 
     def installDependentRunTimePackages(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
         listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
