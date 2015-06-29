@@ -22,6 +22,7 @@ def main():
     parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
     parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="input.json")
     parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
+    parser.add_option("-e",  "--parallel-build", dest="parallelBuild",  default=False)
     
     
     (options,  args) = parser.parse_args()
@@ -29,6 +30,11 @@ def main():
     if not os.path.isdir(options.logPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
     
+    if options.parallelBuild in ["TRUE", "True", "true"]:
+        parallelBuild = True
+    else:
+        parallelBuild = False
+
     logger=Logger.getLogger(options.logPath+"/Main")
     
     errorFlag=False
@@ -82,7 +88,7 @@ def main():
         logger.info("JSON File :" + options.inputJSONFile)
     else:
         logger.info("Package to build:"+package)
-    
+
     '''    
     listPackages=["acl","attr","autoconf","automake","bash","bc","bindutils","binutils","bison","boost","btrfs-progs","bzip2","ca-certificates","cdrkit","check",
                   "cloud-init","cmake","coreutils","cpio","cracklib","createrepo","curl","cyrus-sasl","db","dbus","deltarpm","diffutils","docbook-xml","docbook-xsl",
@@ -103,9 +109,9 @@ def main():
     try:
         constants.initialize(options)
         if options.installPackage:
-            buildAPackage(package)
+            buildAPackage(package, parallelBuild)
         else:
-            buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption,logger)
+            buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption,logger, parallelBuild)
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
@@ -113,13 +119,13 @@ def main():
     
     sys.exit(0)
 
-def buildAPackage(package):
+def buildAPackage(package, parallelBuild):
     listPackages=[]
     listPackages.append(package)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackages)
+    pkgManager.buildPackages(listPackages, parallelBuild)
 
-def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger):
+def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger, parallelBuild):
     listPackages = get_all_package_names(inputJSONFile)
 
     listPackagesToBuild=[]
@@ -129,7 +135,7 @@ def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger):
     logger.info("List of packages to build:")
     logger.info(listPackagesToBuild)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackagesToBuild)
+    pkgManager.buildPackages(listPackagesToBuild, parallelBuild)
     
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)

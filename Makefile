@@ -42,6 +42,8 @@ CONTAIN := $(TOOLS_BIN)/contain
 check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot
 
+PARALLEL=False
+
 all: iso
 
 micro: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
@@ -65,7 +67,8 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/build_install_options_micro.json
+                -j $(PHOTON_DATA_DIR)/build_install_options_micro.json \
+                -e ${PARALLEL}
 
 minimal: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 	@echo "Building Photon Minimal ISO..."
@@ -88,7 +91,8 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json
+                -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
+                -e ${PARALLEL}
 
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon FUll ISO..."
@@ -111,7 +115,8 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/build_install_options_all.json
+                -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
+                -e ${PARALLEL}
 
 packages-cached:
 	@echo "Using cached RPMS..."
