@@ -76,10 +76,10 @@ fi
 
 if [ ${EUID} -eq 0 ] ; then
 # 	Ommited in the filesystem.spec file - not needed for booting
-    [ -e ${BUILDROOT}/dev/console ]	|| fakeroot mknod -m 600 ${BUILDROOT}/dev/console c 5 1
-    [ -e ${BUILDROOT}/dev/null ]		|| fakeroot mknod -m 666 ${BUILDROOT}/dev/null c 1 3
-    [ -e ${BUILDROOT}/dev/random ]    || fakeroot mknod -m 444 ${BUILDROOT}/dev/random c 1 8
-    [ -e ${BUILDROOT}/dev/urandom ]    || fakeroot mknod -m 444 ${BUILDROOT}/dev/urandom c 1 9
+    [ -e ${BUILDROOT}/dev/console ]	|| mknod -m 600 ${BUILDROOT}/dev/console c 5 1
+    [ -e ${BUILDROOT}/dev/null ]	|| mknod -m 666 ${BUILDROOT}/dev/null c 1 3
+    [ -e ${BUILDROOT}/dev/random ]	|| mknod -m 444 ${BUILDROOT}/dev/random c 1 8
+    [ -e ${BUILDROOT}/dev/urandom ]	|| mknod -m 444 ${BUILDROOT}/dev/urandom c 1 9
 
     chown -R 0:0 ${BUILDROOT}/*	|| fail "${PRGNAME}: Changing ownership: ${BUILDROOT}: FAILURE"
 
