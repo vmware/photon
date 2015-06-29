@@ -15,9 +15,4 @@ fi
 
 PUBLISHRPMSPATHDIR=$1
 
-if [ ${EUID} -ne 0 ]; then
-    echo "${PRGNAME}: Need to be root user: FAILURE"
-    exit 1
-fi
-
-wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --cut-dirs=4 -B https://bintray.com/artifact/download/vmware/photon_release_1.0_TP1_x86_64/ -i rpmfilelist -P ${PUBLISHRPMSPATHDIR}
+cat rpmfilelist | awk '{print "https://bintray.com/artifact/download/vmware/photon_release_1.0_TP1_x86_64/"$1}' | xargs -n 1 -P 10 wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --cut-dirs=4 -P ${PUBLISHRPMSPATHDIR}

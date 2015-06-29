@@ -7,3 +7,4 @@ packer-cache/
 stage/
 discus-cache/
 output-*/
+tools/bin/

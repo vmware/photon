@@ -66,24 +66,32 @@ run_command "	Extracting filesystem rpm" "cp ${BUILDROOT}/${PARENT}/RPMS/x86_64/
 fi
 RPMPKGFILE="$(find ${RPM_PATH} -name 'filesystem*.rpm' -printf %f)"
 [ -z ${RPMPKGFILE} ] && fail "	Filesystem rpm package missing: Can not continue"
-run_command "	Installing filesystem " "rpm -Uvh --nodeps --root ${BUILDROOT} ${RPM_PATH}/x86_64/${RPMPKGFILE}" "$LOG_PATH/filesystem.completed"
+
+if [ ${EUID} -eq 0 ] ; then
+    run_command "	Installing filesystem " "rpm -Uvh --nodeps --define '_dbpath /var/lib/rpm' --root ${BUILDROOT} ${RPM_PATH}/x86_64/${RPMPKGFILE}" "$LOG_PATH/filesystem.completed"
+else
+    run_command "	Installing filesystem " "rpm -Uvh --nodeps --dbpath=${BUILDROOT}/var/lib/rpm --badreloc --relocate /=${BUILDROOT} ${RPM_PATH}/x86_64/${RPMPKGFILE}" "$LOG_PATH/filesystem.completed"
+fi
 
 
+if [ ${EUID} -eq 0 ] ; then
 # 	Ommited in the filesystem.spec file - not needed for booting
-[ -e ${BUILDROOT}/dev/console ]	|| mknod -m 600 ${BUILDROOT}/dev/console c 5 1
-[ -e ${BUILDROOT}/dev/null ]		|| mknod -m 666 ${BUILDROOT}/dev/null c 1 3
-[ -e ${BUILDROOT}/dev/random ]    || mknod -m 444 ${BUILDROOT}/dev/random c 1 8
-[ -e ${BUILDROOT}/dev/urandom ]    || mknod -m 444 ${BUILDROOT}/dev/urandom c 1 9
+    [ -e ${BUILDROOT}/dev/console ]	|| mknod -m 600 ${BUILDROOT}/dev/console c 5 1
+    [ -e ${BUILDROOT}/dev/null ]	|| mknod -m 666 ${BUILDROOT}/dev/null c 1 3
+    [ -e ${BUILDROOT}/dev/random ]	|| mknod -m 444 ${BUILDROOT}/dev/random c 1 8
+    [ -e ${BUILDROOT}/dev/urandom ]	|| mknod -m 444 ${BUILDROOT}/dev/urandom c 1 9
 
-chown -R 0:0 ${BUILDROOT}/*	|| fail "${PRGNAME}: Changing ownership: ${BUILDROOT}: FAILURE"
+    chown -R 0:0 ${BUILDROOT}/*	|| fail "${PRGNAME}: Changing ownership: ${BUILDROOT}: FAILURE"
 
 #
 #	Mount kernel filesystem
 #
-if ! mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then mount --bind /dev ${BUILDROOT}/dev; fi
-if ! mountpoint ${BUILDROOT}/dev/pts	>/dev/null 2>&1; then mount -t devpts devpts ${BUILDROOT}/dev/pts -o gid=5,mode=620; fi
-if ! mountpoint ${BUILDROOT}/proc	>/dev/null 2>&1; then mount -t proc proc ${BUILDROOT}/proc; fi
-if ! mountpoint ${BUILDROOT}/sys 	>/dev/null 2>&1; then mount -t sysfs sysfs ${BUILDROOT}/sys; fi
-if ! mountpoint ${BUILDROOT}/run	>/dev/null 2>&1; then mount -t tmpfs tmpfs ${BUILDROOT}/run; fi
-if [ -h ${BUILDROOT}/dev/shm ];			 then mkdir -pv ${BUILDROOT}/$(readlink ${BUILDROOT}/dev/shm); fi
+    if ! mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then mount --bind /dev ${BUILDROOT}/dev; fi
+    if ! mountpoint ${BUILDROOT}/dev/pts	>/dev/null 2>&1; then mount -t devpts devpts ${BUILDROOT}/dev/pts -o gid=5,mode=620; fi
+    if ! mountpoint ${BUILDROOT}/proc	>/dev/null 2>&1; then mount -t proc proc ${BUILDROOT}/proc; fi
+    if ! mountpoint ${BUILDROOT}/sys 	>/dev/null 2>&1; then mount -t sysfs sysfs ${BUILDROOT}/sys; fi
+    if ! mountpoint ${BUILDROOT}/run	>/dev/null 2>&1; then mount -t tmpfs tmpfs ${BUILDROOT}/run; fi
+    if [ -h ${BUILDROOT}/dev/shm ];			 then mkdir -pv ${BUILDROOT}/$(readlink ${BUILDROOT}/dev/shm); fi
+fi
+
 exit 0

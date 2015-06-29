@@ -110,7 +110,7 @@ class PackageManager(object):
         self.buildGivenPackages(constants.listToolChainPackages)
         
     def buildPackages(self,listPackages):
-        self.buildToolChainPackages():
+        self.buildToolChainPackages()
         self.buildGivenPackages(listPackages)
     
     def initializeThreadPool(self,statusEvent):
@@ -135,7 +135,7 @@ class PackageManager(object):
         statusEvent=threading.Event()
         numWorkerThreads=self.calculatePossibleNumWorkerThreads()
         if numWorkerThreads > 8:
-            numWorkerThreads = 8
+            numWorkerThreads = 1
         if numWorkerThreads == 0:
             self.logger.error("Unable to create worker threads. Terminating the package manager.")
             raise Exception("No Space.")

@@ -11,9 +11,15 @@ Makefile: ;
 
 include $(MAKEROOT)/makedefs.mk
 
+export PATH := $(SRCROOT)/tools/bin:$(PATH)
+
 ifdef PHOTON_CACHE_PATH
+PHOTON_PACKAGES_MICRO := packages-cached
+PHOTON_PACKAGES_MINIMAL := packages-cached
 PHOTON_PACKAGES := packages-cached
 else
+PHOTON_PACKAGES_MICRO := packages-micro
+PHOTON_PACKAGES_MINIMAL := packages-minimal
 PHOTON_PACKAGES := packages
 endif
 
@@ -29,24 +35,50 @@ else
 PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
+TOOLS_BIN := $(SRCROOT)/tools/bin
+CONTAIN := $(TOOLS_BIN)/contain
+
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local \
-check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-package-list \
+check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot
 
 all: iso
 
-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
-	@echo "Building Photon ISO..."
+micro: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
+	@echo "Building Photon Micro ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
-        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-micro.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_INSTALLER_PACKAGE_LIST) \
+                -p $(PHOTON_DATA_DIR)/build_install_options_micro.json \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+	@echo "Building all Micro RPMS..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -o full \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -j $(PHOTON_DATA_DIR)/build_install_options_micro.json
+
+minimal: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+	@echo "Building Photon Minimal ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-minimal.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -56,7 +88,30 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_PACKAGE_LIST)
+                -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json
+
+iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+	@echo "Building Photon FUll ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_DATA_DIR)/build_install_options_all.json \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
+	@echo "Building all RPMS..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -o full \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -j $(PHOTON_DATA_DIR)/build_install_options_all.json
 
 packages-cached:
 	@echo "Using cached RPMS..."
@@ -106,6 +161,8 @@ clean: clean-install clean-chroot
 	@$(RMDIR) $(PHOTON_STAGE)
 	@echo "Deleting chroot path..."
 	@$(RMDIR) $(PHOTON_CHROOT_PATH)
+	@echo "Deleting tools/bin..."
+	@$(RMDIR) $(TOOLS_BIN)
 
 clean-install:
 	@echo "Cleaning installer working directory..."
@@ -155,7 +212,7 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
 	fi
 
-check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-package-list
+check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
@@ -175,8 +232,8 @@ check-createrepo:
 check-vagrant: check-packer
 	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
 
-check-package-list:
-	json_pp -t null < installer/package_list.json >/dev/null 2>&1 || { echo "Invalid installer/package_list.json. Aborting" >&2; exit 1; }
+check-sanity:
+	$(SRCROOT)/support/sanity_check.sh
 
 ifeq ($(VAGRANT_BUILD),vcloudair)
 check-packer: check-packer-ovf-plugin
@@ -190,7 +247,7 @@ endif
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
 
-%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -201,5 +258,9 @@ check-packer-ovf-plugin:
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
                               -l $(PHOTON_LOGS_DIR)
-                              
 
+$(TOOLS_BIN):
+	mkdir -p $(TOOLS_BIN)
+
+$(CONTAIN): $(TOOLS_BIN)
+	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@

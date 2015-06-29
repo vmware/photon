@@ -4,6 +4,8 @@
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
+from optparse import OptionParser
+import os.path
 import curses
 import sys
 import subprocess
@@ -65,7 +67,7 @@ class IsoInstaller(object):
         print "Failed to mount the cd, exiting the installer, check the logs for more details"
         raise Exception("Can not mount the cd")
     
-    def __init__(self, stdscreen):
+    def __init__(self, stdscreen, options_file):
         self.screen = stdscreen
 
         # Init the colors
@@ -95,8 +97,7 @@ class IsoInstaller(object):
 
         license_agreement = License(self.maxy, self.maxx)
         select_disk = SelectDisk(self.maxy, self.maxx, self.install_config)
-        package_selector = PackageSelector(self.maxy, self.maxx, self.install_config)
-        custom_package_selector = CustomPackageSelector(self.maxy, self.maxx, self.install_config)
+        package_selector = PackageSelector(self.maxy, self.maxx, self.install_config, options_file)
         hostname_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, False,  'Choose the hostname for your system',
             'Hostname:', 
             2, self.install_config)
@@ -112,7 +113,6 @@ class IsoInstaller(object):
                     (license_agreement.display, False),
                     (select_disk.display, True),
                     (package_selector.display, True),
-                    (custom_package_selector.display, False),
                     (hostname_reader.get_user_string, True),
                     (root_password_reader.get_user_string, True),
                  ]
@@ -135,4 +135,9 @@ class IsoInstaller(object):
                     index = 0
 
 if __name__ == '__main__':
-    curses.wrapper(IsoInstaller)
+    usage = "Usage: %prog [options]"
+    parser = OptionParser(usage)
+    parser.add_option("-j",  "--json-file", dest="options_file",  default="input.json")
+
+    (options,  args) = parser.parse_args()
+    curses.wrapper(IsoInstaller, options.options_file)

@@ -17,28 +17,31 @@ if [ $# -lt 1 ]; then
     fail "${PRGNAME}: No build root specified. Usage : ${PRGNAME} <build-root>"
 fi
 
+SOURCES=$1
+shift 
+RPMS=$1
+shift 
 BUILDROOT=$1
 shift 
-
-# Remove the name of this script from our argument list
-#shift
-
-PHOTON_ENV_CMD=/usr/bin/env
-PHOTON_BASH_CMD=/bin/bash
-
-test -x ${BUILDROOT}/tools/bin/env && PHOTON_ENV_CMD=/tools/bin/env
-test -x ${BUILDROOT}/tools/bin/bash && PHOTON_BASH_CMD=/tools/bin/bash
 
 #
 #	Goto chroot and run the command specified as parameter.
 #
-chroot "${BUILDROOT}" \
-	$PHOTON_ENV_CMD -i \
+
+if [ ${EUID} -eq 0 ] ; then
+    CHROOT_CMD=chroot
+else
+#    CHROOT_CMD="contain -b $SOURCES:usr/src/photon/SOURCES,$RPMS:usr/src/photon/RPMS -c"
+    CHROOT_CMD="contain -b $RPMS:usr/src/photon/RPMS -c -n"
+fi
+
+$CHROOT_CMD "${BUILDROOT}" \
+	/usr/bin/env -i \
 	HOME=/root \
 	TERM="$TERM" \
 	PS1='\u:\w\$ ' \
 	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
 	SHELL=/bin/bash \
-	$PHOTON_BASH_CMD --login +h -c "$*"
+	/bin/bash --login +h -c "$*"
 
 exit 0

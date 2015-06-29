@@ -16,17 +16,21 @@ class PackageUtils(object):
         self.logName=logName
         self.logPath=logPath
         self.logger=Logger.getLogger(logName,logPath)
-        self.runInChrootCommand="./run-in-chroot.sh"
+        self.runInChrootCommand="./run-in-chroot.sh " + constants.sourcePath + " " + constants.rpmPath;
         self.rpmBinary = "rpm"
         self.installRPMPackageOptions = "-Uvh"
         self.nodepsRPMPackageOptions = "--nodeps"
         
         self.rpmbuildBinary = "rpmbuild"
-        self.rpmbuildBuildallOption = "-ba"
+        self.rpmbuildBuildallOption = "-ba --clean"
         self.rpmbuildNocheckOption = "--nocheck"
         self.queryRpmPackageOptions = "-qa"
         self.forceRpmPackageOptions = "--force"
         self.adjustGCCSpecScript="adjust-gcc-specs.sh"
+        self.rpmFilesToInstallInAOneShot=""
+        self.packagesToInstallInAOneShot=""
+        self.noDepsRPMFilesToInstallInAOneShot=""
+        self.noDepsPackagesToInstallInAOneShot=""
     
     def getRPMDestDir(self,rpmName,rpmDir):
         arch=""
@@ -41,15 +45,16 @@ class PackageUtils(object):
         cmdUtils = CommandUtils()
         rpmName=os.path.basename(rpmFile)
         rpmDestDir=self.getRPMDestDir(rpmName,destDir)
-        if not os.path.isdir(rpmDestDir):
-            cmdUtils.runCommandInShell("mkdir -p "+rpmDestDir)
         rpmDestPath=rpmDestDir+"/"+rpmName
-        shutil.copyfile(rpmFile,  rpmDestPath)
+        if os.geteuid()==0:
+            if not os.path.isdir(rpmDestDir):
+                cmdUtils.runCommandInShell("mkdir -p "+rpmDestDir)
+            shutil.copyfile(rpmFile,  rpmDestPath)
         return rpmDestPath
     
     def installRPM(self,package,chrootID,noDeps=False,destLogPath=None):
-        self.logger.info("Installing rpm for package:"+package)
-        self.logger.debug("No deps:"+str(noDeps))
+#        self.logger.info("Installing rpm for package:"+package)
+#        self.logger.debug("No deps:"+str(noDeps))
         
         rpmfile=self.findRPMFileForGivenPackage(package)
         if rpmfile is None:
@@ -58,21 +63,39 @@ class PackageUtils(object):
 
         rpmDestFile = self.copyRPM(rpmfile, chrootID+constants.topDirPath+"/RPMS")
         rpmFile=rpmDestFile.replace(chrootID,"")
-        chrootCmd=self.runInChrootCommand+" "+chrootID
-        logFile=chrootID+constants.topDirPath+"/LOGS"+"/"+package+".completed"
-        
-        rpmInstallcmd=self.rpmBinary+" "+ self.installRPMPackageOptions
         if noDeps:
-            rpmInstallcmd+=" "+self.nodepsRPMPackageOptions
-        rpmInstallcmd+=" "+rpmFile
+            self.noDepsRPMFilesToInstallInAOneShot += " " + rpmFile
+            self.noDepsPackagesToInstallInAOneShot += " " + package
+        else:
+            self.rpmFilesToInstallInAOneShot += " " + rpmFile
+            self.packagesToInstallInAOneShot += " " + package
+ 
+    def installRPMSInAOneShot(self,chrootID,destLogPath):
+        chrootCmd=self.runInChrootCommand+" "+chrootID
+        rpmInstallcmd=self.rpmBinary+" "+ self.installRPMPackageOptions
+        if self.noDepsRPMFilesToInstallInAOneShot != "":
+            self.logger.info("Installing nodeps rpms: " + self.noDepsPackagesToInstallInAOneShot)
+            logFile=chrootID+constants.topDirPath+"/LOGS/install_rpms_nodeps.log"
+            cmdUtils = CommandUtils()
+            cmd = rpmInstallcmd+" "+self.nodepsRPMPackageOptions + " " + self.noDepsRPMFilesToInstallInAOneShot
+            returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
+            if destLogPath is not None:
+                shutil.copy2(logFile, destLogPath)
+            if not returnVal:
+                self.logger.error("Unable to install rpms")
+                raise Exception("RPM installation failed")
+        if self.rpmFilesToInstallInAOneShot != "":
+            self.logger.info("Installing rpms: " + self.packagesToInstallInAOneShot)
+            logFile=chrootID+constants.topDirPath+"/LOGS/install_rpms.log"
+            cmdUtils = CommandUtils()
+            cmd=rpmInstallcmd+" "+self.rpmFilesToInstallInAOneShot
+            returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
+            if destLogPath is not None:
+                shutil.copy2(logFile, destLogPath)
+            if not returnVal:
+                self.logger.error("Unable to install rpms")
+                raise Exception("RPM installation failed")
         
-        cmdUtils = CommandUtils()
-        returnVal = cmdUtils.runCommandInShell(rpmInstallcmd, logFile, chrootCmd)
-        if destLogPath is not None:
-            shutil.copy2(logFile, destLogPath)
-        if not returnVal:
-            self.logger.error("Unable to install rpm:"+ rpmFile)
-            raise Exception("RPM installation failed")
     
     def copySourcesTobuildroot(self,listSourceFiles,package,destDir):
         cmdUtils = CommandUtils()
@@ -103,6 +126,8 @@ class PackageUtils(object):
         chrootCmd=self.runInChrootCommand+" "+chrootID
         shutil.copyfile(specFile, chrootID+chrootSpecPath+specName )
         
+# FIXME: some sources are located in SPECS/.. how to mount?
+#        if os.geteuid()==0:
         self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
         self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
         
