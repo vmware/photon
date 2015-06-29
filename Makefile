@@ -11,6 +11,8 @@ Makefile: ;
 
 include $(MAKEROOT)/makedefs.mk
 
+export PATH := $(SRCROOT)/tools/bin:$(PATH)
+
 ifdef PHOTON_CACHE_PATH
 PHOTON_PACKAGES := packages-cached
 else
@@ -28,6 +30,9 @@ PHOTON_PUBLISH_RPMS := publish-rpms-cached
 else
 PHOTON_PUBLISH_RPMS := publish-rpms
 endif
+
+TOOLS_BIN := $(SRCROOT)/tools/bin
+CONTAIN := $(TOOLS_BIN)/contain
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local \
 check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
@@ -59,7 +64,7 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -119,6 +124,8 @@ clean: clean-install clean-chroot
 	@$(RMDIR) $(PHOTON_STAGE)
 	@echo "Deleting chroot path..."
 	@$(RMDIR) $(PHOTON_CHROOT_PATH)
+	@echo "Deleting tools/bin..."
+	@$(RMDIR) $(TOOLS_BIN)
 
 clean-install:
 	@echo "Cleaning installer working directory..."
@@ -203,7 +210,7 @@ endif
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
 
-%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -214,3 +221,9 @@ check-packer-ovf-plugin:
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
                               -l $(PHOTON_LOGS_DIR)
+
+$(TOOLS_BIN):
+	mkdir -p $(TOOLS_BIN)
+
+$(CONTAIN): $(TOOLS_BIN)
+	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@
