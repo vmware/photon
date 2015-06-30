@@ -210,6 +210,7 @@ class Installer(object):
         os.environ["RPMROOT"] = self.rpm_path
         rpm_params = rpm_params + ' --force '
         rpm_params = rpm_params + ' --root ' + self.photon_root
+        rpm_params = rpm_params + ' --dbpath /var/lib/rpm '
 
         if ('type' in self.install_config and (self.install_config['type'] in ['micro', 'minimal'])) or self.install_config['iso_system']:
             rpm_params = rpm_params + ' --excludedocs '
