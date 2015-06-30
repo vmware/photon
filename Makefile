@@ -44,9 +44,11 @@ clean-install clean-chroot
 
 PARALLEL=False
 
-all: iso
+all: iso micro-iso minimal-iso
 
-micro: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
+micro: micro-iso
+
+micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
 	@echo "Building Photon Micro ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-micro.iso \
@@ -70,7 +72,9 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -j $(PHOTON_DATA_DIR)/build_install_options_micro.json \
                 -e ${PARALLEL}
 
-minimal: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+minimal: minimal-iso
+
+minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 	@echo "Building Photon Minimal ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-minimal.iso \
