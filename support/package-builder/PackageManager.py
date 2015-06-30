@@ -28,6 +28,7 @@ class PackageManager(object):
         self.mapThreadsLaunchTime={}
         self.listAvailableCyclicPackages=[]
         self.listPackagesToBuild=[]
+        self.maxNumThreads=20
         
     def readPackageBuildData(self, listPackages):
         try:
@@ -138,7 +139,7 @@ class PackageManager(object):
         
         statusEvent=threading.Event()
         numWorkerThreads=self.calculatePossibleNumWorkerThreads()
-        if numWorkerThreads > 8:
+        if numWorkerThreads > self.maxNumThreads:
             numWorkerThreads = defaultThreads
         if numWorkerThreads == 0:
             self.logger.error("Unable to create worker threads. Terminating the package manager.")
