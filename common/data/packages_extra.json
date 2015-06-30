@@ -1,0 +1,3 @@
+{
+    "packages":["google-daemon", "google-startup-scripts"]
+}
