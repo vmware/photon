@@ -1,14 +1,14 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.freedesktop.org/software/systemd/%{name}-%{version}.tar.xz
-Patch0:     systemd-216-compat-1.patch
+Patch0:     	systemd-216-compat-1.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -54,7 +54,8 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
             --with-dbuspolicydir=/etc/dbus-1/system.d               \
             --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces    \
             --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services \
-            --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services
+            --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
+	    --enable-compat-libs
 
 make %{?_smp_mflags}
 %install
@@ -89,8 +90,10 @@ rm -rf %{buildroot}/*
 
 
 %changelog
-*   Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-5
--   Remove debug files.
+*   	Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
+-   	Remove debug files.
+*	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 216-5
+-	Building compat libs 
 *	Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
 -	gudev support
 *	Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3
