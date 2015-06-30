@@ -1,7 +1,7 @@
 Summary:	Mercurial-3.1.2
 Name:		mercurial
 Version:	3.1.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -34,7 +34,7 @@ cat >> %{buildroot}/.hgrc << "EOF"
 username = "$(id -u)"
 EOF
 
-install -vdm644 %{buildroot}/etc/profile.d
+install -vdm755 %{buildroot}/etc/profile.d
 cat >> %{buildroot}/etc/profile.d/mercurial-exports.sh <<- "EOF"
 export PYTHONPATH="$PYTHONPATH:/opt/%{name}-%{version}/mercurial/pure"
 EOF
@@ -56,5 +56,7 @@ rm -rf %{buildroot}/*
 %exclude /opt/%{name}-%{version}/contrib/plan9
 %exclude /opt/%{name}-%{version}/build/temp.*
 %changelog
+*	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 3.1.2-2
+-	/etc/profile.d permission fix
 *	Mon Oct 13 2014 Divya Thaluru <dthaluru@vmware.com> 3.1.2-1
 -	Initial build.	First version
