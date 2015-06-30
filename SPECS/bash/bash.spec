@@ -36,10 +36,11 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 ln -s bash %{buildroot}/bin/sh
 install -vdm 755 %{buildroot}/etc
+install -vdm 755 %{buildroot}/etc/profile.d
+install -vdm 755 %{buildroot}/etc/skel
 
 # Create dircolors
-install -vdm 755 %{buildroot}/etc/profile.d
-cat > /etc/profile.d/dircolors.sh << "EOF"
+cat > %{buildroot}/etc/profile.d/dircolors.sh << "EOF"
 # Setup for /bin/ls and /bin/grep to support color, the alias is in /etc/bashrc.
 if [ -f "/etc/dircolors" ] ; then
         eval $(dircolors -b /etc/dircolors)
@@ -52,7 +53,7 @@ alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 EOF
 
-cat > /etc/profile.d/extrapaths.sh << "EOF"
+cat > %{buildroot}/etc/profile.d/extrapaths.sh << "EOF"
 if [ -d /usr/local/lib/pkgconfig ] ; then
         pathappend /usr/local/lib/pkgconfig PKG_CONFIG_PATH
 fi
@@ -64,7 +65,7 @@ if [ -d /usr/local/sbin -a $EUID -eq 0 ]; then
 fi
 EOF
 
-cat > /etc/profile.d/readline.sh << "EOF"
+cat > %{buildroot}/etc/profile.d/readline.sh << "EOF"
 # Setup the INPUTRC environment variable.
 if [ -z "$INPUTRC" -a ! -f "$HOME/.inputrc" ] ; then
         INPUTRC=/etc/inputrc
@@ -72,7 +73,7 @@ fi
 export INPUTRC
 EOF
 
-cat > /etc/profile.d/umask.sh << "EOF"
+cat > %{buildroot}/etc/profile.d/umask.sh << "EOF"
 # By default, the umask should be set.
 if [ "$(id -gn)" = "$(id -un)" -a $EUID -gt 99 ] ; then
   umask 002
@@ -81,7 +82,7 @@ else
 fi
 EOF
 
-cat > /etc/profile.d/i18n.sh << "EOF"
+cat > %{buildroot}/etc/profile.d/i18n.sh << "EOF"
 # Begin /etc/profile.d/i18n.sh
 
 unset LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES \
@@ -110,7 +111,7 @@ export LANG="${LANG:-C}"
 # End /etc/profile.d/i18n.sh
 EOF
 
-cat > /etc/bashrc << "EOF"
+cat > %{buildroot}/etc/bashrc << "EOF"
 # Begin /etc/bashrc
 # Written for Beyond Linux From Scratch
 # by James Robertson <jameswrobertson@earthlink.net>
@@ -148,7 +149,8 @@ unset RED GREEN NORMAL
 # End /etc/bashrc
 EOF
 
-cat > ~/.bash_profile << "EOF"
+
+cat > %{buildroot}/etc/skel/.bash_profile << "EOF"
 # Begin ~/.bash_profile
 # Written for Beyond Linux From Scratch
 # by James Robertson <jameswrobertson@earthlink.net>
@@ -176,7 +178,7 @@ fi
 # End ~/.bash_profile
 EOF
 
-cat > ~/.bashrc << "EOF"
+cat > %{buildroot}/etc/skel/.bashrc << "EOF"
 # Begin ~/.bashrc
 # Written for Beyond Linux From Scratch
 # by James Robertson <jameswrobertson@earthlink.net>
@@ -195,7 +197,7 @@ fi
 # End ~/.bashrc
 EOF
 
-cat > ~/.bash_logout << "EOF"
+cat > %{buildroot}/etc/skel/.bash_logout << "EOF"
 # Begin ~/.bash_logout
 # Written for Beyond Linux From Scratch
 # by James Robertson <jameswrobertson@earthlink.net>
@@ -205,14 +207,20 @@ cat > ~/.bash_logout << "EOF"
 # End ~/.bash_logout
 EOF
 
-dircolors -p > /etc/dircolors
-
+dircolors -p > %{buildroot}/etc/dircolors
 
 %find_lang %{name}
 rm -rf %{buildroot}/%{_infodir}
+
+%post
+test -e /root/.bash_profile || cp /etc/skel/.bash_profile /root
+test -e /root/.bashrc || cp /etc/skel/.bashrc /root
+test -e /root/.bash_logout || cp /etc/skel/.bash_logout /root
+
 %files
 %defattr(-,root,root)
 /bin/*
+%{_sysconfdir}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_defaultdocdir}/%{name}/*
 %{_mandir}/*/*
@@ -222,7 +230,7 @@ rm -rf %{buildroot}/%{_infodir}
 
 %changelog
 *	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
--	/etc/profile.d permission fix
+-	/etc/profile.d permission fix. Pack /etc files into rpm
 *	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
 -	Initial version
 
