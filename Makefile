@@ -273,3 +273,8 @@ $(TOOLS_BIN):
 
 $(CONTAIN): $(TOOLS_BIN)
 	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@
+
+sha1:
+	@cd $(PHOTON_SRCS_DIR) && \
+		sha1sum * | awk '{print $$2" - "$$1}' > $(PHOTON_SOURCES_LIST)
+
