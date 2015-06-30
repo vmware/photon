@@ -1,14 +1,14 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.1.5.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://cdn.debian.net/debian/pool/main/s/%{name}/%{name}_%{version}.orig.tar.gz
-Source1:	PAM-Configuration-Files.tar.gz
+Source1:	PAM-Configuration-Files-1.0.tar.gz
 BuildRequires: 	cracklib
 BuildRequires: 	cracklib-devel
 Requires:   	cracklib
@@ -71,7 +71,7 @@ done
 pushd PAM-Configuration-Files
 install -vm644 * %{buildroot}%{_sysconfdir}/pam.d/
 popd
-for PROGRAM in chfn chgpasswd chpasswd chsh groupadd groupdel \
+for PROGRAM in chfn chgpasswd chsh groupadd groupdel \
                groupmems groupmod newusers useradd userdel usermod
 do
     install -v -m644 %{buildroot}%{_sysconfdir}/pam.d/chage %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
@@ -94,6 +94,8 @@ done
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
 %changelog
+*	Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-4
+-	Fixed PAM Configuration file for chpasswd
 *	Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
 -	Use group id 100(users) by default
 *	Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-2

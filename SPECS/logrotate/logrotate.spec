@@ -1,0 +1,44 @@
+Summary:	Logrotate
+Name:		logrotate
+Version:	3.9.1
+Release:	1%{?dist}
+License:	GPL+
+URL:		https://fedorahosted.org/logrotate
+Source0:	https://fedorahosted.org/releases/l/o/logrotate/%{name}-%{version}.tar.gz
+Group:		System Environment/Base
+Vendor:		VMware, Inc.
+Distribution:	Photon
+BuildRequires:	popt-devel
+Requires:	popt
+%description
+The logrotate utility is designed to simplify the administration of log files on a system which generates a lot of log files. Logrotate allows for the automatic rotation compression, removal and mailing of log files. Logrotate can be set to handle a log file daily, weekly, monthly or when the log file gets to a certain size.
+%prep
+%setup -q
+%build
+./autogen.sh
+./configure \
+	--prefix=%{_prefix}
+make %{?_smp_mflags}
+%install
+make DESTDIR=%{buildroot} install
+install -vd %{buildroot}%{_sysconfdir}/logrotate.d
+install -p -m 644 examples/logrotate-default %{buildroot}%{_sysconfdir}/logrotate.conf
+install -vd %{buildroot}%{_sysconfdir}/cron.daily
+install -p -m 755 examples/logrotate.cron %{buildroot}%{_sysconfdir}/cron.daily/logrotate
+install -vd %{buildroot}%{_localstatedir}/lib/logrotate
+touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
+
+%post	-p /sbin/ldconfig
+%postun	-p /sbin/ldconfig
+%files
+%defattr(-,root,root)
+%{_sysconfdir}/cron.daily/logrotate
+%{_sysconfdir}/logrotate.conf
+%{_sbindir}/logrotate
+%{_mandir}/man5/logrotate.conf.5.gz
+%{_mandir}/man8/logrotate.8.gz
+/var/lib/logrotate/logrotate.status
+%changelog
+*	Wed Jun 24 2015 Divya Thaluru <dthaluru@vmware.com> 3.9.1-1
+-	Initial build. First version
+

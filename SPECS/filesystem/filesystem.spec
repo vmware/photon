@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	7.5
-Release:	5%{?dist}
+Release:	7%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -98,6 +98,7 @@ systemd-journal:x:23:
 input:x:24:
 mail:x:34:
 lock:x:54:
+dip:x:30:
 systemd-bus-proxy:x:72:
 systemd-journal-gateway:x:73:
 systemd-journal-remote:x:74:
@@ -317,10 +318,10 @@ EOF
 #
 echo "VMware Photon Linux 1.0 TP1" > %{buildroot}/etc/photon-release
 cat > %{buildroot}/etc/lsb-release <<- "EOF"
-DISTRIB_ID=VMware Photon
-DISTRIB_RELEASE=1.0 TP1
+DISTRIB_ID="VMware Photon"
+DISTRIB_RELEASE="1.0 TP1"
 DISTRIB_CODENAME=Photon
-DISTRIB_DESCRIPTION=VMware Photon 1.0 TP1
+DISTRIB_DESCRIPTION="VMware Photon 1.0 TP1"
 EOF
 
 cat > %{buildroot}/usr/lib/os-release <<- "EOF"
@@ -460,8 +461,12 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 /usr/local/lib64
 %endif
 %changelog
-*   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 7.5-5
+*   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 7.5-7
 -   /etc/profile.d permission fix
+*   Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 7.5-6
+-   Adding group dip
+*   Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 7.5-5
+-   Fixing lsb-release file
 *   Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 7.5-4
 -   Change users group id to 100.
 -   Add audio group to users group.
@@ -469,5 +474,5 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 -   Change the network match for dhcp.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 7.5-2
 -   Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.5-1
--	Initial build. First version
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.5-1
+-   Initial build. First version

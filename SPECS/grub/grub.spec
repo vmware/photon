@@ -1,13 +1,19 @@
+%define debug_package %{nil}
+%define __os_install_post %{nil}
 Summary:	GRand Unified Bootloader
 Name:		grub
-Version:	2.00
+Version:	2.02
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grub
 Group:		Applications/System
 Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:		http://ftp.gnu.org/gnu/grub/%{name}-%{version}.tar.xz
+Distribution: 	Photon
+Source0:	http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
+BuildRequires:	device-mapper-devel
+BuildRequires:	xz-devel
+Requires:	xz
+Requires:	device-mapper
 %description
 The GRUB package contains the GRand Unified Bootloader.
 
@@ -20,8 +26,8 @@ These are the additional language files of grub.
 
 
 %prep
-%setup -q
-sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
+%setup -qn grub-2.02~beta2
+#sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -29,12 +35,15 @@ sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
 	--sysconfdir=%{_sysconfdir} \
 	--disable-grub-emu-usb \
 	--disable-efiemu \
-	--disable-werror 
+	--disable-werror
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+mkdir %{buildroot}%{_sysconfdir}/default
+touch %{buildroot}%{_sysconfdir}/default/grub
+mkdir %{buildroot}%{_sysconfdir}/sysconfig
+ln -sf %{_sysconfdir}/default/grub %{buildroot}%{_sysconfdir}/sysconfig/grub
 rm -rf %{buildroot}%{_infodir}
-%find_lang %{name}
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
@@ -54,10 +63,15 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 %{_libdir}/grub/*
 %{_datarootdir}/%{name}/*
+%{_sysconfdir}/sysconfig/grub
+%{_sysconfdir}/default/grub
 
-%files lang -f %{name}.lang
+%files lang
 %defattr(-,root,root)
+/usr/share/locale/*
 
 %changelog
+*	Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-1
+-	Updating grub to 2.02
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.00-1
 -	Initial build.	First version

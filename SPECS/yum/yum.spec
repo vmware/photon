@@ -1,7 +1,7 @@
 Summary:	RPM installer/updater
 Name:		yum
 Version:	3.4.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
@@ -14,6 +14,8 @@ BuildRequires:	gettext
 BuildRequires:	intltool
 BuildRequires:	pycurl
 BuildRequires:	urlgrabber
+Requires:	python2
+Requires:	python2-libs
 Requires:	urlgrabber
 Requires:	yum-metadata-parser >= 1.1.0
 Requires:	pycurl
@@ -189,3 +191,7 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %exclude %{_datadir}/yum-cli/yumupd.py*
 %exclude %{_sbindir}/yum-updatesd
 %exclude %{_mandir}/man*/yum-updatesd*
+
+%changelog
+*	Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 3.4.3-2
+-	Adding python and python-libs as run time dependent packages
