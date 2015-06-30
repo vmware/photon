@@ -27,6 +27,13 @@
         "title" : "3. Photon Full",
         "file" : "packages_full.json",
         "visible" : true
+    },
+    "extra_packages" : {
+        "order" : 4,
+        "type" : "extra",
+        "title" : "Extra packages not installed.",
+        "file" : "packages_extra.json",
+        "visible" : false
     }
 }
 
