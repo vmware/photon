@@ -1,3 +1,8 @@
 {
-    "packages":["google-daemon", "google-startup-scripts"]
+    "packages":["google-daemon", "google-startup-scripts","autogen","cronie","gc","gnutls","guile",
+		"json-c","libestr","libgcrypt","liblogging","librelp","libtasn1","libunistring","nettle","rsyslog",
+		"device-mapper-multipath","NetworkManager","NetworkManager-devel","dbus-glib","libndp","libnl",
+		"dbus-glib-devel","libndp-devel","libnl-devel","logrotate","kpartx","autogen-devel","gc-devel",
+		"gnutls-devel","guile-devel","json-c-devel","libestr-devel","libgcrypt-devel","liblogging-devel",
+		"librelp-devel","libtasn1-devel","libunistring-devel","nettle-devel"]
 }
