@@ -12,19 +12,18 @@ import sys
 def main():
     usage = "Usage: %prog [options] <package name>"
     parser = OptionParser(usage)
-    parser.add_option("-s",  "--spec-path",  dest="specPath",  default="/workspace1/myrepos/photon/SPECS")
-    parser.add_option("-x",  "--source-path",  dest="sourcePath",  default="/workspace1/mysources")
-    parser.add_option("-r",  "--rpm-path",  dest="rpmPath",  default="/workspace1/mystage/RPMS")
+    parser.add_option("-s",  "--spec-path",  dest="specPath",  default="../../SPECS")
+    parser.add_option("-x",  "--source-path",  dest="sourcePath",  default="../../stage/SOURCES")
+    parser.add_option("-r",  "--rpm-path",  dest="rpmPath",  default="../../stage/RPMS")
     parser.add_option("-i",  "--install-package", dest="installPackage",  default=False,  action ="store_true")
-    parser.add_option("-p",  "--publish-RPMS-path", dest="publishRPMSPath",  default="/workspace1/testTP1RPMS/RPMS")
-    parser.add_option("-l",  "--log-path", dest="logPath",  default="/workspace1/LOGS")
+    parser.add_option("-p",  "--publish-RPMS-path", dest="publishRPMSPath",  default="../../stage/PUBLISHRPMS")
+    parser.add_option("-l",  "--log-path", dest="logPath",  default="../../stage/LOGS")
     parser.add_option("-o",  "--build-option", dest="buildOption",  default="full")
     parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
-    parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="input.json")
+    parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="../../common/data/build_install_options_all.json")
     parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
     parser.add_option("-e",  "--parallel-build", dest="parallelBuild",  default=False)
-    
-    
+
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
     if not os.path.isdir(options.logPath):
