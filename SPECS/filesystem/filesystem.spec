@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	7.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -29,7 +29,7 @@ install -vdm 755 %{buildroot}/usr/{,local/}share/{color,dict,doc,info,locale,man
 install -vdm 755 %{buildroot}/usr/{,local/}share/{misc,terminfo,zoneinfo}
 install -vdm 755 %{buildroot}/usr/libexec
 install -vdm 755 %{buildroot}/usr/{,local/}share/man/man{1..8}
-install -vdm 644 %{buildroot}/etc/profile.d
+install -vdm 755 %{buildroot}/etc/profile.d
 
 ln -svfn usr/lib %{buildroot}/lib
 ln -svfn usr/bin %{buildroot}/bin
@@ -460,6 +460,8 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 /usr/local/lib64
 %endif
 %changelog
+*   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 7.5-5
+-   /etc/profile.d permission fix
 *   Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 7.5-4
 -   Change users group id to 100.
 -   Add audio group to users group.

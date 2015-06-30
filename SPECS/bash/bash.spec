@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -38,7 +38,7 @@ ln -s bash %{buildroot}/bin/sh
 install -vdm 755 %{buildroot}/etc
 
 # Create dircolors
-install -vdm 644 %{buildroot}/etc/profile.d
+install -vdm 755 %{buildroot}/etc/profile.d
 cat > /etc/profile.d/dircolors.sh << "EOF"
 # Setup for /bin/ls and /bin/grep to support color, the alias is in /etc/bashrc.
 if [ -f "/etc/dircolors" ] ; then
@@ -221,6 +221,8 @@ rm -rf %{buildroot}/%{_infodir}
 %defattr(-,root,root)
 
 %changelog
+*	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
+-	/etc/profile.d permission fix
 *	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
 -	Initial version
 
