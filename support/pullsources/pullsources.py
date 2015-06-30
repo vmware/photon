@@ -22,9 +22,10 @@ from multiprocessing import Pool
 
 class pullSources:
 
-    def __init__(self, conf_file):
+    def __init__(self, conf_file, src_list):
         self._config = {}
         self.loadConfig(conf_file)
+        self.sha1_filename = src_list
 
         # generate the auth
         self._auth = None
@@ -88,11 +89,8 @@ class pullSources:
             raise Exception('Invalid sha1 for package %s' % package_name)
 
     def pull(self, sources_dir):
-        #Download the list of sources.
-        sha1_filename = 'sha1-all'
-        sha1_file_path = os.path.join(sources_dir, sha1_filename)
-        package_file_path = self.downloadFile(sha1_filename, sha1_file_path)
-        with open(package_file_path) as f:
+        #Open the list of sources.
+        with open(self.sha1_filename) as f:
             packages = f.readlines()
 
         pool = Pool(processes = 10)
@@ -130,12 +128,14 @@ if __name__ == '__main__':
     parser = OptionParser(usage)
 
     parser.add_option("-c", "--config-path",  dest="config_path", default="./bintray.conf", help="Path to bintray configuation file")
+    parser.add_option("-s", "--sources-list-file",  dest="sources_list", default="./source_list.sha1", help="SHA1 file with sources list to download")
+
 
     (options,  args) = parser.parse_args()
 
     if (len(args)) != 1:
             parser.error("Incorrect number of arguments")
 
-    p = pullSources(options.config_path)
+    p = pullSources(options.config_path, options.sources_list)
     print args[0]
     p.pull(args[0])

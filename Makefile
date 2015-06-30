@@ -133,7 +133,7 @@ sources:
 	@echo "Pulling sources from bintray..."
 	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
 	 cd $(PHOTON_PULL_SOURCES_DIR) && \
-	 $(PHOTON_PULL_SOURCES) -c $(PHOTON_BINTRAY_CONFIG) $(PHOTON_SRCS_DIR)
+	 $(PHOTON_PULL_SOURCES) -c $(PHOTON_BINTRAY_CONFIG) -s $(PHOTON_SOURCES_LIST) $(PHOTON_SRCS_DIR)
 
 sources-cached:
 	@echo "Using cached SOURCES..."
