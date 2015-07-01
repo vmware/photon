@@ -5,7 +5,7 @@
                 "attr", "libcap", "systemd", "expat", "dbus", "file", "e2fsprogs", "elfutils-libelf", "lua", "popt", "sqlite-autoconf", "nspr", "nss", "rpm",
                 "openssh", "libffi", "gdbm", "python2", "python2-libs", "pcre", "glib", "libxml2",
                 "photon-release",
-                "sed", "grep", "cpio", "gzip", "nano", "db", "libsolv", "libgpg-error", "hawkey", "libassuan", "gpgme", "librepo", "tdnf",
+                "sed", "grep", "cpio", "gzip", "vim", "db", "libsolv", "libgpg-error", "hawkey", "libassuan", "gpgme", "librepo", "tdnf",
                 "libdnet", "xerces-c", "xml-security-c", "libmspack", "open-vm-tools",
                 "docker","bridge-utils",
                 "libyaml", "PyYAML", "python-requests", "python-prettytable", "python-jsonpointer", "python-jsonpatch", "python-six", "python-configobj", "cloud-init",
