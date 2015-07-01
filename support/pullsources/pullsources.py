@@ -46,17 +46,6 @@ class pullSources:
             f.close()
         return sha1.hexdigest()
 
-    def downloadExistingFilePrompt(self, filename):
-        yes = ['yes', 'y']
-        no = ['no', 'n']
-        while True:
-            prompt = "Found a different local copy of {0}. Do you want to replace it? [y/n]:".format(filename)
-            answer = raw_input(prompt).lower()
-            if answer in yes:
-                return True
-            elif answer in no:
-                return False
-
     def downloadFile(self, filename, file_path):
         print '%s: Downloading %s...' % (str(datetime.datetime.today()), filename)
 
@@ -112,8 +101,7 @@ class pullSources:
             self.downloadFileHelper(package_name, package_path, package_sha1)
 
         elif package_sha1 != self.getFileHash(package_path):
-                if self.downloadExistingFilePrompt(package_name):
-                    self.downloadFileHelper(package_name, package_path, package_sha1)
+            self.downloadFileHelper(package_name, package_path, package_sha1)
 
 def _pickle(method):
     if method.im_self is None:

@@ -44,7 +44,7 @@ clean-install clean-chroot
 
 PARALLEL=False
 
-all: iso micro-iso minimal-iso
+all: iso micro-iso minimal-iso docker-image
 
 micro: micro-iso
 
@@ -162,6 +162,19 @@ $(PHOTON_STAGE):
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
 	@echo "Building LOGS folder..."
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
+
+docker-image:
+	sudo docker run \
+		-it \
+		--rm \
+		--privileged \
+		--net=host \
+		-v `pwd`:/workspace \
+		toliaqat/photon-dev \
+		./support/dockerfiles/photon/make-docker-image.sh /workspace
+
+install-docker-image: docker-image
+	sudo docker build -t photon:base .
 
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."

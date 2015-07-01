@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime
 Name:       apr
 Version:    1.5.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -15,8 +15,8 @@ The Apache Portable Runtime.
 %setup -q
 %build
 ./configure --prefix=/usr \
-        --includedir=%{_includedir}/apr-%{aprver} \
-        --with-installbuilddir=%{_libdir}/apr/build-%{aprver} \
+        --includedir=%{_includedir}/apr-%{version} \
+        --with-installbuilddir=%{_libdir}/apr/build-%{version} \
         --with-devrandom=/dev/urandom \
         CC=gcc CXX=g++
 
@@ -29,10 +29,12 @@ make DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
-/usr/lib/*
-/usr/bin/*
-/usr/include/*
+%{_libdir}/*
+%{_bindir}/*
+%{_includedir}/*
 
 %changelog
+*   Wed Jul 01 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.2-2
+-   Fix tags and paths.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.2-1
 -   Initial build. First version

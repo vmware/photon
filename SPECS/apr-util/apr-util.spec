@@ -24,7 +24,7 @@ The Apache Portable Runtime Utility Library.
 %setup -q
 %build
 %configure --with-apr=%{_prefix} \
-        --includedir=%{_includedir}/apr-%{apuver} \
+        --includedir=%{_includedir}/apr-%{version} \
         --with-ldap --without-gdbm \
         --with-sqlite3 --with-pgsql \
         --without-sqlite2 \
@@ -47,10 +47,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-/usr/lib/*
-/usr/bin/*
-/usr/include/*
+%{_libdir}/*
+%{_bindir}/*
+%{_includedir}/*
 
 %changelog
+*   Wed Jul 01 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.2-2
+-   Fix tags and paths.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.2-1
 -   Initial build. First version
