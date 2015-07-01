@@ -13,11 +13,11 @@ docker build -t pdev $HOME/workspaces/photon/support/dockerfiles/ubuntu-dev
 ## Use the docker container
 Run "make iso" inside the container
 ```shell
-docker run -v $HOME/workspaces/photon:/workspace pdev make iso
+docker run --privileges -v $HOME/workspaces/photon:/workspace pdev make iso
 ```
 
 ## Interactive mode
 Start the container in interactive mode
 ```shell
-docker run -it -v $HOME/workspaces/photon:/workspace pdev
+docker run --privileges -it -v $HOME/workspaces/photon:/workspace pdev
 ```
