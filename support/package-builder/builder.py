@@ -2,7 +2,6 @@
 
 from optparse import OptionParser
 import os.path
-from CommandUtils import CommandUtils
 from Logger import Logger
 from constants import constants
 from PackageManager import PackageManager 
@@ -25,9 +24,8 @@ def main():
     parser.add_option("-e",  "--parallel-build", dest="parallelBuild",  default=False)
 
     (options,  args) = parser.parse_args()
-    cmdUtils=CommandUtils()
     if not os.path.isdir(options.logPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
+        os.makedirs(options.logPath)
     
     if options.parallelBuild in ["TRUE", "True", "true"]:
         parallelBuild = True
@@ -69,13 +67,12 @@ def main():
         logger.error("Found some errors. Please fix input options and re-run it.")
         return False
     
-    
     if not os.path.isdir(options.rpmPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/x86_64")
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
+        os.makedirs(options.rpmPath+"/x86_64")
+        os.makedirs(options.rpmPath+"/noarch")
     
     if not os.path.isdir(options.buildRootPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.buildRootPath)
+        os.makedirs(options.buildRootPath)
     
     logger.info("Source Path :"+options.sourcePath)
     logger.info("Spec Path :" + options.specPath)
