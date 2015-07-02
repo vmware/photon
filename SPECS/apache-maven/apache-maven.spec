@@ -1,20 +1,16 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.3
-Release:	0
+Release:	1%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-BuildArch:       noarch
-Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
-Requires: openjdk >= 1.8.0.45
-BuildRequires: openjdk >= 1.8.0.45, apache-ant >= 1.9.4, wget >= 1.15
+Source0:	http://apache.mirrors.pair.com/maven/maven-3/%{version}/binaries/%{name}-%{version}-bin.tar.gz
 
-%define _prefix /opt/apache-maven-3.3.3
-%define _bindir %{_prefix}/bin
-%define _libdir %{_prefix}/lib
+Requires: 	openjdk >= 1.8.0.45
+BuildRequires: 	openjdk >= 1.8.0.45
 
 %description
 The Maven package contains binaries for a build system
@@ -22,37 +18,28 @@ The Maven package contains binaries for a build system
 %prep
 
 %setup -q
-echo "nameserver 127.0.1.1" > /etc/resolv.conf
-echo "search localdomain" >> /etc/resolv.conf
 %build
-MAVEN_DIST_DIR=/opt/apache-maven-3.3.3
-
-export JAVA_HOME=/opt/OpenJDK-1.8.0.45-bin
-export ANT_HOME=/opt/apache-ant-1.9.4
-export PATH=$PATH:$ANT_HOME/bin
-
-ant -Dmaven.home=$MAVEN_DIST_DIR
 
 %install
 
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 
 mkdir -p -m 700 %{buildroot}/opt
+install -d -m 755 %{buildroot}/opt/%{name}
+cp -R %{_builddir}/%{name}-%{version}/* %{buildroot}/opt/%{name}/
 
-cp -r /opt/apache-maven-3.3.3 %{buildroot}/opt
+install -d -m 755 %{buildroot}/etc/profile.d/
+echo 'export MAVEN_HOME=/opt/%{name}' > %{buildroot}/etc/profile.d/%{name}.sh
+echo 'export PATH=$MAVEN_HOME/bin:$PATH' >> %{buildroot}/etc/profile.d/%{name}.sh
+echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
-%{_libdir}/*
-%{_prefix}/LICENSE
-%{_prefix}/NOTICE
-%{_prefix}/README.txt
-%{_prefix}/boot/plexus-classworlds-2.5.2.jar
-%{_prefix}/conf/logging/simplelogger.properties
-%{_prefix}/conf/settings.xml
-%{_prefix}/conf/toolchains.xml
+/opt/%{name}/*
+/etc/profile.d/%{name}.sh
 
 %changelog
+*	Mon Jun 29 2015 Sarah Choi <sarahc@vmware.com> 3.3.3-1
+-	Update PATH and remove unnecessary files
 *	Fri May 22 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
 -	Initial build.	First version
