@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.freedesktop.org/software/systemd/%{name}-%{version}.tar.xz
 Patch0:     	systemd-216-compat-1.patch
+Patch1:         systemd-216-if-rename.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -37,6 +38,7 @@ cc_cv_CFLAGS__flto=no
 EOF
 sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch0 -p1
+%patch1 -p1
 %build
 ./configure --prefix=%{_prefix}                                    \
             --sysconfdir=/etc                                       \
@@ -90,6 +92,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
+-       Fixing networkd/udev race condition for renaming interface.
 *   	Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
 -   	Remove debug files.
 *	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 216-5
