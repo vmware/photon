@@ -23,6 +23,7 @@ def main():
     parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="../../common/data/build_install_options_all.json")
     parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
     parser.add_option("-e",  "--parallel-build", dest="parallelBuild",  default=False)
+    parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -107,7 +108,13 @@ def main():
     '''
     try:
         constants.initialize(options)
-        if options.installPackage:
+        if options.toolChainStage == "stage1":
+            pkgManager = PackageManager()
+            pkgManager.buildToolChain()
+        elif options.toolChainStage == "stage2":
+            pkgManager = PackageManager()
+            pkgManager.buildToolChainPackages(parallelBuild)
+        elif options.installPackage:
             buildAPackage(package, parallelBuild)
         else:
             buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption,logger, parallelBuild)
@@ -117,6 +124,12 @@ def main():
         sys.exit(1)
     
     sys.exit(0)
+
+def buildToolChain(parallelBuild):
+    listPackages=[]
+    listPackages.append(package)
+    pkgManager = PackageManager()
+    pkgManager.buildPackages(listPackages, parallelBuild)
 
 def buildAPackage(package, parallelBuild):
     listPackages=[]
