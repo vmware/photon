@@ -105,6 +105,10 @@ class PackageBuilder(object):
         except Exception as e:
             self.logger.error("Failed while building package:" + package)
             self.logger.debug("Chroot with ID: " + chrootID + " not deleted for debugging.")
+            logFileName = os.path.join(destLogPath, package + ".log")
+            fileLog = os.popen('tail -n 20 ' + logFileName).read()
+            self.logger.debug(fileLog)
+            self.logger.debug()
             raise e
         if chrootID is not None:
             chrUtils.destroyChroot(chrootID)
