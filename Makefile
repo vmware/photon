@@ -26,7 +26,7 @@ endif
 ifdef PHOTON_SOURCES_PATH
 PHOTON_SOURCES := sources-cached
 else
-PHOTON_SOURCES := sources
+PHOTON_SOURCES ?= sources
 endif
 
 ifdef PHOTON_PUBLISH_RPMS_PATH
