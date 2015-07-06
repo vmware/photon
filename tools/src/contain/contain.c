@@ -73,8 +73,8 @@ int main(int argc, char **argv) {
       error(1, errno, "fork");
     case 0:
       raise(SIGSTOP);
-//      if (geteuid() != 0)
-//        denysetgroups(parent);
+      if (geteuid() != 0)
+        denysetgroups(parent);
       writemap(parent, GID, gidmap);
       writemap(parent, UID, uidmap);
 
