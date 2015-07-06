@@ -1,7 +1,7 @@
 Summary:	Libxml2-2.9.1
 Name:		libxml2
 Version:	2.9.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MIT
 URL:		http://xmlsoft.org/
 Group:		System Environment/General Libraries
@@ -15,6 +15,17 @@ Provides:	pkgconfig(libxml-2.0)
 
 %description
 The libxml2 package contains libraries and utilities used for parsing XML files. 
+
+%package python
+Summary:    The libxml2 python module
+Group:      Development/Languages/Python
+Requires:   libxml2
+Requires:   python2
+Requires:   python2-libs
+
+%description python
+The libxml2 python module
+
 
 %package devel
 Summary:    Libraries and header files for libxml
@@ -48,7 +59,6 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_docdir}/*
 %{_libdir}/libxml*
-%{_libdir}/python*
 %{_libdir}/xml2Conf.sh
 %{_bindir}/*
 %{_datadir}/aclocal/*
@@ -56,12 +66,18 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 
+%files python
+%defattr(-,root,root)
+%{_libdir}/python*
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
 
 %changelog
+*   Thu Jul 2 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.9.1-3
+-   Seperate the python module from the main library
 *	Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.9.1-2
 -	Moved 'Provides: pkgconfig(...)' into base package
 *	Mon Oct 13 2014 Divya Thaluru <dthaluru@vmware.com> 2.9.1-1

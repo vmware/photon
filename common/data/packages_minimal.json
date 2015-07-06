@@ -3,7 +3,7 @@
                 "pkg-config", "ncurses", "readline", "bash", "bzip2", "cracklib", "cracklib-dicts", "shadow", "procps-ng", "iana-etc", "coreutils", "bc", "libtool", "inetutils",
                 "findutils", "xz", "grub", "iproute2", "util-linux", "openssl", "kmod", "linux", "ca-certificates", "curl", "iptables", "Linux-PAM",
                 "attr", "libcap", "systemd", "expat", "dbus", "file", "e2fsprogs", "elfutils-libelf", "lua", "popt", "sqlite-autoconf", "nspr", "nss", "rpm",
-                "openssh", "libffi", "gdbm", "python2", "python2-libs", "pcre", "glib", "libxml2",
+                "openssh", "libffi", "gdbm", "python2", "python2-libs", "pcre", "glib", "libxml2", "libxml2-python",
                 "photon-release",
                 "sed", "grep", "cpio", "gzip", "vim", "db", "libsolv", "libgpg-error", "hawkey", "libassuan", "gpgme", "librepo", "tdnf",
                 "libdnet", "xerces-c", "xml-security-c", "libmspack", "open-vm-tools",
