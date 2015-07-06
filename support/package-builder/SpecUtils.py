@@ -27,6 +27,16 @@ class Specutils(object):
             sourceNames.append(sourceName)
         return sourceNames
     
+    def getSourceURLs(self):
+        sourceNames=[]
+        strUtils = StringUtils()
+        pkg = self.spec.packages.get('default')
+        if pkg is None:
+            return None
+        for source in pkg.sources:
+            sourceNames.append(source)
+        return sourceNames
+
     def getPatchNames(self):
         patchNames=[]
         strUtils = StringUtils()
@@ -88,6 +98,15 @@ class Specutils(object):
                 licenseInfo=pkg.license
                 break
         return licenseInfo
+
+    def getURL(self, pkgName):
+        url=None
+        for key in self.spec.packages.keys():
+            pkg = self.spec.packages.get(key)
+            if pkg.name == pkgName:
+                url=pkg.URL
+                break
+        return url
 
     def getBuildArch(self, pkgName):
         buildArch="x86_64"

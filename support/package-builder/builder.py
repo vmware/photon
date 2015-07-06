@@ -8,6 +8,7 @@ from constants import constants
 from PackageManager import PackageManager 
 import json
 import sys
+from SpecUtils import Specutils
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -103,7 +104,9 @@ def main():
     '''
     try:
         constants.initialize(options)
-        if options.toolChainStage == "stage1":
+        if package == "package_list":
+            buildPackageList(options.specPath)
+        elif options.toolChainStage == "stage1":
             pkgManager = PackageManager()
             pkgManager.buildToolChain()
         elif options.toolChainStage == "stage2":
@@ -125,6 +128,30 @@ def buildToolChain(buildThreads):
     listPackages.append(package)
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackages, buildThreads)
+
+def buildPackageList(specPath):
+    print "Package,Version,License,URL,Sources,Patches"
+    lst = os.listdir(specPath)
+    lst.sort()
+    for dirEntry in lst:
+        specDir = os.path.join(specPath, dirEntry)
+        if os.path.isdir(specDir):
+            for specEntry in os.listdir(specDir):
+                specFile = os.path.join(specDir, specEntry)
+                if os.path.isfile(specFile) and specFile.endswith(".spec"):
+                    spec=Specutils(specFile)
+                    name=spec.getPackageNames()[0]
+                    version=spec.getRPMVersion(name)
+                    license=spec.getLicense(name)
+                    url=spec.getURL(name)
+                    source=spec.getSourceURLs()[0]
+                    patches=""
+                    ps=spec.getPatchNames()
+                    for p in ps:
+                        if patches != "":
+                            patches += " "
+                        patches += p
+                    print name+","+version+","+license+","+url+","+source+","+patches
 
 def buildAPackage(package, buildThreads):
     listPackages=[]

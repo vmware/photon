@@ -178,6 +178,8 @@ class SpecParser(object):
             return True
         elif re.search('^'+'conflicts:',line,flags=re.IGNORECASE) :
             return True
+        elif re.search('^'+'url:',line,flags=re.IGNORECASE) :
+            return True
         elif re.search('^'+'source[0-9]*:',line,flags=re.IGNORECASE) :
             return True
         elif re.search('^'+'patch[0-9]*:',line,flags=re.IGNORECASE) :
@@ -272,6 +274,9 @@ class SpecParser(object):
             return True
         if headerName == 'distribution':
             pkg.distribution=headerContent
+            return True
+        if headerName == 'url':
+            pkg.URL=headerContent
             return True
         if headerName.find('source') != -1:
             pkg.sources.append(headerContent)
