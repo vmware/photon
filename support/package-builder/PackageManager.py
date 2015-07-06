@@ -28,7 +28,6 @@ class PackageManager(object):
         self.mapThreadsLaunchTime={}
         self.listAvailableCyclicPackages=[]
         self.listPackagesToBuild=[]
-        self.maxNumThreads=20
         
     def readPackageBuildData(self, listPackages):
         try:
@@ -93,26 +92,13 @@ class PackageManager(object):
             self.logger.error(e)
             raise e
     
-    def calculatePossibleNumWorkerThreads(self):
-        process = subprocess.Popen(["df" ,constants.buildRootPath],shell=True,stdout=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
-            self.logger.error("Unable to check free space. Unknown error.")
-            return False
-        output = process.communicate()[0]
-        device, size, used, available, percent, mountpoint = output.split("\n")[1].split()
-        c =  int(available)/600000
-        numChroots=int(c)
-        self.logger.info("Possible number of worker threads:"+str(numChroots))
-        return numChroots
-    
-    def buildToolChainPackages(self, parallelBuild):
+    def buildToolChainPackages(self, buildThreads):
         self.buildToolChain()
-        self.buildGivenPackages(constants.listToolChainPackages, parallelBuild)
+        self.buildGivenPackages(constants.listToolChainPackages, buildThreads)
         
-    def buildPackages(self,listPackages, parallelBuild):
-        self.buildToolChainPackages(parallelBuild)
-        self.buildGivenPackages(listPackages, parallelBuild)
+    def buildPackages(self,listPackages, buildThreads):
+        self.buildToolChainPackages(buildThreads)
+        self.buildGivenPackages(listPackages, buildThreads)
     
     def initializeThreadPool(self,statusEvent):
         ThreadPool.clear()
@@ -127,29 +113,18 @@ class PackageManager(object):
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling=False
     
-    def buildGivenPackages (self, listPackages, parallelBuild):
-        defaultThreads = 1
-        if parallelBuild == True:
-            defaultThreads = 8
-
+    def buildGivenPackages (self, listPackages, buildThreads):
         returnVal=self.calculateParams(listPackages)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
             raise Exception("Unable to set paramaters")
         
         statusEvent=threading.Event()
-        numWorkerThreads=self.calculatePossibleNumWorkerThreads()
-        if numWorkerThreads > self.maxNumThreads:
-            numWorkerThreads = defaultThreads
-        if numWorkerThreads == 0:
-            self.logger.error("Unable to create worker threads. Terminating the package manager.")
-            raise Exception("No Space.")
-
         self.initializeScheduler(statusEvent)
         self.initializeThreadPool(statusEvent)
         
         i=0
-        while i < numWorkerThreads:
+        while i < buildThreads:
             workerName="WorkerThread"+str(i)
             ThreadPool.addWorkerThread(workerName)
             ThreadPool.startWorkerThread(workerName)

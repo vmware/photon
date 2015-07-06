@@ -22,7 +22,7 @@ def main():
     parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
     parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="../../common/data/build_install_options_all.json")
     parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
-    parser.add_option("-e",  "--parallel-build", dest="parallelBuild",  default=False)
+    parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Numbeer of working threads")
     parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
 
     (options,  args) = parser.parse_args()
@@ -30,11 +30,6 @@ def main():
     if not os.path.isdir(options.logPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
     
-    if options.parallelBuild in ["TRUE", "True", "true"]:
-        parallelBuild = True
-    else:
-        parallelBuild = False
-
     logger=Logger.getLogger(options.logPath+"/Main")
     
     errorFlag=False
@@ -113,11 +108,11 @@ def main():
             pkgManager.buildToolChain()
         elif options.toolChainStage == "stage2":
             pkgManager = PackageManager()
-            pkgManager.buildToolChainPackages(parallelBuild)
+            pkgManager.buildToolChainPackages(options.buildThreads)
         elif options.installPackage:
-            buildAPackage(package, parallelBuild)
+            buildAPackage(package, options.buildThreads)
         else:
-            buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption,logger, parallelBuild)
+            buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption,logger, options.buildThreads)
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
@@ -125,19 +120,19 @@ def main():
     
     sys.exit(0)
 
-def buildToolChain(parallelBuild):
+def buildToolChain(buildThreads):
     listPackages=[]
     listPackages.append(package)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackages, parallelBuild)
+    pkgManager.buildPackages(listPackages, buildThreads)
 
-def buildAPackage(package, parallelBuild):
+def buildAPackage(package, buildThreads):
     listPackages=[]
     listPackages.append(package)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackages, parallelBuild)
+    pkgManager.buildPackages(listPackages, buildThreads)
 
-def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger, parallelBuild):
+def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger, buildThreads):
     listPackages = get_all_package_names(inputJSONFile)
 
     listPackagesToBuild=[]
@@ -147,7 +142,7 @@ def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger, parallelBui
     logger.info("List of packages to build:")
     logger.info(listPackagesToBuild)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackagesToBuild, parallelBuild)
+    pkgManager.buildPackages(listPackagesToBuild, buildThreads)
     
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)

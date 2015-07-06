@@ -42,7 +42,7 @@ CONTAIN := $(TOOLS_BIN)/contain
 check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot
 
-PARALLEL=False
+THREADS?=1
 
 all: iso micro-iso minimal-iso docker-image
 
@@ -70,7 +70,7 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_micro.json \
-                -e ${PARALLEL}
+                -t ${THREADS}
 
 minimal: minimal-iso
 
@@ -96,7 +96,7 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
-                -e ${PARALLEL}
+                -t ${THREADS}
 
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon FUll ISO..."
@@ -120,7 +120,7 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
-                -e ${PARALLEL}
+                -t ${THREADS}
 
 tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
 	@echo "Building all RPMS..."
@@ -133,7 +133,7 @@ tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
-                -e ${PARALLEL} \
+                -t ${THREADS} \
                 -m stage1
 
 tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
@@ -147,7 +147,7 @@ tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
-                -e ${PARALLEL} \
+                -t ${THREADS} \
                 -m stage2
 
 
