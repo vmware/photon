@@ -55,7 +55,7 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
-*	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 7.19.5-2
+*	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 7.19.5.1-2
 -	Added Doc subpackage. Removed chmod a-x for examples.
 *	Sat Jan 24 2015 Touseef Liaqat <tliaqat@vmware.com> 7.19.5.1
 -	Initial build.	First version
