@@ -314,7 +314,8 @@ $(TOOLS_BIN):
 	mkdir -p $(TOOLS_BIN)
 
 $(CONTAIN): $(TOOLS_BIN)
-	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@
+	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@_unpriv
+	sudo install -o root -g root -m 4755 $@_unpriv $@
 
 sha1:
 	@cd $(PHOTON_SRCS_DIR) && \
