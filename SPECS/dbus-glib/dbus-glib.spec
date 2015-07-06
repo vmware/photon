@@ -18,7 +18,7 @@ The D-Bus GLib package contains GLib interfaces to the D-Bus API.
 %package devel
 Summary:	Libraries and headers for the D-Bus GLib bindings
 Requires:	glib-devel
-Requires:	dbus-glib
+Requires:	%{name} = %{version}
 
 %description devel
 Headers and static libraries for the D-Bus GLib bindings
