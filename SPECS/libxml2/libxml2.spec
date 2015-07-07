@@ -19,7 +19,7 @@ The libxml2 package contains libraries and utilities used for parsing XML files.
 %package python
 Summary:    The libxml2 python module
 Group:      Development/Languages/Python
-Requires:   libxml2
+Requires:   %{name} = %{version}
 Requires:   python2
 Requires:   python2-libs
 
