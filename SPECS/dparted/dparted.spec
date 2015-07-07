@@ -1,7 +1,7 @@
 Summary:	My summary.
 Name:		dparted
 Version:	0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		dparted-0.1.tar.gz
 Group:		Applications/System
@@ -10,11 +10,9 @@ Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
 Requires:	python2 >= 2.7
 BuildRequires:	parted
-BuildRequires:	glibmm
+BuildRequires:	glibmm-devel
 BuildRequires:	intltool
 BuildRequires:	XML-Parser
-BuildRequires:	glib-devel
-Requires:	glib
 Requires:	parted
 Requires:	glibmm
 %description
@@ -38,5 +36,7 @@ make DESTDIR=%{buildroot} install
 %{_sbindir}/*
 %{_datadir}/*
 %changelog
+*	Tue Jul 7 2015 Alexey Makhalov <amakhalov@vmware.com> 0.18.0-2
+	Use glibmm-devel package
 *	Thu Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 0.18.0-1
 	Initial version
