@@ -13,7 +13,8 @@
                 "elfutils-libelf", "sqlite-autoconf", "nspr", "nss", "popt", "lua", "rpm",
                 "gptfdisk", "tar", "gzip", "openssl", "python2", "python2-libs", "python-requests",
                 "pcre", "glib", "parted", "libsigc++", "XML-Parser", "glibmm", "dparted",
-                "libgsystem", "ostree","device-mapper","device-mapper-libs","libsepol","libselinux"]
+                "libgsystem", "ostree","device-mapper","device-mapper-libs","libsepol","libselinux", 
+                "db", "libsolv", "hawkey", "python-hawkey"]
 }
 
 

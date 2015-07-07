@@ -27,7 +27,7 @@ fi
 [ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
 
 RPMPKG=""
-RPMPKG=$(find ${RPMROOT} -name "$1-[0-9]*.rpm" -print)
+RPMPKG=$(find ${RPMROOT} -name "$1" -print)
 # TODO: sometimes we catch several items into RPMPKG.
 # In case we have several releases in rpm cache. Need to handle that.
 [ -z $RPMPKG ] && fail "installation error: rpm package not found\n"
