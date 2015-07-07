@@ -10,6 +10,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-release
 BuildArch:	noarch
+Requires: rpm
 
 %description
 Photon release files such as yum configs and other /etc/ release related files
