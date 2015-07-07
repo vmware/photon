@@ -200,7 +200,6 @@ rpm-4.11.2.tar.bz2 - ceef44bd180d48d4004c437bc31a3ea038f54e3e
 rpm-ostree-2015.7.tar.gz - 9a0fa260d8671d9998b5f5509de1bbadd42f7127
 rpm-ostree-toolbox-2015.3.tar.gz - bd8e4b5da029990845233bceac765322c62db848
 rpm-system-configuring-scripts-2.2.tar.gz - 9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
-rpm-system-configuring-scripts.tar.gz - e072a801501fec9d9d9bb8344b521e5e899c9c7d
 rsyslog-8.10.0.tar.gz - 9fddcf1121e438e5291f738bb4619230de525e50
 ruby-2.2.1.tar.gz - 12376b79163e02bc9bd1a39329d67c3d19ccace9
 sed-4.2.2.tar.bz2 - f17ab6b1a7bcb2ad4ed125ef78948092d070de8f
@@ -227,6 +226,7 @@ urlgrabber-3.10.tar.gz - a2ff4fc2056f4d91b412104e04ff0bdc73ec5fb1
 util-linux-2.24.1.tar.xz - ecf75bbb77bba874fc11fc27423aa67b395b7ae5
 v1.7.0.tar.gz - e638f39c6081de7b0903ed09096300bdbb1d5aa0
 vim-7.4.tar.bz2 - 601abf7cc2b5ab186f40d8790e542f86afca86b7
+vsftpd-3.0.2.tar.gz - f36976bb1c5df25ac236d8a29e965ba2b825ccd0
 wget-1.15.tar.xz - e9fb1d25fa04f9c69e74e656a3174dca02700ba1
 which-2.20.tar.gz - 3bcd6d87aa5231917ba7123319eedcae90cfa0fd
 WWW-Curl-4.17.tar.gz - 8ec7b7b39bd653539671fb02fbb7d0ff4863e636
