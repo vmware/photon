@@ -45,7 +45,6 @@ install -v -m644    doc/{how-fuse-works,kernel.txt} \
 %files 
 %defattr(-, root, root)
 %doc README NEWS INSTALL AUTHORS COPYING COPYING.LIB
-%doc example/
 %{_libdir}/*
 %exclude %{_libdir}/debug/
 %exclude %{_libdir}/*.la
