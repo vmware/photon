@@ -8,9 +8,9 @@ enabled = True
 def execute(name, ks_config, config, root):
 
     if ks_config:
-        package_list_micro = JsonWrapper("packages_micro.json").read()
-        package_list_minimal = JsonWrapper("packages_minimal.json").read()
-        package_list_full = JsonWrapper("packages_full.json").read()
+        package_list_micro = JsonWrapper("data/packages_micro.json").read()
+        package_list_minimal = JsonWrapper("data/packages_minimal.json").read()
+        package_list_full = JsonWrapper("data/packages_full.json").read()
 
         if ks_config['type'] == 'micro':
             packages = package_list_micro["packages"]

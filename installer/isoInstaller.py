@@ -25,8 +25,8 @@ from license import License
 
 class IsoInstaller(object):
 
-    def get_config(self, path, cd_path):
-        if path.startswith("http"):
+    def get_config(self, path):
+        if path.startswith("http://"):
             # Do 3 trials to get the kick start
             # TODO: make sure the installer run after network is up
             for x in range(0,3):
@@ -48,10 +48,15 @@ class IsoInstaller(object):
             raise Exception(err_msg)
         else:
             if path.startswith("cdrom:/"):
-                path = os.path.join(cd_path, path.replace("cdrom:/", "", 1))
+                self.mount_RPMS_cd()
+                path = os.path.join(self.cd_path, path.replace("cdrom:/", "", 1))
             return (JsonWrapper(path)).read();
 
     def mount_RPMS_cd(self):
+        # check if the cd is already mounted
+        if self.cd_path:
+            return
+
         # Mount the cd to get the RPMS
         process = subprocess.Popen(['mkdir', '-p', '/mnt/cdrom'])
         retval = process.wait()
@@ -61,7 +66,8 @@ class IsoInstaller(object):
             process = subprocess.Popen(['mount', '/dev/cdrom', '/mnt/cdrom'])
             retval = process.wait()
             if retval == 0:
-                return "/mnt/cdrom"
+                self.cd_path = "/mnt/cdrom"
+                return
             print "Failed to mount the cd, retry in a second"
             time.sleep(1)
         print "Failed to mount the cd, exiting the installer, check the logs for more details"
@@ -83,32 +89,40 @@ class IsoInstaller(object):
 
         curses.curs_set(0)
 
-        self.install_config = {'iso_system': False}
+        self.cd_path = None;
 
-        # Mount the cd for the RPM, tools, and may be the ks
-        cd_path = self.mount_RPMS_cd()
+        self.install_config = {'iso_system': False}
         
-        # check the kickstart params
-        ks_config = None
         kernel_params = subprocess.check_output(['cat', '/proc/cmdline'])
+
+        # check the kickstart param
+        ks_config = None
         m = re.match(r".*ks=(\S+)\s*.*\s*", kernel_params)
         if m != None:
-            ks_config = self.get_config(m.group(1), cd_path)
+            ks_config = self.get_config(m.group(1))
 
-        license_agreement = License(self.maxy, self.maxx)
-        select_disk = SelectDisk(self.maxy, self.maxx, self.install_config)
-        package_selector = PackageSelector(self.maxy, self.maxx, self.install_config, options_file)
-        hostname_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, False,  'Choose the hostname for your system',
-            'Hostname:', 
-            2, self.install_config)
-        root_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, True,  'Set up root password',
-            'Root password:', 
-            2, self.install_config)
-        installer = Installer(self.install_config, self.maxy, self.maxx, True, rpm_path=os.path.join(cd_path, "RPMS"), log_path="/var/log", ks_config=ks_config)
+        # check for the repo param
+        m = re.match(r".*repo=(\S+)\s*.*\s*", kernel_params)
+        if m != None:
+            rpm_path = m.group(1)
+        else:
+            # the rpms should be in the cd
+            self.mount_RPMS_cd()
+            rpm_path=os.path.join(self.cd_path, "RPMS")
 
         # This represents the installer screen, the bool indicated if I can go back to this window or not
         items = []
         if not ks_config:
+            license_agreement = License(self.maxy, self.maxx)
+            select_disk = SelectDisk(self.maxy, self.maxx, self.install_config)
+            package_selector = PackageSelector(self.maxy, self.maxx, self.install_config, options_file)
+            hostname_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, False,  'Choose the hostname for your system',
+                'Hostname:', 
+                2, self.install_config)
+            root_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, True,  'Set up root password',
+                'Root password:', 
+                2, self.install_config)
+            
             items = items + [
                     (license_agreement.display, False),
                     (select_disk.display, True),
@@ -116,6 +130,7 @@ class IsoInstaller(object):
                     (hostname_reader.get_user_string, True),
                     (root_password_reader.get_user_string, True),
                  ]
+        installer = Installer(self.install_config, self.maxy, self.maxx, True, rpm_path=rpm_path, log_path="/var/log", ks_config=ks_config)
         items = items + [(installer.install, False)]
 
         index = 0
