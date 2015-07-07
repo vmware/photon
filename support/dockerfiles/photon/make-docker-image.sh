@@ -55,14 +55,20 @@ chroot $TEMP_CHROOT bash -c \
     tdnf install -y coreutils ; \
     tdnf install -y tdnf ; \
     tdnf install -y photon-release; \
-    rpm -e --nodeps perl"
+    rpm -e --nodeps perl; \
+    rpm -e --nodeps perl-DBD-SQLite; \
+    rpm -e --nodeps perl-Module-ScanDeps; \
+    rpm -e --nodeps perl-DBIx-Simple; \
+    rpm -e --nodeps perl-DBI; \
+    rpm -e --nodeps perl-WWW-Curl;"
 
 cd $TEMP_CHROOT
 # cleanup anything not needed inside rootfs
 rm -rf usr/src/
 rm -rf home/*
 rm -rf var/lib/yum/*
-rm -rf /var/log/*
+rm -rf var/log/*
+find var/cache/tdnf/photon/rpms -type f -name "*.rpm" -exec rm {} \;
 tar cpjf ../$ROOTFS_TAR_FILENAME .
 mkdir -p $STAGE_DIR
 mv ../$ROOTFS_TAR_FILENAME $STAGE_DIR/
