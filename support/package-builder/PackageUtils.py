@@ -193,6 +193,23 @@ class PackageUtils(object):
             raise Exception("Invalid RPM")
         packageName=rpmfile[0:versionindex]
         return packageName 
+
+    def findPackageInfoFromRPMFile(self,rpmfile):
+        rpmfile=os.path.basename(rpmfile)
+        rpmfile=rpmfile.replace(".x86_64.rpm","")
+        rpmfile=rpmfile.replace(".noarch.rpm","")
+        releaseindex=rpmfile.rfind("-")
+        if releaseindex == -1:
+            self.logger.error("Invalid rpm file:"+rpmfile)
+            raise Exception("Invalid RPM")
+        versionindex=rpmfile[0:releaseindex].rfind("-")
+        if versionindex == -1:
+            self.logger.error("Invalid rpm file:"+rpmfile)
+            raise Exception("Invalid RPM")
+        packageName=rpmfile[0:versionindex]
+        version=rpmfile[versionindex+1:releaseindex]
+        release=rpmfile[releaseindex+1:]
+        return packageName,version,release
     
     def findInstalledRPMPackages(self, chrootID):
         cmd = self.rpmBinary+" "+self.queryRpmPackageOptions

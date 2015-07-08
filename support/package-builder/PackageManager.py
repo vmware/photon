@@ -7,7 +7,6 @@ from PackageUtils import PackageUtils
 from ToolChainUtils import ToolChainUtils
 from Scheduler import Scheduler
 from ThreadPool import ThreadPool
-import subprocess
 
 class PackageManager(object):
     
@@ -54,8 +53,14 @@ class PackageManager(object):
                     listDirectorys.append(dirEntryPath)
         pkgUtils = PackageUtils(self.logName,self.logPath)
         for rpmfile in listRPMFiles:
-            package = pkgUtils.findPackageNameFromRPMFile(rpmfile)
-            listAvailablePackages.append(package)
+            package,version,release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
+            if constants.specData.isRPMPackage(package):
+                specVersion=constants.specData.getVersion(package)
+                specRelease=constants.specData.getRelease(package)
+                if version == specVersion and release == specRelease:
+                    listAvailablePackages.append(package)
+        self.logger.info("List of Already built packages")
+        self.logger.info(listAvailablePackages)
         return listAvailablePackages
     
     def calculateParams(self,listPackages):
