@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.1.2
-Release:    2%{dist}
+Release:    2%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
