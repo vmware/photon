@@ -99,6 +99,13 @@ class SerializableSpecObjectsUtils(object):
         self.logger.error("Could not able to find "+package+" package from specs")
         raise Exception("Invalid package:"+package)
     
+    def isRPMPackage(self,package):
+        if self.mapPackageToSpec.has_key(package):
+            specName=self.mapPackageToSpec[package]
+            if self.mapSerializableSpecObjects.has_key(specName):
+                return True
+        return False
+    
     def getSecurityHardeningOption(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].securityHardening

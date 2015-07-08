@@ -124,10 +124,8 @@ def main():
     sys.exit(0)
 
 def buildToolChain(buildThreads):
-    listPackages=[]
-    listPackages.append(package)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackages, buildThreads)
+    pkgManager.buildToolChainPackages(buildThreads)
 
 def buildPackageList(specPath):
     print "Package,Version,License,URL,Sources,Patches"
