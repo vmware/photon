@@ -30,6 +30,7 @@ make DESTDIR=%{buildroot} install
 %files
 %defattr(-,root,root)
 %{_libdir}/*
+%exclude %{_libdir}/debug
 %{_bindir}/*
 %{_includedir}/*
 
