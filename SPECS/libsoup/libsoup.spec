@@ -62,13 +62,14 @@ make DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
-/usr/lib/*
+%{_libdir}/*
+%exclude %{_libdir}/debug
 
 %files devel
-/usr/include/*
+%{_includedir}/*
 
 %files doc
-/usr/share/*
+%{_datadir}/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)

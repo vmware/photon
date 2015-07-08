@@ -48,6 +48,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*
+%exclude %{_libdir}/debug
 %{_includedir}/*
 %{_datadir}/postgresql/*
 %changelog
