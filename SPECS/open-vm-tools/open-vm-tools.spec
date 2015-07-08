@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	9.10.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools/archive/stable-9.10.x.zip
 Group:		Applications/System
@@ -12,6 +12,7 @@ Source1:        gosc-scripts.tar.gz
 Patch0:		open-vm-tools-strerror_r-fix.patch
 Patch1:		open-vm-tools-service-link.patch
 Patch2:         open-vm-tools-GOSC-photon.patch
+Patch3:         open-vm-tools-GOSC-vca.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -34,6 +35,7 @@ VmWare virtualization user mode tools
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p0
 %build
 autoreconf -i
 ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static
@@ -85,6 +87,8 @@ ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 
 
 %changelog
+*       Thu Jul 09 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-4
+        Fixing GOSC to work on VCA.
 *       Tue Apr 21 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-3
         Adding guest optimizations support for photon.
 *	Tue Apr 21 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.0-2
