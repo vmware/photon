@@ -1,0 +1,23 @@
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts-2/imc-shell/imgcust-scripts/PhotonCustomization.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-06-17 23:22:17.000000000 +0000
++++ gosc-scripts-2/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-07-08 21:54:10.065494490 +0000
+@@ -10,7 +10,7 @@
+ 
+   local ciConfigPath="/tmp/cloud-config.ci"
+ 
+-  rm -rf /etc/systemd/network/ifcfg-*
++  rm -rf /etc/systemd/network/*
+ 
+   ConfigFile_LoadConfigFile $configPath
+ 
+@@ -50,6 +50,9 @@
+   # If you don't quote the variable when you echo it, newlines are lost.
+   echo "${content}" > $ciConfigPath
+ 
++  sleep 2
++  rm -rf /var/lib/cloud/instance*
++
+   Exec '/usr/bin/cloud-init --file '$ciConfigPath' init'
+ 
+   Exec '/bin/systemctl restart systemd-networkd' '' ''
+Only in gosc-scripts-2/imc-shell/imgcust-scripts: PhotonCustomization.sh~
