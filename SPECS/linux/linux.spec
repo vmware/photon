@@ -1,3 +1,4 @@
+%global security_hardening none
 %define    OPENVMTOOLS_NAME            open-vm-tools
 %define    OPENVMTOOLS_VERSION         9.10.0
 Summary:        Kernel
@@ -30,6 +31,7 @@ Requires:    libmspack
 Requires:    glib
 Requires:    xml-security-c
 Requires:    openssl
+Requires:    filesystem
 
 %description
 The Linux package contains the Linux kernel. Open vmware tools package contains the kernel module vmhgfs

@@ -10,10 +10,12 @@ RUN \
   apt-get -y upgrade && \
   apt-get install -y build-essential && \
   apt-get install -y bison gawk g++ createrepo python-aptdaemon genisoimage docker.io && \
+  apt-get install -y --no-install-recommends wget texinfo python-requests nano && \
   rm -f /bin/sh && \
   ln -s /bin/bash /bin/sh && \
   rm -rf /var/lib/apt/lists/*
 
-WORKDIR ~/
+VOLUME  /workspace
+WORKDIR /workspace
 
 CMD ["bash"]
