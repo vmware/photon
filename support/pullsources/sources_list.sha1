@@ -2,6 +2,7 @@ acl-2.2.52.src.tar.gz - 537dddc0ee7b6aa67960a3de2d36f1e2ff2059d9
 ant-contrib-1.0b3-src.tar.gz - b28d2bf18656b263611187fa9fbb95cec93d47c8
 apache-ant-1.9.4-src.tar.gz - 01fe8219e50765beafc69de8b7886f882dee73ec
 apache-maven-3.3.3-src.tar.gz - 70301d0669bc86cd81b25a05b1daab3c6ca23595
+apache-tomcat-7.0.63.tar.gz - ddd520f6df2414f10b6b0832dcacd7889f2dbff0
 apr-1.5.2.tar.gz - 2ef2ac9a8de7f97f15ef32cddf1ed7325163d84c
 apr-util-1.5.4.tar.gz - 72cc3ac693b52fb831063d5c0de18723bc8e0095
 asciidoc-8.6.9.tar.gz - 82e574dd061640561fa0560644bc74df71fb7305
