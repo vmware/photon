@@ -42,7 +42,7 @@ class CustomPackageSelector(object):
 
 
     def exit_function(self,  selected_indexes):
-        json_wrapper_package_list = JsonWrapper("packages_miniaml.json");
+        json_wrapper_package_list = JsonWrapper("packages_minimal.json");
         package_list_json = json_wrapper_package_list.read()
         selected_items = []
         for index in selected_indexes:
