@@ -30,20 +30,31 @@ class PackageSelector(object):
 
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select Installation', True, self.package_menu)
 
+    def get_packages_to_install(self, options, base_path, config_type):
+        package_list = []
+        for install_option in options:
+            if install_option[1]["type"] == config_type:
+                if install_option[1]["include"] != "none":
+                    package_list = self.get_packages_to_install(options, base_path, install_option[1]["include"])
+                json_wrapper_package_list = JsonWrapper(os.path.join(base_path, install_option[1]["file"]))
+                package_list_json = json_wrapper_package_list.read()
+                package_list = package_list + package_list_json["packages"]
+                break
+        return package_list
+
     def load_package_list(self, options_file):
-        base_path = os.path.dirname(options_file)
         json_wrapper_option_list = JsonWrapper(options_file)
         option_list_json = json_wrapper_option_list.read()
         options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
 
         self.package_menu_items = []
+        base_path = os.path.dirname(options_file)
+        package_list = []
 
         for install_option in options_sorted:
             if install_option[1]["visible"] == True:
-                file_path = os.path.join(base_path, install_option[1]["file"])
-                json_wrapper_package_list = JsonWrapper(file_path)
-                package_list_json = json_wrapper_package_list.read()
-                self.package_menu_items.append((install_option[1]["title"], self.exit_function, [install_option[1]["type"], package_list_json["packages"]] ))
+                package_list = self.get_packages_to_install(options_sorted, base_path, install_option[1]["type"])
+                self.package_menu_items.append((install_option[1]["title"], self.exit_function, [install_option[1]["type"], package_list] ))
 
         self.package_menu = Menu(self.menu_starty,  self.maxx, self.package_menu_items)
 
