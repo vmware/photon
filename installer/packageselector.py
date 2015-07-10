@@ -33,7 +33,7 @@ class PackageSelector(object):
     def get_packages_to_install(self, options, base_path, config_type):
         package_list = []
         for install_option in options:
-            if install_option[1]["type"] == config_type:
+            if install_option[0] == config_type:
                 if install_option[1]["include"] != "none":
                     for include_type in install_option[1]["include"].split(','):
                         package_list = package_list + self.get_packages_to_install(options, base_path, include_type)
@@ -54,8 +54,8 @@ class PackageSelector(object):
 
         for install_option in options_sorted:
             if install_option[1]["visible"] == True:
-                package_list = self.get_packages_to_install(options_sorted, base_path, install_option[1]["type"])
-                self.package_menu_items.append((install_option[1]["title"], self.exit_function, [install_option[1]["type"], package_list] ))
+                package_list = self.get_packages_to_install(options_sorted, base_path, install_option[0])
+                self.package_menu_items.append((install_option[1]["title"], self.exit_function, [install_option[0], package_list] ))
 
         self.package_menu = Menu(self.menu_starty,  self.maxx, self.package_menu_items)
 
