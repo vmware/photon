@@ -7,7 +7,7 @@
 
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
-Version:	1.0
+Version:	1.0.1
 Release:	1%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -37,17 +37,18 @@ Requires:	tdnf = %{version}-%{release}
 Development files for tdnf
 
 %prep
-rm -rf $RPM_BUILD_DIR/tdnf
+rm -rf $RPM_BUILD_DIR/%{name}-%{version}
 zcat $RPM_SOURCE_DIR/%{name}-%{version}.tar.gz | tar -xvf -
 
 %build
-cd $RPM_BUILD_DIR/tdnf
+cd $RPM_BUILD_DIR/%{name}-%{version}
+autoreconf -i
 ./configure --prefix=%{_prefix} --bindir=%{_bindir} --libdir=%{_libdir} --sysconfdir=/etc
 make clean
 make
 
 %install
-cd $RPM_BUILD_DIR/tdnf
+cd $RPM_BUILD_DIR/%{name}-%{version}
 make DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}/var/cache/tdnf
 
@@ -95,6 +96,8 @@ mkdir -p %{buildroot}/var/cache/tdnf
     %{_libdir}/*
 
 %changelog
+*       Tue Jun 30 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1
+-       Proxy support, keepcache fix, valgrind leaks fix
 *       Fri Jan 23 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0
 -       Initial build.  First version
 
