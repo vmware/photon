@@ -1,8 +1,17 @@
 import subprocess
 import os
+from Logger import Logger
+from constants import constants
 
 class CommandUtils(object):
-    def __init__(self):
+    def __init__(self,logName=None,logPath=None):
+        if logName is None:
+            logName = "CommandUtils"
+        if logPath is None:
+            logPath = constants.logPath
+        self.logName=logName
+        self.logPath=logPath
+        self.logger=Logger.getLogger(logName,logPath)
         self.findBinary = "find"
 
     def findFile (self, filename, sourcePath):
@@ -20,6 +29,7 @@ class CommandUtils(object):
             cmd = chrootCmd+" "+cmd
         if logfilePath is None:
             logfilePath=os.devnull
+        self.logger.debug(cmd)
         logfile=open(logfilePath,"w")
         process = subprocess.Popen("%s" %cmd,shell=True,stdout=logfile,stderr=logfile)
         retval = process.wait()
@@ -31,6 +41,7 @@ class CommandUtils(object):
     def runCommandInShell2(self,cmd,chrootCmd=None):
         if chrootCmd is not None:
             cmd = chrootCmd+" "+cmd
+        self.logger.debug(cmd)
         process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
         retval = process.wait()
         if retval != 0:
