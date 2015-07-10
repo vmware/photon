@@ -156,7 +156,7 @@ if __name__ == '__main__':
     packages = []
     if config['iso_system'] == True:
         for install_option in options_sorted:
-            if install_option[1]['type'] == "iso":
+            if install_option[0] == "iso":
                 json_wrapper_package_list = JsonWrapper(os.path.join(base_path, install_option[1]["file"]))
                 package_list_json = json_wrapper_package_list.read()
                 packages = package_list_json["packages"]

@@ -1,15 +1,13 @@
 {
-    "iso_packages" : {
+    "iso" : {
         "order" : 0,
-        "type" : "iso",
         "title" : "ISO Packages",
         "file" : "packages_iso.json",
         "visible" : false,
         "include" : "none"
     },
-    "minimal_packages" : {
+    "minimal" : {
         "order" : 1,
-        "type" : "minimal",
         "title" : "Photon Minimal",
         "file" : "packages_minimal.json",
         "visible" : true,
