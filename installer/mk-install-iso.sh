@@ -43,8 +43,8 @@ find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv -
 
 rm -f ${BUILDROOT}/installer/*.pyc
 rm -rf ${BUILDROOT}/installer/BUILD_DVD
-# Copy package list json files
-cp -rf $PHOTON_COMMON_DIR ${BUILDROOT}/installer/
+# Copy package list json files, dereference symlinks
+cp -rf -L $PHOTON_COMMON_DIR/*.json ${BUILDROOT}/installer/
 #ID in the initrd.gz now is PHOTON_VMWARE_CD . This is how we recognize that the cd is actually ours. touch this file there.
 touch ${WORKINGDIR}/PHOTON_VMWARE_CD
 
@@ -69,7 +69,7 @@ cp BUILD_DVD/fstab ${BUILDROOT}/etc/fstab
 cat >> ${BUILDROOT}/bin/bootphotoninstaller << EOF
 #!/bin/bash
 cd /installer
-./isoInstaller.py --json-file=./data/$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
+./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
 /bin/bash
 EOF
 
