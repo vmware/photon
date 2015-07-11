@@ -1,7 +1,7 @@
 Summary:	Git for operating system binaries
 Name:		ostree
 Version:	2015.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 Source1:	91-ostree.preset
 #Patch0:		ostree_syntax_error_fix.patch
@@ -19,7 +19,14 @@ Requires:	libgsystem
 Requires:	gpgme
 Requires:	libassuan
 Requires:	libgpg-error
-Requires:       systemd
+Requires:   systemd
+Requires:   libsoup
+Requires:   libsoup-devel
+Requires:   mkinitcpio
+Requires:   dracut
+Requires:   dracut-tools
+Requires:   libarchive
+Requires:   libarchive-devel
 BuildRequires:	attr
 BuildRequires:	python2-libs
 BuildRequires:	python2
@@ -28,7 +35,14 @@ BuildRequires:	gobject-introspection-devel
 BuildRequires:	gobject-introspection-python
 BuildRequires:  gpgme-devel
 BuildRequires:  libcap
+BuildRequires:  libsoup
+BuildRequires:  libsoup-devel
+BuildRequires:  mkinitcpio
+BuildRequires:  dracut
+BuildRequires:  dracut-tools
 BuildRequires:  systemd
+BuildRequires:  libarchive
+BuildRequires:  libarchive-devel
 
 %description
 OSTree is a tool for managing bootable, immutable, versioned
@@ -108,6 +122,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 2015.7-2
+-   Add dracut, mkinitcpio and libsoup as dependencies
 *	Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
 -	Updated the version
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.11-1
