@@ -12,6 +12,6 @@
                 "procps-ng", "iana-etc", "readline", "coreutils", "bc", "libtool", "inetutils",
                 "findutils", "xz", "grub", "iproute2", "util-linux", "linux",
                 "attr", "libcap", "kmod", "expat", "dbus", "file",
-                "sed", "grep", "cpio", "gzip",
-                "dracut", "dracut-tools"]
+                "sed", "grep", "cpio", "gzip", "nss-altfiles",
+                "dracut", "dracut-tools", "ostree", "rpm-ostree"]
 }
