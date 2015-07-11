@@ -35,7 +35,8 @@ class PackageSelector(object):
         for install_option in options:
             if install_option[1]["type"] == config_type:
                 if install_option[1]["include"] != "none":
-                    package_list = self.get_packages_to_install(options, base_path, install_option[1]["include"])
+                    for include_type in install_option[1]["include"].split(','):
+                        package_list = package_list + self.get_packages_to_install(options, base_path, include_type)
                 json_wrapper_package_list = JsonWrapper(os.path.join(base_path, install_option[1]["file"]))
                 package_list_json = json_wrapper_package_list.read()
                 package_list = package_list + package_list_json["packages"]
