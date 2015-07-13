@@ -161,7 +161,7 @@ if __name__ == '__main__':
                 package_list_json = json_wrapper_package_list.read()
                 packages = package_list_json["packages"]
     else:
-        packages = get_packages_to_install(options_sorted, base_path, config['type'])
+        packages = PackageSelector.get_packages_to_install(options_sorted, base_path, config['type'])
 
     config['packages'] = packages
 
