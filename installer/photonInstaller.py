@@ -13,6 +13,7 @@ import subprocess
 import sys
 import os
 from jsonwrapper import JsonWrapper
+from packageselector import PackageSelector
 
 def query_yes_no(question, default="no"):
     valid = {"yes": True, "y": True, "ye": True,
@@ -84,7 +85,7 @@ def create_rpm_list_to_copy_in_iso(build_install_option):
     base_path = os.path.dirname(build_install_option)
     json_wrapper_option_list = JsonWrapper(build_install_option)
     option_list_json = json_wrapper_option_list.read()
-    options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
+    options_sorted = option_list_json.items()
     packages = []
     for install_option in options_sorted:
         file_path = os.path.join(base_path, install_option[1]["file"])
@@ -149,16 +150,18 @@ if __name__ == '__main__':
     # Check the installation type
     json_wrapper_option_list = JsonWrapper(options.package_list_file)
     option_list_json = json_wrapper_option_list.read()
-    options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
-    packages = []
+    options_sorted = option_list_json.items()
     base_path = os.path.dirname(options.package_list_file)
-    for install_option in options_sorted:
-        print install_option
-        if (config['iso_system'] == True and install_option[1]['type'] == "iso") or (install_option[1]['type'] == config['type']):
-            json_wrapper_package_list = JsonWrapper(os.path.join(base_path, install_option[1]["file"]))
-            package_list_json = json_wrapper_package_list.read()
-            packages = package_list_json["packages"]
-            break
+
+    packages = []
+    if config['iso_system'] == True:
+        for install_option in options_sorted:
+            if install_option[0] == "iso":
+                json_wrapper_package_list = JsonWrapper(os.path.join(base_path, install_option[1]["file"]))
+                package_list_json = json_wrapper_package_list.read()
+                packages = package_list_json["packages"]
+    else:
+        packages = PackageSelector.get_packages_to_install(options_sorted, base_path, config['type'])
 
     config['packages'] = packages
 

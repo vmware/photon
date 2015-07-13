@@ -2,6 +2,7 @@ acl-2.2.52.src.tar.gz - 537dddc0ee7b6aa67960a3de2d36f1e2ff2059d9
 ant-contrib-1.0b3-src.tar.gz - b28d2bf18656b263611187fa9fbb95cec93d47c8
 apache-ant-1.9.4-src.tar.gz - 01fe8219e50765beafc69de8b7886f882dee73ec
 apache-maven-3.3.3-src.tar.gz - 70301d0669bc86cd81b25a05b1daab3c6ca23595
+apache-tomcat-7.0.63.tar.gz - ddd520f6df2414f10b6b0832dcacd7889f2dbff0
 apr-1.5.2.tar.gz - 2ef2ac9a8de7f97f15ef32cddf1ed7325163d84c
 apr-util-1.5.4.tar.gz - 72cc3ac693b52fb831063d5c0de18723bc8e0095
 asciidoc-8.6.9.tar.gz - 82e574dd061640561fa0560644bc74df71fb7305
@@ -102,6 +103,7 @@ intltool-0.50.2.tar.gz - 7fddbd8e1bf94adbf1bc947cbf3b8ddc2453f8ad
 iproute2-3.12.0.tar.xz - 9397376e5d4dcbb1182745cd58625895fcdb868d
 iptables-1.4.21.tar.bz2 - 85d4160537546a23a7e42bc26dd7ee62a0ede4c8
 itstool-2.0.2.tar.bz2 - 5084a2cecca8d70d184f22d2aecf5e2cb715917f
+jaxws-ri-2.2.5.tar.gz - b48b4592bd75991838d1ec003158f6b4ae05ebff
 jna-4.1.0.tar.gz - c520c1be533619d3cbc3ad448d49a8f24ee60bda
 json-c-0.12.tar.gz - 5580aad884076c219d41160cbd8bc12213d12c37
 json-glib-1.0.2.tar.xz - e3bca16e0c9985a74ee95084ce86af18b31678b1
@@ -217,7 +219,7 @@ tar-1.27.1.tar.xz - 5ce4233e1774e990b930f3c46990267b28448962
 tcl8.6.1-src.tar.gz - 5c83d44152cc0496cc0847a2495f659502a30e40
 tcpdump-4.7.3.tar.gz - 4f085cef7cd4aedc9e402021ec11e3a8b23a6926
 tcsh-6.18.01.tar.gz - eee2035645737197ff8059c84933a75d23cd76f9
-tdnf-1.0.tar.gz - f2e10a64fd564082c64eb4e4b585d7192cf47ff5
+tdnf-1.0.1.tar.gz - bff1ffdce4f7c319c06da3a76f8be70f76be1246
 texinfo-5.2.tar.xz - fbbc35c5857d11d1164c8445c78b66ad6d472072
 thin-provisioning-tools-v0.4.1.tar.gz - d1ccfd0d9036a22b726a4e0011f888e0fda76e56
 Types-Serialiser-1.0.tar.gz - 72ba9d1d97bb582360c79bcbdb158e73573adb70

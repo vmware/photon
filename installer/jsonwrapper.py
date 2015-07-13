@@ -6,6 +6,7 @@
 
 
 import json
+import collections
 
 class JsonWrapper(object):
 
@@ -14,7 +15,7 @@ class JsonWrapper(object):
 
     def read(self):
         json_data = open(self.filename)
-        self.data = json.load(json_data)
+        self.data = json.load(json_data, object_pairs_hook=collections.OrderedDict)
         json_data.close()
         return self.data
 

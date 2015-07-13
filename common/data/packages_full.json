@@ -1,16 +1,5 @@
 {
-    "packages":["glibc", "zlib", "filesystem", "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp", 
-                "pkg-config", "ncurses", "readline", "bash", "bzip2", "cracklib", "cracklib-dicts", "shadow", "procps-ng", "iana-etc", "coreutils", "bc", "libtool", "inetutils",
-                "findutils", "xz", "grub", "iproute2", "util-linux", "openssl", "kmod", "linux", "ca-certificates", "curl", "iptables", "Linux-PAM",
-                "attr", "libcap", "systemd", "expat", "dbus", "file", "e2fsprogs", "elfutils-libelf", "lua", "popt", "sqlite-autoconf", "nspr", "nss", "rpm",
-                "openssh", "libffi", "gdbm", "python2", "python2-libs", "pcre", "glib", "libxml2", "libxml2-python",
-                "photon-release",
-                "sed", "grep", "cpio", "gzip", "nano", "db", "libsolv", "libgpg-error", "hawkey", "libassuan", "gpgme", "librepo", "tdnf",
-                "libdnet", "xerces-c", "xml-security-c", "libmspack", "open-vm-tools",
-                "docker","bridge-utils",
-                "libyaml", "PyYAML", "python-requests", "python-prettytable", "python-jsonpointer", "python-jsonpatch", "python-six", "python-configobj", "cloud-init",
-                "krb5", "e2fsprogs-devel",
-                "unzip", "gmp-devel", "sudo", "bzip2-devel", "XML-Parser", "intltool", "mercurial", "libsigc++", "boost", 
+    "packages":["unzip", "gmp-devel", "sudo", "bzip2-devel", "XML-Parser", "intltool", "mercurial", "libsigc++", "boost", 
                 "libgomp-devel", "libstdc++-devel", "libgcc-devel", "gcc", "bison", "gdb", "libpipeline", "python2-devel", 
                 "python2-tools", "linux-api-headers","gawk","check", "libltdl", "libltdl-devel", "pcre-devel", "glib-devel", 
                 "glibc-devel", "glibc-lang", "zlib-devel", "gettext", "git", "git-lang", "autoconf", "perl", "perl-DBI","perl-Config-IniFiles",
@@ -24,7 +13,7 @@
                 "go", "grub-lang", "diffutils", "groff", "man-db", "mpfr-devel", "man-pages", 
                 "hawkey-devel", "python-hawkey", "libxml2-devel", "ruby", "readline-devel", "wget",
                 "Linux-PAM-lang", "make", "bindutils", "gperf", "lua-devel", "which", "less",
-                "cmake", "gpgme-devel", "parted", "vim", "xz-devel", "xerces-c-devel", "xml-security-c-devel", 
+                "cmake", "gpgme-devel", "parted", "nano", "xz-devel", "xerces-c-devel", "xml-security-c-devel", 
                 "nss-devel", "ncurses-devel", "tzdata", "itstool", "sed-lang", "gptfdisk", "ntp", "flex", "patch", "m4", "dracut", "dracut-tools", 
                 "libarchive", "libsoup", "asciidoc", "mkinitcpio",
                 "ostree", "tdnf-devel", "librepo-devel", "libhif", "libhif-devel", "rpm-ostree", "createrepo", "glibmm", "deltarpm", "cdrkit", "dparted", "libgsystem",
@@ -33,7 +22,7 @@
                 "device-mapper-event-libs","libacl","libacl-devel","libselinux-devel","libselinux-python","libselinux-utils","libsepol-devel",
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
-                "haveged", "haveged-devel",
+                "haveged", "haveged-devel", "vim-extra",
                 "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "zookeeper", "fuse", "fakeroot-ng"]
 }
 

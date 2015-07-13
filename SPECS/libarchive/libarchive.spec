@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.1.2
-Release:    1
+Release:    2%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -11,6 +11,12 @@ Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 
 %description
 Multi-format archive and compression library
+
+%package	devel
+Summary:	Header and development files
+Requires:	%{name} = %{version}
+%description	devel
+It contains the libraries and header files to create applications 
 
 %prep
 %setup -q
@@ -30,11 +36,16 @@ make DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
-/usr/lib/*
-/usr/bin/*
-/usr/share/man/*
-/usr/include/*
+%{_libdir}
+%{_bindir}
+%exclude %{_libdir}/debug/
+%files devel
+%defattr(-,root,root)
+%{_includedir}
+%{_mandir}
 
 %changelog
+*   Wed Jul 8 2015 Alexey Makhalov <amakhalov@vmware.com> 3.1.2-2
+-   Added devel package, dist tag. Use macroses part.
 *   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 3.1.2-1
 -   Initial build.  First version

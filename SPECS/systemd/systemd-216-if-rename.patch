@@ -1,0 +1,45 @@
+diff -ru systemd-216/src/network/networkd-manager.c systemd-216-4/src/network/networkd-manager.c
+--- systemd-216/src/network/networkd-manager.c	2014-08-15 14:42:14.000000000 +0000
++++ systemd-216-4/src/network/networkd-manager.c	2015-07-04 00:49:26.056457748 +0000
+@@ -35,6 +35,7 @@
+ #include "virt.h"
+ 
+ #include "sd-rtnl.h"
++#define UDEV_INIT_LOOP_WAIT_COUNT 10000
+ 
+ const char* const network_dirs[] = {
+         "/etc/systemd/network",
+@@ -225,7 +226,9 @@
+         NetDev *netdev = NULL;
+         uint16_t type;
+         const char *name;
+-        int r, ifindex;
++        int r, ifindex, i;
++        char ifindex_str[2 + DECIMAL_STR_MAX(int)];
++        struct udev_device *device = NULL;
+ 
+         assert(rtnl);
+         assert(message);
+@@ -244,6 +247,21 @@
+         } else
+                 link_get(m, ifindex, &link);
+ 
++        /* Networkd must wait for udev to finish device initiatization/ renaming the interface.
++        The maximum wait time is 10 second but it takes less than 1 second for udev to make it up in some udev/networkd race cases */
++
++        sprintf(ifindex_str, "n%d", ifindex);
++        device = udev_device_new_from_device_id(m->udev, ifindex_str);
++        
++        for(i=0 ; i < UDEV_INIT_LOOP_WAIT_COUNT ; i++) {
++                if (!udev_device_get_is_initialized(device)) {
++                        usleep(1);
++                        continue;
++                } else {
++                        break;
++                }   
++        } 
++
+         r = sd_rtnl_message_read_string(message, IFLA_IFNAME, &name);
+         if (r < 0 || !name) {
+                 log_warning("rtnl: received link message without valid ifname");
+Only in systemd-216-4/src/network: networkd-manager.c~

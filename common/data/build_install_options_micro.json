@@ -1,16 +1,14 @@
 {
-    "iso_packages" : {
-        "order" : 0,
-        "type" : "iso",
+    "iso" : {
         "title" : "ISO Packages",
         "file" : "packages_iso.json",
-        "visible" : false
+        "visible" : false,
+        "include" : "none"
     },
-    "micro_packages" : {
-        "order" : 1,
-        "type" : "micro",
+    "micro" : {
         "title" : "Photon Micro",
         "file" : "packages_micro.json",
-        "visible" : true
+        "visible" : true,
+        "include" : "none"
     }
 }

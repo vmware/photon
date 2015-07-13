@@ -1,39 +1,34 @@
 {
-    "iso_packages" : {
-        "order" : 0,
-        "type" : "iso",
+    "iso" : {
         "title" : "ISO Packages",
         "file" : "packages_iso.json",
-        "visible" : false
+        "visible" : false,
+        "include" : "none"
     },
-    "micro_packages" : {
-        "order" : 1,
-        "type" : "micro",
+    "micro" : {
         "title" : "1. Photon Micro",
         "file" : "packages_micro.json",
-        "visible" : true
+        "visible" : true,
+        "include" : "none"
 
     },
-    "minimal_packages" : {
-        "order" : 2,
-        "type" : "minimal",
+    "minimal" : {
         "title" : "2. Photon Minimal",
         "file" : "packages_minimal.json",
-        "visible" : true
+        "visible" : true,
+        "include" : "none"
     },
-    "full_packages" : {
-        "order" : 3,
-        "type" : "full",
+    "full" : {
         "title" : "3. Photon Full",
         "file" : "packages_full.json",
-        "visible" : true
+        "visible" : true,
+        "include" : "minimal"
     },
-    "extra_packages" : {
-        "order" : 4,
-        "type" : "extra",
+    "extra" : {
         "title" : "Extra packages not installed.",
         "file" : "packages_extra.json",
-        "visible" : false
+        "visible" : false,
+        "include" : "none"
     }
 }
 
