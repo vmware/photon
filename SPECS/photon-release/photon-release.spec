@@ -33,6 +33,8 @@ install -d -m 755 $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 install -m 644 PHOTON-RPM-GPG-KEY $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 
 %post
+# Remove __db* files to workaround BD version check bug in rpm
+rm -f /var/lib/rpm/__db*
 rpm --import /etc/pki/rpm-gpg/PHOTON-RPM-GPG-KEY
 
 %clean
