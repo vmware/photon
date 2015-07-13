@@ -46,7 +46,7 @@ class PackageSelector(object):
     def load_package_list(self, options_file):
         json_wrapper_option_list = JsonWrapper(options_file)
         option_list_json = json_wrapper_option_list.read()
-        options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
+        options_sorted = option_list_json.items()
 
         self.package_menu_items = []
         base_path = os.path.dirname(options_file)

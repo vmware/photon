@@ -85,7 +85,7 @@ def create_rpm_list_to_copy_in_iso(build_install_option):
     base_path = os.path.dirname(build_install_option)
     json_wrapper_option_list = JsonWrapper(build_install_option)
     option_list_json = json_wrapper_option_list.read()
-    options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
+    options_sorted = option_list_json.items()
     packages = []
     for install_option in options_sorted:
         file_path = os.path.join(base_path, install_option[1]["file"])
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     # Check the installation type
     json_wrapper_option_list = JsonWrapper(options.package_list_file)
     option_list_json = json_wrapper_option_list.read()
-    options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
+    options_sorted = option_list_json.items()
     base_path = os.path.dirname(options.package_list_file)
 
     packages = []

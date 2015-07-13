@@ -9,6 +9,7 @@ from PackageManager import PackageManager
 import json
 import sys
 from SpecUtils import Specutils
+import collections
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -172,9 +173,9 @@ def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger, buildThread
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)
     jsonData = open(build_install_option)
-    option_list_json = json.load(jsonData)
+    option_list_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
     jsonData.close()
-    options_sorted = sorted(option_list_json.items(), key=lambda item: item[1]['order'])
+    options_sorted = option_list_json.items()
     packages = []
 
     for install_option in options_sorted:
