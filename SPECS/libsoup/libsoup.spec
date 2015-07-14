@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.50.0
-Release:    1
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -62,7 +62,8 @@ make DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
-/usr/lib/*
+%{_libdir}
+%exclude %{_libdir}/debug
 
 %files devel
 /usr/include/*
@@ -74,5 +75,7 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 
 %changelog
+*   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 2.50.0-2
+-   Exclude /usr/lib/debug
 *   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 2.50.0-1
 -   Initial build.  First version

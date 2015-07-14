@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.5.4
-Release:    1%{?dist}
+Release:    3%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -48,10 +48,13 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 %{_libdir}/*
+%exclude %{_libdir}/debug
 %{_bindir}/*
 %{_includedir}/*
 
 %changelog
+*   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 1.5.2-3
+-   Exclude /usr/lib/debug
 *   Wed Jul 01 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.2-2
 -   Fix tags and paths.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.2-1
