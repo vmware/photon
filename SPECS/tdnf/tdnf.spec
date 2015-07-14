@@ -86,6 +86,7 @@ mkdir -p %{buildroot}/var/cache/tdnf
     %defattr(-,root,root)
     %{_includedir}/*
     %{_libdir}/*
+    %exclude %{_libdir}/debug
 
 %changelog
 *       Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-2
