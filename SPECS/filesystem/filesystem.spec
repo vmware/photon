@@ -48,7 +48,7 @@ ln -svfn var/srv %{buildroot}/srv
 ln -svfn ../run %{buildroot}/var/run
 ln -svfn ../run/lock %{buildroot}/var/lock
 install -vdm 755 %{buildroot}/var/{opt,cache,lib/{color,misc,locate},local}
-
+install -vdm 755 %{buildroot}/mnt/cdrom
 ln -svfn var/opt %{buildroot}/opt
 
 #
@@ -296,7 +296,7 @@ cat > %{buildroot}/etc/fstab <<- "EOF"
 #	hdparm -I /dev/sda | grep NCQ --> can use barrier
 #system		mnt-pt		type		options			dump fsck
 /dev/sda1	/		    ext4	    defaults,barrier,noatime,noacl,data=ordered 1 1
-# /dev/cdrom      /media/cdrom      iso9660     ro              0   0
+/dev/cdrom      /mnt/cdrom      iso9660     ro,noauto              0   0
 # /dev/sda2	swap		swap		pri=1			0 0
 #	mount points
 #	End /etc/fstab
@@ -387,6 +387,7 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 #	run filesystem
 %dir /run/lock
 #	usr filesystem
+%dir /mnt/cdrom
 %dir /usr/bin
 %dir /usr/include
 %dir /usr/lib
