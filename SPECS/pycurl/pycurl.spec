@@ -8,6 +8,7 @@ Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
 URL:            http://pycurl.sourceforge.net/
 Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
+%define sha1 pycurl=e448cc05ef05f8645bb9a7873d7a7e0b0035db14
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	pycurl

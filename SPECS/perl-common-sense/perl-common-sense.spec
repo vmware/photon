@@ -10,6 +10,7 @@ License:	GPL+ or Artistic
 Group:		Development/Libraries
 URL:		http://search.cpan.org/dist/common-sense
 Source0:	http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/common-sense-%{version}.tar.gz
+%define sha1 common-sense=114bab46ac459f399ec3c7b2ae6a0d3b42d05c7c
 Vendor:		VMware, Inc.
 Distribution:	Photon 
 BuildRequires:	perl

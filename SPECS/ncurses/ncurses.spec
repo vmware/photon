@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.gnu.org/gnu/ncurses/%{name}-%{version}.tar.gz
+%define sha1 ncurses=3e042e5f2c7223bffdaac9646a533b8c758b65b5
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.

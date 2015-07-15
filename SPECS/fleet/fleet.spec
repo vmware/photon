@@ -9,6 +9,7 @@ BuildRequires:	go
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	https://github.com/coreos/%{name}/archive/%{name}-%{version}.tar.gz
+%define sha1 fleet=2de21c48f918c7611564f5960858ad3f53b8f58d
 %description
 fleet ties together systemd and etcd into a simple distributed init system.
 

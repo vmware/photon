@@ -9,6 +9,7 @@ class constants(object):
     specData=None
     buildRootPath="/mnt"
     prevPublishRPMRepo=""
+    pullsourcesConfig=""
     noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison","openjdk","go"]
     listToolChainPackages=["linux-api-headers", "glibc","zlib", "file",
         "binutils","gmp","mpfr", "mpc","gcc", "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
@@ -56,6 +57,7 @@ class constants(object):
         constants.buildRootPath=options.buildRootPath
         constants.specData = SerializableSpecObjectsUtils(constants.logPath)
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
+        constants.pullsourcesConfig = options.pullsourcesConfig
         
 
         

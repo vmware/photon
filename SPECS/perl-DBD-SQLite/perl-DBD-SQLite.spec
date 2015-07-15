@@ -7,6 +7,7 @@ Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
 Source0:        http://search.cpan.org/CPAN/authors/id/I/IS/ISHIGAKI/DBD-SQLite-%{version}.tar.gz
+%define sha1 DBD-SQLite=1210af99d7010b315e4c4de9fb895ac34bdb22bd
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  sqlite-autoconf

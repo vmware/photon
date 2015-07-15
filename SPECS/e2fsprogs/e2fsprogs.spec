@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
+%define sha1 e2fsprogs=fb8e3662302bcab1682d567d6ee0ff051faa1bbd
 %description
 The E2fsprogs package contains the utilities for handling
 the ext2 file system.

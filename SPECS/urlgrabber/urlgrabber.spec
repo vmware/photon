@@ -5,6 +5,7 @@ Name: 			urlgrabber
 Version: 		3.10
 Release: 		1%{?dist}
 Source0: 		urlgrabber-%{version}.tar.gz
+%define sha1 urlgrabber=a2ff4fc2056f4d91b412104e04ff0bdc73ec5fb1
 License: 		LGPLv2+
 Group: 			Development/Libraries
 BuildRoot: 		%{_tmppath}/%{name}-%{version}-%{release}-buildroot

@@ -6,6 +6,7 @@ License: 	LGPLv2+
 Group: 		System Environment/Libraries
 URL:		http://www.infradead.org/~tgr/libnl/
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
+%define sha1 libnl=b7a4981f7edf7398256d35fd3c0b87bc84ae27d1
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	glib-devel

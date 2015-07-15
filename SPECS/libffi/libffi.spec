@@ -8,6 +8,7 @@ Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
+%define sha1 libffi=cb373ef2115ec7c57913b84ca72eee14b10ccdc3
 Provides:	pkgconfig(libffi)
 %description
 The libffi library provides a portable, high level programming interface

@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:        MIT
 URL:            https://github.com/json-c/json-c/wiki
 Source0:        https://s3.amazonaws.com/json-c_releases/releases/json-c-0.12.tar.gz
+%define sha1 json-c=5580aad884076c219d41160cbd8bc12213d12c37
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon

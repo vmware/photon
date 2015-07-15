@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPL+
 URL:		http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
+%define sha1 XML-Parser=68c7ee61b413c2e8255699b1987fca598e0a39d8
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon

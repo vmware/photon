@@ -8,6 +8,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/m4/%{name}-%{version}.tar.xz
+%define sha1 m4=74ad71fa100ec8c13bc715082757eb9ab1e4bbb0
 %description
 The M4 package contains a macro processor
 %prep

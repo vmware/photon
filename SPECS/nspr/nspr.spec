@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.mozilla.org/pub/mozilla.org/%{name}/releases/v%{version}/src/%{name}-%{version}.tar.gz
+%define sha1 nspr=c87c6a10e0e36866006b45c194d70cd8c67d0934
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
 for system level and libc like functions.

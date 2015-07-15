@@ -8,6 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://mercurial.selenic.com/release/%{name}-%{version}.tar.gz
+%define sha1 mercurial=ae7e16454cee505da895c2497f09711f35287459
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
 Requires:	python2

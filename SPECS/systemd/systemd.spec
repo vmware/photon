@@ -8,6 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.freedesktop.org/software/systemd/%{name}-%{version}.tar.xz
+%define sha1 systemd=0d933a2f76db5d30f52429e9b172323bc6abd49a
 Patch0:     	systemd-216-compat-1.patch
 Patch1:         systemd-216-if-rename.patch
 Requires:	Linux-PAM

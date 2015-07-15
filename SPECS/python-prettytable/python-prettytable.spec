@@ -6,6 +6,7 @@ License:        BSD-2-Clause
 Group:          Development/Languages/Python
 Url:            http://code.google.com/p/prettytable/
 Source0:        prettytable-%{version}.tar.gz
+%define sha1 prettytable=b7d0bf0feee0d23108a044ffae44aff5c5935250
 
 BuildRequires: python2
 BuildRequires: python2-libs

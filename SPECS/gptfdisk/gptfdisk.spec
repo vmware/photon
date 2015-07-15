@@ -8,6 +8,7 @@ Group:		System Environment/Filesystem and Disk management
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://downloads.sourceforge.net/project/gptfdisk/gptfdisk/0.8.10/gptfdisk-0.8.10.tar.gz
+%define sha1 gptfdisk=1708e232220236b6bdf299b315e9bc2205c01ba5
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/systemd/gptfdisk-0.8.10-convenience-1.patch
 Requires: 	popt >= 1.16
 BuildRequires:	popt-devel

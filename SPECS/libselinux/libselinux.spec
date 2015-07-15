@@ -6,6 +6,7 @@ Release:	1%{?dist}
 License:	Public Domain
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20150202/%{name}-%{version}.tar.gz
+%define sha1 libselinux=bc424260dee281b3853ca4fcb2af6e8362b475b1
 Url:		https://github.com/SELinuxProject/selinux/wiki
 Vendor:		VMware, Inc.
 Distribution:	Photon

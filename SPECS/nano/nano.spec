@@ -6,6 +6,7 @@ License:	GPLv3+
 URL:		http://www.nano-editor.org/
 Group:		Applications/Editors
 Source0:	http://www.nano-editor.org/dist/v2.2/%{name}-%{version}.tar.gz
+%define sha1 nano=f2a628394f8dda1b9f28c7e7b89ccb9a6dbd302a
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	ncurses-devel

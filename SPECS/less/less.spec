@@ -8,6 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
+%define sha1 less=d5b07180d3dad327ccc8bc66818a31577e8710a2
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description

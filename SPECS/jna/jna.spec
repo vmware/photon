@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
+%define sha1 jna=c520c1be533619d3cbc3ad448d49a8f24ee60bda
 Requires: openjdk >= 1.8.0.45
 BuildRequires: openjdk >= 1.8.0.45, apache-ant >= 1.9.4
 

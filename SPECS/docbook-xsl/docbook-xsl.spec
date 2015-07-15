@@ -5,6 +5,7 @@ Release:	2%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
+%define sha1 docbook-xsl=1d668c845bb43c65115d1a1d9542f623801cfb6f
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon

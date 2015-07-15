@@ -8,6 +8,7 @@ License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/JSON-XS/
 Source0:        http://www.cpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-%{version}.tar.gz
+%define sha1 JSON-XS=725f67ef1de914a6fdaf99d751aea3018cee492b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  perl

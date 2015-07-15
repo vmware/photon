@@ -8,6 +8,7 @@ Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:        http://archive.apache.org/dist/httpd/%{name}-%{version}.tar.bz2
+%define sha1 httpd=bc4681bfd63accec8d82d3cc440fbc8264ce0f17
 BuildRequires: openssl
 BuildRequires: openssl-devel
 BuildRequires: pcre-devel

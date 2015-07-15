@@ -17,6 +17,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
+%define sha1 go=b54b7deb7b7afe9f5d9a3f5dd830c7dede35393a
 BuildRequires:	mercurial
 Requires:	mercurial
 # We strip meta dependency, but go requires glibc.

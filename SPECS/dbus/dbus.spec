@@ -6,6 +6,7 @@ License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File
 Source0:	http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
+%define sha1 dbus=e0d10e8b4494383c7e366ac80a942ba45a705a96
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	expat

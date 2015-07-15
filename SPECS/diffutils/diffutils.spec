@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/diffutils/%{name}-%{version}.tar.xz
+%define sha1 diffutils=6463cce7d3eb73489996baefd0e4425928ecd61e
 BuildRequires:	coreutils
 %description
 The Diffutils package contains programs that show the

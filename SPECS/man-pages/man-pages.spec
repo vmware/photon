@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/docs/man-pages/%{name}-%{version}.tar.xz
+%define sha1 man-pages=76eae3fb069a6df2195081408e7ea2784722385b
 BuildArch:	noarch
 %description
 The Man-pages package contains over 1,900 man pages.

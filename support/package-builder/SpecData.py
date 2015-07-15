@@ -13,6 +13,7 @@ class SerializableSpecObject(object):
         self.installRequiresPackages={}
         self.specFile=""
         self.listSources=[]
+        self.checksums={}
         self.listPatches=[]
         self.securityHardening=""
 
@@ -38,6 +39,7 @@ class SerializableSpecObjectsUtils(object):
             specObj.version=spec.getVersion()
             specObj.release=spec.getRelease()
             specObj.listSources=spec.getSourceNames()
+            specObj.checksums=spec.getChecksums()
             specObj.listPatches=spec.getPatchNames()
             specObj.securityHardening=spec.getSecurityHardeningOption()
             for specPkg in specObj.listPackages:
@@ -82,11 +84,15 @@ class SerializableSpecObjectsUtils(object):
     def getPatches(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listPatches
-        
+
     def getSources(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listSources
         
+    def getSHA1(self, package, source):
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].checksums[source]
+
     def getPackages(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listPackages

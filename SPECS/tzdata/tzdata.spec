@@ -8,9 +8,11 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
+%define sha1 tzdata=0fe77c8cca50b5f20d73e9c2a5b4fadca34c1504
 BuildArch:	noarch
 %description
 Sources for time zone and daylight saving time data
+%define sha1 tzdata=0fe77c8cca50b5f20d73e9c2a5b4fadca34c1504
 %define blddir		%{name}-%{version}
 %prep
 rm -rf %{blddir}

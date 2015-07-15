@@ -9,7 +9,9 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
+%define sha1 apache-ant=01fe8219e50765beafc69de8b7886f882dee73ec
 Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
+%define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Requires: openjdk >= 1.8.0.45, python2
 BuildRequires: openjdk >= 1.8.0.45
 

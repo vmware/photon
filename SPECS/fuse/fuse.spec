@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        http://sourceforge.net/projects/fuse/files/fuse-2.X/%{version}/%{name}-%{version}.tar.gz
+%define sha1 fuse=c8b25419f33624dc5240af6a5d26f2c04367ca71
 %description
 With FUSE it is possible to implement a fully functional filesystem in a
 userspace program. 

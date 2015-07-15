@@ -8,6 +8,7 @@ Group:		System Environment/Daemons
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	https://www.balabit.com/downloads/files/eventlog/0.2/%{name}_%{version}.tar.gz
+%define sha1 eventlog=3e35a634e7de029ab9d36995a085bfcb00ed6a4d
 BuildRequires:	bison
 BuildRequires:	flex
 

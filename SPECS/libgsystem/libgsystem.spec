@@ -4,6 +4,7 @@ Version:	2015.1
 Release:	1%{?dist}
 Group:		Development/Libraries
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/libgsystem/%{version}/%{name}-%{version}.tar.xz
+%define sha1 libgsystem=9b14593c87a386d2d3c01490ba126047aa6eba30
 License:	LGPLv2+
 URL:		https://wiki.gnome.org/Projects/LibGSystem
 Vendor:		VMware, Inc.

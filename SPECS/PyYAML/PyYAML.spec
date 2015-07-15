@@ -6,6 +6,7 @@ Group:          Development/Libraries
 License:        MIT
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
+%define sha1 PyYAML=1a2d5df8b31124573efb9598ec6d54767f3c4cd4
 
 BuildRequires: python2
 BuildRequires: python2-libs

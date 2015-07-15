@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	LGPLv3+ or GPLv2+
 URL:            http://www.lysator.liu.se/~nisse/nettle/
 Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
+%define sha1 nettle=1836601393522124787e029466935408e22dd204
 Group: 		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon

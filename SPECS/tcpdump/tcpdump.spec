@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
+%define sha1 tcpdump=4f085cef7cd4aedc9e402021ec11e3a8b23a6926
 Group:		Networking
 Vendor:		VMware, Inc.
 Distribution:	Photon

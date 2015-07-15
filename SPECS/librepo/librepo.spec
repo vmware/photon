@@ -10,6 +10,7 @@ License:       	LGPLv2+
 URL:           	https://github.com/Tojaj/librepo/
 Group:         	System Environment/Libraries
 Source0:       	%{name}-%{version}.tar.gz
+%define sha1 librepo=a753212f721be8782c8c3aa40e450247676b7649
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	curl, gpgme, libassuan, libgpg-error

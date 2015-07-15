@@ -6,6 +6,7 @@ License:	Apache License
 Group:		System Environment/Base
 URL:		https://github.com/GoogleCloudPlatform/compute-image-packages/
 Source0:	google-daemon-%{version}.tar.gz
+%define sha1 google-daemon=4cb51288268b09f4a5d07f43d83ca34e5b714383
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	google-daemon

@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:	noarch
 Source0:	http://anduin.linuxfromscratch.org/sources/LFS/lfs-packages/conglomeration//iana-etc/%{name}-%{version}.tar.bz2
+%define sha1 iana-etc=218593bcb9264014c4e397d838b2c218eac9df06
 %description
 The Iana-Etc package provides data for network services and protocols.
 %prep

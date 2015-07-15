@@ -8,7 +8,9 @@ Release:	1%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/GoogleCloudPlatform/kubernetes
 Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.12.0/%{name}.tar.gz
+%define sha1 kubernetes.tar.gz=10d85777784f901a7476e642e7bab1776a834900
 Source1:	https://github.com/GoogleCloudPlatform/kubernetes/archive/%{commit}/kubernetes-ecca426.tar.gz
+%define sha1 kubernetes-ecca426=20cab37ca8ec5eddc0e530e5ce683ee6e8e5bb58
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon

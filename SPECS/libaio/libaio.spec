@@ -7,6 +7,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://fedorahosted.org/releases/l/i/libaio/libaio-0.3.110.tar.gz
+%define sha1 libaio=f8f6ed15f22e528f6f415939b07854539e3360e4
 Patch0:		libaio-install-to-destdir-slash-usr.patch
 
 %description

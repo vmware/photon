@@ -8,6 +8,7 @@ Group:		System Environment/General Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
+%define sha1 libxml2=eb3e2146c6d68aea5c2a4422ed76fe196f933c21
 Requires:	python2
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs

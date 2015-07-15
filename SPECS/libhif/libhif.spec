@@ -8,6 +8,7 @@ Release:   	1%{?dist}
 License:   	LGPLv2+
 URL:       	https://github.com/hughsie/libhif
 Source0:   	http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.gz
+%define sha1 libhif=7de667ee0a26f448c5a0c9f56dc5c304d7c282aa
 Vendor:		VMware, Inc.
 Distribution:	Photon
 

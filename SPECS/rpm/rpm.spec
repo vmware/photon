@@ -8,8 +8,11 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
+%define sha1 rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
 Source1:	http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
+%define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:	rpm-system-configuring-scripts-2.2.tar.gz
+%define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
 #Requires: nspr
 Requires: 	nss
 Requires: 	popt

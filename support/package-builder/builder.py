@@ -26,6 +26,7 @@ def main():
     parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
     parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Numbeer of working threads")
     parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
+    parser.add_option("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()

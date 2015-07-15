@@ -8,6 +8,7 @@ Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
+%define sha1 apr-util=72cc3ac693b52fb831063d5c0de18723bc8e0095
 BuildRequires:   apr
 BuildRequires:   openldap
 BuildRequires:   openssl

@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
+%define sha1 librelp=060097280a8f5ff3365c3455c9f12eddaa72dc10
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon

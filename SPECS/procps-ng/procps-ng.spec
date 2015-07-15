@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
+%define sha1 procps-ng=088c77631745fc75ee41fc29c254a4069be4869a
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description

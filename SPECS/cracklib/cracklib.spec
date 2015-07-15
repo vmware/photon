@@ -6,7 +6,9 @@ Version:	2.9.2
 Release:	2%{?dist}
 Group:		System Environment/Libraries
 Source:		cracklib-%{version}.tar.gz
+%define sha1 cracklib-2.9.2=a780211a87a284297aa473fe2b50584b842a0e98
 Source1:    cracklib-words-20080507.gz
+%define sha1 cracklib-words=e0cea03e505e709b15b8b950d56cb493166607da
 URL:		http://sourceforge.net/projects/cracklib/
 License:	GPL
 Vendor:     VMware, Inc.

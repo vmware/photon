@@ -8,6 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.gnupg.org/gcrypt/%{name}/%{name}-%{version}.tar.bz2
+%define sha1 gpgme=8dd7711a4de117994fe2d45879ef8a9900d50f6a
 Requires:	libassuan
 Requires:	libgpg-error
 BuildRequires:	libgpg-error

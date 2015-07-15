@@ -8,7 +8,9 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://cdn.debian.net/debian/pool/main/s/%{name}/%{name}_%{version}.orig.tar.gz
+%define sha1 shadow=6e4de75de58405d21b0377b926ae770afccd95bc
 Source1:	PAM-Configuration-Files-1.0.tar.gz
+%define sha1 PAM=018667e773afb7a6fafb03a1967202dbe9b7f232
 BuildRequires: 	cracklib
 BuildRequires: 	cracklib-devel
 Requires:   	cracklib

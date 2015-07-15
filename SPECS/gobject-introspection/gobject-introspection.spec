@@ -8,6 +8,7 @@ Group:      	Development/Libraries
 License:    	GPLv2+, LGPLv2+, MIT
 URL:        	http://live.gnome.org/GObjectIntrospection
 Source0:    	%{name}-%{version}.tar.xz
+%define sha1 gobject-introspection=eb4db77dfb7bf26e25dbfc8d03eb38be7adfb7cc
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  gettext

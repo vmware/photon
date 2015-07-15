@@ -6,6 +6,7 @@ Summary:        Awesome Python HTTP Library That's Actually Usable
 License:        Apache2
 Group:          Development/Languages/Python
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
+%define sha1 requests=f906c441be2f0e7a834cbf701a72788d3ac3d144
 
 BuildRequires: python2
 BuildRequires: python2-libs

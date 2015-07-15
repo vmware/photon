@@ -8,6 +8,7 @@ Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.50/%{name}-%{version}.tar.xz
+%define sha1 libsoup=8bd422bd5d19b5e2630bbb35dfb06354b1d56442
 BuildRequires:   glib
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection

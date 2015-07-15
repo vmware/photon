@@ -8,6 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gdbm/%{name}-%{version}.tar.gz
+%define sha1 gdbm=ce433d0f192c21d41089458ca5c8294efe9806b4
 %description
 This is a disk file format database which stores key/data-pairs in
 single files. The actual data of any record being stored is indexed

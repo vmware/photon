@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	%{name}-%{version}.tar.xz
+%define sha1 util-linux=ecf75bbb77bba874fc11fc27423aa67b395b7ae5
 BuildRequires:	ncurses-devel
 %description
 Utilities for handling file systems, consoles, partitions,

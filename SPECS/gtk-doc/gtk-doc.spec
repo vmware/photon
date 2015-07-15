@@ -5,6 +5,7 @@ Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.21/%{name}-%{version}.tar.xz
+%define sha1 gtk-doc=49b4fc9d4cf618c53f39f35f4cf2fc27b7b3dae4
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon

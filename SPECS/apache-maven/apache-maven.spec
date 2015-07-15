@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
+%define sha1 apache-maven=70301d0669bc86cd81b25a05b1daab3c6ca23595
 Requires: openjdk >= 1.8.0.45
 BuildRequires: openjdk >= 1.8.0.45, apache-ant >= 1.9.4, wget >= 1.15
 

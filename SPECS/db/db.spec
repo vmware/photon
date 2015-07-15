@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	Sleepycat License
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/%{name}-%{version}.tar.gz
+%define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Group:		Databases
 Vendor:		VMware, Inc.
 Distribution:	Photon

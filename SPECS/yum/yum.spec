@@ -5,6 +5,7 @@ Release:	2%{?dist}
 License:	GPLv2+
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
+%define sha1 yum=8ec5d339e4518a7908fd4db0721740288a3d8b6c
 URL:		http://yum.baseurl.org/
 Vendor:		VMware, Inc.
 Distribution:	Photon

@@ -5,6 +5,7 @@ Release:	2%{?dist}
 License:	BSD
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://downloads.sourceforge.net/infozip/unzip60.tar.gz
+%define sha1 unzip=abf7de8a4018a983590ed6f5cbd990d4740f8a22
 Group:		System Environment/Utilities
 Vendor:		VMware, Inc.
 Distribution: Photon

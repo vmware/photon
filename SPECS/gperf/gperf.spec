@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://freedesktop.org/wiki/Software/%{name}l/
 Source0:	http://ftp.gnu.org/gnu/gperf/%{name}-%{version}.tar.gz
+%define sha1 gperf=e32d4aff8f0c730c9a56554377b2c6d82d0951b8
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon

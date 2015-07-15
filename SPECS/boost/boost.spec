@@ -8,6 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/boost/boost_1_56_0.tar.bz2
+%define sha1 boost=f94bb008900ed5ba1994a1072140590784b9b5df
 BuildRequires:	bzip2-devel
 
 %description

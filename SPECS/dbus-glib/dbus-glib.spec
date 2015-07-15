@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License: 	AFL and GPLv2+
 Group: 		System Environment/Libraries
 Source0:	http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
+%define sha1 dbus-glib=776a0e843f5c04cb58225962d623e82f283aed68
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	glib-devel

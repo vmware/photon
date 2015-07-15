@@ -108,7 +108,6 @@ class PackageBuilder(object):
             logFileName = os.path.join(destLogPath, package + ".log")
             fileLog = os.popen('tail -n 20 ' + logFileName).read()
             self.logger.debug(fileLog)
-            self.logger.debug()
             raise e
         if chrootID is not None:
             chrUtils.destroyChroot(chrootID)

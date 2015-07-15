@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20150202/%{name}-%{version}.tar.gz
+%define sha1 libsepol=9946b1ab2f2d64edf7c4beaaf098bd916b3a7fd2
 URL:		http://www.selinuxproject.org
 Vendor:		VMware, Inc.
 Distribution:	Photon

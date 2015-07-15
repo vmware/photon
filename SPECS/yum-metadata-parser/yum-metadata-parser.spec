@@ -5,6 +5,7 @@ Name:       	yum-metadata-parser
 Version:   	1.1.4
 Release:    	1%{?dist}
 Source0:    	%{name}-%{version}.tar.gz
+%define sha1 yum-metadata-parser=044e69a04ea5ac39d79020d9e1f1a35c9dc64d9b
 License:    	GPLv2+
 Group:      	Development/Libraries
 URL:        	http://devel.linux.duke.edu/cgi-bin/viewcvs.cgi/yum-metadata-parser/

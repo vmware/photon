@@ -27,6 +27,12 @@ class Specutils(object):
             sourceNames.append(sourceName)
         return sourceNames
     
+    def getChecksums(self):
+        sourceNames=[]
+        strUtils = StringUtils()
+        pkg = self.spec.packages.get('default')
+        return pkg.checksums
+    
     def getSourceURLs(self):
         sourceNames=[]
         strUtils = StringUtils()

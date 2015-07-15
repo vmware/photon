@@ -8,6 +8,7 @@ URL:		http://sources.redhat.com/dm
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
+%define sha1 LVM2=5bd2f4c33cdf93e580ea5b8a64bc32cd77be078e
 Patch0:		lvm2-set-default-preferred_names.patch
 Patch1:		lvm2-enable-lvmetad-by-default.patch
 Patch2:		lvm2-remove-mpath-device-handling-from-udev-rules.patch

@@ -8,6 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.openssl.org/source/%{name}-%{version}.tar.gz
+%define sha1 openssl=46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f
 Patch0:		openssl-1.0.2a-fix_parallel_build-1.patch
 %description
 The OpenSSL package contains management tools and libraries relating

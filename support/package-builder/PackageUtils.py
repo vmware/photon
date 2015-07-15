@@ -5,6 +5,7 @@ import shutil
 from constants import constants
 import re
 from time import sleep
+import PullSources
 
 class PackageUtils(object):
     
@@ -100,6 +101,11 @@ class PackageUtils(object):
     def copySourcesTobuildroot(self,listSourceFiles,package,destDir):
         cmdUtils = CommandUtils()
         for source in listSourceFiles:
+            # Fetch/verify sources if sha1 not None.
+            sha1 = constants.specData.getSHA1(package, source)
+            if sha1 is not None:
+                PullSources.get(source, sha1, constants.sourcePath, constants.pullsourcesConfig)
+
             sourcePath = cmdUtils.findFile(source,constants.sourcePath)
             if sourcePath is None or len(sourcePath) == 0:
                 sourcePath = cmdUtils.findFile(source,constants.specPath)

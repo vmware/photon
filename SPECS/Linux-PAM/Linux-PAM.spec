@@ -8,6 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://linux-pam.org/library/%{name}-%{version}.tar.bz2
+%define sha1 Linux-PAM=f8ce53c67363f78d520392fa1c253c4978058be1
 %description
 The Linux PAM package contains Pluggable Authentication Modules used to 
 enable the local system administrator to choose how applications authenticate users.

@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		%{name}-%{version}.tar.xz
+%define sha1 man-db=ba27924ef024527ad562017d956ffd3375bccc8d
 Requires:	libpipeline
 Requires:	gdbm
 Requires:	xz

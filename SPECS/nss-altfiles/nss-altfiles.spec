@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	https://github.com/aperezdc/nss-altfiles/archive/%{name}-%{version}.tar.gz
+%define sha1 nss-altfiles=1dbe12033c0d166a509c267a21995c9d29b919f8
 BuildRequires: glibc-devel
 
 %description

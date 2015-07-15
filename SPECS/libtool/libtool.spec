@@ -8,6 +8,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/libtool/%{name}-%{version}.tar.gz
+%define sha1 libtool=22b71a8b5ce3ad86e1094e7285981cae10e6ff88
 %description
 It wraps the complexity of using shared libraries in a 
 consistent, portable interface.

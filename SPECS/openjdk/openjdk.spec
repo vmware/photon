@@ -10,6 +10,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 AutoReqProv: 	no
 Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJDK-%{version}-x86_64-bin.tar.xz
+%define sha1 OpenJDK=d9a073768d2ba66560ecccf46a5466d58ee0524f
 %description
 The OpenJDK package installs java class library and javac java compiler. 
 

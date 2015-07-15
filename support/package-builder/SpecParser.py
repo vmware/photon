@@ -66,6 +66,8 @@ class SpecParser(object):
                 self.readPackageHeaders(line, self.packages[currentPkg])
             elif self.isGlobalSecurityHardening(line):
                 self.readSecurityHardening(line)
+            elif self.isChecksum(line):
+                self.readChecksum(line, self.packages[currentPkg])
             else:
                 self.specAdditionalContent+=line+"\n"
             i=i+1
@@ -197,6 +199,11 @@ class SpecParser(object):
             return True
         return False
 
+    def isChecksum(self,line):
+        if re.search('^%define *sha1',line,flags=re.IGNORECASE) :
+            return True
+        return False
+
     def readHeader(self,line):
         headerSplitIndex=line.find(":")
         if(headerSplitIndex+1 == len(line) ):
@@ -315,4 +322,30 @@ class SpecParser(object):
             print "Error: Invalid security_hardening value: " + words[2]
             return False
         self.globalSecurityHardening = words[2]
+        return True;
+
+    def readChecksum(self,line,pkg):
+        strUtils = StringUtils()
+        data = line.strip();
+        words=data.split(" ")
+        nrWords = len(words)
+        if (nrWords != 3):
+            print "Error: Unable to parse line: "+line
+            return False
+        value=words[2].split("=")
+        if (len(value) != 2):
+            print "Error: Unable to parse line: "+line
+            return False
+        matchedSources=[]
+        for source in pkg.sources:
+            sourceName=strUtils.getFileNameFromURL(source)
+            if (sourceName.startswith(value[0])):
+                matchedSources.append(sourceName)
+        if (len(matchedSources) == 0):
+            print "Error: Can not find match for sha1 "+value[0]
+            return False
+        if (len(matchedSources) > 1):
+            print "Error: Too many matches in sources: "+matchedSources+" for sha1 "+value[0]
+            return False
+        pkg.checksums[sourceName] = value[1]
         return True;

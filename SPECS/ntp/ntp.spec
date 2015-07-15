@@ -8,7 +8,9 @@ Group:		System Environment/NetworkingPrograms
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
+%define sha1 ntp=4a5353a4791b6f4315a66c28d504ec6c7926b192
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/svn/blfs-bootscripts-20140919.tar.bz2
+%define sha1 blfs-bootscripts=762b68f79f84463a6b1dabb69e9dbdc2c43f32d8
 Requires:	libcap >= 2.24
 BuildRequires:	which
 BuildRequires:	libcap

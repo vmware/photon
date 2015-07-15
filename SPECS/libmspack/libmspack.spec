@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.cabextract.org.uk/libmspack/%{name}-%{version}.tar.gz
+%define sha1 libmspack=b10249bde64ca387b211fd0bd125fc360377593c
 %description
 A library that provides compression and decompression of file formats used by Microsoft
 %prep

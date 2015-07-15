@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://libestr.adiscon.com/
 Source0:	http://libestr.adiscon.com/files/download/%{name}-%{version}.tar.gz
+%define sha1 libestr=35cc717f5ae737a28140dd1472e13ce2ec317c6c
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon

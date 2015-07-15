@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://freedesktop.org/wiki/Software/%{name}l/
 Source0:	http://launchpad.net/intltool/trunk/0.50.2/+download/%{name}-%{version}.tar.gz
+%define sha1 intltool=7fddbd8e1bf94adbf1bc947cbf3b8ddc2453f8ad
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon

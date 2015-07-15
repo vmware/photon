@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
+%define sha1 readline=017b92dc7fd4e636a2b5c9265a77ccc05798c9e1
 Patch:		http://www.linuxfromscratch.org/patches/lfs/development/readline-6.3-upstream_fixes-3.patch
 BuildRequires:	ncurses-devel
 Requires:	ncurses

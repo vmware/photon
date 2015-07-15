@@ -8,7 +8,9 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
+%define sha1 iptables=85d4160537546a23a7e42bc26dd7ee62a0ede4c8
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
+%define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:	iptable_rules
 Patch1:		blfs_systemd_fixes.patch
 %description

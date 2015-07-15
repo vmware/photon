@@ -6,6 +6,7 @@ License:	Apache License
 Group:		System Environment/Base
 URL:		https://github.com/GoogleCloudPlatform/compute-image-packages/
 Source0:	google-startup-scripts-%{version}.tar.gz
+%define sha1 google-startup-scripts=2303d183a8e16f36b6ee5b5f0b8fc5e065bd0402
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	google-startup-scripts

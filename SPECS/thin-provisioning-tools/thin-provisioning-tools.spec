@@ -6,6 +6,7 @@ License:	GPLv3+
 Group:		System Environment/Base
 URL:		https://github.com/jthornber/thin-provisioning-tools
 Source0:	https://github.com/jthornber/thin-provisioning-tools/archive/thin-provisioning-tools-v%{version}.tar.gz
+%define sha1 thin-provisioning-tools=d1ccfd0d9036a22b726a4e0011f888e0fda76e56
 BuildRequires:	expat , libaio-devel, boost
 Requires:	expat, libaio
 Vendor:		VMware, Inc.

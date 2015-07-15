@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0: http://openvswitch.org/releases/%{name}-%{version}.tar.gz
+%define sha1 openvswitch=ef8854781265a7e3ea80b5070db6cac2dff704d5
 Requires: openssl
 BuildRequires: openssl openssl-devel python2 python2-devel
 BuildRequires:  python2

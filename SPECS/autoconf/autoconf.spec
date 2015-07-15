@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/autoconf/%{name}-%{version}.tar.xz
+%define sha1 autoconf=e891c3193029775e83e0534ac0ee0c4c711f6d23
 Requires:	perl
 BuildRequires:	m4
 Requires:	m4

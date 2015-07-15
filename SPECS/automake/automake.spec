@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
+%define sha1 automake=2ced676f6b792a95c5919243f81790b1172c7f5b
 BuildRequires:	autoconf
 %description
 Contains programs for generating Makefiles for use with Autoconf.

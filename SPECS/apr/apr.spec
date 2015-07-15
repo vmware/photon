@@ -8,6 +8,7 @@ Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
+%define sha1 apr=2ef2ac9a8de7f97f15ef32cddf1ed7325163d84c
 %description
 The Apache Portable Runtime.
 

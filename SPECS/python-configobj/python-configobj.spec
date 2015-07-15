@@ -6,6 +6,7 @@ License:        BSD
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/c/configobj/configobj-%{version}.tar.gz
 Source0:        configobj-%{version}.tar.gz
+%define sha1 configobj=add3ae15e3f0d2d28d37370dcad930243cb4145c
 
 BuildRequires: python2
 BuildRequires: python2-libs

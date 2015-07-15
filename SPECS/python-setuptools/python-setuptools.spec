@@ -7,6 +7,7 @@ Group: Development/Languages
 URL: https://pypi.python.org/pypi/setuptools
 
 Source0: https://pypi.python.org/packages/source/s/setuptools/setuptools-%{version}.tar.gz
+%define sha1 setuptools=427e916ad99a704af54b7aa3124bd52d4ebf04d3
 
 BuildArch: noarch
 

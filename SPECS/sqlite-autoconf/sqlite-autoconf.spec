@@ -8,6 +8,7 @@ Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://sqlite.org/2014/%{name}-%{version}.tar.gz
+%define sha1 sqlite-autoconf=a9b0a3d66fb5c2ae51ad2d8a512ca827adc7d59c
 Obsoletes:	libsqlite
 %description
 This package contains most of the static files that comprise the

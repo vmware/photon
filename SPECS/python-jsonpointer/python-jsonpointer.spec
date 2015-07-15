@@ -6,6 +6,7 @@ License:        Modified BSD License
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
 Source0:        jsonpointer-%{version}.tar.gz
+%define sha1 jsonpointer=0dff85fd348b9adb4607ec47bd419fe33094474b
 
 BuildRequires: python2
 BuildRequires: python2-libs

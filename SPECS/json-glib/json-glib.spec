@@ -5,6 +5,7 @@ Release:    	3%{?dist}
 License:    	LGPLv2+
 Group:      	Development/Libraries
 Source0:    	http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.0/%{name}-%{version}.tar.xz
+%define sha1 json-glib=e3bca16e0c9985a74ee95084ce86af18b31678b1
 URL:        	http://live.gnome.org/JsonGlib
 Vendor:		VMware, Inc.
 Distribution:	Photon

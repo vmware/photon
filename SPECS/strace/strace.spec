@@ -8,6 +8,7 @@ Group:		Development/Debuggers
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/project/strace/strace/4.10/%{name}-%{version}.tar.xz
+%define sha1 strace=5c3ec4c5a9eeb440d7ec70514923c2e7e7f9ab6c
 BuildRequires:	libacl-devel, libaio-devel
 
 %description

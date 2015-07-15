@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	LGPLv2+
 URL:		https://download.gnome.org/sources/NetworkManager/1.0/NetworkManager-1.0.2.tar.xz
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
+%define sha1 NetworkManager=e6183286935dd87a4885f187e533729a6d6a8e79
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon

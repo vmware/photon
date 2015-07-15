@@ -6,6 +6,7 @@ Group:		System Environment/Base
 License:	GPLv2+
 URL:		http://btrfs.wiki.kernel.org/index.php/Main_Page
 Source0:	https://www.kernel.org/pub/linux/kernel/people/kdave/%{name}/%{name}-%{version}.tar.gz
+%define sha1 btrfs-progs=2d279d13c51f929055a6eefa2bd95d1daf2c0a93
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	lzo-devel

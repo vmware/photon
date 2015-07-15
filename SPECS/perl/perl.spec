@@ -13,6 +13,7 @@ Group:		Development/Languages
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
+%define sha1 perl=b8b87ef46630b5a2287b86b6e0c69088da36adfd
 Provides:	perl >= 0:5.003000
 Provides:	perl(getopts.pl)
 Provides:   /bin/perl

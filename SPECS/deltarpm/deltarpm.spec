@@ -8,6 +8,7 @@ Vendor: VMware, Inc.
 Distribution: Photon
 URL: http://www.novell.com/products/linuxpackages/professional/deltarpm.html
 Source0: ftp://ftp.suse.com/pub/projects/deltarpm/deltarpm-%{version}.tar.bz2
+%define sha1 deltarpm=1f92f9ad44be7ba5a9ead5481ac7208c609e9374
 BuildRequires: rpm-devel >= 4.2
 BuildRequires: bzip2-devel
 BuildRequires: xz-devel

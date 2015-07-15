@@ -3,6 +3,7 @@ Name:		acl
 Version:	2.2.52
 Release:	1%{?dist}
 Source0:	http://download.savannah.gnu.org/releases-noredirect/acl/acl-%{version}.src.tar.gz
+%define sha1 acl=537dddc0ee7b6aa67960a3de2d36f1e2ff2059d9
 License:	GPLv2+
 Group:		System Environment/Base
 URL:		http://acl.bestbits.at/

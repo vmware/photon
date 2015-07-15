@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://prdownloads.sourceforge.net/psmisc/%{name}-%{version}.tar.gz
+%define sha1 psmisc=abdddc8d5c91251bba0f3190956ae9d05c058745
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description

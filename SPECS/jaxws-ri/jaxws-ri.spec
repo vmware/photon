@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://jax-ws.java.net/2.2.5/%{name}-%{version}.tar.gz
+%define sha1 jaxws-ri=b48b4592bd75991838d1ec003158f6b4ae05ebff
 Requires: openjdk >= 1.8.0.45
 
 %define _prefix /opt/%{name}-%{version}

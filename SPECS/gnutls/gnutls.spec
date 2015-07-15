@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.4/%{name}-%{version}.tar.xz
+%define sha1 gnutls=f29b4d763aee89c860aa5c54574778537239da08
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon

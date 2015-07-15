@@ -3,6 +3,7 @@ Name:		ostree
 Version:	2015.7
 Release:	2%{?dist}
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
+%define sha1 ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
 Source1:	91-ostree.preset
 #Patch0:		ostree_syntax_error_fix.patch
 License:	LGPLv2+

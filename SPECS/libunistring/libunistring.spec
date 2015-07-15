@@ -5,6 +5,7 @@ Release: 	1%{?dist}
 License:	LGPLv3+
 Url:		http://www.gnu.org/software/libunistring/
 Source0:	http://ftp.gnu.org/gnu/libunistring/%{name}-%{version}.tar.xz
+%define sha1 libunistring=ccb81e629380385d682b71c8e96eba4a7ef43af7
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon

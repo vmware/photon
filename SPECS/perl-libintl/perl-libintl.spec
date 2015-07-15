@@ -7,6 +7,7 @@ License:	LGPLv2+
 Group: 		Development/Libraries
 URL: 		http://search.cpan.org/dist/libintl-perl/
 Source: 	http://search.cpan.org/CPAN/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
+%define sha1 libintl-perl=da2ed849f3b3f28dc5306a2887126a55f49992cb
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires: 	perl

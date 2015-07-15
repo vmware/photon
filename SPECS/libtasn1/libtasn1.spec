@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv3+ and LGPLv2+
 URL:		http://www.gnu.org/software/libtasn1/
 Source0:	http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
+%define sha1 libtasn1=7d648928729ffd38de84fac8b94d3ae0558de472
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon

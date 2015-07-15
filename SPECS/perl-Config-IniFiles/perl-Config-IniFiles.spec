@@ -7,6 +7,7 @@ Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Config-IniFiles/
 Source0:        http://www.cpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
+%define sha1 Config-IniFiles=a84bf7ec97ffb79558b8fa5eef7b32e361ebcd15
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch

@@ -8,6 +8,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://pkgconfig.freedesktop.org/releases/%{name}-%{version}.tar.gz
+%define sha1 pkg-config=71853779b12f958777bffcb8ca6d849b4d3bed46
 %description
 Contains a tool for passing the include path and/or library paths
 to build tools during the configure and make file execution.
