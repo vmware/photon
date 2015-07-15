@@ -116,11 +116,14 @@ class IsoInstaller(object):
             license_agreement = License(self.maxy, self.maxx)
             select_disk = SelectDisk(self.maxy, self.maxx, self.install_config)
             package_selector = PackageSelector(self.maxy, self.maxx, self.install_config, options_file)
-            hostname_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, False,  'Choose the hostname for your system',
+            hostname_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, False, False, 'Choose the hostname for your system',
                 'Hostname:', 
                 2, self.install_config)
-            root_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, True,  'Set up root password',
+            root_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, True, False,  'Set up root password',
                 'Root password:', 
+                2, self.install_config)
+            confirm_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, True, True,  'Confirm root password',
+                'Confirm Root password:', 
                 2, self.install_config)
             
             items = items + [
@@ -129,6 +132,7 @@ class IsoInstaller(object):
                     (package_selector.display, True),
                     (hostname_reader.get_user_string, True),
                     (root_password_reader.get_user_string, True),
+                    (confirm_password_reader.get_user_string, False),
                  ]
         installer = Installer(self.install_config, self.maxy, self.maxx, True, rpm_path=rpm_path, log_path="/var/log", ks_config=ks_config)
         items = items + [(installer.install, False)]
