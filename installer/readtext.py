@@ -11,19 +11,19 @@ import random
 import cracklib
 from actionresult import ActionResult
 from action import Action
+from confirmwindow import ConfirmWindow
 
 class ReadText(Action):
-    def __init__(self, textwin, y, install_config, ispassword):
+    def __init__(self, maxy, maxx, textwin, y, install_config, ispassword, confirm_pass):
         self.textwin = textwin
+        self.maxy = maxy
+        self.maxx = maxx
         self.y = y
         self.install_config = install_config
         self.ispassword = ispassword
-        self.x = 0
-
-        #initialize the ----
-        dashes = '_' * (self.textwin.getmaxyx()[1] - 1)
-        self.textwin.addstr(self.y, 0, dashes)
-        self.str = ''
+        self.confirm_pass = confirm_pass;
+        
+        self.init_text()        
 
         #initialize the accepted characters
         if self.ispassword:
@@ -46,21 +46,42 @@ class ReadText(Action):
     def hide(self):
         return
     
+    def init_text(self):
+        self.x = 0;
+        #initialize the ----
+        dashes = '_' * (self.textwin.getmaxyx()[1] - 1)
+        self.textwin.addstr(self.y, 0, dashes)
+        self.str = ''
+
+        #remove the error messages
+        spaces = ' ' * (self.textwin.getmaxyx()[1] - 1)
+        self.textwin.addstr(self.y + 2, 0, spaces)
+
     def do_action(self):
+        self.init_text()
         curses.curs_set(1)
 
         while True:
             ch = self.textwin.getch(self.y, self.x)
 
             if ch in [curses.KEY_ENTER, ord('\n')]:
-                if self.ispassword:
+                if self.confirm_pass:
+                    if self.str != self.install_config['password']:
+                        curses.curs_set(0)
+                        conf_message_height = 8
+                        conf_message_width = 40
+                        conf_message_button_y = (self.maxy - conf_message_height) / 2 + 5
+                        confrim_window = ConfirmWindow(conf_message_height, conf_message_width, self.maxy, self.maxx, conf_message_button_y, "passwords don't match, please try again.", True)
+                        confrim_window.do_action()
+                        return ActionResult(False, {'goBack': True})
+                    self.install_config['password'] = self.generate_password_hash(self.str)
+                elif self.ispassword:
                     err = self.validate_password(self.str)
                     if err != self.str:
-                        spaces = ' ' * (self.textwin.getmaxyx()[1] - 1)
-                        self.textwin.addstr(self.y + 2, 0, spaces)
+                        self.init_text()
                         self.textwin.addstr(self.y + 2, 0, "Error: " + err, curses.color_pair(4))
                         continue
-                    self.install_config['password'] = self.generate_password_hash(self.str);
+                    self.install_config['password'] = self.str;
                 else:
                     if not self.validate_hostname(self.str):
                         self.textwin.addstr(self.y + 2, 0, "It should start with alpha char and ends with alpha-numeric char", curses.color_pair(4))
@@ -87,6 +108,8 @@ class ReadText(Action):
                 self.x += 1
 
     def validate_hostname(self, hostname):
+        if (hostname == None or len(hostname) == 0):
+            return False;
         return (ord(hostname[0]) in self.alpha_chars) and (hostname[-1] not in ['.', '-'])
 
     def validate_password(self, text):
