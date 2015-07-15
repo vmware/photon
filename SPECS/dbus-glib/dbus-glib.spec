@@ -11,6 +11,7 @@ BuildRequires:	glib-devel
 BuildRequires:	dbus
 Requires:	glib
 Requires:	dbus
+Provides:	pkgconfig(dbus-glib-1)
 
 %description
 The D-Bus GLib package contains GLib interfaces to the D-Bus API.
