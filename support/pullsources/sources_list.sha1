@@ -10,6 +10,7 @@ attr-2.4.47.src.tar.gz - 5060f0062baee6439f41a433325b8b3671f8d2d8
 autoconf-2.69.tar.xz - e891c3193029775e83e0534ac0ee0c4c711f6d23
 autogen-5.18.5.tar.gz - cd24a7944d646f6aaea5c7ed13018de38c45b3da
 automake-1.14.1.tar.xz - 2ced676f6b792a95c5919243f81790b1172c7f5b
+automake-1.15.tar.gz - b5a840c7ec4321e78fdc9472e476263fa6614ca1
 bash-4.3.tar.gz - 45ac3c5727e7262334f4dfadecdf601b39434e84
 bc-1.06.95.tar.bz2 - 18717e0543b1dda779a71e6a812f11b8261a705a
 bind-9.10.1-P1.tar.gz - 24a81ba458a762c27be47461301fcf336cfb1d43
@@ -131,6 +132,7 @@ libintl-perl-1.23.tar.gz - da2ed849f3b3f28dc5306a2887126a55f49992cb
 liblogging-1.0.5.tar.gz - e202bf9412747ecd384678e8b3024a4646d45c2f
 libmspack-0.4alpha.tar.gz - b10249bde64ca387b211fd0bd125fc360377593c
 libndp-1.5.tar.gz - 9e7c371d9e72f2bcbb922c1041880aba5ae386dc
+libnfsidmap-0.25.tar.gz - f52e143d33a3a8a8138be41a90f2cc956f1acea2
 libnl-3.2.25.tar.gz - b7a4981f7edf7398256d35fd3c0b87bc84ae27d1
 libpcap-1.7.2.tar.gz - 97aed0270bc201dfdeacccddc61179d27c68e42c
 libpipeline-1.2.6.tar.gz - 467d5eec21cf2f959c15866da76fcd50b7d02d64
@@ -142,6 +144,7 @@ libsigc++-2.4.0.tar.xz - 74f992ce5714e9f9d63ab698b48d79a65c0cd5be
 libsolv-0.6.6.tar.gz - dca7ddcc42932a87c5a22196c50cad549f16e414
 libsoup-2.50.0.tar.xz - 8bd422bd5d19b5e2630bbb35dfb06354b1d56442
 libtasn1-4.5.tar.gz - 7d648928729ffd38de84fac8b94d3ae0558de472
+libtirpc-0.3.2.tar.bz2 - af9b74d0c4d1499a7b1a43e396e5b7d62180ea65
 libtool-2.4.2.tar.gz - 22b71a8b5ce3ad86e1094e7285981cae10e6ff88
 libunistring-0.9.5.tar.xz - ccb81e629380385d682b71c8e96eba4a7ef43af7
 libxml2-2.9.1.tar.gz - eb3e2146c6d68aea5c2a4422ed76fe196f933c21
@@ -168,6 +171,7 @@ nano-2.2.6.tar.gz - f2a628394f8dda1b9f28c7e7b89ccb9a6dbd302a
 ncurses-5.9.tar.gz - 3e042e5f2c7223bffdaac9646a533b8c758b65b5
 nettle-3.1.1.tar.gz - 1836601393522124787e029466935408e22dd204
 NetworkManager-1.0.2.tar.xz - e6183286935dd87a4885f187e533729a6d6a8e79
+nfs-utils-1.3.2.tar.bz2 - 138ad690992d4784c05024d814a2d49ee8ebf6be
 nspr-4.10.8.tar.gz - c87c6a10e0e36866006b45c194d70cd8c67d0934
 nss-3.19.tar.gz - 5c344b28abe7e0529d58373c5005ccfc66869716
 nss-altfiles-2.19.1.tar.gz - 1dbe12033c0d166a509c267a21995c9d29b919f8

@@ -24,7 +24,7 @@
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel", "vim-extra",
                 "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "zookeeper", "fuse",
-                "nss-altfiles"]
+                "nss-altfiles","libtirpc","nfs-utils"]
 }
 
 
