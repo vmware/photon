@@ -10,7 +10,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
-%define sha1 grub=274d91e96b56a5b9dd0a07accff69dbb6dfb596b
+%define sha1 grub=b2c9227f9a54587532ae3f727d197ab112cdbbb3
 BuildRequires:	device-mapper-devel
 BuildRequires:	xz-devel
 Requires:	xz
