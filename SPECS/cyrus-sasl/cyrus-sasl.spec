@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -58,7 +58,7 @@ popd
     --enable-fast-install \
     --enable-krb4
 
-make %{?_smp_mflags}
+make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -94,5 +94,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_datadir}/licenses/%{name}/LICENSE
 %changelog
+*	Thu Jul 16 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.26-2
+-	Disabling parallel threads in make
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.26-1
 -	Initial build.	First version
