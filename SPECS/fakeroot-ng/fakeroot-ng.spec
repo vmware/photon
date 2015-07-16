@@ -1,15 +1,16 @@
-Summary:        Fools programs into thinking they are running with root permission
-Name:		fakeroot-ng
-Version:	0.18
-Release:	1%{?dist}
-License:	GPLv2+
-URL:		http://fakeroot-ng.lingnu.com/
-Source0:	http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
-Group:          System Environment/Base
-BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
+Summary:      Fools programs into thinking they are running with root permission
+Name:         fakeroot-ng
+Version:      0.18
+Release:      1%{?dist}
+License:      GPLv2+
+URL:          http://fakeroot-ng.lingnu.com/
+Source0:      http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
+%define       sha1 fakeroot-ng=288dadbd50ff36a9eb11d4bc14213c6d1beaafaa
+Group:        System Environment/Base
+BuildRoot:    %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+Group:        Development/Tools
+Vendor:       VMware, Inc.
+Distribution: Photon
 
 %description
 Fakeroot-ng is a clean re-implementation of fakeroot. The core idea 
