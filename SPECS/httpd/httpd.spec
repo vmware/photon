@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.12
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -21,27 +21,63 @@ Requires:   openssl
 %description
 The Apache HTTP Server.
 
+%package devel
+Summary: Header files for httpd
+Group: Applications/System
+Requires: httpd
+%description devel
+These are the header files of httpd.
+
+%package docs
+Summary: Help files for httpd
+Group: Applications/System
+Requires: httpd
+%description docs
+These are the help files of httpd.
+
 %prep
 %setup -q
 %build
-./configure --enable-authnz-fcgi                            \
+./configure --prefix=%{_sysconfdir}/httpd \
+            --exec-prefix=%{_prefix} \
+            --bindir=%{_bindir}                             \
+            --sbindir=%{_sbindir}                           \
+            --mandir=%{_mandir}                             \
+            --libdir=%{_libdir}                             \
+            --sysconfdir=%{_sysconfdir}/httpd/conf          \
+            --includedir=%{_includedir}/httpd               \
+            --libexecdir=%{_libdir}/httpd/modules           \
+            --enable-authnz-fcgi                            \
             --enable-mods-shared="all cgi"                  \
             --enable-mpms-shared=all                        \
-            --enable-suexec=shared                          \
             --with-apr=%{_prefix}                           \
-            --with-apr-util=%{_prefix}                      \
-            --with-suexec-bin=/usr/lib/httpd/suexec         \
-            --with-suexec-caller=apache                     \
-            --with-suexec-docroot=/srv/www                  \
-            --with-suexec-logfile=/var/log/httpd/suexec.log \
-            --with-suexec-uidmin=100                        \
-            --with-suexec-userdir=public_html
+            --with-apr-util=%{_prefix}
 
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install &&
+make DESTDIR=%{buildroot} install
 
+install -vdm755 %{buildroot}/usr/lib/systemd/system
+
+cat << EOF >> %{buildroot}/usr/lib/systemd/system/httpd.service
+[Unit]
+Description=The Apache HTTP Server
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=notify
+
+ExecStart=/usr/sbin/httpd $OPTIONS -DFOREGROUND
+ExecReload=/usr/sbin/httpd $OPTIONS -k graceful
+KillSignal=SIGWINCH
+KillMode=mixed
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
 
 %post
 /sbin/ldconfig
@@ -53,11 +89,6 @@ if ! getent passwd apache >/dev/null; then
         -s /bin/false -u 25 apache
 fi
 
-mv -v /usr/sbin/suexec /usr/lib/httpd/suexec
-chgrp apache           /usr/lib/httpd/suexec &&
-chmod 4754             /usr/lib/httpd/suexec &&
-chown -v -R apache:apache /srv/www
-
 %postun
 /sbin/ldconfig
 if getent passwd apache >/dev/null; then
@@ -67,10 +98,30 @@ if getent group apache >/dev/null; then
     groupdel apache
 fi
 
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+
+%files docs
+%defattr(-,root,root)
+%{_sysconfdir}/httpd/manual/*
+
 %files
 %defattr(-,root,root)
-/usr/local/*
+%{_libdir}/*
+%{_bindir}/*
+%{_sbindir}/*
+%{_datadir}/*
+%{_sysconfdir}/httpd/build/*
+%{_sysconfdir}/httpd/cgi-bin/*
+%{_sysconfdir}/httpd/conf/*
+%{_sysconfdir}/httpd/error/*
+%{_sysconfdir}/httpd/htdocs/*
+%{_sysconfdir}/httpd/icons/*
+
 
 %changelog
+*   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-2
+-   Added service file. Changed installation paths.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-1
 -   Initial build. First version
