@@ -159,6 +159,7 @@ make-4.0.tar.bz2 - c819622dc84e2290c351646b8a0ec4df0df12bb6
 man-db-2.6.6.tar.xz - ba27924ef024527ad562017d956ffd3375bccc8d
 man-pages-3.59.tar.xz - 76eae3fb069a6df2195081408e7ea2784722385b
 mercurial-3.1.2.tar.gz - ae7e16454cee505da895c2497f09711f35287459
+mesos-0.22.1.tar.gz - 599c09d83ee69804cd12936c8c3df57f45f30b4d
 mkinitcpio-18.tar.gz - 0e124990118d170f6852efe46d889b5adae6dfd6
 Module-Install-1.14.tar.gz - 255bff1bdf9e7b0f67eff15d0b4d52662c0f67d7
 Module-ScanDeps-1.18.tar.gz - f12767be803f28e685be29e6bc9430361179de09
@@ -212,6 +213,7 @@ shadow_4.1.5.1.orig.tar.gz - 6e4de75de58405d21b0377b926ae770afccd95bc
 six-1.9.0.tar.gz - d168e6d01f0900875c6ecebc97da72d0fda31129
 sqlite-autoconf-3080301.tar.gz - a9b0a3d66fb5c2ae51ad2d8a512ca827adc7d59c
 strace-4.10.tar.xz - 5c3ec4c5a9eeb440d7ec70514923c2e7e7f9ab6c
+subversion-1.8.13.tar.gz - 437cf662b7ed27d2254aa7ca334fdd74b49262ef
 sudo-1.8.11p1.tar.gz - 3c442d59c0e112d4a43ffba434580e93fe1a766f
 swig-3.0.5.tar.gz - 271813b317e4836853d2249fc8ce2df34c2a062a
 syslog-ng_3.6.2.tar.gz - 36eeaf920383ee8cb1c17d945205b7562f9fbbb2
