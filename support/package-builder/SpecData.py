@@ -91,7 +91,7 @@ class SerializableSpecObjectsUtils(object):
         
     def getSHA1(self, package, source):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].checksums[source]
+        return self.mapSerializableSpecObjects[specName].checksums.get(source)
 
     def getPackages(self, package):
         specName=self.getSpecName(package)

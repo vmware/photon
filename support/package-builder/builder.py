@@ -10,6 +10,7 @@ import json
 import sys
 from SpecUtils import Specutils
 import collections
+import traceback
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -121,6 +122,8 @@ def main():
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
+        # print stacktrace
+        traceback.print_exc()
         sys.exit(1)
     
     sys.exit(0)
