@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://apache.mirrors.lucidnetworks.net/mesos/%{name}-%{version}.tar.gz
+%define sha1 mesos=599c09d83ee69804cd12936c8c3df57f45f30b4d
 Requires:	openjdk >= 1.8.0.45
 Requires:	expat
 BuildRequires:	openjdk >= 1.8.0.45

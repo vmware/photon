@@ -8,6 +8,7 @@ Group:      	Utilities/System
 Vendor:     	VMware, Inc.
 Distribution: 	Photon
 Source0:        http://archive.apache.org/dist/subversion/%{name}-%{version}.tar.gz
+%define sha1 subversion=437cf662b7ed27d2254aa7ca334fdd74b49262ef
 Requires:   	apr
 Requires:   	apr-util
 BuildRequires: 	apr
