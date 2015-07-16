@@ -23,15 +23,17 @@ class ReadText(Action):
         self.ispassword = ispassword
         self.confirm_pass = confirm_pass;
         
-        self.init_text()        
+        self.textwin_width = self.textwin.getmaxyx()[1] - 1
+        self.visible_text_width = self.textwin_width - 1
+
+        self.init_text()
+        self.maxlength = 255        
 
         #initialize the accepted characters
         if self.ispassword:
-            self.maxlength = self.textwin.getmaxyx()[1] - 2
             # Adding all the letters
             self.accepted_chars = range(33, 127)
         else:
-            self.maxlength = 24
 
             self.alpha_chars = range(65, 91)
             self.alpha_chars.extend(range(97,123))
@@ -49,12 +51,12 @@ class ReadText(Action):
     def init_text(self):
         self.x = 0;
         #initialize the ----
-        dashes = '_' * (self.textwin.getmaxyx()[1] - 1)
+        dashes = '_' * self.textwin_width
         self.textwin.addstr(self.y, 0, dashes)
         self.str = ''
 
         #remove the error messages
-        spaces = ' ' * (self.textwin.getmaxyx()[1] - 1)
+        spaces = ' ' * self.textwin_width
         self.textwin.addstr(self.y + 2, 0, spaces)
 
     def do_action(self):
@@ -62,7 +64,11 @@ class ReadText(Action):
         curses.curs_set(1)
 
         while True:
-            ch = self.textwin.getch(self.y, self.x)
+            if len(self.str) > self.visible_text_width:
+                curs_loc = self.visible_text_width
+            else:
+                curs_loc = len(self.str)
+            ch = self.textwin.getch(self.y, curs_loc)
 
             if ch in [curses.KEY_ENTER, ord('\n')]:
                 if self.confirm_pass:
@@ -94,18 +100,24 @@ class ReadText(Action):
                 return ActionResult(False, None)
             elif ch == 127:
                 # Handle the backspace case
-                self.x -= 1
-                if self.x < 0:
-                    self.x = 0
-                self.textwin.addch(self.y, self.x, ord('_'))
                 self.str = self.str[:len(self.str) - 1]
-            elif self.x < self.maxlength and ch in self.accepted_chars:
-                if (self.ispassword):
-                    self.textwin.echochar(ord('*'))
-                else:
-                    self.textwin.echochar(ch)
+
+                update_text = True
+
+            elif len(self.str) < self.maxlength and ch in self.accepted_chars:
                 self.str += chr(ch)
-                self.x += 1
+                update_text = True
+
+            if update_text:
+                if len(self.str) > self.visible_text_width:
+                    text = self.str[-self.visible_text_width:]
+                else:
+                    text = self.str
+                if self.ispassword:
+                    text = '*' * len(text)
+                # Add the dashes
+                text = text + '_' * (self.visible_text_width - len(self.str))
+                self.textwin.addstr(self.y, 0, text)
 
     def validate_hostname(self, hostname):
         if (hostname == None or len(hostname) == 0):
