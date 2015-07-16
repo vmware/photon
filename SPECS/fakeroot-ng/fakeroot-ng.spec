@@ -1,7 +1,7 @@
 Summary:        Fools programs into thinking they are running with root permission
 Name:		fakeroot-ng
 Version:	0.18
-Release:	0.1%{?dist}
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://fakeroot-ng.lingnu.com/
 Source0:	http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
