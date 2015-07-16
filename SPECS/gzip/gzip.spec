@@ -8,6 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/gzip/%{name}-%{version}.tar.xz
+%define sha1 gzip=05bd01fc90178b806e0c13f9526e2ad392084085
 %description
 The Gzip package contains programs for compressing and
 decompressing files.

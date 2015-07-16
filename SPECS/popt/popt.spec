@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://anduin.linuxfromscratch.org/BLFS/svn/p/%{name}-%{version}.tar.gz
+%define sha1 popt=cfe94a15a2404db85858a81ff8de27c8ff3e235e
 %description
 The popt package contains the popt libraries which are used by
 some programs to parse command-line options.

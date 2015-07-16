@@ -70,6 +70,7 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_micro.json \
+		-c $(PHOTON_BINTRAY_CONFIG) \
                 -t ${THREADS}
 
 minimal: minimal-iso
@@ -96,6 +97,7 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
+		-c $(PHOTON_BINTRAY_CONFIG) \
                 -t ${THREADS}
 
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
@@ -120,6 +122,7 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
+		-c $(PHOTON_BINTRAY_CONFIG) \
                 -t ${THREADS}
 
 tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
@@ -134,6 +137,7 @@ tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
                 -t ${THREADS} \
+		-c $(PHOTON_BINTRAY_CONFIG) \
                 -m stage1
 
 tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
@@ -148,6 +152,7 @@ tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
                 -t ${THREADS} \
+		-c $(PHOTON_BINTRAY_CONFIG) \
                 -m stage2
 
 
@@ -159,10 +164,7 @@ packages-cached:
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/x86_64/* $(PHOTON_RPMS_DIR_X86_64)/
 
 sources:
-	@echo "Pulling sources from bintray..."
-	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
-	 cd $(PHOTON_PULL_SOURCES_DIR) && \
-	 $(PHOTON_PULL_SOURCES) -c $(PHOTON_BINTRAY_CONFIG) -s $(PHOTON_SOURCES_LIST) $(PHOTON_SRCS_DIR)
+	@echo "Pulling sources from bintray...(nothing to do)"
 
 sources-cached:
 	@echo "Using cached SOURCES..."
@@ -308,6 +310,7 @@ check-packer-ovf-plugin:
                               -r $(PHOTON_RPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -c $(PHOTON_BINTRAY_CONFIG) \
                               -l $(PHOTON_LOGS_DIR)
 
 $(TOOLS_BIN):
@@ -316,8 +319,4 @@ $(TOOLS_BIN):
 $(CONTAIN): $(TOOLS_BIN)
 	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@_unpriv
 	sudo install -o root -g root -m 4755 $@_unpriv $@
-
-sha1:
-	@cd $(PHOTON_SRCS_DIR) && \
-		sha1sum * | awk '{print $$2" - "$$1}' > $(PHOTON_SOURCES_LIST)
 

@@ -6,6 +6,7 @@ Release:	1%{?dist}
 License:	GPL+ or Artistic
 URL:		http://search.cpan.org/dist/List-MoreUtils/
 Source0:	http://search.cpan.org/CPAN/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz
+%define sha1 List-MoreUtils=e72c962a78850f08212df5d9bd0b0b59b5a3caa4
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	perl

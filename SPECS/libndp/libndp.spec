@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://www.libndp.org/
 Source:		http://www.libndp.org/files/%{name}-%{version}.tar.gz
+%define sha1 libndp=9e7c371d9e72f2bcbb922c1041880aba5ae386dc
 Group:		System Environment/Libraries
 
 %description

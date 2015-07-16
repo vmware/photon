@@ -9,6 +9,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
+%define sha1 gcc=810fb70bd721e1d9f446b6503afe0a9088b62986
 Requires:	libstdc++-devel
 Requires:	libgcc-devel
 Requires:	libgomp-devel

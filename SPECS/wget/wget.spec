@@ -8,6 +8,7 @@ Group:		System Environment/NetworkingPrograms
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
+%define sha1 wget=e9fb1d25fa04f9c69e74e656a3174dca02700ba1
 Requires:	openssl
 BuildRequires:	openssl-devel
 %description

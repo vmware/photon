@@ -10,6 +10,7 @@ import json
 import sys
 from SpecUtils import Specutils
 import collections
+import traceback
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -26,6 +27,7 @@ def main():
     parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
     parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Numbeer of working threads")
     parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
+    parser.add_option("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -120,6 +122,8 @@ def main():
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
+        # print stacktrace
+        traceback.print_exc()
         sys.exit(1)
     
     sys.exit(0)

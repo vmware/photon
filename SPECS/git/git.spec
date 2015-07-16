@@ -8,6 +8,7 @@ Group:		System Environment/Programming
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
+%define sha1 git=b0d38bf2161286f2039a9a2adb4c8f7e5308e824
 BuildRequires:  curl
 BuildRequires:	python2
 BuildRequires:	python2-libs

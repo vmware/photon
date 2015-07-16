@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://download.savannah.gnu.org/releases/libpipeline/%{name}-%{version}.tar.gz
+%define sha1 libpipeline=467d5eec21cf2f959c15866da76fcd50b7d02d64
 %description
 Contains a library for manipulating pipelines of sub processes
 in a flexible and convenient way.

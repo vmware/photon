@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
+%define sha1 bison=aeb1e3544007124009e5203afe86a5676580d444
 BuildRequires:	m4
 Requires:	m4
 BuildRequires:	flex

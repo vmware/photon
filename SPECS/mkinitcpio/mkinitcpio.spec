@@ -8,6 +8,7 @@ Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
+%define sha1 mkinitcpio=0e124990118d170f6852efe46d889b5adae6dfd6
 BuildRequires: asciidoc
 BuildRequires: python2-libs
 BuildRequires: docbook-xsl

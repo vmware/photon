@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	tar/%{name}-%{version}.tar.xz
+%define sha1 tar=5ce4233e1774e990b930f3c46990267b28448962
 Patch0:		tar-1.27.1-manpage-1.patch
 %description
 Contains GNU archiving program

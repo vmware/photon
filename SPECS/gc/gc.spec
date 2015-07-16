@@ -5,7 +5,9 @@ Release:	1%{?dist}
 License:	BSD
 Url:		http://www.hboehm.info/gc/
 Source0:	http://www.hboehm.info/gc/gc_source/%{name}-%{version}.tar.gz
+%define sha1 gc=cd4a54620c38a2c361b3ee99dd134dbffb57c313
 Source1:	http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-7.4.2.tar.gz
+%define sha1 libatomic_ops=57cd7c64e37fca300bd7b24e3d2f14129b25b376
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon

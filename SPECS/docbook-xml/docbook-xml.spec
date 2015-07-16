@@ -5,6 +5,7 @@ Release:	3%{?dist}
 License:	MIT
 URL:		http://www.docbook.org
 Source0:	http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
+%define sha1 docbook-xml=b9124233b50668fb508773aa2b3ebc631d7c1620
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon

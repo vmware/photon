@@ -5,6 +5,7 @@ Release:	2%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.2/%{name}-%{version}.tar.gz
+%define sha1 cmake=53c1fe2aaae3b2042c0fe5de177f73ef6f7b267f
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon

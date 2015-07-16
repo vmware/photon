@@ -6,6 +6,7 @@ Release:	1%{?dist}
 License:	BSD
 Group:		System Environment/Shells
 Source:		http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.gz
+%define sha1 tcsh=eee2035645737197ff8059c84933a75d23cd76f9
 URL:		http://www.tcsh.org/
 Vendor:		VMware, Inc.
 Distribution: 	Photon

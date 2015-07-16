@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
+%define sha1 libcap=b2754cddb614567de445ffdaac7a00b9671b858a
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon

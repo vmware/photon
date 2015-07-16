@@ -8,6 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
+%define sha1 grep=c7e6525c5c5aaa1bc3c1774db1697f42b11c2d85
 Patch0:     out-of-bound-heap-read-CVE-2015-1345.patch
 %description
 The Grep package contains programs for searching through files.

@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/libsigc++/2.4/%{name}-%{version}.tar.xz
+%define sha1 libsigc=74f992ce5714e9f9d63ab698b48d79a65c0cd5be
 %description
 My lib
 %prep

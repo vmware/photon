@@ -8,6 +8,7 @@ Group:		System Environment/Daemons
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://my.balabit.com/downloads/syslog-ng/open-source-edition/%{version}/source/%{name}_%{version}.tar.gz
+%define sha1 syslog-ng=36eeaf920383ee8cb1c17d945205b7562f9fbbb2
 Requires:	glib
 Requires:	python2
 BuildRequires:	eventlog

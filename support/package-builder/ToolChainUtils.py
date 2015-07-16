@@ -5,6 +5,7 @@ from PackageUtils import PackageUtils
 from constants import constants
 import subprocess
 import os.path
+import traceback
 
 class ToolChainUtils(object):
     
@@ -146,12 +147,13 @@ class ToolChainUtils(object):
                 chrUtils.destroyChroot(chrootID)
                 chrootID=None
             self.logger.info("Successfully built toolchain")
-        except Exception as e:
-            self.logger.error("Unable to build tool chain.")
-            raise e
-        finally:
             if chrootID is not None:
                 chrUtils.destroyChroot(chrootID)
+        except Exception as e:
+            self.logger.error("Unable to build tool chain.")
+            # print stacktrace
+            traceback.print_exc()
+            raise e
                 
     def installToolChainRPMS(self,chrootID):
         cmdUtils = CommandUtils()

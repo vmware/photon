@@ -11,8 +11,10 @@ Group:        System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v3.x/%{name}-%{version}.tar.xz
+%define sha1 linux=10a25ca5b6d93db78adc9caf13f7ad7cb4b79c61
 #Source1:    config-%{version}-generic.amd64
 Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.10.0/open-vm-tools-9.10.0.tar.gz
+%define sha1 open-vm-tools=958c40c8038d52947680444f507f693825d358be
 Patch0:        vmhgfs_fix_3.19.patch
 BuildRequires:    bc
 BuildRequires:    kbd

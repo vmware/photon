@@ -7,6 +7,7 @@ Group: Development/Libraries
 URL: http://pyyaml.org/wiki/LibYAML
 
 Source0: http://pyyaml.org/download/libyaml/yaml-%{version}.tar.gz
+%define sha1 yaml=f3d404e11bec3c4efcddfd14c42d46f1aabe0b5d
 
 %description
 LibYAML is a C library implementation of a YAML 1.1 parser and emitter.

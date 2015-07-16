@@ -8,6 +8,7 @@ Group:		Applications/Text
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/groff/%{name}-%{version}.tar.gz
+%define sha1 groff=37223941e25bb504bf54631daaabb01b147dc1d3
 %description
 The Groff package contains programs for processing
 and formatting text.

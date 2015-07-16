@@ -19,6 +19,7 @@ BuildRequires:	openssl-devel
 
 BuildRequires:	librepo-devel
 Source0:	%{name}-%{version}.tar.gz
+%define sha1 tdnf=bff1ffdce4f7c319c06da3a76f8be70f76be1246
 
 %description
 tdnf is a yum/dnf equivalent

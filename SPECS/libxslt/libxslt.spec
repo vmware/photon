@@ -8,6 +8,7 @@ Group:		System Environment/General Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
+%define sha1 libxslt=4df177de629b2653db322bfb891afa3c0d1fa221
 Requires:	libxml2-devel
 BuildRequires:	libxml2-devel
 BuildRequires:	python2

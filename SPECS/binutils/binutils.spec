@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
+%define sha1 binutils=b46cc90ebaba7ffcf6c6d996d60738881b14e50d
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.

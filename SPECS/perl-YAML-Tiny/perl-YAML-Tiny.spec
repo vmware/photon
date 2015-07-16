@@ -7,6 +7,7 @@ License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML-Tiny/
 Source0:        http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/YAML-Tiny-%{version}.tar.gz
+%define sha1 YAML-Tiny=7fb62ca3dce1ba0310e31946d4a66ef14952e7fc
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch

@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.42/%{name}-%{version}.tar.xz
+%define sha1 glib=f5168a7adffad3620ff3f1b3d6ff6d0ad3f0752e
 BuildRequires:	pcre-devel
 BuildRequires:	libffi
 BuildRequires:	pkg-config

@@ -8,6 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha1 krb5=6f24800d48d36a33305387a9b6340884b05573b1
 Requires:	openssl
 Requires:	e2fsprogs-devel
 BuildRequires: 	openssl-devel

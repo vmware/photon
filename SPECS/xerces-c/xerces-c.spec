@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.apache.org/dist/xerces/c/3/sources/%{name}-%{version}.tar.gz
+%define sha1 xerces-c=177ec838c5119df57ec77eddec9a29f7e754c8b2
 %description
 Xerces-C++ is a validating XML parser written in a portable subset of C++
 %package	devel

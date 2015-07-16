@@ -8,6 +8,7 @@ Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
+%define sha1 libarchive=6a991777ecb0f890be931cec4aec856d1a195489
 
 %description
 Multi-format archive and compression library

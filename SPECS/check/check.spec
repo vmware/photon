@@ -5,6 +5,7 @@ Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://check.sourceforge.net/
 Source0:	http://sourceforge.net/projects/check/files/latest/download/%{name}-%{version}.tar.gz
+%define sha1 check=4b79e2d485d014ddb438e322b64235347d57b0ff
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon

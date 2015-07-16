@@ -6,6 +6,7 @@ Release:	2%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 Source0:	elfutils-%{version}.tar.bz2
+%define sha1 elfutils=09adbbf0f3a35bb1bcb77c2eaa40de8d3443af4d
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Obsoletes:	libelf libelf-devel

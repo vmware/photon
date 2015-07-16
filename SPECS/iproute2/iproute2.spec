@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
+%define sha1 iproute2=9397376e5d4dcbb1182745cd58625895fcdb868d
 %description
 The IPRoute2 package contains programs for basic and advanced
 IPV4-based networking.

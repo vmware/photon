@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
+%define sha1 bash=45ac3c5727e7262334f4dfadecdf601b39434e84
 Patch0:		http://www.linuxfromscratch.org/patches/downloads/bash/bash-4.3-upstream_fixes-7.patch
 Provides:	/bin/sh
 Provides:	/bin/bash

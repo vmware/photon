@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.xz
+%define sha1 patch=433184d0ca43770f28b3de1d5e9da518a7ac7c50
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon

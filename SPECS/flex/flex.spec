@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://prdownloads.sourceforge.net/flex/%{name}-%{version}.tar.bz2
+%define sha1 flex=5214d963dfac14e0607ae36b68076dfef71fdd40
 BuildRequires:	m4
 Requires:	m4
 %description

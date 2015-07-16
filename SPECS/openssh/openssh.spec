@@ -8,7 +8,9 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+%define sha1 openssh=b850fd1af704942d9b3c2eff7ef6b3a59b6a6b6e
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
+%define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Patch1:		blfs_systemd_fixes.patch
 Requires:	openssl
 Requires:	Linux-PAM

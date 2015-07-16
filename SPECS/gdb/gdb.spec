@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
+%define sha1 gdb=67cfbc6efcff674aaac3af83d281cf9df0839ff9
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon

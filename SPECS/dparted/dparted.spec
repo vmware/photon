@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
+%define sha1 dparted=7a2686dd56d86d1a696982e4061cf66cc8963409
 Requires:	python2 >= 2.7
 BuildRequires:	parted
 BuildRequires:	glibmm-devel

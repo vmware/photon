@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gmp/%{name}-%{version}.tar.xz
+%define sha1 gmp=12cfe0911d64fcbd85835df9ddc18c99af8f9a45
 %description
 The GMP package contains math libraries. These have useful functions
 for arbitrary precision arithmetic.

@@ -8,6 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://tukaani.org/xz/%{name}-%{version}.tar.xz
+%define sha1 xz=56f1d78117f0c32bbb1cfd40117aa7f55bee8765
 %description
 The Xz package contains programs for compressing and
 decompressing files

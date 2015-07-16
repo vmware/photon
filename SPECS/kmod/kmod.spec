@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.kernel.org/pub/linux/utils/kernel/kmod/%{name}-%{version}.tar.xz
+%define sha1 kmod=1b3e8066208098b3b9593b63bff5838a41bbdfb0
 BuildRequires:	xz-devel
 Requires:	xz
 %description

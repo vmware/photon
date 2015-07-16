@@ -11,6 +11,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
+%define sha1 glibc=1157be3fe63baa81b7ba104a103337775a6ed06f
 Patch0:		glibc-2.21-fhs-1.patch
 Provides:	rtld(GNU_HASH)
 Requires:   filesystem

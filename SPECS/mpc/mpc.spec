@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://www.multiprecision.org/mpc/download/%{name}-%{version}.tar.gz
+%define sha1 mpc=5072d82ab50ec36cc8c0e320b5c377adb48abe70
 %description
 The MPC package contains a library for the arithmetic of complex
 numbers with arbitrarily high precision and correct rounding of

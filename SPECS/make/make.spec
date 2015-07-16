@@ -8,6 +8,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/make/%{name}-%{version}.tar.bz2
+%define sha1 make=c819622dc84e2290c351646b8a0ec4df0df12bb6
 %description
 The Make package contains a program for compiling packages.
 %prep

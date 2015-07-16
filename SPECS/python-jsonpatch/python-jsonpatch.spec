@@ -6,6 +6,7 @@ License:        Modified BSD License
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/j/jsonpatch/jsonpatch-%{version}.tar.gz
 Source0:        jsonpatch-%{version}.tar.gz
+%define sha1 jsonpatch=b45d37d581315e423451a9f0ea8dc091b6138254
 
 BuildRequires: python2
 BuildRequires: python2-libs

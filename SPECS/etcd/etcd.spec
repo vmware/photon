@@ -8,6 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://github.com/coreos/etcd/releases/download/v2.0.4/%{name}-v%{version}-linux-amd64.tar.gz
+%define sha1 etcd=1aa350cfa94f8dccb855c4f9b1bbcda5eeddc6d0
 Requires:	shadow
 %description
 A highly-available key value store for shared configuration and service discovery.

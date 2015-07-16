@@ -6,6 +6,7 @@ Group:          System Environment/Libraries
 License:        GPLv2+
 URL:            http://www.oberhumer.com/opensource/lzo/
 Source0:        http://www.oberhumer.com/opensource/lzo/download/%{name}-%{version}.tar.gz
+%define sha1 lzo=e2a60aca818836181e7e6f8c4f2c323aca6ac057
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  zlib-devel

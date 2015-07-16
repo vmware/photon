@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.gz
+%define sha1 gettext=a2dc46d788edb0078ab20da7bd194bdb6da2f0d9
 %description
 These allow programs to be compiled with NLS
 (Native Language Support), enabling them to output

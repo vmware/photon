@@ -8,6 +8,7 @@ Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/%{name}-%{version}.tar.gz
+%define sha1 expat=b08197d146930a5543a7b99e871cba3da614f6f0
 %description
 The Expat package contains a stream oriented C library for parsing XML.
 %prep

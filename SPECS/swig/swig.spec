@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv3+ and BSD
 URL:		http://swig.sourceforge.net/
 Source0:	http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz
+%define sha1 swig=271813b317e4836853d2249fc8ce2df34c2a062a
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	pcre-devel

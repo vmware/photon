@@ -6,6 +6,7 @@ License:	GPL+
 Group:		System Environment/Base
 URL:		http://christophe.varoqui.free.fr/
 Source0:	http://christophe.varoqui.free.fr/multipath-tools/multipath-tools-0.5.0.tar.bz2
+%define sha1 multipath-tools=dcd889c09bcb1f2b89900838da6ac1ed970104cb
 BuildRequires:	libaio-devel
 BuildRequires:	device-mapper-devel
 BuildRequires:	libselinux-devel

@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.zlib.net/%{name}-%{version}.tar.xz
+%define sha1 zlib=b598beb7acc96347cbd1020b71aef7871d374677
 %description
 Compression and decompression routines
 %package	devel

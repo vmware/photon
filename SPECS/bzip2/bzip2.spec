@@ -8,6 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://www.bzip.org/%{version}/%{name}-%{version}.tar.gz
+%define sha1 bzip2=3f89f861209ce81a6bab1fd1998c0ef311712002
 Patch0:		http://www.linuxfromscratch.org/patches/lfs/7.2/bzip2-1.0.6-install_docs-1.patch
 %description
 The Bzip2 package contains programs for compressing and

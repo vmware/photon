@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.altlinux.org/pub/people/legion/kbd/%{name}-%{version}.tar.gz
+%define sha1 kbd=8d7d6f9fc95d8abb80156da0713a4cbc0dbfda97
 Patch0:		kbd-2.0.1-backspace-1.patch
 BuildRequires:	check >= 0.9.4
 %description

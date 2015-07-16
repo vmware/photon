@@ -35,6 +35,7 @@ class Package(object):
         self.basePkgName=""
         
         self.sources=[]
+        self.checksums={}
         self.patches=[]
         self.buildrequires=[]
         self.buildprovides=[]

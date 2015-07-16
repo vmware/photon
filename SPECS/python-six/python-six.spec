@@ -6,6 +6,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
 Source0:        six-%{version}.tar.gz
+%define sha1 six=d168e6d01f0900875c6ecebc97da72d0fda31129
 
 BuildRequires: python2
 BuildRequires: python2-libs

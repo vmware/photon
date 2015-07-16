@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://pkgs.fedoraproject.org/repo/pkgs/xml-security-c/xml-security-c-1.5.1.tar.gz/2c47c4ec12e8d6abe967aa5e5e99000c/%{name}-%{version}.tar.gz
+%define sha1 xml-security-c=e51d3dca7f32cfcc2090d4d20cf8a1d032d95d79
 Requires:	openssl
 Requires:	xerces-c
 BuildRequires:	openssl-devel

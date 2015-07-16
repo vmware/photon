@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License: 	BSD
 URL:     	http://www.liblogging.org/
 Source0: 	http://download.rsyslog.com/liblogging/liblogging-%{version}.tar.gz
+%define sha1 liblogging=e202bf9412747ecd384678e8b3024a4646d45c2f
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon

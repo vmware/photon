@@ -6,6 +6,7 @@ License:	Apache License
 Group:		System Environment/Base
 URL:		http://photon.org
 Source:		photon-release-%{version}.tar.gz
+%define sha1 photon-release=88312b408fcfc626acf0c13002c1a87cc384a9ff
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-release

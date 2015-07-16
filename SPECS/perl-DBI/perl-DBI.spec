@@ -19,6 +19,7 @@ URL:            http://dbi.perl.org/
 # license is not a FSF free license. 
 # Source0:        http://www.cpan.org/authors/id/T/TI/TIMB/DBI-%{version}.tar.gz
 Source0:        DBI-%{version}_repackaged.tar.gz
+%define sha1 DBI=82fcc8e2b5180941cf8d38e655d5d98f86a29ca4
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  perl

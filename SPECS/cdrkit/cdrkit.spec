@@ -7,6 +7,7 @@ Group: 		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0: 	%{name}-%{version}.tar.gz
+%define sha1 cdrkit=3f7ddc06db0272942e1a4cd98c3c96462df77387
 URL:  		http://gd.tuwien.ac.at/utils/schilling/cdrtools/
 BuildArchitectures: x86_64
 Requires: 	bash

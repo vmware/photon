@@ -8,6 +8,7 @@ Release: 	1.0%{?dist}
 # It doesn't follow the Github guidelines because they only work for
 # github; the infrastructure above is generic for any git repository.
 Source0:	%{name}-%{version}.tar.gz
+%define sha1 rpm-ostree-toolbox=bd8e4b5da029990845233bceac765322c62db848
 License: 	LGPLv2+
 URL: 		https://github.com/cgwalters/rpm-ostree-toolbox
 Vendor:		VMware, Inc.

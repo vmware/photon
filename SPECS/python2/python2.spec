@@ -8,6 +8,7 @@ Group:		System Environment/Programming
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.python.org/ftp/python/2.7.9/Python-%{version}.tar.xz
+%define sha1 Python=3172f6e957713c2d9fca462cc16068222fd1b9d3
 Patch: cgi.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel

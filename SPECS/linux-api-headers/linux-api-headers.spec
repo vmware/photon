@@ -8,6 +8,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://www.kernel.org/pub/linux/kernel/v3.x/linux-%{version}.tar.xz
+%define sha1 linux=10a25ca5b6d93db78adc9caf13f7ad7cb4b79c61
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.

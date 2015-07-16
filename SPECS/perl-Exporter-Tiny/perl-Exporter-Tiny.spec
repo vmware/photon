@@ -7,6 +7,7 @@ License:	(GPL+ or Artistic) and Public Domain and (GPL+ or Artistic or CC-BY-SA)
 Group:		Development/Libraries
 URL:		http://search.cpan.org/dist/Exporter-Tiny/
 Source0:	http://search.cpan.org/CPAN/authors/id/T/TO/TOBYINK/Exporter-Tiny-%{version}.tar.gz
+%define sha1 Exporter-Tiny=3a3ac1affabcfce1d1bf8cffee2e7a8c78780e54
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:	noarch

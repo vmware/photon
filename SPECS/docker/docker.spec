@@ -8,6 +8,7 @@ Group:      Applications/File
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tar.gz
+%define sha1 docker=59a5b5eaae6966a3caa43f30c23a1a9b49edc268
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.

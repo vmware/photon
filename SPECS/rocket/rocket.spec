@@ -8,6 +8,7 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        rocket-v0.5.1.tar.gz
+%define sha1 rocket=f04027de635f9dd965cd36dd29203dc760f5840a
 
 %description
 Rocket is a CLI for running app containers, and an implementation of the App Container Spec.

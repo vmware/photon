@@ -8,6 +8,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	ttp://www.lua.org/ftp/%{name}-%{version}.tar.gz
+%define sha1 lua=926b7907bc8d274e063d42804666b40a3f3c124c
 Patch0:		lua-5.2.3-shared_library-1.patch
 BuildRequires:	readline-devel
 Requires:	readline

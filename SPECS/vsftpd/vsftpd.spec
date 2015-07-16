@@ -8,6 +8,7 @@ Group:		System Environment/Daemons
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
+%define sha1 vsftpd=f36976bb1c5df25ac236d8a29e965ba2b825ccd0
 BuildRequires:	libcap Linux-PAM openssl-devel
 Requires:	libcap Linux-PAM openssl
 %description

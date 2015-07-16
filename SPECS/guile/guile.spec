@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License: 	LGPLv3+
 URL:		http://www.gnu.org/software/guile/
 Source0: 	ftp://ftp.gnu.org/pub/gnu/guile/%{name}-%{version}.tar.gz
+%define sha1 guile=3cdd1c4956414bffadea13e5a1ca08949016a802
 Group: 		Development/Languages
 Vendor:		VMware, Inc.
 Distribution:	Photon

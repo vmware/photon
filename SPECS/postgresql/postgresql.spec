@@ -8,6 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
+%define sha1 postgresql=0086c9625e727be5b1ef00c4c694e762e41eba50
 Requires:	openssl
 Requires:	perl
 Requires: 	python2

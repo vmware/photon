@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/autogen/
 Source0:        ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.gz
+%define sha1 autogen=cd24a7944d646f6aaea5c7ed13018de38c45b3da
 Group:		System Environment/Tools
 Vendor:		VMware, Inc.
 BuildRequires:	guile-devel

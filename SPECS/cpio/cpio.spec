@@ -8,6 +8,7 @@ Group:		System Environment/System utilities
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
+%define sha1 cpio=6f1934b0079dc1e85ddff89cabdf01adb3a74abb
 %description
 The cpio package contains tools for archiving.
 %prep

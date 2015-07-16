@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
+%define sha1 cronie=bbf154a6db7c9802664d1f0397b5e7ae9a9618e4
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon

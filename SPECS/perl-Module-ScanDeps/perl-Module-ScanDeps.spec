@@ -6,6 +6,7 @@ Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 Source0:        http://search.cpan.org/CPAN/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz 
+%define sha1 Module-ScanDeps=f12767be803f28e685be29e6bc9430361179de09
 URL:            http://search.cpan.org/dist/Module-ScanDeps/
 Vendor:		VMware, Inc.
 Distribution:	Photon

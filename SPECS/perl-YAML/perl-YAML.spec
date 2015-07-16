@@ -7,6 +7,7 @@ License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
 Source0:        http://search.cpan.org/CPAN/authors/id/I/IN/INGY/YAML-%{version}.tar.gz
+%define sha1 YAML=9124d31d1cf147e11dc90950ddc7041379d07cdf
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch

@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://mirrors.gigenet.com/apache/tomcat/tomcat-7/v7.0.63/src/%{name}-%{version}.tar.gz
+%define sha1 apache-tomcat=ddd520f6df2414f10b6b0832dcacd7889f2dbff0
 Requires: openjdk >= 1.8.0.45
 
 %define _prefix /opt/%{name}-%{version}

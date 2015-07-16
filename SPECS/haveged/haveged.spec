@@ -10,6 +10,7 @@ Distribution:   Discus
 Group:          System Environment/Daemons
 URL:            http://www.irisa.fr/caps/projects/hipsor/
 Source0:        http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
+%define sha1 haveged=ab7234b7f57dbb7d500a5ab3cbf0494715ce6499
 Source1:        haveged.service
 Requires:       systemd
 

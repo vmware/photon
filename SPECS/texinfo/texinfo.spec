@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	%{name}-%{version}.tar.xz
+%define sha1 texinfo=fbbc35c5857d11d1164c8445c78b66ad6d472072
 %description
 The Texinfo package contains programs for reading, writing,
 and converting info pages.

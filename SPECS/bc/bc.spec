@@ -8,6 +8,7 @@ Group:		System Environment/base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://alpha.gnu.org/gnu/bc/%{name}-%{version}.tar.bz2
+%define sha1 bc=18717e0543b1dda779a71e6a812f11b8261a705a
 %description
 The Bc package contains an arbitrary precision numeric processing language.
 %prep

@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
+%define sha1 nss=5c344b28abe7e0529d58373c5005ccfc66869716
 Patch:		nss-3.19-standalone-1.patch
 Requires:	nspr
 Requires:	sqlite-autoconf

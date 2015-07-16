@@ -9,6 +9,7 @@ Group: 		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0: 	%{name}-%{version}.tar.gz
+%define sha1 createrepo=9dfd0e935b3180096ccd61611db3c85c968eea4f
 URL: 		http://linux.duke.edu/metadata/
 BuildArchitectures: noarch
 Requires: python2 >= 2.1, rpm-devel, rpm >= 0:4.1.1, libxml2

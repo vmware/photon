@@ -12,6 +12,7 @@ License:        MIT
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
 Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
+%define sha1 WWW-Curl=8ec7b7b39bd653539671fb02fbb7d0ff4863e636
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  perl

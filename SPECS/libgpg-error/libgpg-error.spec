@@ -7,6 +7,7 @@ License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/
 Group:		Development/Libraries
 Source0:	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/%{name}-%{version}.tar.bz2
+%define sha1 libgpg-error=ba5858b2947e7272dd197c87bac9f32caf29b256
 Vendor:		VMware, Inc.
 Distribution:	Photon
 

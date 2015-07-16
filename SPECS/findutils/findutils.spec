@@ -8,6 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/findutils/%{name}-%{version}.tar.gz
+%define sha1 findutils=e8dd88fa2cc58abffd0bfc1eddab9020231bb024
 %description
 These programs are provided to recursively search through a
 directory tree and to create, maintain, and search a database

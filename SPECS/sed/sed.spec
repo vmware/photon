@@ -8,6 +8,7 @@ Group:		Applications/Editors
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.bz2
+%define sha1 sed=f17ab6b1a7bcb2ad4ed125ef78948092d070de8f
 %description
 The Sed package contains a stream editor.
 

@@ -10,6 +10,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 URL:            ftp://ftp.gnome.org
 Source0:        ftp://ftp.gnome.org/pub/GNOME/sources/pygobject/3.10/pygobject-3.10.2.tar.xz
+%define sha1 pygobject=693cc1cb692a8f21ff27d28eaa780f5e67cafb1a
 Requires:	python2
 Requires:	gobject-introspection
 Requires:	glib-devel

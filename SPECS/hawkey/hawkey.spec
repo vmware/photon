@@ -5,6 +5,7 @@ Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://fedoraproject.org/wiki/Features/Hawkey
 Source0:	https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
+%define sha1 hawkey=4caad007e243d0fa3f4c2912bd393cc6b326b272
 Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon

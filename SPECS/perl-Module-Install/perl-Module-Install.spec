@@ -10,6 +10,7 @@ License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
 Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/Module-Install-%{version}.tar.gz
+%define sha1 Module-Install=255bff1bdf9e7b0f67eff15d0b4d52662c0f67d7
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch

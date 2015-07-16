@@ -8,6 +8,7 @@ Group:		System Environment/NetworkingLibraries
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
+%define sha1 curl=e43ddbae467ea9d5bd6be03fab5833fac8c850ca
 Requires:	ca-certificates
 BuildRequires:	ca-certificates
 Requires:	openssl

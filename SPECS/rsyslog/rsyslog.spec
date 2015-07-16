@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPLv3+ and ASL 2.0
 URL:		http://www.rsyslog.com/
 Source0:	http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
+%define sha1 rsyslog=9fddcf1121e438e5291f738bb4619230de525e50
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon

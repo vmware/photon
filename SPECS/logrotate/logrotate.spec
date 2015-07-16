@@ -5,6 +5,7 @@ Release:	1%{?dist}
 License:	GPL+
 URL:		https://fedorahosted.org/logrotate
 Source0:	https://fedorahosted.org/releases/l/o/logrotate/%{name}-%{version}.tar.gz
+%define sha1 logrotate=7ba734cd1ffa7198b66edc4bca17a28ea8999386
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon

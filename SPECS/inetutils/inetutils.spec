@@ -8,6 +8,7 @@ Group:		Applications/Communications
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/inetutils/%{name}-%{version}.tar.gz
+%define sha1 inetutils=b5aa9902e3a82bfd6e75b9aa80b72111e5418447
 %description
 The Inetutils package contains programs for basic networking.
 %prep

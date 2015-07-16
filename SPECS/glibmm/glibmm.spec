@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.42/%{name}-%{version}.tar.xz
+%define sha1 glibmm=8f316a4dfdaf49366028087085f04c0ba29cb5c2
 BuildRequires:	python2 >= 2.7
 BuildRequires:	libsigc++
 BuildRequires:	glib-devel glib-schemas

@@ -5,6 +5,7 @@ Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://itstool.org
 Source0:	http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
+%define sha1 itstool=5084a2cecca8d70d184f22d2aecf5e2cb715917f
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon

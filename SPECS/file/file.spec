@@ -8,6 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
+%define sha1 file=20fa06592291555f2b478ea2fb70b53e9e8d1f7c
 %description
 The package contains a utility for determining the type of a
 given file or files

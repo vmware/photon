@@ -8,6 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://prdownloads.sourceforge.net/libdnet/%{name}-%{version}.tar.gz
+%define sha1 libdnet=e2ae8c7f0ca95655ae9f77fd4a0e2235dc4716bf
 %description
 libdnet provides a simplified, portable interface to several low-level networking routines.
 %prep

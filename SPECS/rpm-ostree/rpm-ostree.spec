@@ -3,6 +3,7 @@ Name:           rpm-ostree
 Version:        2015.7
 Release:        1%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
+%define sha1 rpm-ostree=9a0fa260d8671d9998b5f5509de1bbadd42f7127
 License:        LGPLv2+
 URL:            https://github.com/cgwalters/rpm-ostree
 Vendor:		VMware, Inc.

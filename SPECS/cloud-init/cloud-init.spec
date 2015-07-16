@@ -6,6 +6,7 @@ Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
+%define sha1 cloud-init=9af02f68d68abce91463bec22b17964d1618e1da
 Source1:        cloud-photon.cfg
 
 Patch0:         photon-distro.patch

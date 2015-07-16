@@ -8,6 +8,7 @@ Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.gnupg.org/gcrypt/%{name}/%{name}-%{version}.tar.bz2
+%define sha1 libassuan=7cf0545955ce414044bb99b871d324753dd7b2e5
 Requires:	libgpg-error >= 1.17
 BuildRequires:	libgpg-error >= 1.17
 %description
