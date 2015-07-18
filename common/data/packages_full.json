@@ -23,7 +23,7 @@
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel", "vim-extra",
-                "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "zookeeper", "fuse", "fleet",
+                "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "syslog-ng-devel", "zookeeper", "fuse", "fleet",
                 "nss-altfiles", "apache-maven", "subversion", "mesos", "python3", "python3-libs", "python3-devel", "python3-tools"]
 }
 
