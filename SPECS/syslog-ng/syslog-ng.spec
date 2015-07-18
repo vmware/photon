@@ -1,7 +1,7 @@
 Summary:	Next generation system logger facilty
 Name:		syslog-ng
 Version:	3.6.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL + LGPL
 URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-system
 Group:		System Environment/Daemons
@@ -21,6 +21,13 @@ BuildRequires:	python2-devel
  system logging tool. It is often used to manage log messages and implement
  centralized logging, where the aim is to collect the log messages of several
  devices to a single, central log server.
+
+%package	devel
+Summary:	Header and development files for syslog-ng
+Requires:	%{name} = %{version}
+%description    devel
+ syslog-ng-devel package contains header files, pkfconfig files, and libraries
+ needed to build applications using syslog-ng APIs.
 
 %prep
 %setup -q
@@ -74,9 +81,15 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-#TODO - clean this up. split header files into -devel package
-/etc/*
+/etc/syslog-ng/*.conf
+/etc/systemd/system/syslog-ng.service
 /usr/bin/*
+/usr/lib/libsyslog-ng*
+/usr/sbin/syslog-ng
+/usr/sbin/syslog-ng-ctl
+/usr/share/man/*
+
+%files devel
 /usr/include/syslog-ng/*.h
 /usr/include/syslog-ng/compat/*.h
 /usr/include/syslog-ng/control/*.h
@@ -89,17 +102,15 @@ rm -rf %{buildroot}/*
 /usr/include/syslog-ng/stats/*.h
 /usr/include/syslog-ng/template/*.h
 /usr/include/syslog-ng/transport/*.h
-/usr/lib/libsyslog-ng*
+/usr/lib/syslog-ng/lib*.so
 /usr/lib/pkgconfig/syslog-ng.pc
-/usr/lib/syslog-ng/*.so
-/usr/sbin/syslog-ng
-/usr/sbin/syslog-ng-ctl
 /usr/share/include/scl/*
-/usr/share/man/*
 /usr/share/tools/*
 /usr/share/xsd/*
 
 %changelog
+*	Sat Jul 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-2
+-	Split headers and unshared libs over to devel package.
 *	Thu Jun 4 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-1
 -	Add syslog-ng support to photon.
 
