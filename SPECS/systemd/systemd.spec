@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -58,7 +58,9 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
             --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces    \
             --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services \
             --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
-	    --enable-compat-libs
+	    --enable-compat-libs \
+	    --with-sysvinit-path=/etc/rc.d/init.d \
+	    --with-rc-local-script-path-start=/etc/rc.d/rc.local
 
 make %{?_smp_mflags}
 %install
@@ -93,6 +95,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*	Tue Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
+-	Adding sysvinit support 
 *       Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
 -       Fixing networkd/udev race condition for renaming interface.
 *   	Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
