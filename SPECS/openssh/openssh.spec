@@ -1,7 +1,7 @@
 Summary:	'Free version of the SSH connectivity tools
 Name:		openssh
 Version:	6.6p1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -57,6 +57,9 @@ ln -sfv ../../../../lib/systemd/system/sshd.service  %{buildroot}/etc/systemd/sy
 cat << EOF >> %{buildroot}/lib/systemd/system/sshd-keygen.service
 [Unit]
 Description=Generate sshd host keys
+ConditionPathExists=|!/etc/ssh/ssh_host_rsa_key
+ConditionPathExists=|!/etc/ssh/ssh_host_ecdsa_key
+ConditionPathExists=|!/etc/ssh/ssh_host_ed25519_key
 Before=sshd.service
 
 [Service]
@@ -65,6 +68,7 @@ RemainAfterExit=yes
 ExecStart=/usr/bin/ssh-keygen -A
 EOF
 
+ln -sfv ../../../../lib/systemd/system/sshd-keygen.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/sshd-keygen.service
 
 %{_fixperms} %{buildroot}/*
 %check
@@ -79,6 +83,7 @@ if ! getent passwd sshd >/dev/null; then
 	useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd -s /bin/false -u 50 sshd
 fi
 
+
 %postun
 /sbin/ldconfig
 if getent passwd sshd >/dev/null; then
@@ -91,7 +96,7 @@ fi
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-/etc/systemd/system/multi-user.target.wants/sshd.service
+/etc/systemd/system/multi-user.target.wants/*
 /etc/ssh/*
 /lib/systemd/system/sshd.service
 /lib/systemd/system/sshd.socket
@@ -105,6 +110,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*	Fri Jul 17 2015 Divya Thaluru <dthaluru@vmware.com> 6.6p1-3
+-	Enabling ssh-keygen service by default and fixed service file to execute only once.
 *	Tue May 19 2015 Sharath George <sharathg@vmware.com> 6.6p1-2
 -	Bulding ssh server with kerberos 5.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 6.6p1-1
