@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -10,6 +10,7 @@ Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha1 bash=45ac3c5727e7262334f4dfadecdf601b39434e84
 Patch0:		http://www.linuxfromscratch.org/patches/downloads/bash/bash-4.3-upstream_fixes-7.patch
+Patch1:		fix-save_bash_input-segfault.patch
 Provides:	/bin/sh
 Provides:	/bin/bash
 %description
@@ -25,6 +26,7 @@ These are the additional language files of bash.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -230,6 +232,8 @@ test -e /root/.bash_logout || cp /etc/skel/.bash_logout /root
 %defattr(-,root,root)
 
 %changelog
+*	Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
+-	Fix segfault in save_bash_input.
 *	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
 -	/etc/profile.d permission fix. Pack /etc files into rpm
 *	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
