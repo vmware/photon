@@ -1,9 +1,9 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 Summary:	GRand Unified Bootloader
-Name:		grub
+Name:		grub2
 Version:	2.02
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grub
 Group:		Applications/System
@@ -21,7 +21,7 @@ The GRUB package contains the GRand Unified Bootloader.
 %package lang
 Summary: Additional language files for grub
 Group: System Environment/Programming
-Requires: grub >= 2.00
+Requires: grub2 >= 2.00
 %description lang
 These are the additional language files of grub.
 
@@ -36,14 +36,19 @@ These are the additional language files of grub.
 	--sysconfdir=%{_sysconfdir} \
 	--disable-grub-emu-usb \
 	--disable-efiemu \
-	--disable-werror
+	--disable-werror \
+	--program-transform-name=s,grub,%{name}, \
+	--with-grubdir=%{name}
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 mkdir %{buildroot}%{_sysconfdir}/default
 touch %{buildroot}%{_sysconfdir}/default/grub
 mkdir %{buildroot}%{_sysconfdir}/sysconfig
 ln -sf %{_sysconfdir}/default/grub %{buildroot}%{_sysconfdir}/sysconfig/grub
+mkdir -p %{buildroot}/boot/%{name}
+touch %{buildroot}/boot/%{name}/grub.cfg
 rm -rf %{buildroot}%{_infodir}
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -63,15 +68,18 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /sbin/*
 %{_bindir}/*
 %{_libdir}/grub/*
-%{_datarootdir}/%{name}/*
+%{_datarootdir}/grub/*
 %{_sysconfdir}/sysconfig/grub
 %{_sysconfdir}/default/grub
+%ghost %config(noreplace) /boot/%{name}/grub.cfg
 
 %files lang
 %defattr(-,root,root)
 /usr/share/locale/*
 
 %changelog
+*	Wed Jul 22 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-2
+-	Changing program name from grub to grub2.
 *	Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-1
 -	Updating grub to 2.02
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.00-1

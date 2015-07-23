@@ -5,7 +5,7 @@
                 "cracklib", "cracklib-dicts", "cracklib-python", "shadow", 
                 "coreutils", "grep",
                 "findutils",
-                "xz", "grub", "kmod",
+                "xz", "grub2", "kmod",
                 "util-linux", "e2fsprogs",
                 "expat",
                 "linux", "cpio",
