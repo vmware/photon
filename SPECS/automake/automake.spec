@@ -1,20 +1,21 @@
 Summary:	Programs for generating Makefiles
 Name:		automake
-Version:	1.14.1
-Release:	2%{?dist}
+Version:	1.15
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/automake/
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
-%define sha1 automake=2ced676f6b792a95c5919243f81790b1172c7f5b
+Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.gz
+%define sha1 automake=b5a840c7ec4321e78fdc9472e476263fa6614ca1
 BuildRequires:	autoconf
 %description
 Contains programs for generating Makefiles for use with Autoconf.
 %prep
 %setup -q
 %build
+sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
 ./configure \
 	--prefix=%{_prefix} \
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
@@ -30,11 +31,13 @@ rm -rf %{buildroot}%{_infodir}
 %defattr(-,root,root)
 %{_bindir}/*
 %{_datarootdir}/aclocal/README
-%{_datarootdir}/%{name}-1.14/*
-%{_datarootdir}/aclocal-1.14/*
+%{_datarootdir}/%{name}-1.15/*
+%{_datarootdir}/aclocal-1.15/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.15-1
+-	Updated to version 1.15
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14.1-2
 -	Adding autoconf package to build time requires packages
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.14.1-1
