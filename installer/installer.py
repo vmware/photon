@@ -272,6 +272,9 @@ class Installer(object):
         if self.iso_installer:
             # just copy the initramfs /boot -> /photon_mnt/boot
             shutil.copy('boot/initrd.img-no-kmods', self.photon_root + '/boot/')
+            # remove the installer directory
+            process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
+            retval = process.wait()
         else:
             #Build the initramfs
             process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', 'boot/initrd.img-no-kmods'],  stdout=self.output)
