@@ -91,7 +91,7 @@ def main():
     '''    
     listPackages=["acl","attr","autoconf","automake","bash","bc","bindutils","binutils","bison","boost","btrfs-progs","bzip2","ca-certificates","cdrkit","check",
                   "cloud-init","cmake","coreutils","cpio","cracklib","createrepo","curl","cyrus-sasl","db","dbus","deltarpm","diffutils","docbook-xml","docbook-xsl",
-                  "docker","dparted","dracut","e2fsprogs","elfutils","etcd","expat","file","filesystem","findutils","flex","gawk","gcc","gdb","gdbm","gettext","git",
+                  "docker","dracut","e2fsprogs","elfutils","etcd","expat","file","filesystem","findutils","flex","gawk","gcc","gdb","gdbm","gettext","git",
                   "glib","glibc","glibmm","gmp","go","gobject-introspection","google-daemon","google-startup-scripts","gperf","gpgme","gptfdisk","grep","groff",
                   "grub","gtk-doc","gzip","haveged","hawkey","iana-etc","inetutils","intltool","iproute2","iptables","itstool","json-glib","kbd","kmod","krb5",
                   "kubernetes","less","libaio","libassuan","libcap","libdnet","libffi","libgpg-error","libgsystem","libhif","libmspack","libpcap","libpipeline",
