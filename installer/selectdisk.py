@@ -4,14 +4,12 @@
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
-import subprocess
-import os
-import json
 from device import Device
 from window import Window
 from actionresult import ActionResult
 from menu import Menu
 from confirmwindow import ConfirmWindow
+import modules.commons
 
 class SelectDisk(object):
     def __init__(self,  maxy, maxx, install_config):
@@ -42,18 +40,15 @@ class SelectDisk(object):
         if not confirmed:
             return ActionResult(confirmed, None)
         
-        #self.install_config['disk'] = self.devices[device_index].path
-        #return ActionResult(True, None)
-        
         # Do the partitioning
         self.window.clearerror()
-        json_ret = subprocess.check_output(['gpartedbin', 'defaultpartitions', self.devices[device_index].path], stderr=open(os.devnull, 'w'))
-        json_dct = json.loads(json_ret)
-        if json_dct['success']:
-            self.install_config['disk'] = json_dct['data']
-        else:
+        partitions_data = modules.commons.partition_disk(self.devices[device_index].path)
+        if partitions_data == None:
             self.window.adderror('Partitioning failed, you may try again')
-        return ActionResult(json_dct['success'], None)
+        else:
+            self.install_config['disk'] = partitions_data
+
+        return ActionResult(partitions_data != None, None)
 
     def display(self, params):
         self.window.addstr(0, 0, 'First, we will setup your disks.\n\nWe have detected {0} disks, choose disk to be auto-partitioned:'.format(len(self.devices)))
@@ -65,7 +60,7 @@ class SelectDisk(object):
             #if index > 0:
                 self.disk_menu_items.append(
                         (
-                            '{2} - {1} MB @ {0}'.format(device.path, device.size, device.model), 
+                            '{2} - {1} @ {0}'.format(device.path, device.size, device.model), 
                             self.guided_partitions, 
                             index
                         )
