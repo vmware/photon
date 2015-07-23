@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.50.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -18,6 +18,7 @@ BuildRequires:   python2
 BuildRequires:   python2-libs
 BuildRequires:   python2-devel
 BuildRequires:   python2-tools
+Requires:	libxml2
 
 %description
 libsoup is HTTP client/server library for GNOME
@@ -26,6 +27,7 @@ libsoup is HTTP client/server library for GNOME
 Summary: Header files for libsoup
 Group: System Environment/Development
 Requires: libsoup
+Requires: libxml2-devel
 %description devel
 Header files for libsoup.
 
@@ -76,6 +78,8 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 
 %changelog
+*   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 2.50.0-3
+-   Addinf libxml2 to Requires 
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 2.50.0-2
 -   Exclude /usr/lib/debug
 *   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 2.50.0-1
