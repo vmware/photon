@@ -1,0 +1,27 @@
+Submitted By:            Randy McMurchy <randy_at_linuxfromscratch_dot_org>
+Date:                    2004-08-27
+Initial Package Version: 1.60
+Upstream Status:         N/A (package is unmaintained)
+Origin:                  From Fedora Core (submitted to LFS-Hackers by Kevin White)
+Description:             Fixes mii-tool when compiled using Linux-2.6.x
+
+$LastChangedBy: randy $
+$Date: 2004-08-27 21:04:05 -0600 (Fri, 27 Aug 2004) $
+
+--- net-tools-1.60/include/mii.h.bar	Tue Jul 31 11:49:39 2001
++++ net-tools-1.60/include/mii.h	Tue Jul 31 11:49:33 2001
+@@ -11,11 +11,9 @@
+ 
+ /* network interface ioctl's for MII commands */
+ #ifndef SIOCGMIIPHY
+-#define SIOCGMIIPHY (SIOCDEVPRIVATE)	/* Read from current PHY */
+-#define SIOCGMIIREG (SIOCDEVPRIVATE+1) 	/* Read any PHY register */
+-#define SIOCSMIIREG (SIOCDEVPRIVATE+2) 	/* Write any PHY register */
+-#define SIOCGPARAMS (SIOCDEVPRIVATE+3) 	/* Read operational parameters */
+-#define SIOCSPARAMS (SIOCDEVPRIVATE+4) 	/* Set operational parameters */
++#define SIOCGMIIPHY 0x8947 	/* Read from current PHY */
++#define SIOCGMIIREG 0x8948 	/* Read any PHY register */
++#define SIOCSMIIREG 0x8949 	/* Write any PHY register */
+ #endif
+ 
+ #include <linux/types.h>

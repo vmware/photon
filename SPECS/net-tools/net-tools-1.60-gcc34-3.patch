@@ -1,0 +1,86 @@
+Originaly By: Zack Winkles <winkie AT linuxfromscratch DOT org>
+Submitted By: Jim Gifford <jim AT linuxfromscratch DOT org>
+Date: 2004-06-23
+Initial Package Version: 1.60
+Origin: N/A
+Upstream Status: N/A
+Description: Fix some occurrences of syntax that GCC 3.4 doesn't like.
+ 
+diff -Naur net-tools-1.60.orig/hostname.c net-tools-1.60/hostname.c
+--- net-tools-1.60.orig/hostname.c	2001-04-08 17:04:23.000000000 +0000
++++ net-tools-1.60/hostname.c	2004-06-24 06:22:16.913258663 +0000
+@@ -78,6 +78,7 @@
+             fprintf(stderr, _("%s: name too long\n"), program_name);
+             break;
+         default:
++	    ((void)0);
+         }
+ 	exit(1);
+     }
+@@ -98,6 +99,7 @@
+ 	    fprintf(stderr, _("%s: name too long\n"), program_name);
+ 	    break;
+ 	default:
++	    ((void)0);
+ 	}
+ 	exit(1);
+     };
+@@ -117,6 +119,7 @@
+ 	    fprintf(stderr, _("%s: name too long\n"), program_name);
+ 	    break;
+ 	default:
++	    ((void)0);
+ 	}
+ 	exit(1);
+     };
+@@ -174,6 +177,7 @@
+ 	printf("%s\n", hp->h_name);
+ 	break;
+     default:
++	((void)0);
+     }
+ }
+ 
+diff -Naur net-tools-1.60.orig/lib/inet_sr.c net-tools-1.60/lib/inet_sr.c
+--- net-tools-1.60.orig/lib/inet_sr.c	2000-02-20 21:46:45.000000000 +0000
++++ net-tools-1.60/lib/inet_sr.c	2004-06-24 06:22:01.967840446 +0000
+@@ -105,6 +105,7 @@
+     case 2:
+        isnet = 0; break;
+     default:
++       ((void)0);
+     }
+ 
+     /* Fill in the other fields. */
+diff -Naur net-tools-1.60.orig/mii-tool.c net-tools-1.60/mii-tool.c
+--- net-tools-1.60.orig/mii-tool.c	2000-05-21 14:31:17.000000000 +0000
++++ net-tools-1.60/mii-tool.c	2004-06-24 06:22:01.971839755 +0000
+@@ -379,17 +379,17 @@
+ /*--------------------------------------------------------------------*/
+ 
+ const char *usage =
+-"usage: %s [-VvRrwl] [-A media,... | -F media] [interface ...]
+-       -V, --version               display version information
+-       -v, --verbose               more verbose output
+-       -R, --reset                 reset MII to poweron state
+-       -r, --restart               restart autonegotiation
+-       -w, --watch                 monitor for link status changes
+-       -l, --log                   with -w, write events to syslog
+-       -A, --advertise=media,...   advertise only specified media
+-       -F, --force=media           force specified media technology
+-media: 100baseT4, 100baseTx-FD, 100baseTx-HD, 10baseT-FD, 10baseT-HD,
+-       (to advertise both HD and FD) 100baseTx, 10baseT\n";
++"usage: %s [-VvRrwl] [-A media,... | -F media] [interface ...]\n"
++"       -V, --version               display version information\n"
++"       -v, --verbose               more verbose output\n"
++"       -R, --reset                 reset MII to poweron state\n"
++"       -r, --restart               restart autonegotiation\n"
++"       -w, --watch                 monitor for link status changes\n"
++"       -l, --log                   with -w, write events to syslog\n"
++"       -A, --advertise=media,...   advertise only specified media\n"
++"       -F, --force=media           force specified media technology\n"
++"media: 100baseT4, 100baseTx-FD, 100baseTx-HD, 10baseT-FD, 10baseT-HD,\n"
++"       (to advertise both HD and FD) 100baseTx, 10baseT\n";
+ 
+ int main(int argc, char **argv)
+ {
