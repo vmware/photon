@@ -271,10 +271,10 @@ class Installer(object):
         retval = process.wait()
         if self.iso_installer:
             # just copy the initramfs /boot -> /photon_mnt/boot
-            shutil.copy('/boot/initrd.img-no-kmods', self.photon_root + '/boot/')
+            shutil.copy('boot/initrd.img-no-kmods', self.photon_root + '/boot/')
         else:
             #Build the initramfs
-            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', '/boot/initrd.img-no-kmods'],  stdout=self.output)
+            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', 'boot/initrd.img-no-kmods'],  stdout=self.output)
             retval = process.wait()
 
 
