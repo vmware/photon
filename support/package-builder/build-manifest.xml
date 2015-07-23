@@ -54,7 +54,6 @@
         <package id="docbook-xml"/>
         <package id="docbook-xsl"/>
         <package id="docker"/>
-        <package id="dparted"/>
         <package id="dracut"/>
         <package id="dracut-tools"
                  spec="dracut"/>
@@ -328,7 +327,6 @@
         <pkgref id="coreutils"/>
         <pkgref id="cpio"/>
         <pkgref id="dbus"/>
-        <pkgref id="dparted"/>
         <pkgref id="e2fsprogs"/>
         <pkgref id="elfutils-libelf"/>
         <pkgref id="elfutils-libelf-devel"/>
@@ -573,7 +571,6 @@
         <pkgref id="diffutils"/>
         <pkgref id="docbook-xml"/>
         <pkgref id="docbook-xsl"/>
-        <pkgref id="dparted"/>
         <pkgref id="dracut"/>
         <pkgref id="dracut-tools"/>
         <pkgref id="e2fsprogs-devel"/>
