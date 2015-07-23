@@ -32,21 +32,21 @@ if [ $# -eq 2 ]
 fi
 
 #
-#	Install grub.
+#	Install grub2.
 #
 UUID=$(blkid -s UUID -o value $PARTITION)
-grub-install --force --boot-directory=$BUILDROOT/boot "$HDD"
-cp boot/unifont.pf2 ${BUILDROOT}/boot/grub/
-mkdir -p ${BUILDROOT}/boot/grub/themes/photon
-cp boot/splash.tga ${BUILDROOT}/boot/grub/themes/photon/photon.tga
-cp boot/terminal_*.tga ${BUILDROOT}/boot/grub/themes/photon/
-cp boot/theme.txt ${BUILDROOT}/boot/grub/themes/photon/
-cat > "$BUILDROOT"/boot/grub/grub.cfg << "EOF"
-# Begin /boot/grub/grub.cfg
+grub2-install --force --boot-directory=$BUILDROOT/boot "$HDD"
+cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
+mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
+cp boot/splash.tga ${BUILDROOT}/boot/grub2/themes/photon/photon.tga
+cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
+cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
+cat > "$BUILDROOT"/boot/grub2/grub.cfg << "EOF"
+# Begin /boot/grub2/grub.cfg
 set default=0
 set timeout=5
 set root=(hd0,2)
-loadfont /boot/grub/unifont.pf2
+loadfont /boot/grub2/unifont.pf2
 
 insmod gfxterm
 insmod vbe
@@ -57,7 +57,7 @@ gfxpayload=keep
 
 terminal_output gfxterm
 
-set theme=/boot/grub/themes/photon/theme.txt
+set theme=/boot/grub2/themes/photon/theme.txt
 
 menuentry "Photon" {
 	insmod ext2
@@ -65,10 +65,10 @@ menuentry "Photon" {
 	linux /boot/vmlinuz-3.19.2 init=/lib/systemd/systemd root=UUID=UUID_PLACEHOLDER loglevel=3 ro
 	initrd /boot/initrd.img-no-kmods
 }
-# End /boot/grub/grub.cfg
+# End /boot/grub2/grub.cfg
 EOF
 
-sed -i "s/UUID_PLACEHOLDER/$UUID/" "$BUILDROOT"/boot/grub/grub.cfg > ${LOGFILE}	
+sed -i "s/UUID_PLACEHOLDER/$UUID/" "$BUILDROOT"/boot/grub2/grub.cfg > ${LOGFILE}	
 
 #Cleanup the workspace directory
 rm -rf "$BUILDROOT"/tools

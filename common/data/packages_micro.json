@@ -4,7 +4,7 @@
                 "bzip2", "pkg-config", "ncurses", "cracklib", "cracklib-dicts", "shadow", "procps-ng", "e2fsprogs",
                 "iana-etc", "readline", "coreutils", "bash", "bc", "libtool",
                 "inetutils",
-                "xz", "grub", "iproute2", "kbd", "kmod", "libpipeline",
+                "xz", "grub2", "iproute2", "kbd", "kmod", "libpipeline",
                 "util-linux",
                 "openssl", "libffi", "expat",
                 "linux", "curl",

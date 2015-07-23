@@ -10,7 +10,7 @@
                 "kubernetes", "cyrus-sasl", "openldap", "binutils-devel", "python-iniparse", "psmisc", "etcd", "openssl-devel", 
                 "util-linux-lang", "db-docs", "linux-dev", "linux-docs", "mpc", "json-glib", "json-glib-devel", 
                 "automake", "libpcap", "tcpdump", "elfutils-libelf-devel", "elfutils", "elfutils-devel", "elfutils-devel-static", "elfutils-libelf-devel-static", 
-                "go", "grub-lang", "diffutils", "groff", "man-db", "mpfr-devel", "man-pages", 
+                "go", "grub2","grub2-lang", "diffutils", "groff", "man-db", "mpfr-devel", "man-pages", 
                 "hawkey-devel", "python-hawkey", "libxml2-devel", "ruby", "readline-devel", "wget",
                 "Linux-PAM-lang", "make", "bindutils", "gperf", "lua-devel", "less",
                 "cmake", "gpgme-devel", "parted", "nano", "xz-devel", "xerces-c-devel", "xml-security-c-devel", 
