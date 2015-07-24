@@ -1,20 +1,19 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
-Version:	9.10.0
-Release:	4%{?dist}
+Version:	10.0.0
+Release:	1%{?dist}
 License:	LGPLv2+
-URL:		https://github.com/vmware/open-vm-tools/archive/stable-9.10.x.zip
+URL:		https://github.com/vmware/open-vm-tools/archive/stable-10.0.0.tar.gz
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.10.0/%{name}-%{version}.tar.gz
-%define sha1 open-vm-tools=958c40c8038d52947680444f507f693825d358be
+Source0:	%{name}-%{version}.tar.gz
+%define sha1 open-vm-tools=ff6421f75409f847f74f1f1fdb7e5bad4e74fe0b
 Source1:        gosc-scripts.tar.gz
 %define sha1 gosc-scripts=a87bb5b95f78923ac6053513b3364a119795a5d0
-Patch0:		open-vm-tools-strerror_r-fix.patch
-Patch1:		open-vm-tools-service-link.patch
-Patch2:         open-vm-tools-GOSC-photon.patch
-Patch3:         open-vm-tools-GOSC-vca.patch
+Patch0:		open-vm-tools-service-link.patch
+Patch1:         open-vm-tools-GOSC-photon.patch
+Patch2:         open-vm-tools-GOSC-vca.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -36,8 +35,7 @@ VmWare virtualization user mode tools
 %setup -a 1
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p0
+%patch2 -p0
 %build
 autoreconf -i
 ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static
@@ -89,6 +87,8 @@ ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 
 
 %changelog
+*       Thu Jul 23 2015 Anish Swaminathan <anishs@vmware.com> 10.0.0-1
+        Update vm tools version.
 *       Thu Jul 09 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-4
         Fixing GOSC to work on VCA.
 *       Tue Apr 21 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-3

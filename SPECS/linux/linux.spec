@@ -1,10 +1,10 @@
 %global security_hardening none
 %define    OPENVMTOOLS_NAME            open-vm-tools
-%define    OPENVMTOOLS_VERSION         9.10.0
+%define    OPENVMTOOLS_VERSION         10.0.0
 Summary:        Kernel
 Name:        linux
 Version:    3.19.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -13,9 +13,8 @@ Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v3.x/%{name}-%{version}.tar.xz
 %define sha1 linux=10a25ca5b6d93db78adc9caf13f7ad7cb4b79c61
 #Source1:    config-%{version}-generic.amd64
-Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.10.0/open-vm-tools-9.10.0.tar.gz
-%define sha1 open-vm-tools=958c40c8038d52947680444f507f693825d358be
-Patch0:        vmhgfs_fix_3.19.patch
+Source1:    open-vm-tools-10.0.0.tar.gz
+%define sha1 open-vm-tools=ff6421f75409f847f74f1f1fdb7e5bad4e74fe0b
 BuildRequires:    bc
 BuildRequires:    kbd
 BuildRequires:    kmod
@@ -36,7 +35,7 @@ Requires:    openssl
 Requires:    filesystem
 
 %description
-The Linux package contains the Linux kernel. Open vmware tools package contains the kernel module vmhgfs
+The Linux package contains the Linux kernel.
 
 
 
@@ -60,8 +59,6 @@ The Linux package contains the Linux kernel doc files
 
 %prep
 %setup -c -n Linux-package -a 1
-cd %{OPENVMTOOLS_NAME}-%{OPENVMTOOLS_VERSION}
-%patch -P 0 -p1
 
 %build
 #make linux 
@@ -145,8 +142,9 @@ EOF
 
 
 %changelog
+*   Thu Jul 23 2015 Anish Swaminathan <anishs@vmware.com> 3.13.3-3
+-   Updated vmhgfs module.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.13.3-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1
 -   Initial build. First version
-
