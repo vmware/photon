@@ -106,17 +106,9 @@ createrepo --database ${WORKINGDIR}/RPMS
 
 rm -rf ${BUILDROOT}/LOGS
 
-# Cleaning up
 #Remove our rpm database as it fills up the ramdisk
 rm -rf ${BUILDROOT}/home/*
 rm -rf ${BUILDROOT}/var/lib/rpm
-
-# Remove the boot directory
-rm -rf ${BUILDROOT}/boot
-
-#Remove the include files.
-rm -rf ${BUILDROOT}/usr/include
-
 # TODO: mbassiouny, Find a clean way to do that
 for i in `ls ${BUILDROOT}/usr/share/`; do
 	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' ]; then

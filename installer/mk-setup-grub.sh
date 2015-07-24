@@ -35,7 +35,17 @@ fi
 #	Install grub2.
 #
 UUID=$(blkid -s UUID -o value $PARTITION)
-grub2-install --force --boot-directory=$BUILDROOT/boot "$HDD"
+
+grubInstallCmd=""
+ln -sfv grub2 $BUILDROOT/boot/grub
+command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
+command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
+if [ -z $grubInstallCmd ]; then
+echo "Unable to found grub install command"
+exit 1
+fi
+
+$grubInstallCmd --force --boot-directory=$BUILDROOT/boot "$HDD"
 cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
 cp boot/splash.tga ${BUILDROOT}/boot/grub2/themes/photon/photon.tga
