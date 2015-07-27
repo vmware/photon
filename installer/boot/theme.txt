@@ -8,5 +8,9 @@ terminal-box : "terminal_*.tga"
 	top = 50%-20
 	width = 20%
 	height = 20%
+	item_height = 15
+	item_spacing = 10
+	item_color = "#a0a0a0"
+	selected_item_color = "#000000"
 }
 
