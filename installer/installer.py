@@ -276,8 +276,16 @@ class Installer(object):
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
         else:
-            #Build the initramfs
-            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', '/boot/initrd.img-no-kmods'],  stdout=self.output)
+            #Build the initramfs by passing in the kernel version
+            version_string = ''	
+            for root, dirs, files in os.walk(self.rpm_path):
+                for name in files:
+                    if fnmatch.fnmatch(name, 'linux-[0-9]*.rpm'):
+                        version_array = name.split('-')
+                        if len(version_array) > 2:
+                            version_string = version_array[1]
+
+            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', '/boot/initrd.img-no-kmods', '-k', version_string],  stdout=self.output)
             retval = process.wait()
 
 
