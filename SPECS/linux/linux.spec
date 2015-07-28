@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    3.19.2
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -15,6 +15,7 @@ Source0:    http://www.kernel.org/pub/linux/kernel/v3.x/%{name}-%{version}.tar.x
 #Source1:    config-%{version}-generic.amd64
 Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.10.0/open-vm-tools-9.10.0.tar.gz
 %define sha1 open-vm-tools=958c40c8038d52947680444f507f693825d358be
+Source2:	config-%{version}-x86_64
 Patch0:        vmhgfs_fix_3.19.patch
 BuildRequires:    bc
 BuildRequires:    kbd
@@ -47,6 +48,12 @@ Requires:    python2
 %description dev
 The Linux package contains the Linux kernel dev files
 
+%package gpu-drivers
+Summary:    Kernel Drivers
+Group:        System Environment/Kernel
+Requires:    %{name} = %{version}
+%description gpu-drivers
+The Linux package contains the Linux kernel drivers for GPU
 
 
 %package docs
@@ -67,7 +74,7 @@ cd %{OPENVMTOOLS_NAME}-%{OPENVMTOOLS_VERSION}
 #make linux 
 cd %{name}-%{version}
 make mrproper
-cp %{_topdir}/config .config
+cp %{SOURCE2} .config
 make LC_ALL= oldconfig
 #make LC_ALL= silentoldconfig
 #make LC_ALL= defconfig
@@ -142,9 +149,13 @@ EOF
 %defattr(-,root,root)
 /lib/modules/%{version}/build
 
-
+%files gpu-drivers
+%defattr(-,root,root)
+/lib/modules/%{version}/kernel/drivers/gpu
 
 %changelog
+*	Fri Jul 24 2015 Harish Udaiya Kumar<hudaiyakumar@gmail.com> 3.19.2-3
+	Updated the config file to include graphics drivers. 
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.13.3-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1
