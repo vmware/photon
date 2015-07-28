@@ -1,6 +1,6 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
-Version:	1.0.2a
+Version:	1.0.2d
 Release:	1%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
@@ -8,8 +8,8 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=46ecd325b8e587fa491f6bb02ad4a9fb9f382f5f
-Patch0:		openssl-1.0.2a-fix_parallel_build-1.patch
+%define sha1 openssl=d01d17b44663e8ffa6a33a5a30053779d9593c3d
+
 %description
 The OpenSSL package contains management tools and libraries relating
 to cryptography. These are useful for providing cryptography 
@@ -26,7 +26,7 @@ Header files for doing development with openssl.
 
 %prep
 %setup -q
-%patch0 -p1
+
 %build
 export CFLAGS="%{optflags}"
 ./config \
@@ -57,7 +57,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
-/usr/share/man/man3/.3ssl.gz
 
 %files devel
 %{_includedir}/*
@@ -67,5 +66,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*       Fri Jul 24 2015 Chang Lee <changlee@vmware.com> 1.0.2d-1
+-       Update new version.
 *	Wed Mar 25 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2a-1
 -	Initial build.	First version
