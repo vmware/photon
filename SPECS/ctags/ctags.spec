@@ -5,7 +5,7 @@ Release:        1
 License:        GPL
 URL:            http://ctags.sourceforge.net
 Source:         http://prdownloads.sourceforge.net/ctags/ctags-%{version}.tar.gz
-%define         sha1 ctags=482da1ecd182ab39bbdc09f2f02c9fba8cd20030
+%define sha1 ctags=482da1ecd182ab39bbdc09f2f02c9fba8cd20030
 Group:          Development/Tools
 Buildroot:      %{_tmppath}/%{name}-%{version}-root
 Vendor:         VMware, Inc.
