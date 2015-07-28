@@ -1,27 +1,31 @@
-%global commit		ecca42643b91a7117de8cd385b64e6bafecefd65
+%global commit		6a5c06e3d1eb27a6310a09270e4a5fb1afa93e74
 %global shortcommit	%(c=%{commit}; echo ${c:0:7})
 
 Summary:	Kubernetes cluster management
 Name:		kubernetes
-Version:	0.12.0
+Version:	1.0.1
 Release:	1%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/GoogleCloudPlatform/kubernetes
-Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v0.12.0/%{name}.tar.gz
-%define sha1 kubernetes.tar.gz=10d85777784f901a7476e642e7bab1776a834900
-Source1:	https://github.com/GoogleCloudPlatform/kubernetes/archive/%{commit}/kubernetes-ecca426.tar.gz
-%define sha1 kubernetes-ecca426=20cab37ca8ec5eddc0e530e5ce683ee6e8e5bb58
+Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v1.0.1/%{name}-v%{version}.tar.gz
+%define sha1 kubernetes-v1.0.1.tar.gz=39e56947e3a42bbec0641486710dcd829123c472
+Source1:	https://github.com/GoogleCloudPlatform/kubernetes/archive/%{commit}/kubernetes-6a5c06e.tar.gz
+%define sha1 kubernetes-6a5c06e=3cbb14cb1c4b6342f95b1277f177bc2342b77173
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Requires:	etcd >= 2.0.0
 Requires:	shadow
+
 %description
 Kubernetes is an open source implementation of container cluster management.
+
 %prep -p exit
 %setup -qn "./kubernetes"
 tar xf %{SOURCE1}
+
 %build
+
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -vdm755 tmp
@@ -56,12 +60,15 @@ install -d %{buildroot}/var/lib/kubelet
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %clean
 rm -rf %{buildroot}/*
+
 %pre
 getent group kube >/dev/null || groupadd -r kube
 getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
         -c "Kubernetes user" kube
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -80,6 +87,9 @@ getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
 %config(noreplace) %{_sysconfdir}/%{name}/proxy
 %config(noreplace) %{_sysconfdir}/%{name}/kubelet
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
+
 %changelog
+*	Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
+-	Upgrade to kubernetes v1.0.1
 *	Tue Mar 10 2015 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
 -	Initial build. First version
