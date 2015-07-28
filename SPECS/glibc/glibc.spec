@@ -91,8 +91,8 @@ install -vdm 755 %{buildroot}/var/cache/nscd
 install -vdm 755 %{buildroot}%{_libdir}/locale
 cp -v ../%{name}-%{version}/nscd/nscd.conf %{buildroot}%{_sysconfdir}/nscd.conf
 #	Install locale generation script and config file
-cp -v %{SOURCE1} %{buildroot}%{_sysconfdir}
-cp -v %{SOURCE2} %{buildroot}/sbin
+cp -v %{SOURCE2} %{buildroot}%{_sysconfdir}
+cp -v %{SOURCE1} %{buildroot}/sbin
 #	Remove unwanted cruft
 rm -rf %{buildroot}%{_infodir}
 #	Install configuration files

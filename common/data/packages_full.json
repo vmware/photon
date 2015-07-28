@@ -24,7 +24,7 @@
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel", "vim-extra",
                 "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "syslog-ng-devel", "zookeeper", "fuse", "fleet",
-                "nss-altfiles", "apache-maven", "subversion", "mesos", "python3", "python3-libs", "python3-devel", "python3-tools", "fakeroot-ng", "ctags"]
+                "nss-altfiles", "apache-maven", "subversion", "mesos", "python3", "python3-libs", "python3-devel", "python3-tools", "fakeroot-ng", "ctags", "libtirpc","libtirpc-devel","lsof"]
 }
 
 
