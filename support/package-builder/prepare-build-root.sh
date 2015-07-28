@@ -43,8 +43,6 @@ mkdir -p ${BUILDROOT}${PARENT}/SPECS
 
 #copy localegen files.
 cp ./locale* ${BUILDROOT}${PARENT}/
-#copy kernel config files
-cp ./config* ${BUILDROOT}${PARENT}/
 
 mkdir ${BUILDROOT}/etc
 cp /etc/resolv.conf ${BUILDROOT}/etc/
