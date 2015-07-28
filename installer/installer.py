@@ -285,7 +285,7 @@ class Installer(object):
                         if len(version_array) > 2:
                             version_string = version_array[1]
 
-            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', '/boot/initrd.img-no-kmods', '-k', version_string],  stdout=self.output)
+            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', 'boot/initrd.img-no-kmods', '-k', version_string],  stdout=self.output)
             retval = process.wait()
 
 
