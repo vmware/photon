@@ -1,0 +1,12 @@
+{
+	"hostname": "photon-machine",
+	"password": 
+		{
+			"crypted": false,
+			"text": "PASSWORD"
+		},
+	"type": "minimal",
+    "size": {"root": "2", "swap": "0"},
+    "public_key":"<ssh-key-here>"
+}
+
