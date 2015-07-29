@@ -1,7 +1,7 @@
 {
     "packages":["glibc", "zlib", "filesystem",
                 "libgcc", "libstdc++", 
-                "sed", "pkg-config", "readline", "ncurses", "bash",
+                "sed", "bzip2", "pkg-config", "readline", "ncurses", "bash",
                 "cracklib", "cracklib-dicts", "cracklib-python", "shadow", 
                 "coreutils", "grep",
                 "findutils",
