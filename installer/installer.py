@@ -335,3 +335,13 @@ class Installer(object):
                 print >> sys.stderr,  "Error: not able to execute module %s" % module
                 continue
             mod.execute(module, self.ks_config, self.install_config, self.photon_root)
+
+    def run(self, command, comment = None):
+        if comment != None:
+            print >> sys.stderr, "Installer: {} ".format(comment)
+            self.progress_bar.show_loading(comment)
+
+        print >> sys.stderr, "Installer: {} ".format(command)
+        process = subprocess.Popen([command], shell=True, stdout=self.output)
+        retval = process.wait()
+        return retval

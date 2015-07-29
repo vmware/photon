@@ -19,7 +19,7 @@ class PackageSelector(object):
         self.maxx = maxx
         self.maxy = maxy
         self.win_width = 50
-        self.win_height = 10
+        self.win_height = 13
 
         self.win_starty = (self.maxy - self.win_height) / 2
         self.win_startx = (self.maxx - self.win_width) / 2

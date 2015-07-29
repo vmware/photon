@@ -14,7 +14,12 @@
                 "gptfdisk", "gzip", "openssl", "python2", "python2-libs", "python-requests",
                 "pcre",
                 "libgsystem", "ostree","device-mapper","device-mapper-libs","libsepol","libselinux", 
-                "db", "libsolv", "hawkey", "python-hawkey"]
+                "db", "libsolv",
+                "dracut", "dracut-tools",
+                "gpgme", "gpgme-devel", "hawkey", "python-hawkey", "json-glib", "glib",
+                "libarchive", "libarchive-devel", "libassuan", "libffi",
+                "libgpg-error", "libhif", "libhif-devel",
+                "librepo", "librepo-devel", "libsoup", "libsoup-devel",
+                "libxml2", "mkinitcpio", "openssl-devel",
+                "yum", "ostree"]
 }
-
-

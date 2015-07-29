@@ -9,7 +9,7 @@ from window import Window
 from readtext import ReadText
 
 class WindowStringReader(object):
-    def __init__(self, maxy, maxx, height, width, ispassword, confirm_password, title, display_string, inputy, install_config):
+    def __init__(self, maxy, maxx, height, width, field, confirm_password, title, display_string, inputy, install_config, default_string = None):
         self.title = title
         self.display_string = display_string
         self.inputy = inputy
@@ -23,7 +23,7 @@ class WindowStringReader(object):
         self.starty = (self.maxy - self.height) / 2
 
         self.window = Window(self.height, self.width, self.maxy, self.maxx, self.title, True)
-        self.read_text = ReadText(maxy, maxx, self.window.content_window(), self.inputy, install_config, ispassword, confirm_password)
+        self.read_text = ReadText(maxy, maxx, self.window.content_window(), self.inputy, install_config, field, confirm_password, default_string)
         self.window.set_action_panel(self.read_text)
         self.window.addstr(0, 0, self.display_string)
 

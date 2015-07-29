@@ -2,17 +2,14 @@
     "packages":["glibc","zlib", "filesystem",
                 "gmp", "mpfr", "libgcc", "libstdc++",
                 "bzip2", "pkg-config", "ncurses", "cracklib", "cracklib-dicts", "shadow", "procps-ng", "e2fsprogs",
-                "iana-etc", "readline", "coreutils", "bash", "bc", "libtool",
+                "iana-etc", "readline", "coreutils", "bash",
                 "inetutils",
-                "xz", "grub2", "iproute2", "kbd", "kmod", "libpipeline",
+                "xz", "iproute2", "kbd", "kmod", "libpipeline",
                 "util-linux",
                 "openssl", "libffi", "expat",
-                "linux", "curl",
-                "iptables", "ca-certificates",
-                "Linux-PAM", "attr", "libcap", "systemd", "dbus",
-                "sqlite-autoconf", "elfutils-libelf", "elfutils-libelf-devel",
-                "nspr", "nss", "popt", "lua", "rpm", "openssh",
-                "db", "libsolv", "libgpg-error", "hawkey", "libassuan", "gpgme", "librepo", "pcre", "glib", "tdnf",
+                "linux", "glib",
+                "iptables", "ca-certificates", "pcre",
+                "Linux-PAM", "attr", "libcap", "systemd", "dbus", "docker",
                 "photon-release"
                 ]
 }

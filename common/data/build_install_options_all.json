@@ -30,7 +30,7 @@
         "visible" : true,
         "include" : "none"
     },
-    "ostree_host" : {
+    "ostree_server" : {
         "title" : "5. Photon OSTree Server",
         "file" : "packages_ostree_server.json",
         "visible" : true,

@@ -9,31 +9,32 @@ import crypt
 import string
 import random
 import cracklib
+import sys
 from actionresult import ActionResult
 from action import Action
 from confirmwindow import ConfirmWindow
 
 class ReadText(Action):
-    def __init__(self, maxy, maxx, textwin, y, install_config, ispassword, confirm_pass):
+    def __init__(self, maxy, maxx, textwin, y, install_config, field, confirm_pass, default_string = None):
         self.textwin = textwin
         self.maxy = maxy
         self.maxx = maxx
         self.y = y
         self.install_config = install_config
-        self.ispassword = ispassword
+        self.field = field
         self.confirm_pass = confirm_pass;
-        
+        self.default_string = default_string
         self.textwin_width = self.textwin.getmaxyx()[1] - 1
         self.visible_text_width = self.textwin_width - 1
 
         self.init_text()
-        self.maxlength = 255        
+        self.maxlength = 255
 
         #initialize the accepted characters
-        if self.ispassword:
+        if self.field == "password":
             # Adding all the letters
             self.accepted_chars = range(33, 127)
-        else:
+        elif self.field == "hostname":
 
             self.alpha_chars = range(65, 91)
             self.alpha_chars.extend(range(97,123))
@@ -43,7 +44,8 @@ class ReadText(Action):
             self.accepted_chars.extend(range(48, 58))
             # Adding the . and -
             self.accepted_chars.extend([ord('.'), ord('-')])
-
+        else:
+            self.accepted_chars = range(33, 127)
 
     def hide(self):
         return
@@ -63,6 +65,10 @@ class ReadText(Action):
         self.init_text()
         curses.curs_set(1)
 
+        if self.default_string != None:
+            self.textwin.addstr(self.y, 0, self.default_string)
+            self.str = self.default_string
+
         while True:
             if len(self.str) > self.visible_text_width:
                 curs_loc = self.visible_text_width
@@ -81,18 +87,21 @@ class ReadText(Action):
                         confrim_window.do_action()
                         return ActionResult(False, {'goBack': True})
                     self.install_config['password'] = self.generate_password_hash(self.str)
-                elif self.ispassword:
+                elif self.field == "password":
                     err = self.validate_password(self.str)
                     if err != self.str:
                         self.init_text()
                         self.textwin.addstr(self.y + 2, 0, "Error: " + err, curses.color_pair(4))
                         continue
                     self.install_config['password'] = self.str;
-                else:
+                elif self.field == "hostname":
                     if not self.validate_hostname(self.str):
                         self.textwin.addstr(self.y + 2, 0, "It should start with alpha char and ends with alpha-numeric char", curses.color_pair(4))
                         continue
                     self.install_config['hostname'] = self.str
+                else:
+                    self.install_config[self.field] = self.str
+                    return ActionResult(True, self.str)
                 curses.curs_set(0)
                 return ActionResult(True, None)
             elif ch in [ord('\t')]:
@@ -113,7 +122,7 @@ class ReadText(Action):
                     text = self.str[-self.visible_text_width:]
                 else:
                     text = self.str
-                if self.ispassword:
+                if self.field == "password":
                     text = '*' * len(text)
                 # Add the dashes
                 text = text + '_' * (self.visible_text_width - len(self.str))
