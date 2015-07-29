@@ -127,6 +127,8 @@ if __name__ == '__main__':
             print "Unexpected failure, please check the logs"
             sys.exit(1)
 
+        config['initrd_dir'] = "/boot"
+
         config['iso_system'] = False
         config['vmdk_install'] = True
 
