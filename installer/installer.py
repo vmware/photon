@@ -269,9 +269,11 @@ class Installer(object):
         #Setup the disk
         process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.finalize_command, '-w', self.photon_root], stdout=self.output)
         retval = process.wait()
+        initrd_dir = 'boot'
+        initrd_file_name = 'initrd.img-no-kmods'
         if self.iso_installer:
             # just copy the initramfs /boot -> /photon_mnt/boot
-            shutil.copy('boot/initrd.img-no-kmods', self.photon_root + '/boot/')
+            shutil.copy(os.path.join(initrd_dir, initrd_file_name), self.photon_root + '/boot/')
             # remove the installer directory
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
@@ -285,7 +287,9 @@ class Installer(object):
                         if len(version_array) > 2:
                             version_string = version_array[1]
 
-            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', 'boot/initrd.img-no-kmods', '-k', version_string],  stdout=self.output)
+            if 'initrd_dir' in self.install_config:
+                initrd_dir = self.install_config['initrd_dir']
+            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', os.path.join(initrd_dir, initrd_file_name), '-k', version_string],  stdout=self.output)
             retval = process.wait()
 
 
