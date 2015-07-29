@@ -1,0 +1,20 @@
+{
+    "iso" : {
+        "title" : "ISO Packages",
+        "file" : "packages_iso.json",
+        "visible" : false,
+        "include" : "none"
+    },
+    "minimal" : {
+        "title" : "Photon Minimal",
+        "file" : "packages_minimal.json",
+        "visible" : true,
+        "include" : "none"
+    },
+    "azure" : {
+        "title" : "Photon Azure packages",
+        "file" : "packages_azure.json",
+        "visible" : false,
+        "include" : "minimal"
+    }
+}
