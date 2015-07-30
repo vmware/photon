@@ -129,6 +129,9 @@ EOF
 %post
 /sbin/depmod -aq %{version}
 
+%post gpu-drivers
+/sbin/depmod -aq %{version}
+
 %files
 %defattr(-,root,root)
 /boot/system.map-%{version}
@@ -151,6 +154,7 @@ EOF
 
 %files gpu-drivers
 %defattr(-,root,root)
+%exclude /lib/modules/%{version}/kernel/drivers/gpu/drm/cirrus/
 /lib/modules/%{version}/kernel/drivers/gpu
 
 %changelog
