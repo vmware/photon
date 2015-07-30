@@ -38,7 +38,7 @@ endif
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 
-.PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local \
+.PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
 check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot
 
@@ -263,6 +263,17 @@ photon-vagrant-local: check-packer check-vagrant
 		$(MV) *.box $(PHOTON_STAGE); \
 	else \
 		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
+	fi
+
+cloud-image: $(PHOTON_STAGE) $(PHOTON_ISO_PATH)
+	@echo "Building cloud image $(IMG_NAME)..."
+	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
+	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
+		sudo $(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
+	elif [ -e $(PHOTON_STAGE)/photon-minimal.iso ]; then \
+		sudo $(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon-minimal.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
+	else \
+		echo "Unable to find photon iso file... aborting build"; \
 	fi
 
 check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity

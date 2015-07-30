@@ -1,0 +1,151 @@
+diff -rupN WALinuxAgent-2.0.14/waagent WALinuxAgent-2.0.14-new/waagent
+--- WALinuxAgent-2.0.14/waagent	2015-07-02 02:26:10.000000000 -0700
++++ WALinuxAgent-2.0.14-new/waagent	2015-07-15 12:50:34.031122491 -0700
+@@ -1581,6 +1581,139 @@ class fedoraDistro(redhatDistro):
+         Run('/sbin/usermod ' + user + ' -G ""')
+         super(fedoraDistro, self).DeleteAccount(user)
+ 
++
++############################################################    
++# photonDistro
++############################################################    
++
++class photonDistro(AbstractDistro):
++    """
++    photon Distro concrete class
++    Put photon specific behavior here...
++    """
++    CORE_UID = 500
++
++    def __init__(self):
++        super(photonDistro,self).__init__()
++        self.requiredDeps += [ "/bin/systemctl" ]
++        self.agent_service_name = 'waagent'
++        self.init_script_file='/usr/lib/systemd/system/waagent.service'
++        self.dhcp_client_name='systemd-networkd'
++        self.getpidcmd='pidof '
++        self.shadow_file_mode=0640
++        self.dhcp_enabled=True
++
++    def checkPackageInstalled(self,p):
++        """
++        There is no package manager in Photon.  Return 1 since it must be preinstalled.
++        """
++        return 1
++
++    def checkDependencies(self):
++        for a in self.requiredDeps:
++            if Run("which " + a + " > /dev/null 2>&1",chk_err=False):
++                Error("Missing required dependency: " + a)
++                return 1
++        return 0
++
++
++    def checkPackageUpdateable(self,p):
++        """
++        There is no package manager in Photon.  Return 0 since it can't be updated via package.
++        """
++        return 0
++
++    def startAgentService(self):
++        return Run('systemctl start ' + self.agent_service_name)
++
++    def stopAgentService(self):
++        return Run('systemctl stop ' + self.agent_service_name)
++
++    def restartSshService(self):
++        return Run('systemctl restart sshd')
++
++    def sshDeployPublicKey(self,fprint,path):
++        """
++        We support PKCS8.
++        """
++        if Run("ssh-keygen -i -m PKCS8 -f " + fprint + " >> " + path):
++            return 1
++        else :
++            return 0
++
++    def RestartInterface(self, iface):
++        Run("systemctl restart systemd-networkd")
++
++    def CreateAccount(self, user, password, expiration, thumbprint):
++        """
++        Create a user account, with 'user', 'password', 'expiration', ssh keys
++        and sudo permissions.
++        Returns None if successful, error string on failure.
++        """
++        userentry = None
++        try:
++            userentry = pwd.getpwnam(user)
++        except:
++            pass
++        uidmin = None
++        try:
++            uidmin = int(GetLineStartingWith("UID_MIN", "/etc/login.defs").split()[1])
++        except:
++            pass
++        if uidmin == None:
++            uidmin = 100
++        if userentry != None and userentry[2] < uidmin and userentry[2] != self.CORE_UID:
++            Error("CreateAccount: " + user + " is a system user. Will not set password.")
++            return "Failed to set password for system user: " + user + " (0x06)."
++        if userentry == None:
++            command = "useradd --create-home --password '*' " + user
++            if expiration != None:
++                command += " --expiredate " + expiration.split('.')[0]
++            if Run(command):
++                Error("Failed to create user account: " + user)
++                return "Failed to create user account: " + user + " (0x07)."
++        else:
++            Log("CreateAccount: " + user + " already exists. Will update password.")
++        if password != None:
++            RunSendStdin("chpasswd", user + ":" + password + "\n")
++        try:
++            if password == None:
++                SetFileContents("/etc/sudoers.d/waagent", user + " ALL = (ALL) NOPASSWD: ALL\n")
++            else:
++                SetFileContents("/etc/sudoers.d/waagent", user + " ALL = (ALL) ALL\n")
++            os.chmod("/etc/sudoers.d/waagent", 0440)
++        except:
++            Error("CreateAccount: Failed to configure sudo access for user.")
++            return "Failed to configure sudo privileges (0x08)."
++        home = MyDistro.GetHome()
++        if thumbprint != None:
++            dir = home + "/" + user + "/.ssh"
++            CreateDir(dir, user, 0700)
++            pub = dir + "/id_rsa.pub"
++            prv = dir + "/id_rsa"
++            Run("ssh-keygen -y -f " + thumbprint + ".prv > " + pub)
++            SetFileContents(prv, GetFileContents(thumbprint + ".prv"))
++            for f in [pub, prv]:
++                os.chmod(f, 0600)
++                ChangeOwner(f, user)
++            SetFileContents(dir + "/authorized_keys", GetFileContents(pub))
++            ChangeOwner(dir + "/authorized_keys", user)
++        Log("Created user account: " + user)
++        return None
++
++    def startDHCP(self):
++        Run("systemctl start " + self.dhcp_client_name, chk_err=False)
++
++    def stopDHCP(self):
++        Run("systemctl stop " + self.dhcp_client_name, chk_err=False)
++
++    def translateCustomData(self, data):
++        return base64.b64decode(data)
++
++    def getConfigurationPath(self):
++        return "/etc/waagent.conf"
++
++
+ ############################################################    
+ #	FreeBSD
+ ############################################################    
+@@ -5823,6 +5956,7 @@ def GetMyDistro(dist_class_name=''):
+     Return MyDistro object.
+     NOTE: Logging is not initialized at this point.
+     """
++    dist_class_name = 'photonDistro'
+     if dist_class_name == '':
+         if 'Linux' in platform.system():
+             Distro=DistInfo()[0]
