@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	9.10.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools/archive/stable-9.10.x.zip
 Group:		Applications/System
@@ -89,6 +89,8 @@ ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 
 
 %changelog
+*       Thu Jul 30 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-5
+        Adding Blob configuation support to GOSC scripts.
 *       Thu Jul 09 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-4
         Fixing GOSC to work on VCA.
 *       Tue Apr 21 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-3
