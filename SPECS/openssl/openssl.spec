@@ -41,12 +41,15 @@ make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
+ln -sf %{_libdir}/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 /etc/ssl/*
