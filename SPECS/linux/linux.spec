@@ -15,7 +15,7 @@ Source0:    http://www.kernel.org/pub/linux/kernel/v3.x/%{name}-%{version}.tar.x
 #Source1:    config-%{version}-generic.amd64
 Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.10.0/open-vm-tools-9.10.0.tar.gz
 %define sha1 open-vm-tools=958c40c8038d52947680444f507f693825d358be
-Source2:	config-%{version}-x86_64
+Source2:	config-%{version}
 Patch0:        vmhgfs_fix_3.19.patch
 BuildRequires:    bc
 BuildRequires:    kbd

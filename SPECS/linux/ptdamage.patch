@@ -1,0 +1,24 @@
+Subject: reduce the damage from intel_pt by bailing out on cpus that don't support it
+
+
+the intel_pt code does a series of expensive things BEFORE it changes the cpu capabilities
+(and then bail out).
+This is silly, bail out immediately on CPUs that don't have support for the feature.
+This changes reduces out boot time by over 10%
+
+
+Signed-off-by: Arjan van de Ven <arjan@linux.intel.com>
+
+--- linux-4.1/arch/x86/kernel/cpu/perf_event_intel_pt.c~	2015-06-22 01:05:43.000000000 -0400
++++ linux-4.1/arch/x86/kernel/cpu/perf_event_intel_pt.c	2015-07-08 10:51:20.025827021 -0400
+@@ -1060,6 +1060,10 @@ static __init int pt_init(void)
+ {
+ 	int ret, cpu, prior_warn = 0;
+ 
++
++	if (!test_cpu_cap(&boot_cpu_data, X86_FEATURE_INTEL_PT))
++		return -ENODEV;
++
+ 	BUILD_BUG_ON(sizeof(struct topa) > PAGE_SIZE);
+ 	get_online_cpus();
+ 	for_each_online_cpu(cpu) {
