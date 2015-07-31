@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -127,7 +127,7 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %dir %{_libdir}/locale
 %{_sysconfdir}/*
 %ifarch x86_64
-%{_lib64}/*
+/lib64/*
 %{_lib64dir}/*
 %else
 %{_lib}/*
@@ -187,6 +187,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %lang(zh_TW) %{_datarootdir}/locale/zh_TW/LC_MESSAGES/libc.mo
 
 %changelog
+*	Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.19-4
+	Support glibc building against current rpm version.
 *	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-3
 -	Packing locale-gen scripts
 *   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19-2
