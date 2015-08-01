@@ -21,5 +21,5 @@
                 "libgpg-error", "libhif", "libhif-devel",
                 "librepo", "librepo-devel", "libsoup", "libsoup-devel",
                 "libxml2", "mkinitcpio", "openssl-devel",
-                "yum", "ostree" ,"dosfstools"]
+                "yum", "ostree" ,"dosfstools", "pciutils"]
 }
