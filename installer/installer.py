@@ -122,7 +122,15 @@ class Installer(object):
             self.execute_modules(modules.commons.POST_INSTALL)
 
             # install grub
-            process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, self.install_config['disk']['disk'], self.install_config['disk']['root']], stdout=self.output)
+            try:
+                if self.install_config['boot'] == 'bios':
+                    process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root']], stdout=self.output)
+                elif self.install_config['boot'] == 'efi':
+                    process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "efi", self.install_config['disk']['disk'], self.install_config['disk']['root']], stdout=self.output)
+            except:
+                #install bios if variable is not set.
+                process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root']], stdout=self.output)
+
             retval = process.wait()
 
         process = subprocess.Popen([self.unmount_disk_command, '-w', self.photon_root], stdout=self.output)
