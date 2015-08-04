@@ -1,16 +1,16 @@
-%global commit		6a5c06e3d1eb27a6310a09270e4a5fb1afa93e74
+%global commit		e310e619fc1ac4f3238bf5ebe9e7033bf5d47ee2
 %global shortcommit	%(c=%{commit}; echo ${c:0:7})
 
 Summary:	Kubernetes cluster management
 Name:		kubernetes
-Version:	1.0.1
+Version:	1.0.2
 Release:	1%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/GoogleCloudPlatform/kubernetes
-Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v1.0.1/%{name}-v%{version}.tar.gz
-%define sha1 kubernetes-v1.0.1.tar.gz=39e56947e3a42bbec0641486710dcd829123c472
-Source1:	https://github.com/GoogleCloudPlatform/kubernetes/archive/%{commit}/kubernetes-6a5c06e.tar.gz
-%define sha1 kubernetes-6a5c06e=3cbb14cb1c4b6342f95b1277f177bc2342b77173
+Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v%{version}/%{name}-v%{version}.tar.gz
+%define sha1 kubernetes-v%{version}.tar.gz=fb3b57031958b2604d2d7112133f147206803601
+Source1:	https://github.com/GoogleCloudPlatform/kubernetes/archive/%{commit}/kubernetes-%{shortcommit}.tar.gz
+%define sha1 kubernetes-%{shortcommit}=a77e22b1677450c94f7b5eaf50586bb6adcf7e6d
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -29,7 +29,7 @@ tar xf %{SOURCE1}
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -vdm755 tmp
-tar -C tmp/ -xvf server/kubernetes-server-linux-amd64.tar.gz 
+tar -C tmp/ -xvf server/kubernetes-server-linux-amd64.tar.gz
 
 install -m 755 -d %{buildroot}%{_bindir}
 
@@ -89,6 +89,8 @@ getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*	Mon Aug 3 2015 Tom Scanlan <tscanlan@vmware.com> 1.0.2-1
+-	bump up to latest release
 *	Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
 -	Upgrade to kubernetes v1.0.1
 *	Tue Mar 10 2015 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
