@@ -26,7 +26,7 @@ BuildRequires:	python2
 BuildRequires:	python2-libs
 BuildRequires:	gobject-introspection-devel
 BuildRequires:	gobject-introspection-python
-Requires:	glib-devel
+Requires:	glib
 Requires:	libffi
 Requires:	pcre
 %description

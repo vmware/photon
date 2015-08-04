@@ -202,10 +202,10 @@ docker-image:
 		--net=host \
 		-v `pwd`:/workspace \
 		toliaqat/photon-dev \
-		./support/dockerfiles/photon/make-docker-image.sh /workspace
+		./support/dockerfiles/photon/make-docker-image.sh tdnf
 
 install-docker-image: docker-image
-	sudo docker build -t photon:base .
+	sudo docker build -t photon:tdnf .
 
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."
