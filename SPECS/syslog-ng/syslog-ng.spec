@@ -1,7 +1,7 @@
 Summary:	Next generation system logger facilty
 Name:		syslog-ng
 Version:	3.6.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPL + LGPL
 URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-system
 Group:		System Environment/Daemons
@@ -73,7 +73,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 mkdir -p /usr/var/
 /bin/systemctl enable syslog-ng
 
-%postun
+%preun
 /bin/systemctl disable syslog-ng
 
 %clean
@@ -109,6 +109,8 @@ rm -rf %{buildroot}/*
 /usr/share/xsd/*
 
 %changelog
+*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.6.2-3
+-       Adding preun section.
 *	Sat Jul 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-2
 -	Split headers and unshared libs over to devel package.
 *	Thu Jun 4 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-1

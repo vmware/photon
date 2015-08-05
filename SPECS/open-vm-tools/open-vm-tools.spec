@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	9.10.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools/archive/stable-9.10.x.zip
 Group:		Applications/System
@@ -71,7 +71,13 @@ rm -f %{buildroot}/sbin/mount.vmhgfs
 ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 /sbin/ldconfig
 /bin/systemctl enable vmtoolsd
+
+%preun
+/bin/systemctl disable vmtoolsd
+
 %postun	-p /sbin/ldconfig
+rm -f /sbin/mount.vmhgfs
+
 %files 
 %defattr(-,root,root)
 %{_libdir}/open-vm-tools/plugins/*
@@ -89,6 +95,8 @@ ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 
 
 %changelog
+*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-6
+        Adding preun and post install commands.
 *       Thu Jul 30 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-5
         Adding Blob configuation support to GOSC scripts.
 *       Thu Jul 09 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-4

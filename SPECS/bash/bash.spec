@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -220,6 +220,11 @@ test -e /root/.bash_profile || cp /etc/skel/.bash_profile /root
 test -e /root/.bashrc || cp /etc/skel/.bashrc /root
 test -e /root/.bash_logout || cp /etc/skel/.bash_logout /root
 
+%postun
+rm -f /root/.bashrc
+rm -f /root/.bash_profile
+rm -f /root/.bash_logout
+
 %files
 %defattr(-,root,root)
 /bin/*
@@ -232,6 +237,8 @@ test -e /root/.bash_logout || cp /etc/skel/.bash_logout /root
 %defattr(-,root,root)
 
 %changelog
+*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
+-       Adding post unstall section.
 *	Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
 -	Fix segfault in save_bash_input.
 *	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2

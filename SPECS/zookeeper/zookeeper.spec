@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -55,6 +55,7 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --log-dir=%{_var}/log/zookeeper \
        --pid-dir=%{_var}/run \
        --var-dir=%{_var}/zookeeper
+-p /sbin/ldconfig
 
 %preun
 bash %{_prefix}/sbin/update-zookeeper-env.sh \
@@ -76,5 +77,8 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 %{_prefix}
 
 %changelog
-*	Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
-	Initial build. First version
+
+*	Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
+        Adding ldconfig in post section.
+*       Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
+        Initial build. First version	Initial build. First version
