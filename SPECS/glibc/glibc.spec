@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -118,9 +118,13 @@ cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 	/opt/lib
 	include /etc/ld.so.conf.d/*.conf
 EOF
+
 %post
 printf "Creating ldconfig cache\n";/sbin/ldconfig
-#printf "Creating locale files\n";/sbin/locale-gen.sh
+
+%postun
+/sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %dir %{_localstatedir}/cache/nscd
@@ -187,6 +191,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %lang(zh_TW) %{_datarootdir}/locale/zh_TW/LC_MESSAGES/libc.mo
 
 %changelog
+*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.19-5
+        Adding postun section for ldconfig.
 *	Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.19-4
 	Support glibc building against current rpm version.
 *	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-3
