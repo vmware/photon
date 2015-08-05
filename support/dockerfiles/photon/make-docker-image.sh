@@ -17,6 +17,8 @@ TEMP_CHROOT=$(pwd)/temp_chroot
 ROOTFS_TAR_FILENAME=photon-rootfs.tar.bz2
 STAGE_DIR=$(pwd)/stage
 
+sudo createrepo $STAGE_DIR/RPMS
+
 cat > yum.conf <<- EOF
 
 [main]
