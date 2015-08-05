@@ -1,13 +1,13 @@
 Summary:	Programs for basic networking
 Name:		inetutils
 Version:	1.9.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/inetutils
 Group:		Applications/Communications
 Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:		http://ftp.gnu.org/gnu/inetutils/%{name}-%{version}.tar.gz
+Distribution: 	Photon
+Source0:	http://ftp.gnu.org/gnu/inetutils/%{name}-%{version}.tar.gz
 %define sha1 inetutils=b5aa9902e3a82bfd6e75b9aa80b72111e5418447
 %description
 The Inetutils package contains programs for basic networking.
@@ -26,16 +26,18 @@ echo '#define PATH_PROCNET_DEV "/proc/net/dev"' >> ifconfig/system/linux.h
 make %{?_smp_mflags}
 %install
 make SUIDMODE="-o root -m 755" DESTDIR=%{buildroot} install
-install -vdm 755 %{buildroot}/{bin,sbin}
-mv -v %{buildroot}%{_bindir}/{hostname,ifconfig,ping,ping6,traceroute} %{buildroot}/bin
+install -vd %{buildroot}%{_sbindir}
+mv -v %{buildroot}%{_bindir}/ifconfig %{buildroot}%{_sbindir}/ifconfig
 rm -rf %{buildroot}%{_infodir}
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
-/bin/*
 %{_bindir}/*
 %{_mandir}/man1/*
+%{_sbindir}/*
 %changelog
+*	Wed Aug 5 2015 Divya Thaluru <dthaluru@vmware.com> 1.9.2-2
+-	Packaging ifconfig in /usr/sbin directory instead of /usr/bin directory
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.9.2-1
 -	Initial build.	First version
