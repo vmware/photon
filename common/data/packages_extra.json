@@ -7,5 +7,5 @@
 		"librelp-devel","libtasn1-devel","libunistring-devel","nettle-devel",
 	        "apache-ant","ant-contrib","apache-maven","apache-tomcat","jna",
 		"dhcp-client","dhcp-server","dhcp-libs","dhcp-devel","initscripts","net-tools",
-	        "jaxws-ri","commons-daemon"]
+	        "jaxws-ri","commons-daemon","runit"]
 }
