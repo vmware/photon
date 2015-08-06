@@ -1,7 +1,7 @@
 Summary:	Package manager
 Name:		rpm
 Version:	4.11.2
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://rpm.org
 Group:		Applications/System
@@ -16,7 +16,6 @@ Source2:	rpm-system-configuring-scripts-2.2.tar.gz
 #Requires: nspr
 Requires: 	nss
 Requires: 	popt
-Requires: 	lua
 Requires:	elfutils-libelf
 BuildRequires:	python2
 BuildRequires:	python2-libs
@@ -32,9 +31,18 @@ RPM package manager
 Requires:   python2
 Summary:    Libraries and header files for rpm
 Provides:   pkgconfig(rpm)
-
 %description devel
 Static libraries and header files for the support library for rpm
+
+%package build
+Requires: perl
+Requires: rpm-devel
+Requires: rpm
+Requires: elfutils-libelf
+Requires: lua
+Summary: Binaries, scripts and libraries needed to build rpms.
+%description build
+Binaries, libraries and scripts to build rpms.
 
 %prep
 %setup -q
@@ -84,33 +92,105 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 /bin/rpm
 %{_sysconfdir}/rpm/macros
-%{_bindir}/*
-%{_libdir}/rpm/*
+%{_bindir}/gendiff
+%{_bindir}/rpm2cpio
+%{_bindir}/rpmdb
+%{_bindir}/rpmgraph
+%{_bindir}/rpmkeys
+%{_bindir}/rpmquery
+%{_bindir}/rpmverify
+
+%{_libdir}/rpm/check-buildroot
+%{_libdir}/rpm/check-files
+%{_libdir}/rpm/check-prereqs
+%{_libdir}/rpm/check-rpaths
+%{_libdir}/rpm/check-rpaths-worker
+%{_libdir}/rpm/config.guess
+%{_libdir}/rpm/config.sub
+%{_libdir}/rpm/debugedit
+%{_libdir}/rpm/desktop-file.prov
+%{_libdir}/rpm/elfdeps
+%{_libdir}/rpm/fontconfig.prov
+%{_libdir}/rpm/libtooldeps.sh
+%{_libdir}/rpm/macros
+%{_libdir}/rpm/mkinstalldirs
+%{_libdir}/rpm/pkgconfigdeps.sh
+%{_libdir}/rpm/platform
+%{_libdir}/rpm/pythondeps.sh
+%{_libdir}/rpm/rpm.daily
+%{_libdir}/rpm/rpm.log
+%{_libdir}/rpm/rpm.supp
+%{_libdir}/rpm/rpm2cpio.sh
+%{_libdir}/rpm/rpmdb_*
+%{_libdir}/rpm/rpmdeps
+%{_libdir}/rpm/rpmpopt-4.11.2
+%{_libdir}/rpm/rpmrc
+%{_libdir}/rpm/script.req
+%{_libdir}/rpm/tcl.req
+%{_libdir}/rpm/tgpg
+
+%{_libdir}/rpm/platform/*
 %{_libdir}/rpm-plugins/*
-%{_libdir}/librpmsign.so.*
-%{_libdir}/librpmbuild.so.*
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
-%{_mandir}/fr/man8/*.gz
-%{_mandir}/ja/man8/*.gz
-%{_mandir}/ko/man8/*.gz
-%{_mandir}/*/*.gz
-%{_mandir}/pl/man1/*.gz
-%{_mandir}/pl/man8/*.gz
-%{_mandir}/ru/man8/*.gz
-%{_mandir}/sk/man8/*.gz
+%{_mandir}/man8/rpm.8.gz
+%{_mandir}/man8/rpm2cpio.8.gz
+%{_mandir}/man8/rpmdb.8.gz
+%{_mandir}/man8/rpmgraph.8.gz
+%{_mandir}/man8/rpmkeys.8.gz
+%exclude %{_mandir}/fr/man8/*.gz
+%exclude %{_mandir}/ja/man8/*.gz
+%exclude %{_mandir}/ko/man8/*.gz
+%exclude %{_mandir}/pl/man1/*.gz
+%exclude %{_mandir}/pl/man8/*.gz
+%exclude %{_mandir}/ru/man8/*.gz
+%exclude %{_mandir}/sk/man8/*.gz
+
+%files build
+%{_bindir}/rpmbuild
+%{_bindir}/rpmsign
+%{_bindir}/rpmspec
+%{_libdir}/librpmsign.so
+%{_libdir}/librpmbuild.so
+%{_libdir}/librpmsign.so.*
+%{_libdir}/librpmbuild.so.*
+%{_libdir}/rpm/osgideps.pl
+%{_libdir}/rpm/perldeps.pl
+%{_libdir}/rpm/macros.perl
+%{_libdir}/rpm/perl.prov
+%{_libdir}/rpm/perl.req
+%{_libdir}/rpm/perldeps.pl
+%{_libdir}/rpm/find-debuginfo.sh
+%{_libdir}/rpm/find-lang.sh
+%{_libdir}/rpm/find-provides
+%{_libdir}/rpm/find-requires
+%{_libdir}/rpm/brp-*
+%{_libdir}/rpm/mono-find-provides
+%{_libdir}/rpm/mono-find-requires
+%{_libdir}/rpm/ocaml-find-provides.sh
+%{_libdir}/rpm/ocaml-find-requires.sh
+%{_libdir}/rpm/macros.perl
+%{_libdir}/rpm/macros.php
+%{_libdir}/rpm/macros.python
+%{_libdir}/rpm/fileattrs/*
+
+%{_mandir}/man1/gendiff.1*
+%{_mandir}/man8/rpmbuild.8*
+%{_mandir}/man8/rpmdeps.8*
+%{_mandir}/man8/rpmspec.8*
+%{_mandir}/man8/rpmsign.8.gz
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/python*
 %{_includedir}/*
 %{_libdir}/pkgconfig/rpm.pc
-%{_libdir}/librpmsign.so
-%{_libdir}/librpmbuild.so
 %{_libdir}/librpmio.so
 %{_libdir}/librpm.so
 
 %changelog
+*   Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
+-   Moving build utils to a different package.
 *	Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
 -	Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.
 *	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 4.11.2-4
