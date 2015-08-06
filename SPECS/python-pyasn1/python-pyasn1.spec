@@ -1,11 +1,12 @@
 Name:           python-pyasn1
 Version:        0.1.7
-Release:        1
+Release:        2
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/p/pyasn1/pyasn1-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
+%define sha1 python-pyasn1=a4a956213e406151269011965885b82134611857
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -33,5 +34,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Thu Aug 6 2015 Anish Swaminathan <anishs@vmware.com>
+- Added sha1sum
 * Fri Mar 13 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
-- Initial packaging for Discus
+- Initial packaging for Photon
