@@ -326,6 +326,7 @@ class SpecParser(object):
 
     def readChecksum(self,line,pkg):
         strUtils = StringUtils()
+        line=pkg.decodeContents(line)
         data = line.strip();
         words=data.split(" ")
         nrWords = len(words)
