@@ -44,7 +44,7 @@ clean-install clean-chroot
 
 THREADS?=1
 
-all: iso micro-iso minimal-iso docker-image
+all: iso micro-iso minimal-iso docker-image all-cloud-images
 
 micro: micro-iso
 
@@ -331,3 +331,6 @@ $(CONTAIN): $(TOOLS_BIN)
 	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@_unpriv
 	sudo install -o root -g root -m 4755 $@_unpriv $@
 
+IMAGES = gce azure ami ova
+all-cloud-images:
+	$(foreach var,$(IMAGES),sudo make cloud-image IMG_NAME=$(var);)
