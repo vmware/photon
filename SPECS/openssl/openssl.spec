@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha1 openssl=d01d17b44663e8ffa6a33a5a30053779d9593c3d
-
+Requires:	bash glibc libgcc perl perl-WWW-Curl 
 %description
 The OpenSSL package contains management tools and libraries relating
 to cryptography. These are useful for providing cryptography 

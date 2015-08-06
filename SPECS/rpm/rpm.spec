@@ -14,9 +14,9 @@ Source1:	http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 Source2:	rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
 #Requires: nspr
-Requires: 	nss
-Requires: 	popt
-Requires: 	lua
+Requires: 	nss perl-Module-ScanDeps
+Requires: 	popt perl libgcc
+Requires: 	lua zlib file bash
 Requires:	elfutils-libelf
 BuildRequires:	python2
 BuildRequires:	python2-libs
