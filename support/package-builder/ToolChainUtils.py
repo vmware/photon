@@ -45,7 +45,6 @@ class ToolChainUtils(object):
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
         self.logger.info("Successfully prepared chroot:"+chrootID)
 
-    #Tool chain should be built before calling this method
     def installToolChain(self,chrootID):
         self.logger.info("Installing toolchain.....")
         self.prepareBuildRoot(chrootID)
@@ -59,6 +58,8 @@ class ToolChainUtils(object):
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
+                    if package == "rpm-build":
+                        continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             rpmFiles += " " + rpmFile
