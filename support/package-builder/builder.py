@@ -143,18 +143,24 @@ def buildPackageList(specPath):
                 specFile = os.path.join(specDir, specEntry)
                 if os.path.isfile(specFile) and specFile.endswith(".spec"):
                     spec=Specutils(specFile)
-                    name=spec.getPackageNames()[0]
+                    name=spec.getBasePackageName()
                     version=spec.getRPMVersion(name)
                     license=spec.getLicense(name)
                     url=spec.getURL(name)
-                    source=spec.getSourceURLs()[0]
+                    ss=spec.getSourceURLs()
+                    sources=""
+                    for s in ss:
+                        if (s.startswith("http") or s.startswith("ftp")):
+                            if sources != "":
+                                sources += " "
+                            sources += s
                     patches=""
                     ps=spec.getPatchNames()
                     for p in ps:
                         if patches != "":
                             patches += " "
                         patches += p
-                    print name+","+version+","+license+","+url+","+source+","+patches
+                    print name+","+version+","+license+","+url+","+sources+","+patches
 
 def buildAPackage(package, buildThreads):
     listPackages=[]
