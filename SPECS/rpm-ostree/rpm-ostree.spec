@@ -31,15 +31,13 @@ BuildRequires: 	python2-libs
 BuildRequires:	python2
 BuildRequires: 	gobject-introspection-python
 
-Requires:      yum
 BuildRequires:	which
 BuildRequires:	popt-devel
 Requires:	libcap
-Requires:	librepo-devel
+Requires:	librepo
 Requires:	hawkey
-Requires:	rpm
-Requires:	libhif-devel
-Requires:	openssl-devel
+Requires:	libhif
+Requires:	openssl
 Requires:	ostree
 Requires:	json-glib
 
@@ -76,6 +74,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/man*/*.gz
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/*.typelib
+
+
 
 %files devel
 %{_libdir}/lib*.so

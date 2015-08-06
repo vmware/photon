@@ -1,7 +1,7 @@
 
 %global goroot          /usr/lib/golang
 %global gopath          %{_datadir}/gocode
-%global gohostarch  amd64
+%global gohostarch      amd64
 
 # rpmbuild magic to keep from having meta dependency on libc.so.6
 %define _use_internal_dependency_generator 0
@@ -9,7 +9,7 @@
 
 Summary:	Go 
 Name:		go
-Version:	1.3.3
+Version:	1.4.2
 Release:	1%{?dist}
 License:	BSD
 URL:		https://golang/org
@@ -17,16 +17,18 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
-%define sha1 go=b54b7deb7b7afe9f5d9a3f5dd830c7dede35393a
+%define sha1 go=460caac03379f746c473814a65223397e9c9a2f6
 BuildRequires:	mercurial
 Requires:	mercurial
 # We strip meta dependency, but go requires glibc.
 Requires:	glibc
+
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.  
 
 %prep
 %setup -qn %{name}
+
 %build
 export GOROOT_FINAL=%{goroot}
 export GOHOSTOS=linux
@@ -34,6 +36,7 @@ export GOHOSTARCH=%{gohostarch}
 pushd src
 ./make.bash --no-clean
 popd
+
 %install
 rm -rf %{buildroot}
 
@@ -77,15 +80,20 @@ chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
 
 
 %{_fixperms} %{buildroot}/*
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post	-p /sbin/ldconfig
+
 %postun	-p /sbin/ldconfig
 rm /etc/profile.d/go-exports.sh
 rm -rf /opt/%{name}
 exit 0
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %exclude %{goroot}/src/*.rc
@@ -101,6 +109,9 @@ rm -rf %{buildroot}/*
 %exclude %{goroot}/src/pkg/debug/dwarf/testdata
 %exclude %{goroot}/src/pkg/debug/elf/testdata
 %{_bindir}/*
+
 %changelog
+*	Mon Aug 03 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.4.2-1
+-	Update to golang release version 1.4.2
 *	Fri Oct 17 2014 Divya Thaluru <dthaluru@vmware.com> 1.3.3-1
 -	Initial build.	First version

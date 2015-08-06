@@ -1,6 +1,450 @@
-diff -ru gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts-2/imc-shell/imgcust-scripts/PhotonCustomization.sh
---- gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-06-17 23:22:17.000000000 +0000
-+++ gosc-scripts-2/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-07-08 21:54:10.065494490 +0000
+diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh
+--- gosc-scripts-original/imc-shell/imgcust-scripts/ConfigFile.sh	2015-07-28 20:17:25.000000000 +0000
++++ gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh	2015-07-30 18:30:34.119134000 +0000
+@@ -103,6 +103,8 @@
+   local lineLength=
+   local key=
+   local val=
++#  local bulkcontent=0
++  cloud_config_blob="content: |"
+ 
+   ConfigFile_Clear
+ 
+@@ -146,8 +148,11 @@
+     # key value pair (non-eager '=' for base64)
+     elif [[ $line =~ ([^=]+)=(.*) ]]; then
+       key="${BASH_REMATCH[1]}"
+-      val="${BASH_REMATCH[2]}"
++      val="${BASH_REMATCH[2]}"   
+ 
++      echo "$category"
++      echo "$key"
++    
+       # cleaning up on all "input" paths
+       key=$(Trim "$key")
+       val=$(Trim "$val")
+@@ -169,6 +174,44 @@
+   done <<<"$content"
+ }
+ 
++# Parses extra config file to parse the bulk blob content.
++# Args:
++#   content: string:Name of file containing blob data
++# Results:
++#   String: Content of Blob content config file
++# Throws:
++#   None
++ConfigFile_GetBlobContent()
++{
++  local content="$1"
++  local line=
++  local cloud_config_blob="content: |"
++
++  while read line
++  do
++    # remove end char \n (chomp)
++    line="${line%\\n}"
++
++    # spaces at the end are not allowed, things like passwords must be at least base64-encoded
++    line=$(Trim "$line")
++
++    if [[ -z "$line" ]]; then
++     # Debug "Empty line. Ignored."
++      continue
++    fi
++
++    if [[ $line == '#'* ]]; then
++      #Debug "Comment found. Line ignored."
++      continue
++    fi
++
++    cloud_config_blob="$cloud_config_blob
++        $line"
++
++  done <<<"$content"
++  echo "$cloud_config_blob"
++}
++
+ # Parses properties from a .cfg file.
+ #
+ # Any previously available properties will be removed.
+@@ -184,14 +227,28 @@
+ ConfigFile_LoadConfigFile()
+ {
+   local filename=$1
+-
+-  Info "Opening file name $filename."
+-
++  Info "Opening file name $filename"
+   local content=$(<$filename)
++  ConfigFile_LoadConfigContent "$content"  
++}
+ 
+-  ConfigFile_LoadConfigContent "$content"
++# Open and parses content from Blob file content.
++#
++# Args:
++#   filename: string: full path to a .cfg file
++# Results:
++#   Bulk Config File Content.
++# Throws:
++#   None
++ConfigFile_WriteFileContent()
++{
++  local filename=$1
++  local content=$(<$filename)
++  local result=$(ConfigFile_GetBlobContent "$content") 
++  echo "$result"
+ }
+ 
++
+ # Determines whether a property with a given key exists.
+ #
+ # Args:
+@@ -493,6 +550,122 @@
+   echo "$val"
+ }
+ 
++# Retrieves Lightware domain IP.
++#
++# Args:
++#   None
++# Results:
++#   string: domainname or empty string in case it's missing or empty
++# Throws:
++#   None
++ConfigFile_GetLWDomainIP()
++{
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|DOMAINIP')"
++}
++
++# Retrieves Lightware domain password.
++#
++# Args:
++#   None
++# Results:
++#   string: Lightwave domain password or empty if its missing or empty
++# Throws:
++#   None
++ConfigFile_GetLWDomainPwd()
++{
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|-PASS')"
++}
++
++# Retrieves Service-N file Name.
++#
++# Args:
++#   SERVICE-N File Name
++# Results:
++#   string: Number of commands to be run for this particular service
++# Throws:
++#   None
++ConfigFile_GetServiceFileCommandCount()
++{
++  local service_file=$1
++  local query="${service_file}|COMMANDCNT"
++  echo "$(ConfigFile_GetOptionalString $query)"
++}
++
++# Retrieves Service-N - command N to be executed
++#
++# Args:
++#   SERVICE-N File Name
++#   Command number
++# Results:
++#   string: Command to be run.
++# Throws:
++#   None
++ConfigFile_GetServiceFileCommand()
++{
++  local service_file=$1
++  local cmdNo=$2
++  local query="${service_file}|${cmdNo}"
++  echo "$(ConfigFile_GetOptionalString $query)"
++}
++
++# Retrieves Service-N file path
++#
++# Args:
++#   SERVICE-N File Name
++#
++# Results:
++#   string: Service file path
++# Throws:
++#   None
++ConfigFile_GetServiceFilePath()
++{
++  local service_file=$1
++  local query="${service_file}|PATH"
++  echo "$(ConfigFile_GetOptionalString $query)"
++}
++
++
++# Retrieves Number of custom service.
++#
++# Args:
++#   None
++# Results:
++#   integer: count
++# Throws:
++#   Dies in case setting is not present.
++ConfigFile_GetServiceCount()
++{
++  local val='' # has to be declared before assigned
++#  Info "Seee   Count"
++  val=$(ConfigFile_GetOptionalNonEmptyString "CLOUD-INIT-BLOB|SERVICES") || exit 1
++
++  local myresult=0
++
++  if [[ -n "$val" ]]; then
++    local spl=(${val//,/ })
++    myresult="${#spl[@]}"
++  fi
++#  Info "service Count "
++  echo "$myresult"
++}
++
++# Retrieves Service File Name.
++#
++# Args:
++#   None
++# Results:
++#   string: service file name
++# Throws:
++#   Dies in case setting is not present.
++ConfigFile_GetServiceFileName()
++{  
++  local service_file=$1
++ # echo "$service_file"
++  local query="${service_file}|NAME"
++  echo "$(ConfigFile_GetOptionalString $query)"
++
++}
++
+ # Retrieves whether to set time to UTC or Local.
+ #
+ # Args:
+diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh
+--- gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-07-28 20:17:25.000000000 +0000
++++ gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-07-30 20:03:30.567183898 +0000
+@@ -385,7 +385,7 @@
+   local oldFQDN=$(GetResolverFqdn)
+   local res=''
+   Info "CHF"
+-  echo $pldHostname
++  echo $oldHostname
+   echo $oldFQDN
+  
+   CustomizeHostsFileContent "" "$oldHostname" "$oldFQDN" "res"
+@@ -670,6 +670,130 @@
+   Info "InstallCustomScript has completed"
+ }
+ 
++# Generates lightwave YUM repository config file named lightwave.repo.
++#
++# Args:
++#   resultVar: string: name of the result OUT var
++# Results:
++#   string: contents of the file
++# Throws:
++#   None
++GenerateLWYumConfigFile_lightwave()
++{
++  local resultVar=$1
++  local stringResult= 
++  export stringResult=$(${CAT} <<EOF
++[lightwave]
++name=VMware Lightwave 1.0(x86_64)
++baseurl=https://dl.bintray.com/vmware/lightwave
++gpgkey=file:///etc/pki/rpm-gpg/PHOTON-RPM-GPG-KEY
++gpgcheck=0
++enabled=1
++skip_if_unavailable=True
++EOF
++)
++
++  eval $resultVar="'$stringResult'"
++}
++
++# Generates lightwave YUM repository config file named photon-extras.
++#
++# Args:
++#   resultVar: string: name of the result OUT var
++# Results:
++#   string: contents of the file
++# Throws:
++#   None
++GenerateLWYumConfigFile_photon_extras()
++{
++  local resultVar=$1
++  local stringResult= 
++  export stringResult=$(${CAT} <<EOF
++[photon-extras]
++name=VMware Photon Extras 1.0(x86_64)
++baseurl=https://dl.bintray.com/vmware/photon_extras
++gpgkey=file:///etc/pki/rpm-gpg/PHOTON-RPM-GPG-KEY
++gpgcheck=0
++enabled=1
++skip_if_unavailable=True
++EOF
++)
++
++  eval $resultVar="'$stringResult'"
++}
++
++# Execute Photon vm to join lightwave configuration if provided credential in input.
++#
++# Args:
++#   None
++# Results:
++#   None
++# Throws:
++#   None
++LightWaveDomainJoin()
++{
++  local lightWaveFile="/etc/yum.repos.d/lightwave.repo"
++  local photonExtraFile="/etc/yum.repos.d/photon-extras.repo"
++
++  local lw_ip=$(ConfigFile_GetLWDomainIP)
++  local lw_pwd=$(ConfigFile_GetLWDomainPwd)
++
++  if [[ -n "$lw_ip" ]]; then
++    Debug "Light Server address is $lw_ip"
++    
++    GenerateLWYumConfigFile_lightwave content1
++    GenerateLWYumConfigFile_photon_extras content2
++
++    echo "${content1}" > $lightWaveFile
++    echo "${content2}" > $photonExtraFile
++
++    echo "y" | /bin/tdnf install vmware-lightwave-clients
++    echo $lw_pwd | /opt/vmware/bin/ic-join --domain-controller $lw_ip
++    Debug "Light wave join procedure completed"
++  else
++    Debug "Lightwave Configuration missing :: Nothing to Configure"
++  fi 
++}
++
++
++# Execute all blob service file commands if present in the configuration file.
++# 
++# Args:
++#   None
++# Results:
++#   None
++# Throws:
++#   Nothing
++#
++ExecuteAllBlobServiceFileCommands()
++{
++  local val=''
++  val=$(ConfigFile_GetOptionalNonEmptyString "CLOUD-INIT-BLOB|SERVICES")
++
++  if [ -z "$val" ]; then
++    Info "No Blob Service file present:: Nothing to do"
++  else
++    Info "Service file found. executing Commands......."
++    local ser_cnt=$(ConfigFile_GetServiceCount)
++    for i in $(seq 1 $ser_cnt); do
++      local service_tag="SERVICE"
++      local command_tag="COMMAND"
++      local ser_query=$service_tag$i
++      local cmd_cnt=$(ConfigFile_GetServiceFileCommandCount $ser_query)
++      if [ "$cmd_cnt" -gt 0 ]; then
++        for j in $(seq 1 $ser_cnt); do
++          
++          local cmd_query=$command_tag$j
++          local commd=$(ConfigFile_GetServiceFileCommand $ser_query $cmd_query)
++          Exec '$commd'
++        done
++      fi
++    done
++  fi
++}
++
++
++
+ # Generates cloud-init configuration files which represents customization.
+ #
+ # Args:
+@@ -697,30 +821,6 @@
+ EOF
+ )
+ 
+-  local scriptName=$(ConfigFile_GetCustomScriptName)
+-
+-  if [[ -n "$scriptName" ]]; then
+-    export formatResult=$formatResult$(${CAT} <<EOF
+-
+-
+-photon:
+-    units:
+-      - name: post-customize-guest.service
+-        enable: yes
+-        content: |
+-          [Unit]
+-          Description=GOSC
+-
+-          [Service]
+-          TimeoutStartSec=0
+-          ExecStart=/etc/systemd/system/post-customize-guest.sh
+-
+-          [Install]
+-          WantedBy=multi-user.target
+-EOF
+-)
+-  fi
+-
+   securitySshRsa=$(GetOvfPropertyValue 'security.ssh-rsa' $tmpOvfEnvFile)
+ 
+   if [[ -n "$securitySshRsa" ]]; then
+@@ -754,6 +854,33 @@
+ )
+   fi
+ 
++  export formatResult=$formatResult$(${CAT} <<EOF
++
++write_files:
++EOF
++)
++ 
++ local service_cnt=$(ConfigFile_GetServiceCount)
++ if [ "$service_cnt" -gt 0 ]; then
++   for j in $(seq 1 $service_cnt); do
++       Debug "Writing service file '$j'"
++       local ser="SERVICE"
++       queryString=$ser$j
++       local ff_name=$(ConfigFile_GetServiceFileName $queryString)
++       local path=$(ConfigFile_GetServiceFilePath $queryString)      
++       local abs_file="$path/$ff_name"
++       local data=$(ConfigFile_WriteFileContent $abs_file)
++       export formatResult=$formatResult$(${CAT} <<EOF
++
++    - path: /etc/systemd/system/$ff_name.service
++      permissions: 0644
++      $data        
++EOF
++)
++
++    done
++  fi
++
+   local nicsCnt=$(ConfigFile_GetNicsCnt)
+ 
+   local i=
+@@ -768,8 +895,6 @@
+ 
+     export formatResult=$formatResult$(${CAT} <<EOF
+ 
+-
+-write_files:
+     - path: /etc/systemd/network/ifcfg-$ifCfg.network
+       permissions: 0644
+       content: |
+Only in gosc-scripts/imc-shell/imgcust-scripts: CustomizationUtils.sh~
+diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh
+--- gosc-scripts-original/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-07-28 20:17:25.000000000 +0000
++++ gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-07-30 18:30:29.015134000 +0000
 @@ -10,7 +10,7 @@
  
    local ciConfigPath="/tmp/cloud-config.ci"
@@ -10,14 +454,26 @@ diff -ru gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scri
  
    ConfigFile_LoadConfigFile $configPath
  
-@@ -50,6 +50,9 @@
-   # If you don't quote the variable when you echo it, newlines are lost.
-   echo "${content}" > $ciConfigPath
- 
+@@ -44,6 +44,9 @@
+   else
+     Exec "/usr/bin/timedatectl set-timezone $tz" '' ''
+   fi
++  
 +  sleep 2
 +  rm -rf /var/lib/cloud/instance*
-+
-   Exec '/usr/bin/cloud-init --file '$ciConfigPath' init'
  
-   Exec '/bin/systemctl restart systemd-networkd' '' ''
-Only in gosc-scripts-2/imc-shell/imgcust-scripts: PhotonCustomization.sh~
+   GenerateCloudInitConfig content "GetInterfaceByMacAddressIPAddrShow" $tmpOvfEnvFile
+ 
+@@ -65,6 +68,12 @@
+     echo "${shadow}" > /etc/shadow
+   fi
+   
++  # Execute all commands present in blob service file
++  ExecuteAllBlobServiceFileCommands
++  
++  # Call lightwave domain join
++  LightWaveDomainJoin
++
+   machineId=$(GetBiosUuid "")
+ 
+ }

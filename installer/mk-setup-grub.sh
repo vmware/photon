@@ -41,10 +41,11 @@ ARCH=$(uname -m)	# host architecture
 > ${LOGFILE}		#	clear/initialize logfile
 
 # Check if passing a HHD and partition
-if [ $# -eq 2 ] 
+if [ $# -eq 3 ] 
 	then
-		HDD=$1
-		PARTITION=$2
+        BOOTMODE=$1
+		HDD=$2
+		PARTITION=$3
 fi
 
 #
@@ -62,7 +63,12 @@ echo "Unable to found grub install command"
 exit 1
 fi
 
-grub_mbr_install
+if [ "$BOOTMODE" == "bios" ]; then 
+    grub_mbr_install
+fi
+if [ "$BOOTMODE" == "efi" ]; then 
+    grub_efi_install
+fi
 
 cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon

@@ -7,7 +7,7 @@
                 "perl-Module-ScanDeps","perl-Types-Serialiser","perl-WWW-Curl","perl-YAML-Tiny","perl-YAML","perl-common-sense","perl-libintl","tcsh",
                 "gobject-introspection", "gobject-introspection-devel", "gobject-introspection-python", "procps-ng-devel", 
                 "bash-lang", "kbd", "coreutils-lang", "libxslt", "docbook-xml", "docbook-xsl", "gtk-doc", "popt-devel", "texinfo", "tar", 
-                "kubernetes", "cyrus-sasl", "openldap", "binutils-devel", "python-iniparse", "psmisc", "etcd", "openssl-devel", 
+                "kubernetes", "cyrus-sasl", "openldap", "binutils", "binutils-devel", "python-iniparse", "psmisc", "etcd", "openssl-devel", 
                 "util-linux-lang", "db-docs", "linux-dev", "linux-docs", "mpc", "json-glib", "json-glib-devel", 
                 "automake", "libpcap", "tcpdump", "elfutils-libelf-devel", "elfutils", "elfutils-devel", "elfutils-devel-static", "elfutils-libelf-devel-static", 
                 "go", "grub2","grub2-lang", "diffutils", "groff", "man-db", "mpfr-devel", "man-pages", 
@@ -24,7 +24,8 @@
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel", "vim-extra",
                 "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "syslog-ng-devel", "zookeeper", "fuse", "fleet",
-                "nss-altfiles", "apache-maven", "subversion", "mesos", "python3", "python3-libs", "python3-devel", "python3-tools", "fakeroot-ng", "ctags", "libtirpc","libtirpc-devel","lsof","nfs-utils"]
+                "nss-altfiles", "apache-maven", "subversion", "mesos", "python3", "python3-libs", "python3-devel", "python3-tools", "fakeroot-ng", "ctags",
+                "libtirpc", "libtirpc-devel", "lsof", "nfs-utils", "cve-check-tool", "flannel"]
 }
 
 

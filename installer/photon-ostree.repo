@@ -1,6 +1,5 @@
 [photon-ostree]
-name=VMware Photon Linux 1.0(x86_64)
-baseurl=http://192.168.29.140:8090/
+name=VMware Photon OSTree Linux 1.0(x86_64)
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY
 gpgcheck=0
 enabled=1

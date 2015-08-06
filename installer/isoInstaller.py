@@ -92,8 +92,6 @@ class IsoInstaller(object):
         curses.curs_set(0)
 
         self.cd_path = None;
-
-        self.install_config = {'iso_system': False}
         
         kernel_params = subprocess.check_output(['cat', '/proc/cmdline'])
 
@@ -115,18 +113,19 @@ class IsoInstaller(object):
         # This represents the installer screen, the bool indicated if I can go back to this window or not
         items = []
         if not ks_config:
+            install_config = {'iso_system': False}
             license_agreement = License(self.maxy, self.maxx)
-            select_disk = SelectDisk(self.maxy, self.maxx, self.install_config)
-            package_selector = PackageSelector(self.maxy, self.maxx, self.install_config, options_file)
+            select_disk = SelectDisk(self.maxy, self.maxx, install_config)
+            package_selector = PackageSelector(self.maxy, self.maxx, install_config, options_file)
             hostname_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, 'hostname', False, 'Choose the hostname for your system',
                 'Hostname:', 
-                2, self.install_config)
+                2, install_config)
             root_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, 'password', False,  'Set up root password',
                 'Root password:', 
-                2, self.install_config)
+                2, install_config)
             confirm_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, 'password', True,  'Confirm root password',
                 'Confirm Root password:', 
-                2, self.install_config)
+                2, install_config)
             
             items = items + [
                     (license_agreement.display, False),
@@ -136,7 +135,11 @@ class IsoInstaller(object):
                     (root_password_reader.get_user_string, True),
                     (confirm_password_reader.get_user_string, False),
                  ]
-        installer = InstallerContainer(self.install_config, self.maxy, self.maxx, True, rpm_path=rpm_path, log_path="/var/log", ks_config=ks_config)
+        else:
+            install_config = ks_config
+            install_config['iso_system'] = False
+
+        installer = InstallerContainer(install_config, self.maxy, self.maxx, True, rpm_path=rpm_path, log_path="/var/log", ks_config=ks_config)
 
         items = items + [(installer.install, False)]
 

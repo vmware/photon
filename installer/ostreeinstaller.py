@@ -42,7 +42,7 @@ class OstreeInstaller(Installer):
                     "Please provide the URL of OSTree repo",
                     "OSTree Repo URL:", 2,
                     self.install_config,
-                    "http://192.168.29.166/")
+                    "https://dl.bintray.com/vmware/photon/rpms/dev/")
 
                 ret = ostree_url_reader.get_user_string(None)
                 self.ostree_repo_url = ret.result
@@ -54,7 +54,7 @@ class OstreeInstaller(Installer):
                 "Please provide the Ref in OSTree repo",
                 "OSTree Repo Ref:", 2,
                 self.install_config,
-                "tp2/x86_64/minimal")
+                "dev/x86_64/minimal")
 
             ret = ostree_ref_reader.get_user_string(None)
             self.ostree_ref = ret.result
