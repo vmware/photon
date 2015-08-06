@@ -1,12 +1,13 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.0.14
-Release:        1
+Release:        2
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            http://go.microsoft.com/fwlink/?LinkId=250998
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
+%define sha1 WALinuxAgent=90448cc3f48f21a23a0932d1cf05e75d5a5bf158
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -78,5 +79,7 @@ fi
 
 
 %changelog
+* Thu Aug 6 2015 Anish Swaminathan <anishs@vmware.com>
+- Added sha1sum
 * Fri Mar 13 2015 - mbassiouny@vmware.com
 - Initial pacaking for Discus
