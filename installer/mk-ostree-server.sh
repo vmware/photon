@@ -22,5 +22,5 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 ROOT=$1
 
 mkdir -p ${ROOT}/srv/rpm-ostree
-ostree --repo=${ROOT}/srv/rpm-ostree/repo init --mode=archive-z2 >> "${LOGFILE}" 2>&1
-rpm-ostree compose tree --repo=${ROOT}/srv/rpm-ostree/repo photon-base.json >> "${LOGFILE}" 2>&1
+ostree --repo=${ROOT}/srv/rpm-ostree/repo init --mode=archive-z2  2>&1 | tee "${LOGFILE}"
+rpm-ostree compose tree --repo=${ROOT}/srv/rpm-ostree/repo photon-base.json  2>&1 |  tee "${LOGFILE}"

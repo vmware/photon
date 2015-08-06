@@ -10,6 +10,8 @@ fi
 
 PROGRAM=$0
 
+createrepo stage/RPMS
+
 cp installer/photon-ostree.repo installer/photon-ostree.repo.bak
 echo "baseurl=file:///photon/stage/RPMS" >> installer/photon-ostree.repo
 
@@ -22,4 +24,4 @@ tar -zcf stage/ostree-repo.tar.gz stage/ostree-repo/repo/
 
 # Restore file
 mv -f installer/photon-ostree.repo.bak installer/photon-ostree.repo
-
+rm -rf stage/ostree-repo
