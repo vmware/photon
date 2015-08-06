@@ -17,6 +17,7 @@ Source0:	http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
 Provides:	perl >= 0:5.003000
 Provides:	perl(getopts.pl)
 Provides:   /bin/perl
+Requires:	perl-DBD-SQLite perl-DBIx-Simple zlib gdbm glibc libgcc
 %description
 The Perl package contains the Practical Extraction and
 Report Language.
