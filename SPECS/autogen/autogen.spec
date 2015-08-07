@@ -15,6 +15,7 @@ BuildRequires:	which
 #BuildRequires:	libltdl-devel
 Requires:	guile
 Requires:	gc
+Requires:	gmp
 Distribution:	Photon
 %description
 AutoGen is a tool designed to simplify the creation and maintenance of programs that contain large amounts of repetitious text. It is especially valuable in programs that have several blocks of text that must be kept synchronized.

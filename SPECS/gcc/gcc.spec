@@ -13,7 +13,7 @@ Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz
 Requires:	libstdc++-devel
 Requires:	libgcc-devel
 Requires:	libgomp-devel
-
+Requires:	gmp
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
