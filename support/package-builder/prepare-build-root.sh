@@ -21,6 +21,7 @@ BUILDROOT=$1
 SPEC_PATH=$2
 RPM_PATH=$3
 LOG_PATH=$4
+DIST=$5
 PARENT=/usr/src/photon
 
 LOGFILE="$(date +%Y-%m-%d).log"
@@ -58,7 +59,7 @@ if [ -z ${RPMPKG} ] ; then
 FSSPEC="$(find -L $SPEC_PATH -name 'filesystem.spec' -print)"
 test -z ${RPMPKG} || fail "Unable to find filesystem.spec file in $SPEC_PATH"
 #run_command "	Extracting filesystem spec" "cp ${FSSPEC} ${BUILDROOT}/${PARENT}/SPECS" "$LOG_PATH/filesystem.log"
-run_command "Building filesystem rpm" "rpmbuild -ba --nocheck --define \"_topdir ${BUILDROOT}/${PARENT}\" --define \"_dbpath ${BUILDROOT}/var/lib/rpm\" ${FSSPEC}" "$LOG_PATH/filesystem.log"
+run_command "Building filesystem rpm" "rpmbuild -ba --nocheck --define \"_topdir ${BUILDROOT}/${PARENT}\" --define \"_dbpath ${BUILDROOT}/var/lib/rpm\" --define \"dist ${DIST}\" ${FSSPEC}" "$LOG_PATH/filesystem.log"
 #run_command "	Building filesystem rpm " "rpmbuild -ba --nocheck --root ${BUILDROOT} --define '_topdir ${PARENT}' --define '_dbpath /var/lib/rpm' ${BUILDROOT}${PARENT}/SPECS/filesystem.spec" "$LOG_PATH/filesystem.log"
 run_command "	Extracting filesystem rpm" "cp ${BUILDROOT}/${PARENT}/RPMS/x86_64/filesystem*.rpm ${RPM_PATH}/x86_64/" "$LOG_PATH/filesystem.log"
 fi

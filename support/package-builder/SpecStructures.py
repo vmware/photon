@@ -1,3 +1,4 @@
+import constants
 
 class rpmMacro(object):
 
@@ -31,7 +32,7 @@ class Package(object):
         self.version=""
         self.release=""
         self.buildarch="x86_64"
-        self.distribution=""
+        self.distribution=constants.constants.dist
         self.basePkgName=""
         
         self.sources=[]
