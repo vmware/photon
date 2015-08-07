@@ -25,7 +25,7 @@
                 "haveged", "haveged-devel", "vim-extra",
                 "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "syslog-ng-devel", "zookeeper", "fuse", "fleet",
                 "nss-altfiles", "apache-maven", "subversion", "mesos", "python3", "python3-libs", "python3-devel", "python3-tools", "fakeroot-ng", "ctags",
-                "libtirpc", "libtirpc-devel", "lsof", "nfs-utils", "cve-check-tool", "flannel"]
+                "libtirpc", "libtirpc-devel", "lsof", "nfs-utils", "cve-check-tool", "flannel", "rpm-build"]
 }
 
 

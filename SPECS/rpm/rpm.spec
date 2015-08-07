@@ -125,8 +125,6 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/rpmdeps
 %{_libdir}/rpm/rpmpopt-4.11.2
 %{_libdir}/rpm/rpmrc
-%{_libdir}/rpm/script.req
-%{_libdir}/rpm/tcl.req
 %{_libdir}/rpm/tgpg
 
 %{_libdir}/rpm/platform/*
@@ -150,10 +148,6 @@ rm -rf %{buildroot}
 %{_bindir}/rpmbuild
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
-%{_libdir}/librpmsign.so
-%{_libdir}/librpmbuild.so
-%{_libdir}/librpmsign.so.*
-%{_libdir}/librpmbuild.so.*
 %{_libdir}/rpm/osgideps.pl
 %{_libdir}/rpm/perldeps.pl
 %{_libdir}/rpm/macros.perl
@@ -173,6 +167,8 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/macros.php
 %{_libdir}/rpm/macros.python
 %{_libdir}/rpm/fileattrs/*
+%{_libdir}/rpm/script.req
+%{_libdir}/rpm/tcl.req
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -187,6 +183,10 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/rpm.pc
 %{_libdir}/librpmio.so
 %{_libdir}/librpm.so
+%{_libdir}/librpmsign.so
+%{_libdir}/librpmbuild.so
+%{_libdir}/librpmsign.so.*
+%{_libdir}/librpmbuild.so.*
 
 %changelog
 *   Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
