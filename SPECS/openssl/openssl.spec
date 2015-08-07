@@ -59,17 +59,15 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-/%{_sysconfdir}/ssl/certs
-/%{_sysconfdir}/ssl/misc
-/%{_sysconfdir}/ssl/misc/CA.sh
-/%{_sysconfdir}/ssl/misc/c_hash
-/%{_sysconfdir}/ssl/misc/c_info
-/%{_sysconfdir}/ssl/misc/c_issuer
-/%{_sysconfdir}/ssl/misc/c_name
-/%{_sysconfdir}/ssl/openssl.cnf
-/%{_sysconfdir}/ssl/private
-/%{_bindir}/openssl
-%{_bindir}/*
+%{_sysconfdir}/ssl/certs
+%{_sysconfdir}/ssl/misc/CA.sh
+%{_sysconfdir}/ssl/misc/c_hash
+%{_sysconfdir}/ssl/misc/c_info
+%{_sysconfdir}/ssl/misc/c_issuer
+%{_sysconfdir}/ssl/misc/c_name
+%{_sysconfdir}/ssl/openssl.cnf
+%{_sysconfdir}/ssl/private
+%{_bindir}/openssl
 %{_libdir}/*.so.*
 %{_libdir}/engines/*
 %{_mandir}/man1/*
