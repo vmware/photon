@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2d
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -23,6 +23,13 @@ Requires: openssl = %{version}-%{release}
 %description devel
 Header files for doing development with openssl.
 
+%package perl
+Summary: openssl perl scripts
+Group: Applications/Internet
+Requires: perl
+Requires: openssl = %{version}-%{release}
+%description perl
+Perl scripts that convert certificates and keys to various formats.
 
 %prep
 %setup -q
@@ -32,7 +39,7 @@ export CFLAGS="%{optflags}"
 ./config \
 	--prefix=%{_prefix} \
 	--libdir=lib \
-	--openssldir=/etc/ssl \
+	--openssldir=/%{_sysconfdir}/ssl \
 	shared \
 	zlib-dynamic \
 	-Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
@@ -52,7 +59,16 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-/etc/ssl/*
+/%{_sysconfdir}/ssl/certs
+/%{_sysconfdir}/ssl/misc
+/%{_sysconfdir}/ssl/misc/CA.sh
+/%{_sysconfdir}/ssl/misc/c_hash
+/%{_sysconfdir}/ssl/misc/c_info
+/%{_sysconfdir}/ssl/misc/c_issuer
+/%{_sysconfdir}/ssl/misc/c_name
+/%{_sysconfdir}/ssl/openssl.cnf
+/%{_sysconfdir}/ssl/private
+/%{_bindir}/openssl
 %{_bindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/engines/*
@@ -68,8 +84,15 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.a
 %{_libdir}/*.so
 
+%files perl
+/%{_bindir}/c_rehash
+/%{_sysconfdir}/ssl/misc/tsget
+/%{_sysconfdir}/ssl/misc/CA.pl
+
 %changelog
-*       Fri Jul 24 2015 Chang Lee <changlee@vmware.com> 1.0.2d-1
--       Update new version.
+*   Fri Aug 07 2015 Sharath George <sharathg@vmware.com> 1.0.2d-2
+-   Split perl scripts to a different package.
+*   Fri Jul 24 2015 Chang Lee <changlee@vmware.com> 1.0.2d-1
+-   Update new version.
 *	Wed Mar 25 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2a-1
 -	Initial build.	First version
