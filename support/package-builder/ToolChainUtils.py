@@ -31,7 +31,7 @@ class ToolChainUtils(object):
     def prepareBuildRoot(self,chrootID):
         self.logger.info("Preparing build environment")
         cmdUtils = CommandUtils()
-        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.logPath
+        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.logPath + " " + constants.dist
         logFile=constants.logPath+"/prepareBuildRoot.log"
         returnVal=cmdUtils.runCommandInShell(prepareChrootCmd,logFile)
         if not returnVal:

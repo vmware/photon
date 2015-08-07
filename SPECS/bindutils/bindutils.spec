@@ -1,10 +1,10 @@
 Summary:	Domain Name System software
 Name:		bindutils
 Version:	9.10.1
-Release:	P1%{?dist}
+Release:	1%{?dist}
 License:	ISC
 URL:		http://www.isc.org/downloads/bind/
-Source0:	ftp://ftp.isc.org/isc/bind9/9.10.1-P1/bind-%{version}-%{release}.tar.gz
+Source0:	ftp://ftp.isc.org/isc/bind9/9.10.1-P1/bind-%{version}.tar.gz
 %define sha1 bind=24a81ba458a762c27be47461301fcf336cfb1d43
 Group:		Development/Tools
 Vendor:		VMware, Inc.
@@ -16,7 +16,7 @@ BIND is open source software that implements the Domain Name System (DNS) protoc
 for the Internet. It is a reference implementation of those protocols, but it is 
 also production-grade software, suitable for use in high-volume and high-reliability applications.
 %prep
-%setup -qn bind-%{version}-%{release}
+%setup -qn bind-%{version}
 %build
 ./configure \
 	--prefix=%{_prefix}

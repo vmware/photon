@@ -25,6 +25,7 @@ class PackageUtils(object):
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOption = "-ba --clean"
         self.rpmbuildNocheckOption = "--nocheck"
+        self.rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
         self.queryRpmPackageOptions = "-qa"
         self.forceRpmPackageOptions = "--force"
         self.adjustGCCSpecScript="adjust-gcc-specs.sh"
@@ -152,7 +153,7 @@ class PackageUtils(object):
 
     def buildRPM(self,specFile,logFile,chrootCmd):
         
-        rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildNocheckOption
+        rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildNocheckOption +" "+self.rpmbuildDistOption
         rpmBuildcmd+=" "+specFile
         
         cmdUtils = CommandUtils()
@@ -178,7 +179,7 @@ class PackageUtils(object):
         cmdUtils = CommandUtils()
         version = constants.specData.getVersion(package)
         release = constants.specData.getRelease(package)
-        listFoundRPMFiles = cmdUtils.findFile(package+"-"+version+"-"+release+"*.rpm",constants.rpmPath)
+        listFoundRPMFiles = cmdUtils.findFile(package+"-"+version+"-"+release+".*.rpm",constants.rpmPath)
         if len(listFoundRPMFiles) == 1 :
             return listFoundRPMFiles[0]
         if len(listFoundRPMFiles) == 0 :
