@@ -1396,7 +1396,7 @@ DoClone(void)
    VixDiskLibCreateParams createParams;
    createParams.adapterType = appGlobals.adapterType;
    createParams.capacity = appGlobals.mbSize * 2048;
-   createParams.diskType = VIXDISKLIB_DISK_MONOLITHIC_SPARSE;
+   createParams.diskType = VIXDISKLIB_DISK_STREAM_OPTIMIZED;
    createParams.hwVersion = VIXDISKLIB_HWVERSION_WORKSTATION_5;
 
    vixError = VixDiskLib_Clone(appGlobals.connection,
