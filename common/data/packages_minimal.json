@@ -9,7 +9,7 @@
                 "libdnet", "xerces-c", "xml-security-c", "libmspack", "open-vm-tools",
                 "docker","bridge-utils",
                 "libyaml", "PyYAML", "python-requests", "python-prettytable", "python-jsonpointer", "python-jsonpatch", "python-six", "python-configobj", "cloud-init",
-                "krb5", "e2fsprogs-devel", "which", "tcsh"]
+                "krb5", "e2fsprogs-devel", "which", "tcsh", "openssl-devel"]
 }
 
 
