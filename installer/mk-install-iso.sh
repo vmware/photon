@@ -38,7 +38,11 @@ WORKINGDIR=${BUILDROOT}
 BUILDROOT=${BUILDROOT}/photon-chroot
 
 cp -r BUILD_DVD/isolinux ${WORKINGDIR}/
-mv ${WORKINGDIR}/isolinux/live-menu.cfg ${WORKINGDIR}/isolinux/menu.cfg
+
+if [ "$LIVE_CD" = true ] ; then
+    mv ${WORKINGDIR}/isolinux/live-menu.cfg ${WORKINGDIR}/isolinux/menu.cfg
+fi
+
 cp sample_ks.cfg ${WORKINGDIR}/isolinux/
 
 find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
@@ -160,7 +164,3 @@ mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		$WORKINGDIR >$ISO_OUTPUT_NAME
 
 popd
-
-
-
-

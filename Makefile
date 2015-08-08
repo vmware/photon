@@ -44,7 +44,7 @@ clean-install clean-chroot
 
 THREADS?=1
 
-all: iso micro-iso minimal-iso docker-image
+all: iso micro-iso minimal-iso docker-image ostree-host-iso live-iso
 
 micro: micro-iso
 
@@ -122,7 +122,7 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 		-c $(PHOTON_BINTRAY_CONFIG) \
                 -t ${THREADS}
 
-iso: 
+iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building Photon FUll ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
