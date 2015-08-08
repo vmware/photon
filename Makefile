@@ -86,6 +86,17 @@ minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
+ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
+	@echo "Building Photon OSTree Host ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-ostree-host.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_DATA_DIR)/build_install_options_ostreehost.json \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
 packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -100,7 +111,7 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 		-c $(PHOTON_BINTRAY_CONFIG) \
                 -t ${THREADS}
 
-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building Photon FUll ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
@@ -206,6 +217,10 @@ docker-image:
 
 install-docker-image: docker-image
 	sudo docker build -t photon:tdnf .
+
+ostree-repo: $(PHOTON_PACKAGES)
+	@echo "Creating OSTree repo from local PRMs in ostree-repo.tar.gz..."
+	./support/ostree-tools/make-ostree-image.sh
 
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."

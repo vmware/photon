@@ -4,7 +4,7 @@
                 "sed", "bzip2", "pkg-config", "readline", "ncurses", "bash",
                 "cracklib", "cracklib-dicts", "cracklib-python", "shadow", 
                 "coreutils", "grep",
-                "findutils",
+                "findutils", "tar",
                 "xz", "grub2", "kmod", "grub2-efi",
                 "util-linux", "e2fsprogs",
                 "expat",

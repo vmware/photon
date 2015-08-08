@@ -28,13 +28,15 @@
         "title" : "4. Photon OSTree Host",
         "file" : "packages_ostree_host.json",
         "visible" : true,
-        "include" : "none"
+        "include" : "none",
+        "additional-files" : ["ostree-repo.tar.gz"]
     },
     "ostree_server" : {
         "title" : "5. Photon OSTree Server",
         "file" : "packages_ostree_server.json",
         "visible" : true,
-        "include" : "minimal"
+        "include" : "minimal",
+        "additional-files" : ["ostree-repo.tar.gz"]
     },
     "extra" : {
         "title" : "Extra packages not installed but packed in ISO.",
@@ -43,5 +45,3 @@
         "include" : "none"
     }
 }
-
-

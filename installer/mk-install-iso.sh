@@ -11,9 +11,7 @@
 #	End
 #
 
-set -o errexit          # exit if error...insurance ;)
-set -o nounset          # exit if variable not initalized
-set +h                  # disable hashall
+set +x                 # disable hashall
 PRGNAME=${0##*/}	    # script name minus the path
 source config.inc		#	configuration parameters
 source function.inc		#	commonn functions
@@ -30,6 +28,8 @@ ISO_OUTPUT_NAME=$1
 RPMS_PATH=$2
 PACKAGE_LIST_FILE=$3
 RPM_LIST=$4
+STAGE_PATH=$5
+ADDITIONAL_FILES_TO_COPY_FROM_STAGE=$6
 PHOTON_COMMON_DIR=$(dirname "${PACKAGE_LIST_FILE}")
 PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 #- Step 3 Setting up the boot loader
@@ -97,6 +97,16 @@ for rpm_name in $RPM_LIST; do
     FILENAME="`find . -name "$rpm_name-[0-9]*" -type f`"
     if [ -n "$FILENAME" ]; then
         cp --parent $FILENAME ${WORKINGDIR}/RPMS/;
+    fi
+done
+)
+
+# Work in sub-shell using ( ... ) to come back to original folder.
+(
+cd $STAGE_PATH
+for file_name in $ADDITIONAL_FILES_TO_COPY_FROM_STAGE; do
+    if [ -n "$file_name" ]; then
+        cp $file_name ${WORKINGDIR}/;
     fi
 done
 )

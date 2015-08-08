@@ -5,7 +5,7 @@
 
     "ref": "tp2/x86_64/minimal",
 
-    "repos": ["photon-ostree"],
+    "repos": ["photon"],
 
     "selinux": false,
 
@@ -25,5 +25,5 @@
                 "photon-release",
                 "vim", "tdnf",
                 "docker","bridge-utils",
-                "dracut", "dracut-tools", "ostree", "rpm-ostree", "nss-altfiles", "which"]
+                "dracut", "dracut-tools", "rpm-ostree", "nss-altfiles", "which"]
 }

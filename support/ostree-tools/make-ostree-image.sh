@@ -20,7 +20,7 @@ mkdir -p stage/ostree-repo
 
 sudo docker run -it --privileged -v $(pwd):/photon -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/installer"  toliaqat/photon:rpm-ostree ./mk-ostree-server.sh /
 
-tar -zcf stage/ostree-repo.tar.gz stage/ostree-repo/repo/
+(cd stage/ostree-repo/repo/; tar -zcf ../../ostree-repo.tar.gz .; )
 
 # Restore file
 mv -f installer/photon-ostree.repo.bak installer/photon-ostree.repo
