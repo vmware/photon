@@ -88,10 +88,11 @@ def create_rpm_list_to_copy_in_iso(build_install_option):
     options_sorted = option_list_json.items()
     packages = []
     for install_option in options_sorted:
-        file_path = os.path.join(base_path, install_option[1]["file"])
-        json_wrapper_package_list = JsonWrapper(file_path)
-        package_list_json = json_wrapper_package_list.read()
-        packages = packages + package_list_json["packages"]
+        if install_option[0] != "iso":
+            file_path = os.path.join(base_path, install_option[1]["file"])
+            json_wrapper_package_list = JsonWrapper(file_path)
+            package_list_json = json_wrapper_package_list.read()
+            packages = packages + package_list_json["packages"]
     return packages
 
 def create_additional_file_list_to_copy_in_iso(base_path, build_install_option):
@@ -103,6 +104,17 @@ def create_additional_file_list_to_copy_in_iso(base_path, build_install_option):
         if install_option[1].has_key("additional-files"):
             file_list = file_list + map(lambda filename: os.path.join(base_path, filename), install_option[1].get("additional-files")) 
     return file_list
+
+def get_live_cd_status_string(build_install_option):
+    json_wrapper_option_list = JsonWrapper(build_install_option)
+    option_list_json = json_wrapper_option_list.read()
+    options_sorted = option_list_json.items()
+    file_list = []
+    for install_option in options_sorted:
+        if install_option[1].has_key("live-cd"):
+            if install_option[1].get("live-cd") == True:
+                return "true"
+    return "false"
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <config file> <tools path>"
@@ -205,7 +217,8 @@ if __name__ == '__main__':
     if config['iso_system']:
         rpm_list = " ".join(create_rpm_list_to_copy_in_iso(options.package_list_file))
         files_to_copy = " ".join(create_additional_file_list_to_copy_in_iso(os.path.abspath(options.stage_path), options.package_list_file))
-        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy])
+        live_cd = get_live_cd_status_string(options.package_list_file)
+        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd])
         retval = process.wait()
 
     # Cleaning up for vmdk

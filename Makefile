@@ -39,7 +39,7 @@ TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
-check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
+check check-docker check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot
 
 THREADS?=1
@@ -97,6 +97,17 @@ ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
+live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+	@echo "Building Photon Minimal LIVE ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-live-iso.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_DATA_DIR)/build_install_options_livecd.json \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1                
+
 packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -111,7 +122,7 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 		-c $(PHOTON_BINTRAY_CONFIG) \
                 -t ${THREADS}
 
-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
+iso: 
 	@echo "Building Photon FUll ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
@@ -291,7 +302,10 @@ cloud-image: $(PHOTON_STAGE) $(PHOTON_ISO_PATH)
 		echo "Unable to find photon iso file... aborting build"; \
 	fi
 
-check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity
+check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity check-docker
+
+check-docker:
+	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }

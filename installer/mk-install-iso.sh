@@ -30,6 +30,7 @@ PACKAGE_LIST_FILE=$3
 RPM_LIST=$4
 STAGE_PATH=$5
 ADDITIONAL_FILES_TO_COPY_FROM_STAGE=$6
+LIVE_CD=$7
 PHOTON_COMMON_DIR=$(dirname "${PACKAGE_LIST_FILE}")
 PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 #- Step 3 Setting up the boot loader
@@ -37,6 +38,7 @@ WORKINGDIR=${BUILDROOT}
 BUILDROOT=${BUILDROOT}/photon-chroot
 
 cp -r BUILD_DVD/isolinux ${WORKINGDIR}/
+mv ${WORKINGDIR}/isolinux/live-menu.cfg ${WORKINGDIR}/isolinux/menu.cfg
 cp sample_ks.cfg ${WORKINGDIR}/isolinux/
 
 find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
@@ -65,6 +67,7 @@ mkdir -p ${BUILDROOT}/etc/systemd/scripts
 cp BUILD_DVD/fstab ${BUILDROOT}/etc/fstab
 
 #- Step 7 - Create installer script
+if [ "$LIVE_CD" = false ] ; then
 
 cat >> ${BUILDROOT}/bin/bootphotoninstaller << EOF
 #!/bin/bash
@@ -75,6 +78,8 @@ EOF
 
 chmod 755 ${BUILDROOT}/bin/bootphotoninstaller
 
+fi
+
 cat >> ${BUILDROOT}/init << EOF
 mount -t proc proc /proc
 /lib/systemd/systemd
@@ -84,7 +89,12 @@ chmod 755 ${BUILDROOT}/init
 #adding autologin to the root user
 sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --noclear %I $TERM/g" ${BUILDROOT}/lib/systemd/system/getty@.service
 
-sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${BUILDROOT}/etc/passwd
+#- Step 7 - Create installer script
+if [ "$LIVE_CD" = false ] ; then
+
+    sed -i "s/root:.*/root:x:0:0:root:\/root:\/bin\/bootphotoninstaller/g" ${BUILDROOT}/etc/passwd
+
+fi
 
 mkdir -p ${BUILDROOT}/mnt/photon-root/photon-chroot
 rm -rf ${BUILDROOT}/RPMS
@@ -116,23 +126,26 @@ createrepo --database ${WORKINGDIR}/RPMS
 
 rm -rf ${BUILDROOT}/LOGS
 
-# Cleaning up
-#Remove our rpm database as it fills up the ramdisk
-rm -rf ${BUILDROOT}/home/*
-rm -rf ${BUILDROOT}/var/lib/rpm
+if [ "$LIVE_CD" = false ] ; then
+    # Cleaning up
+    #Remove our rpm database as it fills up the ramdisk
+    rm -rf ${BUILDROOT}/home/*
+    rm -rf ${BUILDROOT}/var/lib/rpm
 
-# Remove the boot directory
-rm -rf ${BUILDROOT}/boot
+    # Remove the boot directory
+    rm -rf ${BUILDROOT}/boot
 
-#Remove the include files.
-rm -rf ${BUILDROOT}/usr/include
+    #Remove the include files.
+    rm -rf ${BUILDROOT}/usr/include
 
-# TODO: mbassiouny, Find a clean way to do that
-for i in `ls ${BUILDROOT}/usr/share/`; do
-	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' ]; then
-		rm -rf ${BUILDROOT}/usr/share/$i
-	fi
-done
+    # TODO: mbassiouny, Find a clean way to do that
+    for i in `ls ${BUILDROOT}/usr/share/`; do
+    	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' ]; then
+    		rm -rf ${BUILDROOT}/usr/share/$i
+    	fi
+    done
+
+fi
 
 # Generate the intird
 pushd $BUILDROOT
