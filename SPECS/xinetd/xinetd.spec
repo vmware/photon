@@ -3,7 +3,6 @@ Name:		xinetd
 Version:	2.3.15
 Release:	1%{?dist}
 License:	BSD
-URL:		http://www.xinetd.org/
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
 Distribution: 	Photon
@@ -27,7 +26,6 @@ mechanism to protect against port scanners, among other things.
 	--sbindir=%{buildroot}/%{_sbindir} 	\
 	--mandir=%{buildroot}/%{_datadir}/man 
   make
-  strip xinetd/xinetd
 
 %install
 rm -rf %{buildroot}
@@ -36,29 +34,25 @@ mkdir -p %{buildroot}/etc/rc.d/init.d
 mkdir -p %{buildroot}/etc/xinetd.d
 
 %makeinstall  
-#install -m 0755 xinetd6 %{buildroot}/%{_sbindir}
 install -m 0755 contrib/xinetd %{buildroot}/etc/rc.d/init.d/xinetd
 install -m 0600 contrib/xinetd.conf %{buildroot}/etc/
 cp contrib/xinetd.d/* %{buildroot}/etc/xinetd.d
-#pushd %{buildroot}
 mkdir -p %{buildroot}/lib/systemd/system
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/xinetd.service
-#popd
-install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
-ln -sfv ../../../../lib/systemd/system/xinetd.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/xinetd.service
+
 %clean
 rm -rf %{buildroot}
 
 %post
-/sbin/ldconfig 
-%systemd_post xinetd.service
+%{_sbindir}/ldconfig 
+if [ $1 -eq 1 ] ; then
+    # Initial installation
+    # Enabled by default per "runs once then goes away" exception
+    /bin/systemctl enable xinetd.service     >/dev/null 2>&1 || :
+fi
 
 %preun
-%systemd_preun xinetd.service
-
-%postun
-/sbin/ldconfig
-%systemd_postun_with_restart xinetd.service
+/bin/systemctl disable xinetd.service
 
 %files
 %defattr(-, root, root)
@@ -69,9 +63,10 @@ rm -rf %{buildroot}
 %attr(0750, root, root) %config(noreplace) /etc/xinetd.conf
 %attr(0750, root, root) %config(noreplace) /etc/xinetd.d/*
 /lib/systemd/system/xinetd.service
-/etc/systemd/system/multi-user.target.wants/xinetd.service
 
 %changelog
 *   Fri Aug 07 2015 Xiaolin Li  <xiaolinl@vmware.com> 2.3.15-1
--   Initial build. First version
+-   Add xinetd library to photon
+*   Sun Sep 07 2003 Steve Grubb <linux_4ever@yahoo.com>
+-   Refined installation and added services.
  

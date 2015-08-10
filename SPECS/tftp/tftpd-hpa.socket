@@ -1,9 +1,0 @@
-[Unit]
-Description = Listen for tftp connections
-
-[Socket]
-ListenDatagram = 69
-BindToDevice = eth0
-
-[Install]
-WantedBy = sockets.target
