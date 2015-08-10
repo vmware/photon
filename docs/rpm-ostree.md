@@ -22,13 +22,6 @@ rpm-ostree compose tree --repo=/srv/rpm-ostree/repo photon-base.json
 
 Above command will create a new commit that will have your package related changes in it.
 
-### Changing the RPM repo
-Following is the rpm repo file being used for fetching RPMs by the rpm-ostree command to create the ostree repo. Change this file to point to different rpm repo than the default Photon repo.
-
-```
-/srv/rpm-ostree/photon-ostree.json
-```
-
 ## RPM-OSTree Host
 
 OSTree host is the installation of Photon that retrives the images from RPM-OSTree server during installation. It can get atomic updates from the same server in its life time.
