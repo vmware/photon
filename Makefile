@@ -295,9 +295,9 @@ cloud-image: $(PHOTON_STAGE) $(PHOTON_ISO_PATH)
 	@echo "Building cloud image $(IMG_NAME)..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
-		sudo $(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
 	elif [ -e $(PHOTON_STAGE)/photon-minimal.iso ]; then \
-		sudo $(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon-minimal.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon-minimal.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
 	else \
 		echo "Unable to find photon iso file... aborting build"; \
 	fi
@@ -307,10 +307,10 @@ cloud-image-all: $(PHOTON_STAGE) $(PHOTON_ISO_PATH)
 	@echo "Building cloud images - gce, ami, azure and ova..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
-		sudo $(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT); \
-		sudo $(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT); \
-		sudo $(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) azure $(SRCROOT); \
-		sudo $(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) azure $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT); \
 	else \
 		echo "Unable to find photon iso file... aborting build"; \
 	fi
