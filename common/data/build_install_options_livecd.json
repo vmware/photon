@@ -3,7 +3,7 @@
         "title" : "Live CD Packages",
         "file" : "packages_minimal.json",
         "visible" : false,
-        "include" : "none",
+        "include" : [],
         "live-cd" : true
     }
 }
