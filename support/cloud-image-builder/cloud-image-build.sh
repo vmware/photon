@@ -34,6 +34,8 @@ gunzip /tmp/initrd.gz
 cd /tmp
 cpio -id < initrd
 cp -R /tmp/installer/ $INSTALLER_PATH/
+rm -rf /tmp/initrd*
+rm -rf /tmp/installer
 umount $ISO_MOUNT_FOLDER
 
 cd $INSTALLER_PATH/installer
