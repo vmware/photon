@@ -3,12 +3,12 @@
         "title" : "ISO Packages",
         "file" : "packages_iso.json",
         "visible" : false,
-        "include" : "none"
+        "include" : []
     },
     "minimal" : {
         "title" : "Photon Minimal",
         "file" : "packages_minimal.json",
         "visible" : true,
-        "include" : "none"
+        "include" : []
     }
 }
