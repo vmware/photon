@@ -31,6 +31,7 @@ RPM_LIST=$4
 STAGE_PATH=$5
 ADDITIONAL_FILES_TO_COPY_FROM_STAGE=$6
 LIVE_CD=$7
+OUTPUT_DATA_PATH=$8
 PHOTON_COMMON_DIR=$(dirname "${PACKAGE_LIST_FILE}")
 PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 #- Step 3 Setting up the boot loader
@@ -50,7 +51,7 @@ find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv -
 rm -f ${BUILDROOT}/installer/*.pyc
 rm -rf ${BUILDROOT}/installer/BUILD_DVD
 # Copy package list json files, dereference symlinks
-cp -rf -L $PHOTON_COMMON_DIR/*.json ${BUILDROOT}/installer/
+cp -rf -L $OUTPUT_DATA_PATH/*.json ${BUILDROOT}/installer/
 #ID in the initrd.gz now is PHOTON_VMWARE_CD . This is how we recognize that the cd is actually ours. touch this file there.
 touch ${WORKINGDIR}/PHOTON_VMWARE_CD
 

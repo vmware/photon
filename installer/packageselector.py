@@ -31,13 +31,14 @@ class PackageSelector(object):
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select Installation', True, self.package_menu)
 
     @staticmethod
-    def get_packages_to_install(options, base_path, config_type):
+    def get_packages_to_install(options, config_type, output_data_path):
         package_list = []
         for install_option in options:
             if install_option[0] == config_type:
-                for include_type in install_option[1]["include"]:
-                    package_list = package_list + PackageSelector.get_packages_to_install(options, base_path, include_type)
-                json_wrapper_package_list = JsonWrapper(os.path.join(base_path, install_option[1]["file"]))
+                if install_option[1]["include"] != "none":
+                    for include_type in install_option[1]["include"].split(','):
+                        package_list = package_list + PackageSelector.get_packages_to_install(options, include_type, output_data_path)
+                json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path, install_option[1]["file"]))
                 package_list_json = json_wrapper_package_list.read()
                 package_list = package_list + package_list_json["packages"]
                 break
@@ -64,7 +65,7 @@ class PackageSelector(object):
 
         for install_option in options_sorted:
             if install_option[1]["visible"] == True:
-                package_list = PackageSelector.get_packages_to_install(options_sorted, base_path, install_option[0])
+                package_list = PackageSelector.get_packages_to_install(options_sorted, install_option[0], base_path)
                 additional_files = PackageSelector.get_additional_files_to_copy_in_iso(options_sorted, base_path, install_option[0])
                 self.package_menu_items.append((install_option[1]["title"], self.exit_function, [install_option[0], package_list, additional_files] ))
 
