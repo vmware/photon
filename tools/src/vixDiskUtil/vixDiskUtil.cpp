@@ -44,7 +44,7 @@ using std::vector;
 #define COMMAND_WRITEBENCH      (1 << 11)
 #define COMMAND_CHECKREPAIR     (1 << 12)
 #define COMMAND_MOUNTDISK       (1 << 13)
-#define COMMAND_UNMOUNTDISK     (1 << 14)
+#define COMMAND_CONVERT     (1 << 14)
 
 #define VIXDISKLIB_VERSION_MAJOR 6
 #define VIXDISKLIB_VERSION_MINOR 0
@@ -108,14 +108,13 @@ static void DoRedo(void);
 static void DoFill(void);
 static void DoDump(void);
 static void DoMountDisk(void);
-static void DoMountList(void);
-static void DoUnMountDisk(void);
 static void DoReadMetadata(void);
 static void DoWriteMetadata(void);
 static void DoDumpMetadata(void);
 static void DoInfo(void);
 static void DoTestMultiThread(void);
 static void DoClone(void);
+static void DoConvert(void);
 static int BitCount(int number);
 static void DumpBytes(const uint8 *buf, size_t n, int step);
 static void DoRWBench(bool read);
@@ -332,11 +331,11 @@ PrintUsage(void)
     printf(" -fill : fills specified range of sectors with byte value "
            "specified by -val\n");
     printf(" -mount : mounts the disk on to local path\n");
-    printf(" -unmount : unmounts the disk\n");
     printf(" -wmeta key value : writes (key,value) entry into disk's metadata table\n");
     printf(" -rmeta key : displays the value of the specified metada entry\n");
     printf(" -meta : dumps all entries of the disk's metadata\n");
     printf(" -clone sourcePath : clone source vmdk possibly to a remote site\n");
+    printf(" -convert sourcePath : convert source raw image to a vmdk\n");
     printf(" -readbench blocksize: Does a read benchmark on a disk using the \n");
     printf("specified I/O block size (in sectors).\n");
     printf(" -writebench blocksize: Does a write benchmark on a disk using the\n");
@@ -499,6 +498,8 @@ main(int argc, char* argv[])
 	    DoCheckRepair(appGlobals.repair);
 	} else if (appGlobals.command & COMMAND_MOUNTDISK) {
 	    DoMountDisk();
+	} else if (appGlobals.command & COMMAND_CONVERT) {
+	    DoConvert();
 	}
         retval = 0;
     } catch (const VixDiskLibErrWrapper& e) {
@@ -591,8 +592,6 @@ ParseArguments(int argc, char* argv[])
             }
         } else if (!strcmp(argv[i], "-mount")) {
             appGlobals.command |= COMMAND_MOUNTDISK;
-        } else if (!strcmp(argv[i], "-unmount")) {
-            appGlobals.command |= COMMAND_UNMOUNTDISK;
         } else if (!strcmp(argv[i], "-rmeta")) {
            appGlobals.command |= COMMAND_READ_META;
            if (i >= argc - 2) {
@@ -655,6 +654,14 @@ ParseArguments(int argc, char* argv[])
             }
             appGlobals.srcPath = argv[++i];
             appGlobals.command |= COMMAND_CLONE;
+        } else if (!strcmp(argv[i], "-convert")) {
+            if (i >= argc - 2) {
+                printf("Error: The -convert command requires the path of the "
+                       "source raw image to be specified. See usage below.\n\n");
+                return PrintUsage();
+            }
+            appGlobals.srcPath = argv[++i];
+            appGlobals.command |= COMMAND_CONVERT;
         } else if (!strcmp(argv[i], "-readbench")) {
             if (0 && i >= argc - 2) {
                 printf("Error: The -readbench command requires a block size "
@@ -1412,6 +1419,55 @@ DoClone(void)
    cout << "\n Done" << "\n";
 }
 
+/*
+ *----------------------------------------------------------------------
+ *
+ * DoConvert --
+ *
+ *      Converts a local raw disk to vmdk
+ *
+ * Results:
+ *      None.
+ *
+ * Side effects:
+ *      None.
+ *
+ *----------------------------------------------------------------------
+ */
+
+static void
+DoConvert(void)
+{
+   
+   appGlobals.diskType = VIXDISKLIB_DISK_STREAM_OPTIMIZED;
+   DoCreate();
+   VixError vixError;
+   VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
+
+   VixDiskLibInfo* info = 0;
+   setbuf(stdout, (char *)NULL);
+   vixError = VixDiskLib_GetInfo(disk.Handle(), &info);
+   CHECK_AND_THROW(vixError);
+   unsigned char diskbuf[VIXDISKLIB_SECTOR_SIZE];
+   FILE* fp = fopen(appGlobals.srcPath, "rb");
+   if (fp == NULL) {
+      printf("Problem reading input raw file");
+      return;
+   }
+
+   for(size_t i = 0; i < info->capacity; i += 1)
+   {
+       size_t data = fread(diskbuf, VIXDISKLIB_SECTOR_SIZE, 1, fp);
+       vixError = VixDiskLib_Write(disk.Handle(), i, data, diskbuf);
+       CHECK_AND_THROW(vixError);
+   }
+   fclose(fp);
+
+   VixDiskLib_FreeInfo(info);
+
+   cout << "\n Done" << "\n";
+}
+
 
 /*
  *----------------------------------------------------------------------
@@ -1673,82 +1729,4 @@ DoMountDisk()
    VixMntapi_Exit();
 }
 
-/*
-*----------------------------------------------------------------------
-*
-* DoUnMountDisk --
-*
-*      Unmounts a vmdk
-*
-* Results:
-*      None
-*
-* Side effects:
-*      None.
-*
-*----------------------------------------------------------------------
-*/
 
-static void
-DoUnMountDisk()
-{
-   VixError err;
-   const char *diskNames[1];
-   diskNames[0] = appGlobals.diskPath;
-   VixDiskSetHandle diskSetHandle = NULL;
-   VixVolumeHandle *volumeHandles = NULL;
-   VixVolumeInfo *volInfo = NULL;
-   VixDiskSetInfo *diskSetInfo = NULL;
-   size_t numVolumes = 0;
-
-   // Init Mount Lib
-   err = VixMntapi_Init(VIXMNTAPI_VERSION_MAJOR,
-                  VIXMNTAPI_VERSION_MINOR,
-		  NULL, NULL, NULL,
-		  appGlobals.libdir,
-		  appGlobals.cfgFile);
-   CHECK_AND_THROW(err);
-   // VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
-
-   // Open Disks
-   err = VixMntapi_OpenDisks(appGlobals.connection, 
-		       diskNames, 
-		       1, appGlobals.openFlags, &diskSetHandle);
-   CHECK_AND_THROW(err);
-   err = VixMntapi_GetDiskSetInfo(diskSetHandle, &diskSetInfo);
-   CHECK_AND_THROW(err);
-   printf("DiskSet Info - flags %u (passed - %u), mountPoint %s.\n",
-          diskSetInfo->openFlags, appGlobals.openFlags,
-          diskSetInfo->mountPath);
-
-   err = VixMntapi_GetVolumeHandles(diskSetHandle,
-                                         &numVolumes,
-                                         &volumeHandles);
-   CHECK_AND_THROW(err);
-   printf("Num Volumes %d\n", (int)numVolumes);
-   
-   volInfo = NULL;
-   err = VixMntapi_MountVolume(volumeHandles[0], FALSE);
-   CHECK_AND_THROW(err);
-
-   err = VixMntapi_GetVolumeInfo(volumeHandles[0], &volInfo);
-   CHECK_AND_THROW(err);
-
-   printf("Type %d, isMounted %d, symLink %s, numGuestMountPoints %d\n",
-          volInfo->type, volInfo->isMounted,
-          volInfo->symbolicLink == NULL ? "<null>" : volInfo->symbolicLink,
-          (int)volInfo->numGuestMountPoints);
-
-
-   VixMntapi_FreeVolumeInfo(volInfo);
-   VixMntapi_DismountVolume(volumeHandles[0], TRUE);
-
-   VixMntapi_FreeDiskSetInfo(diskSetInfo);
-   if (volumeHandles) {
-      VixMntapi_FreeVolumeHandles(volumeHandles);
-   }
-   if (diskSetHandle) {
-      VixMntapi_CloseDiskSet(diskSetHandle);
-   }
-   VixMntapi_Exit();
-}
