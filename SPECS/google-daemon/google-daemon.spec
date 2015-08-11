@@ -1,12 +1,12 @@
 Summary:	Google Daemon
 Name:		google-daemon
-Version:	1.2.2
+Version:	1.2.7
 Release:	1%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://github.com/GoogleCloudPlatform/compute-image-packages/
 Source0:	google-daemon-%{version}.tar.gz
-%define sha1 google-daemon=4cb51288268b09f4a5d07f43d83ca34e5b714383
+%define sha1 google-daemon=a38bce5383c71f7ecc41c50575fcf29ae4c55489
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	google-daemon
@@ -38,3 +38,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/*
 %exclude /README.md
 %exclude /LICENSE
+
+%changelog
+*   Mon Aug 10 2015 Anish Swaminathan <anishs@vmware.com> 1.2.7-1
+-   Updated version.

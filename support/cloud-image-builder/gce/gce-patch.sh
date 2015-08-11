@@ -25,7 +25,7 @@ echo "server 169.254.169.254" >> /etc/ntp.conf
 
 
 # Set UTC timezone
-# ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
 # Update /etc/resolv.conf
 
@@ -108,3 +108,6 @@ fi
 
 docker run --rm -it google/cloud-sdk gsutil $*
 EOF
+
+chmod a+x /usr/bin/gcloud
+chmod a+x /usr/bin/gsutil
