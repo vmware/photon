@@ -1,10 +1,10 @@
 %global security_hardening none
 # Kernel parameters:
-# init=/lib/systemd/systemd notsc pci=nocrs clocksource=acpi_pm no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 root=/dev/sda2 rw systemd.show_status=0 elevator=noop quiet
+# init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 root=/dev/sda2 rw systemd.show_status=0 elevator=noop quiet
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.1.3
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -18,15 +18,14 @@ patch2:		0002-Skip-synchronize_rcu-on-single-CPU-systems.patch
 patch3:		0003-sysrq-Skip-synchronize_rcu-if-there-is-no-old-op.patch
 patch4:		0004-enable-no-blink-by-default.patch
 patch5:		0005-wakeups.patch
-patch6:		0006-probe.patch
+patch6:		pci-probe-vmware.patch
 patch7:		0007-cgroup.patch
 patch8:		0008-smpboot.patch
 patch9: 	0009-perf.patch
 patch10:	0010-tweak-the-scheduler-to-favor-CPU-0.patch
-patch11:	0011-probe2.patch
-patch12:	0012-No-wait-for-the-known-devices.patch
-patch13:	0013-Turn-mmput-into-an-async-function.patch
-Patch14:	ptdamage.patch
+patch11:	0012-No-wait-for-the-known-devices.patch
+patch12:	0013-Turn-mmput-into-an-async-function.patch
+Patch13:	ptdamage.patch
 
 BuildRequires:    bc
 BuildRequires:    kbd
@@ -83,7 +82,6 @@ The Linux package contains the Linux kernel doc files
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
-%patch14 -p1
 
 %build
 #make linux 
@@ -126,6 +124,8 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{version}
 /lib/modules/%{version}-esx/build
 
 %changelog
+*   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
+    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time. 
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1
     Initial commit. Use patchset from Clear Linux. 
 
