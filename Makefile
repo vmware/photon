@@ -71,6 +71,7 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_micro.json \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
 minimal: minimal-iso
@@ -120,6 +121,7 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
@@ -145,6 +147,7 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
 tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
@@ -160,6 +163,7 @@ tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
                 -t ${THREADS} \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -m stage1
 
 tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
@@ -175,6 +179,7 @@ tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
                 -t ${THREADS} \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -m stage2
 
 
@@ -364,6 +369,7 @@ check-packer-ovf-plugin:
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
                               -c $(PHOTON_BINTRAY_CONFIG) \
+			      -d $(PHOTON_DIST_TAG) \
                               -l $(PHOTON_LOGS_DIR)
 
 $(TOOLS_BIN):

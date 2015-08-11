@@ -28,7 +28,7 @@ def main():
     parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Numbeer of working threads")
     parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
     parser.add_option("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
-    parser.add_option("-d",  "--dist", dest="dist",  default="phTP2")
+    parser.add_option("-d",  "--dist", dest="dist",  default="")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
