@@ -179,7 +179,8 @@ class PackageUtils(object):
         cmdUtils = CommandUtils()
         version = constants.specData.getVersion(package)
         release = constants.specData.getRelease(package)
-        listFoundRPMFiles = cmdUtils.findFile(package+"-"+version+"-"+release+".*.rpm",constants.rpmPath)
+        listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+".x86_64.rpm",constants.rpmPath),
+                            cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
         if len(listFoundRPMFiles) == 1 :
             return listFoundRPMFiles[0]
         if len(listFoundRPMFiles) == 0 :
