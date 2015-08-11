@@ -32,7 +32,7 @@ class Package(object):
         self.version=""
         self.release=""
         self.buildarch="x86_64"
-        self.distribution=constants.constants.dist
+        self.distribution="Photon"
         self.basePkgName=""
         
         self.sources=[]
@@ -76,10 +76,10 @@ class Package(object):
             content = content.replace('%{version}',self.version)
         
         if content.find("%{?dist}") != -1:
-            content = content.replace('%{?dist}',self.distribution)
+            content = content.replace('%{?dist}',constants.constants.dist)
 
         if content.find("%{dist}") != -1:
-            content = content.replace('%{dist}',self.distribution)
+            content = content.replace('%{dist}',constants.constants.dist)
         
         return content
     
