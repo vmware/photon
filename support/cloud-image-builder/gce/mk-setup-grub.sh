@@ -12,6 +12,22 @@
 #       The path to this empty disk is specified in the HDD variable in config.inc
 #   End
 #
+grub_efi_install()
+{
+    mkdir $BUILDROOT/boot/efi
+    mkfs.vfat /dev/sda1
+    mount -t vfat /dev/sda1 $BUILDROOT/boot/efi
+    cp boot/unifont.pf2 /usr/share/grub/
+    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck --debug
+    mv $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
+    umount $BUILDROOT/boot/efi
+}
+
+grub_mbr_install()
+{
+    $grubInstallCmd --force --boot-directory=$BUILDROOT/boot "$HDD"
+}
+
 set -o errexit      # exit if error...insurance ;)
 set -o nounset      # exit if variable not initalized
 set +h          # disable hashall
@@ -25,10 +41,11 @@ ARCH=$(uname -m)    # host architecture
 > ${LOGFILE}        #   clear/initialize logfile
 
 # Check if passing a HHD and partition
-if [ $# -eq 2 ] 
-    then
-        HDD=$1
-        PARTITION=$2
+if [ $# -eq 3 ] 
+	then
+        BOOTMODE=$1
+		HDD=$2
+		PARTITION=$3
 fi
 
 #
@@ -39,7 +56,8 @@ sgdisk -m 1:2 "$HDD"
 UUID=$(blkid -s UUID -o value $PARTITION)
 
 grubInstallCmd=""
-ln -sfv $BUILDROOT/boot/grub $BUILDROOT/boot/grub2
+mkdir -p $BUILDROOT/boot/grub2
+ln -sfv grub2 $BUILDROOT/boot/grub
 command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
 command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
 if [ -z $grubInstallCmd ]; then
@@ -47,12 +65,18 @@ echo "Unable to find grub install command"
 exit 1
 fi
 
-$grubInstallCmd --force --boot-directory=$BUILDROOT/boot "$HDD"
 cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
 cp boot/splash.tga ${BUILDROOT}/boot/grub2/themes/photon/photon.tga
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
 cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
+
+if [ "$BOOTMODE" == "bios" ]; then 
+    grub_mbr_install
+fi
+if [ "$BOOTMODE" == "efi" ]; then 
+    grub_efi_install
+fi
 
 cat > "$BUILDROOT"/boot/grub2/grub.cfg << "EOF"
 # Begin /boot/grub2/grub.cfg
