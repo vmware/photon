@@ -79,7 +79,11 @@ class OstreeInstaller(Installer):
         return ActionResult(True, None)
 
     def get_ostree_repo_url(self):
-        return self.window.do_action()
+        if self.ks_config != None:
+            self.ostree_repo_url = self.ks_config['ostree_repo_url']
+            self.ostree_ref = self.ks_config['ostree_repo_ref']
+            return
+        self.window.do_action()
 
     def deploy_ostree(self, repo_url, repo_ref):
         self.run("ostree admin --sysroot={} init-fs {}".format(self.photon_root, self.photon_root), "Initializing OSTree filesystem")
@@ -184,13 +188,11 @@ class OstreeInstaller(Installer):
 
         self.run("{} {} {}".format(self.unmount_disk_command, '-w', self.photon_root))
 
-        if self.iso_installer:
-            self.progress_bar.show_loading('Press any key to continue to boot')
-            self.progress_bar.hide()
-            self.window.addstr(0, 0,
-                "Congratulations, Photon has been installed in {} secs.\n\nPress any key to continue to boot...".format(self.progress_bar.time_elapsed))
-            if self.ks_config == None:
-                self.window.content_window().getch()
+        self.progress_bar.hide()
+        self.window.addstr(0, 0,
+            "Congratulations, Photon has been installed in {} secs.\n\nPress any key to continue to boot...".format(self.progress_bar.time_elapsed))
+        if self.ks_config == None:
+            self.window.content_window().getch()
 
         return ActionResult(True, None)
 
