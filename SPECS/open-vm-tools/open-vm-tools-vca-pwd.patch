@@ -1,0 +1,11 @@
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts-modified/imc-shell/imgcust-scripts/CustomizationUtils.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-08-11 05:52:22.214311000 +0000
++++ gosc-scripts-modified/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-08-11 14:24:03.870583613 +0000
+@@ -849,6 +849,7 @@
+ 
+ users:
+     - name: root
++      lock-passwd: false
+       passwd: $adminPwdHash
+ EOF
+ )

@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	9.10.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools/archive/stable-9.10.x.zip
 Group:		Applications/System
@@ -15,6 +15,7 @@ Patch0:		open-vm-tools-strerror_r-fix.patch
 Patch1:		open-vm-tools-service-link.patch
 Patch2:         open-vm-tools-GOSC-photon.patch
 Patch3:         open-vm-tools-GOSC-vca.patch
+Patch4:         open-vm-tools-vca-pwd.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -38,6 +39,7 @@ VmWare virtualization user mode tools
 %patch1 -p1
 %patch2 -p1
 %patch3 -p0
+%patch4 -p0
 %build
 autoreconf -i
 ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static
@@ -95,6 +97,8 @@ rm -f /sbin/mount.vmhgfs
 
 
 %changelog
+*       Tue Aug 11 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-7
+        VCA initial login password issue fix.
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-6
         Adding preun and post install commands.
 *       Thu Jul 30 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-5
