@@ -114,7 +114,8 @@ class IsoInstaller(object):
         # This represents the installer screen, the bool indicated if I can go back to this window or not
         items = []
         if not ks_config:
-            random_hostname = "photon-" + '%12x' % random.randrange(16**12)
+            random_id = '%12x' % random.randrange(16**12)
+            random_hostname = "photon-" + random_id.strip()
             install_config = {'iso_system': False}
             license_agreement = License(self.maxy, self.maxx)
             select_disk = SelectDisk(self.maxy, self.maxx, install_config)

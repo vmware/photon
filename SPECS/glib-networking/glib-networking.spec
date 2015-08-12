@@ -42,8 +42,7 @@ These are the additional language files of glib-networking.
 %build
 export CFLAGS="%{optflags}"
 ./configure  --prefix=%{_prefix} \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt \
-    --disable-static
+    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 
 make %{?_smp_mflags}
 

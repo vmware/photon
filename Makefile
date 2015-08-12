@@ -128,7 +128,7 @@ ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
 	@echo "Building Photon Minimal LIVE ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-live-iso.iso \
@@ -305,7 +305,11 @@ install-docker-image: docker-image
 
 ostree-repo: $(PHOTON_PACKAGES)
 	@echo "Creating OSTree repo from local PRMs in ostree-repo.tar.gz..."
-	$(SRCROOT)/support/ostree-tools/make-ostree-image.sh $(SRCROOT)
+	@if [ -f  $(PHOTON_STAGE)/ostree-repo.tar.gz ]; then \
+		echo "ostree-repo.tar.gz already present, not creating again..."; \
+	else \
+		$(SRCROOT)/support/ostree-tools/make-ostree-image.sh $(SRCROOT); \
+	fi
 
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."

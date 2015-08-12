@@ -21,5 +21,7 @@
                 "libgpg-error", "libhif", "libhif-devel",
                 "librepo", "librepo-devel", "libsoup", "libsoup-devel",
                 "libxml2", "mkinitcpio", "openssl-devel",
-                "yum", "ostree" ,"dosfstools", "pciutils", "efivar", "efibootmgr"]
+                "yum", "libtasn1", "nettle", "nettle-devel", "gnutls",
+                "gnutls-devel", "glib-networking", "ostree", "gmp",
+                "dosfstools", "pciutils", "efivar", "efibootmgr"]
 }
