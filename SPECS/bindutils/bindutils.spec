@@ -4,8 +4,8 @@ Version:	9.10.1
 Release:	1%{?dist}
 License:	ISC
 URL:		http://www.isc.org/downloads/bind/
-Source0:	ftp://ftp.isc.org/isc/bind9/9.10.1-P1/bind-%{version}-p1.tar.gz
-%define sha1 bind=93c7c6ac7d621f9dc1eaee9a0221bbaac89f1105
+Source0:	ftp://ftp.isc.org/isc/bind9/9.10.1-P1/bind-%{version}-P1.tar.gz
+%define sha1 bind=24a81ba458a762c27be47461301fcf336cfb1d43
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
