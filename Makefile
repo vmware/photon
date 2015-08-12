@@ -287,7 +287,7 @@ install-docker-image: docker-image
 
 ostree-repo: $(PHOTON_PACKAGES)
 	@echo "Creating OSTree repo from local PRMs in ostree-repo.tar.gz..."
-	./support/ostree-tools/make-ostree-image.sh
+	$(SRCROOT)/support/ostree-tools/make-ostree-image.sh $(SRCROOT)
 
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."

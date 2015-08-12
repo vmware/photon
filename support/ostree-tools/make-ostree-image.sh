@@ -9,19 +9,20 @@ if [ "$#" -lt 0 ]; then
 fi
 
 PROGRAM=$0
+SRCROOT=$1
 
 createrepo stage/RPMS
 
-cp installer/photon-ostree.repo installer/photon-ostree.repo.bak
-echo "baseurl=file:///photon/stage/RPMS" >> installer/photon-ostree.repo
+cp ${SRCROOT}/installer/photon-ostree.repo ${SRCROOT}/installer/photon-ostree.repo.bak
+echo "baseurl=file:///RPMS" >> ${SRCROOT}/installer/photon-ostree.repo
 
 rm -rf stage/ostree-repo
 mkdir -p stage/ostree-repo
 
-sudo docker run -it --privileged -v $(pwd):/photon -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/installer"  toliaqat/photon:rpm-ostree ./mk-ostree-server.sh /
+sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPMS -v $(pwd)/stage/ostree-repo:/srv/rpm-ostree -w="/photon/installer"  toliaqat/photon:rpm-ostree ./mk-ostree-server.sh /
 
 (cd stage/ostree-repo/repo/; tar -zcf ../../ostree-repo.tar.gz .; )
 
 # Restore file
-mv -f installer/photon-ostree.repo.bak installer/photon-ostree.repo
-rm -rf stage/ostree-repo
+mv -f ${SRCROOT}/installer/photon-ostree.repo.bak ${SRCROOT}/installer/photon-ostree.repo
+rm -rf ${SRCROOT}/stage/ostree-repo
