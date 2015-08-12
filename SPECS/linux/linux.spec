@@ -1,6 +1,6 @@
 %global security_hardening none
 %define    OPENVMTOOLS_NAME            open-vm-tools
-%define    OPENVMTOOLS_VERSION         9.10.0
+%define    OPENVMTOOLS_VERSION         10.0.0
 Summary:        Kernel
 Name:        linux
 Version:    3.19.2
@@ -13,10 +13,9 @@ Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v3.x/%{name}-%{version}.tar.xz
 %define sha1 linux=10a25ca5b6d93db78adc9caf13f7ad7cb4b79c61
 #Source1:    config-%{version}-generic.amd64
-Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.10.0/open-vm-tools-9.10.0.tar.gz
-%define sha1 open-vm-tools=958c40c8038d52947680444f507f693825d358be
+Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools-10.0.0.tar.gz
+%define sha1 open-vm-tools=1658ab1b73438e746bb6f11f16fe570eaf753747
 Source2:	config-%{version}
-Patch0:        vmhgfs_fix_3.19.patch
 BuildRequires:    bc
 BuildRequires:    kbd
 BuildRequires:    kmod
@@ -41,13 +40,19 @@ Requires:    python2
 %description dev
 The Linux package contains the Linux kernel dev files
 
-%package gpu-drivers
-Summary:    Kernel Drivers
+%package drivers-gpu
+Summary:    Kernel GPU Drivers
 Group:        System Environment/Kernel
 Requires:    %{name} = %{version}
-%description gpu-drivers
+%description drivers-gpu
 The Linux package contains the Linux kernel drivers for GPU
 
+%package sound
+Summary:    Kernel Sound modules
+Group:        System Environment/Kernel
+Requires:    %{name} = %{version}
+%description sound
+The Linux package contains the Linux kernel sound support
 
 %package docs
 Summary:    Kernel docs
@@ -61,7 +66,6 @@ The Linux package contains the Linux kernel doc files
 %prep
 %setup -c -n Linux-package -a 1
 cd %{OPENVMTOOLS_NAME}-%{OPENVMTOOLS_VERSION}
-%patch -P 0 -p1
 
 %build
 #make linux 
@@ -122,7 +126,10 @@ EOF
 %post
 /sbin/depmod -aq %{version}
 
-%post gpu-drivers
+%post drivers-gpu
+/sbin/depmod -aq %{version}
+
+%post sound
 /sbin/depmod -aq %{version}
 
 %files
@@ -134,6 +141,8 @@ EOF
 /lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{version}/build
+%exclude /lib/modules/%{version}/kernel/drivers/gpu
+%exclude /lib/modules/%{version}/kernel/sound
 
 %files docs
 %defattr(-,root,root)
@@ -145,16 +154,24 @@ EOF
 %defattr(-,root,root)
 /lib/modules/%{version}/build
 
-%files gpu-drivers
+%files drivers-gpu
 %defattr(-,root,root)
 %exclude /lib/modules/%{version}/kernel/drivers/gpu/drm/cirrus/
 /lib/modules/%{version}/kernel/drivers/gpu
 
+%files sound
+%defattr(-,root,root)
+/lib/modules/%{version}/kernel/sound
+
 %changelog
+*   Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19.2-5
+-   Updated OVT to version 10.0.0.
+-   Rename -gpu-drivers to -drivers-gpu in accordance to directory structure.
+-   Added -sound package/
 *   Tue Aug 11 2015 Anish Swaminathan<anishs@vmware.com> 3.19.2-4
 -   Removed Requires dependencies. 
-*   Fri Jul 24 2015 Harish Udaiya Kumar<hudaiyakumar@gmail.com> 3.19.2-3
--   Updated the config file to include graphics drivers. 
+*   Fri Jul 24 2015 Harish Udaiya Kumar <hudaiyakumar@gmail.com> 3.19.2-3
+-   Updated the config file to include graphics drivers.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.13.3-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1

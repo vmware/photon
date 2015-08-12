@@ -1,21 +1,20 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
-Version:	9.10.0
-Release:	7%{?dist}
+Version:	10.0.0
+Release:	1%{?dist}
 License:	LGPLv2+
-URL:		https://github.com/vmware/open-vm-tools/archive/stable-9.10.x.zip
+URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-9.10.0/%{name}-%{version}.tar.gz
-%define sha1 open-vm-tools=958c40c8038d52947680444f507f693825d358be
+Source0:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools-10.0.0.tar.gz
+%define sha1 open-vm-tools=1658ab1b73438e746bb6f11f16fe570eaf753747
 Source1:        gosc-scripts.tar.gz
 %define sha1 gosc-scripts=a87bb5b95f78923ac6053513b3364a119795a5d0
-Patch0:		open-vm-tools-strerror_r-fix.patch
-Patch1:		open-vm-tools-service-link.patch
-Patch2:         open-vm-tools-GOSC-photon.patch
-Patch3:         open-vm-tools-GOSC-vca.patch
-Patch4:         open-vm-tools-vca-pwd.patch
+Patch0:		open-vm-tools-service-link.patch
+Patch1:         open-vm-tools-GOSC-photon.patch
+Patch2:         open-vm-tools-GOSC-vca.patch
+Patch3:         open-vm-tools-vca-pwd.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -37,12 +36,12 @@ VmWare virtualization user mode tools
 %setup -a 1
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
+%patch2 -p0
 %patch3 -p0
-%patch4 -p0
 %build
+touch ChangeLog
 autoreconf -i
-./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static
+sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static
 make %{?_smp_mflags}
 %install
 
@@ -97,6 +96,8 @@ rm -f /sbin/mount.vmhgfs
 
 
 %changelog
+*	Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-1
+	Update version to 10.0.0.
 *       Tue Aug 11 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-7
         VCA initial login password issue fix.
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-6
