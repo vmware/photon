@@ -68,12 +68,18 @@ micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO) $(PHOTON_MICRO_DEPLIST
 $(PHOTON_MICRO_DEPLIST): check $(PREPARE_OUT_DATADIR)
 	@echo "Generating the install time dependency list for micro installation"
 	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) --input-type=json --file packages_micro.json -d json -t $(PHOTON_STAGE) -a $(PHOTON_DATA_DIR)
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		--input-type=json --file packages_micro.json -d json -t $(PHOTON_STAGE) -a $(PHOTON_DATA_DIR)
 	@echo "generated the json file with all dependencies for micro installation"
 
 deptree-micro:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i json -f packages_micro.json -a $(PHOTON_DATA_DIR)
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		-i json -f packages_micro.json -a $(PHOTON_DATA_DIR)
 
 packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all Micro RPMS..."
@@ -95,7 +101,10 @@ minimal: minimal-iso
 
 deptree-minimal:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i json -f packages_minimal.json -a $(PHOTON_DATA_DIR) 
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		-i json -f packages_minimal.json -a $(PHOTON_DATA_DIR) 
 
 minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) $(PHOTON_MINIMAL_DEPLIST)
 	@echo "Building Photon Minimal ISO..."
@@ -133,7 +142,10 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 $(PHOTON_MINIMAL_DEPLIST): $(PREPARE_OUT_DATADIR)
 	@echo "Generating the install time dependency list for minimal installation"	
 	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) --input-type=json --file packages_minimal.json -d json -a $(PHOTON_DATA_DIR)
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		--input-type=json --file packages_minimal.json -d json -a $(PHOTON_DATA_DIR)
 	@echo "generated the json file with all dependencies for minimal installation"
 
 packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
@@ -165,12 +177,18 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo $(PHOTON_FULL_DEPLIST)
 $(PHOTON_FULL_DEPLIST): $(PHOTON_MINIMAL_DEPLIST) 
 	@echo "Generating the install time dependency list for full installation"
 	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) --input-type=json --file packages_full.json -d json -a $(PHOTON_DATA_DIR)
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		--input-type=json --file packages_full.json -d json -a $(PHOTON_DATA_DIR)
 	@echo "generated the json file with all dependencies for full installation"
 
 deptree-full:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i json -f packages_full.json -a $(PHOTON_DATA_DIR)
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		-i json -f packages_full.json -a $(PHOTON_DATA_DIR)
 
 deptree:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
