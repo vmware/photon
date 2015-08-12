@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    3.19.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -28,17 +28,10 @@ BuildRequires:     libmspack
 BuildRequires:    Linux-PAM
 BuildRequires:    openssl-devel
 BuildRequires:    procps-ng-devel
-Requires:    xerces-c
-Requires:    libdnet
-Requires:    libmspack
-Requires:    glib
-Requires:    xml-security-c
-Requires:    openssl
-Requires:    filesystem
+Requires:         filesystem
 
 %description
-The Linux package contains the Linux kernel. Open vmware tools package contains the kernel module vmhgfs
-
+The Linux package contains the Linux kernel. 
 
 
 %package dev
@@ -158,8 +151,10 @@ EOF
 /lib/modules/%{version}/kernel/drivers/gpu
 
 %changelog
-*	Fri Jul 24 2015 Harish Udaiya Kumar<hudaiyakumar@gmail.com> 3.19.2-3
-	Updated the config file to include graphics drivers. 
+*   Tue Aug 11 2015 Anish Swaminathan<anishs@vmware.com> 3.19.2-4
+-   Removed Requires dependencies. 
+*   Fri Jul 24 2015 Harish Udaiya Kumar<hudaiyakumar@gmail.com> 3.19.2-3
+-   Updated the config file to include graphics drivers. 
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.13.3-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1
