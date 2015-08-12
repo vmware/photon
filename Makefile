@@ -49,7 +49,7 @@ clean-install clean-chroot
 
 THREADS?=1
 
-all: iso micro-iso minimal-iso docker-image ostree-host-iso live-iso cloud-image-all
+all: iso minimal-iso docker-image ostree-host-iso live-iso cloud-image-all
 
 micro: micro-iso
 	@:
@@ -135,7 +135,7 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_DATA_DIR)/build_install_options_livecd.json \
+                -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_livecd.json \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1                
 
