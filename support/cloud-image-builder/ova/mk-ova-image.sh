@@ -15,5 +15,20 @@ $SRC_ROOT/tools/bin/vixdiskutil -wmeta toolsVersion 2147483647 $PHOTON_IMG_OUTPU
 
 cd $PHOTON_IMG_OUTPUT_PATH
 
-ovftool /tmp/vmx-temp.vmx $PHOTON_IMG_OUTPUT_PATH/photon-stream-ova.ova
+mkdir -p $PHOTON_IMG_OUTPUT_PATH/temp
+ovftool /tmp/vmx-temp.vmx $PHOTON_IMG_OUTPUT_PATH/temp/photon-stream-ova.ovf
+cd $PHOTON_IMG_OUTPUT_PATH/temp
+
+sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp/photon-stream-ova.ovf
+rm -f $PHOTON_IMG_OUTPUT_PATH/temp/photon-stream-ova.mf
+openssl sha1 *.vmdk *.ovf > photon-stream-ova.mf
+tar cf photon-stream-ova.ova photon-stream-ova.ovf photon-stream-ova.mf photon-stream-ova-disk1.vmdk
+
+cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-stream-ova.ova $PHOTON_IMG_OUTPUT_PATH/
+cd $PHOTON_IMG_OUTPUT_PATH
+rm -rf $PHOTON_IMG_OUTPUT_PATH/temp/
+
+
+
+
 
