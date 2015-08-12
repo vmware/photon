@@ -18,6 +18,7 @@ BuildRequires:   python2
 BuildRequires:   python2-libs
 BuildRequires:   python2-devel
 BuildRequires:   python2-tools
+BuildRequires:   glib-networking
 Requires:	libxml2
 
 %description
@@ -50,8 +51,7 @@ These are the additional language files of libsoup.
 
 %build
 export CFLAGS="%{optflags}"
-./configure  --prefix=%{_prefix} \
-    --disable-tls-check
+./configure  --prefix=%{_prefix}
 
 make %{?_smp_mflags}
 
