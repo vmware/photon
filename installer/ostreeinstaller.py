@@ -25,13 +25,29 @@ from windowstringreader import WindowStringReader
 from window import Window
 from actionresult import ActionResult
 from installer import Installer
+from menu import Menu
 
 class OstreeInstaller(Installer):
 
     def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
         Installer.__init__(self, install_config, maxy, maxx, iso_installer, rpm_path, log_path, ks_config)
+    
+        self.win_height = 13
+        self.win_width = 50
+        self.menu_starty = self.starty + 3    
+        self.ostree_host_menu_items = []
+        self.ostree_host_menu_items.append(("Default RPM-OSTree Server", self.default_installation, []))
+        self.ostree_host_menu_items.append(("Custom RPM-OSTree Server", self.custom_installation, []))
+        self.host_menu = Menu(self.menu_starty,  self.maxx, self.ostree_host_menu_items)
+        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select OSTree Server', True, self.host_menu)
+        self.default_repo = True
 
-    def get_ostree_repo_url(self):
+    def default_installation(self,  selected_item_params):
+        self.default_repo = True
+        return ActionResult(True, None)
+
+    def custom_installation(self,  selected_item_params):
+        self.default_repo = False
         success = False
         while not success:
             got_the_url = False
@@ -42,7 +58,7 @@ class OstreeInstaller(Installer):
                     "Please provide the URL of OSTree repo",
                     "OSTree Repo URL:", 2,
                     self.install_config,
-                    "https://dl.bintray.com/vmware/photon/rpms/dev/")
+                    "https://dl.bintray.com/vmware/photon/rpm-ostree/dev/x86_64/minimal")
 
                 ret = ostree_url_reader.get_user_string(None)
                 self.ostree_repo_url = ret.result
@@ -61,6 +77,9 @@ class OstreeInstaller(Installer):
             success = ret.success
 
         return ActionResult(True, None)
+
+    def get_ostree_repo_url(self):
+        return self.window.do_action()
 
     def deploy_ostree(self, repo_url, repo_ref):
         self.run("ostree admin --sysroot={} init-fs {}".format(self.photon_root, self.photon_root), "Initializing OSTree filesystem")

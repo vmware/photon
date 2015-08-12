@@ -24,6 +24,7 @@ from windowstringreader import WindowStringReader
 from jsonwrapper import JsonWrapper
 from selectdisk import SelectDisk
 from license import License
+import random
 
 class IsoInstaller(object):
 
@@ -113,13 +114,15 @@ class IsoInstaller(object):
         # This represents the installer screen, the bool indicated if I can go back to this window or not
         items = []
         if not ks_config:
+            random_hostname = "photon-" + '%12x' % random.randrange(16**12)
             install_config = {'iso_system': False}
             license_agreement = License(self.maxy, self.maxx)
             select_disk = SelectDisk(self.maxy, self.maxx, install_config)
             package_selector = PackageSelector(self.maxy, self.maxx, install_config, options_file)
             hostname_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, 'hostname', False, 'Choose the hostname for your system',
                 'Hostname:', 
-                2, install_config)
+                2, install_config,
+                random_hostname)
             root_password_reader = WindowStringReader(self.maxy, self.maxx, 10, 70, 'password', False,  'Set up root password',
                 'Root password:', 
                 2, install_config)
