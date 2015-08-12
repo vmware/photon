@@ -10,6 +10,7 @@ import json
 import sys
 from SpecUtils import Specutils
 import collections
+import traceback
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -27,6 +28,7 @@ def main():
     parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Numbeer of working threads")
     parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
     parser.add_option("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
+    parser.add_option("-d",  "--dist", dest="dist",  default="")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -90,7 +92,7 @@ def main():
     '''    
     listPackages=["acl","attr","autoconf","automake","bash","bc","bindutils","binutils","bison","boost","btrfs-progs","bzip2","ca-certificates","cdrkit","check",
                   "cloud-init","cmake","coreutils","cpio","cracklib","createrepo","curl","cyrus-sasl","db","dbus","deltarpm","diffutils","docbook-xml","docbook-xsl",
-                  "docker","dparted","dracut","e2fsprogs","elfutils","etcd","expat","file","filesystem","findutils","flex","gawk","gcc","gdb","gdbm","gettext","git",
+                  "docker","dracut","e2fsprogs","elfutils","etcd","expat","file","filesystem","findutils","flex","gawk","gcc","gdb","gdbm","gettext","git",
                   "glib","glibc","glibmm","gmp","go","gobject-introspection","google-daemon","google-startup-scripts","gperf","gpgme","gptfdisk","grep","groff",
                   "grub","gtk-doc","gzip","haveged","hawkey","iana-etc","inetutils","intltool","iproute2","iptables","itstool","json-glib","kbd","kmod","krb5",
                   "kubernetes","less","libaio","libassuan","libcap","libdnet","libffi","libgpg-error","libgsystem","libhif","libmspack","libpcap","libpipeline",
@@ -121,6 +123,8 @@ def main():
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
+        # print stacktrace
+        traceback.print_exc()
         sys.exit(1)
     
     sys.exit(0)
@@ -140,18 +144,24 @@ def buildPackageList(specPath):
                 specFile = os.path.join(specDir, specEntry)
                 if os.path.isfile(specFile) and specFile.endswith(".spec"):
                     spec=Specutils(specFile)
-                    name=spec.getPackageNames()[0]
+                    name=spec.getBasePackageName()
                     version=spec.getRPMVersion(name)
                     license=spec.getLicense(name)
                     url=spec.getURL(name)
-                    source=spec.getSourceURLs()[0]
+                    ss=spec.getSourceURLs()
+                    sources=""
+                    for s in ss:
+                        if (s.startswith("http") or s.startswith("ftp")):
+                            if sources != "":
+                                sources += " "
+                            sources += s
                     patches=""
                     ps=spec.getPatchNames()
                     for p in ps:
                         if patches != "":
                             patches += " "
                         patches += p
-                    print name+","+version+","+license+","+url+","+source+","+patches
+                    print name+","+version+","+license+","+url+","+sources+","+patches
 
 def buildAPackage(package, buildThreads):
     listPackages=[]

@@ -1,14 +1,14 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
-Version:	2.42.0
-Release:	3%{?dist}
+Version:	2.45.4
+Release:	1%{?dist}
 License:	LGPLv2+
-URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.42/glib-2.42.0.tar.xz
+URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.45/glib-2.45.4.tar.xz
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.42/%{name}-%{version}.tar.xz
-%define sha1 glib=f5168a7adffad3620ff3f1b3d6ff6d0ad3f0752e
+Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.45/%{name}-%{version}.tar.xz
+%define sha1 glib=7ea14c2119a39560a0a82f14ba841fcad69f6ec7
 BuildRequires:	pcre-devel
 BuildRequires:	libffi
 BuildRequires:	pkg-config

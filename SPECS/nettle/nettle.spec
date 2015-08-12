@@ -13,6 +13,7 @@ Provides:	libhogweed.so.4()(64bit)
 Provides:	libhogweed.so.4(HOGWEED_4)(64bit)
 Provides:	libnettle.so.6()(64bit)
 Provides:	libnettle.so.6(NETTLE_6)(64bit)
+Requires:	gmp
 
 %description
 GNettle is a cryptographic library that is designed to fit easily in more

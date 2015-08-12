@@ -1,0 +1,15 @@
+{
+    "iso" : {
+        "title" : "ISO Packages",
+        "file" : "packages_iso.json",
+        "visible" : false,
+        "include" : []
+    },
+    "ostree_host" : {
+        "title" : "4. Photon OSTree Host",
+        "file" : "packages_ostree_host.json",
+        "visible" : true,
+        "include" : [],
+        "additional-files" : ["ostree-repo.tar.gz"]
+    }
+}

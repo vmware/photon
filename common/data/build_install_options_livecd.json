@@ -1,0 +1,9 @@
+{
+    "iso" : {
+        "title" : "Live CD Packages",
+        "file" : "packages_minimal.json",
+        "visible" : false,
+        "include" : [],
+        "live-cd" : true
+    }
+}

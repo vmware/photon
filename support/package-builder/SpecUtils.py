@@ -28,8 +28,6 @@ class Specutils(object):
         return sourceNames
     
     def getChecksums(self):
-        sourceNames=[]
-        strUtils = StringUtils()
         pkg = self.spec.packages.get('default')
         return pkg.checksums
     

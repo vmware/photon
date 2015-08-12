@@ -17,6 +17,7 @@ Requires:	libltdl
 Requires:	libunistring
 Requires:	gc
 Requires:	libffi
+Requires:	gmp
 
 %description
 GUILE (GNU's Ubiquitous Intelligent Language for Extension) is a library

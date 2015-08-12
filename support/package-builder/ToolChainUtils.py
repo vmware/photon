@@ -5,6 +5,7 @@ from PackageUtils import PackageUtils
 from constants import constants
 import subprocess
 import os.path
+import traceback
 
 class ToolChainUtils(object):
     
@@ -30,7 +31,7 @@ class ToolChainUtils(object):
     def prepareBuildRoot(self,chrootID):
         self.logger.info("Preparing build environment")
         cmdUtils = CommandUtils()
-        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.logPath
+        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.logPath + " " + constants.dist
         logFile=constants.logPath+"/prepareBuildRoot.log"
         returnVal=cmdUtils.runCommandInShell(prepareChrootCmd,logFile)
         if not returnVal:
@@ -44,7 +45,6 @@ class ToolChainUtils(object):
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
         self.logger.info("Successfully prepared chroot:"+chrootID)
 
-    #Tool chain should be built before calling this method
     def installToolChain(self,chrootID):
         self.logger.info("Installing toolchain.....")
         self.prepareBuildRoot(chrootID)
@@ -58,6 +58,8 @@ class ToolChainUtils(object):
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
+                    if package == "rpm-build" or package == "rpm-devel":
+                        continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             rpmFiles += " " + rpmFile
@@ -146,12 +148,13 @@ class ToolChainUtils(object):
                 chrUtils.destroyChroot(chrootID)
                 chrootID=None
             self.logger.info("Successfully built toolchain")
-        except Exception as e:
-            self.logger.error("Unable to build tool chain.")
-            raise e
-        finally:
             if chrootID is not None:
                 chrUtils.destroyChroot(chrootID)
+        except Exception as e:
+            self.logger.error("Unable to build tool chain.")
+            # print stacktrace
+            traceback.print_exc()
+            raise e
                 
     def installToolChainRPMS(self,chrootID):
         cmdUtils = CommandUtils()

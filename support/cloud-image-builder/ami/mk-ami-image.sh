@@ -1,0 +1,3 @@
+#!/bin/bash
+
+PHOTON_IMG_OUTPUT_PATH=$1

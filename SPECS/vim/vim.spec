@@ -3,7 +3,7 @@
 Summary:	Text editor
 Name:		vim
 Version:	7.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Charityware
 URL:		http://www.vim.org
 Group:		Applications/Editors
@@ -54,7 +54,6 @@ EOF
 
 %files extra
 %defattr(-,root,root)
-%config(noreplace) /etc/vimrc
 %{_bindir}/vimtutor
 %{_bindir}/xxd
 %{_mandir}/*/*
@@ -62,6 +61,7 @@ EOF
 %{_datarootdir}/vim/vim74/autoload/*
 %{_datarootdir}/vim/vim74/bugreport.vim
 %{_datarootdir}/vim/vim74/colors/*
+%exclude %{_datarootdir}/vim/vim74/colors/desert.vim
 %{_datarootdir}/vim/vim74/compiler/*
 %{_datarootdir}/vim/vim74/delmenu.vim
 %{_datarootdir}/vim/vim74/evim.vim
@@ -86,6 +86,7 @@ EOF
 %{_datarootdir}/vim/vim74/scripts.vim
 %{_datarootdir}/vim/vim74/spell/*
 %{_datarootdir}/vim/vim74/syntax/*
+%exclude %{_datarootdir}/vim/vim74/syntax/syntax.vim
 %{_datarootdir}/vim/vim74/tools/*
 %{_datarootdir}/vim/vim74/tutor/*
 %{_datarootdir}/vim/vim74/lang/*.vim
@@ -130,6 +131,9 @@ EOF
 
 %files
 %defattr(-,root,root)
+%config(noreplace) /etc/vimrc
+%{_datarootdir}/vim/vim74/colors/desert.vim
+%{_datarootdir}/vim/vim74/syntax/syntax.vim
 %{_bindir}/ex
 %{_bindir}/vi
 %{_bindir}/view
@@ -139,6 +143,8 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
+*   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
+-   Added profile related files in minimal vim package.
 *   Tue Jun 30 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
 -   Pack extra files separately, to make vim package small.
 *	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2

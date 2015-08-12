@@ -158,6 +158,13 @@ class Menu(Action):
         curses.doupdate()
 
     def do_action(self):
+        # Auto select one and only item.
+        if len(self.items) == 1 and  not self.selector_menu:
+            result = self.items[self.position][1](self.items[self.position][2])
+            if result.success:
+                self.hide()
+                return result
+
         while True:
             self.refresh()
 

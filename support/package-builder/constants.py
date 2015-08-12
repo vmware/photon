@@ -5,6 +5,7 @@ class constants(object):
     sourcePath=""
     rpmPath=""
     logPath=""
+    dist=""
     topDirPath=""
     specData=None
     buildRootPath="/mnt"
@@ -30,7 +31,7 @@ class constants(object):
         "readline","diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch",
         "util-linux", "tar", "xz","libtool", "flex",  "bison",
         "lua","popt","nspr","sqlite-autoconf","nss","elfutils-libelf",
-        "libpipeline", "gdbm","perl","texinfo","rpm",
+        "libpipeline", "gdbm","perl","texinfo","rpm","rpm-build", "rpm-devel",
         "autoconf","automake", "groff", "man-db", "man-pages","elfutils","cpio"]
 
     listToolChainRPMPkgsToBuild=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
@@ -48,6 +49,7 @@ class constants(object):
     
     @staticmethod
     def initialize(options):
+        constants.dist = options.dist
         constants.specPath = options.specPath
         constants.sourcePath = options.sourcePath
         constants.rpmPath = options.rpmPath

@@ -55,6 +55,8 @@ ln -sfv ../../lib/$(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/l
 %files devel
 %defattr(-, root, root)
 %{_bindir}/*
+%exclude %{_bindir}/pcregrep  
+%exclude %{_bindir}/pcretest
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_libdir}/*.so

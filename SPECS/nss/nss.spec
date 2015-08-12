@@ -1,7 +1,7 @@
 Summary:	Security client
 Name:		nss
 Version:	3.19
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
 Group:		Applications/System
@@ -71,6 +71,8 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 
 
 %changelog
+*       Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2
+-       Version update. Firefox requirement.
 *	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19-1
 -	Version update. Firefox requirement.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.15.4-1

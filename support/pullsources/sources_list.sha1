@@ -12,7 +12,7 @@ autogen-5.18.5.tar.gz - cd24a7944d646f6aaea5c7ed13018de38c45b3da
 automake-1.14.1.tar.xz - 2ced676f6b792a95c5919243f81790b1172c7f5b
 bash-4.3.tar.gz - 45ac3c5727e7262334f4dfadecdf601b39434e84
 bc-1.06.95.tar.bz2 - 18717e0543b1dda779a71e6a812f11b8261a705a
-bind-9.10.1-P1.tar.gz - 24a81ba458a762c27be47461301fcf336cfb1d43
+bind-9.10.1.tar.gz - 93c7c6ac7d621f9dc1eaee9a0221bbaac89f1105
 binutils-2.25.tar.bz2 - b46cc90ebaba7ffcf6c6d996d60738881b14e50d
 bison-3.0.2.tar.xz - aeb1e3544007124009e5203afe86a5676580d444
 blfs-bootscripts-20140919.tar.bz2 - 762b68f79f84463a6b1dabb69e9dbdc2c43f32d8
@@ -51,7 +51,6 @@ diffutils-3.3.tar.xz - 6463cce7d3eb73489996baefd0e4425928ecd61e
 docbook-xml-4.5.zip - b9124233b50668fb508773aa2b3ebc631d7c1620
 docbook-xsl-1.78.1.tar.bz2 - 1d668c845bb43c65115d1a1d9542f623801cfb6f
 docker-1.7.0.tar.gz - 59a5b5eaae6966a3caa43f30c23a1a9b49edc268
-dparted-0.1.tar.gz - 7a2686dd56d86d1a696982e4061cf66cc8963409
 dracut-041.tar.xz - 9c7c6c61eb7529206fc6595bd014e046e18ef5e0
 e2fsprogs-1.42.9.tar.gz - fb8e3662302bcab1682d567d6ee0ff051faa1bbd
 elfutils-0.158.tar.bz2 - 09adbbf0f3a35bb1bcb77c2eaa40de8d3443af4d

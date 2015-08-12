@@ -26,7 +26,6 @@ class PackageManager(object):
         self.mapOutputThread={}
         self.mapThreadsLaunchTime={}
         self.listAvailableCyclicPackages=[]
-        self.listPackagesToBuild=[]
         
     def readPackageBuildData(self, listPackages):
         try:
@@ -71,21 +70,16 @@ class PackageManager(object):
         self.mapCyclesToPackageList.clear()
         self.mapPackageToCycle.clear()
         self.sortedPackageList=[]
-        self.listPackagesToBuild=[]
-        
-        if not self.readPackageBuildData(listPackages):
-            return False
         
         self.listOfPackagesAlreadyBuilt = self.readAlreadyAvailablePackages()
         
-        self.listPackagesToBuild=self.sortedPackageList[:]
-        for pkg in self.sortedPackageList:
+        listPackagesToBuild=listPackages[:]
+        for pkg in listPackages:
             if pkg in self.listOfPackagesAlreadyBuilt:
-                self.listPackagesToBuild.remove(pkg)
+                listPackagesToBuild.remove(pkg)
         
-        self.logger.info(self.listPackagesToBuild)
-        self.logger.info(listPackages)
-        
+        if not self.readPackageBuildData(listPackagesToBuild):
+            return False
         return True
     
     def buildToolChain(self):

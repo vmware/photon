@@ -10,6 +10,7 @@ Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
 %define sha1 coreutils=cc7fe47b21eb49dd2ee4cdb707570f42fb2c8cc6
 Patch0:		http://www.linuxfromscratch.org/patches/lfs/7.5/coreutils-8.22-i18n-4.patch
+Requires:	gmp
 %description
 The Coreutils package contains utilities for showing and setting
 the basic system

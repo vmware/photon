@@ -34,7 +34,7 @@ Following is the list (extracted from [this link](https://cloud.google.com/compu
   
       # Change partition table to MBR from GPT
       sgdisk -m 1:2 /dev/sda
-      grub-install /dev/sda
+      grub2-install /dev/sda
       
       # Enable serial console on grub for GCE.
       cat << EOF >> /etc/default/grub
@@ -44,7 +44,7 @@ Following is the list (extracted from [this link](https://cloud.google.com/compu
       EOF
       
       # Create new grub.cfg based on the settings in /etc/default/grub
-      grub-mkconfig -o /boot/grub/grub.cfg
+      grub2-mkconfig -o /boot/grub2/grub.cfg
       
 ##### 2. Install Google Cloud SDK and GCE Packages
       yum install google-daemon google-startup-scripts

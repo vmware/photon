@@ -1,12 +1,12 @@
 Summary:	Google Startup Scripts
 Name:		google-startup-scripts
-Version:	1.2.2
+Version:	1.2.7
 Release:	1%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://github.com/GoogleCloudPlatform/compute-image-packages/
 Source0:	google-startup-scripts-%{version}.tar.gz
-%define sha1 google-startup-scripts=2303d183a8e16f36b6ee5b5f0b8fc5e065bd0402
+%define sha1 google-startup-scripts=23511515ad691ab29d3953b948ee3afb8adcb18d
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	google-startup-scripts
@@ -40,3 +40,7 @@ rm -rf $RPM_BUILD_ROOT
 /etc/*
 %exclude /README.md
 %exclude /LICENSE
+
+%changelog
+*   Mon Aug 10 2015 Anish Swaminathan <anishs@vmware.com> 1.2.7-1
+-   Updated version.

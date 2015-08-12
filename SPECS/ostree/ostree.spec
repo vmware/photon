@@ -75,6 +75,7 @@ env NOCONFIGURE=1 ./autogen.sh
 	--enable-gtk-doc \
 	--with-dracut \
 	--with-mkinitcpio \
+    --enable-libsoup-client-certs  \
 	--prefix=%{_prefix}
 	  
 make %{?_smp_mflags}

@@ -12,6 +12,22 @@
 #		The path to this empty disk is specified in the HDD variable in config.inc
 #	End
 #
+grub_efi_install()
+{
+    mkdir $BUILDROOT/boot/efi
+    mkfs.vfat /dev/sda1
+    mount -t vfat /dev/sda1 $BUILDROOT/boot/efi
+    cp boot/unifont.pf2 /usr/share/grub/
+    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck --debug
+    mv $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
+    umount $BUILDROOT/boot/efi
+}
+
+grub_mbr_install()
+{
+    $grubInstallCmd --force --boot-directory=$BUILDROOT/boot "$HDD"
+}
+
 set -o errexit		# exit if error...insurance ;)
 set -o nounset		# exit if variable not initalized
 set +h			# disable hashall
@@ -25,28 +41,46 @@ ARCH=$(uname -m)	# host architecture
 > ${LOGFILE}		#	clear/initialize logfile
 
 # Check if passing a HHD and partition
-if [ $# -eq 2 ] 
+if [ $# -eq 3 ] 
 	then
-		HDD=$1
-		PARTITION=$2
+        BOOTMODE=$1
+		HDD=$2
+		PARTITION=$3
 fi
 
 #
-#	Install grub.
+#	Install grub2.
 #
 UUID=$(blkid -s UUID -o value $PARTITION)
-grub-install --force --boot-directory=$BUILDROOT/boot "$HDD"
-cp boot/unifont.pf2 ${BUILDROOT}/boot/grub/
-mkdir -p ${BUILDROOT}/boot/grub/themes/photon
-cp boot/splash.tga ${BUILDROOT}/boot/grub/themes/photon/photon.tga
-cp boot/terminal_*.tga ${BUILDROOT}/boot/grub/themes/photon/
-cp boot/theme.txt ${BUILDROOT}/boot/grub/themes/photon/
-cat > "$BUILDROOT"/boot/grub/grub.cfg << "EOF"
-# Begin /boot/grub/grub.cfg
+
+grubInstallCmd=""
+mkdir -p $BUILDROOT/boot/grub2
+ln -sfv grub2 $BUILDROOT/boot/grub
+command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
+command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
+if [ -z $grubInstallCmd ]; then
+echo "Unable to found grub install command"
+exit 1
+fi
+
+if [ "$BOOTMODE" == "bios" ]; then 
+    grub_mbr_install
+fi
+if [ "$BOOTMODE" == "efi" ]; then 
+    grub_efi_install
+fi
+
+cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
+mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
+cp boot/splash.tga ${BUILDROOT}/boot/grub2/themes/photon/photon.tga
+cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
+cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
+cat > "$BUILDROOT"/boot/grub2/grub.cfg << "EOF"
+# Begin /boot/grub2/grub.cfg
 set default=0
 set timeout=5
 set root=(hd0,2)
-loadfont /boot/grub/unifont.pf2
+loadfont /boot/grub2/unifont.pf2
 
 insmod gfxterm
 insmod vbe
@@ -57,7 +91,7 @@ gfxpayload=keep
 
 terminal_output gfxterm
 
-set theme=/boot/grub/themes/photon/theme.txt
+set theme=/boot/grub2/themes/photon/theme.txt
 
 menuentry "Photon" {
 	insmod ext2
@@ -65,10 +99,10 @@ menuentry "Photon" {
 	linux /boot/vmlinuz-3.19.2 init=/lib/systemd/systemd root=UUID=UUID_PLACEHOLDER loglevel=3 ro
 	initrd /boot/initrd.img-no-kmods
 }
-# End /boot/grub/grub.cfg
+# End /boot/grub2/grub.cfg
 EOF
 
-sed -i "s/UUID_PLACEHOLDER/$UUID/" "$BUILDROOT"/boot/grub/grub.cfg > ${LOGFILE}	
+sed -i "s/UUID_PLACEHOLDER/$UUID/" "$BUILDROOT"/boot/grub2/grub.cfg > ${LOGFILE}	
 
 #Cleanup the workspace directory
 rm -rf "$BUILDROOT"/tools

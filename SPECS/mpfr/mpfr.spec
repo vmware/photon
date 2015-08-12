@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.xz
 %define sha1 mpfr=03e593cc6e26639ef5e60be1af8dc527209e5172
+Requires:	gmp
 %description
 The MPFR package contains functions for multiple precision math.
 %package	devel

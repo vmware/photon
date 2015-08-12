@@ -1,0 +1,9 @@
+{
+    "packages":["filesystem", "glibc", "bash", "bzip2", "dracut", "dracut-tools",
+                "glib", "gpgme", "gpgme-devel", "hawkey", "json-glib",
+                "libarchive", "libarchive-devel", "libassuan", "libcap", "libffi",
+                "libgcc", "libgpg-error", "libgsystem", "libhif", "libhif-devel",
+                "librepo", "librepo-devel", "libsolv", "libsoup", "libsoup-devel",
+                "libxml2", "mkinitcpio", "openssl-devel", "ostree", "pcre", "rpm",
+                "sqlite-autoconf", "systemd", "xz", "yum", "zlib", "ostree", "rpm-ostree"]
+}

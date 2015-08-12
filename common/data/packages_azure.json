@@ -1,0 +1,3 @@
+{
+    "packages":["sudo", "python-pyasn1", "WALinuxAgent"]
+}

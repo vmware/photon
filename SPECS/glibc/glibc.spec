@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	2%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -12,6 +12,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 %define sha1 glibc=1157be3fe63baa81b7ba104a103337775a6ed06f
+Source1:	locale-gen.sh
+Source2:	locale-gen.conf
 Patch0:		glibc-2.21-fhs-1.patch
 Provides:	rtld(GNU_HASH)
 Requires:   filesystem
@@ -89,8 +91,8 @@ install -vdm 755 %{buildroot}/var/cache/nscd
 install -vdm 755 %{buildroot}%{_libdir}/locale
 cp -v ../%{name}-%{version}/nscd/nscd.conf %{buildroot}%{_sysconfdir}/nscd.conf
 #	Install locale generation script and config file
-#cp -v %{_topdir}/locale-gen.conf %{buildroot}%{_sysconfdir}
-#cp -v %{_topdir}/locale-gen.sh %{buildroot}/sbin
+cp -v %{SOURCE2} %{buildroot}%{_sysconfdir}
+cp -v %{SOURCE1} %{buildroot}/sbin
 #	Remove unwanted cruft
 rm -rf %{buildroot}%{_infodir}
 #	Install configuration files
@@ -116,16 +118,20 @@ cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 	/opt/lib
 	include /etc/ld.so.conf.d/*.conf
 EOF
+
 %post
 printf "Creating ldconfig cache\n";/sbin/ldconfig
-#printf "Creating locale files\n";/sbin/locale-gen.sh
+
+%postun
+/sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %dir %{_localstatedir}/cache/nscd
 %dir %{_libdir}/locale
 %{_sysconfdir}/*
 %ifarch x86_64
-%{_lib64}/*
+/lib64/*
 %{_lib64dir}/*
 %else
 %{_lib}/*
@@ -185,7 +191,13 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %lang(zh_TW) %{_datarootdir}/locale/zh_TW/LC_MESSAGES/libc.mo
 
 %changelog
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19-2
--   Update according to UsrMove.
+*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.19-5
+        Adding postun section for ldconfig.
+*	Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.19-4
+	Support glibc building against current rpm version.
+*	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-3
+-	Packing locale-gen scripts
+*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19-2
+-   	Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.19-1
 -	Initial build. First version

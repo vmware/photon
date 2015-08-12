@@ -51,9 +51,14 @@ class Window(Action):
             self.hide_window()
             return action_result
         else:
-            #highlight the GoBack and keep going
-            self.contentwin.addstr(self.height - 3, 5, '<Go Back>', curses.color_pair(3))
-            self.contentwin.refresh()
+            if (action_result.result != None and 'goBack' in action_result.result and action_result.result['goBack']):
+                self.hide_window()
+                self.action_panel.hide()
+                return action_result
+            else:
+                #highlight the GoBack and keep going
+                self.contentwin.addstr(self.height - 3, 5, '<Go Back>', curses.color_pair(3))
+                self.contentwin.refresh()
 
         while action_result.success == False:
             key = self.contentwin.getch()

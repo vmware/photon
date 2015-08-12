@@ -1,7 +1,7 @@
 Summary:	precision numeric processing language
 Name:		bc
 Version:	1.06.95
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://alpha.gnu.org/gnu/bc/
 Group:		System Environment/base
@@ -27,12 +27,19 @@ install -vdm 755 %{buildroot}/%{_mandir}
 rm -rf %{buildroot}%{_infodir}
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post
 /sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*       Tue Aug 4 2015 Kumar Kaushik <kaushikk@vmware.com> 1.06.95-2
+-       Adding the post uninstall section.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.06.95-1
 -	initial version

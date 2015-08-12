@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.22.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -29,6 +29,8 @@ The Mesos package installs MesosContainerizer.
 
 %setup -q
 %build
+sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.in
+sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.in
 ./configure	--prefix=%{_prefix}  	
 
 make %{?_smp_mflags}
@@ -52,5 +54,7 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/mesos/*
 
 %changelog
+*	Thu Jul 16 2015 Alexey Makhalov <amakhalov@vmware.com> 0.22.1-2
+-	Untar with --no-same-owner to get it compilable in container.
 *	Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 0.22.1-1
 -	Initial build.	First version

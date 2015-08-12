@@ -1,0 +1,29 @@
+{
+    "comment": "Photon Minimal OSTree",
+
+    "osname": "photon",
+
+    "ref": "tp2/x86_64/minimal",
+
+    "repos": ["photon"],
+
+    "selinux": false,
+
+    "initramfs-args": ["--no-hostonly"],
+
+    "bootstrap_packages": ["filesystem"],
+
+    "packages": ["glibc", "zlib", "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp",
+                "pkg-config", "ncurses", "bash", "bzip2", "cracklib", "cracklib-dicts", "shadow",
+                "procps-ng", "iana-etc", "readline", "coreutils", "bc", "libtool", "inetutils",
+                "findutils", "xz", "grub2", "iproute2", "util-linux", "linux",
+                "attr", "libcap", "kmod", "expat", "dbus", "file",
+                "sed", "grep", "cpio", "gzip",
+                "openssl", "ca-certificates", "curl",
+                "systemd",
+                "openssh",
+                "photon-release",
+                "vim", "tdnf",
+                "docker","bridge-utils",
+                "dracut", "dracut-tools", "rpm-ostree", "nss-altfiles", "which"]
+}

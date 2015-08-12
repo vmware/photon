@@ -1,0 +1,17 @@
+[Unit]
+Description=Docker Daemon
+After=docker.socket  network.target
+Requires=docker.socket
+
+[Service]
+ExecStart=/bin/docker -d -s overlay -H fd://
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+MountFlags=slave
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target

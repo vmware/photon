@@ -29,6 +29,11 @@ else
 PHOTON_SOURCES ?= sources
 endif
 
+PHOTON_MINIMAL_DEPLIST := minimal-dep-list
+PHOTON_MICRO_DEPLIST := micro-dep-list
+PHOTON_FULL_DEPLIST := full-dep-list
+PREPARE_OUT_DATADIR := prepare-out-datadir
+
 ifdef PHOTON_PUBLISH_RPMS_PATH
 PHOTON_PUBLISH_RPMS := publish-rpms-cached
 else
@@ -38,17 +43,18 @@ endif
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 
-.PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local \
-check check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
+.PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
+check check-docker check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot
 
 THREADS?=1
 
-all: iso micro-iso minimal-iso docker-image
+all: iso minimal-iso docker-image ostree-host-iso live-iso cloud-image-all
 
 micro: micro-iso
+	@:
 
-micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
+micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO) $(PHOTON_MICRO_DEPLIST)
 	@echo "Building Photon Micro ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-micro.iso \
@@ -58,6 +64,22 @@ micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
                 -p $(PHOTON_DATA_DIR)/build_install_options_micro.json \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+$(PHOTON_MICRO_DEPLIST): check $(PREPARE_OUT_DATADIR)
+	@echo "Generating the install time dependency list for micro installation"
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		--input-type=json --file packages_micro.json -d json -t $(PHOTON_STAGE) -a $(PHOTON_DATA_DIR)
+	@echo "generated the json file with all dependencies for micro installation"
+
+deptree-micro:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		-i json -f packages_micro.json -a $(PHOTON_DATA_DIR)
 
 packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all Micro RPMS..."
@@ -71,11 +93,20 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_micro.json \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
 minimal: minimal-iso
+	@:
 
-minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+deptree-minimal:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		-i json -f packages_minimal.json -a $(PHOTON_DATA_DIR) 
+
+minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) $(PHOTON_MINIMAL_DEPLIST)
 	@echo "Building Photon Minimal ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-minimal.iso \
@@ -85,6 +116,37 @@ minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
                 -p $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
+	@echo "Building Photon OSTree Host ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-ostree-host.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_DATA_DIR)/build_install_options_ostreehost.json \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+	@echo "Building Photon Minimal LIVE ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-live-iso.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_livecd.json \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1                
+
+$(PHOTON_MINIMAL_DEPLIST): $(PREPARE_OUT_DATADIR)
+	@echo "Generating the install time dependency list for minimal installation"	
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		--input-type=json --file packages_minimal.json -d json -a $(PHOTON_DATA_DIR)
+	@echo "generated the json file with all dependencies for minimal installation"
 
 packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all RPMS..."
@@ -98,9 +160,10 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo $(PHOTON_FULL_DEPLIST)
 	@echo "Building Photon FUll ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
@@ -110,6 +173,30 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                 -p $(PHOTON_DATA_DIR)/build_install_options_all.json \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+$(PHOTON_FULL_DEPLIST): $(PHOTON_MINIMAL_DEPLIST) 
+	@echo "Generating the install time dependency list for full installation"
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		--input-type=json --file packages_full.json -d json -a $(PHOTON_DATA_DIR)
+	@echo "generated the json file with all dependencies for full installation"
+
+deptree-full:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		-i json -f packages_full.json -a $(PHOTON_DATA_DIR)
+
+deptree:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i pkg -p $(pkg)
+
+who-needs:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg) 
 
 packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
 	@echo "Building all RPMS..."
@@ -123,6 +210,7 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
 tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
@@ -138,6 +226,7 @@ tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
                 -t ${THREADS} \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -m stage1
 
 tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
@@ -153,6 +242,7 @@ tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
                 -t ${THREADS} \
 		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
                 -m stage2
 
 
@@ -181,6 +271,10 @@ publish-rpms-cached:
 	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR) && \
 	 $(CP) -rf $(PHOTON_PUBLISH_RPMS_PATH)/* $(PHOTON_PUBLISH_RPMS_DIR)/
 
+prepare-out-datadir:
+	$(MKDIR) -p $(PHOTON_GENERATED_DATA_DIR)
+	$(CP) $(PHOTON_DATA_DIR)/*.json $(PHOTON_GENERATED_DATA_DIR)
+
 $(PHOTON_STAGE):
 	@echo "Creating staging folder..."
 	$(MKDIR) -p $(PHOTON_STAGE)
@@ -193,6 +287,8 @@ $(PHOTON_STAGE):
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
 	@echo "Building LOGS folder..."
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
+	@echo "Creating data folder for generated files..."
+
 
 docker-image:
 	sudo docker run \
@@ -202,10 +298,14 @@ docker-image:
 		--net=host \
 		-v `pwd`:/workspace \
 		toliaqat/photon-dev \
-		./support/dockerfiles/photon/make-docker-image.sh /workspace
+		./support/dockerfiles/photon/make-docker-image.sh tdnf
 
 install-docker-image: docker-image
-	sudo docker build -t photon:base .
+	sudo docker build -t photon:tdnf .
+
+ostree-repo: $(PHOTON_PACKAGES)
+	@echo "Creating OSTree repo from local PRMs in ostree-repo.tar.gz..."
+	$(SRCROOT)/support/ostree-tools/make-ostree-image.sh $(SRCROOT)
 
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."
@@ -265,7 +365,34 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
 	fi
 
-check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity
+cloud-image: $(PHOTON_STAGE) $(PHOTON_ISO_PATH)
+	@echo "Building cloud image $(IMG_NAME)..."
+	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
+	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
+	elif [ -e $(PHOTON_STAGE)/photon-minimal.iso ]; then \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon-minimal.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
+	else \
+		echo "Unable to find photon iso file... aborting build"; \
+	fi
+
+
+cloud-image-all: $(PHOTON_STAGE) $(PHOTON_ISO_PATH)
+	@echo "Building cloud images - gce, ami, azure and ova..."
+	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
+	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) azure $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT); \
+	else \
+		echo "Unable to find photon iso file... aborting build"; \
+	fi
+
+check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity check-docker
+
+check-docker:
+	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
@@ -311,6 +438,7 @@ check-packer-ovf-plugin:
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
                               -c $(PHOTON_BINTRAY_CONFIG) \
+			      -d $(PHOTON_DIST_TAG) \
                               -l $(PHOTON_LOGS_DIR)
 
 $(TOOLS_BIN):

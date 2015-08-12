@@ -1,7 +1,7 @@
 Summary:	NetworkManager
 Name:		NetworkManager
 Version:	1.0.2
-Release:	1%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		https://download.gnome.org/sources/NetworkManager/1.0/NetworkManager-1.0.2.tar.xz
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
@@ -20,6 +20,9 @@ BuildRequires:	nss-devel
 BuildRequires:	libndp-devel
 BuildRequires:	python2
 BuildRequires:	python2-libs
+BuildRequires:	dhcp-client
+BuildRequires:	libsoup-devel
+BuildRequires:	libgudev >= 165
 
 %package devel
 Summary:	Libraries and header files for NetworkManager
@@ -38,14 +41,18 @@ NetworkManager is a set of co-operative tools that make networking simple and st
 	--prefix=%{_prefix} \
 	--disable-ppp \
 	--disable-gtk-doc \
-	--sysconfdir=%{_sysconfdir}
+	--sysconfdir=%{_sysconfdir} \
+        --with-dhclient=yes \
+	--enable-ifcfg-rh=yes \
+	--with-setting-plugins-default='ifcfg-rh,ibft'
+
  
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 cat >> %{buildroot}/etc/NetworkManager/NetworkManager.conf << "EOF"
 [main]
-plugins=keyfile
+plugins=ifcfg-rh,ibft
 EOF
 
 %post	-p /sbin/ldconfig
@@ -79,5 +86,9 @@ EOF
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Wed Aug 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.2-3
+-	Add libgudev dependency.
+*	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2-2
+-	Building with dhclient.
 *	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2-1
 -	Initial build.

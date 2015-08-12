@@ -7,24 +7,25 @@
                 "perl-Module-ScanDeps","perl-Types-Serialiser","perl-WWW-Curl","perl-YAML-Tiny","perl-YAML","perl-common-sense","perl-libintl","tcsh",
                 "gobject-introspection", "gobject-introspection-devel", "gobject-introspection-python", "procps-ng-devel", 
                 "bash-lang", "kbd", "coreutils-lang", "libxslt", "docbook-xml", "docbook-xsl", "gtk-doc", "popt-devel", "texinfo", "tar", 
-                "kubernetes", "cyrus-sasl", "openldap", "binutils-devel", "python-iniparse", "psmisc", "etcd", "openssl-devel", 
+                "kubernetes", "cyrus-sasl", "openldap", "binutils", "binutils-devel", "python-iniparse", "psmisc", "etcd", "openssl-devel", 
                 "util-linux-lang", "db-docs", "linux-dev", "linux-docs", "mpc", "json-glib", "json-glib-devel", 
                 "automake", "libpcap", "tcpdump", "elfutils-libelf-devel", "elfutils", "elfutils-devel", "elfutils-devel-static", "elfutils-libelf-devel-static", 
-                "go", "grub-lang", "diffutils", "groff", "man-db", "mpfr-devel", "man-pages", 
+                "go", "grub2","grub2-lang", "diffutils", "groff", "man-db", "mpfr-devel", "man-pages", 
                 "hawkey-devel", "python-hawkey", "libxml2-devel", "ruby", "readline-devel", "wget",
                 "Linux-PAM-lang", "make", "bindutils", "gperf", "lua-devel", "less",
                 "cmake", "gpgme-devel", "parted", "nano", "xz-devel", "xerces-c-devel", "xml-security-c-devel", 
                 "nss-devel", "ncurses-devel", "tzdata", "itstool", "sed-lang", "gptfdisk", "ntp", "flex", "patch", "m4", "dracut", "dracut-tools", 
                 "libarchive", "libarchive-devel", "libsoup", "libsoup-devel", "asciidoc", "mkinitcpio",
-                "ostree", "tdnf-devel", "librepo-devel", "libhif", "libhif-devel", "rpm-ostree", "createrepo", "glibmm", "deltarpm", "cdrkit", "dparted", "libgsystem",
+                "ostree", "tdnf-devel", "librepo-devel", "libhif", "libhif-devel", "rpm-ostree", "createrepo", "glibmm", "deltarpm", "cdrkit", "libgsystem",
                 "rpm-ostree-toolbox","libsepol","libselinux","device-mapper-libs","device-mapper",
                 "acl","btrfs-progs","btrfs-progs-devel","device-mapper-devel","device-mapper-event","device-mapper-event-devel",
                 "device-mapper-event-libs","libacl","libacl-devel","libselinux-devel","libselinux-python","libselinux-utils","libsepol-devel",
                 "libaio","libaio-devel","thin-provisioning-tools","lvm2","lvm2-devel","lvm2-libs","lvm2-python-libs","lzo","lzo-devel","lzo-minilzo","swig",
                 "rpm-devel","pycurl","urlgrabber","yum-metadata-parser","yum", "rocket", "strace", "cracklib-python",
                 "haveged", "haveged-devel", "vim-extra",
-                "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "zookeeper", "fuse", "fleet",
-                "nss-altfiles", "apache-maven", "subversion", "mesos"]
+                "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "eventlog", "syslog-ng", "syslog-ng-devel", "zookeeper", "fuse", "fleet",
+                "nss-altfiles", "apache-maven", "subversion", "mesos", "python3", "python3-libs", "python3-devel", "python3-tools", "fakeroot-ng", "ctags",
+                "libtirpc", "libtirpc-devel", "lsof", "nfs-utils", "cve-check-tool", "flannel", "rpm-build", "dkms", "openssl-perl", "xinetd", "tftp", "tftp-server"]
 }
 
 
