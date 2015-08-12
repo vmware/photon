@@ -93,29 +93,36 @@ make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="
 %install
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{version}
+install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 install -vdm 755 %{buildroot}/etc/modprobe.d
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
-cp -v System.map        %{buildroot}/boot/system.map-%{version}
-cp -v .config            %{buildroot}/boot/config-%{version}
-cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{version}
+cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}
+cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}
+cp -v .config            %{buildroot}/boot/config-esx-%{version}
+cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 
 %post
-/sbin/depmod -aq %{version}
+/sbin/depmod -aq %{version}-esx
+test -f /boot/grub/grub.cfg && sed -i '/set theme=/a \
+\
+menuentry "linux-esx-4.1.3" { \
+    insmod ext2 \
+    insmod part_gpt \
+    linux /boot/vmlinuz-esx-4.1.3 init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 root='`df | grep -e "\/$" | cut -f 1 -d " "`' rw systemd.show_status=0 elevator=noop quiet \
+}' /boot/grub/grub.cfg
 
 %files
 %defattr(-,root,root)
-/boot/system.map-%{version}
-/boot/config-%{version}
-/boot/vmlinuz-%{version}
+/boot/system.map-esx-%{version}
+/boot/config-esx-%{version}
+/boot/vmlinuz-esx-%{version}
 #/lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{version}-esx/build
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/linux-%{version}/*
+%{_defaultdocdir}/linux-esx-%{version}/*
 
 
 
