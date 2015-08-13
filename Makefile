@@ -369,26 +369,26 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon.iso ... aborting build"; \
 	fi
 
-cloud-image: $(PHOTON_STAGE) $(PHOTON_ISO_PATH)
+cloud-image: $(PHOTON_STAGE) $(PHOTON_ISO_PATH) iso
 	@echo "Building cloud image $(IMG_NAME)..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
-		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR); \
 	elif [ -e $(PHOTON_STAGE)/photon-minimal.iso ]; then \
-		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon-minimal.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon-minimal.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR); \
 	else \
 		echo "Unable to find photon iso file... aborting build"; \
 	fi
 
 
-cloud-image-all: $(PHOTON_STAGE) $(PHOTON_ISO_PATH)
+cloud-image-all: $(PHOTON_STAGE) $(PHOTON_ISO_PATH) iso
 	@echo "Building cloud images - gce, ami, azure and ova..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
-		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT); \
-		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT); \
-		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) azure $(SRCROOT); \
-		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) azure $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR); \
+		$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_STAGE)/photon.iso $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR); \
 	else \
 		echo "Unable to find photon iso file... aborting build"; \
 	fi
