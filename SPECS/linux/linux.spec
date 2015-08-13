@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.0.9
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -125,6 +125,12 @@ EOF
 
 %post
 /sbin/depmod -aq %{version}
+cat > /boot/photon.cfg << "EOF"
+# GRUB Environment Block
+photon_cmdline=init=/lib/systemd/systemd rootfstype=ext4 ro loglevel=3 quiet
+photon_linux=/boot/vmlinuz-%{version}
+photon_initrd=/boot/initrd.img-no-kmods
+EOF
 
 %post drivers-gpu
 /sbin/depmod -aq %{version}
@@ -164,6 +170,8 @@ EOF
 /lib/modules/%{version}/kernel/sound
 
 %changelog
+*   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-2
+-   Added environment file for grub.
 *   Wed Aug 12 2015 Sharath George <sharathg@vmware.com> 4.0.9-1
 -   Upgrading kernel version.
 *   Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19.2-5

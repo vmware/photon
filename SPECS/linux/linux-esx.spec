@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.1.3
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -103,13 +103,11 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 
 %post
 /sbin/depmod -aq %{version}-esx
-test -f /boot/grub/grub.cfg && sed -i '/set theme=/a \
-\
-menuentry "linux-esx-4.1.3" { \
-    insmod ext2 \
-    insmod part_gpt \
-    linux /boot/vmlinuz-esx-4.1.3 init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 root='`df | grep -e "\/$" | cut -f 1 -d " "`' rw systemd.show_status=0 elevator=noop quiet \
-}' /boot/grub/grub.cfg
+cat > /boot/photon.cfg << "EOF"
+# GRUB Environment Block
+photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet
+photon_linux=/boot/vmlinuz-esx-%{version}
+EOF
 
 %files
 %defattr(-,root,root)
@@ -131,6 +129,8 @@ menuentry "linux-esx-4.1.3" { \
 /lib/modules/%{version}-esx/build
 
 %changelog
+*   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
+-   Added environment file for grub.
 *   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
     Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time. 
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1

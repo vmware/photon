@@ -75,16 +75,18 @@ mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
 cp boot/splash.tga ${BUILDROOT}/boot/grub2/themes/photon/photon.tga
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
 cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
-cat > "$BUILDROOT"/boot/grub2/grub.cfg << "EOF"
+cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg
 set default=0
 set timeout=5
-set root=(hd0,2)
+search -n -u $UUID -s
 loadfont /boot/grub2/unifont.pf2
 
 insmod gfxterm
 insmod vbe
 insmod tga
+insmod ext2
+insmod part_gpt
 
 set gfxmode="640x480"
 gfxpayload=keep
@@ -92,17 +94,16 @@ gfxpayload=keep
 terminal_output gfxterm
 
 set theme=/boot/grub2/themes/photon/theme.txt
+load_env -f /boot/photon.cfg
 
 menuentry "Photon" {
-	insmod ext2
-    insmod part_gpt
-	linux /boot/vmlinuz-4.0.9 init=/lib/systemd/systemd root=UUID=UUID_PLACEHOLDER loglevel=3 ro
-	initrd /boot/initrd.img-no-kmods
+    linux \$photon_linux root=$PARTITION \$photon_cmdline
+    if [ "\$photon_initrd" ]; then
+        initrd \$photon_initrd
+    fi
 }
 # End /boot/grub2/grub.cfg
 EOF
-
-sed -i "s/UUID_PLACEHOLDER/$UUID/" "$BUILDROOT"/boot/grub2/grub.cfg > ${LOGFILE}	
 
 #Cleanup the workspace directory
 rm -rf "$BUILDROOT"/tools
