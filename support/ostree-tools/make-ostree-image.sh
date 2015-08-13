@@ -25,4 +25,4 @@ sudo docker run -it --privileged -v ${SRCROOT}:/photon -v $(pwd)/stage/RPMS:/RPM
 
 # Restore file
 mv -f ${SRCROOT}/installer/photon-ostree.repo.bak ${SRCROOT}/installer/photon-ostree.repo
-rm -rf ${SRCROOT}/stage/ostree-repo
+sudo rm -rf ${SRCROOT}/stage/ostree-repo
