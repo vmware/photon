@@ -59,6 +59,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 install -vdm755 %{buildroot}/usr/lib/systemd/system
+install -vdm755 %{buildroot}/etc/httpd/logs
 
 cat << EOF >> %{buildroot}/usr/lib/systemd/system/httpd.service
 [Unit]
@@ -68,8 +69,8 @@ After=network.target remote-fs.target nss-lookup.target
 [Service]
 Type=notify
 
-ExecStart=/usr/sbin/httpd $OPTIONS -DFOREGROUND
-ExecReload=/usr/sbin/httpd $OPTIONS -k graceful
+ExecStart=/usr/sbin/httpd \$OPTIONS -DFOREGROUND
+ExecReload=/usr/sbin/httpd \$OPTIONS -k graceful
 KillSignal=SIGWINCH
 KillMode=mixed
 Restart=always
@@ -118,6 +119,7 @@ fi
 %{_sysconfdir}/httpd/error/*
 %{_sysconfdir}/httpd/htdocs/*
 %{_sysconfdir}/httpd/icons/*
+%dir %{_sysconfdir}/httpd/logs
 
 
 %changelog

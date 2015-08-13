@@ -31,7 +31,6 @@ class OstreeInstaller(Installer):
 
     def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
         Installer.__init__(self, install_config, maxy, maxx, iso_installer, rpm_path, log_path, ks_config)
-    
         self.win_height = 13
         self.win_width = 50
         self.menu_starty = self.starty + 3    

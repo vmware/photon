@@ -36,6 +36,12 @@ class OstreeServerInstaller(Installer):
 
         self.run("mkdir -p {}/srv/rpm-ostree/repo".format(self.photon_root))
         self.run("cp ./photon-base.json {}/srv/rpm-ostree/".format(self.photon_root))
-        self.run("cp ./photon-ostree.repo {}/srv/rpm-ostree/".format(self.photon_root))
+        self.run("ln -s /etc/yum.repos.d/photon.repo {}/srv/rpm-ostree/photon-ostree.repo".format(self.photon_root))
+        self.run("cp ./ostree-httpd.conf {}/srv/rpm-ostree/".format(self.photon_root))
+        self.run("cp ./httpd.service {}/usr/lib/systemd/system/".format(self.photon_root))
+        self.run("cp ./get-ip-address.sh {}/usr/bin/".format(self.photon_root))
+        self.run("cp ./ostree-server-greeting.txt {}/etc/issue".format(self.photon_root))
+        self.run("ln -s /usr/lib/systemd/system/httpd.service {}/usr/lib/systemd/system/multi-user.target.wants/httpd.service".format(self.photon_root))
         self.run("tar -xf /mnt/cdrom/ostree-repo.tar.gz -C {}/srv/rpm-ostree/repo".format(self.photon_root))
+
 

@@ -19,7 +19,8 @@ BuildRequires:   python2-libs
 BuildRequires:   python2-devel
 BuildRequires:   python2-tools
 BuildRequires:   glib-networking
-Requires:	libxml2
+Requires:        libxml2
+Requires:        glib-networking
 
 %description
 libsoup is HTTP client/server library for GNOME
