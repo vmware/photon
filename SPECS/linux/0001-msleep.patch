@@ -49,7 +49,7 @@ index c412fdb..61bf9ae 100644
  struct kobject *acpi_kobj;
  EXPORT_SYMBOL_GPL(acpi_kobj);
  
-+extern int warn_on_msleep;
++//extern int warn_on_msleep;
 +
  static int __init acpi_init(void)
  {
@@ -58,7 +58,7 @@ index c412fdb..61bf9ae 100644
  		return -ENODEV;
  	}
  
-+	warn_on_msleep = 1;
++//	warn_on_msleep = 1;
 +
  	acpi_kobj = kobject_create_and_add("acpi", firmware_kobj);
  	if (!acpi_kobj) {
@@ -67,7 +67,7 @@ index c412fdb..61bf9ae 100644
  	result = acpi_bus_init();
  	if (result) {
  		disable_acpi();
-+		warn_on_msleep = 0;
++//		warn_on_msleep = 0;
  		return result;
  	}
  
@@ -176,8 +176,8 @@ index 2ece3aa..42000e8 100644
  	open_softirq(TIMER_SOFTIRQ, run_timer_softirq);
  }
  
-+int warn_on_msleep;
-+EXPORT_SYMBOL_GPL(warn_on_msleep);
++//int warn_on_msleep;
++//EXPORT_SYMBOL_GPL(warn_on_msleep);
  /**
   * msleep - sleep safely even with waitqueue interruptions
   * @msecs: Time in milliseconds to sleep for
@@ -186,7 +186,7 @@ index 2ece3aa..42000e8 100644
  	unsigned long timeout = msecs_to_jiffies(msecs) + 1;
  
 +//	if (warn_on_msleep)
-+		WARN(1, "msleep(%i) called", msecs);
++//		WARN(1, "msleep(%i) called", msecs);
 +
  	while (timeout)
  		timeout = schedule_timeout_uninterruptible(timeout);
