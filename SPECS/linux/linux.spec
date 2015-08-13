@@ -3,17 +3,17 @@
 %define    OPENVMTOOLS_VERSION         10.0.0
 Summary:        Kernel
 Name:        linux
-Version:    3.19.2
-Release:    4%{?dist}
+Version:    4.0.9
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution: Photon
-Source0:    http://www.kernel.org/pub/linux/kernel/v3.x/%{name}-%{version}.tar.xz
-%define sha1 linux=10a25ca5b6d93db78adc9caf13f7ad7cb4b79c61
+Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
+%define sha1 linux=355d1ab33bfea50442b54b7a594ae4d015ea47e0
 #Source1:    config-%{version}-generic.amd64
-Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools-10.0.0.tar.gz
+Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-10.0.0/open-vm-tools-10.0.0.tar.gz
 %define sha1 open-vm-tools=1658ab1b73438e746bb6f11f16fe570eaf753747
 Source2:	config-%{version}
 BuildRequires:    bc
@@ -164,6 +164,8 @@ EOF
 /lib/modules/%{version}/kernel/sound
 
 %changelog
+*   Wed Aug 12 2015 Sharath George <sharathg@vmware.com> 4.0.9-1
+-   Upgrading kernel version.
 *   Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19.2-5
 -   Updated OVT to version 10.0.0.
 -   Rename -gpu-drivers to -drivers-gpu in accordance to directory structure.
