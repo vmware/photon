@@ -11,6 +11,9 @@ import random
 import string
 import subprocess
 import sys
+sys.path.append('../support/SpecDeps/')
+from SpecData import SerializableSpecObject
+from SpecData import SerializedSpecObjects
 import os
 from jsonwrapper import JsonWrapper
 from packageselector import PackageSelector
@@ -128,6 +131,7 @@ if __name__ == '__main__':
     parser.add_option("-f", "--force", action="store_true", dest="force", default=False)
     parser.add_option("-p", "--package-list-file", dest="package_list_file", default="../common/data/build_install_options_all.json")
     parser.add_option("-m", "--stage-path", dest="stage_path", default="../stage")
+    parser.add_option("-s", "--spec-path", dest="spec_path", default="../SPECS")
 
     (options,  args) = parser.parse_args()
     if options.iso_path:
@@ -176,6 +180,12 @@ if __name__ == '__main__':
     option_list_json = json_wrapper_option_list.read()
     options_sorted = option_list_json.items()
     base_path = os.path.dirname(options.package_list_file)
+
+    # Generate the package dependencies based on package_list_file
+    specDependencyGenerator = SerializedSpecObjects(base_path, options.stage_path)
+    for install_option in options_sorted:
+        if install_option[1]["visible"] == True:
+		    specDependencyGenerator.readSpecsAndConvertToSerializableObjects(options.spec_path, "json", install_option[1]["file"], "json")
 
     packages = []
     additional_files_to_copy_from_stage_to_iso = []
