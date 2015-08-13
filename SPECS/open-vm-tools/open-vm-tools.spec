@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -23,6 +23,8 @@ BuildRequires: 	libmspack
 BuildRequires:	Linux-PAM
 BuildRequires:	openssl-devel
 BuildRequires:	procps-ng-devel
+BuildRequires:	fuse-devel
+Requires:	fuse
 Requires:	xerces-c
 Requires:	libdnet
 Requires:	libmspack
@@ -96,19 +98,21 @@ rm -f /sbin/mount.vmhgfs
 
 
 %changelog
-*	Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-1
-	Update version to 10.0.0.
+*       Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-2
+-       Build with fuse support.
+*       Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-1
+-       Update version to 10.0.0.
 *       Tue Aug 11 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-7
-        VCA initial login password issue fix.
+-       VCA initial login password issue fix.
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-6
-        Adding preun and post install commands.
+-       Adding preun and post install commands.
 *       Thu Jul 30 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-5
-        Adding Blob configuation support to GOSC scripts.
+-       Adding Blob configuation support to GOSC scripts.
 *       Thu Jul 09 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-4
-        Fixing GOSC to work on VCA.
+-       Fixing GOSC to work on VCA.
 *       Tue Apr 21 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-3
-        Adding guest optimizations support for photon.
+-       Adding guest optimizations support for photon.
 *	Tue Apr 21 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.0-2
-	Added open-vm-tools-stderr_r-fix upstream patch and removed glibc patch.
-*	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 9.10.0-1
-	Initial version
+-       Added open-vm-tools-stderr_r-fix upstream patch and removed glibc patch.
+*       Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 9.10.0-1
+-       Initial version
