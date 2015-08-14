@@ -1,7 +1,7 @@
 Summary:	NetworkManager
 Name:		NetworkManager
 Version:	1.0.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		https://download.gnome.org/sources/NetworkManager/1.0/NetworkManager-1.0.2.tar.xz
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
@@ -23,10 +23,28 @@ BuildRequires:	python2-libs
 BuildRequires:	dhcp-client
 BuildRequires:	libsoup-devel
 BuildRequires:	libgudev >= 165
+BuildRequires:	libgudev-devel >= 165
+
+Requires:	dbus-glib
+Requires:	libnl
+Requires:	readline
+Requires:	ncurses
+Requires:	nss
+Requires:	libndp
+Requires:	libsoup
+Requires:	libgudev >= 165
 
 %package devel
 Summary:	Libraries and header files for NetworkManager
 Requires:	NetworkManager
+Requires:	dbus-glib-devel
+Requires:	libnl-devel
+Requires:	readline-devel
+Requires:	ncurses-devel
+Requires:	nss-devel
+Requires:	libndp-devel
+Requires:	libsoup-devel
+Requires:	libgudev-devel >= 165
 
 %description devel
 Headers and libraries for the NetworkManager.
@@ -86,6 +104,8 @@ EOF
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Thu Aug 13 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.2-4
+-	Update libgudev devel dependency, requires.
 *	Wed Aug 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.2-3
 -	Add libgudev dependency.
 *	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2-2
