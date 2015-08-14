@@ -115,7 +115,9 @@ class ProgressBar(object):
     def show_loading(self, message):
         self.loadding_timer = threading.Timer(self.loading_interval, self.update_loading_symbol)
         self.loadding_timer.start()
+        self.update_loading_message(message)
 
+    def update_loading_message(self, message):
         self.message_len = len(message)
         spaces = ' ' * self.width
         self.update_message(' ')

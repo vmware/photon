@@ -4,23 +4,11 @@
 #
 #    Author: Touseef Liaqat <tliaqat@vmware.com>
 
-import subprocess
-import curses
 import os
-import crypt
-import re
-import random
-import string
-import shutil
-import fnmatch
-import signal
-import sys
 import glob
-import urllib
 import modules.commons
-import xml.etree.ElementTree as ET
-from jsonwrapper import JsonWrapper
 from installer import Installer
+from actionresult import ActionResult
 
 class OstreeInstaller(Installer):
 
@@ -158,11 +146,14 @@ class OstreeInstaller(Installer):
         deployment_fstab = os.path.join(deployment, "etc/fstab")
         self.run("echo \"/dev/sda2    /boot    ext4   defaults   1 2  \" >> {} ".format(deployment_fstab), "Adding /boot mount point in fstab")
         self.run("mount --bind {} {}".format(deployment, self.photon_root))
-        self.progress_bar.show_loading("Starting post install modules")
+        self.progress_bar.update_loading_message("Starting post install modules")
         self.execute_modules(modules.commons.POST_INSTALL)
-        self.progress_bar.show_loading("Unmounting disks")
+        self.progress_bar.update_loading_message("Unmounting disks")
         self.run("{} {} {}".format(self.unmount_disk_command, '-w', self.photon_root))
-        self.progress_bar.show_loading("Ready to restart")
+        self.progress_bar.update_loading_message("Ready to restart")
         self.progress_bar.hide()
+        self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
+        if self.ks_config == None:
+            self.window.content_window().getch()
         return ActionResult(True, None)
 

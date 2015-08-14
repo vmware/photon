@@ -347,7 +347,7 @@ class Installer(object):
     def run(self, command, comment = None):
         if comment != None:
             print >> sys.stderr, "Installer: {} ".format(comment)
-            self.progress_bar.show_loading(comment)
+            self.progress_bar.update_loading_message(comment)
 
         print >> sys.stderr, "Installer: {} ".format(command)
         process = subprocess.Popen([command], shell=True, stdout=self.output)
