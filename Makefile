@@ -34,6 +34,11 @@ PHOTON_MICRO_DEPLIST := micro-dep-list
 PHOTON_FULL_DEPLIST := full-dep-list
 PREPARE_OUT_DATADIR := prepare-out-datadir
 
+MINIMAL_PACKAGE_LIST_FILE := build_install_options_minimal.json
+MICRO_PACKAGE_LIST_FILE := build_install_options_micro.json
+FULL_PACKAGE_LIST_FILE := build_install_options_all.json
+CLOUDALL_PACKAGE_LIST_FILE := build_install_options_cloudall.json
+
 ifdef PHOTON_PUBLISH_RPMS_PATH
 PHOTON_PUBLISH_RPMS := publish-rpms-cached
 else
@@ -61,7 +66,8 @@ micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO) $(PHOTON_MICRO_DEPLIST
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_DATA_DIR)/build_install_options_micro.json \
+                -p $(PHOTON_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
+                -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -71,7 +77,7 @@ $(PHOTON_MICRO_DEPLIST): check $(PREPARE_OUT_DATADIR)
 		$(PHOTON_SPECDEPS) \
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
-		--input-type=json --file packages_micro.json -d json -t $(PHOTON_STAGE) -a $(PHOTON_DATA_DIR)
+		--input-type=json --file $(MICRO_PACKAGE_LIST_FILE) -d json -t $(PHOTON_STAGE) -a $(PHOTON_DATA_DIR)
 	@echo "generated the json file with all dependencies for micro installation"
 
 deptree-micro:
@@ -79,7 +85,7 @@ deptree-micro:
 		$(PHOTON_SPECDEPS) \
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
-		-i json -f packages_micro.json -a $(PHOTON_DATA_DIR)
+		-i json -f $(MICRO_PACKAGE_LIST_FILE) -a $(PHOTON_DATA_DIR)
 
 packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 	@echo "Building all Micro RPMS..."
@@ -91,7 +97,7 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/build_install_options_micro.json \
+                -j $(PHOTON_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
@@ -104,7 +110,7 @@ deptree-minimal:
 		$(PHOTON_SPECDEPS) \
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
-		-i json -f packages_minimal.json -a $(PHOTON_DATA_DIR) 
+		-i json -f $(MINIMAL_PACKAGE_LIST_FILE) -a $(PHOTON_DATA_DIR) 
 
 minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) $(PHOTON_MINIMAL_DEPLIST)
 	@echo "Building Photon Minimal ISO..."
@@ -113,7 +119,8 @@ minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) $(PHOTON_MINIMAL_D
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
+                -p $(PHOTON_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
+                -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -125,6 +132,7 @@ ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_DATA_DIR)/build_install_options_ostreehost.json \
+                -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -136,6 +144,7 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_livecd.json \
+                -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1                
 
@@ -145,7 +154,7 @@ $(PHOTON_MINIMAL_DEPLIST): $(PREPARE_OUT_DATADIR)
 		$(PHOTON_SPECDEPS) \
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
-		--input-type=json --file packages_minimal.json -d json -a $(PHOTON_DATA_DIR)
+		--input-type=json --file $(MINIMAL_PACKAGE_LIST_FILE) -d json -a $(PHOTON_DATA_DIR)
 	@echo "generated the json file with all dependencies for minimal installation"
 
 packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
@@ -158,7 +167,7 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/build_install_options_minimal.json \
+                -j $(PHOTON_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
@@ -170,8 +179,8 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo $(PHOTON_FULL_DEPLIST)
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_DATA_DIR)/build_install_options_all.json \
-				-o $(PHOTON_STAGE)/common/data \
+                -p $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+		        -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -181,7 +190,7 @@ $(PHOTON_FULL_DEPLIST): $(PHOTON_MINIMAL_DEPLIST)
 		$(PHOTON_SPECDEPS) \
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
-		--input-type=json --file packages_full.json -d json -a $(PHOTON_DATA_DIR)
+		--input-type=json --file $(FULL_PACKAGE_LIST_FILE) -d json -a $(PHOTON_DATA_DIR)
 	@echo "generated the json file with all dependencies for full installation"
 
 deptree-full:
@@ -189,7 +198,7 @@ deptree-full:
 		$(PHOTON_SPECDEPS) \
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
-		-i json -f packages_full.json -a $(PHOTON_DATA_DIR)
+		-i json -f $(FULL_PACKAGE_LIST_FILE) -a $(PHOTON_DATA_DIR)
 
 deptree:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
@@ -209,7 +218,7 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
+                -j $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
@@ -224,7 +233,7 @@ tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
+                -j $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -t ${THREADS} \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
@@ -240,7 +249,7 @@ tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/build_install_options_all.json \
+                -j $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -t ${THREADS} \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
@@ -371,6 +380,13 @@ photon-vagrant-local: check-packer check-vagrant
 	fi
 
 cloud-image: $(PHOTON_STAGE) $(PHOTON_ISO_PATH) iso
+	@echo "Generating the install time dependency list for "$(IMG_NAME)
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		--input-type=json --file build_install_options_$(IMG_NAME).json -d json -a $(PHOTON_DATA_DIR)
+	@echo "generated the json file with all dependencies for "$(IMG_NAME)
 	@echo "Building cloud image $(IMG_NAME)..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
@@ -383,6 +399,13 @@ cloud-image: $(PHOTON_STAGE) $(PHOTON_ISO_PATH) iso
 
 
 cloud-image-all: $(PHOTON_STAGE) $(PHOTON_ISO_PATH) iso
+	@echo "Generating the install time dependency list for full installation"
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) \
+		-s $(PHOTON_SPECS_DIR) \
+		-t $(PHOTON_STAGE) \
+		--input-type=json --file $(CLOUDALL_PACKAGE_LIST_FILE) -d json -a $(PHOTON_DATA_DIR)
+	@echo "generated the json file with all dependencies for full installation"
 	@echo "Building cloud images - gce, ami, azure and ova..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	@if [ -e $(PHOTON_STAGE)/photon.iso ]; then \
