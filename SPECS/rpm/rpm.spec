@@ -1,7 +1,7 @@
 Summary:	Package manager
 Name:		rpm
 Version:	4.11.2
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		http://rpm.org
 Group:		Applications/System
@@ -131,6 +131,8 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/rpmpopt-4.11.2
 %{_libdir}/rpm/rpmrc
 %{_libdir}/rpm/tgpg
+%{_libdir}/librpmbuild.so
+%{_libdir}/librpmbuild.so.*
 
 %{_libdir}/rpm/platform/*
 %{_libdir}/rpm-plugins/*
@@ -189,9 +191,7 @@ rm -rf %{buildroot}
 %{_libdir}/librpmio.so
 %{_libdir}/librpm.so
 %{_libdir}/librpmsign.so
-%{_libdir}/librpmbuild.so
 %{_libdir}/librpmsign.so.*
-%{_libdir}/librpmbuild.so.*
 
 %changelog
 *   Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
