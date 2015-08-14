@@ -39,13 +39,15 @@ rm /etc/ssh/sshd_config
 
 echo "AuthorizedKeysFile .ssh/authorized_keys" >> /etc/ssh/sshd_config
 echo "UsePrivilegeSeparation sandbox" >> /etc/ssh/sshd_config
-echo "PasswordAuthentication yes" >> /etc/ssh/sshd_config
-echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
+echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
+echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
+echo "PermitRootLogin without-password" >> /etc/ssh/sshd_config
 echo "PermitTunnel no" >> /etc/ssh/sshd_config
 echo "AllowTcpForwarding yes" >> /etc/ssh/sshd_config
 echo "X11Forwarding no" >> /etc/ssh/sshd_config
 echo "ClientAliveInterval 420" >> /etc/ssh/sshd_config
-#echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
+echo "UseDNS no" >> /etc/ssh/sshd_config
+echo "ChallengeResponseAuthentication no" >> /etc/ssh/sshd_config
 echo "UsePAM yes" >> /etc/ssh/sshd_config
 
 
@@ -65,7 +67,7 @@ echo "Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,
 echo "Tunnel no" >> /etc/ssh/ssh_config
 echo "ServerAliveInterval 420" >> /etc/ssh/ssh_config
 
-
+sed -i '/.*linux.*vmlinuz/ s/$/ console=ttyS0/' /boot/grub/grub.cfg
 # Disable root login
 #usermod -L root
 
