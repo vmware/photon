@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.1.3
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -100,20 +100,22 @@ cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}
 cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}
 cp -v .config            %{buildroot}/boot/config-esx-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
-
-%post
-/sbin/depmod -aq %{version}-esx
-cat > /boot/photon.cfg << "EOF"
+cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet
 photon_linux=/boot/vmlinuz-esx-%{version}
 EOF
+
+%post
+/sbin/depmod -aq %{version}-esx
+ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 
 %files
 %defattr(-,root,root)
 /boot/system.map-esx-%{version}
 /boot/config-esx-%{version}
 /boot/vmlinuz-esx-%{version}
+%config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 #/lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{version}-esx/build
@@ -129,8 +131,10 @@ EOF
 /lib/modules/%{version}-esx/build
 
 %changelog
+*   Fri Aug 14 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-4
+-   Use photon.cfg as a symlink.
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
--   Added environment file for grub.
+-   Added environment file(photon.cfg) for grub.
 *   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
     Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time. 
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1

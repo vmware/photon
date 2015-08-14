@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.0.9
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -88,6 +88,12 @@ cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
 cp -v System.map        %{buildroot}/boot/system.map-%{version}
 cp -v .config            %{buildroot}/boot/config-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
+# GRUB Environment Block
+photon_cmdline=init=/lib/systemd/systemd rootfstype=ext4 ro loglevel=3 quiet
+photon_linux=/boot/vmlinuz-%{version}
+photon_initrd=/boot/initrd.img-no-kmods
+EOF
 
 #    Cleanup dangling symlinks
 rm -rf %{buildroot}/lib/modules/%{version}/source
@@ -125,12 +131,7 @@ EOF
 
 %post
 /sbin/depmod -aq %{version}
-cat > /boot/photon.cfg << "EOF"
-# GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rootfstype=ext4 ro loglevel=3 quiet
-photon_linux=/boot/vmlinuz-%{version}
-photon_initrd=/boot/initrd.img-no-kmods
-EOF
+ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 
 %post drivers-gpu
 /sbin/depmod -aq %{version}
@@ -143,6 +144,7 @@ EOF
 /boot/system.map-%{version}
 /boot/config-%{version}
 /boot/vmlinuz-%{version}
+%config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 %config(noreplace) /etc/modules-load.d/vmhgfs.conf
 /lib/firmware/*
 /lib/modules/*
@@ -170,8 +172,10 @@ EOF
 /lib/modules/%{version}/kernel/sound
 
 %changelog
+*   Fri Aug 14 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-3
+-   Use photon.cfg as a symlink.
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-2
--   Added environment file for grub.
+-   Added environment file(photon.cfg) for grub.
 *   Wed Aug 12 2015 Sharath George <sharathg@vmware.com> 4.0.9-1
 -   Upgrading kernel version.
 *   Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19.2-5
