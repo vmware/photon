@@ -1,6 +1,6 @@
-diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh
---- gosc-scripts-original/imc-shell/imgcust-scripts/ConfigFile.sh	2015-07-28 20:17:25.000000000 +0000
-+++ gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh	2015-07-30 18:30:34.119134000 +0000
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scripts-from-RPM/imc-shell/imgcust-scripts/ConfigFile.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh	2015-06-17 23:21:44.000000000 +0000
++++ gosc-scripts-from-RPM/imc-shell/imgcust-scripts/ConfigFile.sh	2015-08-13 22:56:47.000000000 +0000
 @@ -103,6 +103,8 @@
    local lineLength=
    local key=
@@ -101,21 +101,86 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scri
  # Determines whether a property with a given key exists.
  #
  # Args:
-@@ -493,6 +550,122 @@
+@@ -493,6 +550,200 @@
    echo "$val"
  }
  
-+# Retrieves Lightware domain IP.
++# Retrieves Lightwave DNS1 IP.
 +#
 +# Args:
 +#   None
 +# Results:
-+#   string: domainname or empty string in case it's missing or empty
++#   string: DNS1 IP or empty string in case it's missing or empty
 +# Throws:
 +#   None
-+ConfigFile_GetLWDomainIP()
++ConfigFile_GetLWDNS1()
 +{
-+  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|DOMAINIP')"
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|DNS1')"
++}
++
++# Retrieves Lightwave DNS2 IP.
++#
++# Args:
++#   None
++# Results:
++#   string: DNS2 IP or empty string in case it's missing or empty
++# Throws:
++#   None
++ConfigFile_GetLWDNS2()
++{
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|DNS2')"
++}
++
++# Retrieves Lightwave DNS3 IP.
++#
++# Args:
++#   None
++# Results:
++#   string: DNS3 IP or empty string in case it's missing or empty
++# Throws:
++#   None
++ConfigFile_GetLWDNS3()
++{
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|DNS3')"
++}
++
++# Retrieves Lightwave Domain.
++#
++# Args:
++#   None
++# Results:
++#   string: Lightwave Domain or empty string in case it's missing or empty
++# Throws:
++#   None
++ConfigFile_GetLWDomain()
++{
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|DOMAIN')"
++}
++
++# Retrieves Lightwave SITE.
++#
++# Args:
++#   None
++# Results:
++#   string: SITE or empty string in case it's missing or empty
++# Throws:
++#   None
++ConfigFile_GetLWSite()
++{
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|SITE')"
++}
++
++# Retrieves Lightwave OP.
++#
++# Args:
++#   None
++# Results:
++#   string: OP or empty string in case it's missing or empty
++# Throws:
++#   None
++ConfigFile_GetLWOP()
++{
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|OP')"
 +}
 +
 +# Retrieves Lightware domain password.
@@ -129,6 +194,19 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scri
 +ConfigFile_GetLWDomainPwd()
 +{
 +  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|-PASS')"
++}
++
++# Retrieves Lightware domain username.
++#
++# Args:
++#   None
++# Results:
++#   string: Lightwave domain username or empty if its missing or empty
++# Throws:
++#   None
++ConfigFile_GetLWDomainUserName()
++{
++  echo "$(ConfigFile_GetOptionalString 'LIGHTWAVE|USERNAME')"
 +}
 +
 +# Retrieves Service-N file Name.
@@ -224,9 +302,14 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scri
  # Retrieves whether to set time to UTC or Local.
  #
  # Args:
-diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh
---- gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-07-28 20:17:25.000000000 +0000
-+++ gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-07-30 20:03:30.567183898 +0000
+@@ -1035,3 +1286,4 @@
+ 
+   echo "$primary"
+ }
++
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts-from-RPM/imc-shell/imgcust-scripts/CustomizationUtils.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-06-17 23:21:58.000000000 +0000
++++ gosc-scripts-from-RPM/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-08-14 02:19:13.099688800 +0000
 @@ -385,7 +385,7 @@
    local oldFQDN=$(GetResolverFqdn)
    local res=''
@@ -236,61 +319,10 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh g
    echo $oldFQDN
   
    CustomizeHostsFileContent "" "$oldHostname" "$oldFQDN" "res"
-@@ -670,6 +670,130 @@
+@@ -670,6 +670,113 @@
    Info "InstallCustomScript has completed"
  }
  
-+# Generates lightwave YUM repository config file named lightwave.repo.
-+#
-+# Args:
-+#   resultVar: string: name of the result OUT var
-+# Results:
-+#   string: contents of the file
-+# Throws:
-+#   None
-+GenerateLWYumConfigFile_lightwave()
-+{
-+  local resultVar=$1
-+  local stringResult= 
-+  export stringResult=$(${CAT} <<EOF
-+[lightwave]
-+name=VMware Lightwave 1.0(x86_64)
-+baseurl=https://dl.bintray.com/vmware/lightwave
-+gpgkey=file:///etc/pki/rpm-gpg/PHOTON-RPM-GPG-KEY
-+gpgcheck=0
-+enabled=1
-+skip_if_unavailable=True
-+EOF
-+)
-+
-+  eval $resultVar="'$stringResult'"
-+}
-+
-+# Generates lightwave YUM repository config file named photon-extras.
-+#
-+# Args:
-+#   resultVar: string: name of the result OUT var
-+# Results:
-+#   string: contents of the file
-+# Throws:
-+#   None
-+GenerateLWYumConfigFile_photon_extras()
-+{
-+  local resultVar=$1
-+  local stringResult= 
-+  export stringResult=$(${CAT} <<EOF
-+[photon-extras]
-+name=VMware Photon Extras 1.0(x86_64)
-+baseurl=https://dl.bintray.com/vmware/photon_extras
-+gpgkey=file:///etc/pki/rpm-gpg/PHOTON-RPM-GPG-KEY
-+gpgcheck=0
-+enabled=1
-+skip_if_unavailable=True
-+EOF
-+)
-+
-+  eval $resultVar="'$stringResult'"
-+}
 +
 +# Execute Photon vm to join lightwave configuration if provided credential in input.
 +#
@@ -302,27 +334,61 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh g
 +#   None
 +LightWaveDomainJoin()
 +{
-+  local lightWaveFile="/etc/yum.repos.d/lightwave.repo"
-+  local photonExtraFile="/etc/yum.repos.d/photon-extras.repo"
-+
-+  local lw_ip=$(ConfigFile_GetLWDomainIP)
-+  local lw_pwd=$(ConfigFile_GetLWDomainPwd)
-+
-+  if [[ -n "$lw_ip" ]]; then
-+    Debug "Light Server address is $lw_ip"
-+    
-+    GenerateLWYumConfigFile_lightwave content1
-+    GenerateLWYumConfigFile_photon_extras content2
-+
-+    echo "${content1}" > $lightWaveFile
-+    echo "${content2}" > $photonExtraFile
-+
-+    echo "y" | /bin/tdnf install vmware-lightwave-clients
-+    echo $lw_pwd | /opt/vmware/bin/ic-join --domain-controller $lw_ip
-+    Debug "Light wave join procedure completed"
-+  else
-+    Debug "Lightwave Configuration missing :: Nothing to Configure"
++  
++  local result="DNS="
++  local lw_dns1=$(ConfigFile_GetLWDNS1)
++  local lw_dns2=$(ConfigFile_GetLWDNS2)
++  local lw_dns3=$(ConfigFile_GetLWDNS3)
++  local query_string=''
++  
++  Debug "DNS1 $lw_dns1"
++  Debug "DNS2 $lw_dns2"
++  Debug "DNS3 $lw_dns3"
++  query_string="$lw_dns1 $lw_dns2 $lw_dns3"
++  Debug "DNS to be set : $query_string"
++ 
++  if [[ -n "$query_string" ]]; then
++    result=$result$query_string
++    sed -i "s/#DNS/DNS/g" /etc/systemd/resolved.conf
++    sed -i "1,/DNS=/s/DNS=/$result/" /etc/systemd/resolved.conf
++  fi  
++  
++  local domain_name=$(ConfigFile_GetLWDomain)
++  local user_name=$(ConfigFile_GetLWDomainUserName)
++  local password=$(ConfigFile_GetLWDomainPwd)
++  
++  # default username is administrator, we will overwrite it if other username is specified 
++  
++  if [[ -z "$user_name" ]]; then
++    user_name='administrator'
 +  fi 
++  
++  # optional params
++  local op=$(ConfigFile_GetLWOP)
++  if [[ -n "$op" ]]; then
++    op="--op $op"
++  fi
++
++  local site=$(ConfigFile_GetLWSite)
++  if [[ -n "$site" ]]; then
++    site="--site $site"
++  fi
++  Debug "LIGHTWAVE domain_name $domain_name  username : $user_name  pwd $password"
++  local optional="$op $site"
++
++  local execute="/opt/vmware/bin/domainjoin join $domain_name --username $user_name --password $password"
++
++  if [[ -n "$domain_name" ]] && [[ -n "$password" ]]; then
++    if [[ -n "$optional" ]]; then
++      execute="$execute $optional"
++    fi
++    Debug "Going to execute $execute"
++    $execute    
++    Debug "Light wave domain join procedure completed"
++  else
++    Debug "ERROR :: Either Domain Name or Password Missing: Cannot Join Lighwave domain"
++  fi
++  
 +}
 +
 +
@@ -367,7 +433,7 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh g
  # Generates cloud-init configuration files which represents customization.
  #
  # Args:
-@@ -697,30 +821,6 @@
+@@ -697,30 +804,6 @@
  EOF
  )
  
@@ -398,7 +464,13 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh g
    securitySshRsa=$(GetOvfPropertyValue 'security.ssh-rsa' $tmpOvfEnvFile)
  
    if [[ -n "$securitySshRsa" ]]; then
-@@ -754,6 +854,33 @@
+@@ -749,11 +832,39 @@
+ 
+ users:
+     - name: root
++      lock-passwd: false
+       passwd: $adminPwdHash
+ EOF
  )
    fi
  
@@ -432,7 +504,7 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh g
    local nicsCnt=$(ConfigFile_GetNicsCnt)
  
    local i=
-@@ -768,8 +895,6 @@
+@@ -768,8 +879,6 @@
  
      export formatResult=$formatResult$(${CAT} <<EOF
  
@@ -441,10 +513,14 @@ diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/CustomizationUtils.sh g
      - path: /etc/systemd/network/ifcfg-$ifCfg.network
        permissions: 0644
        content: |
-Only in gosc-scripts/imc-shell/imgcust-scripts: CustomizationUtils.sh~
-diff -ru gosc-scripts-original/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh
---- gosc-scripts-original/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-07-28 20:17:25.000000000 +0000
-+++ gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-07-30 18:30:29.015134000 +0000
+@@ -1013,3 +1122,4 @@
+     echo ""
+   fi
+ }
++
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts-from-RPM/imc-shell/imgcust-scripts/PhotonCustomization.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-06-17 23:22:17.000000000 +0000
++++ gosc-scripts-from-RPM/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-08-13 22:56:47.000000000 +0000
 @@ -10,7 +10,7 @@
  
    local ciConfigPath="/tmp/cloud-config.ci"

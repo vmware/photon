@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -13,8 +13,7 @@ Source1:        gosc-scripts.tar.gz
 %define sha1 gosc-scripts=a87bb5b95f78923ac6053513b3364a119795a5d0
 Patch0:		open-vm-tools-service-link.patch
 Patch1:         open-vm-tools-GOSC-photon.patch
-Patch2:         open-vm-tools-GOSC-vca.patch
-Patch3:         open-vm-tools-vca-pwd.patch
+Patch2:         GOSC-VCA.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -39,7 +38,6 @@ VmWare virtualization user mode tools
 %patch0 -p1
 %patch1 -p1
 %patch2 -p0
-%patch3 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -98,6 +96,8 @@ rm -f /sbin/mount.vmhgfs
 
 
 %changelog
+*       Thu Aug 13 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-3
+-       Combining all GOSC patches and adding support for lightwave.
 *       Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-2
 -       Build with fuse support.
 *       Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-1
