@@ -63,7 +63,6 @@ fi
 PASSWORD=`date | md5sum | cut -f 1 -d ' '`
 sed -i "s/PASSWORD/$PASSWORD/" $VMDK_CONFIG_SAFE_FILE
 cat $VMDK_CONFIG_SAFE_FILE
-cp $SRC_ROOT/support/SpecDeps/*.py $INSTALLER_PATH/installer
 ./photonInstaller.py -p build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $INSTALLER_PATH/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
 rm $VMDK_CONFIG_SAFE_FILE
 
