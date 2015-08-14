@@ -20,69 +20,17 @@ import urllib
 import modules.commons
 import xml.etree.ElementTree as ET
 from jsonwrapper import JsonWrapper
-from progressbar import ProgressBar
-from windowstringreader import WindowStringReader
-from window import Window
-from actionresult import ActionResult
 from installer import Installer
-from menu import Menu
 
 class OstreeInstaller(Installer):
 
     def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
         Installer.__init__(self, install_config, maxy, maxx, iso_installer, rpm_path, log_path, ks_config)
-        self.win_height = 13
-        self.win_width = 50
-        self.menu_starty = self.starty + 3    
-        self.ostree_host_menu_items = []
-        self.ostree_host_menu_items.append(("Default RPM-OSTree Server", self.default_installation, []))
-        self.ostree_host_menu_items.append(("Custom RPM-OSTree Server", self.custom_installation, []))
-        self.host_menu = Menu(self.menu_starty,  self.maxx, self.ostree_host_menu_items)
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select OSTree Server', True, self.host_menu)
-        self.default_repo = True
-
-    def default_installation(self,  selected_item_params):
-        self.default_repo = True
-        return ActionResult(True, None)
-
-    def custom_installation(self,  selected_item_params):
-        self.default_repo = False
-        success = False
-        while not success:
-            got_the_url = False
-            while not got_the_url:
-                ostree_url_reader = WindowStringReader(
-                    self.maxy, self.maxx, 10, 70,
-                    "ostree_repo_url", False,
-                    "Please provide the URL of OSTree repo",
-                    "OSTree Repo URL:", 2,
-                    self.install_config,
-                    "https://dl.bintray.com/vmware/photon/rpm-ostree/dev/x86_64/minimal")
-
-                ret = ostree_url_reader.get_user_string(None)
-                self.ostree_repo_url = ret.result
-                got_the_url = ret.success
-
-            ostree_ref_reader = WindowStringReader(self.maxy,
-                self.maxx, 10, 70,
-                "ostree_ref", False,
-                "Please provide the Ref in OSTree repo",
-                "OSTree Repo Ref:", 2,
-                self.install_config,
-                "dev/x86_64/minimal")
-
-            ret = ostree_ref_reader.get_user_string(None)
-            self.ostree_ref = ret.result
-            success = ret.success
-
-        return ActionResult(True, None)
 
     def get_ostree_repo_url(self):
-        if self.ks_config != None:
-            self.ostree_repo_url = self.ks_config['ostree_repo_url']
-            self.ostree_ref = self.ks_config['ostree_repo_ref']
-            return
-        self.window.do_action()
+        self.default_repo = 'default_repo' in self.install_config and self.install_config['default_repo'];
+        self.ostree_repo_url = self.install_config['ostree_repo_url']
+        self.ostree_ref = self.install_config['ostree_repo_ref']
 
     def deploy_ostree(self, repo_url, repo_ref):
         self.run("ostree admin --sysroot={} init-fs {}".format(self.photon_root, self.photon_root), "Initializing OSTree filesystem")
