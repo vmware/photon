@@ -26,16 +26,34 @@ class OstreeInstaller(Installer):
 
     def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
         Installer.__init__(self, install_config, maxy, maxx, iso_installer, rpm_path, log_path, ks_config)
+        self.repo_config = {}
+        self.repo_read_conf()
 
     def get_ostree_repo_url(self):
         self.default_repo = 'default_repo' in self.install_config and self.install_config['default_repo'];
-        self.ostree_repo_url = self.install_config['ostree_repo_url']
-        self.ostree_ref = self.install_config['ostree_repo_ref']
+        if not self.default_repo:
+            self.ostree_repo_url = self.install_config['ostree_repo_url']
+            self.ostree_ref = self.install_config['ostree_repo_ref']
+
+    def repo_read_conf(self):
+        with open("ostree-release-repo.conf") as repo_conf:
+            for line in repo_conf:
+                name, value = line.partition("=")[::2]
+                self.repo_config[name] = value.strip(' \n\t\r')
+
+    def pull_repo(self, repo_url, repo_ref):
+        if self.default_repo:
+            self.run("ostree remote add --repo={}/ostree/repo --set=gpg-verify=false photon {}".format(self.photon_root, repo_url), "Adding OSTree remote")
+            self.run("ostree pull-local --repo={}/ostree/repo {}".format(self.photon_root, self.local_repo_path), "Pulling OSTree remote repo")
+            self.run("mv {}/ostree/repo/refs/heads {}/ostree/repo/refs/remotes/photon".format(self.photon_root, self.photon_root))
+            self.run("mkdir -p {}/ostree/repo/refs/heads".format(self.photon_root, self.photon_root))
+        else:
+            self.run("ostree remote add --repo={}/ostree/repo --set=gpg-verify=false photon {}".format(self.photon_root, repo_url), "Adding OSTree remote")
+            self.run("ostree pull --repo={}/ostree/repo photon {}".format(self.photon_root, repo_ref), "Pulling OSTree remote repo")
 
     def deploy_ostree(self, repo_url, repo_ref):
         self.run("ostree admin --sysroot={} init-fs {}".format(self.photon_root, self.photon_root), "Initializing OSTree filesystem")
-        self.run("ostree remote add --repo={}/ostree/repo --set=gpg-verify=false photon {}".format(self.photon_root, repo_url), "Adding OSTree remote")
-        self.run("ostree pull --repo={}/ostree/repo photon {}".format(self.photon_root, repo_ref), "Pulling OSTree remote repo")
+        self.pull_repo(repo_url, repo_ref)
         self.run("ostree admin --sysroot={} os-init photon ".format(self.photon_root), "OSTree OS Initializing")
         self.run("ostree admin --sysroot={} deploy --os=photon photon/{}".format(self.photon_root, repo_ref), "Deploying")
 
@@ -87,6 +105,16 @@ class OstreeInstaller(Installer):
         self.window.show_window()
         self.progress_bar.initialize("Initializing installation...")
         self.progress_bar.show()
+        
+        self.progress_bar.show_loading("Unpacking local OSTree repo")
+        
+        if self.default_repo:
+            self.run("mkdir repo")
+            self.run("tar --warning=none -xf /mnt/cdrom/ostree-repo.tar.gz -C repo")
+            self.local_repo_path = "/installer/repo/"
+            self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
+            self.ostree_ref = self.repo_config['OSTREEREFS']
+
 
         self.execute_modules(modules.commons.PRE_INSTALL)
 
@@ -132,14 +160,9 @@ class OstreeInstaller(Installer):
         self.run("mount --bind {} {}".format(deployment, self.photon_root))
         self.progress_bar.show_loading("Starting post install modules")
         self.execute_modules(modules.commons.POST_INSTALL)
-
+        self.progress_bar.show_loading("Unmounting disks")
         self.run("{} {} {}".format(self.unmount_disk_command, '-w', self.photon_root))
-
+        self.progress_bar.show_loading("Ready to restart")
         self.progress_bar.hide()
-        self.window.addstr(0, 0,
-            "Congratulations, Photon has been installed in {} secs.\n\nPress any key to continue to boot...".format(self.progress_bar.time_elapsed))
-        if self.ks_config == None:
-            self.window.content_window().getch()
-
         return ActionResult(True, None)
 

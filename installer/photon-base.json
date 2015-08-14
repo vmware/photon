@@ -21,7 +21,7 @@
                 "sed", "grep", "cpio", "gzip",
                 "openssl", "ca-certificates", "curl",
                 "systemd",
-                "openssh",
+                "openssh", "iptables",
                 "photon-release",
                 "vim", "tdnf",
                 "docker","bridge-utils",

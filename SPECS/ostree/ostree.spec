@@ -84,6 +84,7 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot} INSTALL="install -p -c"
 find %{buildroot} -name '*.la' -delete
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_prefix}/lib/systemd/system-preset/91-ostree.preset
+install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 mkdir -p %{buildroot}%{_prefix}/lib/systemd/system/
 cp -R %{buildroot}/lib/systemd/system/*.service %{buildroot}%{_prefix}/lib/systemd/system/
 rm -rf %{buildroot}/lib
@@ -110,6 +111,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/grub.d/*ostree
 %{_sysconfdir}/dracut.conf.d/ostree.conf
 %{_sysconfdir}/ostree-mkinitcpio.conf
+%dir %{_sysconfdir}/ostree/remotes.d
 %{_libdir}/girepository-*/OSTree-*.typelib
 %{_libexecdir}/ostree/grub2*
 %{_libdir}/initcpio/*
