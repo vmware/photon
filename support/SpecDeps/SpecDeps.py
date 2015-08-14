@@ -9,6 +9,7 @@ from SpecData import SerializedSpecObjects
 import sys
 import os
 from optparse import OptionParser
+from jsonwrapper import JsonWrapper
 
 DEFAULT_INPUT_TYPE = "pkg"
 DEFAULT_DISPLAY_OPTION = "tree"
@@ -26,8 +27,14 @@ def main():
 	parser.add_option("-s", "--spec-dir", dest="spec_dir", default=SPEC_FILE_DIR)
 	parser.add_option("-t", "--stage-dir", dest="stage_dir", default="../../stage")
 	parser.add_option("-a", "--input-data-dir", dest="input_data_dir", default="../../common/data/")
-
 	(options,  args) = parser.parse_args() 
+
+
+	if(False == options.input_data_dir.endswith('/')):
+		options.input_data_dir += '/'
+	
+		
+
 	specDeps = SerializedSpecObjects(options.input_data_dir, options.stage_dir)
 	displayOption = options.display_option
 	abs_path = os.path.abspath(__file__)
@@ -39,7 +46,13 @@ def main():
 	elif(options.input_type == "json"):
 		targetName = options.json_file
 
-	specDeps.readSpecsAndConvertToSerializableObjects(options.spec_dir, options.input_type, targetName, displayOption)
+	 # Generate the package dependencies based on package_list_file
+	json_wrapper_option_list = JsonWrapper(options.input_data_dir + options.json_file)
+	option_list_json = json_wrapper_option_list.read()
+	options_sorted = option_list_json.items()
+	for install_option in options_sorted:
+		if install_option[1]["file"] != "iso":
+			specDeps.readSpecsAndConvertToSerializableObjects(options.spec_dir, options.input_type, install_option[1]["file"], displayOption)
 	
 	sys.exit(0)
 
