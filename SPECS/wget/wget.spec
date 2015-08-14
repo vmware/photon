@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
 %define sha1 wget=e9fb1d25fa04f9c69e74e656a3174dca02700ba1
+Patch0:		cve-2014-4877.patch
 Requires:	openssl
 BuildRequires:	openssl-devel
 %description
@@ -16,6 +17,8 @@ The Wget package contains a utility useful for non-interactive
 downloading of files from the Web.
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
