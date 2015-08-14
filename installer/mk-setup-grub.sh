@@ -77,9 +77,18 @@ cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
 cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg
+
+function set_rootpartition {
+    regexp -s dev '.{2}(.)' \$root
+    regexp -s part '.*(.)' \$root
+    regexp -s char '.{'\$dev'}(.)' abcdefghij
+    set rootpartition=/dev/sd\$char\$part
+}
+
 set default=0
 set timeout=5
 search -n -u $UUID -s
+set_rootpartition
 loadfont /boot/grub2/unifont.pf2
 
 insmod gfxterm
@@ -97,7 +106,7 @@ set theme=/boot/grub2/themes/photon/theme.txt
 load_env -f /boot/photon.cfg
 
 menuentry "Photon" {
-    linux \$photon_linux root=$PARTITION \$photon_cmdline
+    linux \$photon_linux root=\$rootpartition \$photon_cmdline
     if [ "\$photon_initrd" ]; then
         initrd \$photon_initrd
     fi
