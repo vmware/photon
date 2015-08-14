@@ -65,6 +65,7 @@ class ReadText(Action):
                 curs_loc = len(self.str)
             ch = self.textwin.getch(self.y, curs_loc)
 
+            update_text = False
             if ch in [curses.KEY_ENTER, ord('\n')]:
                 if self.confirmation_error_msg:
                     if self.str != self.install_config[self.field]:
