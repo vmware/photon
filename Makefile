@@ -171,6 +171,7 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo $(PHOTON_FULL_DEPLIST)
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_DATA_DIR)/build_install_options_all.json \
+				-o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
