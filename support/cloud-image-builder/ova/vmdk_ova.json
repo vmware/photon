@@ -3,7 +3,7 @@
 	"password": 
 		{
 			"crypted": false,
-			"text": "PASSWORD"
+			"text": "changeme"
 		},
 	"type": "minimal",
     "size": {"root": "2", "swap": "0"},
