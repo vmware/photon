@@ -1,13 +1,14 @@
 Summary: Implementation of a YAML 1.1 parser and emitter
 Name: libyaml
 Version: 0.1.6
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT/X Consortium
 Group: Development/Libraries
 URL: http://pyyaml.org/wiki/LibYAML
 
 Source0: http://pyyaml.org/download/libyaml/yaml-%{version}.tar.gz
 %define sha1 yaml=f3d404e11bec3c4efcddfd14c42d46f1aabe0b5d
+Patch0:  cve-2014-9130.patch
 
 %description
 LibYAML is a C library implementation of a YAML 1.1 parser and emitter.
@@ -25,6 +26,7 @@ you will need to install %{name}-devel.
 
 %prep
 %setup -n yaml-%{version}
+%patch0 -p1
 
 %build
 %configure --disable-static
@@ -53,5 +55,7 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/*.la
 
 %changelog
+* Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.6-2
+- Fix cve-2014-9130.
 * Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 0.1.6-1
 - Initial package for Photon.
