@@ -53,19 +53,19 @@ all: iso minimal-iso docker-image ostree-host-iso live-iso cloud-image-all
 micro: micro-iso
 	@:
 
-micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO) generate-dep-lists
+micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
 	@echo "Building Photon Micro ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-micro.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
+                -p $(PHOTON_GENERATED_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all Micro RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -75,7 +75,7 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
+                -j $(PHOTON_GENERATED_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
@@ -83,14 +83,14 @@ packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
 minimal: minimal-iso
 	@:
 
-minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) generate-dep-lists
+minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 	@echo "Building Photon Minimal ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon-minimal.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
+                -p $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
@@ -102,7 +102,7 @@ ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_DATA_DIR)/build_install_options_ostreehost.json \
+                -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_ostreehost.json \
                 -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
@@ -119,7 +119,7 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1                
 
-packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
+packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -129,19 +129,19 @@ packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
+                -j $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo generate-dep-lists
+iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building Photon FUll ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) -i $(PHOTON_STAGE)/photon.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+                -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
 		        -o $(PHOTON_STAGE)/common/data \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
@@ -154,7 +154,7 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg) 
 
-packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
+packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -164,12 +164,12 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
-tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
+tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -179,13 +179,13 @@ tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -t ${THREADS} \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
                 -m stage1
 
-tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
+tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -195,7 +195,7 @@ tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -t ${THREADS} \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
@@ -395,7 +395,7 @@ endif
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
 
-%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
+%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
