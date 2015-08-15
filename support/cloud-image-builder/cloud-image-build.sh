@@ -28,16 +28,7 @@ ISO_MOUNT_FOLDER=$PHOTON_STAGE_PATH/iso_mount
 
 mkdir -p $ISO_MOUNT_FOLDER
 mkdir -p $INSTALLER_PATH/installer
-mount -o loop $PHOTON_ISO_PATH  $ISO_MOUNT_FOLDER
-# Trying to uncompress initrd image to get /usr/src/photon folder
-cp -R $ISO_MOUNT_FOLDER/isolinux/initrd.img  /tmp/initrd.gz
-gunzip /tmp/initrd.gz
-cd /tmp
-cpio -id < initrd
-cp -R /tmp/installer/ $INSTALLER_PATH/
-rm -rf /tmp/initrd*
-rm -rf /tmp/installer
-umount $ISO_MOUNT_FOLDER
+cp -R $SRC_ROOT/installer $INSTALLER_PATH/
 
 cd $INSTALLER_PATH/installer
 cp $VMDK_CONFIG_FILE $VMDK_CONFIG_SAFE_FILE
@@ -67,30 +58,33 @@ fi
 PASSWORD=`date | md5sum | cut -f 1 -d ' '`
 sed -i "s/PASSWORD/$PASSWORD/" $VMDK_CONFIG_SAFE_FILE
 cat $VMDK_CONFIG_SAFE_FILE
-./photonInstaller.py -p build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $INSTALLER_PATH/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
+./photonInstaller.py -p $GENERATED_DATA_PATH/build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $INSTALLER_PATH/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
 rm $VMDK_CONFIG_SAFE_FILE
 
 
 cd $BUILD_SCRIPTS_FOLDER
 
+
+
+DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-${IMG_NAME}.raw`
+
+echo "Mapping device partition to loop device"
+kpartx -av $DISK_DEVICE
+
+DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
+
+echo "DISK_DEVICE=$DISK_DEVICE"
+echo "ROOT_PARTITION=/dev/mapper/${DEVICE_NAME}p2"
+
+rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
+mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
+
+mount -v -t ext4 /dev/mapper/${DEVICE_NAME}p2 $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
+rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/installer
+rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/LOGS
+
 if [ $IMG_NAME != "ova" ]
   then
-
-
-    DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-${IMG_NAME}.raw`
-
-    echo "Mapping device partition to loop device"
-    kpartx -av $DISK_DEVICE
-
-    DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
-
-    echo "DISK_DEVICE=$DISK_DEVICE"
-    echo "ROOT_PARTITION=/dev/mapper/${DEVICE_NAME}p2"
-
-    rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
-    mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
-
-    mount -v -t ext4 /dev/mapper/${DEVICE_NAME}p2 $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
     mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
     mount -o bind /dev $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
     mount -o bind /dev/pts $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
@@ -101,7 +95,11 @@ if [ $IMG_NAME != "ova" ]
     cp etcd.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
     cp -f docker.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
     cp -f docker.socket $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
-    cp -f $IMG_NAME/cloud-photon.cfg $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/cloud/cloud.cfg
+    if [ -e $IMG_NAME/cloud-photon.cfg ]
+    then
+        cp -f $IMG_NAME/cloud-photon.cfg $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/cloud/cloud.cfg
+    fi
+    
     cp $IMG_NAME/$IMG_NAME-patch.sh $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/
 
     cp /etc/resolv.conf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/
@@ -113,17 +111,19 @@ if [ $IMG_NAME != "ova" ]
     umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
     umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
     umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
-
-    umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
-
-    echo "Deleting device map partition"
-    kpartx -d $DISK_DEVICE
-
-    #rm -rf photon-${IMG_NAME}
-
-    echo "Detaching loop device from raw disk"
-    losetup -d $DISK_DEVICE
 fi
+umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
+
+echo "Deleting device map partition"
+kpartx -d $DISK_DEVICE
+
+rm -rf photon-${IMG_NAME}
+
+echo "Detaching loop device from raw disk"
+losetup -d $DISK_DEVICE
+
 
 cd $IMG_NAME
 ./mk-$IMG_NAME-image.sh $PHOTON_STAGE_PATH/$IMG_NAME $SRC_ROOT
+
+exit 0
