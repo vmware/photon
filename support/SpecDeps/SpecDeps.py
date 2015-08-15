@@ -47,7 +47,7 @@ def main():
 		targetName = options.json_file
 
 	 # Generate the package dependencies based on package_list_file
-	json_wrapper_option_list = JsonWrapper(options.input_data_dir + options.json_file)
+	json_wrapper_option_list = JsonWrapper(options.json_file)
 	option_list_json = json_wrapper_option_list.read()
 	options_sorted = option_list_json.items()
 	for install_option in options_sorted:
