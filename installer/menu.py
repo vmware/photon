@@ -10,11 +10,11 @@ from action import Action
 from sets import Set
 
 class Menu(Action):
-    def __init__(self, starty, maxx, items, height = 0, selector_menu = False, can_navigate_outside = True, horizontal = False):
+    def __init__(self, starty, maxx, items, height = 0, selector_menu = False, can_navigate_outside = True, horizontal = False, default_selected = 0):
         self.can_navigate_outside = can_navigate_outside
         self.horizontal = horizontal
         self.horizontal_padding = 10
-        self.position = 0
+        self.position = default_selected
         self.head_position = 0  #This is the start of showing
         self.items = items
         self.items_strings = []
