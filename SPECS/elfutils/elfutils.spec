@@ -2,18 +2,20 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.158
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 Source0:	elfutils-%{version}.tar.bz2
 %define sha1 elfutils=09adbbf0f3a35bb1bcb77c2eaa40de8d3443af4d
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
+Patch0: cve-2014-0172.patch
+
 Obsoletes:	libelf libelf-devel
 Requires:	elfutils-libelf = %{version}-%{release}
 Requires:	glibc >= 2.7
 Requires:	bzip2
-
 # ExcludeArch: xxx
 
 BuildRequires:	gcc >= 4.1.2-33
@@ -97,7 +99,7 @@ for libelf.
 
 %prep
 %setup -q
-
+%patch0 -p1
 %build
 %configure --program-prefix=%{_programprefix}
 make %{?_smp_mflags}
@@ -180,6 +182,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
+* Sat Aug 15 2015 Sharath George <sharathg@vmware.com> 0.158-3
+- Add in patch for CVE-2014-0172
 * Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 0.158-2
 - Update according to UsrMove.
 * Fri Jan  3 2014 Mark Wielaard <mjw@redhat.com> 0.158-1
