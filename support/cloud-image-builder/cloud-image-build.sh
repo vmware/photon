@@ -28,16 +28,7 @@ ISO_MOUNT_FOLDER=$PHOTON_STAGE_PATH/iso_mount
 
 mkdir -p $ISO_MOUNT_FOLDER
 mkdir -p $INSTALLER_PATH/installer
-mount -o loop $PHOTON_ISO_PATH  $ISO_MOUNT_FOLDER
-# Trying to uncompress initrd image to get /usr/src/photon folder
-cp -R $ISO_MOUNT_FOLDER/isolinux/initrd.img  /tmp/initrd.gz
-gunzip /tmp/initrd.gz
-cd /tmp
-cpio -id < initrd
-cp -R /tmp/installer/ $INSTALLER_PATH/
-rm -rf /tmp/initrd*
-rm -rf /tmp/installer
-umount $ISO_MOUNT_FOLDER
+cp -R $SRC_ROOT/installer $INSTALLER_PATH/
 
 cd $INSTALLER_PATH/installer
 cp $VMDK_CONFIG_FILE $VMDK_CONFIG_SAFE_FILE
@@ -63,7 +54,7 @@ fi
 PASSWORD=`date | md5sum | cut -f 1 -d ' '`
 sed -i "s/PASSWORD/$PASSWORD/" $VMDK_CONFIG_SAFE_FILE
 cat $VMDK_CONFIG_SAFE_FILE
-./photonInstaller.py -p build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $INSTALLER_PATH/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
+./photonInstaller.py -p $GENERATED_DATA_PATH/build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $INSTALLER_PATH/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
 rm $VMDK_CONFIG_SAFE_FILE
 
 

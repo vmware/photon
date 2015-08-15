@@ -281,10 +281,7 @@ class Installer(object):
         initrd_file_name = 'initrd.img-no-kmods'
         if self.iso_installer:
             # just copy the initramfs /boot -> /photon_mnt/boot
-            shutil.copy(os.path.join(initrd_dir, initrd_file_name), self.photon_root + '/boot/')
-            # remove the installer directory
-            process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
-            retval = process.wait()
+            shutil.copy(os.path.join(initrd_dir, initrd_file_name), self.photon_root + '/boot/')    
         else:
             #Build the initramfs by passing in the kernel version
             version_string = ''	
@@ -299,6 +296,11 @@ class Installer(object):
                 initrd_dir = self.install_config['initrd_dir']
             process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', os.path.join(initrd_dir, initrd_file_name), '-k', version_string],  stdout=self.output)
             retval = process.wait()
+        # remove the installer and LOGS directory
+        process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
+        retval = process.wait()
+        process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "LOGS")], stdout=self.output)
+        retval = process.wait()
 
 
     def install_package(self,  package_name):
