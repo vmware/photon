@@ -117,6 +117,8 @@ class ReadText(Action):
         if self.validation_fn:
             success, err = self.validation_fn(self.str)
             if not success:
+                spaces = ' ' * self.textwin_width
+                self.textwin.addstr(self.y + 2, 0, spaces)
                 self.textwin.addstr(self.y + 2, 0, err, curses.color_pair(4))
             return success
         else:

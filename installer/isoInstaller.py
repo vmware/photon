@@ -91,20 +91,20 @@ class IsoInstaller(object):
     def validate_ostree_url_input(self, text):
         status = 0
         if not text:
-            return False, "Error: Invalid input            "
+            return False, "Error: Invalid input"
 
         try:
             status = urllib.urlopen(text).getcode()
         except:
-            return False , "Error: Invalid Url             "
+            return False , "Error: Invalid or unreachable Url"
         else:
             if status != 200:
-                return False , "Error: URL not accessible   "
+                return False , "Error: URL not accessible"
 
         return True, None
 
     def validate_ostree_refs_input(self, text):
-        return not (not text), "Error: Invalid input        "
+        return not (not text), "Error: Invalid input"
 
     def validate_password(self, text):
         try:
@@ -208,7 +208,7 @@ class IsoInstaller(object):
                     self.validate_ostree_url_input, # validation function of the input
                     None, # post processing of the input field
                     'Please provide the URL of OSTree repo', 'OSTree Repo URL:', 2, install_config,
-                    "")
+                    "http://")
             ostree_ref_reader = OSTreeWindowStringReader(
                     self.maxy, self.maxx, 10, 70, 
                     'ostree_repo_ref', 
@@ -218,7 +218,7 @@ class IsoInstaller(object):
                     self.validate_ostree_refs_input, # validation function of the input
                     None, # post processing of the input field
                     'Please provide the Ref in OSTree repo', 'OSTree Repo Ref:', 2, install_config,
-                    "")
+                    "tp2/x86_64/minimal")
             
             items = items + [
                     (license_agreement.display, False),
