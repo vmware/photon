@@ -43,7 +43,11 @@ cd $INSTALLER_PATH/installer
 cp $VMDK_CONFIG_FILE $VMDK_CONFIG_SAFE_FILE
 cp ${BUILD_SCRIPTS_FOLDER}/mk-setup-vmdk.sh .
 cp ${BUILD_SCRIPTS_FOLDER}/mk-clean-vmdk.sh .
-cp ${BUILD_SCRIPTS_FOLDER}/mk-setup-grub.sh .
+
+if [ $IMG_NAME != "ova" ]
+  then
+    cp ${BUILD_SCRIPTS_FOLDER}/mk-setup-grub.sh .
+fi
 
 if [ -e ${BUILD_SCRIPTS_FOLDER}/${IMG_NAME}/mk-setup-grub.sh ]
   then
