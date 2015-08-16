@@ -38,13 +38,7 @@ BuildRequires:     libmspack
 BuildRequires:    Linux-PAM
 BuildRequires:    openssl-devel
 BuildRequires:    procps-ng-devel
-Requires:    xerces-c
-Requires:    libdnet
-Requires:    libmspack
-Requires:    glib
-Requires:    xml-security-c
-Requires:    openssl
-Requires:    filesystem
+Requires:    filesystem kmod coreutils
 
 %description
 The Linux kernel build for GOS for ESX hypervisor.

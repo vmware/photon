@@ -242,6 +242,7 @@ $(PHOTON_STAGE):
 	@echo "Creating data folder for generated files..."
 
 generate-dep-lists:
+	$(RMDIR) $(PHOTON_GENERATED_DATA_DIR)
 	$(MKDIR) -p $(PHOTON_GENERATED_DATA_DIR)
 	@for f in $$(ls $(PHOTON_DATA_DIR)/build_install_options*.json) ; \
 	do \

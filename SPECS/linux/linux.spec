@@ -27,7 +27,7 @@ BuildRequires:     libmspack
 BuildRequires:    Linux-PAM
 BuildRequires:    openssl-devel
 BuildRequires:    procps-ng-devel
-Requires:         filesystem
+Requires:         filesystem kmod coreutils
 
 %description
 The Linux package contains the Linux kernel. 
