@@ -108,7 +108,7 @@ class SerializedSpecObjects(object):
 			if (packageFound == True):
 				self.findTotalRequires(allDeps, depQue, parent, displayOption)
 			else:
-				print "No spec file builds a package named",pkgName
+				print "No spec file builds a package named",inputValue
   	  			return
 		elif (inputType == "json"):
 			filePath = self.inputDataDir +"/"+ inputValue
