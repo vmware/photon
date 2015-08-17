@@ -65,7 +65,7 @@ micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages-micro: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
+packages-micro: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all Micro RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -119,7 +119,7 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1                
 
-packages-minimal: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
+packages-minimal: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -154,7 +154,7 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg) 
 
-packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -169,7 +169,7 @@ packages: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep
 		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
-tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -185,7 +185,7 @@ tool-chain-stage1: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) gen
 		-d $(PHOTON_DIST_TAG) \
                 -m stage1
 
-tool-chain-stage2: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+tool-chain-stage2: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
