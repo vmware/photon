@@ -1,6 +1,6 @@
 Summary:    Docker
 Name:       docker
-Version:    1.7.0
+Version:    1.8.1
 Release:    1%{?dist}
 License:    ASL 2.0
 URL:        http://docs.docker.com
@@ -8,7 +8,7 @@ Group:      Applications/File
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tar.gz
-%define sha1 docker=59a5b5eaae6966a3caa43f30c23a1a9b49edc268
+%define sha1 docker=2988b4b1efca9d08acc04668d65f8df5796fb4ba
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker.service
 #/etc/systemd/system/multi-user.target.wants/docker.service
 %changelog
+*   Mon Aug 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.1-1
+-   Update to new version 1.8.1.
 *   Fri Jun 19 2015 Fabio Rapposelli <fabio@vmware.com> 1.7.0-1
 -   Update to new version.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.6.0-3
