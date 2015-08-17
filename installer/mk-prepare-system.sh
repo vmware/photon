@@ -35,10 +35,9 @@ cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
 #
 #	Setup the filesystem for chapter 06
 #
-mkdir -p LOGS
 RPMPKG="$(find RPMS -name 'filesystem-[0-9]*.rpm' -print)"
 [ -z ${RPMPKG} ] && fail "	Filesystem rpm package missing: Can not continue"
-run_command "	Installing filesystem" "rpm -Uvh --nodeps --root ${BUILDROOT} --dbpath /var/lib/rpm ${RPMPKG}" "LOGS/filesystem.completed"
+run_command "	Installing filesystem" "rpm -Uvh --nodeps --root ${BUILDROOT} --dbpath /var/lib/rpm ${RPMPKG}" "${LOGFILE}"
 
 # 	Ommited in the filesystem.spec file - not needed for booting
 [ -e ${BUILDROOT}/dev/console ]	|| mknod -m 600 ${BUILDROOT}/dev/console c 5 1
