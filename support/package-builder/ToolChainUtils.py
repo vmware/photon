@@ -6,6 +6,7 @@ from constants import constants
 import subprocess
 import os.path
 import traceback
+import shutil
 
 class ToolChainUtils(object):
     
@@ -21,28 +22,59 @@ class ToolChainUtils(object):
         self.localegenScript = "./locale-gen.sh"
         self.localegenConfig = "./locale-gen.conf"
         self.prepareBuildRootCmd="./prepare-build-root.sh"
+        self.rpmbuildCommand = "rpmbuild"
         if os.geteuid()==0:
             self.rpmCommand="rpm"
         else:
             self.rpmCommand="fakeroot-ng rpm"
 
-        
-
     def prepareBuildRoot(self,chrootID):
         self.logger.info("Preparing build environment")
         cmdUtils = CommandUtils()
-        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID+" "+constants.specPath+" "+constants.rpmPath+" "+constants.logPath + " " + constants.dist
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/tmp")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath)
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SOURCES")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/LOGS")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/BUILD")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/BUILDROOT")
+
+        package="filesystem"
+        pkgUtils=PackageUtils(self.logName,self.logPath)
+        rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+        if rpmFile is None:
+            specFile=constants.specData.getSpecFile(package)
+            cmd=self.rpmbuildCommand+" -ba --nocheck --define \'_topdir "+chrootID+constants.topDirPath+"\' --define \'_dbpath "+chrootID+"/var/lib/rpm\' --define \'dist "+constants.dist+"\' "+specFile
+            self.logger.info(cmd)
+            cmdUtils.runCommandInShell(cmd,self.logPath+"/filesystem.log")
+            filesystemrpmFile = cmdUtils.findFile(package+"-*.rpm", chrootID)
+            if len(filesystemrpmFile) > 0:
+                shutil.copy2(filesystemrpmFile[0],constants.rpmPath+"/x86_64/")
+            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            if rpmFile is None:
+                self.logger.error("Cannot find filesystem rpm")
+                raise Exception("Cannot find filesystem rpm")
+        
+        self.logger.debug("Installing filesystem rpms:" + package)
+        if os.geteuid()==0:
+            cmd=self.rpmCommand + " -i --nodeps --root "+chrootID+" --define '_dbpath /var/lib/rpm' "+ rpmFile
+        else:
+            cmd=self.rpmCommand + " -i --nodeps --badreloc --relocate /="+chrootID+" --define '_dbpath "+chrootID+"/var/lib/rpm' "+ rpmFile
+        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
+        retval = process.wait()
+        if retval != 0:
+            self.logger.error("Installing filesystem rpm failed")
+            raise "RPM installation failed"
+        
+        prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID
         logFile=constants.logPath+"/prepareBuildRoot.log"
         returnVal=cmdUtils.runCommandInShell(prepareChrootCmd,logFile)
         if not returnVal:
             self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
             raise Exception("Prepare build root script failed")
 
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SOURCES")
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
         self.logger.info("Successfully prepared chroot:"+chrootID)
 
     def installToolChain(self,chrootID):
