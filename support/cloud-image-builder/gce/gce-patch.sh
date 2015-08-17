@@ -53,6 +53,7 @@ rm /root/.ssh/authorized_keys
 rm /etc/ssh/sshd_config
 
 echo "AuthorizedKeysFile .ssh/authorized_keys" >> /etc/ssh/sshd_config
+echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config
 echo "UsePrivilegeSeparation sandbox" >> /etc/ssh/sshd_config
 echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 echo "PermitRootLogin no" >> /etc/ssh/sshd_config
@@ -82,6 +83,9 @@ echo "ServerAliveInterval 420" >> /etc/ssh/ssh_config
 
 # Disable root login
 usermod -L root
+
+#disable ipv6
+echo "net.ipv6.conf.all.disable_ipv6 = 1" > /etc/sysctl.d/ipv6-disable.conf
 
 # Disable loading/unloading of modules
 echo 1 > /proc/sys/kernel/modules_disabled

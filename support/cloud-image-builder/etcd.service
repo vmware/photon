@@ -2,7 +2,7 @@
 Description=etcd service
 
 [Service]
-ExecStart=/usr/bin/etcd
+ExecStart=/usr/sbin/etcd
 Restart=always
 
 [Install]
