@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.4.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -108,6 +108,7 @@ chmod -v 755 %{buildroot}%{_libdir}/libpython3.4m.so.1.0
 # Remove unused stuff
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
 find %{buildroot}%{_libdir} -name '*.pyo' -delete
+find %{buildroot}%{_libdir} -name '*.o' -delete
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -151,7 +152,6 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python3.4/sqlite3/test
 %exclude %{_libdir}/python3.4/idlelib/idle_test
 %exclude %{_libdir}/python3.4/test
-#%exclude %{_libdir}/python3.4/unittest
 %exclude %{_libdir}/python3.4/lib-dynload/_ctypes_test.*.so
 
 %files libs
@@ -163,15 +163,13 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python3.4/sqlite3/test
 %exclude %{_libdir}/python3.4/idlelib/idle_test
 %exclude %{_libdir}/python3.4/test
-#%exclude %{_libdir}/python3.4/unittest
 %exclude %{_libdir}/python3.4/lib-dynload/_ctypes_test.*.so
 
 %files devel
 %defattr(-,root,root)
-/usr/include/*
+%{_includedir}/*
+
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
-%{_libdir}/python3.4/config-3.4m/*
-%exclude %{_libdir}/python3.4/config-3.4m/python.o
 %{_libdir}/libpython3.so
 %exclude %{_bindir}/2to3*
 %exclude %{_bindir}/idle*
@@ -184,5 +182,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Wed Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
+-	Remove python.o file, and minor cleanups.
 *	Wed Jul 1 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3
 -	Add Python3 package to Photon.
