@@ -108,6 +108,8 @@ systemd-resolve:x:77:
 systemd-timesync:x:78:
 nogroup:x:99:
 users:x:100:audio
+sudo:x:27:
+wheel:x:28:
 EOF
 #
 #	7.2.2. Creating Network Interface Configuration Files"
