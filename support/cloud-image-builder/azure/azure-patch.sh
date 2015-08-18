@@ -10,6 +10,7 @@ ln -s ../ntpd.service ntpd.service
 ln -s ../docker.service docker.service
 ln -s ../eth0.service eth0.service
 ln -s ../waagent.service waagent.service
+ln -s ../sshd-keygen.service sshd-keygen.service
 
 
 
