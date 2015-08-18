@@ -49,7 +49,7 @@ class ToolChainUtils(object):
             cmd=self.rpmbuildCommand+" -ba --nocheck --define \'_topdir "+chrootID+constants.topDirPath+"\' --define \'_dbpath "+chrootID+"/var/lib/rpm\' --define \'dist "+constants.dist+"\' "+specFile
             self.logger.info(cmd)
             cmdUtils.runCommandInShell(cmd,self.logPath+"/filesystem.log")
-            filesystemrpmFile = cmdUtils.findFile(package+"-*.rpm", chrootID)
+            filesystemrpmFile = cmdUtils.findFile(package+"-*.rpm", chrootID+constants.topDirPath+"/RPMS")
             if len(filesystemrpmFile) > 0:
                 shutil.copy2(filesystemrpmFile[0],constants.rpmPath+"/x86_64/")
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
