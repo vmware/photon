@@ -49,6 +49,7 @@ ln -svfn ../run %{buildroot}/var/run
 ln -svfn ../run/lock %{buildroot}/var/lock
 install -vdm 755 %{buildroot}/var/{opt,cache,lib/{color,misc,locate},local}
 install -vdm 755 %{buildroot}/mnt/cdrom
+install -vdm 755 %{buildroot}/mnt/hgfs
 ln -svfn var/opt %{buildroot}/opt
 
 #
@@ -390,6 +391,7 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 %dir /run/lock
 #	usr filesystem
 %dir /mnt/cdrom
+%dir /mnt/hgfs
 %dir /usr/bin
 %dir /usr/include
 %dir /usr/lib
