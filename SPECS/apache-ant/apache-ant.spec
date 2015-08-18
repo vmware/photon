@@ -36,7 +36,7 @@ cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
 
 mkdir -p -m 700 $ANT_DIST_DIR
 
-export JAVA_HOME=/opt/OpenJDK-1.8.0.45-bin
+export JAVA_HOME=/opt/OpenJDK-1.8.0.51-bin
 
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
