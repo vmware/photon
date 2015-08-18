@@ -1,14 +1,14 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
-Version:	4.2.6p5
+Version:	4.2.8p3
 Release:	1%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1 ntp=4a5353a4791b6f4315a66c28d504ec6c7926b192
+Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/%{name}-%{version}.tar.gz
+%define sha1 ntp=fc624396f8d9f9bc282da30c8e8e527ade7d420f
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/svn/blfs-bootscripts-20140919.tar.bz2
 %define sha1 blfs-bootscripts=762b68f79f84463a6b1dabb69e9dbdc2c43f32d8
 Requires:	libcap >= 2.24
@@ -94,10 +94,16 @@ rm -rf %{buildroot}/*
 /etc/rc.d/rc4.d/S26ntpd
 /etc/rc.d/rc5.d/S26ntpd
 /etc/rc.d/rc6.d/K46ntpd
-%{_sbindir}/*
+%{_bindir}/*
 %{_datadir}/doc/%{name}-%{version}/*
+%{_datadir}/doc/ntp/*
+%{_datadir}/doc/sntp/*
 %{_datadir}/licenses/ntp/LICENSE
 %{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_datadir}/ntp/lib/NTP/Util.pm
 %changelog
+*	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.8p3-1
+-	Updating to version 4.2.8p3
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.6p5-1
 -	Initial build.	First version
