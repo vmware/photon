@@ -406,7 +406,7 @@ main(int argc, char* argv[])
     memset(&appGlobals, 0, sizeof appGlobals);
     appGlobals.command = 0;
     appGlobals.adapterType = VIXDISKLIB_ADAPTER_SCSI_LSILOGIC;
-    appGlobals.diskType = VIXDISKLIB_DISK_STREAM_OPTIMIZED;
+    appGlobals.diskType = VIXDISKLIB_DISK_MONOLITHIC_SPARSE;
     appGlobals.startSector = 0;
     appGlobals.numSectors = 1;
     appGlobals.mbSize = 100;
@@ -1439,7 +1439,7 @@ static void
 DoConvert(void)
 {
    
-   appGlobals.diskType = VIXDISKLIB_DISK_STREAM_OPTIMIZED;
+   appGlobals.diskType = VIXDISKLIB_DISK_MONOLITHIC_SPARSE;
    DoCreate();
    VixError vixError;
    VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
