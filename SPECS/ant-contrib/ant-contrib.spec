@@ -23,7 +23,7 @@ The Ant Contrib project is a collection of tasks for Apache Ant.
 %setup -n %{name}
 %build
 ANT_HOME=/opt/apache-ant-1.9.4
-export JAVA_HOME=/opt/OpenJDK-1.8.0.45-bin
+export JAVA_HOME=/opt/OpenJDK-1.8.0.51-bin
 mkdir -p -m 700 %{_prefix}
 $ANT_HOME/bin/ant -Ddist.dir="%{_prefix}" -Dproject.version="1.0b3" dist
 %install

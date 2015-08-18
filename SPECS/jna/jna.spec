@@ -31,7 +31,7 @@ Sources for JNA
 %setup -q
 %build
 ANT_HOME=/opt/apache-ant-1.9.4
-export JAVA_HOME=/opt/OpenJDK-1.8.0.45-bin
+export JAVA_HOME=/opt/OpenJDK-1.8.0.51-bin
 
 $ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/LibraryLoadTest.java" -Drelease=true
 

@@ -24,7 +24,7 @@ The JNA package contains libraries for interop from Java to native libraries.
 %setup -q -n %{name}-%{version}-src
 %build
 ANT_HOME=/opt/apache-ant-1.9.4
-export JAVA_HOME=/opt/OpenJDK-1.8.0.45-bin
+export JAVA_HOME=/opt/OpenJDK-1.8.0.51-bin
 
 $ANT_HOME/bin/ant dist
 

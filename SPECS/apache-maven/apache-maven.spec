@@ -27,7 +27,7 @@ The Maven package contains binaries for a build system
 %build
 MAVEN_DIST_DIR=/opt/apache-maven-3.3.3
 
-export JAVA_HOME=/opt/OpenJDK-1.8.0.45-bin
+export JAVA_HOME=/opt/OpenJDK-1.8.0.51-bin
 export ANT_HOME=/opt/apache-ant-1.9.4
 export PATH=$PATH:$ANT_HOME/bin
 
