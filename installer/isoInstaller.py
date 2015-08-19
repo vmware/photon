@@ -218,7 +218,7 @@ class IsoInstaller(object):
                     self.validate_ostree_refs_input, # validation function of the input
                     None, # post processing of the input field
                     'Please provide the Ref in OSTree repo', 'OSTree Repo Ref:', 2, install_config,
-                    "tp2/x86_64/minimal")
+                    "photon/tp2/x86_64/minimal")
             
             items = items + [
                     (license_agreement.display, False),

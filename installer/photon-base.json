@@ -3,7 +3,9 @@
 
     "osname": "photon",
 
-    "ref": "tp2/x86_64/minimal",
+    "ref": "photon/tp2/x86_64/minimal",
+
+    "automatic_version_prefix": "1.0_tp2_minimal",
 
     "repos": ["photon"],
 

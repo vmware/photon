@@ -74,7 +74,7 @@ class Installer(object):
     def exit_gracefully(self, signal, frame):
         if self.iso_installer:
             self.progress_bar.hide()
-            self.window.addstr(0, 0, 'Opps, Installer got inturrupted.\n\nPress any key to get to the bash...')
+            self.window.addstr(0, 0, 'Opps, Installer got interrupted.\n\nPress any key to get to the bash...')
             self.window.content_window().getch()
         
         sys.exit(1)
