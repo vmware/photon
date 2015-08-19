@@ -3,7 +3,7 @@ by Arjan van de Ven <arjan@linux.intel.com>
 
 --- linux-4.1.3_/drivers/pci/probe.c	2015-07-21 10:10:33.000000000 -0700
 +++ linux-4.1.3/drivers/pci/probe.c	2015-08-11 11:55:16.487139895 -0700
-@@ -159,6 +159,207 @@
+@@ -159,6 +159,220 @@
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
@@ -196,13 +196,26 @@ by Arjan van de Ven <arjan@linux.intel.com>
 +        }
 +	/* VMware, Inc : VMware VMXNET3 Ethernet Controller */
 +        if (dev->vendor == 0x15ad && dev->device == 0x07b0) {
-+                if (pos == 0x10) {
-+                        *sz = 0xfffff000;
-+                        return 1;
-+                }
-+                if (pos == 0x14) {
-+                        *sz = 0xfffff000;
-+                        return 1;
++		switch (pos) {
++			case 0x10:
++				*sz = 0xfffff000;
++                        	return 1;
++			case 0x14:
++				*sz = 0xfffff000;
++	                        return 1;
++			case 0x18:
++				*sz = 0xffffe000;
++	                        return 1;
++			case 0x1c:
++				*sz = 0xfffffff1;
++	                        return 1;
++			case 0x20:
++			case 0x24:
++                        	*sz = 0; /* Not implemented */
++	                        return 1;
++			case 0x30:
++				*sz = 0xffff0000;
++	                        return 1;
 +                }
 +        }
 +        return 0;
@@ -211,7 +224,7 @@ by Arjan van de Ven <arjan@linux.intel.com>
  /**
   * pci_read_base - read a PCI BAR
   * @dev: the PCI device
-@@ -178,6 +379,13 @@
+@@ -178,6 +392,13 @@
  
  	mask = type ? PCI_ROM_ADDRESS_MASK : ~0;
  
@@ -225,7 +238,7 @@ by Arjan van de Ven <arjan@linux.intel.com>
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -187,7 +395,6 @@
+@@ -187,7 +408,6 @@
  		}
  	}
  
@@ -233,53 +246,3 @@ by Arjan van de Ven <arjan@linux.intel.com>
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -1085,6 +1292,28 @@
- 
- #define LEGACY_IO_RESOURCE	(IORESOURCE_IO | IORESOURCE_PCI_FIXED)
- 
-+static int guess_bar_count(int class)
-+{
-+        if (class == 0x068000)
-+            return 0;
-+        if (class == 0x020000)
-+            return 2;
-+        if (class == 0x010000)
-+            return 2;
-+        if (class == 0x00ff00)
-+            return 1;
-+        return 6;
-+}
-+
-+static int has_rom(int class, int rom)
-+{
-+        if (class == 0x020000)
-+          return 0;
-+        if (class == 0x010000 || class == 0x00ff00)
-+          return 0;
-+        return rom;
-+}
-+
- /**
-  * pci_setup_device - fill in class and map information of a device
-  * @dev: the device structure to fill
-@@ -1103,6 +1332,7 @@
- 	int pos = 0;
- 	struct pci_bus_region region;
- 	struct resource *res;
-+	int maxbar;
- 
- 	if (pci_read_config_byte(dev, PCI_HEADER_TYPE, &hdr_type))
- 		return -EIO;
-@@ -1150,7 +1380,11 @@
- 		if (class == PCI_CLASS_BRIDGE_PCI)
- 			goto bad;
- 		pci_read_irq(dev);
--		pci_read_bases(dev, 6, PCI_ROM_ADDRESS);
-+
-+		maxbar = guess_bar_count(dev->class);
-+
-+		if (class != PCI_CLASS_STORAGE_IDE)
-+			pci_read_bases(dev, maxbar, has_rom(dev->class, PCI_ROM_ADDRESS));
- 		pci_read_config_word(dev, PCI_SUBSYSTEM_VENDOR_ID, &dev->subsystem_vendor);
- 		pci_read_config_word(dev, PCI_SUBSYSTEM_ID, &dev->subsystem_device);
- 
