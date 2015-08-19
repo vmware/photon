@@ -43,7 +43,7 @@ class OstreeInstaller(Installer):
         self.run("ostree admin --sysroot={} init-fs {}".format(self.photon_root, self.photon_root), "Initializing OSTree filesystem")
         self.pull_repo(repo_url, repo_ref)
         self.run("ostree admin --sysroot={} os-init photon ".format(self.photon_root), "OSTree OS Initializing")
-        self.run("ostree admin --sysroot={} deploy --os=photon photon/{}".format(self.photon_root, repo_ref), "Deploying")
+        self.run("ostree admin --sysroot={} deploy --os=photon photon:{}".format(self.photon_root, repo_ref), "Deploying")
 
     def do_systemd_tmpfiles_commands(self, commit_number):
         prefixes = ["/var/home",

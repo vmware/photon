@@ -31,7 +31,6 @@ OSTree host is the installation of Photon that retrives the images from RPM-OSTr
 Host machines created from RPM-OSTree server can run following commands to upgrade their Host machine to the latest version from RPM-OSTree server.
 
 ```
-> ostree pull photon tp2/x86_64/minimal
 > rpm-ostree upgrade
 > systemctl reboot
 ```
