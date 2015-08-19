@@ -3,8 +3,6 @@
 
 cd /lib/systemd/system/multi-user.target.wants/
 
-ln -s ../ntpd.service ntpd.service
-# ln -s ../etcd.service etcd.service
 ln -s ../docker.service docker.service
 ln -s ../eth0.service eth0.service
 
@@ -68,8 +66,6 @@ echo "Tunnel no" >> /etc/ssh/ssh_config
 echo "ServerAliveInterval 420" >> /etc/ssh/ssh_config
 
 sed -i '/.*linux.*vmlinuz/ s/$/ console=ttyS0/' /boot/grub/grub.cfg
-# Disable root login
-#usermod -L root
 
 # Disable loading/unloading of modules
 echo 1 > /proc/sys/kernel/modules_disabled
