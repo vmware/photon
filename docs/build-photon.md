@@ -3,11 +3,14 @@
 photon/
 ├── Makefile
 ├── README
-├── SPECS # RPM SPEC files
-├── cloud-init.md
-├── gce.md
-├── installer # Installer used at runtime
-└── support
+├── Dockerfile
+├── Vagrantfile
+├── SPECS        # RPM SPEC files
+├── common       # Build, Packaging config
+├── docs         # Documentation
+├── installer    # Installer used at runtime
+├── support      # Build scripts
+└── tools
 ```
 
 ## How to build the ISO?
@@ -18,6 +21,10 @@ Pre-requisites :
  * Packages: bison, gawk, g++, createrepo, python-aptdaemon, genisoimage, texinfo, python-requests
 ```
 sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests
+```
+ * Docker:
+```
+wget -qO- https://get.docker.com/ | sh
 ```
 
 Make sure `/bin/sh` is a symbolic link pointing to `/bin/bash`
