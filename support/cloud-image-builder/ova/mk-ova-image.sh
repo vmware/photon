@@ -57,6 +57,7 @@ losetup -d $DISK_DEVICE
 
 $SRC_ROOT/tools/bin/vixdiskutil -convert $PHOTON_IMG_OUTPUT_PATH/photon-ova.raw -cap 16000 $PHOTON_IMG_OUTPUT_PATH/photon-custom.vmdk
 
+$SRC_ROOT/tools/bin/vixdiskutil -wmeta toolsVersion 2147483647 $PHOTON_IMG_OUTPUT_PATH/photon-custom.vmdk
 
 ovftool /tmp/vmx-temp-custom.vmx $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.ovf
 cd $PHOTON_IMG_OUTPUT_PATH/temp
