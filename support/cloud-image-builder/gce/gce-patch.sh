@@ -1,9 +1,6 @@
 #!/bin/bash
 set -x
 
-cp -f /usr/lib/systemd/system/google* /lib/systemd/system/
-cp -f /usr/lib/systemd/system/kub* /lib/systemd/system/
-
 cd /lib/systemd/system/multi-user.target.wants/
 
 # Create links in multi-user.target to auto-start these scripts and services.
@@ -11,7 +8,6 @@ for i in ../google*; do  ln -s $i `basename $i`; done
 # for i in ../kube*; do  ln -s $i `basename $i`; done
 
 ln -s ../ntpd.service ntpd.service
-# ln -s ../etcd.service etcd.service
 ln -s ../docker.service docker.service
 ln -s ../eth0.service eth0.service
 
