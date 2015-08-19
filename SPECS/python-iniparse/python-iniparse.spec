@@ -2,7 +2,7 @@
 
 Name:           python-iniparse
 Version:        0.4
-Release:        1.0%{?dist}
+Release:        1%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 License:        MIT

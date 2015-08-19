@@ -1,6 +1,6 @@
 Name:           python-pyasn1
 Version:        0.1.7
-Release:        2
+Release:        2%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
