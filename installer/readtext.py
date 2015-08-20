@@ -34,7 +34,7 @@ class ReadText(Action):
         if accepted_chars:
             self.accepted_chars = accepted_chars
         else:
-            self.accepted_chars = range(33, 127)
+            self.accepted_chars = range(32, 127)
 
     def hide(self):
         return
