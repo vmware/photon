@@ -75,11 +75,9 @@ Create running VM instances using Azure management portal
 
 ##OVA
 
-The ova image uses a custom linux kernel, which is an optimized kernel based on version 4.1.3. The default password for the ova file is under support/cloud-image-builder/ova/vmdk_ova.json. The password should be changed using guest customization options when uploading to vCA.
+The ova image uses a custom linux kernel, which is an optimized kernel based on version 4.1.3. Two ova files are generated from build - photon-ova.ova and photon-custom.ova. The password for photon-ova.ova should be changed using guest customization options when uploading to vCA. Photon-custom.ova is genrated with the password changeme, intended for use with Fusion/Workstation.
 
 ####Pre-requisites
-
-[QEMU] (https://en.wikibooks.org/wiki/QEMU/Installing_QEMU)
 
 [VDDK 6.0] (https://developercenter.vmware.com/web/sdk/60/vddk)
 
