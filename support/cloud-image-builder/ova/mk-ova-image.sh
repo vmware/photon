@@ -46,7 +46,8 @@ sed -e "s/^\(root:\)[^:]*:/\1x:/" $PHOTON_IMG_OUTPUT_PATH/photon-custom/etc/shad
 ./update_custom_password.py changeme $PHOTON_IMG_OUTPUT_PATH/photon-custom
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-custom/etc/shadow-
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-custom/etc/shadow.bak
-
+# Force immediate password expiry
+chroot $PHOTON_IMG_OUTPUT_PATH/photon-custom /bin/bash -c "chage -d 0 root"
 umount $PHOTON_IMG_OUTPUT_PATH/photon-custom
 kpartx -d $DISK_DEVICE
 
