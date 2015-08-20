@@ -1,0 +1,26 @@
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts-2/imc-shell/imgcust-scripts/CustomizationUtils.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-08-19 16:39:55.187036608 -0700
++++ gosc-scripts-2/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-08-20 15:01:03.890341509 -0700
+@@ -804,7 +804,8 @@
+ EOF
+ )
+ 
+-  securitySshRsa=$(GetOvfPropertyValue 'security.ssh-rsa' $tmpOvfEnvFile)
++#  securitySshRsa=$(GetOvfPropertyValue 'security.ssh-rsa' $tmpOvfEnvFile)
++  securitySshRsa=''
+ 
+   if [[ -n "$securitySshRsa" ]]; then
+     if [[ "$securitySshRsa" != *ssh-rsa* ]]; then
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts-2/imc-shell/imgcust-scripts/PhotonCustomization.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-08-19 16:39:55.171037246 -0700
++++ gosc-scripts-2/imc-shell/imgcust-scripts/PhotonCustomization.sh	2015-08-20 14:59:04.186507719 -0700
+@@ -53,7 +53,8 @@
+   # If you don't quote the variable when you echo it, newlines are lost.
+   echo "${content}" > $ciConfigPath
+ 
+-  Exec '/usr/bin/cloud-init --file '$ciConfigPath' init'
++#  Exec '/usr/bin/cloud-init --file '$ciConfigPath' init'
++   cloud-init --file $ciConfigPath init 2>&1
+ 
+   Exec '/bin/systemctl restart systemd-networkd' '' ''
+   
