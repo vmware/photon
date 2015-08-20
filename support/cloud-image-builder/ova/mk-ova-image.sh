@@ -61,6 +61,8 @@ $SRC_ROOT/tools/bin/vixdiskutil -wmeta toolsVersion 2147483647 $PHOTON_IMG_OUTPU
 
 ovftool /tmp/vmx-temp-custom.vmx $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.ovf
 cd $PHOTON_IMG_OUTPUT_PATH/temp
+sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.ovf
+rm -f $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.mf
 openssl sha1 photon-custom.vmdk photon-custom.ovf > photon-custom.mf
 tar cf photon-custom.ova photon-custom.ovf photon-custom.mf photon-custom-disk1.vmdk
 cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.ova $PHOTON_IMG_OUTPUT_PATH/
