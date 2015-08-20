@@ -103,7 +103,9 @@ if [ $IMG_NAME != "ova" ]
     fi
     
     cp $IMG_NAME/$IMG_NAME-patch.sh $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/
-    sed -e "s/^\(root:\)[^:]*:/\1*:/" $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow
+    cp $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak
+    sed -e "s/^\(root:\)[^:]*:/\1*:/" $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak > $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow
+    rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak
 
     cp /etc/resolv.conf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/
     echo "chrooting and running patch inside the chroot"
