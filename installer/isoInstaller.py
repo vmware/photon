@@ -19,6 +19,7 @@ import crypt
 import string
 import random
 import urllib
+import modules.commons
 from diskpartitioner import DiskPartitioner
 from packageselector import PackageSelector
 from custompackageselector import CustomPackageSelector
@@ -47,7 +48,7 @@ class IsoInstaller(object):
                     err_msg = response.text
                 except Exception as e:
                     err_msg = e
-                print >> sys.stderr, "Failed to get the kickstart file at {0}, error msg: {1}".format(path, err_msg)
+                modules.commons.log(modules.commons.LOG_INFO, "Failed to get the kickstart file at {0}, error msg: {1}".format(path, err_msg))
                 print "Failed to get the kickstart file at {0}, retry in a second".format(path)
                 time.sleep(1)
 

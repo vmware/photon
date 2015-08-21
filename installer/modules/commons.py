@@ -5,6 +5,10 @@ import re
 PRE_INSTALL = "pre-install"
 POST_INSTALL = "post-install"
 
+LOG_ERROR = "err"
+LOG_WARNING = "warning"
+LOG_INFO = "info"
+
 def partition_disk(disk, docker_partition_size = None, swap_partition_size = None):
     partitions_data = {}
     partitions_data['disk'] = disk
@@ -79,3 +83,20 @@ def replace_string_in_file(filename,  search_string,  replace_string):
     with open(filename, "w") as destination:
         for line in lines:
             destination.write(re.sub(search_string,  replace_string,  line))
+
+def log(type, message):
+    # Specify the default priority level for the logged messages. 
+    # Pass one of "emerg", "alert", "crit", "err", "warning", "notice", "info", "debug", 
+    # or a value between 0 and 7 (corresponding to the same named levels). 
+    lineprefix = '';
+    priority_levels_in_string = ["emerg", "alert", "crit", "err", "warning", "notice", "info", "debug"]
+    prefix=''
+    try:
+        index = priority_levels_in_string.index(type)
+        prefix = '<'+str(index)+'>'
+    except ValueError:
+        pass
+    command = 'systemd-cat echo ' + '"' + prefix + message + '"'
+    process = subprocess.Popen([command], shell=True)
+    retval = process.wait()
+    return retval
