@@ -9,6 +9,7 @@ from PackageManager import PackageManager
 import json
 import sys
 from SpecUtils import Specutils
+from StringUtils import StringUtils
 import collections
 import traceback
 
@@ -108,8 +109,10 @@ def main():
     '''
     try:
         constants.initialize(options)
-        if package == "package_list":
-            buildPackageList(options.specPath)
+        if package == "packages_list":
+            buildPackagesList(options.specPath, options.buildRootPath+"/../packages_list.csv")
+        elif package == "sources_list":
+            buildSourcesList(options.specPath, options.buildRootPath+"/../")
         elif options.toolChainStage == "stage1":
             pkgManager = PackageManager()
             pkgManager.buildToolChain()
@@ -133,8 +136,9 @@ def buildToolChain(buildThreads):
     pkgManager = PackageManager()
     pkgManager.buildToolChainPackages(buildThreads)
 
-def buildPackageList(specPath):
-    print "Package,Version,License,URL,Sources,Patches"
+def buildPackagesList(specPath, csvFilename):
+    csvFile = open(csvFilename, "w")
+    csvFile.write("Package,Version,License,URL,Sources,Patches\n")
     lst = os.listdir(specPath)
     lst.sort()
     for dirEntry in lst:
@@ -161,7 +165,43 @@ def buildPackageList(specPath):
                         if patches != "":
                             patches += " "
                         patches += p
-                    print name+","+version+","+license+","+url+","+sources+","+patches
+                    csvFile.write(name+","+version+","+license+","+url+","+sources+","+patches+"\n")
+    csvFile.close()
+
+def buildSourcesList(specPath, yamlDir, singleFile=False):
+    strUtils = StringUtils()
+    if singleFile:
+        yamlFile = open(yamlDir+"sources_list.yaml", "w")
+    lst = os.listdir(specPath)
+    lst.sort()
+    for dirEntry in lst:
+        specDir = os.path.join(specPath, dirEntry)
+        if os.path.isdir(specDir):
+            for specEntry in os.listdir(specDir):
+                specFile = os.path.join(specDir, specEntry)
+                if os.path.isfile(specFile) and specFile.endswith(".spec"):
+                    spec=Specutils(specFile)
+                    modified = len(spec.getPatchNames()) > 0
+                    ss=spec.getSourceURLs()
+                    for s in ss:
+                        if (s.startswith("http") or s.startswith("ftp")):
+                            ossname=strUtils.getPackageNameFromURL(s)
+                            ossversion=strUtils.getPackageVersionFromURL(s)
+                            if not singleFile:
+                                yamlFile = open(yamlDir+ossname+"-"+ossversion+".yaml", "w")
+                            yamlFile.write("vmwsource:"+ossname+":"+ossversion+":\n")
+                            yamlFile.write("  repository: VMWsource\n")
+                            yamlFile.write("  name: '"+ossname+"'\n")
+                            yamlFile.write("  version: '"+ossversion+"'\n")
+                            yamlFile.write("  url: "+s+"\n")
+                            yamlFile.write("  license: UNKNOWN\n")
+                            if modified:
+                                yamlFile.write("  modified: true\n")
+                            yamlFile.write("\n")
+                            if not singleFile:
+                                yamlFile.close()
+    if singleFile:
+        yamlFile.close()
 
 def buildAPackage(package, buildThreads):
     listPackages=[]
