@@ -19,6 +19,7 @@ import crypt
 import string
 import random
 import urllib
+import urllib2
 from diskpartitioner import DiskPartitioner
 from packageselector import PackageSelector
 from custompackageselector import CustomPackageSelector
@@ -94,7 +95,11 @@ class IsoInstaller(object):
             return False, "Error: Invalid input"
 
         try:
-            status = urllib.urlopen(text).getcode()
+           if text.startswith("https"):
+               status = urllib2.urlopen(text,cafile="/usr/lib/python2.7/site-packages/requests/cacert.pem").getcode()
+           else:
+               status = urllib2.urlopen(text).getcode()
+
         except:
             return False , "Error: Invalid or unreachable Url"
         else:
