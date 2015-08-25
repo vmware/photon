@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -10,7 +10,6 @@ Distribution:	Photon
 Source0:	http://www.freedesktop.org/software/systemd/%{name}-%{version}.tar.xz
 %define sha1 systemd=0d933a2f76db5d30f52429e9b172323bc6abd49a
 Patch0:     	systemd-216-compat-1.patch
-Patch1:         systemd-216-if-rename.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -39,7 +38,6 @@ cc_cv_CFLAGS__flto=no
 EOF
 sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch0 -p1
-%patch1 -p1
 %build
 ./configure --prefix=%{_prefix}                                    \
             --sysconfdir=/etc                                       \
@@ -95,6 +93,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*	Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
+-	Reduce systemd-networkd boot time (exclude if-rename patch).
 *	Tue Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
 -	Adding sysvinit support 
 *       Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
