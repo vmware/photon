@@ -25,7 +25,7 @@ cd $PHOTON_IMG_OUTPUT_PATH/temp
 
 sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.ovf
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.mf
-openssl sha1 photon-ova.vmdk photon-ova.ovf > photon-ova.mf
+openssl sha1 *.vmdk photon-ova.ovf > photon-ova.mf
 tar cf photon-ova.ova photon-ova.ovf photon-ova.mf photon-ova-disk1.vmdk
 
 cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.ova $PHOTON_IMG_OUTPUT_PATH/
@@ -60,12 +60,14 @@ $SRC_ROOT/tools/bin/vixdiskutil -convert $PHOTON_IMG_OUTPUT_PATH/photon-ova.raw 
 
 $SRC_ROOT/tools/bin/vixdiskutil -wmeta toolsVersion 2147483647 $PHOTON_IMG_OUTPUT_PATH/photon-custom.vmdk
 
-ovftool /tmp/vmx-temp-custom.vmx $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.ovf
-cd $PHOTON_IMG_OUTPUT_PATH/temp
-sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.ovf
-rm -f $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.mf
-openssl sha1 photon-custom.vmdk photon-custom.ovf > photon-custom.mf
+mkdir -p $PHOTON_IMG_OUTPUT_PATH/temp1
+ovftool /tmp/vmx-temp-custom.vmx $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ovf
+cd $PHOTON_IMG_OUTPUT_PATH/temp1
+sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ovf
+rm -f $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.mf
+openssl sha1 *.vmdk photon-custom.ovf > photon-custom.mf
 tar cf photon-custom.ova photon-custom.ovf photon-custom.mf photon-custom-disk1.vmdk
-cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-custom.ova $PHOTON_IMG_OUTPUT_PATH/
+cp $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp/
+rm -rf $PHOTON_IMG_OUTPUT_PATH/temp1/
