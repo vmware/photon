@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -15,6 +15,7 @@ Patch0:		open-vm-tools-service-link.patch
 Patch1:         open-vm-tools-GOSC-photon.patch
 Patch2:         GOSC-VCA.patch
 Patch3:         GOSC-return-code.patch
+Patch4:         GOSC-NFS-MOUNT.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -40,6 +41,7 @@ VmWare virtualization user mode tools
 %patch1 -p1
 %patch2 -p0
 %patch3 -p0
+%patch4 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -98,6 +100,8 @@ rm -f /sbin/mount.vmhgfs
 
 
 %changelog
+*       Tue Aug 25 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-5
+-       Adding support for NFS mount in GOSC scripts.
 *       Thu Aug 20 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-4
 -       Fixing GOSC-libdeploy return code problem.
 *       Thu Aug 13 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-3
