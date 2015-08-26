@@ -32,7 +32,7 @@ class OstreeInstaller(Installer):
     def pull_repo(self, repo_url, repo_ref):
         if self.default_repo:
             self.run("ostree remote add --repo={}/ostree/repo --set=gpg-verify=false photon {}".format(self.photon_root, repo_url), "Adding OSTree remote")
-            self.run("ostree pull-local --repo={}/ostree/repo {}".format(self.photon_root, self.local_repo_path), "Pulling OSTree remote repo")
+            self.run("ostree pull-local --repo={}/ostree/repo {}".format(self.photon_root, self.local_repo_path), "Pulling OSTree repo")
             self.run("mv {}/ostree/repo/refs/heads {}/ostree/repo/refs/remotes/photon".format(self.photon_root, self.photon_root))
             self.run("mkdir -p {}/ostree/repo/refs/heads".format(self.photon_root, self.photon_root))
         else:
@@ -152,7 +152,7 @@ class OstreeInstaller(Installer):
         self.run("{} {} {}".format(self.unmount_disk_command, '-w', self.photon_root))
         self.progress_bar.update_loading_message("Ready to restart")
         self.progress_bar.hide()
-        self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
+        self.window.addstr(0, 0, 'Congratulations, Photon RPM-OSTree Host has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
         if self.ks_config == None:
             self.window.content_window().getch()
         return ActionResult(True, None)

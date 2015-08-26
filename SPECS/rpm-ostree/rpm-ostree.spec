@@ -4,6 +4,8 @@ Version:        2015.7
 Release:        1%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 %define sha1 rpm-ostree=9a0fa260d8671d9998b5f5509de1bbadd42f7127
+Source1:        libglnx-58a9a5c.tar.gz
+%define sha1 libglnx=ba892544e28201508450dd123a4ebd4dfe6d5ea7
 License:        LGPLv2+
 URL:            https://github.com/cgwalters/rpm-ostree
 Vendor:		VMware, Inc.
@@ -55,8 +57,8 @@ Requires: %{name} = %{version}-%{release}
 Includes the header files for the rpm-ostree library.
 
 %prep
-%autosetup -Sgit -n %{name}-%{version}
-git clone git://git.gnome.org/libglnx libglnx
+%setup -q
+cat /usr/src/photon/SOURCES/libglnx-58a9a5c.tar.gz | tar -xvvzf -
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
