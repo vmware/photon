@@ -46,26 +46,26 @@ mkdir $TEMP_CHROOT
 mkdir -p $TEMP_CHROOT/var/lib/rpm
 rpm --root $TEMP_CHROOT/ --initdb
 yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT install -y filesystem glibc
-yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT install -y yum bash coreutils photon-release $MAIN_PACKAGE
+yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT install -y tdnf vim bash coreutils photon-release $MAIN_PACKAGE
 yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT clean all
 
 cp /etc/resolv.conf $TEMP_CHROOT/etc/
 
 # # reinstalling inside to make sure rpmdb is created for tdnf.
 # # TODO find better solution.
-# chroot $TEMP_CHROOT bash -c \
-#    "tdnf install -y filesystem; \
-#     tdnf install -y glibc ; \
-#     tdnf install -y bash ; \
-#     tdnf install -y coreutils ; \
-#     tdnf install -y rpm-ostree ; \
-#     tdnf install -y photon-release; \
-#     rpm -e --nodeps perl; \
-#     rpm -e --nodeps perl-DBD-SQLite; \
-#     rpm -e --nodeps perl-Module-ScanDeps; \
-#     rpm -e --nodeps perl-DBIx-Simple; \
-#     rpm -e --nodeps perl-DBI; \
-#     rpm -e --nodeps perl-WWW-Curl;"
+chroot $TEMP_CHROOT bash -c \
+   "tdnf install -y filesystem; \
+    tdnf install -y glibc ; \
+    tdnf install -y bash ; \
+    tdnf install -y coreutils ; \
+    tdnf install -y util-linux; \
+    tdnf install -y tdnf ; \
+    tdnf install -y findutils ; \
+    tdnf install -y vim ; \
+    tdnf install -y grep ; \
+    tdnf install -y which ; \
+    tdnf install -y photon-release;"
+
 
 cd $TEMP_CHROOT
 # cleanup anything not needed inside rootfs
