@@ -4,8 +4,9 @@ GCE - Google Compute Engine
 AMI - Amazon Machine Image
 Azure
 OVA
+Photon-bosh-stemcell
 
-How to build cloud images
+#How to build cloud images
 
 sudo make cloud-image IMG_NAME=image-name
 
@@ -22,6 +23,10 @@ Azure - A vhd file
 OVA - An ova file (vmdk + ovf)
 
 sudo make cloud-image-all builds all the cloud images
+
+###How to build Photon bosh-stemcell
+
+Please follow the link to [ build ] (https://github.com/cloudfoundry/bosh/blob/develop/bosh-stemcell/README.md) Photon bosh-stemcell
 
 
 #How to create running instances in the cloud
@@ -87,4 +92,7 @@ The ova image uses a custom linux kernel, which is an optimized kernel based on 
 
 [OVFTOOL] (https://my.vmware.com/group/vmware/details?downloadGroup=OVFTOOL410&productId=491)
 
+##Photon Bosh
+
+Please refer [bosh docs] (http://bosh.io/docs) to deploy BOSH on Photon 
 
