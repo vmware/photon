@@ -1,41 +1,67 @@
 diff -ru gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scripts-modify/imc-shell/imgcust-scripts/ConfigFile.sh
 --- gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh	2015-08-25 16:20:00.119932000 -0700
-+++ gosc-scripts-modify/imc-shell/imgcust-scripts/ConfigFile.sh	2015-08-25 17:05:17.740738207 -0700
-@@ -533,6 +533,40 @@
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/ConfigFile.sh	2015-08-27 16:32:32.394309086 -0700
+@@ -533,6 +533,66 @@
    echo "$val"
  }
  
-+# Retrieves NFS device name to be mounted.
++# Retrieves NFS count.
 +#
 +# Args:
 +#   None
++# Results:
++#   integer: count
++# Throws:
++#   Dies in case setting is not present.
++ConfigFile_GetNFSCnt()
++{
++  local val='' # has to be declared before assigned
++
++  val=$(ConfigFile_GetOptionalNonEmptyString "NFS-CONFIG|NFS") || exit 1
++
++  local myresult=0
++
++  if [[ -n "$val" ]]; then
++    local spl=(${val//,/ })
++    myresult="${#spl[@]}"
++  fi
++
++  echo "$myresult"
++}
++
++# Retrieves NFS device name to be mounted.
++#
++# Args:
++#   NFS number
 +# Results:
 +#   string: NFS device name
 +# Throws:
 +#   Dies in case NFS device entry is present but empty.
 +ConfigFile_GetNFSDevice()
 +{
-+  local val='' # has to be declared before assigned
++  local nfs_no=$1
++  local query="${nfs_no}|DEVICE"
++  local val=''  # has to be declared before assigned
 +
-+  val=$(ConfigFile_GetOptionalNonEmptyString 'NFS|DEVICE') || exit 1
-+
++  val=$(ConfigFile_GetOptionalString $query)
 +  echo "$val"
 +}
 +
 +# Retrieves NFS directory where the given device is required to be mounted.
 +#
 +# Args:
-+#   None
++#   NFS number
 +# Results:
 +#   string: mount directory name and path
 +# Throws:
 +#   Dies in case directoy entry is present but empty.
 +ConfigFile_GetNFSMountDirectory()
 +{
++  local nfs_no=$1
++  local query="${nfs_no}|DIRECTORY"
 +  local val='' # has to be declared before assigned
 +
-+  val=$(ConfigFile_GetOptionalNonEmptyString 'NFS|DIRECTORY') || exit 1
-+
++  val=$(ConfigFile_GetOptionalString $query) || exit 1
 +  echo "$val"
 +}
 +
@@ -44,8 +70,8 @@ diff -ru gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scripts-modif
  # Args:
 diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh
 --- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-08-25 16:20:00.119932000 -0700
-+++ gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-08-25 17:46:25.635967713 -0700
-@@ -738,6 +738,37 @@
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-08-27 16:12:39.593584804 -0700
+@@ -738,6 +738,45 @@
    
  }
  
@@ -60,22 +86,30 @@ diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scrip
 +#
 +MountNFSDevice()
 +{
-+  local nfs_device=$(ConfigFile_GetNFSDevice)
-+  local nfs_directory=$(ConfigFile_GetNFSMountDirectory)
++  local nfs_cnt=$(ConfigFile_GetNFSCnt)
++  if [ "$nfs_cnt" -gt 0 ]; then
++    for j in $(seq 1 $nfs_cnt); do
++       Debug "Going to mount NFS'$j'"
++       local nfs="NFS"
++       local nfs_no=$nfs$j
++       local nfs_device=$(ConfigFile_GetNFSDevice $nfs_no)
++       local nfs_directory=$(ConfigFile_GetNFSMountDirectory $nfs_no)
 +
-+  if [[ -n "$nfs_device" ]] && [[ -n "$nfs_directory" ]]; then
-+    local create_dir='mkdir -p'
-+    create_dir="$create_dir $nfs_directory"
-+    Exec "$create_dir"
++       if [[ -n "$nfs_device" ]] && [[ -n "$nfs_directory" ]]; then
++         local create_dir='mkdir -p'
++         create_dir="$create_dir $nfs_directory"
++         Exec "$create_dir"
 +
-+    local mount_cmd='mount -t nfs'
-+    mount_cmd="$mount_cmd $nfs_device $nfs_directory"
-+    Debug " NFS mount Command: $mount_cmd"
-+    Exec "$mount_cmd"
-+    Debug "NFS mount completed"
-+  else
-+    Debug "No NFS config or wrong data found, nothing to mount"
-+  fi
++         local mount_cmd='mount -t nfs'
++         mount_cmd="$mount_cmd $nfs_device $nfs_directory"
++         Debug " NFS mount Command: $mount_cmd"
++         Exec "$mount_cmd"
++         Debug "NFS mount completed"
++       else
++         Debug "No NFS config or wrong data found for NFS$j, nothing to mount"
++       fi
++    done
++  fi  
 +}
 +
 +
