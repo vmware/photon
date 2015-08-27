@@ -1,4 +1,4 @@
-#Supported Cloud Images
+#Compatible Cloud Images
 
 GCE - Google Compute Engine
 AMI - Amazon Machine Image
