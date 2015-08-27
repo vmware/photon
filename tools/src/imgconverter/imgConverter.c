@@ -88,7 +88,7 @@ typedef uint8_t Bool;
 #define SPARSE_MAGICNUMBER 0x564d444b /* 'V' 'M' 'D' 'K' */
 #define VHD_FIXED_COOKIE 0x636f6e6563746978 /* "conectix" */
 #define VHD_DYNAMIC_COOKIE 0x6378737061727365 /* "cxsparse" */
-#define VHD_CREATOR_APP 0x70686f74 /* "cxsparse" */
+#define VHD_CREATOR_APP 0x70686f74 /* "phot" */
 typedef enum _grain_marker_type
 {
 MARKER_EOS = 0,
