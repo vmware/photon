@@ -1,0 +1,13 @@
+diff -ru open-vm-tools-original/libDeployPkg/linuxDeployment.c open-vm-tools-modified/libDeployPkg/linuxDeployment.c
+--- open-vm-tools-original/libDeployPkg/linuxDeployment.c	2015-08-26 16:41:05.646052000 -0700
++++ open-vm-tools-modified/libDeployPkg/linuxDeployment.c	2015-08-26 16:52:02.258735339 -0700
+@@ -1006,6 +1006,9 @@
+    }
+    free (cleanupCommand);
+ 
++   // Forcefully skip reboot after customization is finished
++   _DeployPkg_SkipReboot(true);
++
+    //Reset the guest OS
+    if (!sSkipReboot && !deploymentResult) {
+       // Reboot the Vm
