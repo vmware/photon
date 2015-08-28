@@ -12,7 +12,7 @@ Vendor:        VMware, Inc.
 Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=718cdc5fab5d24bbcba26d1a5a19e1c950b087c0
-Source1:	config-%{version}-kvm
+Source1:	config-kvm-%{version}
 Patch1:		0001-msleep.patch
 patch2:		0002-Skip-synchronize_rcu-on-single-CPU-systems.patch
 patch3:		0003-sysrq-Skip-synchronize_rcu-if-there-is-no-old-op.patch

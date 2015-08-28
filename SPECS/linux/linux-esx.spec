@@ -1,10 +1,8 @@
 %global security_hardening none
-# Kernel parameters:
-# init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 root=/dev/sda2 rw systemd.show_status=0 elevator=noop quiet
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.1.3
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -12,7 +10,7 @@ Vendor:        VMware, Inc.
 Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=718cdc5fab5d24bbcba26d1a5a19e1c950b087c0
-Source1:	config-%{version}-esx
+Source1:	config-esx-%{version}
 Patch1:		0001-msleep.patch
 patch2:		0002-Skip-synchronize_rcu-on-single-CPU-systems.patch
 patch3:		0003-sysrq-Skip-synchronize_rcu-if-there-is-no-old-op.patch
@@ -41,7 +39,7 @@ BuildRequires:    procps-ng-devel
 Requires:    filesystem kmod coreutils
 
 %description
-The Linux kernel build for GOS for ESX hypervisor.
+The Linux kernel build for GOS for VMware hypervisor.
 
 
 
@@ -78,7 +76,6 @@ The Linux package contains the Linux kernel doc files
 %patch13 -p1
 
 %build
-#make linux 
 make mrproper
 cp %{SOURCE1} .config
 make LC_ALL= oldconfig
@@ -94,6 +91,7 @@ cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}
 cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}
 cp -v .config            %{buildroot}/boot/config-esx-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
+
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet
@@ -110,7 +108,6 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /boot/config-esx-%{version}
 /boot/vmlinuz-esx-%{version}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
-#/lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{version}-esx/build
 
@@ -125,10 +122,13 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}-esx/build
 
 %changelog
+*   Fri Aug 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-5
+-   Added MD/LVM/DM modules.
+-   Pci probe improvements.
 *   Fri Aug 14 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-4
 -   Use photon.cfg as a symlink.
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
--   Added environment file(photon.cfg) for grub.
+-   Added environment file(photon.cfg) for a grub.
 *   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
     Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time. 
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1
