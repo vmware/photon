@@ -2,8 +2,8 @@ Based on 0006-probe.patch and 0011-probe2.patch
 by Arjan van de Ven <arjan@linux.intel.com>
 
 --- linux-4.1.3_/drivers/pci/probe.c	2015-07-21 10:10:33.000000000 -0700
-+++ linux-4.1.3/drivers/pci/probe.c	2015-08-11 11:55:16.487139895 -0700
-@@ -159,6 +159,220 @@
++++ linux-4.1.3/drivers/pci/probe.c	2015-08-28 11:25:48.141940839 -0700
+@@ -159,6 +159,281 @@
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
@@ -136,95 +136,156 @@ by Arjan van de Ven <arjan@linux.intel.com>
 +
 +static int is_known_device(struct pci_dev *dev, int pos, int *sz)
 +{
-+	/* VMware, Inc : VMware Virtual Machine Communication Interface */
-+        if (dev->vendor == 0x15ad && dev->device == 0x0740) {
-+		switch (pos) {
-+			case 0x10: 
-+				*sz = 0xffffffc1;
-+                        	return 1;
-+			case 0x14:
-+                        	*sz = 0xffffe000;
-+	                        return 1;
-+			case 0x1c:
-+			case 0x20:
-+			case 0x24:
-+			case 0x30:
-+                        	*sz = 0; /* Not implemented */
-+	                        return 1;
-+                }
-+        }
-+	/* VMware, Inc : VMware SVGA II Adapter */
-+        if (dev->vendor == 0x15ad && dev->device == 0x0405) {
-+		switch (pos) {
-+			case 0x10: 
-+				*sz = 0xfffffff1;
-+                        	return 1;
-+			case 0x14:
-+                        	*sz = 0xf8000000;
-+	                        return 1;
-+			case 0x18:
-+                        	*sz = 0xff800000;
-+	                        return 1;
-+			case 0x1c:
-+			case 0x20:
-+			case 0x24:
-+                        	*sz = 0; /* Not implemented */
-+	                        return 1;
-+			case 0x30:
-+	                        *sz = 0xffff8000;
-+	                        return 1;
-+                }
-+        }
-+	/* VMware, Inc : VMware PVSCSI SCSI Controller */
-+        if (dev->vendor == 0x15ad && dev->device == 0x07c0) {
-+		switch (pos) {
-+			case 0x10: 
-+				*sz = 0xfffffff9;
-+                        	return 1;
-+			case 0x14:
-+                        	*sz = 0xffff8000;
-+	                        return 1;
-+			case 0x1c:
-+			case 0x20:
-+			case 0x24:
-+                        	*sz = 0; /* Not implemented */
-+	                        return 1;
-+			case 0x30:
-+	                        *sz = 0xffff0000;
-+	                        return 1;
-+                }
-+        }
-+	/* VMware, Inc : VMware VMXNET3 Ethernet Controller */
-+        if (dev->vendor == 0x15ad && dev->device == 0x07b0) {
-+		switch (pos) {
-+			case 0x10:
-+				*sz = 0xfffff000;
-+                        	return 1;
-+			case 0x14:
-+				*sz = 0xfffff000;
-+	                        return 1;
-+			case 0x18:
-+				*sz = 0xffffe000;
-+	                        return 1;
-+			case 0x1c:
-+				*sz = 0xfffffff1;
-+	                        return 1;
-+			case 0x20:
-+			case 0x24:
-+                        	*sz = 0; /* Not implemented */
-+	                        return 1;
-+			case 0x30:
-+				*sz = 0xffff0000;
-+	                        return 1;
-+                }
-+        }
++	switch (dev->vendor) {
++		/* Intel Corporation */
++		case 0x8086:
++		switch (dev->device) {
++			/* IDE interface: 82371AB/EB/MB PIIX4 IDE */
++			case 0x7111:
++			switch (pos) {
++				case 0x20:
++					*sz = 0xfffffff1;
++					return 1;
++				case 0x10: 
++				case 0x14:
++				case 0x18:
++				case 0x1c:
++				case 0x24:
++				case 0x30:
++					*sz = 0; /* Not implemented */
++					return 1;
++			}
++			break;
++
++			/* Bridge: 82371AB/EB/MB PIIX4 ACPI */
++			case 0x7113:
++			switch (pos) {
++				case 0x10: 
++				case 0x14:
++				case 0x18:
++				case 0x1c:
++				case 0x20:
++				case 0x24:
++				case 0x30:
++					*sz = 0; /* Not implemented */
++					return 1;
++			}
++			break;
++		}
++		break;
++
++		/* VMware, Inc */
++		case 0x15ad:
++		switch (dev->device) {
++			/* VMware SVGA II Adapter */
++        		case 0x0405:
++			switch (pos) {
++				case 0x10: 
++					*sz = 0xfffffff1;
++                        		return 1;
++				case 0x14:
++					*sz = 0xf8000000;
++					return 1;
++				case 0x18:
++					*sz = 0xff800000;
++					return 1;
++				case 0x1c:
++				case 0x20:
++				case 0x24:
++					*sz = 0; /* Not implemented */
++					return 1;
++				case 0x30:
++					*sz = 0xffff8000;
++					return 1;
++			}
++			break;
++
++			/* VMware Virtual Machine Communication Interface */
++        		case 0x0740:
++			switch (pos) {
++				case 0x10: 
++					*sz = 0xffffffc1;
++					return 1;
++				case 0x14:
++					*sz = 0xffffe000;
++					return 1;
++				case 0x1c:
++				case 0x20:
++				case 0x24:
++				case 0x30:
++					*sz = 0; /* Not implemented */
++					return 1;
++			}
++			break;
++
++			/* VMware PCI bridge */
++			case 0x0790:
++			/* VMware PCI Express Root Port */
++			case 0x07a0:
++			switch (pos) {
++				case 0x10: 
++				case 0x14:
++				case 0x38:
++					*sz = 0; /* Not implemented */
++					return 1;
++			}
++			break;
++
++			/* VMware VMXNET3 Ethernet Controller */
++			case 0x07b0:
++			switch (pos) {
++				case 0x10:
++					*sz = 0xfffff000;
++					return 1;
++				case 0x14:
++					*sz = 0xfffff000;
++					return 1;
++				case 0x18:
++					*sz = 0xffffe000;
++					return 1;
++				case 0x1c:
++					*sz = 0xfffffff1;
++					return 1;
++				case 0x20:
++				case 0x24:
++					*sz = 0; /* Not implemented */
++					return 1;
++				case 0x30:
++					*sz = 0xffff0000;
++					return 1;
++			}
++			break;
++
++			/* VMware PVSCSI SCSI Controller */
++        		case 0x07c0:
++			switch (pos) {
++				case 0x10: 
++					*sz = 0xfffffff9;
++					return 1;
++				case 0x14:
++					*sz = 0xffff8000;
++					return 1;
++				case 0x1c:
++				case 0x20:
++				case 0x24:
++					*sz = 0; /* Not implemented */
++					return 1;
++				case 0x30:
++					*sz = 0xffff0000;
++					return 1;
++			}
++			break;
++		}
++		break;
++
++	}
 +        return 0;
 +}
 +
  /**
   * pci_read_base - read a PCI BAR
   * @dev: the PCI device
-@@ -178,6 +392,13 @@
+@@ -178,6 +453,13 @@
  
  	mask = type ? PCI_ROM_ADDRESS_MASK : ~0;
  
@@ -238,7 +299,7 @@ by Arjan van de Ven <arjan@linux.intel.com>
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -187,7 +408,6 @@
+@@ -187,7 +469,6 @@
  		}
  	}
  
@@ -246,3 +307,53 @@ by Arjan van de Ven <arjan@linux.intel.com>
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
+@@ -1085,6 +1366,28 @@
+ 
+ #define LEGACY_IO_RESOURCE	(IORESOURCE_IO | IORESOURCE_PCI_FIXED)
+ 
++static int guess_bar_count(int class)
++{
++        if (class == 0x068000)
++            return 0;
++        if (class == 0x020000)
++            return 3;
++        if (class == 0x010000)
++            return 2;
++        if (class == 0x00ff00)
++            return 1;
++        return 6;
++}
++
++static int has_rom(int class, int rom)
++{
++        if (class == 0x020000)
++          return 0;
++        if (class == 0x010000 || class == 0x00ff00)
++          return 0;
++        return rom;
++}
++
+ /**
+  * pci_setup_device - fill in class and map information of a device
+  * @dev: the device structure to fill
+@@ -1103,6 +1406,7 @@
+ 	int pos = 0;
+ 	struct pci_bus_region region;
+ 	struct resource *res;
++	int maxbar;
+ 
+ 	if (pci_read_config_byte(dev, PCI_HEADER_TYPE, &hdr_type))
+ 		return -EIO;
+@@ -1150,7 +1454,11 @@
+ 		if (class == PCI_CLASS_BRIDGE_PCI)
+ 			goto bad;
+ 		pci_read_irq(dev);
+-		pci_read_bases(dev, 6, PCI_ROM_ADDRESS);
++
++		maxbar = guess_bar_count(dev->class);
++
++		if (class != PCI_CLASS_STORAGE_IDE)
++			pci_read_bases(dev, maxbar, has_rom(dev->class, PCI_ROM_ADDRESS));
+ 		pci_read_config_word(dev, PCI_SUBSYSTEM_VENDOR_ID, &dev->subsystem_vendor);
+ 		pci_read_config_word(dev, PCI_SUBSYSTEM_ID, &dev->subsystem_device);
+ 
