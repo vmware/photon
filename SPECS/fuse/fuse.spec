@@ -1,7 +1,7 @@
 Summary:	File System in Userspace (FUSE) utilities
 Name:           fuse
 Version:        2.9.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+
 Url:		http://fuse.sourceforge.net/
 Group:		System Environment/Base
@@ -34,14 +34,6 @@ make install \
 install -v -m755 -d /usr/share/doc/fuse-2.9.4 &&
 install -v -m644    doc/{how-fuse-works,kernel.txt} \
                     /usr/share/doc/fuse-2.9.4
-%post
-/sbin/depmod -aq
-
-%preun
-/sbin/modprobe -r fuse
-
-%postun
-/sbin/depmod -aq 
 
 %files 
 %defattr(-, root, root)
@@ -60,6 +52,8 @@ install -v -m644    doc/{how-fuse-works,kernel.txt} \
 %{_prefix}/bin/fusermount
 
 %changelog
+*	Fri Aug 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.9.4-2
+-	post/pre actions are removed. 
 *	Tue Jun 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9.4-1
 -	Initial version. 
 
