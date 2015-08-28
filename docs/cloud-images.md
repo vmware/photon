@@ -105,3 +105,5 @@ Please refer [bosh docs] (http://bosh.io/docs) to deploy BOSH on Photon
 
 [OVA for Workstation/Fusion] (https://dl.bintray.com/vmware/photon/ova/1.0TP2/x86_64/photon-1.0TP2.ova)
 
+[vSphere Photon bosh-stemcell] (https://bintray.com/artifact/download/vmware/photon/vSpherePhotonStemcell/1.0TP2/bosh-stemcell-0000-vsphere-esxi-photon-TP2-go_agent.tgz)
+
