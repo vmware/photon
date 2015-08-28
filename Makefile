@@ -262,7 +262,7 @@ docker-image:
 		--privileged \
 		--net=host \
 		-v `pwd`:/workspace \
-		toliaqat/photon-dev \
+		vmware/build-photon \
 		./support/dockerfiles/photon/make-docker-image.sh tdnf
 
 install-docker-image: docker-image
