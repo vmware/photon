@@ -80,7 +80,7 @@ Create running VM instances using Azure management portal
 
 ##OVA
 
-The ova image uses a custom linux kernel, which is an optimized kernel based on version 4.1.3. Two ova files are generated from build - photon-ova.ova and photon-custom.ova. The password for photon-ova.ova should be changed using guest customization options when uploading to vCA. Photon-custom.ova is genrated with the password changeme, intended for use with Fusion/Workstation.
+The ova image uses a custom linux kernel, which is an optimized kernel based on version 4.1.3. Two ova files are generated from build - photon-ova.ova and photon-custom.ova. The password for photon-ova.ova should be changed using guest customization options when uploading to vCA. Photon-custom.ova is generated with the password changeme, intended for use with Fusion/Workstation.
 
 ####Pre-requisites
 
@@ -97,7 +97,7 @@ The ova image uses a custom linux kernel, which is an optimized kernel based on 
 Please refer [bosh docs] (http://bosh.io/docs) to deploy BOSH on Photon 
 
 ##Links to the pre-built TP2 images
-[GCE] (https://dl.bintray.com/vmware/photon/gce/1.0TP2/x86_64/photon-1.0TP2.tar.gz)
+[GCE] (https://dl.bintray.com/vmware/photon/gce/1.0TP2/x86_64/photon-1.0TP2.tar.gz)  Alternatively, you can download the source tar file from the [following] (https://console.developers.google.com/m/cloudstorage/b/photon-1-0-tp2/o/photon-gce.tar.gz) Google cloud storage bucket location
 
 [Azure] (https://dl.bintray.com/vmware/photon/azure/1.0TP2/x86_64/photon-1.0TP2.vhd)
 
