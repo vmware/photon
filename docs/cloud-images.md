@@ -1,10 +1,14 @@
 #Compatible Cloud Images
 
-GCE - Google Compute Engine
-AMI - Amazon Machine Image
-Azure
-OVA
-Photon-bosh-stemcell
+  1. GCE - Google Compute Engine
+
+  2. AMI - Amazon Machine Image
+
+  3. Azure
+
+  4. OVA
+
+  5. Photon-bosh-stemcell
 
 #How to build cloud images
 
