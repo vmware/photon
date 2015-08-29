@@ -15,11 +15,21 @@
 grub_efi_install()
 {
     mkdir $BUILDROOT/boot/efi
-    mkfs.vfat /dev/sda1
-    mount -t vfat /dev/sda1 $BUILDROOT/boot/efi
+    #
+    # if it is a loop device then we should mount the dev mapped boot partition
+    #
+    if [[ $HDD == *"loop"* ]]
+    then
+         BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
+    else
+         BOOT_PARTITION=${HDD}1
+    fi
+    mkfs.vfat $BOOT_PARITION
+    mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
     grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck --debug
-    mv $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
+    rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
+    cp efi/bootx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
     umount $BUILDROOT/boot/efi
 }
 
@@ -44,8 +54,8 @@ ARCH=$(uname -m)	# host architecture
 if [ $# -eq 3 ] 
 	then
         BOOTMODE=$1
-		HDD=$2
-		PARTITION=$3
+	HDD=$2
+	PARTITION=$3
 fi
 
 #
