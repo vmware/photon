@@ -5,6 +5,18 @@ import re
 PRE_INSTALL = "pre-install"
 POST_INSTALL = "post-install"
 
+LOG_LEVEL_DESC = ["emerg", "alert", "crit", "err", "warning", "notice", "info", "debug"]
+LOG_FILE_NAME  = "/var/log/installer.log"
+SIGNATURE   = "Photon echo"
+LOG_EMERG   = 0
+LOG_ALERT   = 1
+LOG_CRIT    = 2
+LOG_ERROR   = 3
+LOG_WARNING = 4
+LOG_NOTICE  = 5
+LOG_INFO    = 6
+LOG_DEBUG   = 7
+
 def partition_disk(disk, docker_partition_size = None, swap_partition_size = None):
     partitions_data = {}
     partitions_data['disk'] = disk
@@ -79,3 +91,15 @@ def replace_string_in_file(filename,  search_string,  replace_string):
     with open(filename, "w") as destination:
         for line in lines:
             destination.write(re.sub(search_string,  replace_string,  line))
+
+def log(type, message):
+    command = 'systemd-cat echo \"<{}> {} : {}\"'.format(type, LOG_LEVEL_DESC[type], message)
+    process = subprocess.Popen([command], shell=True)
+    retval = process.wait()
+    return retval
+
+def dump(type, filename):
+    command = "journalctl -p {0} | grep --line-buffered \"{1}\" > {2}".format(LOG_LEVEL_DESC[type], SIGNATURE, filename)
+    process = subprocess.Popen([command], shell=True)
+    retval = process.wait()
+    return retval

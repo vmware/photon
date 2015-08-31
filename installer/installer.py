@@ -76,7 +76,8 @@ class Installer(object):
             self.progress_bar.hide()
             self.window.addstr(0, 0, 'Opps, Installer got interrupted.\n\nPress any key to get to the bash...')
             self.window.content_window().getch()
-        
+
+        modules.commons.dump(modules.commons.LOG_ERROR, modules.commons.LOG_FILE_NAME)        
         sys.exit(1)
 
     def install(self, params):
@@ -194,7 +195,7 @@ class Installer(object):
                 progressbar_num_items +=  q[0].size + q[0].size * self.install_factor
                 self.rpms_tobeinstalled.append({'package': package, 'size': q[0].size, 'location': q[0].location, 'filename': os.path.basename(q[0].location)})
             else:
-                print >> sys.stderr, "Package %s not found in the repo" % package
+                modules.commons.log(modules.commons.LOG_WARNING, "Package {} not found in the repo".format(package))
                 #self.exit_gracefully(None, None)
 
         self.progress_bar.update_num_items(progressbar_num_items)
@@ -317,39 +318,39 @@ class Installer(object):
         return process.wait()
 
     def execute_modules(self, phase):
-        modules = glob.glob('modules/m_*.py')
-        for mod_path in modules:
+        modules_paths = glob.glob('modules/m_*.py')
+        for mod_path in modules_paths:
             module = mod_path.replace('/', '.', 1)
             module = os.path.splitext(module)[0]
             try:
                 __import__(module)
                 mod = sys.modules[module]
             except ImportError:
-                print >> sys.stderr,  'Error importing module %s' % module
+                modules.commons.log(modules.commons.LOG_ERROR, 'Error importing module {}'.format(module))
                 continue
             
             # the module default is disabled
             if not hasattr(mod, 'enabled') or mod.enabled == False:
-                print >> sys.stderr,  "module %s is not enabled" % module
+                modules.commons.log(modules.commons.LOG_INFO, "module {} is not enabled".format(module))
                 continue
             # check for the install phase
             if not hasattr(mod, 'install_phase'):
-                print >> sys.stderr,  "Error: can not defind module %s phase" % module
+                modules.commons.log(modules.commons.LOG_ERROR, "Error: can not defind module {} phase".format(module))
                 continue
             if mod.install_phase != phase:
-                print >> sys.stderr,  "Skipping module %s for phase %s" % (module, phase)
+                modules.commons.log(modules.commons.LOG_INFO, "Skipping module {0} for phase {1}".format(module, phase))
                 continue
             if not hasattr(mod, 'execute'):
-                print >> sys.stderr,  "Error: not able to execute module %s" % module
+                modules.commons.log(modules.commons.LOG_ERROR, "Error: not able to execute module {}".format(module))
                 continue
             mod.execute(module, self.ks_config, self.install_config, self.photon_root)
 
     def run(self, command, comment = None):
         if comment != None:
-            print >> sys.stderr, "Installer: {} ".format(comment)
+            modules.commons.log(modules.commons.LOG_INFO, "Installer: {} ".format(comment))
             self.progress_bar.update_loading_message(comment)
 
-        print >> sys.stderr, "Installer: {} ".format(command)
+        modules.commons.log(modules.commons.LOG_INFO, "Installer: {} ".format(command))
         process = subprocess.Popen([command], shell=True, stdout=self.output)
         retval = process.wait()
         return retval
