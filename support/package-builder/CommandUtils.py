@@ -35,8 +35,5 @@ class CommandUtils(object):
         retval = process.wait()
         if retval != 0:
             return None
-        result = process.communicate()[0]
-        if result is None:
-            return None
-        return result.split()
+        return process.communicate()[0]
 

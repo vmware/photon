@@ -224,6 +224,8 @@ class PackageUtils(object):
         chrootCmd=self.runInChrootCommand+" "+chrootID
         cmdUtils=CommandUtils()
         result=cmdUtils.runCommandInShell2(cmd, chrootCmd)
+        if result is not None:
+            return result.split()
         return result
 
     def adjustGCCSpecs(self, package, chrootID, logPath):
@@ -233,16 +235,13 @@ class PackageUtils(object):
         cmd = "/tmp/"+self.adjustGCCSpecScript+opt
         logFile = logPath+"/adjustGCCSpecScript.log"
         chrootCmd=self.runInChrootCommand+" "+chrootID
-        retryCount=10
-        returnVal=False
-        while retryCount > 0:
-            returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
-            if returnVal:
-                return
-            self.logger.error("Failed while adjusting gcc specs")
-            self.logger.error("Retrying again .....")
-            retryCount = retryCount - 1
-            sleep(5)
-        if not returnVal:
-            self.logger.error("Failed while adjusting gcc specs")
-            raise "Failed while adjusting gcc specs"
+        returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
+        if returnVal:
+            return
+
+        self.logger.debug(cmdUtils.runCommandInShell2("ls -la " + chrootID + "/tmp/" + self.adjustGCCSpecScript))
+        self.logger.debug(cmdUtils.runCommandInShell2("lsof " + chrootID + "/tmp/" + self.adjustGCCSpecScript))
+        self.logger.debug(cmdUtils.runCommandInShell2("ps ax"))
+
+        self.logger.error("Failed while adjusting gcc specs")
+        raise "Failed while adjusting gcc specs"
