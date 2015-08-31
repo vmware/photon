@@ -48,4 +48,4 @@ PHOTON_PACKER_TEMPLATES=$(SRCROOT)/support/packer-templates
 
 PHOTON_CHROOT_PATH:=$(PHOTON_STAGE)/photonroot
 PHOTON_FS_ROOT=/usr/src/photon
-PHOTON_DIST_TAG?=.ph1tp2
+PHOTON_DIST_TAG?=.ph1tp3
