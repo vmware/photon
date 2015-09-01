@@ -15,4 +15,4 @@ fi
 
 PUBLISHRPMSPATHDIR=$1
 
-cat rpmfilelist | awk '{print "https://bintray.com/artifact/download/vmware/photon_release_1.0_TP1_x86_64/"$1}' | xargs -n 1 -P 10 wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --cut-dirs=4 -P ${PUBLISHRPMSPATHDIR}
+cat rpmfilelist | awk '{print "https://bintray.com/artifact/download/vmware/photon_release_1.0_TP2_x86_64/"$1}' | xargs -n 1 -P 10 wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --cut-dirs=4 -P ${PUBLISHRPMSPATHDIR}

@@ -90,8 +90,6 @@ class ToolChainUtils(object):
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
-                    if package == "rpm-build" or package == "rpm-devel":
-                        continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             rpmFiles += " " + rpmFile
