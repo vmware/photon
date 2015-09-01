@@ -1,0 +1,17 @@
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-09-01 14:19:34.538883000 -0700
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-09-01 14:21:31.267459180 -0700
+@@ -803,11 +803,11 @@
+       local ser_query=$service_tag$i
+       local cmd_cnt=$(ConfigFile_GetServiceFileCommandCount $ser_query)
+       if [ "$cmd_cnt" -gt 0 ]; then
+-        for j in $(seq 1 $ser_cnt); do
++        for j in $(seq 1 $cmd_cnt); do
+           
+           local cmd_query=$command_tag$j
+           local commd=$(ConfigFile_GetServiceFileCommand $ser_query $cmd_query)
+-          Exec '$commd'
++          Exec "$commd"
+         done
+       fi
+     done
