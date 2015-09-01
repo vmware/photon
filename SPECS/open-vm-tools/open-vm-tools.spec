@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -17,6 +17,7 @@ Patch2:         GOSC-VCA.patch
 Patch3:         GOSC-return-code.patch
 Patch4:         GOSC-NFS-MOUNT.patch
 Patch5:         skipreboot.patch
+Patch6:         GOSC-counterBug.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -44,6 +45,7 @@ VmWare virtualization user mode tools
 %patch3 -p0
 %patch4 -p0
 %patch5 -p1
+%patch6 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -102,6 +104,8 @@ rm -f /sbin/mount.vmhgfs
 
 
 %changelog
+*       Tue Sep 01 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-7
+-       Fixing GOSC counter bug.
 *       Wed Aug 26 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-6
 -       Avoiding reboot after successful customization.
 *       Tue Aug 25 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-5
