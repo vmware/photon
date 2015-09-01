@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -46,7 +46,6 @@ popd
     --without-authdaemond \
     --disable-macos-framework \
     --disable-sample \
-    --disable-cram \
     --disable-digest \
     --disable-otp \
     --disable-plain \
@@ -94,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_datadir}/licenses/%{name}/LICENSE
 %changelog
+*	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.1.26-3
+-	Enable CRAM.
 *	Thu Jul 16 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.26-2
 -	Disabling parallel threads in make
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.26-1
