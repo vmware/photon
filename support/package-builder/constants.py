@@ -43,7 +43,7 @@ class constants(object):
             "readline-devel", "lua","lua-devel","popt","popt-devel","nspr","sqlite-autoconf","nss","nss-devel",
             "bzip2-devel","elfutils-libelf","elfutils","elfutils-libelf-devel","elfutils-devel",
             "expat","libffi","libpipeline", "gdbm","perl","texinfo","autoconf","automake",
-            "openssl","openssl-devel","python2","python2-libs","python2-devel","rpm",
+            "openssl","openssl-devel","python2","python2-libs","python2-devel","rpm","rpm-build", "rpm-devel",
             "groff", "man-db", "man-pages","cpio"]
     
     
