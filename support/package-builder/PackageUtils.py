@@ -230,11 +230,15 @@ class PackageUtils(object):
 
     def adjustGCCSpecs(self, package, chrootID, logPath):
         opt = " " + constants.specData.getSecurityHardeningOption(package)
-        shutil.copy2(self.adjustGCCSpecScript,  chrootID+"/tmp/"+self.adjustGCCSpecScript)
         cmdUtils=CommandUtils()
+        cpcmd="cp "+ self.adjustGCCSpecScript+" "+chrootID+"/tmp/"+self.adjustGCCSpecScript
         cmd = "/tmp/"+self.adjustGCCSpecScript+opt
         logFile = logPath+"/adjustGCCSpecScript.log"
         chrootCmd=self.runInChrootCommand+" "+chrootID
+        returnVal = cmdUtils.runCommandInShell(cpcmd, logFile)
+        if not returnVal:
+             self.logger.error("Error during copying the file adjust gcc spec")
+             raise "Failed while copying adjust gcc spec file"
         returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
         if returnVal:
             return
