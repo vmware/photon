@@ -77,7 +77,7 @@ class Installer(object):
             self.window.addstr(0, 0, 'Opps, Installer got interrupted.\n\nPress any key to get to the bash...')
             self.window.content_window().getch()
 
-        modules.commons.dump(modules.commons.LOG_ERROR, modules.commons.LOG_FILE_NAME)        
+        modules.commons.dump(modules.commons.LOG_FILE_NAME)        
         sys.exit(1)
 
     def install(self, params):
@@ -134,6 +134,7 @@ class Installer(object):
 
             retval = process.wait()
 
+        modules.commons.dump("{}/{}".format(self.photon_root, modules.commons.LOG_FILE_NAME))
         process = subprocess.Popen([self.unmount_disk_command, '-w', self.photon_root], stdout=self.output)
         retval = process.wait()
 
