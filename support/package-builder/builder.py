@@ -30,6 +30,7 @@ def main():
     parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
     parser.add_option("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
     parser.add_option("-d",  "--dist", dest="dist",  default="")
+    parser.add_option("-k",  "--input-RPMS-path", dest="inputRPMSPath",   default=None)
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -58,6 +59,10 @@ def main():
     
     if not os.path.isfile(options.inputJSONFile) and not options.installPackage:
         logger.error("Given JSON File is not a file:"+options.inputJSONFile)
+        errorFlag = True
+        
+    if options.inputRPMSPath is not None and not os.path.isdir(options.inputRPMSPath):
+        logger.error("Given input RPMS Path is not a directory:"+options.publishRPMSPath)
         errorFlag = True
         
     if options.installPackage :
