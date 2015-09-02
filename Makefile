@@ -211,6 +211,7 @@ packages-cached:
 
 sources:
 	@echo "Pulling sources from bintray...(nothing to do)"
+	@$(MKDIR) -p $(PHOTON_SRCS_DIR)
 
 sources-cached:
 	@echo "Using cached SOURCES..."
