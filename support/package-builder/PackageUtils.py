@@ -157,6 +157,7 @@ class PackageUtils(object):
         rpmBuildcmd+=" "+specFile
         
         cmdUtils = CommandUtils()
+        self.logger.info("Building rpm....")
         returnVal = cmdUtils.runCommandInShell(rpmBuildcmd, logFile, chrootCmd)
         if not returnVal:
             self.logger.error("Building rpm is failed "+specFile)
@@ -181,6 +182,9 @@ class PackageUtils(object):
         release = constants.specData.getRelease(package)
         listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+".x86_64.rpm",constants.rpmPath),
                             cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
+        if constants.inputRPMSPath is not None:
+            listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+".x86_64.rpm",constants.inputRPMSPath),
+                            cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.inputRPMSPath)], listFoundRPMFiles)    
         if len(listFoundRPMFiles) == 1 :
             return listFoundRPMFiles[0]
         if len(listFoundRPMFiles) == 0 :

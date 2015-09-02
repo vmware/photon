@@ -41,6 +41,8 @@ class PackageManager(object):
         listRPMFiles=[]
         listDirectorys=[]
         listDirectorys.append(constants.rpmPath)
+        if constants.inputRPMSPath is not None:
+            listDirectorys.append(constants.inputRPMSPath)
         
         while len(listDirectorys) > 0:
             dirPath=listDirectorys.pop()
