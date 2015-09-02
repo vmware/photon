@@ -1,0 +1,11 @@
+--- linux-4.2_/include/linux/blkdev.h	2015-08-30 18:34:09.000000000 +0000
++++ linux-4.2/include/linux/blkdev.h	2015-08-31 19:43:19.129320398 +0000
+@@ -37,7 +37,7 @@
+ struct blk_flush_queue;
+ 
+ #define BLKDEV_MIN_RQ	4
+-#define BLKDEV_MAX_RQ	128	/* Default maximum */
++#define BLKDEV_MAX_RQ	4096	/* Default maximum */
+ 
+ /*
+  * Maximum number of blkcg policies allowed to be registered concurrently.

@@ -1,0 +1,15 @@
+Based on 0008-smpboot.patch 
+by Arjan van de Ven <arjan@linux.intel.com>
+
+--- linux-4.2_/arch/x86/kernel/tsc.c	2015-08-30 18:34:09.000000000 +0000
++++ linux-4.2/arch/x86/kernel/tsc.c	2015-08-31 19:47:43.188312566 +0000
+@@ -1241,6 +1241,9 @@
+ 	if (!tsc_disabled && !cpu_has(&cpu_data(cpu), X86_FEATURE_CONSTANT_TSC))
+ 		return 0;
+ 
++	if (cpu != 0)
++		return cpu_data(0).loops_per_jiffy;
++
+ 	for_each_online_cpu(i)
+ 		if (cpu_data(i).phys_proc_id == cpu_data(cpu).phys_proc_id)
+ 			return cpu_data(i).loops_per_jiffy;
