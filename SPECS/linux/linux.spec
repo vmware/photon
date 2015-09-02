@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.0.9
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -43,14 +43,14 @@ The Linux package contains the Linux kernel dev files
 %package drivers-gpu
 Summary:    Kernel GPU Drivers
 Group:        System Environment/Kernel
-Requires:    %{name} = %{version}
+Requires:    %{name} = %{version}-%{release}
 %description drivers-gpu
 The Linux package contains the Linux kernel drivers for GPU
 
 %package sound
 Summary:    Kernel Sound modules
 Group:        System Environment/Kernel
-Requires:    %{name} = %{version}
+Requires:    %{name} = %{version}-%{release}
 %description sound
 The Linux package contains the Linux kernel sound support
 
@@ -172,6 +172,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/sound
 
 %changelog
+*   Wed Sep 2 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-4
+-   Added mouse ps/2 module.
 *   Fri Aug 14 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-3
 -   Use photon.cfg as a symlink.
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-2
