@@ -44,7 +44,7 @@ CONTAIN := $(TOOLS_BIN)/contain
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
 check check-docker check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
-clean-install clean-chroot
+clean-install clean-chroot build-updated-packages
 
 THREADS?=1
 
@@ -167,6 +167,22 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
                 -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
 		-c $(PHOTON_BINTRAY_CONFIG) \
 		-d $(PHOTON_DIST_TAG) \
+                -t ${THREADS}
+
+build-updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+	@echo "Building only updated RPMS..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -o full \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+		-c $(PHOTON_BINTRAY_CONFIG) \
+		-d $(PHOTON_DIST_TAG) \
+                -k $(PHOTON_INPUT_RPMS_DIR) \
                 -t ${THREADS}
 
 tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
