@@ -1,29 +1,26 @@
 %global security_hardening none
 Summary:        Kernel
 Name:        linux-esx
-Version:    4.1.3
-Release:    5%{?dist}
+Version:    4.2
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=718cdc5fab5d24bbcba26d1a5a19e1c950b087c0
+%define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:	config-esx-%{version}
-Patch1:		0001-msleep.patch
-patch2:		0002-Skip-synchronize_rcu-on-single-CPU-systems.patch
-patch3:		0003-sysrq-Skip-synchronize_rcu-if-there-is-no-old-op.patch
-patch4:		0004-enable-no-blink-by-default.patch
-patch5:		0005-wakeups.patch
-patch6:		pci-probe-vmware.patch
-patch7:		0007-cgroup.patch
-patch8:		0008-smpboot.patch
-patch9: 	0009-perf.patch
-patch10:	0010-tweak-the-scheduler-to-favor-CPU-0.patch
-patch11:	0012-No-wait-for-the-known-devices.patch
-patch12:	0013-Turn-mmput-into-an-async-function.patch
-Patch13:	ptdamage.patch
+patch1:		01-blkdev-max-rq.patch
+patch2:		02-sysrq-Skip-synchronize_rcu-if-there-is-no-old-op.patch
+patch3:		03-enable-no-blink-by-default.patch
+patch4:		04-vmstat-update-interval.patch
+patch5:		05-pci-probe-vmware.patch
+patch6:		06-calibrate-delay-is-known-by-cpu-0.patch
+patch7:		07-perf.patch
+patch8:		08-No-wait-for-the-known-devices.patch
+patch9:		09-Turn-mmput-into-an-async-function.patch
+Patch10:	ptdamage.patch
 
 BuildRequires:    bc
 BuildRequires:    kbd
@@ -71,9 +68,6 @@ The Linux package contains the Linux kernel doc files
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
 
 %build
 make mrproper
@@ -94,7 +88,7 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet
+photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop cpu_init_udelay=0 quiet
 photon_linux=/boot/vmlinuz-esx-%{version}
 EOF
 
@@ -122,6 +116,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}-esx/build
 
 %changelog
+*   Tue Sep 1 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2-1
+-   Update to linux-4.2. Enable CONFIG_EFI
 *   Fri Aug 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-5
 -   Added MD/LVM/DM modules.
 -   Pci probe improvements.

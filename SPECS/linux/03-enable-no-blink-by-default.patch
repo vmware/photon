@@ -1,0 +1,20 @@
+From: Jose Carlos Venegas Munoz <jos.c.venegas.munoz@intel.com>
+Date: Mon, 13 Apr 2015 11:26:36 -0500
+Subject: [PATCH 04/13] enable no blink by default
+
+Author:    Arjan van de Ven <arjan@linux.intel.com>
+---
+ drivers/video/console/fbcon.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- linux-4.2_/drivers/video/console/fbcon.c	2015-08-30 18:34:09.000000000 +0000
++++ linux-4.2/drivers/video/console/fbcon.c	2015-08-31 19:43:36.985319869 +0000
+@@ -146,7 +146,7 @@
+ 
+ static int fbcon_set_origin(struct vc_data *);
+ 
+-static int fbcon_cursor_noblink;
++static int fbcon_cursor_noblink = 1;
+ 
+ #define divides(a, b)	((!(a) || (b)%(a)) ? 0 : 1)
+ 
