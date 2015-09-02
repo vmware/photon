@@ -1,14 +1,14 @@
 %global security_hardening none
 Summary:        Kernel
 Name:        linux-esx
-Version:    4.2
+Version:    4.2.0
 Release:    1%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution: Photon
-Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:	config-esx-%{version}
 patch1:		01-blkdev-max-rq.patch
@@ -57,7 +57,7 @@ The Linux package contains the Linux kernel doc files
 
 
 %prep
-%setup -q -n linux-%{version}
+%setup -q -n linux-4.2
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
@@ -117,7 +117,7 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 
 %changelog
 *   Tue Sep 1 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2-1
--   Update to linux-4.2. Enable CONFIG_EFI
+-   Update to linux-4.2.0. Enable CONFIG_EFI
 *   Fri Aug 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-5
 -   Added MD/LVM/DM modules.
 -   Pci probe improvements.
