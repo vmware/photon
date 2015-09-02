@@ -11,6 +11,7 @@ Source0:		http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
 %define sha1 gawk=caabca3c1a59d05807c826c45a4639b82cad612a
 Provides:	/bin/gawk
 Requires:	gmp
+Requires:	mpfr
 %description
 The Gawk package contains programs for manipulating text files.
 %prep
@@ -41,6 +42,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.1.0-2
+-	Fix runtime dependency - requires mpfr.
 *	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.0-2
 -	Provide /bin/gawk.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.0-1
