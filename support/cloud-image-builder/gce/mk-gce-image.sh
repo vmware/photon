@@ -8,3 +8,5 @@ echo "Creating ${TARFILE} file from ${RAWFILE}."
 cd $PHOTON_IMG_OUTPUT_PATH
 mv ${RAWFILE} disk.raw
 tar -Szcf $PHOTON_IMG_OUTPUT_PATH/${TARFILE} disk.raw
+
+rm -f disk.raw

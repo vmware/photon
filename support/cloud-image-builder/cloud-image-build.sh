@@ -10,61 +10,52 @@
 #		Create cloud images
 #	End
 #
-
 set -x
-PHOTON_ISO_PATH=$1
-BUILD_SCRIPTS_FOLDER=$2
-IMG_NAME=$3
-SRC_ROOT=$4
-GENERATED_DATA_PATH=$5
-PHOTON_STAGE_PATH="${PHOTON_ISO_PATH%/*}"
+BUILD_SCRIPTS_PATH=$1
+IMG_NAME=$2
+SRC_ROOT=$3
+GENERATED_DATA_PATH=$4
+PHOTON_STAGE_PATH=$5
+ADDITIONAL_RPMS_PATH=$6
 INSTALLER_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
 
 PHOTON_IMG_OUTPUT_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
 
-VMDK_CONFIG_FILE=${BUILD_SCRIPTS_FOLDER}/$IMG_NAME/vmdk_$IMG_NAME.json
-VMDK_CONFIG_SAFE_FILE=${BUILD_SCRIPTS_FOLDER}/$IMG_NAME/vmdk_safe_$IMG_NAME.json
-ISO_MOUNT_FOLDER=$PHOTON_STAGE_PATH/iso_mount
+VMDK_CONFIG_FILE=${BUILD_SCRIPTS_PATH}/$IMG_NAME/vmdk_$IMG_NAME.json
+VMDK_CONFIG_SAFE_FILE=${BUILD_SCRIPTS_PATH}/$IMG_NAME/vmdk_safe_$IMG_NAME.json
 
-mkdir -p $ISO_MOUNT_FOLDER
 mkdir -p $INSTALLER_PATH/installer
 cp -R $SRC_ROOT/installer $INSTALLER_PATH/
 
 cd $INSTALLER_PATH/installer
 cp $VMDK_CONFIG_FILE $VMDK_CONFIG_SAFE_FILE
-cp ${BUILD_SCRIPTS_FOLDER}/mk-setup-vmdk.sh .
-cp ${BUILD_SCRIPTS_FOLDER}/mk-clean-vmdk.sh .
+cp ${BUILD_SCRIPTS_PATH}/mk-setup-vmdk.sh .
+cp ${BUILD_SCRIPTS_PATH}/mk-clean-vmdk.sh .
 
 if [ $IMG_NAME != "ova" ]
   then
-    cp ${BUILD_SCRIPTS_FOLDER}/mk-setup-grub.sh .
+    cp ${BUILD_SCRIPTS_PATH}/mk-setup-grub.sh .
 fi
 
-if [ -e ${BUILD_SCRIPTS_FOLDER}/${IMG_NAME}/mk-setup-grub.sh ]
+if [ -e ${BUILD_SCRIPTS_PATH}/${IMG_NAME}/mk-setup-grub.sh ]
   then
-    cp ${BUILD_SCRIPTS_FOLDER}/${IMG_NAME}/mk-setup-grub.sh .
-fi
-
-if [ -e ${BUILD_SCRIPTS_FOLDER}/${IMG_NAME}/mk-setup-vmdk.sh ]
-  then
-    cp ${BUILD_SCRIPTS_FOLDER}/${IMG_NAME}/mk-setup-vmdk.sh .
-fi
-
-if [ -e ${BUILD_SCRIPTS_FOLDER}/${IMG_NAME}/mk-clean-vmdk.sh ]
-  then
-    cp ${BUILD_SCRIPTS_FOLDER}/${IMG_NAME}/mk-clean-vmdk.sh .
+    cp ${BUILD_SCRIPTS_PATH}/${IMG_NAME}/mk-setup-grub.sh .
 fi
 
 PASSWORD=`date | md5sum | cut -f 1 -d ' '`
 sed -i "s/PASSWORD/$PASSWORD/" $VMDK_CONFIG_SAFE_FILE
-cat $VMDK_CONFIG_SAFE_FILE
+
+echo $ADDITIONAL_RPMS_PATH
+if [ -n "$ADDITIONAL_RPMS_PATH" ]
+  then
+    mkdir $PHOTON_STAGE_PATH/RPMS/additonal
+    cp -f $ADDITIONAL_RPMS_PATH/* $PHOTON_STAGE_PATH/RPMS/additonal/
+fi
+
 ./photonInstaller.py -p $GENERATED_DATA_PATH/build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $INSTALLER_PATH/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
 rm $VMDK_CONFIG_SAFE_FILE
 
-
-cd $BUILD_SCRIPTS_FOLDER
-
-
+cd $BUILD_SCRIPTS_PATH
 
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-${IMG_NAME}.raw`
 
@@ -87,7 +78,7 @@ sed -e "s/^\(root:\)[^:]*:/\1*:/" $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow-
 
-if [ $IMG_NAME != "ova" ]
+if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
   then
     mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
     mount -o bind /dev $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
