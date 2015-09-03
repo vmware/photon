@@ -7,4 +7,6 @@ mkdir -p $SRC_ROOT/tools/bin
 make clean
 make
 $SRC_ROOT/tools/bin/imgconverter -i $PHOTON_IMG_OUTPUT_PATH/photon-azure.raw -v vhd -o $PHOTON_IMG_OUTPUT_PATH/photon-azure.vhd
-exit 0
+
+rm -f $PHOTON_IMG_OUTPUT_PATH/photon-azure.raw
+

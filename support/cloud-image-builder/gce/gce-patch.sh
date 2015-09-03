@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 cd /lib/systemd/system/multi-user.target.wants/
 

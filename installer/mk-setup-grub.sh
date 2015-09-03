@@ -12,6 +12,7 @@
 #		The path to this empty disk is specified in the HDD variable in config.inc
 #	End
 #
+
 grub_efi_install()
 {
     mkdir $BUILDROOT/boot/efi
@@ -27,7 +28,7 @@ grub_efi_install()
     mkfs.vfat $BOOT_PARTITION
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
-    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck --debug
+    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
     rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
     cp efi/bootx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
     umount $BUILDROOT/boot/efi
@@ -69,7 +70,7 @@ ln -sfv grub2 $BUILDROOT/boot/grub
 command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
 command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
 if [ -z $grubInstallCmd ]; then
-echo "Unable to found grub install command"
+echo "Unable to find grub install command"
 exit 1
 fi
 
