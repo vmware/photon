@@ -4,7 +4,7 @@
 .DS_Store
 packer-cache/
 .vagrant/
-stage/
+stage
 discus-cache/
 output-*/
 tools/bin/
