@@ -1,6 +1,7 @@
 from SpecUtils import Specutils
 import os
 from Logger import Logger
+from distutils.version import StrictVersion
 
 class SerializableSpecObject(object):
     def __init__(self):
@@ -28,6 +29,7 @@ class SerializableSpecObjectsUtils(object):
         listSpecFiles=[]
         self.getListSpecFiles(listSpecFiles,specFilesPath)
         for specFile in listSpecFiles:
+            skipUpdating = False
             spec=Specutils(specFile)
             specName=spec.getBasePackageName()
             specObj=SerializableSpecObject()
@@ -43,9 +45,15 @@ class SerializableSpecObjectsUtils(object):
             specObj.listPatches=spec.getPatchNames()
             specObj.securityHardening=spec.getSecurityHardeningOption()
             for specPkg in specObj.listPackages:
-                specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
-                self.mapPackageToSpec[specPkg]=specName
-            self.mapSerializableSpecObjects[specName]=specObj
+	    	if specPkg in self.mapPackageToSpec:
+		    existingObj = self.mapSerializableSpecObjects[self.mapPackageToSpec[specPkg]]
+		    if self.compareVersions(existingObj,specObj) == 1:
+			skipUpdating = True
+			break;			
+            	specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
+            	self.mapPackageToSpec[specPkg]=specName
+	    if skipUpdating == False:
+                self.mapSerializableSpecObjects[specName]=specObj
     
     def getListSpecFiles(self,listSpecFiles,path):
         for dirEntry in os.listdir(path):
@@ -96,7 +104,25 @@ class SerializableSpecObjectsUtils(object):
     def getPackages(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listPackages
-        
+
+    def getReleaseNum(self, releaseVal):
+	id = releaseVal.find(".")
+	if (id != -1):
+	    return releaseVal[0:id]
+	else:
+	    return releaseVal
+
+    def compareVersions(self, existingObj, newObject):
+	if StrictVersion(existingObj.version) > StrictVersion(newObject.version):
+	    return 1;
+	elif StrictVersion(existingObj.version) < StrictVersion(newObject.version):
+	    return -1
+	else:
+	    if int(self.getReleaseNum(existingObj.release)) > int(self.getReleaseNum(newObject.release)):
+		return 1;
+	    else: 
+	     	return -1;
+
     def getSpecName(self,package):
         if self.mapPackageToSpec.has_key(package):
             specName=self.mapPackageToSpec[package]
