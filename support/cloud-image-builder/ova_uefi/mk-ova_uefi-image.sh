@@ -25,7 +25,7 @@ sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp/photon-
 #Add uefi metadata
 sed -i '/vmw:value="efi"\/>/a \ \t<vmw:Config ovf:required="false" vmw:key="uefi.secureBoot.enabled" vmw:value="TRUE"/>\n \ \t<vmw:Config ovf:required="false" vmw:key="isolation.monitor.control.disable" vmw:value="FALSE"/> ' $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-uefi.ovf
 #Add product info
-sed -i '/\/VirtualHardwareSection>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-uefi.ovf
+sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-uefi.ovf
 
 openssl sha1 *.vmdk photon-ova-uefi.ovf > photon-ova-uefi.mf
 tar cf photon-ova-uefi.ova photon-ova-uefi.ovf photon-ova-uefi.mf photon-ova-uefi-disk1.vmdk
