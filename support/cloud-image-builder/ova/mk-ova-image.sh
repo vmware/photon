@@ -25,7 +25,7 @@ cd $PHOTON_IMG_OUTPUT_PATH/temp
 
 sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.ovf
 #Add product info
-sed -i '/\/VirtualHardwareSection>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.ovf
+sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.ovf
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.mf
 openssl sha1 *.vmdk photon-ova.ovf > photon-ova.mf
 tar cf photon-ova.ova photon-ova.ovf photon-ova.mf photon-ova-disk1.vmdk
@@ -67,7 +67,7 @@ ovftool /tmp/vmx-temp-custom.vmx $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ovf
 cd $PHOTON_IMG_OUTPUT_PATH/temp1
 sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ovf
 #Add product info
-sed -i '/\/VirtualHardwareSection>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ovf
+sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ovf
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.mf
 openssl sha1 *.vmdk photon-custom.ovf > photon-custom.mf
 tar cf photon-custom.ova photon-custom.ovf photon-custom.mf photon-custom-disk1.vmdk
