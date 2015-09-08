@@ -3,7 +3,7 @@
 #
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
-Version:	1.0.2
+Version:	1.0.3
 Release:	1%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -19,7 +19,7 @@ BuildRequires:	openssl-devel
 
 BuildRequires:	librepo-devel
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 tdnf=c17584cd75598ca951bb95099e3f76a975003b25
+%define sha1 tdnf=789e45263bde5162a8c7feb737a7cdc638e248e8
 
 %description
 tdnf is a yum/dnf equivalent
@@ -90,6 +90,9 @@ mkdir -p %{buildroot}/var/cache/tdnf
     %exclude %{_libdir}/debug
 
 %changelog
+*       Tue Sep 8 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.3
+-       Fix metadata creation issues. Engage refresh flag.
+-       Do not check gpgkey when gpgcheck is turned off in repo.
 *       Thu Jul 23 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2
 -       Support reinstalls in transaction. Handle non-existent packages correctly.
 *       Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-2
