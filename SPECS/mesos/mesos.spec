@@ -61,6 +61,7 @@ make DESTDIR=%{buildroot} install
 %{_prefix}/etc/mesos/*
 %{_libexecdir}/mesos/*
 %{_datadir}/mesos/*
+%exclude %{_libdir}/debug/
 
 %changelog
 *	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
