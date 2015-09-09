@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.2.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -20,7 +20,9 @@ patch6:		06-calibrate-delay-is-known-by-cpu-0.patch
 patch7:		07-perf.patch
 patch8:		08-No-wait-for-the-known-devices.patch
 patch9:		09-Turn-mmput-into-an-async-function.patch
-Patch10:	ptdamage.patch
+Patch10:	10-ptdamage.patch
+Patch11:	11-piix4-poweroff.patch
+Patch12:	12-sd-lower-log-level.patch
 
 BuildRequires:    bc
 BuildRequires:    kbd
@@ -68,6 +70,8 @@ The Linux package contains the Linux kernel doc files
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
+%patch12 -p1
 
 %build
 make mrproper
@@ -116,6 +120,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}-esx/build
 
 %changelog
+*   Fri Sep 4 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2-2
+-   Hardcoded poweroff (direct write to piix4), no ACPI is required.
+-   sd.c: Lower log level for "Assuming drive cache..." message.
 *   Tue Sep 1 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2-1
 -   Update to linux-4.2.0. Enable CONFIG_EFI
 *   Fri Aug 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-5
