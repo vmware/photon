@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.23.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -15,6 +15,7 @@ BuildRequires:	apache-maven >= 3.3.3
 BuildRequires:	apr >= 1.5.2
 BuildRequires:	apr-util >= 1.5.4
 BuildRequires:	subversion >= 1.8.13
+BuildRequires:	subversion-devel >= 1.8.13
 BuildRequires:	cyrus-sasl >= 2.1.26
 BuildRequires:	python2 >= 2.6
 BuildRequires:	python2-libs
@@ -27,7 +28,15 @@ Requires:	openjdk >= 1.8.0.45
 Requires:	subversion >= 1.8.13
 
 %description
-This package installs mesos services that allow photon to run tasks using mesos frameworks.
+ This package installs mesos services that allow photon to run tasks in mesos
+ framework.
+
+%package	devel
+Summary:	Header and development files for mesos
+Requires:	%{name} = %{version}
+%description    devel
+ mesos-devel package contains header files, pkfconfig files, and libraries
+ needed to build applications for mesos.
 
 %prep
 %setup -q
@@ -54,16 +63,24 @@ make DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
-%{_libdir}/*
-%{_includedir}/*/*
-%{_sbindir}/*
+%{_bindir}/mesos*
+%{_sbindir}/mesos-*
+%{_libdir}/libmesos*
+%{_libexecdir}/mesos/mesos-*
+%{_libexecdir}/mesos/python/*
 %{_prefix}/etc/mesos/*
-%{_libexecdir}/mesos/*
-%{_datadir}/mesos/*
+%{_prefix}/share/mesos/*
+
+%files devel
+%{_includedir}/*
+%{_libdir}/libfixed_resource_estimator*
+%{_libdir}/pkgconfig/mesos.pc
+%{_prefix}/etc/mesos/*
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
+-	Move headers, pc, dev libs into devel pkg.
 *	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
 -	Update to mesos 0.23.0.
 *	Fri Aug 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.1-3

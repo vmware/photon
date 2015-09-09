@@ -1,13 +1,13 @@
 Summary:    	The Apache Subversion control system
 Name:       	subversion
 Version:    	1.8.13
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	Apache License 2.0
 URL:        	http://subversion.apache.org/
 Group:      	Utilities/System
 Vendor:     	VMware, Inc.
 Distribution: 	Photon
-Source0:        http://archive.apache.org/dist/subversion/%{name}-%{version}.tar.gz
+Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %define sha1 subversion=437cf662b7ed27d2254aa7ca334fdd74b49262ef
 Requires:   	apr
 Requires:   	apr-util
@@ -19,6 +19,12 @@ BuildRequires: 	expat
 
 %description
 The Apache version control system.
+
+%package	devel
+Summary:	Header and development files for mesos
+Requires:	%{name} = %{version}
+%description    devel
+ subversion-devel package contains header files, libraries.
 
 %prep
 %setup -q
@@ -34,11 +40,9 @@ make -j1 DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
-%{_libdir}/*
-%exclude %{_libdir}/debug/
-%{_includedir}/*
-%{_mandir}/*/*
+%{_bindir}/svn*
+%{_libdir}/libsvn_*
+%{_mandir}/*
 %lang(de) %{_datadir}/locale/de/LC_MESSAGES/subversion.mo
 %lang(es) %{_datadir}/locale/es/LC_MESSAGES/subversion.mo
 %lang(fr) %{_datadir}/locale/fr/LC_MESSAGES/subversion.mo
@@ -52,6 +56,12 @@ make -j1 DESTDIR=%{buildroot} install
 %lang(zh_CN) %{_datadir}/locale/zh_CN/LC_MESSAGES/subversion.mo
 %lang(zh_TW) %{_datadir}/locale/zh_TW/LC_MESSAGES/subversion.mo
 
+%files devel
+%{_includedir}/*
+%exclude %{_libdir}/debug/
+
 %changelog
-*   Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 1.8.13-1
--   Initial build. First version
+*	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.13-2
+-	Move headers into devel pkg.
+*	Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 1.8.13-1
+-	Initial build. First version
