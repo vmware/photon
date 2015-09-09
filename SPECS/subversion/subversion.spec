@@ -36,6 +36,7 @@ make -j1 DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*
+%exclude %{_libdir}/debug/
 %{_includedir}/*
 %{_mandir}/*/*
 %lang(de) %{_datadir}/locale/de/LC_MESSAGES/subversion.mo
