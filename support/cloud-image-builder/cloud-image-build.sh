@@ -32,7 +32,7 @@ cp $VMDK_CONFIG_FILE $VMDK_CONFIG_SAFE_FILE
 cp ${BUILD_SCRIPTS_PATH}/mk-setup-vmdk.sh .
 cp ${BUILD_SCRIPTS_PATH}/mk-clean-vmdk.sh .
 
-if [ $IMG_NAME != "ova" ]
+if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
   then
     cp ${BUILD_SCRIPTS_PATH}/mk-setup-grub.sh .
 fi
@@ -77,7 +77,6 @@ cp $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow $PHOTON_IMG_OUTPUT_PATH
 sed -e "s/^\(root:\)[^:]*:/\1*:/" $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak > $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow-
-
 if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
   then
     mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
