@@ -26,7 +26,7 @@ patch10:	0010-tweak-the-scheduler-to-favor-CPU-0.patch
 patch11:	0011-probe2.patch
 patch12:	0012-No-wait-for-the-known-devices.patch
 patch13:	0013-Turn-mmput-into-an-async-function.patch
-Patch14:	ptdamage.patch
+Patch14:	10-ptdamage.patch
 
 BuildRequires:    bc
 BuildRequires:    kbd

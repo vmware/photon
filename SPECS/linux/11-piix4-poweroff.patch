@@ -1,0 +1,13 @@
+Author: Alexey Makhalov <amakhalov@vmware.com>
+Poweroff the VM by direct writing in PIIX4 reg.
+
+--- linux-4.2_/arch/x86/kernel/reboot.c	2015-08-30 18:34:09.000000000 +0000
++++ linux-4.2/arch/x86/kernel/reboot.c	2015-09-04 21:57:31.599382587 +0000
+@@ -653,6 +653,7 @@
+ 
+ 	tboot_shutdown(TB_SHUTDOWN_HALT);
+ 
++	outw(0x2000, 0x1004);
+ 	stop_this_cpu(NULL);
+ }
+ 
