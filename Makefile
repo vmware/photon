@@ -146,9 +146,13 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-deptree:
+pkgtree:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i pkg -p $(pkg)
+
+jsontree:
+	@cd $(PHOTON_SPECDEPS_DIR) && \
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i json -f $(PHOTON_DATA_DIR)/build_install_options_$(json).json
 
 who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
@@ -169,12 +173,12 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
 		-d $(PHOTON_DIST_TAG) \
                 -t ${THREADS}
 
-build-updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
                 -s $(PHOTON_SPECS_DIR) \
-                -r $(PHOTON_RPMS_DIR) \
+                -r $(PHOTON_UPDATED_RPMS_DIR) \
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
@@ -252,6 +256,9 @@ $(PHOTON_STAGE):
 	@echo "Building RPMS folders..."
 	@test -d $(PHOTON_RPMS_DIR_NOARCH) || $(MKDIR) -p $(PHOTON_RPMS_DIR_NOARCH)
 	@test -d $(PHOTON_RPMS_DIR_X86_64) || $(MKDIR) -p $(PHOTON_RPMS_DIR_X86_64)
+	@echo "Building UPDATED_RPMS folders..."
+	@test -d $(PHOTON_UPDATED_RPMS_DIR_NOARCH) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_NOARCH)
+	@test -d $(PHOTON_UPDATED_RPMS_DIR_X86_64) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_X86_64)
 	@echo "Building SOURCES folder..."
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
 	@echo "Building LOGS folder..."
