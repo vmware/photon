@@ -110,6 +110,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %lang(tr) %{_datarootdir}/locale/tr/LC_MESSAGES/e2fsprogs.mo
 %lang(vi) %{_datarootdir}/locale/vi/LC_MESSAGES/e2fsprogs.mo
 %lang(zh_CN) %{_datarootdir}/locale/zh_CN/LC_MESSAGES/e2fsprogs.mo
+%{_libdir}/libss.so
 
 %files devel
 %{_includedir}/ss/ss_err.h
@@ -138,7 +139,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libe2p.a
 %{_libdir}/libquota.a
 %{_libdir}/libext2fs.a
-%{_libdir}/libss.so
+
 %changelog
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
 -   Update according to UsrMove.
