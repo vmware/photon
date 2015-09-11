@@ -65,6 +65,7 @@ class SerializedSpecObjects(object):
 			if (allDeps.has_key(depPkg) and allDeps[depPkg] < level + 1): 
 				allDeps[depPkg] = level + 1
 				parent[depPkg] = inPkg
+				self.updateLevels(allDeps, depPkg, parent, allDeps[depPkg])
 			                 
 	def readSpecsAndConvertToSerializableObjects(self, specFilesPath, inputType, inputValue, displayOption):
 		children = {}

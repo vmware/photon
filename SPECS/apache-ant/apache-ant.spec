@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.9.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -14,9 +14,9 @@ Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
-Requires: openjdk >= 1.8.0.45, python2
+Requires: openjre >= 1.8.0.45, python2
+BuildRequires: openjre >= 1.8.0.45
 BuildRequires: openjdk >= 1.8.0.45
-
 %define _prefix /opt/apache-ant-1.9.4
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
@@ -66,6 +66,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_prefix}/maven-ant-tasks/*
 
 %changelog
+*   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.4-2
+-	Updated dependencies after repackaging openjdk.
 *   Wed Aug 12 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
 -   Added maven ant tasks
 *	Fri May 22 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4

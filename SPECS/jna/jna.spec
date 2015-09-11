@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.1.0
-Release:	0%{?dist}
+Release:	1%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -10,8 +10,8 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
 %define sha1 jna=c520c1be533619d3cbc3ad448d49a8f24ee60bda
-Requires: openjdk >= 1.8.0.45
-BuildRequires: openjdk >= 1.8.0.45, apache-ant >= 1.9.4
+Requires: openjre >= 1.8.0.45
+BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.4
 
 %define _prefix /opt/jna-4.1.0
 
@@ -63,5 +63,7 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+*   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.1.0-1
+-	Updated dependencies after repackaging openjdk. 
 *   Fri May 29 2015 Sriram Nambakam <snambakam@vmware.com> 4.1.0-0
 -   Initial commit

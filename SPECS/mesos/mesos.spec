@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.23.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -9,7 +9,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://mirror.sdunix.com/apache/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 mesos=05006a8a2752a089f40823d1c9ec795476ed0b93
-BuildRequires:	openjdk >= 1.8.0.45
+BuildRequires:	openjre >= 1.8.0.45
+BuildRequires:  openjdk >= 1.8.0.45
 BuildRequires:	curl
 BuildRequires:	apache-maven >= 3.3.3
 BuildRequires:	apr >= 1.5.2
@@ -25,7 +26,7 @@ Requires:	apr >= 1.5.2
 Requires:	apr-util >= 1.5.4
 Requires:	cyrus-sasl >= 2.1.26
 Requires:	expat
-Requires:	openjdk >= 1.8.0.45
+Requires:	openjre >= 1.8.0.45
 Requires:	subversion >= 1.8.13
 
 %description
@@ -80,6 +81,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
+-	Updated the dependencies after repackaging the openjdk. 
 *	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
 -	Move headers, pc, dev libs into devel pkg.
 *	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
