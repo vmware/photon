@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	7.0.63
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -10,7 +10,7 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://mirrors.gigenet.com/apache/tomcat/tomcat-7/v7.0.63/src/%{name}-%{version}.tar.gz
 %define sha1 apache-tomcat=ddd520f6df2414f10b6b0832dcacd7889f2dbff0
-Requires: openjdk >= 1.8.0.45
+Requires: openjre >= 1.8.0.45
 
 %define _prefix /opt/%{name}-%{version}
 %define _bindir %{_prefix}/bin
@@ -51,5 +51,7 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
+-	Updated dependency after repackaging openjdk. 
 *	Wed Jul 8 2015 Sriram Nambakam <snambakam@vmware.com> 7.0.63
 -	Initial build.	First version

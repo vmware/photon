@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -10,8 +10,8 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.0.15-src.tar.gz
 %define sha1 commons-daemon=ca6a448d1d214f714e214b35809a2117568970e3
-Requires: openjdk >= 1.8.0.45
-BuildRequires: openjdk >= 1.8.0.45, apache-ant >= 1.9.4
+Requires: openjre >= 1.8.0.45
+BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.4
 
 %define _prefix /opt/%{name}-%{version}
 %define _bindir %{_prefix}/bin
@@ -58,5 +58,7 @@ chmod -R 755 $DIST_DIR
 %{_prefix}/*.jar
 
 %changelog
+*   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-2
+-	Updated dependencies after repackaging openjdk. 
 *   Wed Jul 15 2015 Sriram Nambakam <snambakam@vmware.com> 1.0.15-1
 -   Initial commit

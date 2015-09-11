@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -9,7 +9,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source:	http://www.carfab.com/apachesoftware/zookeeper/stable/%{name}-%{version}.tar.gz
 %define sha1 zookeeper=2a9e53f5990dfe0965834a525fbcad226bf93474
-Requires: shadow, openjdk
+Requires: shadow
+Requires: openjre
 Provides: zookeeper
 %description
 ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. All of these kinds of services are used in some form or another by distributed applications. Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable. Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them ,which make them brittle in the presence of change and difficult to manage. Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
@@ -46,7 +47,7 @@ rm -rf %{buildroot}/%{name}-%{version}
 
 %pre
 getent group hadoop 2>/dev/null >/dev/null || /usr/sbin/groupadd -r hadoop
-/usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_share_dir} zookeeper 2> /dev/null || :
+/usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
 
 %post
 bash %{_prefix}/sbin/update-zookeeper-env.sh \
@@ -55,7 +56,7 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --log-dir=%{_var}/log/zookeeper \
        --pid-dir=%{_var}/run \
        --var-dir=%{_var}/zookeeper
--p /sbin/ldconfig
+/sbin/ldconfig
 
 %preun
 bash %{_prefix}/sbin/update-zookeeper-env.sh \
@@ -67,6 +68,8 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --uninstall
 
 %postun	-p /sbin/ldconfig
+/usr/sbin/userdel zookeeper
+
 %files
 %defattr(-,root,root)
 %attr(0755,root,hadoop) %{_var}/log/zookeeper
@@ -77,8 +80,9 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 %{_prefix}
 
 %changelog
-
+* 	Wed Sep 16 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.6-3
+-	Udating the dependency after repackaging the openjdk, fixed post scripts
 *	Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
         Adding ldconfig in post section.
-*       Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
+*   Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
         Initial build. First version	Initial build. First version
