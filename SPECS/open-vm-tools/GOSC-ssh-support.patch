@@ -1,0 +1,91 @@
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh gosc-scripts-modify/imc-shell/imgcust-scripts/ConfigFile.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/ConfigFile.sh	2015-09-15 11:21:08.091673000 -0700
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/ConfigFile.sh	2015-09-15 11:57:15.228528372 -0700
+@@ -851,6 +851,23 @@
+   echo "$val"
+ }
+ 
++# Retrieves remote user ssh-rsa public key for password less login as root.
++#
++# Args:
++#   None
++# Results:
++#   string: ssh rsa public key
++# Throws:
++#   Nothing
++ConfigFile_GetAdminSSHPubKey()
++{
++  local val='' # has to be declared before assigned
++
++  val=$(ConfigFile_GetOptionalNonEmptyString 'SSH|KEY')
++
++  echo "$val"
++}
++
+ # Retrieves whether to reset root password.
+ #
+ # Args:
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-09-15 11:21:08.091673000 -0700
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh	2015-09-15 12:22:11.649702436 -0700
+@@ -840,6 +840,7 @@
+   local resultVar=$1
+   local addrShowVar=$2
+   local tmpOvfEnvFile=$3
++  local sshKey=''
+ 
+   local formatResult= # unique name
+ 
+@@ -853,24 +854,6 @@
+ EOF
+ )
+ 
+-#  securitySshRsa=$(GetOvfPropertyValue 'security.ssh-rsa' $tmpOvfEnvFile)
+-  securitySshRsa=''
+-
+-  if [[ -n "$securitySshRsa" ]]; then
+-    if [[ "$securitySshRsa" != *ssh-rsa* ]]; then
+-      Debug "Appending 'ssh-rsa ' to the public key"
+-      securitySshRsa="ssh-rsa $securitySshRsa"
+-    fi
+-
+-    export formatResult=$formatResult$(${CAT} <<EOF
+-
+-
+-ssh_authorized_keys:
+-  - $securitySshRsa
+-EOF
+-)
+-  fi
+-
+   local adminPwd=$(ConfigFile_GetAdminPassword)
+ 
+   if [[ -n "$adminPwd" ]]; then
+@@ -888,6 +871,27 @@
+ )
+   fi
+ 
++  sshKey=$(ConfigFile_GetAdminSSHPubKey)
++  if [[ -n "$sshKey" ]]; then
++    if [[ -n "$adminPwd" ]]; then
++      export formatResult=$formatResult$(${CAT} <<EOF
++
++      ssh_authorized_keys:
++        - $sshKey
++EOF
++)
++    else
++      export formatResult=$formatResult$(${CAT} <<EOF
++
++users:
++    - name: root
++      ssh_authorized_keys:
++        - $sshKey
++EOF
++)
++    fi
++  fi
++
+   export formatResult=$formatResult$(${CAT} <<EOF
+ 
+ write_files:
