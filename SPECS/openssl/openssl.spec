@@ -75,13 +75,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
+%{_libdir}/*.so
 
 %files devel
 %{_includedir}/*
 %{_mandir}/man3*/*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
-%{_libdir}/*.so
+
 
 %files perl
 /%{_bindir}/c_rehash
