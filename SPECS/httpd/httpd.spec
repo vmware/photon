@@ -14,10 +14,13 @@ BuildRequires: openssl-devel
 BuildRequires: pcre-devel
 BuildRequires: apr
 BuildRequires: apr-util
+BuildRequires: apr-util-devel
+BuildRequires: openldap
 BuildRequires: expat
 Requires:   pcre
 Requires:   apr-util
 Requires:   openssl
+Requires:   openldap
 %description
 The Apache HTTP Server.
 
