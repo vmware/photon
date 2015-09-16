@@ -13,6 +13,7 @@ Requires:   	apr
 Requires:   	apr-util
 BuildRequires: 	apr
 BuildRequires: 	apr-util
+BuildRequires: 	apr-util-devel
 BuildRequires: 	sqlite-autoconf
 BuildRequires: 	libtool
 BuildRequires: 	expat
