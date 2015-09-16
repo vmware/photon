@@ -150,9 +150,9 @@ pkgtree:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i pkg -p $(pkg)
 
-jsontree:
+imgtree:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i json -f $(PHOTON_DATA_DIR)/build_install_options_$(json).json
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i json -f $(PHOTON_DATA_DIR)/build_install_options_$(img).json
 
 who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \

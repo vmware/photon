@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	9%{?dist}
+Release:	11%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -18,6 +18,8 @@ Patch3:         GOSC-return-code.patch
 Patch4:         GOSC-NFS-MOUNT.patch
 Patch5:         skipreboot.patch
 Patch6:         GOSC-counterBug.patch
+Patch7:         LighwaveHostPatch.patch
+Patch8:         GOSC-ssh-support.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -46,6 +48,8 @@ VmWare virtualization user mode tools
 %patch4 -p0
 %patch5 -p1
 %patch6 -p0
+%patch7 -p0
+%patch8 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -105,6 +109,10 @@ rm -f /sbin/mount.vmhgfs
 
 
 %changelog
+*       Tue Sep 15 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-11
+-       Adding ssh RSA public support for password-less login.
+*       Wed Sep 09 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-10
+-       Adding option to modify /etc/hosts for lightwave on optional basis.
 *       Wed Sep 09 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-9
 -       Fixing once in while issue related to customization failure.
 *       Wed Sep 02 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-8
