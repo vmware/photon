@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.2.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -92,7 +92,7 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop cpu_init_udelay=0 quiet
+photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet nordrand noreplace-smp cpu_init_udelay=0 noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 photon_linux=/boot/vmlinuz-esx-%{version}
 EOF
 
@@ -120,10 +120,15 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}-esx/build
 
 %changelog
-*   Fri Sep 4 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2-2
+*   Thu Sep 17 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-3
+-   More cmdline options to boot up faster (one of the is disable acpi).
+-   Compile out: pci hotplug, sched smt.
+-   Compile in kernel: vmware balloon & vmci, efi fb.
+-   Module for efi vars.
+*   Fri Sep 4 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-2
 -   Hardcoded poweroff (direct write to piix4), no ACPI is required.
 -   sd.c: Lower log level for "Assuming drive cache..." message.
-*   Tue Sep 1 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2-1
+*   Tue Sep 1 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-1
 -   Update to linux-4.2.0. Enable CONFIG_EFI
 *   Fri Aug 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-5
 -   Added MD/LVM/DM modules.
