@@ -14,6 +14,7 @@ BuildRequires:	curl
 BuildRequires:	apache-maven >= 3.3.3
 BuildRequires:	apr >= 1.5.2
 BuildRequires:	apr-util >= 1.5.4
+BuildRequires:	apr-util-devel >= 1.5.4
 BuildRequires:	subversion >= 1.8.13
 BuildRequires:	subversion-devel >= 1.8.13
 BuildRequires:	cyrus-sasl >= 2.1.26
