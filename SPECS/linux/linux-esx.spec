@@ -90,9 +90,10 @@ cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}
 cp -v .config            %{buildroot}/boot/config-esx-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 
+# TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet nordrand noreplace-smp cpu_init_udelay=0 noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
+photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet nordrand noreplace-smp cpu_init_udelay=0
 photon_linux=/boot/vmlinuz-esx-%{version}
 EOF
 
@@ -121,9 +122,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 
 %changelog
 *   Thu Sep 17 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-3
--   More cmdline options to boot up faster (one of the is disable acpi).
+-   Fix for 05- patch (SVGA mem size)
 -   Compile out: pci hotplug, sched smt.
--   Compile in kernel: vmware balloon & vmci, efi fb.
+-   Compile in kernel: vmware balloon & vmci.
 -   Module for efi vars.
 *   Fri Sep 4 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-2
 -   Hardcoded poweroff (direct write to piix4), no ACPI is required.
