@@ -14,6 +14,33 @@ make
 
 cd $PHOTON_IMG_OUTPUT_PATH
 
+DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-ova_uefi.raw`
+
+echo "Mapping device partition to loop device"
+kpartx -av $DISK_DEVICE
+
+DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
+
+echo "DISK_DEVICE=$DISK_DEVICE"
+echo "ROOT_PARTITION=/dev/mapper/${DEVICE_NAME}p2"
+
+rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-ova_uefi
+mkdir $PHOTON_IMG_OUTPUT_PATH/photon-ova_uefi
+
+mount -v -t ext4 /dev/mapper/${DEVICE_NAME}p2 $PHOTON_IMG_OUTPUT_PATH/photon-ova_uefi
+
+rm -f $PHOTON_IMG_OUTPUT_PATH/photon-ova_uefi/etc/systemd/system/multi-user.target.wants/cloud-*
+
+umount $PHOTON_IMG_OUTPUT_PATH/photon-ova_uefi
+
+echo "Deleting device map partition"
+kpartx -d $DISK_DEVICE
+
+rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-ova_uefi
+
+echo "Detaching loop device from raw disk"
+losetup -d $DISK_DEVICE
+
 $SRC_ROOT/tools/bin/vixdiskutil -convert $PHOTON_IMG_OUTPUT_PATH/photon-ova_uefi.raw -cap 16000 $PHOTON_IMG_OUTPUT_PATH/photon-ova-uefi.vmdk
 $SRC_ROOT/tools/bin/vixdiskutil -wmeta toolsVersion 2147483647 $PHOTON_IMG_OUTPUT_PATH/photon-ova-uefi.vmdk
 
