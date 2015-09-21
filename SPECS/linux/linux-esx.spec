@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.2.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -121,6 +121,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}-esx/build
 
 %changelog
+*   Mon Sep 21 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-4
+-   CDROM modules are added.
 *   Thu Sep 17 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-3
 -   Fix for 05- patch (SVGA mem size)
 -   Compile out: pci hotplug, sched smt.
