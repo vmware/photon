@@ -132,7 +132,9 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %{_sysconfdir}/*
 %ifarch x86_64
 /lib64/*
-%{_lib64dir}/*
+%{_lib64dir}/gconv/*
+%{_lib64dir}/audit/*
+%{_lib64dir}/*.so
 %else
 %{_lib}/*
 %endif
@@ -149,6 +151,10 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
 # /usr/bin/mtrace
+%ifarch x86_64
+%{_lib64dir}/*.a
+%{_lib64dir}/*.o
+%endif
 %{_includedir}/*
 
 %files lang
