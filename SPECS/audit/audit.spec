@@ -17,6 +17,7 @@ BuildRequires:	go
 BuildRequires:	tcp_wrappers-devel
 BuildRequires:	libcap-ng-devel
 BuildRequires:	swig
+BuildRequires:  e2fsprogs-devel
 Requires:	krb5
 Requires:	openldap
 Requires:	python2

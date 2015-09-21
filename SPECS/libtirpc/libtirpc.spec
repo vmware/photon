@@ -12,6 +12,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	krb5
 BuildRequires:	automake
+BuildRequires:  e2fsprogs-devel
 Requires:	krb5
 
 %description
