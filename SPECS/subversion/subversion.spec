@@ -1,7 +1,7 @@
 Summary:    	The Apache Subversion control system
 Name:       	subversion
 Version:    	1.8.13
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 License:    	Apache License 2.0
 URL:        	http://subversion.apache.org/
 Group:      	Utilities/System
@@ -42,7 +42,7 @@ make -j1 DESTDIR=%{buildroot} install
 %files
 %defattr(-,root,root)
 %{_bindir}/svn*
-%{_libdir}/libsvn_*
+%{_libdir}/libsvn_*.so.*
 %{_mandir}/*
 %lang(de) %{_datadir}/locale/de/LC_MESSAGES/subversion.mo
 %lang(es) %{_datadir}/locale/es/LC_MESSAGES/subversion.mo
@@ -59,9 +59,13 @@ make -j1 DESTDIR=%{buildroot} install
 
 %files devel
 %{_includedir}/*
+%{_libdir}/libsvn_*.*a
+%{_libdir}/libsvn_*.so
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Mon Sep 21 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-3
+-   Move .a, and .so files to devel pkg.
 *	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.13-2
 -	Move headers into devel pkg.
 *	Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 1.8.13-1
