@@ -1,6 +1,7 @@
 ![Photon](http://storage.googleapis.com/project-photon/vmw-logo-photon.svg "VMware Photon")
 
 [ ![Download](https://api.bintray.com/packages/vmware/photon/iso/images/download.svg) ](https://bintray.com/vmware/photon/iso/_latestVersion)
+[![Build Status](https://img.shields.io/travis/vmware/vca-cli.svg?style=plastic)](http://10.118.100.118:8083/job/Gerrit%20Test/)
 VMware Photon: Minimal Linux Container Host
 ===========================================
 
