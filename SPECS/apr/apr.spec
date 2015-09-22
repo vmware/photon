@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime
 Name:       apr
 Version:    1.5.2
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -12,6 +12,11 @@ Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
 %define	    aprver  1
 %description
 The Apache Portable Runtime.
+%package	devel
+Summary:	Header and development files
+Requires:	%{name} = %{version}
+%description	devel
+It contains the libraries and header files to create applications 
 
 %prep
 %setup -q
@@ -33,10 +38,23 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_libdir}/*
 %exclude %{_libdir}/debug
+%exclude %{_libdir}/*.la
+%exclude %{_libdir}/*.a
+%exclude %{_libdir}/*.so
+%exclude %{_libdir}/pkgconfig
 %{_bindir}/*
+
+%files	devel
+%defattr(-,root,root)
 %{_includedir}/*
+%{_libdir}/*.la
+%{_libdir}/*.a
+%{_libdir}/*.so
+%{_libdir}/pkgconfig
 
 %changelog
+*	Mon Sep 21 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 1.5.2-5
+-	Repacked to move the include files in devel package. 
 *   Wed Jul 15 2015 Sarah Choi <sarahc@vmware.com> 1.5.2-4
 -   Use aprver(=1) instead of version for mesos
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 1.5.2-3
