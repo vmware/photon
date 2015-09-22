@@ -1,7 +1,7 @@
 Summary:    	The Apache Subversion control system
 Name:       	subversion
 Version:    	1.8.13
-Release:    	3%{?dist}
+Release:    	4%{?dist}
 License:    	Apache License 2.0
 URL:        	http://subversion.apache.org/
 Group:      	Utilities/System
@@ -11,7 +11,7 @@ Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %define sha1 subversion=437cf662b7ed27d2254aa7ca334fdd74b49262ef
 Requires:   	apr
 Requires:   	apr-util
-BuildRequires: 	apr
+BuildRequires: 	apr-devel
 BuildRequires: 	apr-util
 BuildRequires: 	apr-util-devel
 BuildRequires: 	sqlite-autoconf
@@ -64,6 +64,8 @@ make -j1 DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+* 	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.13-4
+-	Updated build-requires after creating devel package for apr. 
 *   Mon Sep 21 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-3
 -   Move .a, and .so files to devel pkg.
 *	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.13-2
