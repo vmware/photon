@@ -1,14 +1,14 @@
 Summary:	Mesos
 Name:		mesos
-Version:	0.23.0
-Release:	3%{?dist}
+Version:	0.24.0
+Release:	1%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://mirror.sdunix.com/apache/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 mesos=05006a8a2752a089f40823d1c9ec795476ed0b93
+Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha1 mesos=8d9f09ca34478e0f021437d480f8ad5e0d426eba
 BuildRequires:	openjre >= 1.8.0.45
 BuildRequires:  openjdk >= 1.8.0.45
 BuildRequires:	curl
@@ -69,7 +69,6 @@ make DESTDIR=%{buildroot} install
 %{_sbindir}/mesos-*
 %{_libdir}/libmesos*
 %{_libexecdir}/mesos/mesos-*
-%{_libexecdir}/mesos/python/*
 %{_prefix}/etc/mesos/*
 %{_prefix}/share/mesos/*
 
@@ -77,10 +76,13 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 %{_libdir}/libfixed_resource_estimator*
 %{_libdir}/pkgconfig/mesos.pc
+%{_libdir}/python2.7/site-packages/*
 %{_prefix}/etc/mesos/*
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
+-	Upgrade to mesos 0.24.0
 *	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
 -	Updated the dependencies after repackaging the openjdk. 
 *	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
