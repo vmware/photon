@@ -1,7 +1,7 @@
 Summary:	DB-5.3.28
 Name:		db
 Version:	5.3.28
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Sleepycat License
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/%{name}-%{version}.tar.gz
@@ -11,6 +11,12 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 %description
 The Berkeley DB package contains programs and utilities used by many other applications for database related functions.
+
+%package	devel
+Summary:	Header and development files
+Requires:	%{name} = %{version}
+%description	devel
+It contains the libraries and header files to create applications 
 
 %package docs
 Summary: DB docs
@@ -36,17 +42,24 @@ popd
 find %{buildroot} -name '*.la' -delete
 %clean
 rm -rf %{buildroot}
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so
-%{_includedir}/*
 
 %files docs
 %defattr(-,root,root)
 %{_docdir}/%{name}-%{version}/*
 
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+
+
 %changelog
+* 	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 5.3.28-2
+-	Created devel sub-package. 
 *	Sun Jan 04 2015 Touseef Liaqat <tliaqat@vmware.com> 6.1.19-1
 -	Created separated docs package. First version
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 6.1.19-1
