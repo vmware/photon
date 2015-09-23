@@ -1,7 +1,7 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
 Version:	2.24.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
@@ -20,6 +20,13 @@ Group: Applications/System
 Requires: util-linux >= 2.24.1
 %description lang
 These are the additional language files of util-linux.
+
+%package devel
+Summary: Header and library files for util-linux
+Group: Development/Libraries
+Requires: util-linux >= 2.24.1
+%description devel
+These are the header and library files of util-linux.
 
 %prep
 %setup -q
@@ -44,10 +51,6 @@ find %{buildroot} -name '*.la' -delete
 /lib/*.so.*
 /sbin/*
 %{_bindir}/*
-%{_libdir}/*.so
-%{_libdir}/*.a
-%{_libdir}/pkgconfig/*.pc
-%{_includedir}/*
 %{_sbindir}/*
 %{_mandir}/*/*
 %{_datadir}/bash-completion/completions/*
@@ -56,7 +59,15 @@ find %{buildroot} -name '*.la' -delete
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
+%files devel
+%{_libdir}/*.a
+%{_libdir}/pkgconfig/*.pc
+%{_libdir}/*.so
+%{_includedir}/*
+
 %changelog
+*   Wed Sep 23 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24.1-3
+-   Move .a, .so and config files to devel package.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.24.1-2
 -   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1

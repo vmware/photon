@@ -90,6 +90,9 @@ class ToolChainUtils(object):
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
+                    if package == "util-linux-devel":
+                        self.logger.info("No old verion of util-linux-devel exists, skip until the new version is built")
+                        continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             rpmFiles += " " + rpmFile
@@ -198,6 +201,9 @@ class ToolChainUtils(object):
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
+                    if package == "util-linux-devel":
+                        self.logger.info("No old verion of util-linux-devel exists, skip until the new version is built")
+                        continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise "Input Error"
             rpmFiles += " " + rpmFile
