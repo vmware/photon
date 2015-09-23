@@ -1,7 +1,7 @@
 Summary:	Netlink Protocol Library Suite
 Name:		libnl
 Version:	3.2.25
-Release:	1%{?dist}
+Release:	2%{?dist}
 License: 	LGPLv2+
 Group: 		System Environment/Libraries
 URL:		http://www.infradead.org/~tgr/libnl/
@@ -10,7 +10,7 @@ Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	glib-devel
-BuildRequires:	dbus
+BuildRequires:	dbus-devel
 Requires:	glib
 Requires:	dbus
 
@@ -54,5 +54,7 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.25-2
+-	Updated build-requires after creating devel package for dbus. 
 *	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 3.2.25-1
 -	Initial build.
