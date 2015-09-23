@@ -13,6 +13,7 @@ BuildRequires:	openjre >= 1.8.0.45
 BuildRequires:  openjdk >= 1.8.0.45
 BuildRequires:	curl
 BuildRequires:	apache-maven >= 3.3.3
+BuildRequires:	apr-devel >= 1.5.2
 BuildRequires:	apr >= 1.5.2
 BuildRequires:	apr-util >= 1.5.4
 BuildRequires:	apr-util-devel >= 1.5.4
