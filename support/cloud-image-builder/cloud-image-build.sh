@@ -45,7 +45,6 @@ fi
 PASSWORD=`date | md5sum | cut -f 1 -d ' '`
 sed -i "s/PASSWORD/$PASSWORD/" $VMDK_CONFIG_SAFE_FILE
 
-echo $ADDITIONAL_RPMS_PATH
 if [ -n "$ADDITIONAL_RPMS_PATH" ]
   then
     mkdir $PHOTON_STAGE_PATH/RPMS/additonal
@@ -77,12 +76,22 @@ cp $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow $PHOTON_IMG_OUTPUT_PATH
 sed -e "s/^\(root:\)[^:]*:/\1*:/" $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak > $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow-
+
+mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
+mount -o bind /dev $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
+mount -o bind /dev/pts $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
+mount -o bind /sys $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/sys
+if [ -n "$ADDITIONAL_RPMS_PATH" ]
+  then
+    mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/additional_rpms
+    mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/var/run
+    cp -f $PHOTON_STAGE_PATH/RPMS/additonal/* $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/additional_rpms/
+    chroot $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME} /bin/bash -c "rpm -i /additional_rpms/*"
+fi
+
 if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
   then
-    mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
-    mount -o bind /dev $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
-    mount -o bind /dev/pts $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
-    mount -o bind /sys $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/sys
+
     if [ $IMG_NAME = "gce" ]
       then
         cp ntpd.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
@@ -104,11 +113,11 @@ if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
     chroot $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME} /bin/bash -c "/$IMG_NAME-patch.sh"
     rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/$IMG_NAME-patch.sh
 
-    umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/sys
-    umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
-    umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
-    umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
 fi
+umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/sys
+umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
+umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
+umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
 umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 
 echo "Deleting device map partition"
