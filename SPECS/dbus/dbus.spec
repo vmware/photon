@@ -1,7 +1,7 @@
 Summary:	DBus for systemd
 Name:		dbus
 Version:	1.8.8
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File
@@ -17,6 +17,13 @@ Requires:	systemd
 Requires:	xz
 %description
 The dbus package contains dbus.
+
+%package	devel
+Summary:	Header and development files
+Requires:	%{name} = %{version}
+%description	devel
+It contains the libraries and header files to create applications 
+
 %prep
 %setup -q
 %build
@@ -37,7 +44,7 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %defattr(-,root,root)
 /etc/*
 %{_libdir}/dbus-1.0/include/dbus/*
-%{_libdir}/pkgconfig/*.pc
+#%{_libdir}/pkgconfig/*.pc
 %{_oldincludedir}/*
 %{_bindir}/*
 %{_lib}/*
@@ -46,7 +53,22 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %{_docdir}/*
 %{_sharedstatedir}/*
 %exclude %{_libdir}/debug/*
+%exclude %{_libdir}/*.la
+%exclude %{_libdir}/*.a
+%exclude %{_libdir}/*.so
+%exclude %{_libdir}/pkgconfig/*.pc
+
+%files	devel
+%defattr(-,root,root)
+%{_includedir}/*
+%{_libdir}/pkgconfig/*.pc
+%{_libdir}/*.la
+%{_libdir}/*.a
+%{_libdir}/*.so
+
 %changelog
+*	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.8-4
+-	Created devel sub-package
 *   Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 1.8.8-3
 -   Remove debug files.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.8.8-2
