@@ -1,5 +1,5 @@
 .encoding = "UTF-8"
-virtualHW.version = "10"
+virtualHW.version = "13"
 scsi0.present = "TRUE"
 scsi0.virtualDev = "pvscsi"
 scsi0:0.present = "TRUE"
@@ -18,8 +18,6 @@ ide1:0.autodetect = "TRUE"
 ide1:0.deviceType = "cdrom-raw"
 ide1:0.startConnected = "FALSE"
 firmware = "efi"
-pciBridge5.present = "FALSE"
-pciBridge6.present = "FALSE"
-pciBridge7.present = "FALSE"
+
 
 
