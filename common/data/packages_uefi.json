@@ -1,4 +1,4 @@
 {
-    "packages":["mesos"]
+    "packages":["mesos","nfs-utils"]
 }
 
