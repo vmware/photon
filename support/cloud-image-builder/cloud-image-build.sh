@@ -16,7 +16,9 @@ IMG_NAME=$2
 SRC_ROOT=$3
 GENERATED_DATA_PATH=$4
 PHOTON_STAGE_PATH=$5
-ADDITIONAL_RPMS_PATH=$6
+PHOTON_ISO_PATH=$6
+ADDITIONAL_RPMS_PATH=$7
+
 INSTALLER_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
 
 PHOTON_IMG_OUTPUT_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
@@ -131,5 +133,27 @@ losetup -d $DISK_DEVICE
 
 cd $IMG_NAME
 ./mk-$IMG_NAME-image.sh $PHOTON_STAGE_PATH/$IMG_NAME $SRC_ROOT
+
+ISO_MOUNT_FOLDER=$PHOTON_STAGE_PATH/iso_mount
+
+mkdir -p $ISO_MOUNT_FOLDER
+
+mount -o loop $PHOTON_ISO_PATH $ISO_MOUNT_FOLDER
+
+# Trying to uncompress initrd image to get /usr/src/photon folder
+cp -R $ISO_MOUNT_FOLDER/isolinux/initrd.img /tmp/initrd.gz
+
+gunzip /tmp/initrd.gz
+cd /tmp
+
+cpio -id < initrd
+
+cp installer/boot/initrd.img-no-kmods /boot
+
+rm -rf /tmp/initrd*
+
+rm -rf /tmp/installer
+
+umount $ISO_MOUNT_FOLDER 
 
 exit 0
