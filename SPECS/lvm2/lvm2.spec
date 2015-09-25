@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.116
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
 %define sha1 LVM2=5bd2f4c33cdf93e580ea5b8a64bc32cd77be078e
+Source1:	lvm2-activate.service
 Patch0:		lvm2-set-default-preferred_names.patch
 Patch1:		lvm2-enable-lvmetad-by-default.patch
 Patch2:		lvm2-remove-mpath-device-handling-from-udev-rules.patch
@@ -21,6 +22,7 @@ BuildRequires:	systemd
 BuildRequires:	thin-provisioning-tools
 Requires:	device-mapper-libs = %{version}-%{release}
 Requires:	device-mapper-event-libs = %{version}-%{release}
+Requires:	device-mapper = %{version}-%{release}
 
 %description
 LVM2 includes all of the support for handling read/write operations on
@@ -183,9 +185,16 @@ make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
-
+make install_system_dirs DESTDIR=%{buildroot}
+make install_systemd_units DESTDIR=%{buildroot}
+make install_systemd_generators DESTDIR=%{buildroot}
+make install_tmpfiles_configuration DESTDIR=%{buildroot}
+cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 %post
 /sbin/ldconfig
+systemctl enable lvm2-lvmetad.service
+systemctl enable lvm2-monitor.service
+systemctl enable lvm2-activate.service
 
 %postun
 /sbin/ldconfig
@@ -240,6 +249,8 @@ make install DESTDIR=%{buildroot}
 %defattr(-,root,root,-)
 %attr(555, -, -) %{_sbindir}/dmeventd
 %{_mandir}/man8/dmeventd.8.gz
+/lib/systemd/system/dm-event.service
+/lib/systemd/system/dm-event.socket
 
 %files -n device-mapper-event-libs
 %defattr(555,root,root,-)
@@ -358,7 +369,18 @@ make install DESTDIR=%{buildroot}
 /usr/share/man/man8/vgs.8.gz
 /usr/share/man/man8/vgscan.8.gz
 /usr/share/man/man8/vgsplit.8.gz
+/lib/systemd/system-generators/lvm2-activation-generator
+/lib/systemd/system/blk-availability.service
+/lib/systemd/system/lvm2-lvmetad.service
+/lib/systemd/system/lvm2-lvmetad.socket
+/lib/systemd/system/lvm2-monitor.service
+/lib/systemd/system/lvm2-activate.service
+/lib/systemd/system/lvm2-pvscan@.service
+/usr/lib/tmpfiles.d/lvm2.conf
+/usr/share/man/man8/lvm2-activation-generator.8.gz
 %changelog
+* Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
+- Packaging systemd service and configuration files
 * Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
 - Initial version
 
