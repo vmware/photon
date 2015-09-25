@@ -93,7 +93,7 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet nordrand noreplace-smp cpu_init_udelay=0
+photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet nordrand noreplace-smp cpu_init_udelay=0  plymouth.enable=0
 photon_linux=/boot/vmlinuz-esx-%{version}
 EOF
 

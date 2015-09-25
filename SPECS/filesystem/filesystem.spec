@@ -328,7 +328,7 @@ DISTRIB_DESCRIPTION="VMware Photon 1.0 TP2"
 EOF
 
 cat > %{buildroot}/usr/lib/os-release <<- "EOF"
-NAME=VMware Photon
+NAME="VMware Photon"
 VERSION="1.0 TP2"
 ID=photon
 VERSION_ID=1.0
