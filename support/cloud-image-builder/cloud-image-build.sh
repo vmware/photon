@@ -16,7 +16,9 @@ IMG_NAME=$2
 SRC_ROOT=$3
 GENERATED_DATA_PATH=$4
 PHOTON_STAGE_PATH=$5
-ADDITIONAL_RPMS_PATH=$6
+PHOTON_ISO_PATH=$6
+ADDITIONAL_RPMS_PATH=$7
+
 INSTALLER_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
 
 PHOTON_IMG_OUTPUT_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
@@ -88,6 +90,29 @@ if [ -n "$ADDITIONAL_RPMS_PATH" ]
     cp -f $PHOTON_STAGE_PATH/RPMS/additonal/* $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/additional_rpms/
     chroot $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME} /bin/bash -c "rpm -i /additional_rpms/*"
 fi
+
+
+ISO_MOUNT_FOLDER=$PHOTON_STAGE_PATH/iso_mount
+
+mkdir -p $ISO_MOUNT_FOLDER
+
+mount -o loop $PHOTON_ISO_PATH $ISO_MOUNT_FOLDER
+
+# Trying to uncompress initrd image to get /usr/src/photon folder
+cp -R $ISO_MOUNT_FOLDER/isolinux/initrd.img /tmp/initrd.gz
+
+gunzip /tmp/initrd.gz
+cd /tmp
+
+cpio -id < initrd
+
+cp installer/boot/initrd.img-no-kmods $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/boot/initrd.img-no-kmods
+
+rm -rf /tmp/initrd*
+
+rm -rf /tmp/installer
+
+umount $ISO_MOUNT_FOLDER 
 
 if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
   then
