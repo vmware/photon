@@ -3,7 +3,7 @@
 	"password": 
 		{
 			"crypted": false,
-			"text": "PASSWORD"
+			"text": "changeme"
 		},
 	"type": "uefi",
     "size": {"root": "8", "swap": "0"},
