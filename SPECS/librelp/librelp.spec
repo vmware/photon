@@ -10,6 +10,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	gnutls-devel
+BuildRequires:	autogen
 Requires:	gnutls
 Requires:	gmp
 %description

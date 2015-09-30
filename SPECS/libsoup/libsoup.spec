@@ -19,6 +19,7 @@ BuildRequires:   python2-libs
 BuildRequires:   python2-devel
 BuildRequires:   python2-tools
 BuildRequires:   glib-networking
+BuildRequires:   autogen
 Requires:        libxml2
 Requires:        glib-networking
 

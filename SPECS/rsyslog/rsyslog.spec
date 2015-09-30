@@ -15,6 +15,7 @@ BuildRequires:	json-c-devel
 BuildRequires:	libgcrypt-devel
 BuildRequires:	liblogging-devel
 BuildRequires:	librelp-devel
+BuildRequires:  autogen
 Requires:	systemd
 Requires:	libestr
 Requires:	json-c
