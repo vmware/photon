@@ -10,7 +10,7 @@ Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.45/%{name}-%{version}.tar.xz
 %define sha1 glib-networking=e6e17d1d6ed86a99db228fcf3ea1bd7f844a0cb5
 BuildRequires:	nettle-devel
-BuildRequires:	autogen-devel
+BuildRequires:	autogen-libopts-devel
 BuildRequires:	libtasn1-devel
 BuildRequires:	ca-certificates
 BuildRequires:  gnutls-devel
@@ -20,7 +20,7 @@ BuildRequires:  glib
 BuildRequires:  glib-devel
 BuildRequires:  glib-schemas
 Requires:	nettle
-Requires:	autogen
+#Requires:	autogen-libopts
 Requires:   gnutls
 Requires:	libtasn1
 Requires:	openssl

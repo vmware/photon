@@ -2,7 +2,7 @@
     "packages":["google-daemon", "google-startup-scripts","autogen","cronie","gc","gnutls","guile",
 		"json-c","libestr","libgcrypt","liblogging","librelp","libtasn1","libunistring","nettle","rsyslog",
 		"device-mapper-multipath","NetworkManager","NetworkManager-devel","dbus-glib","libndp","libnl",
-		"dbus-glib-devel","libndp-devel","libnl-devel","logrotate","kpartx","autogen-devel","gc-devel",
+		"dbus-glib-devel","libndp-devel","libnl-devel","logrotate","kpartx","autogen-libopts", "autogen-libopts-devel","gc-devel",
 		"gnutls-devel","guile-devel","json-c-devel","libestr-devel","libgcrypt-devel","liblogging-devel",
 		"librelp-devel","libtasn1-devel","libunistring-devel","nettle-devel",
 	        "apache-ant","ant-contrib","apache-maven","apache-tomcat","jna","gnome-common","libgudev",

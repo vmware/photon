@@ -10,7 +10,6 @@ Distribution:	Photon
 Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
 %define sha1 postgresql=e295fee0f1bace740b2db1eaa64ac060e277d5a7
 Requires:	openssl
-Requires:	perl
 Requires: 	python2
 BuildRequires: 	perl
 BuildRequires:	python2

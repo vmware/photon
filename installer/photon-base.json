@@ -15,6 +15,8 @@
 
     "bootstrap_packages": ["filesystem"],
 
+    "documentation": false,
+
     "packages": ["glibc", "zlib", "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp",
                 "pkg-config", "ncurses", "bash", "bzip2", "cracklib", "cracklib-dicts", "shadow",
                 "procps-ng", "iana-etc", "readline", "coreutils", "bc", "libtool", "inetutils",
