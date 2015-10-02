@@ -90,7 +90,7 @@ cp -v .config            %{buildroot}/boot/config-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rootfstype=ext4 ro loglevel=3 quiet
+photon_cmdline=init=/lib/systemd/systemd rootfstype=ext4 ro loglevel=3 quiet plymouth.enable=0
 photon_linux=/boot/vmlinuz-%{version}
 photon_initrd=/boot/initrd.img-no-kmods
 EOF

@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -72,6 +72,7 @@ for tool in runlevel reboot shutdown poweroff halt telinit; do
 done
 ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
 rm -f %{buildroot}%{_var}/log/README
+mkdir -p %{buildroot}%{_localstatedir}/log/journal
 
 #cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
@@ -92,9 +93,12 @@ rm -rf %{buildroot}/*
 /sbin/*
 %{_includedir}/*
 %{_datadir}/*
+%dir %{_localstatedir}/log/journal
 
 
 %changelog
+*	Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 216-11
+-	Packaging journal log directory
 *	Tue Sep 10 2015 Alexey Makhalov <amakhalov@vmware.com> 216-10
 -	Improve enoX renaming in VMware HV case. Patch is added.
 *	Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
