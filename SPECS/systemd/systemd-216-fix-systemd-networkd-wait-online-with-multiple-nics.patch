@@ -1,0 +1,29 @@
+Submitted By:            Yuya Kusakabe <kusakabe.yuya@nifty.co.jp>
+Date:                    2015-04-25
+Initial Package Version: 216
+Upstream Status:         Not applicable
+Origin:                  Based on mischief's patch at
+  http://lists.freedesktop.org/archives/systemd-devel/2015-March/029858.html
+Description:             when checking interface status, systemd-networkd-wait-online
+                         will continue to wait if any interface is still configuring or
+                         being processed by udev. this patch allows it to return if any
+                         one interface is degraded/routable, as per the manual.
+
+--- a/src/network/networkd-wait-online-manager.c	2014-07-22 07:37:55.858846879 +0900
++++ b/src/network/networkd-wait-online-manager.c	2015-04-25 19:42:04.636202190 +0900
+@@ -57,13 +57,13 @@
+                 if (!l->state) {
+                         log_debug("link %s has not yet been processed by udev",
+                                   l->ifname);
+-                        return false;
++                        continue;
+                 }
+ 
+                 if (streq(l->state, "configuring")) {
+                         log_debug("link %s is being processed by networkd",
+                                   l->ifname);
+-                        return false;
++                        continue;
+                 }
+ 
+                 if (l->operational_state &&
