@@ -137,6 +137,7 @@ if __name__ == '__main__':
             parser.error("Incorrect arguments")
         config = {}
         config['iso_system'] = True
+        config['vmdk_install'] = False
 
     elif options.vmdk_path:
         # Check the arguments
@@ -164,6 +165,7 @@ if __name__ == '__main__':
         config = (JsonWrapper(args[0])).read()
 
         config['iso_system'] = False
+        config['vmdk_install'] = False
 
     if 'password' in config:
         # crypt the password if needed

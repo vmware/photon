@@ -287,7 +287,7 @@ class Installer(object):
             # remove the installer directory
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
-        else:
+        elif not self.install_config['vmdk_install']:
             #Build the initramfs by passing in the kernel version
             version_string = ''	
             for root, dirs, files in os.walk(self.rpm_path):
