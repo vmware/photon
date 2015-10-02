@@ -18,6 +18,8 @@ GENERATED_DATA_PATH=$4
 PHOTON_STAGE_PATH=$5
 ADDITIONAL_RPMS_PATH=$6
 INSTALLER_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
+PHOTON_ISO_PATH=$PHOTON_STAGE_PATH/photon.iso
+ISO_MOUNT_FOLDER=$PHOTON_STAGE_PATH/iso_mount
 
 PHOTON_IMG_OUTPUT_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
 
@@ -69,6 +71,8 @@ echo "ROOT_PARTITION=/dev/mapper/${DEVICE_NAME}p2"
 rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 
+mkdir -p $ISO_MOUNT_FOLDER
+mount -o loop $PHOTON_ISO_PATH $ISO_MOUNT_FOLDER
 mount -v -t ext4 /dev/mapper/${DEVICE_NAME}p2 $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/installer
 rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/LOGS
@@ -87,11 +91,22 @@ if [ -n "$ADDITIONAL_RPMS_PATH" ]
     mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/var/run
     cp -f $PHOTON_STAGE_PATH/RPMS/additonal/* $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/additional_rpms/
     chroot $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME} /bin/bash -c "rpm -i /additional_rpms/*"
+    rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/additional_rpms/
 fi
 
 if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
   then
-
+    #Copy the initrd image
+    rm -rf /tmp/initrd*
+    rm -rf /tmp/installer
+    cp $ISO_MOUNT_FOLDER/isolinux/initrd.img /tmp/initrd.gz
+    gunzip /tmp/initrd.gz
+    cd /tmp
+    cpio -id < initrd
+    cp /tmp/installer/boot/initrd.img* $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/boot/
+    rm -rf /tmp/initrd*
+    rm -rf /tmp/installer
+    cd $BUILD_SCRIPTS_PATH
     if [ $IMG_NAME = "gce" ]
       then
         cp ntpd.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
@@ -119,6 +134,8 @@ umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
 umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
 umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
 umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
+umount $ISO_MOUNT_FOLDER
+rm -rf $ISO_MOUNT_FOLDER
 
 echo "Deleting device map partition"
 kpartx -d $DISK_DEVICE
