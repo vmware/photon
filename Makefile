@@ -313,15 +313,12 @@ clean: clean-install clean-chroot
 clean-install:
 	@echo "Cleaning installer working directory..."
 	@if [ -d $(PHOTON_STAGE)/photon_iso ]; then \
-		cd $(PHOTON_INSTALLER_DIR) && \
-		$(PHOTON_INSTALLER_DIR)/mk-unmount-disk.sh -w $(PHOTON_STAGE)/photon_iso && \
-		$(RMDIR) $(PHOTON_STAGE)/photon_iso; \
+		$(PHOTON_CHROOT_CLEANER) $(PHOTON_STAGE)/photon_iso; \
 	fi
 
 clean-chroot:
 	@echo "Cleaning chroot path..."
 	@if [ -d $(PHOTON_CHROOT_PATH) ]; then \
-		cd $(PHOTON_PKG_BUILDER_DIR) && \
 		$(PHOTON_CHROOT_CLEANER) $(PHOTON_CHROOT_PATH); \
 	fi
 
