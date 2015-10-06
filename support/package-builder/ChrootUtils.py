@@ -33,7 +33,7 @@ class ChrootUtils(object):
         # need to add timeout for this step
         # http://stackoverflow.com/questions/1191374/subprocess-with-timeout
         cmdUtils=CommandUtils()
-        returnVal=cmdUtils.runCommandInShell("./cleanup-build-root.sh "+chrootID)
+        returnVal=cmdUtils.runCommandInShell("./clean-up-chroot.py "+chrootID)
         if not returnVal:
             self.logger.error("Unable to destroy chroot:"+ chrootID +".Unknown error.")
             return False
