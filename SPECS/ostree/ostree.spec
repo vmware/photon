@@ -28,7 +28,6 @@ Requires:   mkinitcpio
 Requires:   dracut
 Requires:   dracut-tools
 Requires:   libarchive
-Requires:   libarchive-devel
 BuildRequires:	attr
 BuildRequires:	python2-libs
 BuildRequires:	python2

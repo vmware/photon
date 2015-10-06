@@ -27,11 +27,11 @@ BuildRequires: 	gobject-introspection-python
 BuildRequires:	openssl-devel
 
 Requires:       openssl
-Requires:       librepo-devel
+Requires:       librepo
 Requires: 	libsolv
 Requires: 	gobject-introspection
-Requires: 	hawkey-devel
-Requires: 	rpm-devel
+Requires: 	hawkey
+Requires: 	rpm
 Requires: 	glib >= 2.16.1
 
 %description
