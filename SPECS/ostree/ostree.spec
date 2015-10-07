@@ -35,7 +35,7 @@ BuildRequires:	gobject-introspection
 BuildRequires:	gobject-introspection-devel
 BuildRequires:	gobject-introspection-python
 BuildRequires:  gpgme-devel
-BuildRequires:  libcap
+BuildRequires:  libcap-devel
 BuildRequires:  libsoup
 BuildRequires:  libsoup-devel
 BuildRequires:  mkinitcpio

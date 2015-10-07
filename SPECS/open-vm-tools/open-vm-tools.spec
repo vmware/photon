@@ -23,8 +23,8 @@ Patch8:         GOSC-ssh-support.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
-BuildRequires: 	libdnet
-BuildRequires: 	libmspack
+BuildRequires: 	libdnet-devel
+BuildRequires: 	libmspack-devel
 BuildRequires:	Linux-PAM
 BuildRequires:	openssl-devel
 BuildRequires:	procps-ng-devel

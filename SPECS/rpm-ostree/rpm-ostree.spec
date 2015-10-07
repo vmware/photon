@@ -17,7 +17,7 @@ BuildRequires: libtool
 BuildRequires: git
 BuildRequires: json-glib-devel
 BuildRequires: gtk-doc
-BuildRequires: libcap
+BuildRequires: libcap-devel
 BuildRequires: ostree-devel
 BuildRequires: libgsystem
 BuildRequires: docbook-xsl
