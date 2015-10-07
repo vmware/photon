@@ -31,6 +31,8 @@ def main():
     parser.add_option("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
     parser.add_option("-d",  "--dist", dest="dist",  default="")
     parser.add_option("-k",  "--input-RPMS-path", dest="inputRPMSPath",   default=None)
+    parser.add_option("-n",  "--build-number", dest="buildNumber",  default="0000000")
+    parser.add_option("-v",  "--release-version", dest="releaseVersion",  default="NNNnNNN")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
