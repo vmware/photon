@@ -13,7 +13,7 @@ BuildArchitectures: x86_64
 Requires: 	bash
 Requires: 	libcap
 BuildRequires: 	cmake
-BuildRequires: 	libcap
+BuildRequires: 	libcap-devel
 BuildRequires: 	bzip2-devel
 %description
 The Cdrtools package contains CD recording utilities. These are useful for reading, creating or writing (burning) Compact Discs.
