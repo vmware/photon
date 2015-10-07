@@ -6,6 +6,8 @@ class constants(object):
     rpmPath=""
     logPath=""
     dist=""
+    buildNumber="0000000"
+    releaseVersion="NNNnNNN"
     topDirPath=""
     specData=None
     buildRootPath="/mnt"
@@ -52,6 +54,8 @@ class constants(object):
     @staticmethod
     def initialize(options):
         constants.dist = options.dist
+        constants.buildNumber = options.buildNumber
+        constants.releaseVersion = options.releaseVersion
         constants.specPath = options.specPath
         constants.sourcePath = options.sourcePath
         constants.rpmPath = options.rpmPath
