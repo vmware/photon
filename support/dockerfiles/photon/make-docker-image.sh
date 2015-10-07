@@ -14,7 +14,7 @@ MAIN_PACKAGE=$1
 
 
 TEMP_CHROOT=$(pwd)/temp_chroot
-ROOTFS_TAR_FILENAME=photon-rootfs.tar.bz2
+ROOTFS_TAR_FILENAME=photon-rootfs-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).tar.bz2
 STAGE_DIR=$(pwd)/stage
 
 sudo createrepo $STAGE_DIR/RPMS
@@ -79,7 +79,9 @@ rm -rf var/log/*
 tar cpjf ../$ROOTFS_TAR_FILENAME .
 mkdir -p $STAGE_DIR
 mv ../$ROOTFS_TAR_FILENAME $STAGE_DIR/
-
+cd $STAGE_DIR
+ln -s $ROOTFS_TAR_FILENAME photon-rootfs.tar.bz2
+cd $TEMP_CHROOT
 cd ..
 
 # cleanup

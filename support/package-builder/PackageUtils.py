@@ -24,6 +24,8 @@ class PackageUtils(object):
         
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOption = "-ba --clean"
+        self.rpmbuildBuildNum = '--define \\\"photon_build_number %s\\\"' % constants.buildNumber
+        self.rpmbuildReleaseVer = '--define \\\"photon_release_version %s\\\"' % constants.releaseVersion
         self.rpmbuildNocheckOption = "--nocheck"
         self.rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
         self.queryRpmPackageOptions = "-qa"
@@ -154,10 +156,12 @@ class PackageUtils(object):
     def buildRPM(self,specFile,logFile,chrootCmd):
         
         rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildNocheckOption +" "+self.rpmbuildDistOption
+        rpmBuildcmd+=" "+self.rpmbuildBuildNum+" "+self.rpmbuildReleaseVer
         rpmBuildcmd+=" "+specFile
         
         cmdUtils = CommandUtils()
         self.logger.info("Building rpm....")
+        self.logger.info(rpmBuildcmd)
         returnVal = cmdUtils.runCommandInShell(rpmBuildcmd, logFile, chrootCmd)
         if not returnVal:
             self.logger.error("Building rpm is failed "+specFile)
