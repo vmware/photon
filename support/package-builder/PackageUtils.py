@@ -246,7 +246,7 @@ class PackageUtils(object):
         returnVal = cmdUtils.runCommandInShell(cpcmd, logFile)
         if not returnVal:
             self.logger.error("Error during copying the file adjust gcc spec")
-            raise "Failed while copying adjust gcc spec file"
+            raise Exception("Failed while copying adjust gcc spec file")
         returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
         if returnVal:
             return
@@ -256,4 +256,4 @@ class PackageUtils(object):
         self.logger.debug(cmdUtils.runCommandInShell2("ps ax"))
 
         self.logger.error("Failed while adjusting gcc specs")
-        raise "Failed while adjusting gcc specs"
+        raise Exception("Failed while adjusting gcc specs")
