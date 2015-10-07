@@ -13,7 +13,7 @@ Source1:	http://www.linuxfromscratch.org/blfs/downloads/svn/blfs-bootscripts-201
 %define sha1 blfs-bootscripts=762b68f79f84463a6b1dabb69e9dbdc2c43f32d8
 Requires:	libcap >= 2.24
 BuildRequires:	which
-BuildRequires:	libcap
+BuildRequires:	libcap-devel >= 2.24
 Requires:	shadow
 
 %description
