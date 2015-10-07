@@ -66,7 +66,7 @@ class ToolChainUtils(object):
         retval = process.wait()
         if retval != 0:
             self.logger.error("Installing filesystem rpm failed")
-            raise "RPM installation failed"
+            raise Exception("RPM installation failed")
         
         prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID
         logFile=constants.logPath+"/prepareBuildRoot.log"
@@ -94,7 +94,7 @@ class ToolChainUtils(object):
                         self.logger.info("No old verion of util-linux-devel exists, skip until the new version is built")
                         continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
-                    raise "Input Error"
+                    raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package
 
@@ -104,7 +104,7 @@ class ToolChainUtils(object):
         retval = process.wait()
         if retval != 0:
             self.logger.error("Installing toolchain rpms failed")
-            raise "RPM installation failed"
+            raise Exception("RPM installation failed")
         
         self.logger.info("Installed toolchain successfully on chroot:"+chrootID)
     
@@ -124,7 +124,7 @@ class ToolChainUtils(object):
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
             if rpmFile is None:
                 self.logger.error("Unable to find rpm "+ package)
-                raise "Input Error"
+                raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package
 
@@ -134,7 +134,7 @@ class ToolChainUtils(object):
         retval = process.wait()
         if retval != 0:
             self.logger.error("Installing toolchain rpms failed")
-            raise "RPM installation failed"
+            raise Exception("RPM installation failed")
             
         self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)    
     
@@ -205,7 +205,7 @@ class ToolChainUtils(object):
                         self.logger.info("No old verion of util-linux-devel exists, skip until the new version is built")
                         continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
-                    raise "Input Error"
+                    raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package
 
@@ -215,7 +215,7 @@ class ToolChainUtils(object):
         retval = process.wait()
         if retval != 0:
             self.logger.error("Installing tool chain  failed")
-            raise "RPM installation failed"
+            raise Exception("RPM installation failed")
             
         self.logger.info("Successfully installed all Tool Chain RPMS in Chroot:"+chrootID)    
     
