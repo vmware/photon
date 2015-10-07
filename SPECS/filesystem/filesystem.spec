@@ -1,12 +1,13 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	7.5
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 URL:		http://www.linuxfromscratch.org
 Distribution:	Photon
+
 %description
 The filesystem package is one of the basic packages that is installed
 on a Linux system. Filesystem contains the basic directory
@@ -319,19 +320,22 @@ EOF
 #
 #		chapter 9.1. The End
 #
-echo "VMware Photon Linux 1.0 TP2" > %{buildroot}/etc/photon-release
+
+echo "VMware Photon Linux %{photon_release_version}" > %{buildroot}/etc/photon-release
+echo "PHOTON_BUILD_NUMBER=%{photon_build_number}" >> %{buildroot}/etc/photon-release
+
 cat > %{buildroot}/etc/lsb-release <<- "EOF"
 DISTRIB_ID="VMware Photon"
-DISTRIB_RELEASE="1.0 TP2"
+DISTRIB_RELEASE="%{photon_release_version}"
 DISTRIB_CODENAME=Photon
-DISTRIB_DESCRIPTION="VMware Photon 1.0 TP2"
+DISTRIB_DESCRIPTION="VMware Photon %{photon_release_version}"
 EOF
 
 cat > %{buildroot}/usr/lib/os-release <<- "EOF"
 NAME="VMware Photon"
-VERSION="1.0 TP2"
+VERSION="%{photon_release_version}"
 ID=photon
-VERSION_ID=1.0
+VERSION_ID=%{photon_release_version} | cut -d- -f1
 PRETTY_NAME="VMware Photon/Linux"
 ANSI_COLOR="1;34"
 HOME_URL="https://vmware.github.io/photon/"
@@ -466,6 +470,8 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 /usr/local/lib64
 %endif
 %changelog
+*   Fri Oct 02 2015 Vinay Kulkarni <kulkarniv@vmware.com> 7.5-9
+-   Dump build-number and release version from macros.
 *   Fri Aug 14 2015 Sharath George <sharathg@vmware.com> 7.5-8
 -   upgrading release to TP2
 *   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 7.5-7

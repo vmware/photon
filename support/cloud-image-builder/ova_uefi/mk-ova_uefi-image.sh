@@ -55,9 +55,10 @@ sed -i '/vmw:value="efi"\/>/a \ \t<vmw:ExtraConfig ovf:required="false" vmw:key=
 sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-uefi.ovf
 
 openssl sha1 *.vmdk photon-ova-uefi.ovf > photon-ova-uefi.mf
-tar cf photon-ova-uefi.ova photon-ova-uefi.ovf photon-ova-uefi.mf photon-ova-uefi-disk1.vmdk
+tar cf photon-ova-uefi-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-ova-uefi.ovf photon-ova-uefi.mf photon-ova-uefi-disk1.vmdk
+cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-uefi-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
+cd $PHOTON_IMG_OUTPUT_PATH && ln -s photon-ova-uefi-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-ova-uefi.ova
 
-cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-uefi.ova $PHOTON_IMG_OUTPUT_PATH/
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp/
 
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-ova_uefi.raw

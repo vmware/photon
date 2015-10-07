@@ -28,10 +28,10 @@ sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp/photon-
 sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.ovf
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.mf
 openssl sha1 *.vmdk photon-ova.ovf > photon-ova.mf
-tar cf photon-ova.ova photon-ova.ovf photon-ova.mf photon-ova-disk1.vmdk
-
-cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.ova $PHOTON_IMG_OUTPUT_PATH/
+tar cf photon-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-ova.ovf photon-ova.mf photon-ova-disk1.vmdk
+cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
+ln -s photon-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-ova.ova
 rm -rf photon-custom
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-ova.raw`
 kpartx -av $DISK_DEVICE
@@ -70,9 +70,10 @@ sed -i "s/otherGuest/other3xLinux64Guest/g" $PHOTON_IMG_OUTPUT_PATH/temp1/photon
 sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0.0</Version> \n \t\t<FullVersion>1.0.0-TP2</FullVersion> \n \t</ProductSection> ' $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ovf
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.mf
 openssl sha1 *.vmdk photon-custom.ovf > photon-custom.mf
-tar cf photon-custom.ova photon-custom.ovf photon-custom.mf photon-custom-disk1.vmdk
-cp $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.ova $PHOTON_IMG_OUTPUT_PATH/
+tar cf photon-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-custom.ovf photon-custom.mf photon-custom-disk1.vmdk
+cp $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
+ln -s photon-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-custom.ova
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp/
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp1/
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-ova.raw
