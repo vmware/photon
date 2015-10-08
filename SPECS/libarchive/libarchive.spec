@@ -32,6 +32,9 @@ export CFLAGS="%{optflags}"
 
 make %{?_smp_mflags}
 
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 rm -rf %{buildroot}%{_infodir}
 make DESTDIR=%{buildroot} install
