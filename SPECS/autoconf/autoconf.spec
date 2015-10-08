@@ -22,6 +22,10 @@ automatically configure source code.
 	--prefix=%{_prefix} \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
