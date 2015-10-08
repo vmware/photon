@@ -99,6 +99,9 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure \
 
 make
 
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT/
