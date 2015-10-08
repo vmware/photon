@@ -29,6 +29,10 @@ sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 	--disable-nologin \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
 make DESTDIR=%{buildroot} install
