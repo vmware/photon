@@ -78,6 +78,10 @@ mv db-5.3.28 db
 	--with-lua \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
+%check
+make check
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
