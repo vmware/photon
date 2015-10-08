@@ -41,6 +41,9 @@ This package includes header files and libraries necessary for developing progra
 
 make %{?_smp_mflags}
 
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make install DESTDIR=%{buildroot}
 
