@@ -33,6 +33,10 @@ Headers and static libraries for the libnl
 	--sysconfdir=%{_sysconfdir} \
  
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 %post	-p /sbin/ldconfig
