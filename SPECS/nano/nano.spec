@@ -22,6 +22,10 @@ The Nano package contains a small, simple text editor
             --infodir=%{_infodir}/%{name}-%{version} \
             --docdir=%{_docdir}/%{name}-%{version}
 make
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 install -v -m644 %{_builddir}/%{name}-%{version}/doc/nanorc.sample %{_sysconfdir}

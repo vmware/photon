@@ -40,6 +40,10 @@ sed -i 's@DICTPATH.*@DICTPATH\t/usr/share/cracklib/pw_dict@' \
 	--with-group-name-max-length=32
 
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin

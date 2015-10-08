@@ -31,6 +31,10 @@ specially formatted comments from the code to create API documentation.
 %build
 ./configure --prefix=%{_prefix}
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
 %files

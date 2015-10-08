@@ -30,6 +30,10 @@ sed -i '/{OLDSUFF}/c:' support/shlib-install
 	--prefix=%{_prefix} \
 	--disable-silent-rules
 make SHLIB_LIBS=-lncurses
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}%{_lib}
