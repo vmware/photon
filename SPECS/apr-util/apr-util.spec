@@ -38,6 +38,9 @@ The Apache Portable Runtime Utility Library.
 
 make %{?_smp_mflags}
 
+%check
+make check
+
 %install
 make DESTDIR=%{buildroot} install
 rm %{buildroot}/usr/lib/libexpat.so
