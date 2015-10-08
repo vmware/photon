@@ -29,6 +29,10 @@ Static libraries and header files for the support library for lua
 sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
+
+%check
+make test
+
 %install
 make %{?_smp_mflags} \
 	INSTALL_TOP=%{buildroot}/usr TO_LIB="liblua.so \
