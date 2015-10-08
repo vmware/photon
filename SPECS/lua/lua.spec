@@ -30,6 +30,10 @@ sed -i '/#define LUA_ROOT/s:/usr/local/:/usr/:' src/luaconf.h
 sed -i 's/CFLAGS= -fPIC -O2 /CFLAGS= -fPIC -O2 -DLUA_COMPAT_MODULE /' src/Makefile
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
+
+%check
+make test
+
 %install
 make %{?_smp_mflags} \
 	INSTALL_TOP=%{buildroot}/usr TO_LIB="liblua.so \
