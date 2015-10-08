@@ -23,6 +23,9 @@ pinentry, SmartCard Daemon and possibly more in the future.
 ./configure --prefix=%{_prefix} --bindir=%{_bindir} --libdir=%{_libdir}
 make %{?_smp_mflags}
 
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 echo $%{_libdir}
