@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -76,7 +76,7 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 
 #cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
-
+find %{buildroot}%{_libdir} -name '*.la' -delete
 %post	-p /sbin/ldconfig
 %postun	
 /sbin/ldconfig
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*     Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 216-12
+-     Removing la files from packages.
 *	Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 216-11
 -	Packaging journal log directory
 *	Tue Sep 10 2015 Alexey Makhalov <amakhalov@vmware.com> 216-10
