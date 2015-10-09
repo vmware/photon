@@ -3,7 +3,7 @@
 Summary:	GRand Unified Bootloader
 Name:		grub2
 Version:	2.02
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grub
 Group:		Applications/System
@@ -11,6 +11,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
 %define sha1 grub=b2c9227f9a54587532ae3f727d197ab112cdbbb3
+Patch0:		Fix_to_boot_entries_with_out_password.patch
 BuildRequires:	device-mapper-devel
 BuildRequires:	xz-devel
 Requires:	xz
@@ -28,6 +29,7 @@ These are the additional language files of grub.
 
 %prep
 %setup -qn grub-2.02~beta2
+%patch0 -p1
 #sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
 %build
 ./configure \
@@ -78,6 +80,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/locale/*
 
 %changelog
+*	Fri Oct 02 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-3
+-	Adding patch to boot entries with out password.
 *	Wed Jul 22 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-2
 -	Changing program name from grub to grub2.
 *	Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-1
