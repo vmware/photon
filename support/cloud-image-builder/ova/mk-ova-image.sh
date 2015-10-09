@@ -3,6 +3,9 @@ set -x
 PHOTON_IMG_OUTPUT_PATH=$1
 SRC_ROOT=$2
 
+rm -f $PHOTON_IMG_OUTPUT_PATH/*.vmdk
+rm -f $PHOTON_IMG_OUTPUT_PATH/*.ova
+
 #Generate two ova images one with a random password and the other with a defined password
 
 sed "s|VMDK_IMAGE|$PHOTON_IMG_OUTPUT_PATH/photon-ova.vmdk|" vmx-template > /tmp/vmx-temp.vmx
