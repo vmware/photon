@@ -1,7 +1,7 @@
 Summary:	The GnuTLS Transport Layer Security Library
 Name:		gnutls
 Version:	3.4.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.4/%{name}-%{version}.tar.xz
@@ -44,6 +44,8 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_infodir}/*
+find %{buildroot}%{_libdir} -name '*.la' -delete
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
@@ -51,7 +53,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
-%{_libdir}/*.la
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
@@ -62,6 +63,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.2-2
+-   Removing la files from packages.
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.4.2-1
 -	Initial build. First version
 

@@ -1,7 +1,7 @@
 Summary:	ASN.1 library
 Name:		libtasn1
 Version:	4.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+ and LGPLv2+
 URL:		http://www.gnu.org/software/libtasn1/
 Source0:	http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
@@ -31,6 +31,7 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_infodir}/*
+find %{buildroot}%{_libdir} -name '*.la' -delete
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
@@ -39,7 +40,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/*.a
-%{_libdir}/*.la
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
@@ -49,6 +49,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 4.5-2
+-   Removing la files from packages.
 *	Fri Jun 19 2015 Divya Thaluru <dthaluru@vmware.com> 4.5-1
 -	Initial build. First version
 

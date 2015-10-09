@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.1.2
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -35,6 +35,7 @@ make %{?_smp_mflags}
 %install
 rm -rf %{buildroot}%{_infodir}
 make DESTDIR=%{buildroot} install
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -50,6 +51,8 @@ make DESTDIR=%{buildroot} install
 %{_mandir}
 
 %changelog
+*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-4
+-   Removing la files from packages.
 *   Fri Aug 14 2015 Alexey Makhalov <amakhalov@vmware.com> 3.1.2-3
 -   Adding patches for security fixes CVE-2013-2011 and CVE-2015-2304.
 *   Wed Jul 8 2015 Alexey Makhalov <amakhalov@vmware.com> 3.1.2-2

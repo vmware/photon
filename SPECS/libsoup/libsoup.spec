@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.50.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -61,6 +61,7 @@ make %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 make DESTDIR=%{buildroot} install
 %find_lang %{name}
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -80,6 +81,8 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 
 %changelog
+*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-4
+-   Removing la files from packages.
 *   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 2.50.0-3
 -   Addinf libxml2 to Requires 
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 2.50.0-2

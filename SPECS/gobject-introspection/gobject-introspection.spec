@@ -3,7 +3,7 @@
 Name:       	gobject-introspection
 Summary:    	Introspection system for GObject-based libraries
 Version:    	1.43.3
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 Group:      	Development/Libraries
 License:    	GPLv2+, LGPLv2+, MIT
 URL:        	http://live.gnome.org/GObjectIntrospection
@@ -66,6 +66,7 @@ mkdir -p $RPM_BUILD_ROOT/%{python_sitelib}
 mv $RPM_BUILD_ROOT/%{_libdir}/gobject-introspection/giscanner $RPM_BUILD_ROOT/%{python_sitelib}
 
 rm -rf $RPM_BUILD_ROOT/%{_datarootdir}/gtk-doc/html
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %post -p /sbin/ldconfig
 
@@ -95,5 +96,7 @@ rm -rf $RPM_BUILD_ROOT/%{_datarootdir}/gtk-doc/html
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-3
+-   Removing la files from packages.
 *	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.43.3-2
 -	Added more requirements for devel subpackage.
