@@ -1,7 +1,7 @@
 Summary:	Low level cryptographic libraries
 Name:		nettle
 Version:	3.1.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv3+ or GPLv2+
 URL:            http://www.lysator.liu.se/~nisse/nettle/
 Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
@@ -49,13 +49,15 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_bindir}/*
-%{_libdir}/*.a
 %files devel
 %defattr(-,root,root)
 %{_includedir}/nettle/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_libdir}/*.a
 %changelog
+*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.1-2
+-   Moving static lib files to devel package.
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.1.1-1
 -	Initial build. First version
 

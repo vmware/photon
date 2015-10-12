@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.50.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -68,11 +68,14 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %files
 %defattr(-,root,root)
-%{_libdir}
+%{_libdir}/*.so.*
 %exclude %{_libdir}/debug
 
 %files devel
 /usr/include/*
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_libdir}/pkgconfig/*
 
 %files doc
 /usr/share/*
@@ -81,6 +84,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %defattr(-,root,root)
 
 %changelog
+*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-5
+-   Moving static lib files to devel package.
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-4
 -   Removing la files from packages.
 *   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 2.50.0-3

@@ -19,7 +19,7 @@ class constants(object):
     listToolChainPackages=["linux-api-headers", "glibc","zlib", "file",
         "binutils","gmp","mpfr", "mpc","gcc", "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
         "readline", "diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch","util-linux", "util-linux-devel",
-        "tar", "xz","libtool", "flex",  "bison", "lua","popt","nspr","sqlite-autoconf","nss",
+        "tar", "xz","libtool", "flex",  "flex-devel","bison", "lua","popt","nspr","sqlite-autoconf","nss",
         "elfutils", "expat","libffi","libpipeline", "gdbm","perl","texinfo","autoconf","automake",
         "openssl","python2","rpm", "groff", "man-db", "man-pages","cpio"]
     
@@ -33,7 +33,7 @@ class constants(object):
         "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
         "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
         "readline","diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch",
-        "util-linux", "util-linux-devel", "tar", "xz","libtool", "flex",  "bison",
+        "util-linux", "util-linux-devel", "tar", "xz","libtool", "flex", "flex-devel",  "bison",
         "lua","popt","nspr","sqlite-autoconf","nss","elfutils-libelf",
         "libpipeline", "gdbm","perl","texinfo","rpm","rpm-build", "rpm-devel",
         "autoconf","automake", "groff", "man-db", "man-pages","elfutils","cpio"]
@@ -43,7 +43,7 @@ class constants(object):
             "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
             "pkg-config", "ncurses", "bash", "bzip2", "sed","ncurses-devel","procps-ng","coreutils", "m4","grep",
             "readline", "diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch",
-            "util-linux", "util-linux-devel", "tar", "xz","libtool", "flex",  "bison",
+            "util-linux", "util-linux-devel", "tar", "xz","libtool", "flex",  "flex-devel","bison",
             "readline-devel", "lua","lua-devel","popt","popt-devel","nspr","sqlite-autoconf","nss","nss-devel",
             "bzip2-devel","elfutils-libelf","elfutils","elfutils-libelf-devel","elfutils-devel",
             "expat","libffi","libpipeline", "gdbm","perl","texinfo","autoconf","automake",

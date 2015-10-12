@@ -16,7 +16,7 @@ Requires:	libcap
 Requires:	xz
 BuildRequires:	intltool
 BuildRequires:	gperf
-BuildRequires:	libcap
+BuildRequires:	libcap-devel
 BuildRequires:	xz-devel
 BuildRequires:	Linux-PAM
 BuildRequires:	XML-Parser

@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.1.2
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -42,15 +42,20 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %files
 %defattr(-,root,root)
-%{_libdir}
+%{_libdir}/*.so.*
 %{_bindir}
 %exclude %{_libdir}/debug/
 %files devel
 %defattr(-,root,root)
 %{_includedir}
 %{_mandir}
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-5
+-   Moving static lib files to devel package.
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-4
 -   Removing la files from packages.
 *   Fri Aug 14 2015 Alexey Makhalov <amakhalov@vmware.com> 3.1.2-3
