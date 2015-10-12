@@ -3,7 +3,7 @@
 Name:       	gobject-introspection
 Summary:    	Introspection system for GObject-based libraries
 Version:    	1.43.3
-Release:    	3%{?dist}
+Release:    	4%{?dist}
 Group:      	Development/Libraries
 License:    	GPLv2+, LGPLv2+, MIT
 URL:        	http://live.gnome.org/GObjectIntrospection
@@ -76,7 +76,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %files
 %defattr(-,root,root,-)
 %doc COPYING
-%{_libdir}/lib*
+%{_libdir}/lib*.so.*
 %dir %{_libdir}/girepository-1.0
 %{_libdir}/girepository-1.0/*.typelib
 
@@ -87,6 +87,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %files devel
 %defattr(-,root,root,-)
 %{_libdir}/lib*.so
+%{_libdir}/lib*.a
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_bindir}/g-ir-*
@@ -96,6 +97,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-4
+-   Moving static lib files to devel package.
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-3
 -   Removing la files from packages.
 *	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.43.3-2

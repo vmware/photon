@@ -93,6 +93,10 @@ class ToolChainUtils(object):
                     if package == "util-linux-devel":
                         self.logger.info("No old verion of util-linux-devel exists, skip until the new version is built")
                         continue
+                    if package == "flex-devel":
+                        self.logger.info("No old verion of flex-devel exists, skip until the new version is built")
+                        continue
+
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
@@ -203,6 +207,9 @@ class ToolChainUtils(object):
                 if rpmFile is None:
                     if package == "util-linux-devel":
                         self.logger.info("No old verion of util-linux-devel exists, skip until the new version is built")
+                        continue
+                    if package == "flex-devel":
+                        self.logger.info("No old verion of flex-devel exists, skip until the new version is built")
                         continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise Exception("Input Error")

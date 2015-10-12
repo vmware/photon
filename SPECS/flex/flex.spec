@@ -1,7 +1,7 @@
 Summary:	A utility for generating programs that recognize patterns in text
 Name:		flex
 Version:	2.5.38
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://flex.sourceforge.net
 Group:		Applications/System
@@ -14,6 +14,16 @@ Requires:	m4
 %description
 The Flex package contains a utility for generating programs
 that recognize patterns in text.
+
+%package devel
+Summary: Development libraries and header files for the flex library
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+The flex-devel package contains the development libraries and header files for
+flex.
+
 %prep
 %setup -q
 sed -i -e '/test-bison/d' tests/Makefile.in
@@ -46,12 +56,18 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/flex++
 %attr(755,root,root) %{_bindir}/lex
 %{_libdir}/*.so.*
+%{_defaultdocdir}/%{name}-%{version}/*
+%{_mandir}/*/*
+
+%files devel
+%defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_includedir}/*
-%{_defaultdocdir}/%{name}-%{version}/*
-%{_mandir}/*/*
+
 %changelog
+*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.5.38-3
+-   Moving static lib files to devel package.
 *	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 2.5.38-2
 -	Adding m4 package to build and run time required package 
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.5.38-1
