@@ -15,6 +15,10 @@ The Man-pages package contains over 1,900 man pages.
 %prep
 %setup -q
 %build
+
+%check
+make check-groff-warnings
+
 %install
 make DESTDIR=%{buildroot} install
 #	The following man pages conflict with other packages

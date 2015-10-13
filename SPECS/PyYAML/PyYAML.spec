@@ -37,6 +37,9 @@ configuration files to object serialization and persistence.
 %{__python} setup.py build
 chmod a-x examples/yaml-highlight/yaml_hl.py
 
+%check
+python setup.py test
+
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{_bindir}
