@@ -209,7 +209,7 @@ class ToolChainUtils(object):
         retval = process.wait()
         if retval != 0:
             self.logger.error("Installing tool chain  failed")
-            raise "RPM installation failed"
+            raise Exception("RPM installation failed")
             
         self.logger.info("Successfully installed all Tool Chain RPMS in Chroot:"+chrootID)    
     

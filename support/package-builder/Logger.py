@@ -24,7 +24,7 @@ class Logger(object):
             logger.addHandler(fhandler)
             logger.setLevel(logging.DEBUG)
             logger.info("--------------------------------------------------------------------------")
-            logger.info("Staring Log")
+            logger.info("Starting Log")
             logger.info("--------------------------------------------------------------------------")
         return logger
         

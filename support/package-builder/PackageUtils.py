@@ -24,7 +24,6 @@ class PackageUtils(object):
         
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOption = "-ba --clean"
-        self.rpmbuildNocheckOption = "--nocheck"
         self.rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
         self.queryRpmPackageOptions = "-qa"
         self.forceRpmPackageOptions = "--force"
@@ -153,7 +152,7 @@ class PackageUtils(object):
 
     def buildRPM(self,specFile,logFile,chrootCmd):
         
-        rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildNocheckOption +" "+self.rpmbuildDistOption
+        rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
         rpmBuildcmd+=" "+specFile
         
         cmdUtils = CommandUtils()
