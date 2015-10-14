@@ -16,7 +16,7 @@ Requires:	python2
 BuildRequires:	openssl-devel
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
-BuildRequires: 	curl
+BuildRequires: 	curl-devel
 Requires: 	curl
 %description
 PycURL is a Python interface to libcurl. PycURL can be used to fetch

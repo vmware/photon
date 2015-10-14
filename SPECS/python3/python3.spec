@@ -36,10 +36,10 @@ code. It is incompatible with Python 2.x releases.
 Summary: The libraries for python runtime
 Group: Applications/System
 Requires: python3 = %{version}-%{release}
-BuildRequires:	expat >= 2.1.0
-BuildRequires:	libffi >= 3.0.13
+BuildRequires:	expat-devel >= 2.1.0
+BuildRequires:	libffi-devel >= 3.0.13
 BuildRequires:	ncurses-devel
-BuildRequires:	sqlite-autoconf
+BuildRequires:	sqlite-autoconf-devel
 Requires:	coreutils
 Requires:	expat >= 2.1.0
 Requires:	libffi >= 3.0.13

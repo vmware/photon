@@ -97,6 +97,12 @@ class ToolChainUtils(object):
                         self.logger.info("No old verion of flex-devel exists, skip until the new version is built")
                         continue
 
+                    if package == "file-devel":
+                        self.logger.info("No old verion of file-devel exists, skip until the new version is built")
+                        continue
+                    if package == "nspr-devel":
+                        self.logger.info("No old verion of nspr-devel exists, skip until the new version is built")
+                        continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
@@ -211,6 +217,13 @@ class ToolChainUtils(object):
                     if package == "flex-devel":
                         self.logger.info("No old verion of flex-devel exists, skip until the new version is built")
                         continue
+                    if package == "file-devel":
+                        self.logger.info("No old verion of file-devel exists, skip until the new version is built")
+                        continue
+                    if package == "nspr-devel":
+                        self.logger.info("No old verion of nspr-devel exists, skip until the new version is built")
+                        continue
+
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile

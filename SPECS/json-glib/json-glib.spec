@@ -24,6 +24,7 @@ BuildRequires:  pkg-config
 BuildRequires:	docbook-xsl
 BuildRequires:	libxslt
 BuildRequires:	docbook-xml
+BuildRequires:	libffi-devel
 Requires:	glib
 Provides:	pkgconfig(json-glib-1.0)
 

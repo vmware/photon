@@ -11,8 +11,8 @@ Source0:	ftp://ftp.gnupg.org/gcrypt/%{name}/%{name}-%{version}.tar.bz2
 %define sha1 gpgme=8dd7711a4de117994fe2d45879ef8a9900d50f6a
 Requires:	libassuan
 Requires:	libgpg-error
-BuildRequires:	libgpg-error
-BuildRequires:	libassuan >= 2.2.0
+BuildRequires:	libgpg-error-devel
+BuildRequires:	libassuan-devel >= 2.2.0
 %description
 The GPGME package is a C language library that allows to add support for cryptography to a program. It is designed to make access to public key crypto engines like GnuPG or GpgSM easier for applications. GPGME provides a high-level crypto API for encryption, decryption, signing, signature verification and key management.  
 

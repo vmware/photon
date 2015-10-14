@@ -10,6 +10,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	glib-devel
 BuildRequires:	dbus-devel
+BuildRequires:	systemd-devel
+BuildRequires:	expat-devel
 Requires:	glib
 Requires:	dbus
 Provides:	pkgconfig(dbus-glib-1)

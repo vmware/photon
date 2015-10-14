@@ -1,7 +1,7 @@
 Summary:	DBus for systemd
 Name:		dbus
 Version:	1.8.8
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File
@@ -9,8 +9,8 @@ Source0:	http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
 %define sha1 dbus=e0d10e8b4494383c7e366ac80a942ba45a705a96
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires:	expat
-BuildRequires:	systemd
+BuildRequires:	expat-devel
+BuildRequires:	systemd-devel
 BuildRequires:	xz-devel
 Requires:	expat
 Requires:	systemd
@@ -43,9 +43,6 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %files
 %defattr(-,root,root)
 /etc/*
-%{_libdir}/dbus-1.0/include/dbus/*
-#%{_libdir}/pkgconfig/*.pc
-%{_oldincludedir}/*
 %{_bindir}/*
 %{_lib}/*
 /lib/*
@@ -65,8 +62,12 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %{_libdir}/*.la
 %{_libdir}/*.a
 %{_libdir}/*.so
+%{_libdir}/dbus-1.0/include/dbus/*
+%{_oldincludedir}/*
 
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.8-5
+-   Move development libraries and header files to devel package.
 *	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.8-4
 -	Created devel sub-package
 *   Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 1.8.8-3

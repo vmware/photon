@@ -16,6 +16,7 @@ BuildRequires:	rpm-devel
 BuildRequires:	glib-devel
 BuildRequires:	hawkey-devel
 BuildRequires:	openssl-devel
+BuildRequires:  curl-devel
 
 BuildRequires:	librepo-devel
 Source0:	%{name}-%{version}.tar.gz

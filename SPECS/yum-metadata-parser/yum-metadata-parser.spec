@@ -16,7 +16,7 @@ BuildRequires: python2-devel
 BuildRequires: glib-devel
 BuildRequires: libxml2
 BuildRequires: libxml2-devel
-BuildRequires: sqlite-autoconf
+BuildRequires: sqlite-autoconf-devel
 BuildRequires:	python2-libs
 Requires:	libxml2
 Requires:	glib
