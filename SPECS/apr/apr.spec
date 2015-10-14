@@ -29,6 +29,9 @@ It contains the libraries and header files to create applications
 
 make %{?_smp_mflags}
 
+%check
+make TEST_VERBOSE=1 test
+
 %install
 make DESTDIR=%{buildroot} install
 
