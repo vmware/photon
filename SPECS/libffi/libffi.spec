@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
 Version:	3.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
@@ -14,6 +14,16 @@ Provides:	pkgconfig(libffi)
 The libffi library provides a portable, high level programming interface
 to various calling conventions. This allows a programmer to call any 
 function specified by a call interface description at run time.
+
+%package devel
+Summary: Development libraries and header files for the libffi library
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+libffi-devel contains the development libraries and header files for
+libffi.
+
 %prep
 %setup -q
 %build
@@ -54,10 +64,17 @@ rm -rf %{buildroot}/*
 %else
 %{_libdir}/*.so*
 %endif
-%{_libdir}/pkgconfig/*
-%{_includedir}/*
 %{_datarootdir}/licenses/libffi/LICENSE
 %{_mandir}/man3/*
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/pkgconfig/*
+%{_includedir}/*
+
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1-2
+-   Move development libraries and header files to devel package.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.1-1
 -	Initial build.	First version

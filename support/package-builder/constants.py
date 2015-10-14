@@ -15,36 +15,36 @@ class constants(object):
     pullsourcesConfig=""
     buildPatch=False
     inputRPMSPath=""
-    noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison","openjdk","go"]
-    listToolChainPackages=["linux-api-headers", "glibc","zlib", "file",
+    noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr", "nspr-devel","xz","bison","openjdk","go"]
+    listToolChainPackages=["linux-api-headers", "glibc","zlib", "file", "file-devel",
         "binutils","gmp","mpfr", "mpc","gcc", "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
         "readline", "diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch","util-linux", "util-linux-devel",
-        "tar", "xz","libtool", "flex",  "flex-devel","bison", "lua","popt","nspr","sqlite-autoconf","nss",
+        "tar", "xz","libtool", "flex",  "flex-devel","bison", "lua","popt","nspr","nspr-devel","sqlite-autoconf","nss",
         "elfutils", "expat","libffi","libpipeline", "gdbm","perl","texinfo","autoconf","automake",
         "openssl","python2","rpm", "groff", "man-db", "man-pages","cpio"]
     
-    listCoreToolChainRPMPackages=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
+    listCoreToolChainRPMPackages=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file", "file-devel",
         "binutils","binutils-devel",  "gmp","gmp-devel", "mpfr", "mpfr-devel", "mpc",
         "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
         "pkg-config","bash"]
     
-    listToolChainRPMPkgsToInstall=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
+    listToolChainRPMPkgsToInstall=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file", "file-devel",
         "binutils","binutils-devel",  "gmp","gmp-devel", "mpfr", "mpfr-devel", "mpc",
         "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
         "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
         "readline","diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch",
         "util-linux", "util-linux-devel", "tar", "xz","libtool", "flex", "flex-devel",  "bison",
-        "lua","popt","nspr","sqlite-autoconf","nss","elfutils-libelf",
+        "lua","popt","nspr", "nspr-devel","sqlite-autoconf","nss","elfutils-libelf",
         "libpipeline", "gdbm","perl","texinfo","rpm","rpm-build", "rpm-devel",
         "autoconf","automake", "groff", "man-db", "man-pages","elfutils","cpio"]
 
-    listToolChainRPMPkgsToBuild=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
+    listToolChainRPMPkgsToBuild=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file", "file-devel",
             "binutils","binutils-devel",  "gmp","gmp-devel", "mpfr", "mpfr-devel", "mpc",
             "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
             "pkg-config", "ncurses", "bash", "bzip2", "sed","ncurses-devel","procps-ng","coreutils", "m4","grep",
             "readline", "diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch",
             "util-linux", "util-linux-devel", "tar", "xz","libtool", "flex",  "flex-devel","bison",
-            "readline-devel", "lua","lua-devel","popt","popt-devel","nspr","sqlite-autoconf","nss","nss-devel",
+            "readline-devel", "lua","lua-devel","popt","popt-devel","nspr","nspr-devel","sqlite-autoconf","nss","nss-devel",
             "bzip2-devel","elfutils-libelf","elfutils","elfutils-libelf-devel","elfutils-devel",
             "expat","libffi","libpipeline", "gdbm","perl","texinfo","autoconf","automake",
             "openssl","openssl-devel","python2","python2-libs","python2-devel","rpm","rpm-build", "rpm-devel",

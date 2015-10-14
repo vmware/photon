@@ -10,7 +10,7 @@ Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.45/%{name}-%{version}.tar.xz
 %define sha1 glib=7ea14c2119a39560a0a82f14ba841fcad69f6ec7
 BuildRequires:	pcre-devel
-BuildRequires:	libffi
+BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
 BuildRequires:	cmake
 Requires:	pcre

@@ -1,7 +1,7 @@
 Summary:	The Kerberos newtork authentication system
 Name:		krb5
 Version:	1.12.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -17,6 +17,16 @@ BuildRequires:	e2fsprogs-devel
 Kerberos V5 is a trusted-third-party network authentication system,
 which can improve your network's security by eliminating the insecure
 practice of clear text passwords.
+
+%package devel
+Summary: Development libraries and header files for the krb5 library
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+krb5-devel contains the development libraries and header files for
+krb5.
+
 %prep
 %setup -q
 %build
@@ -73,21 +83,27 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so
 %{_libdir}/*.so.*
-%{_libdir}/pkgconfig/*.pc
 %{_libdir}/krb5/plugins/*
 %{_sbindir}/*
-%{_includedir}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_datarootdir}/examples/*
 %{_datarootdir}/gnats/*
 %{_datarootdir}/locale/*
 %{_datarootdir}/man/man5/.k5identity.5.gz
 %{_datarootdir}/man/man5/.k5login.5.gz
 %{_docdir}/%{name}-%{version}
+
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+%{_datarootdir}/examples/*
+%{_libdir}/pkgconfig/*.pc
+%{_libdir}/*.so
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 1.12.2-2
+-   Move development libraries and header files to devel package.
 *	Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
 -	Initial build.	First version

@@ -1,7 +1,7 @@
 Summary:	Platform-neutral API
 Name:		nspr
 Version:	4.10.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org
 Group:		Applications/System
@@ -12,6 +12,13 @@ Source0:		http://ftp.mozilla.org/pub/mozilla.org/%{name}/releases/v%{version}/sr
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
 for system level and libc like functions.
+%package devel
+Summary:	The libraries and header files needed for %{name} development.
+Requires: 	%{name} = %{version}-%{release}
+
+%description devel
+The libraries and header files needed for%{name} development.
+
 %prep
 %setup -q
 cd nspr
@@ -35,11 +42,17 @@ make DESTDIR=%{buildroot} install
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_includedir}/*
 %{_libdir}/*.so
-%{_libdir}/pkgconfig/*.pc
 %{_datarootdir}/aclocal/*
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/pkgconfig/*.pc
+%{_includedir}/*
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 4.10.8-2
+-   Move development libraries and header files to devel package.
 *	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 4.10.8-1
 -	Version update. Firefox requirement.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.10.3-1

@@ -13,7 +13,7 @@ BuildRequires:	libselinux-devel
 BuildRequires:	libsepol-devel
 BuildRequires: 	readline-devel
 BuildRequires:	ncurses-devel
-BuildRequires: 	systemd
+BuildRequires: 	systemd-devel
 Requires:	libaio
 Requires:	device-mapper
 Requires:	libselinux

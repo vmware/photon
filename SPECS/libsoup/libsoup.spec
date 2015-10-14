@@ -20,6 +20,7 @@ BuildRequires:   python2-devel
 BuildRequires:   python2-tools
 BuildRequires:   glib-networking
 BuildRequires:   autogen
+BuildRequires:   sqlite-autoconf-devel
 Requires:        libxml2
 Requires:        glib-networking
 

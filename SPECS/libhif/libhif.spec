@@ -19,13 +19,14 @@ BuildRequires: 	gobject-introspection-devel
 BuildRequires: 	hawkey-devel >= 0.4.6
 BuildRequires: 	rpm-devel >= 4.11.0
 BuildRequires: 	librepo-devel >= 1.7.11
-BuildRequires: 	libsolv
+BuildRequires: 	libsolv-devel
 BuildRequires: 	popt-devel
 BuildRequires: 	python2-libs
 BuildRequires:	python2
 BuildRequires: 	gobject-introspection-python
 BuildRequires:	openssl-devel
-
+BuildRequires:	libffi-devel
+BuildRequires:  curl-devel
 Requires:       openssl
 Requires:       librepo
 Requires: 	libsolv

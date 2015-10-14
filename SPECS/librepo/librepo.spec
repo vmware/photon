@@ -19,14 +19,15 @@ Requires:	glib
 BuildRequires:	cmake
 BuildRequires:	glib-devel
 BuildRequires:	check
-BuildRequires:	expat
-BuildRequires:	curl
+BuildRequires:	expat-devel
+BuildRequires:	curl-devel
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
 BuildRequires:	python2-tools
 BuildRequires:	gpgme-devel
 BuildRequires:	openssl-devel
-BuildRequires:	attr
+BuildRequires:	attr-devel
+BuildRequires:	libgpg-error-devel
 
 Requires:       openssl
 

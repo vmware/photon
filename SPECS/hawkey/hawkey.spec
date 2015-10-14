@@ -9,11 +9,12 @@ Source0:	https://github.com/rpm-software-management/hawkey/archive/%{name}-%{ver
 Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires: 	libsolv
+BuildRequires: 	libsolv-devel
 BuildRequires: 	check
 BuildRequires: 	cmake
 BuildRequires: 	rpm
 BuildRequires: 	rpm-devel
+BuildRequires:	expat-devel
 Requires:	libsolv
 
 %description
