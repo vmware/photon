@@ -18,7 +18,7 @@ BuildRequires:	ncurses-devel
 BuildRequires:	readline-devel
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
-BuildRequires:	systemd
+BuildRequires:	systemd-devel
 BuildRequires:	thin-provisioning-tools
 Requires:	device-mapper-libs = %{version}-%{release}
 Requires:	device-mapper-event-libs = %{version}-%{release}

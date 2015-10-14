@@ -11,7 +11,7 @@ Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 mesos=8d9f09ca34478e0f021437d480f8ad5e0d426eba
 BuildRequires:	openjre >= 1.8.0.45
 BuildRequires:  openjdk >= 1.8.0.45
-BuildRequires:	curl
+BuildRequires:	curl-devel
 BuildRequires:	apache-maven >= 3.3.3
 BuildRequires:	apr-devel >= 1.5.2
 BuildRequires:	apr >= 1.5.2

@@ -14,7 +14,7 @@ Requires:	gdbm
 Requires:	xz
 Requires: 	groff
 BuildRequires:	libpipeline
-BuildRequires:	gdbm
+BuildRequires:	gdbm-devel
 BuildRequires:	xz
 BuildRequires: 	groff
 %description

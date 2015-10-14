@@ -1,7 +1,7 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.4.21
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
@@ -17,6 +17,14 @@ Patch1:		blfs_systemd_fixes.patch
 The next part of this chapter deals with firewalls. The principal 
 firewall tool for Linux is Iptables. You will need to install 
 Iptables if you intend on using any form of a firewall.
+
+%package devel
+Summary:	The libraries and header files needed for %{name} development.
+Requires: 	%{name} = %{version}-%{release}
+
+%description devel
+The libraries and header files needed for %{name} development.
+
 %prep
 %setup -q
 tar xf %{SOURCE1}
@@ -67,13 +75,19 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_libdir}/*.so*
 %{_libdir}/iptables/*
-%{_libdir}/pkgconfig/*
 %{_libdir}/iptables-xml
-%{_includedir}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
+
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+%{_libdir}/pkgconfig/*
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 1.4.21-3
+-   Move development libraries and header files to devel package.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.4.21-2
 -   Updated group.
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.21-1

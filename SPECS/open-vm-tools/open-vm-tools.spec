@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -23,9 +23,9 @@ Patch8:         GOSC-ssh-support.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
-BuildRequires: 	libdnet
-BuildRequires: 	libmspack
-BuildRequires:	Linux-PAM
+BuildRequires: 	libdnet-devel
+BuildRequires: 	libmspack-devel
+BuildRequires:	Linux-PAM-devel
 BuildRequires:	openssl-devel
 BuildRequires:	procps-ng-devel
 BuildRequires:	fuse-devel
@@ -38,6 +38,15 @@ Requires:	xml-security-c
 Requires:	openssl
 %description
 VmWare virtualization user mode tools
+
+%package        devel
+Summary:        Development files for %{name}
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+The %{name}-devel package contains libraries, header files and documentation
+for developing applications that use %{name}.
 %prep
 %setup -q
 %setup -a 1
@@ -97,9 +106,6 @@ rm -f /sbin/mount.vmhgfs
 %{_libdir}/open-vm-tools/plugins/*
 %{_libdir}/*.so
 %{_libdir}/*.so.*
-%{_libdir}/*.la
-%{_libdir}/pkgconfig/*.pc
-%{_includedir}/*
 %{_bindir}/*
 %{_sysconfdir}/*
 %{_datadir}/*
@@ -107,8 +113,15 @@ rm -f /sbin/mount.vmhgfs
 /lib/*
 %{_sbindir}/*
 
+%files devel
+%defattr(-,root,root)
+%{_libdir}/*.la
+%{_libdir}/pkgconfig/*.pc
+%{_includedir}/*
 
 %changelog
+*   	Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 10.0.0-12
+-   	Move development libraries and header files to devel package.
 *       Tue Sep 15 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-11
 -       Adding ssh RSA public support for password-less login.
 *       Wed Sep 09 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-10

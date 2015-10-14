@@ -16,8 +16,8 @@ Requires:	openssl
 Requires:	Linux-PAM
 Requires: 	shadow
 BuildRequires:  openssl-devel
-BuildRequires:	Linux-PAM
-BuildRequires:  krb5
+BuildRequires:	Linux-PAM-devel
+BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is

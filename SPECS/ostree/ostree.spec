@@ -12,12 +12,14 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	git
 BuildRequires:	which
-BuildRequires:	libgsystem
+BuildRequires:	libgsystem-devel
 BuildRequires:	xz-devel
 BuildRequires:	gtk-doc
 BuildRequires:	e2fsprogs-devel
 BuildRequires:  libsoup-devel
+BuildRequires:	libffi-devel
 BuildRequires:  autogen
+BuildRequires:  libgpg-error-devel
 Requires:	libgsystem
 Requires:	gpgme
 Requires:	libassuan
@@ -36,12 +38,10 @@ BuildRequires:	gobject-introspection-devel
 BuildRequires:	gobject-introspection-python
 BuildRequires:  gpgme-devel
 BuildRequires:  libcap-devel
-BuildRequires:  libsoup
-BuildRequires:  libsoup-devel
 BuildRequires:  mkinitcpio
 BuildRequires:  dracut
 BuildRequires:  dracut-tools
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  libarchive
 BuildRequires:  libarchive-devel
 

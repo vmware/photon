@@ -13,7 +13,7 @@ Patch:		nss-3.19-standalone-1.patch
 Requires:	nspr
 Requires:	sqlite-autoconf
 BuildRequires:	nspr
-BuildRequires:	sqlite-autoconf
+BuildRequires:	sqlite-autoconf-devel
 #BuildRequires:	readline-devel
 %description
  The Network Security Services (NSS) package is a set of libraries

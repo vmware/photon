@@ -10,7 +10,7 @@ Distribution:	Photon
 Source0:	http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
 %define sha1 sudo=3c442d59c0e112d4a43ffba434580e93fe1a766f
 BuildRequires:	man-db
-BuildRequires:	Linux-PAM
+BuildRequires:	Linux-PAM-devel
 Requires:	Linux-PAM
 Requires:	shadow
 %description
