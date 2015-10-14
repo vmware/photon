@@ -15,6 +15,7 @@ BuildRequires:   apr-devel
 BuildRequires:   openssl
 BuildRequires:   openssl-devel
 BuildRequires:   nss-devel
+BuildRequires:	 sqlite-autoconf-devel
 Requires:   apr
 Requires:   openssl
 %description

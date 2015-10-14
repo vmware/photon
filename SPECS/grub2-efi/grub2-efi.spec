@@ -13,6 +13,7 @@ Source0:	http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
 %define sha1 grub=b2c9227f9a54587532ae3f727d197ab112cdbbb3
 BuildRequires:	device-mapper-devel
 BuildRequires:	xz-devel
+BuildRequires:  systemd-devel
 Requires:	xz
 Requires:	device-mapper
 %description

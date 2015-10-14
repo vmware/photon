@@ -19,7 +19,7 @@ BuildRequires: json-glib-devel
 BuildRequires: gtk-doc
 BuildRequires: libcap-devel
 BuildRequires: ostree-devel
-BuildRequires: libgsystem
+BuildRequires: libgsystem-devel
 BuildRequires: docbook-xsl
 BuildRequires:	libxslt
 BuildRequires:	gobject-introspection-devel
@@ -28,10 +28,13 @@ BuildRequires:	libhif-devel >= 0.2.0
 BuildRequires: 	hawkey-devel >= 0.4.6
 BuildRequires: 	rpm-devel >= 4.11.0
 BuildRequires: 	librepo-devel >= 1.7.11
-BuildRequires:	attr
+BuildRequires:	attr-devel
 BuildRequires: 	python2-libs
 BuildRequires:	python2
 BuildRequires: 	gobject-introspection-python
+BuildRequires:	libffi-devel
+BuildRequires:  libsolv-devel
+BuildRequires:  curl-devel
 BuildRequires:  autogen
 
 BuildRequires:	which

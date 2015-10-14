@@ -1,7 +1,7 @@
 Summary:	Contains a utility for determining file types
 Name:		file
 Version:	5.22
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://www.darwinsys.com/file
 Group:		Applications/File
@@ -12,6 +12,15 @@ Source0:	ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %description
 The package contains a utility for determining the type of a
 given file or files
+
+%package        devel
+Summary:        Development files for %{name}
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+The %{name}-devel package contains libraries, header files and documentation for developing applications that use %{name}.
+
 %prep
 %setup -q
 %build
@@ -30,10 +39,16 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/*.so
-%{_includedir}/*
 %{_mandir}/*/*
 %{_datarootdir}/misc/magic.mgc
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/*.so
+%{_includedir}/*
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 5.22-2
+-   Move development libraries and header files to devel package.
 *	Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 5.22-1
 -	Initial build. First version
