@@ -9,7 +9,7 @@ Source0:	 http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.bz2
 %define sha1 nfs-utils=138ad690992d4784c05024d814a2d49ee8ebf6be
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires: krb5
+BuildRequires: krb5-devel
 BuildRequires: libtirpc-devel
 Requires: python2-libs
 Requires: libtirpc

@@ -15,7 +15,7 @@ BuildRequires: 	cracklib
 BuildRequires: 	cracklib-devel
 Requires:   	cracklib
 Requires:   	cracklib-dicts
-BuildRequires:	Linux-PAM
+BuildRequires:	Linux-PAM-devel
 Requires:	Linux-PAM
 
 %description

@@ -19,7 +19,7 @@ BuildRequires:	autoconf automake libtool
 BuildRequires: 	gtk-doc
 # BuildRequires: gnome-common
 BuildRequires: 	ostree-devel
-BuildRequires: 	libgsystem
+BuildRequires: 	libgsystem-devel
 BuildRequires: 	json-glib-devel
 BuildRequires:	which
 BuildRequires:	python2
@@ -27,6 +27,7 @@ BuildRequires:	python2-libs
 BuildRequires:	gobject-introspection-devel
 BuildRequires:	gobject-introspection-python
 BuildRequires:  autogen
+BuildRequires:  libffi-devel
 Requires: 	systemd
 Requires: 	perl
 Requires:	gobject-introspection

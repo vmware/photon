@@ -1,7 +1,7 @@
 Summary:	Attr-2.4.47
 Name:		attr
 Version:	2.4.47
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	http://download.savannah.gnu.org/releases/attr/%{name}-%{version}.src.tar.gz
@@ -11,6 +11,16 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 %description
 The attr package contains utilities to administer the extended attributes on filesystem objects.
+
+%package devel
+Summary: Development libraries and header files for the attr library
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+The attr-devel contains the development libraries and header files for
+attr.
+
 %prep
 %setup -q
 %build
@@ -40,9 +50,14 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_bindir}/*
 /lib/*.so.*
-%{_includedir}/attr/*
 %{_datadir}/locale/*
 %{_docdir}/%{name}-%{version}/*
+
+%files devel
+%{_includedir}/attr/*
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 2.4.47-2
+-   Move development libraries and header files to devel package.
 *	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.47-1
 -	Initial version

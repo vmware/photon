@@ -14,7 +14,7 @@ BuildRequires:  gnome-common
 BuildRequires:  gobject-introspection
 BuildRequires:  gtk-doc
 BuildRequires:  pkg-config
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  which
 Requires:       systemd
 Provides:       libgudev-1.0.so=0-64

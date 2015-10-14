@@ -1,7 +1,7 @@
 Summary:	An XML parser library
 Name:		expat
 Version:	2.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://expat.sourceforge.net/
 Group:		System Environment/GeneralLibraries
@@ -11,6 +11,16 @@ Source0:	http://downloads.sourceforge.net/%{name}-%{version}.tar.gz
 %define sha1 expat=b08197d146930a5543a7b99e871cba3da614f6f0
 %description
 The Expat package contains a stream oriented C library for parsing XML.
+
+%package devel
+Summary: Development libraries and header files for the expat library
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+The expat-devel contains the development libraries and header files for
+expat.
+
 %prep
 %setup -q
 %build
@@ -37,9 +47,16 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so*
+
+%files devel
+%defattr(-,root,root)
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_mandir}/man1/*
+
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 2.1.0-2
+-   Move development libraries and header files to devel package.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.0-1
 -	Initial build.	First version
