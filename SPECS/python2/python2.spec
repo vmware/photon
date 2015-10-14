@@ -34,9 +34,9 @@ Requires:	expat >= 2.1.0
 Requires:	libffi >= 3.0.13
 Requires:	ncurses
 Requires:	coreutils
-BuildRequires:	expat >= 2.1.0
-BuildRequires:	libffi >= 3.0.13
-BuildRequires:	sqlite-autoconf
+BuildRequires:	expat-devel >= 2.1.0
+BuildRequires:	libffi-devel >= 3.0.13
+BuildRequires:	sqlite-autoconf-devel
 BuildRequires:	ncurses-devel
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size

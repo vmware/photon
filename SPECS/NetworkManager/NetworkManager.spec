@@ -22,6 +22,7 @@ BuildRequires:	python2
 BuildRequires:	python2-libs
 BuildRequires:	dhcp-client
 BuildRequires:	libsoup-devel
+BuildRequires:  systemd-devel
 BuildRequires:  autogen
 Requires:		libnl
 Requires:		dbus-glib

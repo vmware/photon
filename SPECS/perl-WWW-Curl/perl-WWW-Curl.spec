@@ -18,7 +18,7 @@ Distribution:	Photon
 BuildRequires:  perl
 BuildRequires:	perl-Module-Install
 BuildRequires:	perl-YAML-Tiny
-BuildRequires:  curl
+BuildRequires:  curl-devel
 Requires:	perl
 Requires:	curl
 %description

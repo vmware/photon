@@ -1,7 +1,7 @@
 Summary:	Utilities for loading kernel modules
 Name:		kmod
 Version:	16
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:		Applications/System
@@ -13,6 +13,15 @@ BuildRequires:	xz-devel
 Requires:	xz
 %description
 The Kmod package contains libraries and utilities for loading kernel modules
+
+%package        devel
+Summary:        Development files for %{name}
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+The %{name}-devel package contains libraries, header files and documentation for developing applications that use %{name}
+
 %prep
 %setup -q
 %build
@@ -43,10 +52,16 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /bin/*
 %{_lib}/*.so.*
 /sbin/*
+
+%files devel
+%defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %{_datadir}/bash-completion/completions/kmod
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 16-2
+-   Move development libraries and header files to devel package.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 16-1
 -	Initial build. First version	

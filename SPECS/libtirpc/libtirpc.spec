@@ -10,7 +10,7 @@ Group:		System Environment/Libraries
 URL:		http://nfsv4.bullopensource.org/
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires:	krb5
+BuildRequires:	krb5-devel
 BuildRequires:	automake
 BuildRequires:  e2fsprogs-devel
 Requires:	krb5

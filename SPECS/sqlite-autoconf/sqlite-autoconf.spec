@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		sqlite-autoconf
 Version:	3080301
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries
@@ -14,6 +14,16 @@ Obsoletes:	libsqlite
 This package contains most of the static files that comprise the
 www.sqlite.org website including all of the SQL Syntax and the 
 C/C++ interface specs and other miscellaneous documentation.
+
+%package devel
+Summary: Development libraries and header files for the %{name} library
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+%{name}-devel contains the development libraries and header files for
+%{name}.
+
 %prep
 %setup -q
 %build
@@ -45,9 +55,15 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/*.so*
 %{_bindir}/*
+%{_mandir}/man1/*
+
+%files devel
+%defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_mandir}/man1/*
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 3080301-2
+-   Move development libraries and header files to devel package.
 *	Mon Oct 7 2014 Divya Thaluru <dthaluru@vmware.com> 3080301-1
 -	Initial build.	First version

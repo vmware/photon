@@ -16,6 +16,14 @@ This is a library that defines common error values for all GnuPG
 components.  Among these are GPG, GPGSM, GPGME, GPG-Agent, libgcrypt,
 pinentry, SmartCard Daemon and possibly more in the future.
 
+%package        devel
+Summary:        Development files for %{name}
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
+The %{name}-devel package contains libraries, header files and documentation for developing applications that use %{name}
+
 %prep
 %setup -q
 
@@ -43,7 +51,6 @@ echo %{_libdir}
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*gpg-error.so*
-%{_includedir}/gpg-error.h
 %{_datadir}/aclocal/gpg-error.m4
 %{_mandir}/man1/*
 %{_datarootdir}/common-lisp/*
@@ -62,8 +69,13 @@ echo %{_libdir}
 %lang(vi) %{_datarootdir}/locale/vi/LC_MESSAGES/libgpg-error.mo
 %lang(zh_CN) %{_datarootdir}/locale/zh_CN/LC_MESSAGES/libgpg-error.mo
 
+%files devel
+%defattr(-,root,root)
+%{_includedir}/gpg-error.h
 
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com>
+-   Move development libraries and header files to devel package.
 * Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>
 - initial specfile.
 

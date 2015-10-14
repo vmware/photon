@@ -14,6 +14,7 @@ Source0:	http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
 Patch0:		Fix_to_boot_entries_with_out_password.patch
 BuildRequires:	device-mapper-devel
 BuildRequires:	xz-devel
+BuildRequires:  systemd-devel
 Requires:	xz
 Requires:	device-mapper
 %description

@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -18,7 +18,7 @@ BuildRequires:	intltool
 BuildRequires:	gperf
 BuildRequires:	libcap-devel
 BuildRequires:	xz-devel
-BuildRequires:	Linux-PAM
+BuildRequires:	Linux-PAM-devel
 BuildRequires:	XML-Parser
 BuildRequires:	kbd
 BuildRequires:	kmod
@@ -28,6 +28,14 @@ Requires:	glib
 %description
 Systemd is an init replacement with better process control and security
 
+%package devel
+Summary:        Development headers for systemd
+License:        LGPLv2+ and MIT
+Requires:       %{name}
+
+%description devel
+Development headers and auxiliary files for developing applications linking
+to libudev or libsystemd.
 %prep
 %setup -q
 cat > config.cache << "EOF"
@@ -88,15 +96,21 @@ rm -rf %{buildroot}/*
 /lib/*
 %exclude %{_libdir}/debug/*
 %{_libdir}/*
+%exclude %{_libdir}/pkgconfig/*
 %{_bindir}/*
 /bin/*
 /sbin/*
-%{_includedir}/*
 %{_datadir}/*
 %dir %{_localstatedir}/log/journal
 
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*
+%{_libdir}/pkgconfig/*
 
 %changelog
+*     Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 216-13
+-     Move development libraries and header files to devel package.
 *     Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 216-12
 -     Removing la files from packages.
 *	Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 216-11

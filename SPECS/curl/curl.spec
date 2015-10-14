@@ -1,7 +1,7 @@
 Summary:	An URL retrieval utility and library
 Name:		curl
 Version:	7.43.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://curl.haxx.se
 Group:		System Environment/NetworkingLibraries
@@ -20,6 +20,14 @@ protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET,
 DICT, LDAP, LDAPS and FILE. Its ability to both download and 
 upload files can be incorporated into other programs to support
 functions like streaming media.
+
+%package devel
+Summary:	The libraries and header files needed for %{name} development.
+Requires: 	%{name} = %{version}-%{release}
+
+%description devel
+The libraries and header files needed for%{name} development.
+
 %prep
 %setup -q
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
@@ -51,14 +59,21 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so*
-%{_libdir}/pkgconfig/*
-%{_includedir}/*
+%{_libdir}/*.so.*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/pkgconfig/*
+%{_includedir}/*
+%{_libdir}/*.so
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 7.43.0-2
+-   Move development libraries and header files to devel package.
 *	Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 7.43.0-1
 -	Update to version 7.43.0.
 *	Mon Apr 6 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.41.0-1
