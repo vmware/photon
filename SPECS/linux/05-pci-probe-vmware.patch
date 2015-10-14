@@ -184,7 +184,7 @@ by Arjan van de Ven <arjan@linux.intel.com>
 +					*sz = 0xfffffff1;
 +                        		return 1;
 +				case 0x14:
-+					*sz = 0xf8000000;
++					*sz = 0xfc000000;
 +					return 1;
 +				case 0x18:
 +					*sz = 0xff800000;

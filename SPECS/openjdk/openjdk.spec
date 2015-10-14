@@ -2,7 +2,7 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.51
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -13,6 +13,35 @@ Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJD
 %define sha1 OpenJDK=498263b52777406f02405ed610fa756f6b36f5df
 %description
 The OpenJDK package installs java class library and javac java compiler. 
+
+%package	-n openjre
+Summary:	Jave runtime environtment
+AutoReqProv: 	no
+%description	-n openjre
+It contains the libraries files for Java runtime environment
+#%global __requires_exclude ^libgif.*$
+#%filter_from_requires ^libgif.*$
+
+%package		sample
+Summary:		Sample java applications. 
+Group:          Development/Languages/Java
+%description	sample
+It contains the Sample java applications.
+Requires:       %{name} = %{version}
+
+%package		doc
+Summary:		Documentation and demo applications for openjdk
+Group:          Development/Languages/Java
+%description	doc
+It contains the documentation and demo applications for openjdk
+Requires:       %{name} = %{version}-%{release}
+
+%package 		src
+Summary:        OpenJDK Java classes for developers
+Group:          Development/Languages/Java
+%description	src
+This package provides the runtime library class sources. 
+Requires:       %{name} = %{version}
 
 %prep -p exit
 %setup -qn OpenJDK-%{version}-x86_64-bin
@@ -27,16 +56,44 @@ install -vdm644 %{buildroot}/etc/profile.d
 cat >> %{buildroot}/etc/profile.d/java-exports.sh <<- "EOF"
 export CLASSPATH=.:/usr/share/java
 export JAVA_HOME=/opt/OpenJDK-%{version}-bin
-export PATH="$PATH:/opt/OpenJDK-1.8.0.51-bin/bin:/opt/OpenJDK-1.8.0.51-bin/jre/bin"
+export PATH="$PATH:/opt/OpenJDK-%{version}-bin/bin:/opt/OpenJDK-%{version}-bin/jre/bin"
 EOF
 
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-/opt/OpenJDK-%{version}-bin/*
+/opt/OpenJDK-%{version}-bin/ASSEMBLY_EXCEPTION
+/opt/OpenJDK-%{version}-bin/LICENSE
+/opt/OpenJDK-%{version}-bin/release
+/opt/OpenJDK-%{version}-bin/THIRD_PARTY_README
+/opt/OpenJDK-%{version}-bin/lib
+/opt/OpenJDK-%{version}-bin/include/
+
+%files	-n openjre
+%defattr(-,root,root)
+/opt/OpenJDK-%{version}-bin/jre/ 
+/opt/OpenJDK-%{version}-bin/bin
+/opt/OpenJDK-%{version}-bin/lib/amd64/jli/
 /etc/profile.d/java-exports.sh
+
+%files sample
+%defattr(-,root,root)
+/opt/OpenJDK-%{version}-bin/sample/
+
+%files doc
+%defattr(-,root,root)
+/opt/OpenJDK-%{version}-bin/man/
+/opt/OpenJDK-%{version}-bin/demo
+
+%files src
+%defattr(-,root,root)
+/opt/OpenJDK-%{version}-bin/src.zip
+
 %changelog
+*	Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
+-	Split the openjdk into multiple sub-packages to reduce size. 
 *	Mon Aug 17 2015 Sharath George <sarahc@vmware.com> 1.8.0.51-1
 -	Moved to the next version
 *	Tue Jun 30 2015 Sarah Choi <sarahc@vmware.com> 1.8.0.45-2

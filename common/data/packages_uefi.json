@@ -1,4 +1,4 @@
 {
-    "packages":["tzdata", "mesos"]
+    "packages":["mesos", "haveged", "libxml2", "openldap", "boost", "gawk", "nfs-utils"]
 }
 

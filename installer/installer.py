@@ -23,6 +23,7 @@ from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
 from window import Window
 from actionresult import ActionResult
+from __builtin__ import isinstance
 
 class Installer(object):
     def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
@@ -286,7 +287,7 @@ class Installer(object):
             # remove the installer directory
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
-        else:
+        elif not self.install_config['vmdk_install']:
             #Build the initramfs by passing in the kernel version
             version_string = ''	
             for root, dirs, files in os.walk(self.rpm_path):
@@ -298,9 +299,27 @@ class Installer(object):
 
             if 'initrd_dir' in self.install_config:
                 initrd_dir = self.install_config['initrd_dir']
-            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, './mkinitramfs', '-n', os.path.join(initrd_dir, initrd_file_name), '-k', version_string],  stdout=self.output)
+            self.add_dracut_configuration()
+            process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, 'dracut', '--force', '--kver', version_string, os.path.join(initrd_dir,initrd_file_name)],  stdout=self.output, stderr=self.output)
             retval = process.wait()
 
+    def add_dracut_configuration(self):
+        if self.install_config.has_key("dracut_configuration"):
+            dracut_configuration = []
+            
+            for key in self.install_config["dracut_configuration"].keys():
+                keyValue = self.install_config["dracut_configuration"][key]
+                config=key
+                if isinstance(keyValue,list):
+                    config=config+'+="'+" ".join(keyValue)+'"'
+                else:
+                    config=config+'="'+keyValue+'"'
+                config=config+"\n"
+                dracut_configuration.append(config)
+            
+            f = open(self.photon_root+"/etc/dracut.conf","a")
+            f.writelines(dracut_configuration)
+        
 
     def install_package(self,  package_name):
         rpm_params = ''

@@ -16,13 +16,14 @@ BuildRequires:	libgsystem
 BuildRequires:	xz-devel
 BuildRequires:	gtk-doc
 BuildRequires:	e2fsprogs-devel
+BuildRequires:  libsoup-devel
+BuildRequires:  autogen
 Requires:	libgsystem
 Requires:	gpgme
 Requires:	libassuan
 Requires:	libgpg-error
 Requires:   systemd
 Requires:   libsoup
-Requires:   libsoup-devel
 Requires:   mkinitcpio
 Requires:   dracut
 Requires:   dracut-tools

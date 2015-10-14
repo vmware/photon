@@ -16,6 +16,7 @@ Requires:	openssl
 Requires:	krb5 >= 1.12
 BuildRequires:	openssl-devel
 BuildRequires:  krb5 >= 1.12
+BuildRequires:  e2fsprogs-devel
 %description
 The Cyrus SASL package contains a Simple Authentication and Security 
 Layer, a method for adding authentication support to 

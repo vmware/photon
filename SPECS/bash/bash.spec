@@ -35,6 +35,10 @@ These are the additional language files of bash.
 	--without-bash-malloc \
 	--with-installed-readline 
 make %{?_smp_mflags}
+
+%check
+make check
+
 %install
 make DESTDIR=%{buildroot} install
 ln -s bash %{buildroot}/bin/sh

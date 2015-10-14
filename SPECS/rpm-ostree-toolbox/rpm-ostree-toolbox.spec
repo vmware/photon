@@ -26,6 +26,7 @@ BuildRequires:	python2
 BuildRequires:	python2-libs
 BuildRequires:	gobject-introspection-devel
 BuildRequires:	gobject-introspection-python
+BuildRequires:  autogen
 Requires: 	systemd
 Requires: 	perl
 Requires:	gobject-introspection

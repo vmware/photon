@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.2.0
-Release:    2%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -90,9 +90,10 @@ cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}
 cp -v .config            %{buildroot}/boot/config-esx-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 
+# TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop cpu_init_udelay=0 quiet
+photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet nordrand noreplace-smp cpu_init_udelay=0  plymouth.enable=0
 photon_linux=/boot/vmlinuz-esx-%{version}
 EOF
 
@@ -120,10 +121,17 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}-esx/build
 
 %changelog
-*   Fri Sep 4 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2-2
+*   Mon Sep 21 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-4
+-   CDROM modules are added.
+*   Thu Sep 17 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-3
+-   Fix for 05- patch (SVGA mem size)
+-   Compile out: pci hotplug, sched smt.
+-   Compile in kernel: vmware balloon & vmci.
+-   Module for efi vars.
+*   Fri Sep 4 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-2
 -   Hardcoded poweroff (direct write to piix4), no ACPI is required.
 -   sd.c: Lower log level for "Assuming drive cache..." message.
-*   Tue Sep 1 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2-1
+*   Tue Sep 1 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-1
 -   Update to linux-4.2.0. Enable CONFIG_EFI
 *   Fri Aug 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-5
 -   Added MD/LVM/DM modules.

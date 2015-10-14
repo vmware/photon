@@ -18,6 +18,10 @@ and formatting text.
 PAGE=letter ./configure \
 	--prefix=%{_prefix} 
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 install -vdm 755 %{_defaultdocdir}/%{name}-1.22/pdf
 make DESTDIR=%{buildroot} install

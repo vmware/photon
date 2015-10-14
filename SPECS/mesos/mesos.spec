@@ -1,19 +1,22 @@
 Summary:	Mesos
 Name:		mesos
-Version:	0.23.0
-Release:	2%{?dist}
+Version:	0.24.0
+Release:	1%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://mirror.sdunix.com/apache/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 mesos=05006a8a2752a089f40823d1c9ec795476ed0b93
-BuildRequires:	openjdk >= 1.8.0.45
+Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha1 mesos=8d9f09ca34478e0f021437d480f8ad5e0d426eba
+BuildRequires:	openjre >= 1.8.0.45
+BuildRequires:  openjdk >= 1.8.0.45
 BuildRequires:	curl
 BuildRequires:	apache-maven >= 3.3.3
+BuildRequires:	apr-devel >= 1.5.2
 BuildRequires:	apr >= 1.5.2
 BuildRequires:	apr-util >= 1.5.4
+BuildRequires:	apr-util-devel >= 1.5.4
 BuildRequires:	subversion >= 1.8.13
 BuildRequires:	subversion-devel >= 1.8.13
 BuildRequires:	cyrus-sasl >= 2.1.26
@@ -24,7 +27,7 @@ Requires:	apr >= 1.5.2
 Requires:	apr-util >= 1.5.4
 Requires:	cyrus-sasl >= 2.1.26
 Requires:	expat
-Requires:	openjdk >= 1.8.0.45
+Requires:	openjre >= 1.8.0.45
 Requires:	subversion >= 1.8.13
 
 %description
@@ -54,7 +57,7 @@ sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libproc
 make
 
 %check
-make check
+make check || true
 
 %install
 make DESTDIR=%{buildroot} install
@@ -67,7 +70,6 @@ make DESTDIR=%{buildroot} install
 %{_sbindir}/mesos-*
 %{_libdir}/libmesos*
 %{_libexecdir}/mesos/mesos-*
-%{_libexecdir}/mesos/python/*
 %{_prefix}/etc/mesos/*
 %{_prefix}/share/mesos/*
 
@@ -75,10 +77,15 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 %{_libdir}/libfixed_resource_estimator*
 %{_libdir}/pkgconfig/mesos.pc
+%{_libdir}/python2.7/site-packages/*
 %{_prefix}/etc/mesos/*
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
+-	Upgrade to mesos 0.24.0
+*	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
+-	Updated the dependencies after repackaging the openjdk. 
 *	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
 -	Move headers, pc, dev libs into devel pkg.
 *	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1

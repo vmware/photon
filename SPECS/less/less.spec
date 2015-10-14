@@ -20,6 +20,10 @@ The Less package contains a text file viewer
 	--prefix=%{_prefix} \
 	--sysconfdir=%{_sysconfdir}
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 %files

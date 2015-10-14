@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.12
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -14,10 +14,13 @@ BuildRequires: openssl-devel
 BuildRequires: pcre-devel
 BuildRequires: apr
 BuildRequires: apr-util
+BuildRequires: apr-util-devel
+BuildRequires: openldap
 BuildRequires: expat
 Requires:   pcre
 Requires:   apr-util
 Requires:   openssl
+Requires:   openldap
 %description
 The Apache HTTP Server.
 
@@ -34,6 +37,13 @@ Group: Applications/System
 Requires: httpd
 %description docs
 These are the help files of httpd.
+
+%package tools
+Group: System Environment/Daemons
+Summary: Tools for httpd
+
+%description tools
+The httpd-tools of httpd.
 
 %prep
 %setup -q
@@ -111,6 +121,8 @@ fi
 %defattr(-,root,root)
 %{_libdir}/*
 %{_bindir}/*
+%exclude %{_bindir}/apxs
+%exclude %{_bindir}/dbmmanage
 %{_sbindir}/*
 %{_datadir}/*
 %{_sysconfdir}/httpd/build/*
@@ -121,8 +133,14 @@ fi
 %{_sysconfdir}/httpd/icons/*
 %dir %{_sysconfdir}/httpd/logs
 
+%files tools
+%defattr(-,root,root)
+%{_bindir}/apxs
+%{_bindir}/dbmmanage
 
 %changelog
+*   Tue Sep 29 2015 Xiaolin Li <xiaolinl@vmware.com> 2.4.12-3
+-   Move perl script to tools package.
 *   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-2
 -   Added service file. Changed installation paths.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-1

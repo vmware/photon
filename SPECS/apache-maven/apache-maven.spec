@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -10,8 +10,8 @@ Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=70301d0669bc86cd81b25a05b1daab3c6ca23595
-Requires: openjdk >= 1.8.0.45
-BuildRequires: openjdk >= 1.8.0.45, apache-ant >= 1.9.4, wget >= 1.15
+Requires: openjre >= 1.8.0.45
+BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.4, wget >= 1.15
 
 %define _prefix /opt/apache-maven-3.3.3
 %define _bindir %{_prefix}/bin
@@ -61,6 +61,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.3-2
+-	Updated dependencies after repackaging openjdk.
 *	Thu Jul 9 2015 	Sarah Choi<sarahc@vmware.com> 3.3.3-1
 -	Add a script to set environment variables for MAVEN 
 *	Fri May 22 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4

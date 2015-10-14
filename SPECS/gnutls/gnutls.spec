@@ -10,12 +10,12 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	nettle-devel
-BuildRequires:	autogen-devel
+BuildRequires:	autogen-libopts-devel
 BuildRequires:	libtasn1-devel
 BuildRequires:	ca-certificates
 BuildRequires:	openssl-devel
 Requires:	nettle
-Requires:	autogen
+#Requires:	autogen-libopts
 Requires:	libtasn1
 Requires:	openssl
 Requires:	ca-certificates

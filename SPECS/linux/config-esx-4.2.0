@@ -402,7 +402,7 @@ CONFIG_SWIOTLB=y
 CONFIG_IOMMU_HELPER=y
 # CONFIG_MAXSMP is not set
 CONFIG_NR_CPUS=32
-CONFIG_SCHED_SMT=y
+# CONFIG_SCHED_SMT is not set
 CONFIG_SCHED_MC=y
 CONFIG_PREEMPT_NONE=y
 # CONFIG_PREEMPT_VOLUNTARY is not set
@@ -567,7 +567,6 @@ CONFIG_PCI_DIRECT=y
 CONFIG_PCI_DOMAINS=y
 # CONFIG_PCI_CNB20LE_QUIRK is not set
 CONFIG_PCIEPORTBUS=y
-CONFIG_HOTPLUG_PCI_PCIE=y
 # CONFIG_PCIEAER is not set
 # CONFIG_PCIEASPM is not set
 CONFIG_PCI_BUS_ADDR_T_64BIT=y
@@ -587,10 +586,7 @@ CONFIG_PCI_LABEL=y
 #
 # CONFIG_ISA_DMA_API is not set
 # CONFIG_PCCARD is not set
-CONFIG_HOTPLUG_PCI=y
-# CONFIG_HOTPLUG_PCI_ACPI is not set
-# CONFIG_HOTPLUG_PCI_CPCI is not set
-# CONFIG_HOTPLUG_PCI_SHPC is not set
+# CONFIG_HOTPLUG_PCI is not set
 # CONFIG_RAPIDIO is not set
 # CONFIG_X86_SYSFB is not set
 
@@ -1148,7 +1144,7 @@ CONFIG_BLK_DEV_RAM_DAX=y
 # CONFIG_SENSORS_APDS990X is not set
 # CONFIG_HMC6352 is not set
 # CONFIG_DS1682 is not set
-CONFIG_VMWARE_BALLOON=m
+CONFIG_VMWARE_BALLOON=y
 # CONFIG_BMP085_I2C is not set
 # CONFIG_USB_SWITCH_FSA9480 is not set
 # CONFIG_SRAM is not set
@@ -1172,7 +1168,7 @@ CONFIG_VMWARE_BALLOON=m
 # Altera FPGA firmware download module
 #
 # CONFIG_ALTERA_STAPL is not set
-CONFIG_VMWARE_VMCI=m
+CONFIG_VMWARE_VMCI=y
 
 #
 # Intel MIC Bus Driver
@@ -1313,7 +1309,58 @@ CONFIG_ATA_SFF=y
 # CONFIG_PDC_ADMA is not set
 # CONFIG_SATA_QSTOR is not set
 # CONFIG_SATA_SX4 is not set
-# CONFIG_ATA_BMDMA is not set
+CONFIG_ATA_BMDMA=y
+
+#
+# SATA SFF controllers with BMDMA
+#
+CONFIG_ATA_PIIX=m
+# CONFIG_SATA_MV is not set
+# CONFIG_SATA_NV is not set
+# CONFIG_SATA_PROMISE is not set
+# CONFIG_SATA_SIL is not set
+# CONFIG_SATA_SIS is not set
+# CONFIG_SATA_SVW is not set
+# CONFIG_SATA_ULI is not set
+# CONFIG_SATA_VIA is not set
+# CONFIG_SATA_VITESSE is not set
+
+#
+# PATA SFF controllers with BMDMA
+#
+# CONFIG_PATA_ALI is not set
+# CONFIG_PATA_AMD is not set
+# CONFIG_PATA_ARTOP is not set
+# CONFIG_PATA_ATIIXP is not set
+# CONFIG_PATA_ATP867X is not set
+# CONFIG_PATA_CMD64X is not set
+# CONFIG_PATA_CYPRESS is not set
+# CONFIG_PATA_EFAR is not set
+# CONFIG_PATA_HPT366 is not set
+# CONFIG_PATA_HPT37X is not set
+# CONFIG_PATA_HPT3X2N is not set
+# CONFIG_PATA_HPT3X3 is not set
+# CONFIG_PATA_IT8213 is not set
+# CONFIG_PATA_IT821X is not set
+# CONFIG_PATA_JMICRON is not set
+# CONFIG_PATA_MARVELL is not set
+# CONFIG_PATA_NETCELL is not set
+# CONFIG_PATA_NINJA32 is not set
+# CONFIG_PATA_NS87415 is not set
+# CONFIG_PATA_OLDPIIX is not set
+# CONFIG_PATA_OPTIDMA is not set
+# CONFIG_PATA_PDC2027X is not set
+# CONFIG_PATA_PDC_OLD is not set
+# CONFIG_PATA_RADISYS is not set
+# CONFIG_PATA_RDC is not set
+# CONFIG_PATA_SCH is not set
+# CONFIG_PATA_SERVERWORKS is not set
+# CONFIG_PATA_SIL680 is not set
+# CONFIG_PATA_SIS is not set
+# CONFIG_PATA_TOSHIBA is not set
+# CONFIG_PATA_TRIFLEX is not set
+# CONFIG_PATA_VIA is not set
+# CONFIG_PATA_WINBOND is not set
 
 #
 # PIO-only SFF controllers
@@ -1328,6 +1375,8 @@ CONFIG_ATA_SFF=y
 #
 # Generic fallback / legacy drivers
 #
+# CONFIG_PATA_ACPI is not set
+# CONFIG_ATA_GENERIC is not set
 # CONFIG_PATA_LEGACY is not set
 CONFIG_MD=y
 # CONFIG_BLK_DEV_MD is not set
@@ -2302,7 +2351,7 @@ CONFIG_DMI_SCAN_MACHINE_NON_EFI_FALLBACK=y
 #
 # EFI (Extensible Firmware Interface) Support
 #
-# CONFIG_EFI_VARS is not set
+CONFIG_EFI_VARS=m
 CONFIG_EFI_ESRT=y
 CONFIG_EFI_RUNTIME_WRAPPERS=y
 

@@ -12,6 +12,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	krb5
 BuildRequires:	automake
+BuildRequires:  e2fsprogs-devel
 Requires:	krb5
 
 %description
@@ -41,6 +42,9 @@ This package includes header files and libraries necessary for developing progra
 ./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
 
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
 make install DESTDIR=%{buildroot}

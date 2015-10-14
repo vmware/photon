@@ -10,7 +10,7 @@ Distribution:	Photon
 Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 krb5=6f24800d48d36a33305387a9b6340884b05573b1
 Requires:	openssl
-Requires:	e2fsprogs-devel
+Requires:	e2fsprogs
 BuildRequires: 	openssl-devel
 BuildRequires:	e2fsprogs-devel
 %description

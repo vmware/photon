@@ -28,7 +28,7 @@ BuildRequires:	gpgme-devel
 BuildRequires:	openssl-devel
 BuildRequires:	attr
 
-Requires:       openssl-devel
+Requires:       openssl
 
 %description
 A library providing C and Python (libcURL like) API for downloading 

@@ -43,6 +43,9 @@ make soname='libaio.so.1.0.0' libname='libaio.so.1.0.0'
 cd ..
 make
 
+%check
+make partcheck
+
 %install
 cd %{name}-%{version}
 install -D -m 755 src/libaio.so.1.0.0 %{buildroot}/%{_libdir}/libaio.so.1.0.0

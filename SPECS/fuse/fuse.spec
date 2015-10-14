@@ -26,6 +26,9 @@ It contains the libraries and header files to create fuse applications.
 ./configure --prefix=%{_prefix} --disable-static INIT_D_PATH=/tmp/init.d &&
 make %{?_smp_mflags}
 
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 mkdir -p %{buildroot}%{_libdir}/%{name}
 make install \

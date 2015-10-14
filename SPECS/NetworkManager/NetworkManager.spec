@@ -1,7 +1,7 @@
 Summary:	NetworkManager
 Name:		NetworkManager
 Version:	1.0.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		https://download.gnome.org/sources/NetworkManager/1.0/NetworkManager-1.0.2.tar.xz
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
@@ -11,7 +11,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	intltool
 BuildRequires:	iptables
-BuildRequires:	dbus
+BuildRequires:	dbus-devel
 BuildRequires:	dbus-glib-devel
 BuildRequires:	libnl-devel
 BuildRequires:	readline-devel
@@ -22,7 +22,16 @@ BuildRequires:	python2
 BuildRequires:	python2-libs
 BuildRequires:	dhcp-client
 BuildRequires:	libsoup-devel
-
+BuildRequires:  autogen
+Requires:		libnl
+Requires:		dbus-glib
+Requires:		glib
+Requires:		libndp
+Requires:		libsoup
+Requires:		nss
+Requires:		ncurses
+Requires:		readline
+Requires:		dbus
 %package devel
 Summary:	Libraries and header files for NetworkManager
 Requires:	NetworkManager
@@ -85,6 +94,8 @@ EOF
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Tue	Sep 22 2015	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 1.0.2-3
+-	Adding the missing Requires list 
 *	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2-2
 -	Building with dhclient.
 *	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2-1

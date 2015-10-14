@@ -1,7 +1,7 @@
 Summary:	Libsolv-0.6.6
 Name:		libsolv
 Version:	0.6.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://www.cmake.org/
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -12,7 +12,7 @@ Distribution:	Photon
 Requires:	db
 Requires:	rpm
 Requires:	expat
-BuildRequires:	db
+BuildRequires:	db-devel
 BuildRequires:	cmake
 BuildRequires:	rpm-devel
 BuildRequires:	expat
@@ -38,6 +38,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/*
 %{_includedir}/*
 %changelog
+* 	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.6.6-3
+-	Updated build-requires after creating devel package for db. 
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 0.6.6-2
 -   Updated group.
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 0.6.6-1

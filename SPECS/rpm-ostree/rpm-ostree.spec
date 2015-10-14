@@ -32,6 +32,7 @@ BuildRequires:	attr
 BuildRequires: 	python2-libs
 BuildRequires:	python2
 BuildRequires: 	gobject-introspection-python
+BuildRequires:  autogen
 
 BuildRequires:	which
 BuildRequires:	popt-devel

@@ -128,6 +128,7 @@ if __name__ == '__main__':
     parser.add_option("-f", "--force", action="store_true", dest="force", default=False)
     parser.add_option("-p", "--package-list-file", dest="package_list_file", default="../common/data/build_install_options_all.json")
     parser.add_option("-m", "--stage-path", dest="stage_path", default="../stage")
+    parser.add_option("-c", "--dracut-configuration", dest="dracut_configuration_file", default="../common/data/dracut_configuration.json")
 
     (options,  args) = parser.parse_args()
     if options.iso_path:
@@ -136,6 +137,7 @@ if __name__ == '__main__':
             parser.error("Incorrect arguments")
         config = {}
         config['iso_system'] = True
+        config['vmdk_install'] = False
 
     elif options.vmdk_path:
         # Check the arguments
@@ -163,6 +165,7 @@ if __name__ == '__main__':
         config = (JsonWrapper(args[0])).read()
 
         config['iso_system'] = False
+        config['vmdk_install'] = False
 
     if 'password' in config:
         # crypt the password if needed
@@ -189,6 +192,12 @@ if __name__ == '__main__':
         packages = PackageSelector.get_packages_to_install(options_sorted, config['type'], options.output_data_path)
 
     config['packages'] = packages
+
+    if config['iso_system'] == True:
+        if os.path.isfile(options.dracut_configuration_file):
+            json_wrapper_package_list = JsonWrapper(options.dracut_configuration_file)
+            dracut_configuration_list_json = json_wrapper_package_list.read()
+            config["dracut_configuration"]=dracut_configuration_list_json["dracut_configuration"]
 
     # Cleanup the working directory
     if not options.force:
