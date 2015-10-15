@@ -15,6 +15,7 @@ class constants(object):
     pullsourcesConfig=""
     buildPatch=False
     inputRPMSPath=""
+    rpmCheck=False
     noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison","openjdk","go"]
     listToolChainPackages=["linux-api-headers", "glibc","zlib", "file",
         "binutils","gmp","mpfr", "mpc","gcc", "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
@@ -67,6 +68,7 @@ class constants(object):
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
         constants.pullsourcesConfig = options.pullsourcesConfig
         constants.inputRPMSPath=options.inputRPMSPath
+        constants.rpmCheck = options.rpmCheck
         
 
         

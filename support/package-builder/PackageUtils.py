@@ -155,7 +155,9 @@ class PackageUtils(object):
 
     def buildRPM(self,specFile,logFile,chrootCmd):
         
-        rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildNocheckOption +" "+self.rpmbuildDistOption
+        rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
+        if not constants.rpmCheck:
+            rpmBuildcmd+=" "+self.rpmbuildNocheckOption
         rpmBuildcmd+=" "+self.rpmbuildBuildNum+" "+self.rpmbuildReleaseVer
         rpmBuildcmd+=" "+specFile
         

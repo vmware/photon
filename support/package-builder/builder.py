@@ -33,6 +33,7 @@ def main():
     parser.add_option("-k",  "--input-RPMS-path", dest="inputRPMSPath",   default=None)
     parser.add_option("-n",  "--build-number", dest="buildNumber",  default="0000000")
     parser.add_option("-v",  "--release-version", dest="releaseVersion",  default="NNNnNNN")
+    parser.add_option("-u",  "--enable-rpmcheck", dest="rpmCheck",  default=False, action ="store_true")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
