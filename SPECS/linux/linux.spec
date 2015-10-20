@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.0.9
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -172,6 +172,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/sound
 
 %changelog
+*	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.9-5
+- 	Added driver support for frame buffer devices and ACPI 
 *   Wed Sep 2 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-4
 -   Added mouse ps/2 module.
 *   Fri Aug 14 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-3
