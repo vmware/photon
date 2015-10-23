@@ -1,21 +1,16 @@
 %global security_hardening none
-%define    OPENVMTOOLS_NAME            open-vm-tools
-%define    OPENVMTOOLS_VERSION         10.0.0
 Summary:        Kernel
 Name:        linux
-Version:    4.0.9
-Release:    5%{?dist}
+Version:    4.2.0
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution: Photon
-Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=355d1ab33bfea50442b54b7a594ae4d015ea47e0
-#Source1:    config-%{version}-generic.amd64
-Source1:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools/stable-10.0.0/open-vm-tools-10.0.0.tar.gz
-%define sha1 open-vm-tools=1658ab1b73438e746bb6f11f16fe570eaf753747
-Source2:	config-%{version}
+Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
+%define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
+Source1:	config-%{version}
 BuildRequires:    bc
 BuildRequires:    kbd
 BuildRequires:    kmod
@@ -64,21 +59,15 @@ The Linux package contains the Linux kernel doc files
 
 
 %prep
-%setup -c -n Linux-package -a 1
-cd %{OPENVMTOOLS_NAME}-%{OPENVMTOOLS_VERSION}
+%setup -q -n linux-4.2
 
 %build
-#make linux 
-cd %{name}-%{version}
 make mrproper
-cp %{SOURCE2} .config
+cp %{SOURCE1} .config
 make LC_ALL= oldconfig
-#make LC_ALL= silentoldconfig
-#make LC_ALL= defconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
 %install
-cd %{name}-%{version}
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
@@ -110,25 +99,6 @@ mv arch/x86_64 %{buildroot}/lib/modules/%{version}/build/arch/
 mv arch/x86 %{buildroot}/lib/modules/%{version}/build/arch/
 cp Makefile %{buildroot}/lib/modules/%{version}/build/
 
-# make open vm tools - vmhgfs
-cd ../%{OPENVMTOOLS_NAME}-%{OPENVMTOOLS_VERSION}
-#copy buildroot's kernel modules to chroot's kernel
-cp -R %{buildroot}/lib/modules/ /lib/modules/
-cd modules/linux/vmhgfs
-make %{?_smp_mflags} VM_KBUILD=%{version} OVT_SOURCE_DIR=/usr/src/photon/BUILD/Linux-package/%{OPENVMTOOLS_NAME}-%{OPENVMTOOLS_VERSION}/ VM_UNAME=%{version}
-# install vmhgfs
-mkdir %{buildroot}/lib/modules/%{version}/misc
-install -vm 755 vmhgfs.ko %{buildroot}/lib/modules/%{version}/misc/
-
-rm -rf /lib/modules
-#Load the vmhgfs module at boot
-install -vdm 755 %{buildroot}/etc/modules-load.d
-cat > %{buildroot}/etc/modules-load.d/vmhgfs.conf <<- "EOF"
-# Begin /etc/modules-load.d/vmhgfs.conf
-vmhgfs
-# End /etc/modules-load.d/vmhgfs.conf
-EOF
-
 %post
 /sbin/depmod -aq %{version}
 ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
@@ -145,7 +115,6 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /boot/config-%{version}
 /boot/vmlinuz-%{version}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
-%config(noreplace) /etc/modules-load.d/vmhgfs.conf
 /lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{version}/build
@@ -172,6 +141,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/sound
 
 %changelog
+*	Fri Oct 23 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1
+- 	Upgraded the generic linux kernel to version 4.2.0 & and updated timer handling to full tickless mode. 
 *	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.9-5
 - 	Added driver support for frame buffer devices and ACPI 
 *   Wed Sep 2 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-4
