@@ -1,0 +1,11 @@
+diff -ur shadow-original/libmisc/chkname.c shadow-4.1.5.1/libmisc/chkname.c
+--- shadow-original/libmisc/chkname.c	2009-07-12 15:24:45.000000000 -0700
++++ shadow-4.1.5.1/libmisc/chkname.c	2015-10-26 12:09:16.874933768 -0700
+@@ -58,6 +58,7 @@
+ 
+ 	while ('\0' != *++name) {
+ 		if (!(( ('a' <= *name) && ('z' >= *name) ) ||
++		      ( ('A' <= *name) && ('Z' >= *name) ) ||
+ 		      ( ('0' <= *name) && ('9' >= *name) ) ||
+ 		      ('_' == *name) ||
+ 		      ('-' == *name) ||
