@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.1.5.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -11,6 +11,7 @@ Source0:	http://cdn.debian.net/debian/pool/main/s/%{name}/%{name}_%{version}.ori
 %define sha1 shadow=6e4de75de58405d21b0377b926ae770afccd95bc
 Source1:	PAM-Configuration-Files-1.0.tar.gz
 %define sha1 PAM=018667e773afb7a6fafb03a1967202dbe9b7f232
+Patch0: chkname-allowcase.patch   
 BuildRequires: 	cracklib
 BuildRequires: 	cracklib-devel
 Requires:   	cracklib
@@ -24,6 +25,7 @@ in a secure way.
 %prep
 %setup -q -n %{name}-%{version}
 %setup -q -T -D -a 1
+%patch0 -p1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -96,6 +98,8 @@ done
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
 %changelog
+*	Mon Oct 26 2015 Sharath George <sharathg@vmware.com> 4.1.5.1-5
+-	Allow mixed case in username.
 *	Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-4
 -	Fixed PAM Configuration file for chpasswd
 *	Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
