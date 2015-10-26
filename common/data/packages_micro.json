@@ -2,7 +2,7 @@
     "packages":[
                 "bzip2", "pkg-config", "shadow", "procps-ng", "e2fsprogs",
                 "iana-etc", "bash",
-                "inetutils", "coreutils",
+                "net-tools", "coreutils",
                 "iproute2", "kbd", "systemd",
                 "util-linux",
                 "linux", 
