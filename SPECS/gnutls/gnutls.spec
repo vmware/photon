@@ -15,7 +15,7 @@ BuildRequires:	libtasn1-devel
 BuildRequires:	ca-certificates
 BuildRequires:	openssl-devel
 Requires:	nettle
-#Requires:	autogen-libopts
+Requires:	autogen-libopts
 Requires:	libtasn1
 Requires:	openssl
 Requires:	ca-certificates

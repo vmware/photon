@@ -12,6 +12,8 @@ Source0:	http://www.tazenda.demon.co.uk/phil/net-tools/%{name}-%{version}.tar.bz
 Patch0: 	http://www.linuxfromscratch.org/patches/blfs/6.3/net-tools-1.60-gcc34-3.patch
 Patch1:		http://www.linuxfromscratch.org/patches/blfs/6.3/net-tools-1.60-kernel_headers-2.patch
 Patch2:		http://www.linuxfromscratch.org/patches/blfs/6.3/net-tools-1.60-mii_ioctl-1.patch
+Obsoletes:	inetutils 
+Requires:	iputils 
 %description
 The Net-tools package is a collection of programs for controlling the network subsystem of the Linux kernel. 
 %prep
@@ -49,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*	Thu Oct 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.60-3
+-	Added changes to replace inetutils with net-tools
 *	Thu Jul 30 2015 Divya Thaluru <dthaluru@vmware.com> 1.60-2
 -	Disable building with parallel threads
 *	Mon Jul 13 2015 Divya Thaluru <dthaluru@vmware.com> 1.60-1
