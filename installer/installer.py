@@ -226,8 +226,9 @@ class Installer(object):
         selected_packages = self.install_config['packages']
         for package in selected_packages:
             pattern = package + '-[0-9]*.rpm'
+            pattern2 = package + '-v[0-9]*.rpm'
             for rpm in rpms:
-                if fnmatch.fnmatch(rpm['filename'], pattern):
+                if fnmatch.fnmatch(rpm['filename'], pattern) or fnmatch.fnmatch(rpm['filename'], pattern2):
                     rpm['package'] = package
                     self.rpms_tobeinstalled.append(rpm)
                     progressbar_num_items += rpm['size'] + rpm['size'] * self.install_factor
