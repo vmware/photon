@@ -50,6 +50,7 @@ getent group hadoop 2>/dev/null >/dev/null || /usr/sbin/groupadd -r hadoop
 /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
 
 %post
+source %{_sysconfdir}/profile.d/java-exports.sh
 bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
@@ -59,6 +60,7 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 /sbin/ldconfig
 
 %preun
+source %{_sysconfdir}/profile.d/java-exports.sh
 bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
@@ -67,8 +69,9 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --var-dir=%{_var}/zookeeper \
        --uninstall
 
-%postun	-p /sbin/ldconfig
+%postun
 /usr/sbin/userdel zookeeper
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
