@@ -51,7 +51,6 @@ ln -svfn ../run/lock %{buildroot}/var/lock
 install -vdm 755 %{buildroot}/var/{opt,cache,lib/{color,misc,locate},local}
 install -vdm 755 %{buildroot}/mnt/cdrom
 install -vdm 755 %{buildroot}/mnt/hgfs
-ln -svfn var/opt %{buildroot}/opt
 
 #
 #	6.6. Creating Essential Files and Symlinks
@@ -344,6 +343,9 @@ EOF
 
 ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 
+%post
+ln -svfn /var/opt /opt
+
 %files
 %defattr(-,root,root)
 #	Root filesystem
@@ -356,7 +358,6 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 
 /media
 %dir /mnt
-/opt
 %dir /proc
 %dir /root
 %dir /run
