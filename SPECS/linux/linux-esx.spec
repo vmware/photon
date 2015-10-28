@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux-esx
 Version:    4.2.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -11,18 +11,11 @@ Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:	config-esx-%{version}
-patch1:		01-blkdev-max-rq.patch
-patch2:		02-sysrq-Skip-synchronize_rcu-if-there-is-no-old-op.patch
-patch3:		03-enable-no-blink-by-default.patch
-patch4:		04-vmstat-update-interval.patch
-patch5:		05-pci-probe-vmware.patch
-patch6:		06-calibrate-delay-is-known-by-cpu-0.patch
-patch7:		07-perf.patch
-patch8:		08-No-wait-for-the-known-devices.patch
-patch9:		09-Turn-mmput-into-an-async-function.patch
-Patch10:	10-ptdamage.patch
-Patch11:	11-piix4-poweroff.patch
-Patch12:	12-sd-lower-log-level.patch
+patch1:		01-clear-linux.patch
+patch2:		02-pci-probe.patch
+patch3:		03-poweroff.patch
+patch4:		04-quiet-boot.patch
+patch5:		05-pv-ops.patch
 
 BuildRequires:    bc
 BuildRequires:    kbd
@@ -65,13 +58,6 @@ The Linux package contains the Linux kernel doc files
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
 
 %build
 make mrproper
@@ -93,7 +79,7 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd tsc=reliable no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 elevator=noop quiet nordrand noreplace-smp cpu_init_udelay=0  plymouth.enable=0
+photon_cmdline=init=/lib/systemd/systemd no_timer_check rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 quiet nordrand noreplace-smp cpu_init_udelay=0 plymouth.enable=0
 photon_linux=/boot/vmlinuz-esx-%{version}
 EOF
 
@@ -121,6 +107,12 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}-esx/build
 
 %changelog
+*   Wed Oct 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-5
+-   Import patches from kernel2 repo.
+-   Added pv-ops patch (timekeeping related improvements).
+-   Removed unnecessary cmdline params.
+-   .config changes: elevator=noop by default, paravirt clock enable,
+    initrd support, openvswitch module, x2apic enable.
 *   Mon Sep 21 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-4
 -   CDROM modules are added.
 *   Thu Sep 17 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-3
