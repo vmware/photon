@@ -1,0 +1,731 @@
+From d5e7229bec41406a4040a1ac9131e24cb1f8768d Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Wed, 30 Sep 2015 23:00:00 +0000
+Subject: [PATCH 1/5] Measure correct boot time.
+
+---
+ arch/x86/Kconfig          |  8 ++++++++
+ arch/x86/kernel/head_64.S | 16 ++++++++++++++++
+ init/main.c               | 11 +++++++++++
+ 3 files changed, 35 insertions(+)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index b3a1a5d..24141ac 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -708,6 +708,14 @@ config KVM_DEBUG_FS
+ 	  Statistics are displayed in debugfs filesystem. Enabling this option
+ 	  may incur significant overhead.
+ 
++config VMWARE
++	bool "VMware Guest support"
++	depends on PARAVIRT
++	default y
++	---help---
++	  This option enables various optimizations for running under the
++	  VMware hypervisor. It includes a correct boot time measurement.
++
+ source "arch/x86/lguest/Kconfig"
+ 
+ config PARAVIRT_TIME_ACCOUNTING
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 1d40ca8..eccf2d7 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -65,6 +65,16 @@ startup_64:
+ 	 * tables and then reload them.
+ 	 */
+ 
++#ifdef CONFIG_VMWARE
++	/*
++	 * Read a TSC value first
++	 */
++	rdtsc
++	shl	$0x20, %rdx
++	or	%rax, %rdx
++	mov	%rdx, tsc_at_head(%rip)
++#endif
++
+ 	/*
+ 	 * Compute the delta between the address I am compiled to run at and the
+ 	 * address I am actually running at.
+@@ -512,6 +522,12 @@ early_gdt_descr:
+ early_gdt_descr_base:
+ 	.quad	INIT_PER_CPU_VAR(gdt_page)
+ 
++#ifdef CONFIG_VMWARE
++	.globl tsc_at_head
++tsc_at_head:
++	.quad 0
++#endif
++
+ ENTRY(phys_base)
+ 	/* This must match the first entry in level2_kernel_pgt */
+ 	.quad   0x0000000000000000
+diff --git a/init/main.c b/init/main.c
+index 5650655..c386186 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -929,6 +929,9 @@ static int try_to_run_init_process(const char *init_filename)
+ }
+ 
+ static noinline void __init kernel_init_freeable(void);
++#ifdef CONFIG_VMWARE
++extern unsigned long long tsc_at_head;
++#endif
+ 
+ static int __ref kernel_init(void *unused)
+ {
+@@ -944,6 +947,14 @@ static int __ref kernel_init(void *unused)
+ 
+ 	flush_delayed_fput();
+ 
++#ifdef CONFIG_VMWARE
++	printk(KERN_INFO "Pre-Kernel time: %5dms\n",
++		(unsigned int) (tsc_at_head / tsc_khz));
++	printk(KERN_INFO "Kernel boot time:%5dms\n",
++		(unsigned int) ((__native_read_tsc() - tsc_at_head) /
++			tsc_khz));
++#endif
++
+ 	if (ramdisk_execute_command) {
+ 		ret = run_init_process(ramdisk_execute_command);
+ 		if (!ret)
+-- 
+1.9.1
+
+
+From 500436e32d4dffae5d78f12be72c2e6784ab8cfb Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 2 Oct 2015 20:00:06 +0000
+Subject: [PATCH 2/5] PV io_delay for VMware guest.
+
+---
+ arch/x86/kernel/cpu/vmware.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 628a059..8fdd031 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -26,6 +26,7 @@
+ #include <asm/div64.h>
+ #include <asm/x86_init.h>
+ #include <asm/hypervisor.h>
++#include <asm/timer.h>
+ 
+ #define CPUID_VMWARE_INFO_LEAF	0x40000000
+ #define VMWARE_HYPERVISOR_MAGIC	0x564D5868
+@@ -75,6 +76,16 @@ static unsigned long vmware_get_tsc_khz(void)
+ 	return tsc_hz;
+ }
+ 
++static void __init paravirt_ops_setup(void)
++{
++	pv_info.name = "VMware";
++	pv_cpu_ops.io_delay = paravirt_nop,
++
++#ifdef CONFIG_X86_IO_APIC
++	no_timer_check = 1;
++#endif
++}
++
+ static void __init vmware_platform_setup(void)
+ {
+ 	uint32_t eax, ebx, ecx, edx;
+@@ -86,6 +97,8 @@ static void __init vmware_platform_setup(void)
+ 	else
+ 		printk(KERN_WARNING
+ 		       "Failed to get TSC freq from the hypervisor\n");
++
++	paravirt_ops_setup();
+ }
+ 
+ /*
+-- 
+1.9.1
+
+
+From adff5db39b45d8adef2b4579ec46ab1bb721a81f Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Wed, 7 Oct 2015 22:53:18 +0000
+Subject: [PATCH 3/5] Improved tsc based sched_clock & clocksource.
+
+---
+ arch/x86/Kconfig             |  1 +
+ arch/x86/kernel/cpu/vmware.c | 66 ++++++++++++++++++++++++++++++++++++++++++++
+ init/main.c                  | 11 --------
+ kernel/sched/clock.c         |  2 ++
+ 4 files changed, 69 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 24141ac..ca0be27 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -711,6 +711,7 @@ config KVM_DEBUG_FS
+ config VMWARE
+ 	bool "VMware Guest support"
+ 	depends on PARAVIRT
++	select PARAVIRT_CLOCK
+ 	default y
+ 	---help---
+ 	  This option enables various optimizations for running under the
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 8fdd031..004825e 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -27,6 +27,7 @@
+ #include <asm/x86_init.h>
+ #include <asm/hypervisor.h>
+ #include <asm/timer.h>
++#include <linux/sched.h>
+ 
+ #define CPUID_VMWARE_INFO_LEAF	0x40000000
+ #define VMWARE_HYPERVISOR_MAGIC	0x564D5868
+@@ -76,10 +77,43 @@ static unsigned long vmware_get_tsc_khz(void)
+ 	return tsc_hz;
+ }
+ 
++static struct cyc2ns_data vmware_cyc2ns;
++extern unsigned long long tsc_at_head;
++static cycle_t vmware_clock_get_cycles(struct clocksource *cs)
++{
++	return __native_read_tsc();
++}
++
++static struct clocksource clocksource_vmware = {
++	.name = "vmware-clock",
++	.read = vmware_clock_get_cycles,
++	.rating = 400,
++	.mask = CLOCKSOURCE_MASK(64),
++	.flags = CLOCK_SOURCE_IS_CONTINUOUS,
++};
++
++struct clocksource * __init clocksource_default_clock(void)
++{
++	return &clocksource_vmware;
++}
++
++#define CYC2NS_SCALE_FACTOR 8
++
++static u64 vmware_sched_clock(void)
++{
++	u64 ret;
++
++	ret = __native_read_tsc() - vmware_cyc2ns.cyc2ns_offset;
++	ret = mul_u64_u32_shr(ret, vmware_cyc2ns.cyc2ns_mul, CYC2NS_SCALE_FACTOR);
++	return ret;
++}
++
++extern __read_mostly int sched_clock_running;
+ static void __init paravirt_ops_setup(void)
+ {
+ 	pv_info.name = "VMware";
+ 	pv_cpu_ops.io_delay = paravirt_nop,
++	pv_time_ops.sched_clock = vmware_sched_clock;
+ 
+ #ifdef CONFIG_X86_IO_APIC
+ 	no_timer_check = 1;
+@@ -88,6 +122,7 @@ static void __init paravirt_ops_setup(void)
+ 
+ static void __init vmware_platform_setup(void)
+ {
++	uint64_t cpu_khz;
+ 	uint32_t eax, ebx, ecx, edx;
+ 
+ 	VMWARE_PORT(GETHZ, eax, ebx, ecx, edx);
+@@ -98,6 +133,19 @@ static void __init vmware_platform_setup(void)
+ 		printk(KERN_WARNING
+ 		       "Failed to get TSC freq from the hypervisor\n");
+ 
++	cpu_khz = eax | (((uint64_t)ebx) << 32);
++	do_div(cpu_khz, 1000);
++	printk(KERN_INFO "Pre Kernel boot time: %dms\n",
++		(unsigned int) (tsc_at_head / cpu_khz));
++
++	vmware_cyc2ns.cyc2ns_mul =
++		DIV_ROUND_CLOSEST(NSEC_PER_MSEC << CYC2NS_SCALE_FACTOR,
++				  cpu_khz);
++	vmware_cyc2ns.cyc2ns_shift = CYC2NS_SCALE_FACTOR;
++	vmware_cyc2ns.cyc2ns_offset = tsc_at_head;
++
++	clocksource_register_khz(&clocksource_vmware, cpu_khz);
++
+ 	paravirt_ops_setup();
+ }
+ 
+@@ -158,3 +206,21 @@ const __refconst struct hypervisor_x86 x86_hyper_vmware = {
+ 	.x2apic_available	= vmware_legacy_x2apic_available,
+ };
+ EXPORT_SYMBOL(x86_hyper_vmware);
++
++void read_boot_clock64(struct timespec64 *ts)
++{
++	struct timespec64 now;
++	u64 delta, delta_nsec;
++	u32 rem;
++
++	read_persistent_clock64(&now);
++	delta = __native_read_tsc() - vmware_cyc2ns.cyc2ns_offset;
++	delta_nsec = mul_u64_u32_shr(delta, vmware_cyc2ns.cyc2ns_mul,
++					CYC2NS_SCALE_FACTOR);
++	ts->tv_sec = now.tv_sec - div_s64_rem(delta_nsec, NSEC_PER_SEC, &rem);
++	ts->tv_nsec = now.tv_nsec - rem;
++	while (unlikely(ts->tv_nsec < 0)) {
++		ts->tv_sec--;
++		ts->tv_nsec += NSEC_PER_SEC;
++	}
++}
+diff --git a/init/main.c b/init/main.c
+index c386186..5650655 100644
+--- a/init/main.c
++++ b/init/main.c
+@@ -929,9 +929,6 @@ static int try_to_run_init_process(const char *init_filename)
+ }
+ 
+ static noinline void __init kernel_init_freeable(void);
+-#ifdef CONFIG_VMWARE
+-extern unsigned long long tsc_at_head;
+-#endif
+ 
+ static int __ref kernel_init(void *unused)
+ {
+@@ -947,14 +944,6 @@ static int __ref kernel_init(void *unused)
+ 
+ 	flush_delayed_fput();
+ 
+-#ifdef CONFIG_VMWARE
+-	printk(KERN_INFO "Pre-Kernel time: %5dms\n",
+-		(unsigned int) (tsc_at_head / tsc_khz));
+-	printk(KERN_INFO "Kernel boot time:%5dms\n",
+-		(unsigned int) ((__native_read_tsc() - tsc_at_head) /
+-			tsc_khz));
+-#endif
+-
+ 	if (ramdisk_execute_command) {
+ 		ret = run_init_process(ramdisk_execute_command);
+ 		if (!ret)
+diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
+index c0a2051..284a7ba 100644
+--- a/kernel/sched/clock.c
++++ b/kernel/sched/clock.c
+@@ -385,8 +385,10 @@ u64 cpu_clock(int cpu)
+  */
+ u64 local_clock(void)
+ {
++#ifndef CONFIG_VMWARE
+ 	if (!sched_clock_stable())
+ 		return sched_clock_cpu(raw_smp_processor_id());
++#endif
+ 
+ 	return sched_clock();
+ }
+-- 
+1.9.1
+
+
+From 3bd5760c3b1f6cb39568361561d7d1e5440f1109 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 12 Oct 2015 22:43:38 +0000
+Subject: [PATCH 4/5] Move read_boot_clock64 into pv_time_ops.
+
+---
+ arch/x86/Kconfig                      | 14 ++++++--
+ arch/x86/include/asm/paravirt.h       |  5 +++
+ arch/x86/include/asm/paravirt_types.h |  5 +++
+ arch/x86/kernel/cpu/vmware.c          | 66 ++++++++++++++++++++---------------
+ arch/x86/kernel/head_64.S             |  8 +----
+ arch/x86/kernel/paravirt.c            |  7 ++++
+ arch/x86/kernel/setup.c               |  9 +++++
+ kernel/sched/clock.c                  |  7 +++-
+ 8 files changed, 83 insertions(+), 38 deletions(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index ca0be27..d3ef8ef 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -709,13 +709,23 @@ config KVM_DEBUG_FS
+ 	  may incur significant overhead.
+ 
+ config VMWARE
+-	bool "VMware Guest support"
++	bool "VMware guest support"
+ 	depends on PARAVIRT
+ 	select PARAVIRT_CLOCK
+ 	default y
+ 	---help---
+ 	  This option enables various optimizations for running under the
+-	  VMware hypervisor. It includes a correct boot time measurement.
++	  VMware hypervisor. It includes vmware-clock clocksource and some
++	  pv-ops implementations.
++
++config VMWARE_ONLY
++	bool "Build for VMware only"
++	depends on VMWARE
++	default n
++	---help---
++	  This option enables VMware guest specific optimizations. If you say
++	  yes here, the kernel will probably work only under VMware hypervisor.
++
+ 
+ source "arch/x86/lguest/Kconfig"
+ 
+diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
+index d143bfa..ffcbd18 100644
+--- a/arch/x86/include/asm/paravirt.h
++++ b/arch/x86/include/asm/paravirt.h
+@@ -201,6 +201,11 @@ static inline u64 paravirt_steal_clock(int cpu)
+ 	return PVOP_CALL1(u64, pv_time_ops.steal_clock, cpu);
+ }
+ 
++static inline void paravirt_read_boot_clock64(struct timespec64 *ts)
++{
++	PVOP_VCALL1(pv_time_ops.read_boot_clock64, ts);
++}
++
+ static inline unsigned long long paravirt_read_pmc(int counter)
+ {
+ 	return PVOP_CALL1(u64, pv_cpu_ops.read_pmc, counter);
+diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
+index a6b8f9f..7adcd55 100644
+--- a/arch/x86/include/asm/paravirt_types.h
++++ b/arch/x86/include/asm/paravirt_types.h
+@@ -51,6 +51,10 @@ struct mm_struct;
+ struct desc_struct;
+ struct task_struct;
+ struct cpumask;
++#if __BITS_PER_LONG == 64
++# define timespec64 timespec
++#endif
++struct timespec64;
+ 
+ /*
+  * Wrapper type for pointers to code which uses the non-standard
+@@ -98,6 +102,7 @@ struct pv_time_ops {
+ 	unsigned long long (*sched_clock)(void);
+ 	unsigned long long (*steal_clock)(int cpu);
+ 	unsigned long (*get_tsc_khz)(void);
++	void (*read_boot_clock64)(struct timespec64 *ts);
+ };
+ 
+ struct pv_cpu_ops {
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 004825e..1bf1fe3 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -77,8 +77,10 @@ static unsigned long vmware_get_tsc_khz(void)
+ 	return tsc_hz;
+ }
+ 
++#define CYC2NS_SCALE_FACTOR 8
+ static struct cyc2ns_data vmware_cyc2ns;
+-extern unsigned long long tsc_at_head;
++u64 __initdata tsc_at_head;
++
+ static cycle_t vmware_clock_get_cycles(struct clocksource *cs)
+ {
+ 	return __native_read_tsc();
+@@ -92,12 +94,14 @@ static struct clocksource clocksource_vmware = {
+ 	.flags = CLOCK_SOURCE_IS_CONTINUOUS,
+ };
+ 
++#ifdef CONFIG_VMWARE_ONLY
++/* We want to use clocksource_vmware from the beginning to avoid drifting in
++   monotonic clock */
+ struct clocksource * __init clocksource_default_clock(void)
+ {
+ 	return &clocksource_vmware;
+ }
+-
+-#define CYC2NS_SCALE_FACTOR 8
++#endif
+ 
+ static u64 vmware_sched_clock(void)
+ {
+@@ -108,12 +112,33 @@ static u64 vmware_sched_clock(void)
+ 	return ret;
+ }
+ 
+-extern __read_mostly int sched_clock_running;
++
++/* Function to read the exact time the system has been started. It will be
++   used as zero time for monotonic clock */
++static void vmware_read_boot_clock64(struct timespec64 *ts)
++{
++	struct timespec64 now;
++	u64 delta, delta_nsec;
++	u32 rem;
++
++	read_persistent_clock64(&now);
++	delta = __native_read_tsc() - vmware_cyc2ns.cyc2ns_offset;
++	delta_nsec = mul_u64_u32_shr(delta, vmware_cyc2ns.cyc2ns_mul,
++					CYC2NS_SCALE_FACTOR);
++	ts->tv_sec = now.tv_sec - div_s64_rem(delta_nsec, NSEC_PER_SEC, &rem);
++	ts->tv_nsec = now.tv_nsec - rem;
++	while (unlikely(ts->tv_nsec < 0)) {
++		ts->tv_sec--;
++		ts->tv_nsec += NSEC_PER_SEC;
++	}
++}
++
+ static void __init paravirt_ops_setup(void)
+ {
+ 	pv_info.name = "VMware";
+ 	pv_cpu_ops.io_delay = paravirt_nop,
+ 	pv_time_ops.sched_clock = vmware_sched_clock;
++	pv_time_ops.read_boot_clock64 = vmware_read_boot_clock64;
+ 
+ #ifdef CONFIG_X86_IO_APIC
+ 	no_timer_check = 1;
+@@ -122,7 +147,7 @@ static void __init paravirt_ops_setup(void)
+ 
+ static void __init vmware_platform_setup(void)
+ {
+-	uint64_t cpu_khz;
++	uint64_t vtsc_khz;
+ 	uint32_t eax, ebx, ecx, edx;
+ 
+ 	VMWARE_PORT(GETHZ, eax, ebx, ecx, edx);
+@@ -133,18 +158,18 @@ static void __init vmware_platform_setup(void)
+ 		printk(KERN_WARNING
+ 		       "Failed to get TSC freq from the hypervisor\n");
+ 
+-	cpu_khz = eax | (((uint64_t)ebx) << 32);
+-	do_div(cpu_khz, 1000);
++	vtsc_khz = eax | (((uint64_t)ebx) << 32);
++	do_div(vtsc_khz, 1000);
+ 	printk(KERN_INFO "Pre Kernel boot time: %dms\n",
+-		(unsigned int) (tsc_at_head / cpu_khz));
++		(unsigned int) (tsc_at_head / vtsc_khz));
+ 
+ 	vmware_cyc2ns.cyc2ns_mul =
+ 		DIV_ROUND_CLOSEST(NSEC_PER_MSEC << CYC2NS_SCALE_FACTOR,
+-				  cpu_khz);
++				  vtsc_khz);
+ 	vmware_cyc2ns.cyc2ns_shift = CYC2NS_SCALE_FACTOR;
+ 	vmware_cyc2ns.cyc2ns_offset = tsc_at_head;
+ 
+-	clocksource_register_khz(&clocksource_vmware, cpu_khz);
++	clocksource_register_khz(&clocksource_vmware, vtsc_khz);
+ 
+ 	paravirt_ops_setup();
+ }
+@@ -156,6 +181,9 @@ static void __init vmware_platform_setup(void)
+  */
+ static uint32_t __init vmware_platform(void)
+ {
++#ifndef CONFIG_VMWARE_ONLY
++	tsc_at_head = __native_read_tsc();
++#endif
+ 	if (cpu_has_hypervisor) {
+ 		unsigned int eax;
+ 		unsigned int hyper_vendor_id[3];
+@@ -206,21 +234,3 @@ const __refconst struct hypervisor_x86 x86_hyper_vmware = {
+ 	.x2apic_available	= vmware_legacy_x2apic_available,
+ };
+ EXPORT_SYMBOL(x86_hyper_vmware);
+-
+-void read_boot_clock64(struct timespec64 *ts)
+-{
+-	struct timespec64 now;
+-	u64 delta, delta_nsec;
+-	u32 rem;
+-
+-	read_persistent_clock64(&now);
+-	delta = __native_read_tsc() - vmware_cyc2ns.cyc2ns_offset;
+-	delta_nsec = mul_u64_u32_shr(delta, vmware_cyc2ns.cyc2ns_mul,
+-					CYC2NS_SCALE_FACTOR);
+-	ts->tv_sec = now.tv_sec - div_s64_rem(delta_nsec, NSEC_PER_SEC, &rem);
+-	ts->tv_nsec = now.tv_nsec - rem;
+-	while (unlikely(ts->tv_nsec < 0)) {
+-		ts->tv_sec--;
+-		ts->tv_nsec += NSEC_PER_SEC;
+-	}
+-}
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index eccf2d7..1dfd805 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -65,7 +65,7 @@ startup_64:
+ 	 * tables and then reload them.
+ 	 */
+ 
+-#ifdef CONFIG_VMWARE
++#ifdef CONFIG_VMWARE_ONLY
+ 	/*
+ 	 * Read a TSC value first
+ 	 */
+@@ -522,12 +522,6 @@ early_gdt_descr:
+ early_gdt_descr_base:
+ 	.quad	INIT_PER_CPU_VAR(gdt_page)
+ 
+-#ifdef CONFIG_VMWARE
+-	.globl tsc_at_head
+-tsc_at_head:
+-	.quad 0
+-#endif
+-
+ ENTRY(phys_base)
+ 	/* This must match the first entry in level2_kernel_pgt */
+ 	.quad   0x0000000000000000
+diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
+index 58bcfb6..abf40ec 100644
+--- a/arch/x86/kernel/paravirt.c
++++ b/arch/x86/kernel/paravirt.c
+@@ -210,6 +210,12 @@ static u64 native_steal_clock(int cpu)
+ 	return 0;
+ }
+ 
++static void native_read_boot_clock64(struct timespec64 *ts)
++{
++	ts->tv_sec = 0;
++	ts->tv_nsec = 0;
++}
++
+ /* These are in entry.S */
+ extern void native_iret(void);
+ extern void native_irq_enable_sysexit(void);
+@@ -320,6 +326,7 @@ struct pv_init_ops pv_init_ops = {
+ struct pv_time_ops pv_time_ops = {
+ 	.sched_clock = native_sched_clock,
+ 	.steal_clock = native_steal_clock,
++	.read_boot_clock64 = native_read_boot_clock64,
+ };
+ 
+ __visible struct pv_irq_ops pv_irq_ops = {
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 80f874b..0d7022e 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -1289,3 +1289,12 @@ static int __init register_kernel_offset_dumper(void)
+ 	return 0;
+ }
+ __initcall(register_kernel_offset_dumper);
++
++/* We need to define a real function for read_boot_clock64, to override the
++   weak default version */
++#ifdef CONFIG_PARAVIRT
++void read_boot_clock64(struct timespec64 *ts)
++{
++	paravirt_read_boot_clock64(ts);
++}
++#endif
+diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
+index 284a7ba..615aeb4 100644
+--- a/kernel/sched/clock.c
++++ b/kernel/sched/clock.c
+@@ -385,7 +385,12 @@ u64 cpu_clock(int cpu)
+  */
+ u64 local_clock(void)
+ {
+-#ifndef CONFIG_VMWARE
++	/*
++	 * sched_clock is stable and running for VMware guest.
++	 * Let's disable this checking. It will allow us to have
++	 * printk timestamps from the beginning
++	 */
++#if !defined(CONFIG_VMWARE_ONLY) || !defined(CONFIG_PRINTK_TIME)
+ 	if (!sched_clock_stable())
+ 		return sched_clock_cpu(raw_smp_processor_id());
+ #endif
+-- 
+1.9.1
+
+
+From aa93eaec3f709633007ab6ce3ddbb8aaa455b557 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 5 Nov 2015 21:02:52 +0000
+Subject: [PATCH 5/5] Fix clocksource_vmware issue in VM version <= 10
+
+---
+ arch/x86/kernel/cpu/vmware.c | 48 +++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 45 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 1bf1fe3..0b89bb9 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -79,7 +79,8 @@ static unsigned long vmware_get_tsc_khz(void)
+ 
+ #define CYC2NS_SCALE_FACTOR 8
+ static struct cyc2ns_data vmware_cyc2ns;
+-u64 __initdata tsc_at_head;
++uint64_t __initdata tsc_at_head;
++uint64_t __initdata vtsc_khz;
+ 
+ static cycle_t vmware_clock_get_cycles(struct clocksource *cs)
+ {
+@@ -95,11 +96,45 @@ static struct clocksource clocksource_vmware = {
+ };
+ 
+ #ifdef CONFIG_VMWARE_ONLY
++/*
++ * clocksource_vmware_periodic - is a temporary clocksource only for
++ * early boot initialization.
++ * Hack to avoid infinite looping in calibrate_APIC_clock() when
++ * tsc_deadline_timer is not supported by hypervisor (VM version <= 10)
++ * calibrate_APIC_clock() relies on _periodic_ timer!
++ * In that case we do not need to use clocksource that is valid for
++ * hres/oneshot timer.
++ */
++static struct clocksource __initdata clocksource_vmware_periodic = {
++	.name = "vmware-clock-periodic",
++	.read = vmware_clock_get_cycles,
++	.rating = 100,
++	.mask = CLOCKSOURCE_MASK(64),
++};
++
++static struct clocksource __initdata * initial_clocksource;
++
++/*
++ * clocksource_vmware_register
++ *
++ * Time to register real clocksource. It will be activated in
++ * clocksource_done_booting().
++ */
++static int __init clocksource_vmware_register(void)
++{
++	if (!boot_cpu_has(X86_FEATURE_TSC_DEADLINE_TIMER)) {
++		clocksource_register_khz(&clocksource_vmware, vtsc_khz);
++		clocksource_unregister(&clocksource_vmware_periodic);
++	}
++	return 0;
++}
++subsys_initcall(clocksource_vmware_register);
++
+ /* We want to use clocksource_vmware from the beginning to avoid drifting in
+    monotonic clock */
+ struct clocksource * __init clocksource_default_clock(void)
+ {
+-	return &clocksource_vmware;
++	return initial_clocksource;
+ }
+ #endif
+ 
+@@ -147,7 +182,6 @@ static void __init paravirt_ops_setup(void)
+ 
+ static void __init vmware_platform_setup(void)
+ {
+-	uint64_t vtsc_khz;
+ 	uint32_t eax, ebx, ecx, edx;
+ 
+ 	VMWARE_PORT(GETHZ, eax, ebx, ecx, edx);
+@@ -169,7 +203,15 @@ static void __init vmware_platform_setup(void)
+ 	vmware_cyc2ns.cyc2ns_shift = CYC2NS_SCALE_FACTOR;
+ 	vmware_cyc2ns.cyc2ns_offset = tsc_at_head;
+ 
++#ifdef CONFIG_VMWARE_ONLY
++	if (!boot_cpu_has(X86_FEATURE_TSC_DEADLINE_TIMER))
++		initial_clocksource = &clocksource_vmware_periodic;
++	else
++		initial_clocksource = &clocksource_vmware;
++	clocksource_register_khz(initial_clocksource, vtsc_khz);
++#else
+ 	clocksource_register_khz(&clocksource_vmware, vtsc_khz);
++#endif
+ 
+ 	paravirt_ops_setup();
+ }
+-- 
+1.9.1
+
