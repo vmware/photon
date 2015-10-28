@@ -38,6 +38,7 @@ Group:		Development/Libraries
 License:	LGPLv2
 Requires:	%{name} = %{version}-%{release}
 Requires:	device-mapper-devel = %{version}-%{release}
+Requires:   util-linux-devel
 
 %description	devel
 This package contains files needed to develop applications that use

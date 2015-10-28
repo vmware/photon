@@ -8,7 +8,7 @@
                 "gobject-introspection", "gobject-introspection-devel", "gobject-introspection-python", "procps-ng-devel", 
                 "bash-lang", "kbd", "coreutils-lang", "libxslt", "docbook-xml", "docbook-xsl", "gtk-doc", "popt-devel", "texinfo", "tar", 
                 "kubernetes", "cyrus-sasl", "openldap", "binutils", "binutils-devel", "python-iniparse", "psmisc", "etcd", "openssl-devel", 
-                "util-linux-lang", "db-docs", "linux-dev", "linux-docs", "mpc", "json-glib", "json-glib-devel", 
+                "util-linux-lang", "util-linux-devel", "db-docs", "linux-dev", "linux-docs", "mpc", "json-glib", "json-glib-devel", 
                 "automake", "libpcap", "tcpdump", "elfutils-libelf-devel", "elfutils", "elfutils-devel", "elfutils-devel-static", "elfutils-libelf-devel-static", 
                 "go", "grub2","grub2-lang", "diffutils", "groff", "man-db", "mpfr-devel", "man-pages", 
                 "hawkey-devel", "python-hawkey", "libxml2-devel", "ruby", "readline-devel", "wget",
