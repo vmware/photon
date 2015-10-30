@@ -9,7 +9,7 @@
             "nspr", "libxml2-devel", "hawkey-devel", "lua", "libarchive", "nss", "rpm", "librepo",
             "librepo-devel", "dracut", "cracklib", "ncurses", "zlib", "file", "elfutils-libelf",
             "libsoup", "device-mapper-libs", "hawkey", "readline", "libsoup-devel", "device-mapper",
-            "mkinitcpio", "python2-libs", "dracut-tools", "libgsystem", "nettle-devel", "libhif",
+            "mkinitcpio", "python2-libs", "python-xml", "dracut-tools", "libgsystem", "nettle-devel", "libhif",
             "libtasn1-devel", "libarchive-devel", "cracklib-dicts", "findutils", "efivar", "grub2",
             "cpio", "shadow", "dbus", "python-requests", "pkg-config", "dosfstools", "sed", "json-glib",
             "python-hawkey", "libhif-devel", "grub2-efi", "linux", "cracklib-python", "gpgme-devel",
