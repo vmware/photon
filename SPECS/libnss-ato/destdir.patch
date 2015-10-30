@@ -1,0 +1,19 @@
+diff --git a/Makefile b/Makefile
+index 6d9a628..23977f2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -3,11 +3,12 @@
+ #### Start of system configuration section. ####
+ 
+ CC = gcc
+-INSTALL = /usr/bin/install
++INSTALL = /usr/bin/install -D
+ INSTALL_PROGRAM = ${INSTALL}
+ INSTALL_DATA = ${INSTALL} -m 644
+ 
+-prefix = ""
++DESTDIR ?= ""
++prefix = ${DESTDIR}
+ exec_prefix = ${prefix}
+ 
+ # Where the installed binary goes.
