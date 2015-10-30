@@ -1,7 +1,7 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
 Version:	4.2.8p3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms
@@ -9,8 +9,6 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/%{name}-%{version}.tar.gz
 %define sha1 ntp=fc624396f8d9f9bc282da30c8e8e527ade7d420f
-Source1:	http://www.linuxfromscratch.org/blfs/downloads/svn/blfs-bootscripts-20140919.tar.bz2
-%define sha1 blfs-bootscripts=762b68f79f84463a6b1dabb69e9dbdc2c43f32d8
 Requires:	libcap >= 2.24
 BuildRequires:	which
 BuildRequires:	libcap-devel
@@ -23,7 +21,6 @@ package is the official reference implementation of the
 NTP protocol.
 %prep
 %setup -q
-tar xf %{SOURCE1}
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -58,11 +55,26 @@ driftfile /var/cache/ntp.drift
 pidfile   /var/run/ntpd.pid
 EOF
 install -D -m644 COPYRIGHT %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
-#	Install daemon script
-pushd blfs-bootscripts-20140919
-make DESTDIR=%{buildroot} install-ntpd
-popd
+rm -rf %{buildroot}/etc/rc.d/*
+
 %{_fixperms} %{buildroot}/*
+mkdir -p %{buildroot}/lib/systemd/system
+cat << EOF >> %{buildroot}/lib/systemd/system/ntpd.service
+[Unit]
+Description=Network Time Service
+After=syslog.target network.targe
+Documentation=man:ntpd
+Conflicts=systemd-timesyncd.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/ntpd -g -u ntp:ntp
+PrivateTmp=true
+
+[Install]
+
+WantedBy=multi-user.target
+EOF
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %pre
@@ -72,28 +84,23 @@ fi
 if ! getent passwd ntp >/dev/null; then
 	useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
 fi
-%postun
-/sbin/ldconfig
-if getent passwd ntp >/dev/null; then
-	userdel ntp
+%post
+%{_sbindir}/ldconfig 
+if [ $1 -eq 1 ] ; then
+    # Initial installation
+    # Enabled by default per "runs once then goes away" exception
+    /bin/systemctl enable ntpd.service     >/dev/null 2>&1 || :
 fi
-if getent group ntp >/dev/null; then
-	groupdel ntp
-fi
-%post	-p /sbin/ldconfig
+
+%preun
+/bin/systemctl disable ntpd.service
+
 %clean
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-/etc/ntp.conf
-/etc/rc.d/init.d/ntpd
-/etc/rc.d/rc0.d/K46ntpd
-/etc/rc.d/rc1.d/K46ntpd
-/etc/rc.d/rc2.d/K46ntpd
-/etc/rc.d/rc3.d/S26ntpd
-/etc/rc.d/rc4.d/S26ntpd
-/etc/rc.d/rc5.d/S26ntpd
-/etc/rc.d/rc6.d/K46ntpd
+%attr(0750, root, root) %config(noreplace) /etc/ntp.conf
+/lib/systemd/system/ntpd.service
 %{_bindir}/*
 %{_datadir}/doc/%{name}-%{version}/*
 %{_datadir}/doc/ntp/*
@@ -102,7 +109,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_datadir}/ntp/lib/NTP/Util.pm
+
 %changelog
+*	Fri Oct 30 2015 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p3-2
+-   Add ntpd to systemd service.
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.8p3-1
 -	Updating to version 4.2.8p3
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.6p5-1
