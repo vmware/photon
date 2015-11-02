@@ -1,7 +1,7 @@
 Summary:	Linux Pluggable Authentication Modules
 Name:		Linux-PAM
 Version:	1.1.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD and GPLv2+
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
@@ -19,6 +19,15 @@ Group: System Environment/Base
 Requires: Linux-PAM >= 1.1.8
 %description lang
 These are the additional language files of Linux-PAM.
+
+%package devel
+Summary: Development libraries and header files for the Linux-PAM library
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}
+
+%description devel
+Linux-PAM-devel contains the development libraries and header files for
+Linux-PAM.
 
 %prep
 %setup -q
@@ -54,17 +63,24 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/*
 /sbin/*
 %{_lib}/security/*
-%{_libdir}/*.so*
+%{_libdir}/*.so.*
 %{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
-%{_includedir}/security/*
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
 
+%files devel
+%defattr(-,root,root)
+%{_includedir}/security/*
+%{_libdir}/*.so
+%{_includedir}/security/*
+
 %changelog
+*   Wed Oct 14 2015 Xiaolin Li <xiaolinl@vmware.com> 1.1.8-3
+-   Move development libraries and header files to devel package.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
 -   Update according to UsrMove.
 *	Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
