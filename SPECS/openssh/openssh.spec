@@ -16,7 +16,7 @@ Requires:	openssl
 Requires:	Linux-PAM
 Requires: 	shadow
 BuildRequires:  openssl-devel
-BuildRequires:	Linux-PAM
+BuildRequires:	Linux-PAM-devel
 BuildRequires:  krb5
 BuildRequires:  e2fsprogs-devel
 %description

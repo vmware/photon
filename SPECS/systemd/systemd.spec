@@ -18,7 +18,7 @@ BuildRequires:	intltool
 BuildRequires:	gperf
 BuildRequires:	libcap-devel
 BuildRequires:	xz-devel
-BuildRequires:	Linux-PAM
+BuildRequires:	Linux-PAM-devel
 BuildRequires:	XML-Parser
 BuildRequires:	kbd
 BuildRequires:	kmod
