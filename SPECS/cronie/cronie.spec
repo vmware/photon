@@ -10,7 +10,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	libselinux-devel
-BuildRequires:	Linux-PAM
+BuildRequires:	Linux-PAM-devel
 Requires:	libselinux
 Requires:	Linux-PAM
 %description

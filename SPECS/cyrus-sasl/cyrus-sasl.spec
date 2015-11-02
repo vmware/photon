@@ -16,7 +16,7 @@ Requires:       Linux-PAM
 BuildRequires:	openssl-devel
 BuildRequires:  krb5 >= 1.12
 BuildRequires:  e2fsprogs-devel
-BuildRequires:  Linux-PAM
+BuildRequires:  Linux-PAM-devel
 %description
 The Cyrus SASL package contains a Simple Authentication and Security 
 Layer, a method for adding authentication support to 

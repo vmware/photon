@@ -19,7 +19,7 @@ BuildRequires:     xerces-c-devel
 BuildRequires:     xml-security-c-devel
 BuildRequires:     libdnet
 BuildRequires:     libmspack
-BuildRequires:    Linux-PAM
+BuildRequires:    Linux-PAM-devel
 BuildRequires:    openssl-devel
 BuildRequires:    procps-ng-devel
 Requires:         filesystem kmod coreutils
