@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.2.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -72,7 +72,9 @@ install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 install -vdm 755 %{buildroot}/etc/modprobe.d
+install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
+
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
 cp -v System.map        %{buildroot}/boot/system.map-%{version}
 cp -v .config            %{buildroot}/boot/config-%{version}
@@ -88,16 +90,13 @@ EOF
 rm -rf %{buildroot}/lib/modules/%{version}/source
 rm -rf %{buildroot}/lib/modules/%{version}/build
 
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}'
+find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}'
+find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}'
+find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}'
 
-
-#Copy necessary files to build other kernel modules.   
-install -vdm 755 %{buildroot}/lib/modules/%{version}/build
-install -vdm 755 %{buildroot}/lib/modules/%{version}/build/arch
-mv include %{buildroot}/lib/modules/%{version}/build/
-mv scripts %{buildroot}/lib/modules/%{version}/build/
-mv arch/x86_64 %{buildroot}/lib/modules/%{version}/build/arch/
-mv arch/x86 %{buildroot}/lib/modules/%{version}/build/arch/
-cp Makefile %{buildroot}/lib/modules/%{version}/build/
+cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release} # copy .config manually to be where it's expected to be
+ln -sf "/usr/src/%{name}-headers-%{version}-%{release}" "%{buildroot}/lib/modules/%{version}/build"
 
 %post
 /sbin/depmod -aq %{version}
@@ -125,11 +124,10 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 %{_defaultdocdir}/%{name}-%{version}/*
 
-
-
 %files dev
 %defattr(-,root,root)
 /lib/modules/%{version}/build
+/usr/src/%{name}-headers-%{version}-%{release}
 
 %files drivers-gpu
 %defattr(-,root,root)
@@ -141,6 +139,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/sound
 
 %changelog
+*	Wed Nov 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-3
+- 	Added the build essential files in the dev sub-package.
 *	Mon Nov 09 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-2
 - 	Enable Geneve module support for generic kernel.
 *	Fri Oct 23 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1
