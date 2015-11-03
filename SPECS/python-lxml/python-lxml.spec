@@ -11,6 +11,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
+BuildRequires:  python-xml
 BuildRequires:	libxslt
 BuildRequires:	cython
 Requires:	python2

@@ -22,6 +22,7 @@ BuildRequires:	subversion-devel >= 1.8.13
 BuildRequires:	cyrus-sasl >= 2.1.26
 BuildRequires:	python2 >= 2.6
 BuildRequires:	python2-libs
+BuildRequires:  python-xml
 BuildRequires:	python2-devel
 Requires:	apr >= 1.5.2
 Requires:	apr-util >= 1.5.4
