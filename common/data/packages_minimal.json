@@ -3,7 +3,7 @@
                 "pkg-config", "bash", "bzip2", "shadow", "procps-ng", "iana-etc", "coreutils", "bc", "libtool", "net-tools",
                 "findutils", "xz", "iproute2", "util-linux", "kmod", "linux", "ca-certificates", "curl", "iptables", "Linux-PAM",
                 "systemd", "dbus", "file", "e2fsprogs", "rpm",
-                "openssh", "gdbm", "python2", 
+                "openssh", "gdbm", "python2", "python2-libs", "python-xml", 
                 "photon-release",
                 "sed", "grep", "cpio", "gzip", "vim", "db", "tdnf",
                 "open-vm-tools",
