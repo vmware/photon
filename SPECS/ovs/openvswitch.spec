@@ -19,6 +19,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  python2 >= 2.7.0
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
+BuildRequires:  python-xml
 BuildRequires:  python-setuptools
 
 Requires:       libcap-ng
@@ -26,6 +27,7 @@ Requires:       openssl
 Requires:       PyYAML
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-xml
 Requires:       python-configobj
 Requires:       python-jsonpatch
 Requires:       python-prettytable

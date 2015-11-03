@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.9
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -46,6 +46,14 @@ BuildRequires:	ncurses-devel
 The python interpreter can be embedded into applications wanting to 
 use python as an embedded scripting language.  The python-libs package 
 provides the libraries needed for this.
+
+%package -n python-xml
+Summary: XML libraries for python runtime
+Group: Applications/System
+Requires: python2-libs = %{version}-%{release}
+
+%description -n python-xml
+The python-xml package provides the libraries needed for XML manipulation.
 
 %package devel
 Summary: The libraries and header files needed for Python development.
@@ -158,11 +166,16 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python2.7/sqlite3/test
 %exclude %{_libdir}/python2.7/idlelib/idle_test
 %exclude %{_libdir}/python2.7/test
-#%exclude %{_libdir}/python2.7/unittest
 %exclude %{_libdir}/python2.7/lib-dynload/_ctypes_test.so
 %exclude %{_libdir}/python2.7/config
 %exclude %{_libdir}/python2.7/config/*
 %exclude %{_libdir}/libpython2.7.so
+%exclude %{_libdir}/python2.7/xml
+%exclude %{_libdir}/python2.7/lib-dynload/pyexpat.so
+
+%files -n python-xml
+%{_libdir}/python2.7/xml
+%{_libdir}/python2.7/lib-dynload/pyexpat.so
 
 %files devel
 %defattr(-,root,root)
@@ -186,9 +199,14 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Thu Oct 29 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.7.9-4
+-	Seperate python-xml package from python-libs package
+
 *	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 2.7.9-3
 -	Provide /bin/python
+
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-2
 -	Adding coreutils package to run time required package
+
 *	Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-1
 -	Initial build.	First version

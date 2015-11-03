@@ -11,6 +11,7 @@ Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{ver
 %define sha1 mkinitcpio=0e124990118d170f6852efe46d889b5adae6dfd6
 BuildRequires: asciidoc
 BuildRequires: python2-libs
+BuildRequires: python-xml
 BuildRequires: docbook-xsl
 BuildRequires: libxml2-devel
 BuildRequires: libxslt

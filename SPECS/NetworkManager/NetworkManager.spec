@@ -20,6 +20,7 @@ BuildRequires:	nss-devel
 BuildRequires:	libndp-devel
 BuildRequires:	python2
 BuildRequires:	python2-libs
+BuildRequires:  python-xml
 BuildRequires:	dhcp-client
 BuildRequires:	libsoup-devel
 BuildRequires:  autogen

@@ -32,6 +32,7 @@ Group:      Development/Languages
 Requires:   gobject-introspection
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
+BuildRequires:  python-xml
 Requires:	python2
 %description python
 This package contains a Python package for handling the introspection
@@ -45,6 +46,7 @@ Requires:   glib-devel
 Requires:   python2
 Requires:   python2-devel
 Requires:   python2-libs
+Requires:   python-xml
 
 %description devel
 Libraries and headers for gobject-introspection.
