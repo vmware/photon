@@ -17,9 +17,10 @@ Requires:	tcsh
 %description
 The Vim package contains a powerful text editor.
 
-%package extra
-Summary: Extra files for Vim text editor
-Group: Applications/Editors
+%package 	extra
+Summary: 	Extra files for Vim text editor
+Group: 		Applications/Editors
+Requires:	tcsh
 
 %description extra
 The vim extra package contains a extra files for powerful text editor.
