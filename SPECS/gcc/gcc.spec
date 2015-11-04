@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	4.8.2
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -23,6 +23,12 @@ Summary:	GNU C Library
 Group:         	System Environment/Libraries
 %description -n libgcc
 The libgcc package contains GCC shared libraries for gcc .
+
+%package -n     libgcc-atomic
+Summary:        GNU C Library for atomic counter updates
+Group:          System Environment/Libraries
+%description -n libgcc-atomic
+The libgcc package contains GCC shared libraries for atomic counter updates.
 
 %package -n	libgcc-devel
 Summary:	GNU C Library
@@ -160,6 +166,14 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libgcc_s.so.*
 %endif
 
+%files -n libgcc-atomic
+%defattr(-,root,root)
+%ifarch x86_64
+%{_lib64dir}/libatomic.so*
+%else
+%{_lib64dir}/libatomic.so*
+%endif
+
 %files -n libgcc-devel
 %defattr(-,root,root)
 %ifarch x86_64
@@ -214,6 +228,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Mon Nov 02 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.8.2-5
+-   Put libatomic.so into its own package.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-4
 -   Updated group.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-3
