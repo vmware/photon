@@ -141,8 +141,9 @@ class PackageUtils(object):
         self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
         
         listRPMFiles=[]
+        listSRPMFiles=[]
         try:
-            listRPMFiles = self.buildRPM(chrootSpecPath+"/"+specName,chrootLogsFilePath, chrootCmd)
+            listRPMFiles,listSRPMFiles = self.buildRPM(chrootSpecPath+"/"+specName,chrootLogsFilePath, chrootCmd)
         except Exception as e:
             self.logger.error("Failed while building rpm:"+package)
             raise e
@@ -152,6 +153,9 @@ class PackageUtils(object):
 
         for rpmFile in listRPMFiles:
             self.copyRPM(chrootID+"/"+rpmFile, constants.rpmPath)
+
+        for srpmFile in listSRPMFiles:
+            self.copyRPM(chrootID+"/"+srpmFile, constants.sourceRpmPath)
 
     def buildRPM(self,specFile,logFile,chrootCmd):
         
@@ -174,13 +178,15 @@ class PackageUtils(object):
         fileContents=logfile.readlines()
         logfile.close()
         listRPMFiles=[]
+        listSRPMFiles=[]
         for i in range(0,len(fileContents)):
             if re.search("^Wrote:",fileContents[i]):
                 listcontents=fileContents[i].split()
                 if (len(listcontents) == 2) and listcontents[1].strip()[-4:] == ".rpm" and listcontents[1].find("/RPMS/") != -1:
                     listRPMFiles.append(listcontents[1])
-        
-        return listRPMFiles    
+                if (len(listcontents) == 2) and listcontents[1].strip()[-8:] == ".src.rpm" and listcontents[1].find("/SRPMS/") != -1:
+                    listSRPMFiles.append(listcontents[1])
+        return listRPMFiles,listSRPMFiles    
     
     def findRPMFileForGivenPackage(self,package):
         cmdUtils = CommandUtils()

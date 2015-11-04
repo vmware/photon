@@ -16,6 +16,7 @@ class constants(object):
     buildPatch=False
     inputRPMSPath=""
     rpmCheck=False
+    sourceRpmPath=""
     noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison","openjdk","go"]
     listToolChainPackages=["linux-api-headers", "glibc","zlib", "file",
         "binutils","gmp","mpfr", "mpc","gcc", "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
@@ -60,6 +61,7 @@ class constants(object):
         constants.specPath = options.specPath
         constants.sourcePath = options.sourcePath
         constants.rpmPath = options.rpmPath
+        constants.sourceRpmPath = options.sourceRpmPath
         constants.topDirPath = options.topDirPath
         constants.logPath = options.logPath
         constants.prevPublishRPMRepo=options.publishRPMSPath
