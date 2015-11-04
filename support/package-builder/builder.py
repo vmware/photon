@@ -34,6 +34,7 @@ def main():
     parser.add_option("-n",  "--build-number", dest="buildNumber",  default="0000000")
     parser.add_option("-v",  "--release-version", dest="releaseVersion",  default="NNNnNNN")
     parser.add_option("-u",  "--enable-rpmcheck", dest="rpmCheck",  default=False, action ="store_true")
+    parser.add_option("-a",  "--source-rpm-path",  dest="sourceRpmPath",  default="../../stage/SRPMS")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -83,6 +84,9 @@ def main():
     if not os.path.isdir(options.rpmPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/x86_64")
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
+
+    if not os.path.isdir(options.sourceRpmPath):
+        cmdUtils.runCommandInShell("mkdir -p "+options.sourceRpmPath)
     
     if not os.path.isdir(options.buildRootPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.buildRootPath)

@@ -180,6 +180,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
         $(PHOTON_PACKAGE_BUILDER) -o full \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
+                -a $(PHOTON_SRPMS_DIR) \
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
@@ -215,6 +216,7 @@ tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES
         $(PHOTON_PACKAGE_BUILDER) -o full \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
+                -a $(PHOTON_SRPMS_DIR) \
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
@@ -233,6 +235,7 @@ tool-chain-stage2: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES
         $(PHOTON_PACKAGE_BUILDER) -o full \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
+                -a $(PHOTON_SRPMS_DIR) \
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
@@ -280,6 +283,8 @@ $(PHOTON_STAGE):
 	@echo "Building RPMS folders..."
 	@test -d $(PHOTON_RPMS_DIR_NOARCH) || $(MKDIR) -p $(PHOTON_RPMS_DIR_NOARCH)
 	@test -d $(PHOTON_RPMS_DIR_X86_64) || $(MKDIR) -p $(PHOTON_RPMS_DIR_X86_64)
+	@echo "Building SRPMS folders..."
+	@test -d $(PHOTON_SRPMS_DIR) || $(MKDIR) -p $(PHOTON_SRPMS_DIR)
 	@echo "Building UPDATED_RPMS folders..."
 	@test -d $(PHOTON_UPDATED_RPMS_DIR_NOARCH) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_NOARCH)
 	@test -d $(PHOTON_UPDATED_RPMS_DIR_X86_64) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_X86_64)
@@ -442,6 +447,7 @@ check-packer-ovf-plugin:
                               -b $(PHOTON_CHROOT_PATH) \
                               -s $(PHOTON_SPECS_DIR) \
                               -r $(PHOTON_RPMS_DIR) \
+                              -a $(PHOTON_SRPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
                               -c $(PHOTON_BINTRAY_CONFIG) \
