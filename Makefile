@@ -65,6 +65,7 @@ micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
+                -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -98,6 +99,7 @@ minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
+                -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -111,6 +113,7 @@ ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_ostreehost.json \
                 -o $(PHOTON_STAGE)/common/data \
+		-s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -124,6 +127,7 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_livecd.json \
                 -o $(PHOTON_STAGE)/common/data \
+                -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
@@ -154,6 +158,7 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
+                -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
