@@ -32,10 +32,7 @@ sed -i -e 's|# HAVE_IP_TOOLS=0|HAVE_IP_TOOLS=1|g' \
 make
 %install
 make BASEDIR=%{buildroot} BINDIR=%{_bindir} SBINDIR=%{_sbindir} install
-rm %{buildroot}/bin/hostname
-rm %{buildroot}/bin/dnsdomainname
-rm %{buildroot}/usr/share/man/man1/dnsdomainname.1
-rm %{buildroot}/usr/share/man/man1/hostname.1
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
@@ -51,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*	Thu Nov 05 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.60-3
+-	Added changes package hostname & dnsdomain name as well.
 *	Thu Oct 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.60-3
 -	Added changes to replace inetutils with net-tools
 *	Thu Jul 30 2015 Divya Thaluru <dthaluru@vmware.com> 1.60-2
