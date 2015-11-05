@@ -96,23 +96,40 @@ class Installer(object):
             self.window.show_window()
             self.progress_bar.initialize('Initializing installation...')
             self.progress_bar.show()
-
+            #self.rpm_path = "https://dl.bintray.com/vmware/photon_release_1.0_TP2_x86_64"
+            if self.rpm_path.startswith("https://"):
+                cmdoption = 's/baseurl.*/baseurl={}/g'.format(self.rpm_path.replace('/','\/'))
+                process = subprocess.Popen(['sed', '-i', cmdoption,'/etc/yum.repos.d/photon-iso.repo']) 
+                retval = process.wait()
+                if retval != 0:
+                    modules.commons.log(modules.commons.LOG_INFO, "Failed to reset repo")
+                    self.exit_gracefully(None, None)
         self.execute_modules(modules.commons.PRE_INSTALL)
 
         self.initialize_system()
 
+        if self.iso_installer:
+            selected_packages = self.install_config['packages']
+            self.progress_bar.update_num_items(len(selected_packages))
+            for package in selected_packages:
+                self.progress_bar.update_message('Installing {0}...'.format(package))
+                process = subprocess.Popen(['tdnf', 'install', package, '--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=self.output, stderr=subprocess.STDOUT)
+                retval = process.wait()
+                # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
+                if retval != 0 and retval != 137:
+                    modules.commons.log(modules.commons.LOG_ERROR, "Failed install: {} with error code {}".format(package, retval))
+                    self.exit_gracefully(None, None)
+                self.progress_bar.increment(1)
+        else:
         #install packages
-        for rpm in self.rpms_tobeinstalled:
-            # We already installed the filesystem in the preparation
-            if rpm['package'] == 'filesystem':
-                continue
-            if self.iso_installer:
-                self.progress_bar.update_message('Installing {0}...'.format(rpm['package']))
-            return_value = self.install_package(rpm['filename'])
-            if return_value != 0:
-                self.exit_gracefully(None, None)
-            if self.iso_installer:
-                self.progress_bar.increment(rpm['size'] * self.install_factor)
+            for rpm in self.rpms_tobeinstalled:
+                # We already installed the filesystem in the preparation
+                if rpm['package'] == 'filesystem':
+                    continue
+                return_value = self.install_package(rpm['filename'])
+                if return_value != 0:
+                    self.exit_gracefully(None, None)
+
 
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
@@ -233,18 +250,9 @@ class Installer(object):
                     self.rpms_tobeinstalled.append(rpm)
                     progressbar_num_items += rpm['size'] + rpm['size'] * self.install_factor
                     break
-
-        if self.iso_installer:
-            self.progress_bar.update_num_items(progressbar_num_items)
-
         # Copy the rpms
         for rpm in self.rpms_tobeinstalled:
-            if self.iso_installer:
-                message = 'Copying {0}...'.format(rpm['filename'])
-                self.progress_bar.update_message(message)
             shutil.copy(rpm['path'], self.photon_root + '/RPMS/')
-            if self.iso_installer:
-                self.progress_bar.increment(rpm['size'])
 
     def copy_files(self):
         # Make the photon_root directory if not exits
@@ -264,18 +272,29 @@ class Installer(object):
         else:
             self.copy_rpms()
 
+    def bind_installer(self):
+        # Make the photon_root directory if not exits
+        process = subprocess.Popen(['mkdir', '-p', os.path.join(self.photon_root, "installer")], stdout=self.output)
+        retval = process.wait()
+        process = subprocess.Popen(['mount', '--bind', '/installer', os.path.join(self.photon_root, "installer")], stdout=self.output)
+        retval = process.wait()
+
     def initialize_system(self):
         #Setup the disk
         if (not self.install_config['iso_system']):
             process = subprocess.Popen([self.mount_command, '-w', self.photon_root, self.install_config['disk']['root']], stdout=self.output)
             retval = process.wait()
         
-        self.copy_files()
-        
-        #Setup the filesystem basics
-        process = subprocess.Popen([self.prepare_command, '-w', self.photon_root], stdout=self.output)
-        retval = process.wait()
-
+        if self.iso_installer:
+            self.bind_installer()
+            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, 'install'], stdout=self.output)
+            retval = process.wait()
+        else:
+            self.copy_files()
+            #Setup the filesystem basics
+            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root], stdout=self.output)
+            retval = process.wait()
+    
     def finalize_system(self):
         #Setup the disk
         process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.finalize_command, '-w', self.photon_root], stdout=self.output)
@@ -286,6 +305,8 @@ class Installer(object):
             # just copy the initramfs /boot -> /photon_mnt/boot
             shutil.copy(os.path.join(initrd_dir, initrd_file_name), self.photon_root + '/boot/')
             # remove the installer directory
+            process = subprocess.Popen(['umount', os.path.join(self.photon_root, "installer")], stdout=self.output)
+            retval = process.wait()
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
         elif not self.install_config['vmdk_install']:
