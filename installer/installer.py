@@ -16,7 +16,6 @@ import fnmatch
 import signal
 import sys
 import glob
-import urllib
 import modules.commons
 import xml.etree.ElementTree as ET
 from jsonwrapper import JsonWrapper
@@ -96,23 +95,40 @@ class Installer(object):
             self.window.show_window()
             self.progress_bar.initialize('Initializing installation...')
             self.progress_bar.show()
-
+            #self.rpm_path = "https://dl.bintray.com/vmware/photon_release_1.0_TP2_x86_64"
+            if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
+                cmdoption = 's/baseurl.*/baseurl={}/g'.format(self.rpm_path.replace('/','\/'))
+                process = subprocess.Popen(['sed', '-i', cmdoption,'/etc/yum.repos.d/photon-iso.repo']) 
+                retval = process.wait()
+                if retval != 0:
+                    modules.commons.log(modules.commons.LOG_INFO, "Failed to reset repo")
+                    self.exit_gracefully(None, None)
         self.execute_modules(modules.commons.PRE_INSTALL)
 
         self.initialize_system()
 
+        if self.iso_installer:
+            self.get_size_of_packages()
+            selected_packages = self.install_config['packages']
+            for package in selected_packages:
+                self.progress_bar.update_message('Installing {0}...'.format(package))
+                process = subprocess.Popen(['tdnf', 'install', package, '--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=self.output, stderr=subprocess.STDOUT)
+                retval = process.wait()
+                # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
+                if retval != 0 and retval != 137:
+                    modules.commons.log(modules.commons.LOG_ERROR, "Failed install: {} with error code {}".format(package, retval))
+                    self.exit_gracefully(None, None)
+                self.progress_bar.increment(self.size_of_packages[package])
+        else:
         #install packages
-        for rpm in self.rpms_tobeinstalled:
-            # We already installed the filesystem in the preparation
-            if rpm['package'] == 'filesystem':
-                continue
-            if self.iso_installer:
-                self.progress_bar.update_message('Installing {0}...'.format(rpm['package']))
-            return_value = self.install_package(rpm['filename'])
-            if return_value != 0:
-                self.exit_gracefully(None, None)
-            if self.iso_installer:
-                self.progress_bar.increment(rpm['size'] * self.install_factor)
+            for rpm in self.rpms_tobeinstalled:
+                # We already installed the filesystem in the preparation
+                if rpm['package'] == 'filesystem':
+                    continue
+                return_value = self.install_package(rpm['filename'])
+                if return_value != 0:
+                    self.exit_gracefully(None, None)
+
 
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
@@ -150,75 +166,9 @@ class Installer(object):
                 self.window.content_window().getch()
 
         return ActionResult(True, None)
-
-    def download_file(self, url, directory):
-        # TODO: Add errors handling
-        urlopener = urllib.URLopener()
-        urlopener.retrieve(url, os.path.join(directory, os.path.basename(url)))
-
-    def download_rpms(self):
-        repodata_dir = os.path.join(self.photon_root, 'RPMS/repodata')
-        process = subprocess.Popen(['mkdir', '-p', repodata_dir], stdout=self.output)
-        retval = process.wait()
-
-        import hawkey
-        self.install_factor = 1
-        # Load the repo data
-        sack = hawkey.Sack()
         
-        repomd_filename = "repomd.xml"
-        repomd_url = os.path.join(self.rpm_path, "repodata/repomd.xml")
-
-        self.download_file(repomd_url, repodata_dir)
-
-        # parse to the xml to get the primary and files list
-        tree = ET.parse(os.path.join(repodata_dir, repomd_filename))
-        # TODO: Get the namespace dynamically from the xml file
-        ns = {'ns': 'http://linux.duke.edu/metadata/repo'}
-
-        primary_location = tree.find("./ns:data[@type='primary']/ns:location", ns).get("href");
-        filelists_location = tree.find("./ns:data[@type='filelists']/ns:location", ns).get("href");
-        primary_filename = os.path.basename(primary_location);
-        filelists_filename = os.path.basename(filelists_location);
-
-        self.download_file(os.path.join(self.rpm_path, primary_location), repodata_dir)
-        self.download_file(os.path.join(self.rpm_path, filelists_location), repodata_dir)
-        
-        repo = hawkey.Repo("installrepo")
-        repo.repomd_fn = os.path.join(repodata_dir, repomd_filename)
-        repo.primary_fn = os.path.join(repodata_dir, primary_filename)
-        repo.filelists_fn = os.path.join(repodata_dir, filelists_filename)
-        
-        sack.load_yum_repo(repo, load_filelists=True)
-
-        progressbar_num_items = 0
-        self.rpms_tobeinstalled = []
-        selected_packages = self.install_config['packages']
-        for package in selected_packages:
-            # Locate the package
-            q = hawkey.Query(sack).filter(name=package)
-            if (len(q) > 0):
-                progressbar_num_items +=  q[0].size + q[0].size * self.install_factor
-                self.rpms_tobeinstalled.append({'package': package, 'size': q[0].size, 'location': q[0].location, 'filename': os.path.basename(q[0].location)})
-            else:
-                modules.commons.log(modules.commons.LOG_WARNING, "Package {} not found in the repo".format(package))
-                #self.exit_gracefully(None, None)
-
-        self.progress_bar.update_num_items(progressbar_num_items)
-
-        # Download the rpms
-        for rpm in self.rpms_tobeinstalled:
-            message = 'Downloading {0}...'.format(rpm['filename'])
-            self.progress_bar.update_message(message)
-            self.download_file(os.path.join(self.rpm_path, rpm['location']), os.path.join(self.photon_root, "RPMS"))
-            self.progress_bar.increment(rpm['size'])
-        
-        # update the rpms path
-        self.rpm_path = os.path.join(self.photon_root, "RPMS")
-
     def copy_rpms(self):
         # prepare the RPMs list
-        self.install_factor = 3
         rpms = []
         for root, dirs, files in os.walk(self.rpm_path):
             for name in files:
@@ -226,7 +176,6 @@ class Installer(object):
                 size = os.path.getsize(file)
                 rpms.append({'filename': name, 'path': file, 'size': size})
 
-        progressbar_num_items = 0
         self.rpms_tobeinstalled = []
         selected_packages = self.install_config['packages']
         for package in selected_packages:
@@ -236,20 +185,10 @@ class Installer(object):
                 if fnmatch.fnmatch(rpm['filename'], pattern) or fnmatch.fnmatch(rpm['filename'], pattern2):
                     rpm['package'] = package
                     self.rpms_tobeinstalled.append(rpm)
-                    progressbar_num_items += rpm['size'] + rpm['size'] * self.install_factor
                     break
-
-        if self.iso_installer:
-            self.progress_bar.update_num_items(progressbar_num_items)
-
         # Copy the rpms
         for rpm in self.rpms_tobeinstalled:
-            if self.iso_installer:
-                message = 'Copying {0}...'.format(rpm['filename'])
-                self.progress_bar.update_message(message)
             shutil.copy(rpm['path'], self.photon_root + '/RPMS/')
-            if self.iso_installer:
-                self.progress_bar.increment(rpm['size'])
 
     def copy_files(self):
         # Make the photon_root directory if not exits
@@ -263,11 +202,17 @@ class Installer(object):
         # Create the rpms directory
         process = subprocess.Popen(['mkdir', '-p', self.photon_root + '/RPMS'], stdout=self.output)
         retval = process.wait()
+        self.copy_rpms()
 
-        if self.rpm_path.startswith("http://"):
-            self.download_rpms()
-        else:
-            self.copy_rpms()
+    def bind_installer(self):
+        # Make the photon_root/installer directory if not exits
+        process = subprocess.Popen(['mkdir', '-p', os.path.join(self.photon_root, "installer")], stdout=self.output)
+        retval = process.wait()
+        # The function finalize_system will access the file /installer/mk-finalize-system.sh after chroot to photon_root. 
+        # Bind the /installer folder to self.photon_root/installer, so that after chroot to photon_root,
+        # the file can still be accessed as /installer/mk-finalize-system.sh.
+        process = subprocess.Popen(['mount', '--bind', '/installer', os.path.join(self.photon_root, "installer")], stdout=self.output)
+        retval = process.wait()
 
     def update_fstab(self):
         fstab_file = open(os.path.join(self.photon_root, "etc/fstab"), "w")
@@ -321,12 +266,16 @@ class Installer(object):
             process = subprocess.Popen(command, stdout=self.output)
             retval = process.wait()
         
-        self.copy_files()
-        
-        #Setup the filesystem basics
-        process = subprocess.Popen([self.prepare_command, '-w', self.photon_root], stdout=self.output)
-        retval = process.wait()
-
+        if self.iso_installer:
+            self.bind_installer()
+            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, 'install'], stdout=self.output)
+            retval = process.wait()
+        else:
+            self.copy_files()
+            #Setup the filesystem basics
+            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root], stdout=self.output)
+            retval = process.wait()
+    
     def finalize_system(self):
         #Setup the disk
         process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.finalize_command, '-w', self.photon_root], stdout=self.output)
@@ -336,6 +285,9 @@ class Installer(object):
         if self.iso_installer:
             # just copy the initramfs /boot -> /photon_mnt/boot
             shutil.copy(os.path.join(initrd_dir, initrd_file_name), self.photon_root + '/boot/')
+            # unmount the installer directory
+            process = subprocess.Popen(['umount', os.path.join(self.photon_root, "installer")], stdout=self.output)
+            retval = process.wait()
             # remove the installer directory
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
@@ -415,6 +367,32 @@ class Installer(object):
                 modules.commons.log(modules.commons.LOG_ERROR, "Error: not able to execute module {}".format(module))
                 continue
             mod.execute(module, self.ks_config, self.install_config, self.photon_root)
+
+    def get_install_size_of_a_package(self, name_size_pairs, package):
+        modules.commons.log(modules.commons.LOG_INFO, "Find the install size of: {} ".format(package))
+        for index, name in enumerate(name_size_pairs, start=0):
+            if name[name.find(":") + 1:].strip() == package.strip():  
+                item = name_size_pairs[index + 1] 
+                size = item[item.find("(") + 1:item.find(")")]
+                return int(size)
+
+    def get_size_of_packages(self):
+        #call tdnf info to get the install size of all the packages.
+        process = subprocess.Popen(['tdnf', 'info', '--installroot', self.photon_root], stdout=subprocess.PIPE)
+        out,err = process.communicate()
+        if err != None and err != 0:
+            modules.commons.log(modules.commons.LOG_ERROR, "Failed to get infomation from : {} with error code {}".format(package, err))
+
+        name_size_pairs = re.findall("(?:^Name.*$)|(?:^.*Install Size.*$)", out, re.M)
+        selected_packages = self.install_config['packages']
+        self.size_of_packages = {}
+        progressbar_num_items = 0
+        for package in selected_packages:
+            size = self.get_install_size_of_a_package(name_size_pairs, package)
+            progressbar_num_items += size;
+            self.size_of_packages[package] = size;
+        self.progress_bar.update_num_items(progressbar_num_items)    
+
 
     def run(self, command, comment = None):
         if comment != None:

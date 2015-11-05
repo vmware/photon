@@ -71,6 +71,17 @@ mkdir -p ${BUILDROOT}/etc/systemd/scripts
 
 cp BUILD_DVD/fstab ${BUILDROOT}/etc/fstab
 
+mkdir -p ${BUILDROOT}/etc/yum.repos.d
+cat >> ${BUILDROOT}/etc/yum.repos.d/photon-iso.repo <<EOF
+[photon-iso]
+name=VMWare Photon Linux 1.0(x86_64)
+baseurl=file:///mnt/cdrom/RPMS
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=1
+enabled=1
+skip_if_unavailable=True​
+EOF
+
 #- Step 7 - Create installer script
 if [ "$LIVE_CD" = false ] ; then
 
