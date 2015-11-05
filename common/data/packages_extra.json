@@ -9,5 +9,5 @@
 		"dhcp-client","dhcp-server","dhcp-libs","dhcp-devel","initscripts","net-tools",
 	        "jaxws-ri","commons-daemon","runit", "python-pyasn1", "WALinuxAgent", "linux-esx",
 	        "python-Twisted", "python-zope.interface", "python-ipaddr", "chkconfig", "libnss-ato",
-		"procmail","dmidecode"]
+		"procmail","dmidecode","iperf"]
 }
