@@ -129,7 +129,7 @@ if __name__ == '__main__':
     parser.add_option("-p", "--package-list-file", dest="package_list_file", default="../common/data/build_install_options_all.json")
     parser.add_option("-m", "--stage-path", dest="stage_path", default="../stage")
     parser.add_option("-c", "--dracut-configuration", dest="dracut_configuration_file", default="../common/data/dracut_configuration.json")
-
+    parser.add_option("-s", "--json-data-path", dest="json_data_path", default="../stage/common/data/")
     (options,  args) = parser.parse_args()
     if options.iso_path:
         # Check the arguments
@@ -226,7 +226,7 @@ if __name__ == '__main__':
         rpm_list = " ".join(create_rpm_list_to_copy_in_iso(options.package_list_file, options.output_data_path))
         files_to_copy = " ".join(create_additional_file_list_to_copy_in_iso(os.path.abspath(options.stage_path), options.package_list_file))
         live_cd = get_live_cd_status_string(options.package_list_file)
-        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd, options.output_data_path])
+        process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd, options.json_data_path])
         retval = process.wait()
 
     # Cleaning up for vmdk
