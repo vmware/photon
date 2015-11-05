@@ -11,7 +11,7 @@ rm -f $PHOTON_IMG_OUTPUT_PATH/*.ova
 sed "s|VMDK_IMAGE|$PHOTON_IMG_OUTPUT_PATH/photon-ova.vmdk|" vmx-template > /tmp/vmx-temp.vmx
 sed "s|VMDK_IMAGE|$PHOTON_IMG_OUTPUT_PATH/photon-custom.vmdk|" vmx-template > /tmp/vmx-temp-custom.vmx
 
-cp update_custom_password.py $PHOTON_IMG_OUTPUT_PATH/
+cp ../update_custom_password.py $PHOTON_IMG_OUTPUT_PATH/
 
 cd $SRC_ROOT/tools/src/vixDiskUtil
 mkdir -p $SRC_ROOT/tools/bin
