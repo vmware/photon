@@ -5,6 +5,7 @@
 MKDIR=/bin/mkdir
 RM=/bin/rm
 RMDIR=/bin/rm -rf
+RMDIRSAFE=/bin/rm -r
 CP=/bin/cp
 MV=/bin/mv
 TAR=/bin/tar
@@ -14,6 +15,7 @@ SHASUM=/usr/bin/shasum
 PACKER=/usr/local/bin/packer
 VAGRANT=/usr/bin/vagrant
 VAGRANT_BUILD=vagrant
+FIND=/usr/bin/find
 
 SRCROOT := $(realpath $(SRCROOT))
 MAKEROOT := $(realpath $(MAKEROOT))

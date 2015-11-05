@@ -326,7 +326,7 @@ ostree-repo: $(PHOTON_PACKAGES)
 		$(SRCROOT)/support/ostree-tools/make-ostree-image.sh $(SRCROOT); \
 	fi
 
-clean: clean-install clean-chroot
+clean: clean-install clean-chroot clean-logs
 	@echo "Deleting Photon ISO..."
 	@$(RM) -f $(PHOTON_STAGE)/photon-*.iso
 	@echo "Deleting stage dir..."
@@ -347,6 +347,13 @@ clean-chroot:
 	@if [ -d $(PHOTON_CHROOT_PATH) ]; then \
 		$(PHOTON_CHROOT_CLEANER) $(PHOTON_CHROOT_PATH); \
 	fi
+
+clean-logs:
+	@echo "Cleaning log files..."
+	@if [ -d $(PHOTON_LOGS_DIR) ]; then \
+		$(FIND) $(PHOTON_LOGS_DIR) -name "*.log" -type f -delete; \
+	fi
+	$(RMDIRSAFE) $(PHOTON_LOGS_DIR)
 
 photon-build-machine: check-packer check-vagrant
 	@echo "Building photon-build-machine with Packer..."
