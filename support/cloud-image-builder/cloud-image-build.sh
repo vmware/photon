@@ -34,7 +34,7 @@ cp $VMDK_CONFIG_FILE $VMDK_CONFIG_SAFE_FILE
 cp ${BUILD_SCRIPTS_PATH}/mk-setup-vmdk.sh .
 cp ${BUILD_SCRIPTS_PATH}/mk-clean-vmdk.sh .
 
-if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
+if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ] && [ $IMG_NAME != "ova_ovs" ]
   then
     cp ${BUILD_SCRIPTS_PATH}/mk-setup-grub.sh .
 fi
@@ -54,6 +54,7 @@ if [ -n "$ADDITIONAL_RPMS_PATH" ]
 fi
 
 ./photonInstaller.py -p $GENERATED_DATA_PATH/build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $INSTALLER_PATH/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
+cat $VMDK_CONFIG_SAFE_FILE
 rm $VMDK_CONFIG_SAFE_FILE
 
 cd $BUILD_SCRIPTS_PATH
@@ -94,7 +95,7 @@ if [ -n "$ADDITIONAL_RPMS_PATH" ]
     rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/additional_rpms/
 fi
 
-if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ]
+if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ] && [ $IMG_NAME != "ova_ovs" ]
   then
     #Copy the initrd image
     rm -rf /tmp/initrd*
