@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -22,6 +22,7 @@ BuildRequires:  python2-libs
 BuildRequires:  python-xml
 BuildRequires:  python-setuptools
 
+Requires:       libgcc-atomic
 Requires:       libcap-ng
 Requires:       openssl
 Requires:       PyYAML
@@ -126,6 +127,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/man/man8/vtep-ctl.8.gz
 
 %changelog
+*       Sat Oct 31 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-2
+-       OVS requires libatomic.so.1 provided by gcc.
 *       Mon Oct 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-1
 -       Update to OVS v2.4.0
 *       Fri May 29 2015 Kumar Kaushik <kaushikk@vmware.com> 2.3.1-1
