@@ -1,7 +1,7 @@
 Summary:	Networking Tools
 Name:		net-tools
 Version:	1.60
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://net-tools.sourceforge.net
 Group:		System Environment/Base
@@ -24,18 +24,16 @@ The Net-tools package is a collection of programs for controlling the network su
 %build
 yes "" | make config
 sed -i -e 's|HAVE_IP_TOOLS 0|HAVE_IP_TOOLS 1|g' \
+       -e 's|HAVE_AFINET6 0|HAVE_AFINET6 1|g' \
        -e 's|HAVE_MII 0|HAVE_MII 1|g' config.h
 sed -i -e 's|#define HAVE_HWSTRIP 1|#define HAVE_HWSTRIP 0|g' \
        -e 's|#define HAVE_HWTR 1|#define HAVE_HWTR 0|g' config.h
 sed -i -e 's|# HAVE_IP_TOOLS=0|HAVE_IP_TOOLS=1|g' \
+       -e 's|# HAVE_AFINET6=0|HAVE_AFINET6=1|g' \
        -e 's|# HAVE_MII=0|HAVE_MII=1|g' config.make
 make
 %install
 make BASEDIR=%{buildroot} BINDIR=%{_bindir} SBINDIR=%{_sbindir} install
-rm %{buildroot}/bin/hostname
-rm %{buildroot}/bin/dnsdomainname
-rm %{buildroot}/usr/share/man/man1/dnsdomainname.1
-rm %{buildroot}/usr/share/man/man1/hostname.1
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
@@ -51,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*	Fri Nov 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.60-4
+-	Added ipv6 support. Include hostname and dnshostname.
 *	Thu Oct 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.60-3
 -	Added changes to replace inetutils with net-tools
 *	Thu Jul 30 2015 Divya Thaluru <dthaluru@vmware.com> 1.60-2
