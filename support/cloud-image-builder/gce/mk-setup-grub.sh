@@ -149,11 +149,11 @@ menuentry 'GNU/Linux' --class gnu-linux --class gnu --class os $menuentry_id_opt
     else
       search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
     fi
-    echo    'Loading Linux 4.0.9 ...'
-    linux   /boot/vmlinuz-4.0.9 root=/dev/sda2 ro console=ttyS0,38400n8 
+    echo    'Loading Linux 4.2.0 ...'
+    linux   /boot/vmlinuz-4.2.0 root=/dev/sda2 ro console=ttyS0,38400n8 
 }
 submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced-UUID_PLACEHOLDER' {
-    menuentry 'GNU/Linux, with Linux 4.0.9' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.0.9-advanced-UUID_PLACEHOLDER' {
+    menuentry 'GNU/Linux, with Linux 4.2.0' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.2.0-advanced-UUID_PLACEHOLDER' {
         load_video
         set gfxpayload=keep
         insmod gzio
@@ -165,10 +165,10 @@ submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced
         else
           search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
         fi
-        echo    'Loading Linux 4.0.9 ...'
-        linux   /boot/vmlinuz-4.0.9 root=/dev/sda2 ro console=ttyS0,38400n8 
+        echo    'Loading Linux 4.2.0 ...'
+        linux   /boot/vmlinuz-4.2.0 root=/dev/sda2 ro console=ttyS0,38400n8 
     }
-    menuentry 'GNU/Linux, with Linux 4.0.9 (recovery mode)' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.0.9-recovery-UUID_PLACEHOLDER' {
+    menuentry 'GNU/Linux, with Linux 4.2.0 (recovery mode)' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.2.0-recovery-UUID_PLACEHOLDER' {
         load_video
         set gfxpayload=keep
         insmod gzio
@@ -180,8 +180,8 @@ submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced
         else
           search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
         fi
-        echo    'Loading Linux 4.0.9 ...'
-        linux   /boot/vmlinuz-4.0.9 root=/dev/sda2 ro single console=ttyS0,38400n8
+        echo    'Loading Linux 4.2.0 ...'
+        linux   /boot/vmlinuz-4.2.0 root=/dev/sda2 ro single console=ttyS0,38400n8
     }
 }
 
