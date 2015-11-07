@@ -34,7 +34,8 @@ cp $VMDK_CONFIG_FILE $VMDK_CONFIG_SAFE_FILE
 cp ${BUILD_SCRIPTS_PATH}/mk-setup-vmdk.sh .
 cp ${BUILD_SCRIPTS_PATH}/mk-clean-vmdk.sh .
 
-if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ] && [ $IMG_NAME != "ova_ovs" ]
+
+if [[ $IMG_NAME != ova* ]]
   then
     cp ${BUILD_SCRIPTS_PATH}/mk-setup-grub.sh .
 fi

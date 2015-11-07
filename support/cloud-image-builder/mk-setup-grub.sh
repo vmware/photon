@@ -96,7 +96,7 @@ set theme=/boot/grub2/themes/photon/theme.txt
 menuentry "Photon" {
 	insmod ext2
     insmod part_gpt
-	linux /boot/vmlinuz-4.0.9 init=/lib/systemd/systemd root=UUID=UUID_PLACEHOLDER loglevel=3 ro
+	linux /boot/vmlinuz-4.2.0 init=/lib/systemd/systemd root=UUID=UUID_PLACEHOLDER loglevel=3 ro
 	initrd /boot/initrd.img-no-kmods
 }
 # End /boot/grub2/grub.cfg
