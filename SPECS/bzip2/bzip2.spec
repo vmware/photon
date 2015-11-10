@@ -1,13 +1,14 @@
 Summary:	Contains programs for compressing and decompressing files
 Name:		bzip2
 Version:	1.0.6
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		http://www.bzip.org/
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://www.bzip.org/%{version}/%{name}-%{version}.tar.gz
+Provides:    libbz2.so.1()(64bit)
 %define sha1 bzip2=3f89f861209ce81a6bab1fd1998c0ef311712002
 Patch0:		http://www.linuxfromscratch.org/patches/lfs/7.2/bzip2-1.0.6-install_docs-1.patch
 %description
@@ -34,7 +35,8 @@ install -vdm 0755 %{buildroot}/%{_lib}
 install -vdm 0755 %{buildroot}/bin
 cp -av libbz2.so* %{buildroot}/%{_lib}
 install -vdm 755 %{buildroot}%{_libdir}
-ln -sv ../../%{_lib}/libbz2.so.1.0 %{buildroot}%{_libdir}/libbz2.so
+ln -sv %{_lib}/libbz2.so.%{version} %{buildroot}%{_lib}/libbz2.so
+ln -sv %{_lib}/libbz2.so.%{version} %{buildroot}%{_lib}/libbz2.so.1
 rm -v %{buildroot}%{_bindir}/{bunzip2,bzcat}
 ln -sv bzip2 %{buildroot}/usr/bin/bunzip2
 ln -sv bzip2 %{buildroot}/usr/bin/bzcat
@@ -70,10 +72,13 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man1/bzip2.1.gz
 %{_lib}/libbz2.so.1.0.6
 %{_lib}/libbz2.so.1.0
-%{_libdir}/libbz2.so
+%{_lib}/libbz2.so.1
 %files devel
 %{_includedir}/bzlib.h
+%{_libdir}/libbz2.so
 %changelog
+*	Tue Nov 10 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0.6-4
+-	Providing libbz2.so.1, miror fix for devel provides.
 *	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.6-3
 -	Adding bzip2 package run time required package for bzip2-devel package 
 *	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.0.6-2
