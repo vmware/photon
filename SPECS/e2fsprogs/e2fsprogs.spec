@@ -1,7 +1,7 @@
 Summary:	Contains the utilities for the ext2 file system
 Name:		e2fsprogs
 Version:	1.42.9
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://e2fsprogs.sourceforge.net
 Group:		System Environment/Base
@@ -37,17 +37,20 @@ PKG_CONFIG_PATH=/tools/lib/pkgconfig \
 	--disable-silent-rules
 make %{?_smp_mflags}
 %install
-cd build
+pushd build
 make DESTDIR=%{buildroot} install
 make DESTDIR=%{buildroot} install-libs
 chmod -v u+w %{buildroot}/%{_libdir}/{libcom_err,libe2p,libext2fs,libss}.a
 rm -rf %{buildroot}%{_infodir}
+popd
+%find_lang %{name}
+
 %check
 cd build
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
-%files
+%files -f %{name}.lang
 %defattr(-,root,root)
 %config %{_sysconfdir}/mke2fs.conf
 %{_bindir}/compile_et
@@ -97,19 +100,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libcom_err.so
 %{_libdir}/libe2p.so
 %{_libdir}/libext2fs.so
-%lang(ca) %{_datarootdir}/locale/ca/LC_MESSAGES/e2fsprogs.mo
-%lang(cs) %{_datarootdir}/locale/cs/LC_MESSAGES/e2fsprogs.mo
-%lang(de) %{_datarootdir}/locale/de/LC_MESSAGES/e2fsprogs.mo
-%lang(es) %{_datarootdir}/locale/es/LC_MESSAGES/e2fsprogs.mo
-%lang(fr) %{_datarootdir}/locale/fr/LC_MESSAGES/e2fsprogs.mo
-%lang(id) %{_datarootdir}/locale/id/LC_MESSAGES/e2fsprogs.mo
-%lang(it) %{_datarootdir}/locale/it/LC_MESSAGES/e2fsprogs.mo
-%lang(nl) %{_datarootdir}/locale/nl/LC_MESSAGES/e2fsprogs.mo
-%lang(pl) %{_datarootdir}/locale/pl/LC_MESSAGES/e2fsprogs.mo
-%lang(sv) %{_datarootdir}/locale/sv/LC_MESSAGES/e2fsprogs.mo
-%lang(tr) %{_datarootdir}/locale/tr/LC_MESSAGES/e2fsprogs.mo
-%lang(vi) %{_datarootdir}/locale/vi/LC_MESSAGES/e2fsprogs.mo
-%lang(zh_CN) %{_datarootdir}/locale/zh_CN/LC_MESSAGES/e2fsprogs.mo
 
 %files devel
 %{_includedir}/ss/ss_err.h
@@ -140,6 +130,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libext2fs.a
 %{_libdir}/libss.so
 %changelog
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
+-	Handled locale files with macro find_lang
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
 -   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1

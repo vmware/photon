@@ -1,7 +1,7 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
 Version:	2.25
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
 Group:		System Environment/Base
@@ -31,17 +31,19 @@ cd ../binutils-build
 	--disable-silent-rules
 make %{?_smp_mflags} tooldir=%{_prefix}
 %install
-cd ../binutils-build
+pushd ../binutils-build
 make DESTDIR=%{buildroot} tooldir=%{_prefix} install
 find %{buildroot} -name '*.la' -delete
 # Don't remove libiberity.a
 rm -rf %{buildroot}/%{_infodir}
+popd
+%find_lang %{name} --all-name
 %check
 cd ../binutils-build
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
-%files
+%files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/gprof
 %{_bindir}/ld.bfd
@@ -129,103 +131,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/ldscripts/elf_l1om.xbn
 %{_libdir}/ldscripts/elf_x86_64.xbn
 %{_libdir}/ldscripts/elf_l1om.xdw
-%{_datadir}/locale/da/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/da/LC_MESSAGES/ld.mo
-%{_datadir}/locale/da/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/da/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/da/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/uk/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/uk/LC_MESSAGES/ld.mo
-%{_datadir}/locale/uk/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/uk/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/uk/LC_MESSAGES/gas.mo
-%{_datadir}/locale/uk/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/sr/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/sr/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/ga/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/ga/LC_MESSAGES/ld.mo
-%{_datadir}/locale/ga/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/hu/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/fr/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/fr/LC_MESSAGES/ld.mo
-%{_datadir}/locale/fr/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/fr/LC_MESSAGES/gas.mo
-%{_datadir}/locale/fr/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/fr/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/ro/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/ro/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/ro/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/ro/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/nl/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/nl/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/bg/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/bg/LC_MESSAGES/ld.mo
-%{_datadir}/locale/bg/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/de/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/de/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/pt_BR/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/pt_BR/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/fi/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/fi/LC_MESSAGES/ld.mo
-%{_datadir}/locale/fi/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/fi/LC_MESSAGES/gas.mo
-%{_datadir}/locale/fi/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/it/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/it/LC_MESSAGES/ld.mo
-%{_datadir}/locale/it/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/it/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/ru/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/ru/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/ru/LC_MESSAGES/gas.mo
-%{_datadir}/locale/ru/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/zh_TW/LC_MESSAGES/ld.mo
-%{_datadir}/locale/zh_TW/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/sv/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/sv/LC_MESSAGES/ld.mo
-%{_datadir}/locale/sv/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/sv/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/sv/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/tr/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/tr/LC_MESSAGES/ld.mo
-%{_datadir}/locale/tr/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/tr/LC_MESSAGES/gas.mo
-%{_datadir}/locale/tr/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/tr/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/eo/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/sk/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/ms/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/rw/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/rw/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/rw/LC_MESSAGES/gas.mo
-%{_datadir}/locale/rw/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/hr/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/zh_CN/LC_MESSAGES/ld.mo
-%{_datadir}/locale/zh_CN/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/zh_CN/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/zh_CN/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/ja/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/ja/LC_MESSAGES/ld.mo
-%{_datadir}/locale/ja/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/ja/LC_MESSAGES/gas.mo
-%{_datadir}/locale/ja/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/vi/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/vi/LC_MESSAGES/ld.mo
-%{_datadir}/locale/vi/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/vi/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/vi/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/es/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/es/LC_MESSAGES/ld.mo
-%{_datadir}/locale/es/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/es/LC_MESSAGES/gas.mo
-%{_datadir}/locale/es/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/es/LC_MESSAGES/opcodes.mo
-%{_datadir}/locale/id/LC_MESSAGES/gprof.mo
-%{_datadir}/locale/id/LC_MESSAGES/ld.mo
-%{_datadir}/locale/id/LC_MESSAGES/bfd.mo
-%{_datadir}/locale/id/LC_MESSAGES/gas.mo
-%{_datadir}/locale/id/LC_MESSAGES/binutils.mo
-%{_datadir}/locale/id/LC_MESSAGES/opcodes.mo
 %{_mandir}/man1/readelf.1.gz
 %{_mandir}/man1/windmc.1.gz
 %{_mandir}/man1/ranlib.1.gz
@@ -261,6 +166,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libopcodes.so
 
 %changelog
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.25-2
+-	Handled locale files with macro find_lang
 *	Mon Apr 6 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25-1
 -	Updated to 2.25
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24-1

@@ -1,7 +1,7 @@
 Summary:	Reading, writing, and converting info pages
 Name:		texinfo
 Version:	5.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/texinfo/
 Group:		Applications/System
@@ -23,7 +23,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 make DESTDIR=%{buildroot} TEXMF=%{_datarootdir}/texmf install-tex
 rm -rf %{buildroot}%{_infodir}
-%find_lang %{name}
+%find_lang %{name} --all-name
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files -f %{name}.lang
@@ -34,18 +34,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/texinfo/*
 %dir %{_datarootdir}/texmf
 %{_datarootdir}/texmf/*
-%lang(de.us-ascii) %{_datarootdir}/locale/de.us-ascii/LC_MESSAGES/texinfo_document.mo
-%lang(eo) %{_datarootdir}/locale/eo/LC_MESSAGES/texinfo_document.mo
-%lang(es.us-ascii) %{_datarootdir}/locale/es.us-ascii/LC_MESSAGES/texinfo_document.mo
-%lang(fr) %{_datarootdir}/locale/fr/LC_MESSAGES/texinfo_document.mo
-%lang(hu) %{_datarootdir}/locale/hu/LC_MESSAGES/texinfo_document.mo
-%lang(it) %{_datarootdir}/locale/it/LC_MESSAGES/texinfo_document.mo
-%lang(nl) %{_datarootdir}/locale/nl/LC_MESSAGES/texinfo_document.mo
-%lang(no.us-ascii) %{_datarootdir}/locale/no.us-ascii/LC_MESSAGES/texinfo_document.mo
-%lang(pl) %{_datarootdir}/locale/pl/LC_MESSAGES/texinfo_document.mo
-%lang(pt.us-ascii) %{_datarootdir}/locale/pt.us-ascii/LC_MESSAGES/texinfo_document.mo
-%lang(pt_BR.us-ascii) %{_datarootdir}/locale/pt_BR.us-ascii/LC_MESSAGES/texinfo_document.mo
 %changelog
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-3
+-	Handled locale files with macro find_lang
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 5.2-2
 -	Removing perl-libintl package from run-time required packages
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2-1

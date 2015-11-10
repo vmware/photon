@@ -1,7 +1,7 @@
 Summary:	C debugger
 Name:		gdb
 Version:	7.8.2	
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
@@ -42,9 +42,11 @@ rm %{buildroot}%{_libdir}/libopcodes.a
 rm %{buildroot}%{_datadir}/locale/de/LC_MESSAGES/opcodes.mo
 rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/bfd.mo
 rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
+%find_lang %{name} --all-name
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%files
+%files -f %{name}.lang
 %defattr(-,root,root)
 %{_includedir}/*.h
 %{_includedir}/gdb/*.h
@@ -55,33 +57,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/gdb/system-gdbinit/*
 %{_bindir}/*
 %{_mandir}/*/*
-%lang(da) %{_datarootdir}/locale/da/LC_MESSAGES/bfd.mo
-%lang(da) %{_datarootdir}/locale/da/LC_MESSAGES/opcodes.mo
-%lang(es) %{_datarootdir}/locale/es/LC_MESSAGES/bfd.mo
-%lang(es) %{_datarootdir}/locale/es/LC_MESSAGES/opcodes.mo
-%lang(fr) %{_datarootdir}/locale/fr/LC_MESSAGES/bfd.mo
-%lang(fr) %{_datarootdir}/locale/fr/LC_MESSAGES/opcodes.mo
-%lang(ga) %{_datarootdir}/locale/ga/LC_MESSAGES/opcodes.mo
-%lang(id) %{_datarootdir}/locale/id/LC_MESSAGES/bfd.mo
-%lang(id) %{_datarootdir}/locale/id/LC_MESSAGES/opcodes.mo
-%lang(it) %{_datarootdir}/locale/it/LC_MESSAGES/opcodes.mo
-%lang(ja) %{_datarootdir}/locale/ja/LC_MESSAGES/bfd.mo
-%lang(nl) %{_datarootdir}/locale/nl/LC_MESSAGES/opcodes.mo
-%lang(pt_BR) %{_datarootdir}/locale/pt_BR/LC_MESSAGES/opcodes.mo
-%lang(ro) %{_datarootdir}/locale/ro/LC_MESSAGES/bfd.mo
-%lang(ro) %{_datarootdir}/locale/ro/LC_MESSAGES/opcodes.mo
-%lang(ru) %{_datarootdir}/locale/ru/LC_MESSAGES/bfd.mo
-%lang(rw) %{_datarootdir}/locale/rw/LC_MESSAGES/bfd.mo
-%lang(sv) %{_datarootdir}/locale/sv/LC_MESSAGES/bfd.mo
-%lang(sv) %{_datarootdir}/locale/sv/LC_MESSAGES/opcodes.mo
-%lang(tr) %{_datarootdir}/locale/tr/LC_MESSAGES/bfd.mo
-%lang(tr) %{_datarootdir}/locale/tr/LC_MESSAGES/opcodes.mo
-%lang(uk) %{_datarootdir}/locale/uk/LC_MESSAGES/bfd.mo
-%lang(uk) %{_datarootdir}/locale/uk/LC_MESSAGES/opcodes.mo
-%lang(vi) %{_datarootdir}/locale/vi/LC_MESSAGES/bfd.mo
-%lang(vi) %{_datarootdir}/locale/vi/LC_MESSAGES/opcodes.mo
-%lang(zh_CN) %{_datarootdir}/locale/zh_CN/LC_MESSAGES/bfd.mo
-%lang(zh_CN) %{_datarootdir}/locale/zh_CN/LC_MESSAGES/opcodes.mo
+
 %changelog
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 7.9.2-2
+-	Handled locale files with macro find_lang
 *	Wed Apr 08 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-1
 -	Initial build. First version

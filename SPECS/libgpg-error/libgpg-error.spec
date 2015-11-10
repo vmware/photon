@@ -2,7 +2,7 @@
 Summary:      	libgpg-error
 Name:         	libgpg-error
 Version:      	1.17
-Release:      	1%{?dist}
+Release:      	2%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/
 Group:		Development/Libraries
@@ -31,6 +31,7 @@ echo $%{_bindir}
 #cp %{buildroot}/usr/local/lib/* %{buildroot}%{_libdir}/
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
+%find_lang %{name}
 
 %post 
 /sbin/ldconfig
@@ -39,7 +40,7 @@ rm -rf %{buildroot}/%{_infodir}
 /sbin/ldconfig
 
 echo %{_libdir}
-%files
+%files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*gpg-error.so*
@@ -47,23 +48,10 @@ echo %{_libdir}
 %{_datadir}/aclocal/gpg-error.m4
 %{_mandir}/man1/*
 %{_datarootdir}/common-lisp/*
-%lang(cs) %{_datarootdir}/locale/cs/LC_MESSAGES/libgpg-error.mo
-%lang(da) %{_datarootdir}/locale/da/LC_MESSAGES/libgpg-error.mo
-%lang(de) %{_datarootdir}/locale/de/LC_MESSAGES/libgpg-error.mo
-%lang(eo) %{_datarootdir}/locale/eo/LC_MESSAGES/libgpg-error.mo
-%lang(fr) %{_datarootdir}/locale/fr/LC_MESSAGES/libgpg-error.mo
-%lang(it) %{_datarootdir}/locale/it/LC_MESSAGES/libgpg-error.mo
-%lang(ja) %{_datarootdir}/locale/ja/LC_MESSAGES/libgpg-error.mo
-%lang(nl) %{_datarootdir}/locale/nl/LC_MESSAGES/libgpg-error.mo
-%lang(pl) %{_datarootdir}/locale/pl/LC_MESSAGES/libgpg-error.mo
-%lang(ro) %{_datarootdir}/locale/ro/LC_MESSAGES/libgpg-error.mo
-%lang(sv) %{_datarootdir}/locale/sv/LC_MESSAGES/libgpg-error.mo
-%lang(uk) %{_datarootdir}/locale/uk/LC_MESSAGES/libgpg-error.mo
-%lang(vi) %{_datarootdir}/locale/vi/LC_MESSAGES/libgpg-error.mo
-%lang(zh_CN) %{_datarootdir}/locale/zh_CN/LC_MESSAGES/libgpg-error.mo
-
 
 %changelog
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.17-2
+-	Handled locale files with macro find_lang
 * Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>
 - initial specfile.
 
