@@ -40,7 +40,8 @@ class IsoInstaller(object):
         if path.startswith("http://"):
             # Do 3 trials to get the kick start
             # TODO: make sure the installer run after network is up
-            for x in range(0,3):
+            wait = 1
+            for x in range(0,5):
                 err_msg = ""
                 try:
                     response = requests.get(path, timeout=3)
@@ -51,7 +52,8 @@ class IsoInstaller(object):
                     err_msg = e
                 modules.commons.log(modules.commons.LOG_ERROR, "Failed to get the kickstart file at {0}, error msg: {1}".format(path, err_msg))
                 print "Failed to get the kickstart file at {0}, retry in a second".format(path)
-                time.sleep(1)
+                time.sleep(wait)
+                wait = wait * 2
 
 
             # Something went wrong
