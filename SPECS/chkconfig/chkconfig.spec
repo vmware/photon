@@ -6,6 +6,7 @@ License: GPLv2
 Group: System Environment/Base
 URL: https://git.fedorahosted.org/git/chkconfig.git
 Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.bz2
+%define sha1 chkconfig=19a15a6690788686cc173b0d0626eaae01bec0c1
 Requires: libselinux
 Requires: libsepol
 Requires: newt
