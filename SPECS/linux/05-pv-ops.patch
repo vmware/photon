@@ -1,7 +1,7 @@
 From d5e7229bec41406a4040a1ac9131e24cb1f8768d Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 30 Sep 2015 23:00:00 +0000
-Subject: [PATCH 1/5] Measure correct boot time.
+Subject: [PATCH 1/6] Measure correct boot time.
 
 ---
  arch/x86/Kconfig          |  8 ++++++++
@@ -98,7 +98,7 @@ index 5650655..c386186 100644
 From 500436e32d4dffae5d78f12be72c2e6784ab8cfb Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 2 Oct 2015 20:00:06 +0000
-Subject: [PATCH 2/5] PV io_delay for VMware guest.
+Subject: [PATCH 2/6] PV io_delay for VMware guest.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 13 +++++++++++++
@@ -149,7 +149,7 @@ index 628a059..8fdd031 100644
 From adff5db39b45d8adef2b4579ec46ab1bb721a81f Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 7 Oct 2015 22:53:18 +0000
-Subject: [PATCH 3/5] Improved tsc based sched_clock & clocksource.
+Subject: [PATCH 3/6] Improved tsc based sched_clock & clocksource.
 
 ---
  arch/x86/Kconfig             |  1 +
@@ -327,7 +327,7 @@ index c0a2051..284a7ba 100644
 From 3bd5760c3b1f6cb39568361561d7d1e5440f1109 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 12 Oct 2015 22:43:38 +0000
-Subject: [PATCH 4/5] Move read_boot_clock64 into pv_time_ops.
+Subject: [PATCH 4/6] Move read_boot_clock64 into pv_time_ops.
 
 ---
  arch/x86/Kconfig                      | 14 ++++++--
@@ -635,7 +635,7 @@ index 284a7ba..615aeb4 100644
 From aa93eaec3f709633007ab6ce3ddbb8aaa455b557 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 5 Nov 2015 21:02:52 +0000
-Subject: [PATCH 5/5] Fix clocksource_vmware issue in VM version <= 10
+Subject: [PATCH 5/6] Fix clocksource_vmware issue in VM version <= 10
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++++++++++++++++++++++++++++++++++++++---
@@ -723,6 +723,96 @@ index 1bf1fe3..0b89bb9 100644
 +#else
  	clocksource_register_khz(&clocksource_vmware, vtsc_khz);
 +#endif
+ 
+ 	paravirt_ops_setup();
+ }
+-- 
+1.9.1
+
+
+From 245c6ff168fabde177b5b6023356b6005b0efbef Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 10 Nov 2015 11:46:57 +0000
+Subject: [PATCH 6/6] Get lapic timer frequency from HV, skip calibration
+
+---
+ arch/x86/kernel/cpu/vmware.c | 48 +++++---------------------------------------
+ 1 file changed, 5 insertions(+), 43 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 0b89bb9..b16618b 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -96,45 +96,11 @@ static struct clocksource clocksource_vmware = {
+ };
+ 
+ #ifdef CONFIG_VMWARE_ONLY
+-/*
+- * clocksource_vmware_periodic - is a temporary clocksource only for
+- * early boot initialization.
+- * Hack to avoid infinite looping in calibrate_APIC_clock() when
+- * tsc_deadline_timer is not supported by hypervisor (VM version <= 10)
+- * calibrate_APIC_clock() relies on _periodic_ timer!
+- * In that case we do not need to use clocksource that is valid for
+- * hres/oneshot timer.
+- */
+-static struct clocksource __initdata clocksource_vmware_periodic = {
+-	.name = "vmware-clock-periodic",
+-	.read = vmware_clock_get_cycles,
+-	.rating = 100,
+-	.mask = CLOCKSOURCE_MASK(64),
+-};
+-
+-static struct clocksource __initdata * initial_clocksource;
+-
+-/*
+- * clocksource_vmware_register
+- *
+- * Time to register real clocksource. It will be activated in
+- * clocksource_done_booting().
+- */
+-static int __init clocksource_vmware_register(void)
+-{
+-	if (!boot_cpu_has(X86_FEATURE_TSC_DEADLINE_TIMER)) {
+-		clocksource_register_khz(&clocksource_vmware, vtsc_khz);
+-		clocksource_unregister(&clocksource_vmware_periodic);
+-	}
+-	return 0;
+-}
+-subsys_initcall(clocksource_vmware_register);
+-
+ /* We want to use clocksource_vmware from the beginning to avoid drifting in
+    monotonic clock */
+ struct clocksource * __init clocksource_default_clock(void)
+ {
+-	return initial_clocksource;
++	return &clocksource_vmware;
+ }
+ #endif
+ 
+@@ -197,21 +163,17 @@ static void __init vmware_platform_setup(void)
+ 	printk(KERN_INFO "Pre Kernel boot time: %dms\n",
+ 		(unsigned int) (tsc_at_head / vtsc_khz));
+ 
++#ifdef CONFIG_X86_LOCAL_APIC
++	/* Skip lapic calibration since we know bus frequency. */
++	lapic_timer_frequency = ecx;
++#endif
+ 	vmware_cyc2ns.cyc2ns_mul =
+ 		DIV_ROUND_CLOSEST(NSEC_PER_MSEC << CYC2NS_SCALE_FACTOR,
+ 				  vtsc_khz);
+ 	vmware_cyc2ns.cyc2ns_shift = CYC2NS_SCALE_FACTOR;
+ 	vmware_cyc2ns.cyc2ns_offset = tsc_at_head;
+ 
+-#ifdef CONFIG_VMWARE_ONLY
+-	if (!boot_cpu_has(X86_FEATURE_TSC_DEADLINE_TIMER))
+-		initial_clocksource = &clocksource_vmware_periodic;
+-	else
+-		initial_clocksource = &clocksource_vmware;
+-	clocksource_register_khz(initial_clocksource, vtsc_khz);
+-#else
+ 	clocksource_register_khz(&clocksource_vmware, vtsc_khz);
+-#endif
  
  	paravirt_ops_setup();
  }
