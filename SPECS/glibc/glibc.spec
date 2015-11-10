@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -83,7 +83,7 @@ cd %{_builddir}/glibc-build
 make -k check > %{_topdir}/LOGS/%{name}-check.log 2>&1 || true
 %install
 #	Do not remove static libs
-cd %{_builddir}/glibc-build
+pushd %{_builddir}/glibc-build
 #	Create directories
 make install_root=%{buildroot} install
 install -vdm 755 %{buildroot}%{_sysconfdir}/ld.so.conf.d
@@ -118,6 +118,8 @@ cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 	/opt/lib
 	include /etc/ld.so.conf.d/*.conf
 EOF
+popd
+%find_lang %{name} --all-name
 
 %post
 printf "Creating ldconfig cache\n";/sbin/ldconfig
@@ -157,46 +159,14 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %endif
 %{_includedir}/*
 
-%files lang
+%files -f %{name}.lang lang
 %defattr(-,root,root)
-%lang(be) %{_datarootdir}/locale/be/LC_MESSAGES/libc.mo
-%lang(bg) %{_datarootdir}/locale/bg/LC_MESSAGES/libc.mo
-%lang(ca) %{_datarootdir}/locale/ca/LC_MESSAGES/libc.mo
-%lang(cs) %{_datarootdir}/locale/cs/LC_MESSAGES/libc.mo
-%lang(da) %{_datarootdir}/locale/da/LC_MESSAGES/libc.mo
-%lang(de) %{_datarootdir}/locale/de/LC_MESSAGES/libc.mo
-%lang(el) %{_datarootdir}/locale/el/LC_MESSAGES/libc.mo
-%lang(en_GB) %{_datarootdir}/locale/en_GB/LC_MESSAGES/libc.mo
-%lang(eo) %{_datarootdir}/locale/eo/LC_MESSAGES/libc.mo
-%lang(es) %{_datarootdir}/locale/es/LC_MESSAGES/libc.mo
-%lang(fi) %{_datarootdir}/locale/fi/LC_MESSAGES/libc.mo
-%lang(fr) %{_datarootdir}/locale/fr/LC_MESSAGES/libc.mo
-%lang(gl) %{_datarootdir}/locale/gl/LC_MESSAGES/libc.mo
-%lang(hr) %{_datarootdir}/locale/hr/LC_MESSAGES/libc.mo
-%lang(hu) %{_datarootdir}/locale/hu/LC_MESSAGES/libc.mo
-%lang(ia) %{_datarootdir}/locale/ia/LC_MESSAGES/libc.mo
-%lang(id) %{_datarootdir}/locale/id/LC_MESSAGES/libc.mo
-%lang(it) %{_datarootdir}/locale/it/LC_MESSAGES/libc.mo
-%lang(ja) %{_datarootdir}/locale/ja/LC_MESSAGES/libc.mo
-%lang(ko) %{_datarootdir}/locale/ko/LC_MESSAGES/libc.mo
 %{_datarootdir}/locale/locale.alias
-%lang(lt) %{_datarootdir}/locale/lt/LC_MESSAGES/libc.mo
-%lang(nb) %{_datarootdir}/locale/nb/LC_MESSAGES/libc.mo
-%lang(nl) %{_datarootdir}/locale/nl/LC_MESSAGES/libc.mo
-%lang(pl) %{_datarootdir}/locale/pl/LC_MESSAGES/libc.mo
-%lang(pt_BR) %{_datarootdir}/locale/pt_BR/LC_MESSAGES/libc.mo
-%lang(ru) %{_datarootdir}/locale/ru/LC_MESSAGES/libc.mo
-%lang(rw) %{_datarootdir}/locale/rw/LC_MESSAGES/libc.mo
-%lang(sk) %{_datarootdir}/locale/sk/LC_MESSAGES/libc.mo
-%lang(sl) %{_datarootdir}/locale/sl/LC_MESSAGES/libc.mo
-%lang(sv) %{_datarootdir}/locale/sv/LC_MESSAGES/libc.mo
-%lang(tr) %{_datarootdir}/locale/tr/LC_MESSAGES/libc.mo
-%lang(uk) %{_datarootdir}/locale/uk/LC_MESSAGES/libc.mo
-%lang(vi) %{_datarootdir}/locale/vi/LC_MESSAGES/libc.mo
-%lang(zh_CN) %{_datarootdir}/locale/zh_CN/LC_MESSAGES/libc.mo
-%lang(zh_TW) %{_datarootdir}/locale/zh_TW/LC_MESSAGES/libc.mo
+
 
 %changelog
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.19-6
+-	Handled locale files with macro find_lang
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.19-5
         Adding postun section for ldconfig.
 *	Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.19-4

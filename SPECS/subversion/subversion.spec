@@ -1,7 +1,7 @@
 Summary:    	The Apache Subversion control system
 Name:       	subversion
 Version:    	1.8.13
-Release:    	4%{?dist}
+Release:    	5%{?dist}
 License:    	Apache License 2.0
 URL:        	http://subversion.apache.org/
 Group:      	Utilities/System
@@ -38,24 +38,12 @@ make %{?_smp_mflags}
 
 %install
 make -j1 DESTDIR=%{buildroot} install 
-
-%files
+%find_lang %{name}
+%files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/svn*
 %{_libdir}/libsvn_*.so.*
 %{_mandir}/*
-%lang(de) %{_datadir}/locale/de/LC_MESSAGES/subversion.mo
-%lang(es) %{_datadir}/locale/es/LC_MESSAGES/subversion.mo
-%lang(fr) %{_datadir}/locale/fr/LC_MESSAGES/subversion.mo
-%lang(it) %{_datadir}/locale/it/LC_MESSAGES/subversion.mo
-%lang(ja) %{_datadir}/locale/ja/LC_MESSAGES/subversion.mo
-%lang(ko) %{_datadir}/locale/ko/LC_MESSAGES/subversion.mo
-%lang(nb) %{_datadir}/locale/nb/LC_MESSAGES/subversion.mo
-%lang(pl) %{_datadir}/locale/pl/LC_MESSAGES/subversion.mo
-%lang(pt_BR) %{_datadir}/locale/pt_BR/LC_MESSAGES/subversion.mo
-%lang(sv) %{_datadir}/locale/sv/LC_MESSAGES/subversion.mo
-%lang(zh_CN) %{_datadir}/locale/zh_CN/LC_MESSAGES/subversion.mo
-%lang(zh_TW) %{_datadir}/locale/zh_TW/LC_MESSAGES/subversion.mo
 
 %files devel
 %{_includedir}/*
@@ -64,6 +52,8 @@ make -j1 DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-5
+-	Handled locale files with macro find_lang
 * 	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.13-4
 -	Updated build-requires after creating devel package for apr. 
 *   Mon Sep 21 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-3

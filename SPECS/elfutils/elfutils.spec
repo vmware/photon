@@ -2,7 +2,7 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.158
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 Source0:	elfutils-%{version}.tar.bz2
@@ -114,12 +114,15 @@ chmod +x ${RPM_BUILD_ROOT}/usr/lib/lib*.so*
 chmod +x ${RPM_BUILD_ROOT}/usr/lib/elfutils/lib*.so*
 
 # XXX Nuke unpackaged files
-{ cd ${RPM_BUILD_ROOT}
+{ pushd ${RPM_BUILD_ROOT}
   rm -f .%{_bindir}/eu-ld
   rm -f .%{_includedir}/elfutils/libasm.h
   rm -f .%{_libdir}/libasm.so
   rm -f .%{_libdir}/libasm.a
+  popd
 }
+
+%find_lang %{name}
 
 %check
 make check
@@ -164,11 +167,10 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libdw.a
 #%{_libdir}/libasm.a
 
-%files libelf
+%files -f %{name}.lang libelf
 %defattr(-,root,root)
 %{_libdir}/libelf-%{version}.so
 %{_libdir}/libelf.so.*
-%{_datadir}/locale/*/LC_MESSAGES/elfutils.mo
 
 %files libelf-devel
 %defattr(-,root,root)
@@ -182,6 +184,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
+* Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.158-4
+- Handled locale files with macro find_lang
 * Sat Aug 15 2015 Sharath George <sharathg@vmware.com> 0.158-3
 - Add in patch for CVE-2014-0172
 * Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 0.158-2

@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	4.8.2
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -91,7 +91,7 @@ SED=sed \
 	--disable-silent-rules
 make %{?_smp_mflags}
 %install
-cd ../gcc-build
+pushd ../gcc-build
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%_lib
 ln -sv %{_bindir}/cpp %{buildroot}/%{_lib}
@@ -103,13 +103,17 @@ install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 	mv -v %{buildroot}%{_libdir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 %endif
 rm -rf %{buildroot}%{_infodir}
+popd
+%find_lang %{name} --all-name
+
 %check
 cd ../gcc-build
 ulimit -s 32768
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
-%files
+
+%files -f %{name}.lang
 %defattr(-,root,root)
 %{_lib}/cpp
 #	Executables
@@ -121,28 +125,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/gcc/*
 #	Library executables
 %{_libexecdir}/gcc/*
-#	Internationalization
-%lang(be)%{_datarootdir}/locale/be/LC_MESSAGES/*.mo
-%lang(ca)%{_datarootdir}/locale/ca/LC_MESSAGES/*.mo
-%lang(da)%{_datarootdir}/locale/da/LC_MESSAGES/*.mo
-%lang(de)%{_datarootdir}/locale/de/LC_MESSAGES/*.mo
-%lang(el)%{_datarootdir}/locale/el/LC_MESSAGES/*.mo
-%lang(eo)%{_datarootdir}/locale/eo/LC_MESSAGES/*.mo
-%lang(es)%{_datarootdir}/locale/es/LC_MESSAGES/*.mo
-%lang(fi)%{_datarootdir}/locale/fi/LC_MESSAGES/*.mo
-%lang(fr)%{_datarootdir}/locale/fr/LC_MESSAGES/*.mo
-%lang(hr)%{_datarootdir}/locale/hr/LC_MESSAGES/*.mo
-%lang(id)%{_datarootdir}/locale/id/LC_MESSAGES/*.mo
-%lang(ja)%{_datarootdir}/locale/ja/LC_MESSAGES/*.mo
-%lang(nl)%{_datarootdir}/locale/nl/LC_MESSAGES/*.mo
-%lang(ru)%{_datarootdir}/locale/ru/LC_MESSAGES/*.mo
-%lang(sr)%{_datarootdir}/locale/sr/LC_MESSAGES/*.mo
-%lang(sv)%{_datarootdir}/locale/sv/LC_MESSAGES/*.mo
-%lang(tr)%{_datarootdir}/locale/tr/LC_MESSAGES/*.mo
-%lang(uk)%{_datarootdir}/locale/uk/LC_MESSAGES/*.mo
-%lang(vi)%{_datarootdir}/locale/vi/LC_MESSAGES/*.mo
-%lang(zh_CN)%{_datarootdir}/locale/zh_CN/LC_MESSAGES/*.mo
-%lang(zh_TW)%{_datarootdir}/locale/zh_TW/LC_MESSAGES/*.mo
 #	Man pages
 %{_mandir}/man1/*.gz
 %{_mandir}/man7/*.gz
@@ -228,6 +210,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 4.8.2-6
+-	Handled locale files with macro find_lang
 *   Mon Nov 02 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.8.2-5
 -   Put libatomic.so into its own package.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-4
