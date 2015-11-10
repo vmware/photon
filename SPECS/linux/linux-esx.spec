@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       6%{?dist}
+Release:       7%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -120,8 +120,11 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Nov 10 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-7
+-   Get LAPIC timer frequency from HV, skip boot time calibration.
+-   .config: + dummy net driver (M).
 *   Mon Nov 09 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-6
--   Rename subpackage dev -> devel
+-   Rename subpackage dev -> devel.
 -   Added the build essential files in the devel subpackage.
 -   .config: added genede driver module.
 *   Wed Oct 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-5
