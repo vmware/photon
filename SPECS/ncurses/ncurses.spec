@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	5.9
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -46,6 +46,7 @@ ln -sfv libncurses.so %{buildroot}%{_libdir}/libcurses.so
 ln -sfv libncursesw.a %{buildroot}%{_libdir}/libcursesw.a
 ln -sfv libncurses.a %{buildroot}%{_libdir}/libcurses.a
 install -vdm 755  %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -78,11 +79,7 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %{_datadir}/terminfo/*
 %{_libdir}/libncursesw.so.5
 %{_libdir}/libncursesw.so.5.9
-%{_libdir}/libncurses.so
-%{_libdir}/libform.so
-%{_libdir}/libcursesw.so
-%{_libdir}/libpanel.so
-%{_libdir}/libmenu.so
+%{_libdir}/libncurses.so.5
 %{_libdir}/terminfo
 
 %files devel
@@ -132,7 +129,14 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %{_libdir}/libcurses.so
 %{_libdir}/libformw.so
 %{_libdir}/libmenuw.so
+%{_libdir}/libncurses.so
+%{_libdir}/libform.so
+%{_libdir}/libcursesw.so
+%{_libdir}/libpanel.so
+%{_libdir}/libmenu.so
 %changelog
+*   Tue Nov 10 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 5.9-3
+-   Add libncurses.so.5, and minor fix in the devel package
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 5.9-2
 -   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.9-1
