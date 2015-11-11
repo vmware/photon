@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -9,14 +9,13 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1 cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
-Source1:	http://www.linuxfromscratch.org/blfs/downloads/svn/blfs-bootscripts-20140919.tar.bz2
-%define sha1 blfs-bootscripts=762b68f79f84463a6b1dabb69e9dbdc2c43f32d8
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
 Requires:	openssl
 Requires:	krb5 >= 1.12
 BuildRequires:	openssl-devel
 BuildRequires:  krb5 >= 1.12
 BuildRequires:  e2fsprogs-devel
+BuildRequires:  Linux-PAM
 %description
 The Cyrus SASL package contains a Simple Authentication and Security 
 Layer, a method for adding authentication support to 
@@ -28,7 +27,6 @@ protocol and the connection.
 %prep
 %setup -q
 %patch0 -p1
-tar xf %{SOURCE1}
 %build
 autoreconf -fi
 pushd saslauthd
@@ -43,7 +41,7 @@ popd
 	--sysconfdir=/etc \
 	--with-plugindir=%{_libdir}/sasl2 \
     --without-dblib \
-    --without-saslauthd \
+    --with-saslauthd=/run/saslauthd \
     --without-authdaemond \
     --disable-macos-framework \
     --disable-sample \
@@ -64,28 +62,58 @@ make
 make DESTDIR=%{buildroot} install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 install -D -m644 COPYING %{buildroot}/usr/share/licenses/%{name}/LICENSE
-#	daemonize
-pushd blfs-bootscripts-20140919
-make DESTDIR=%{buildroot} install-saslauthd
-popd
 %{_fixperms} %{buildroot}/*
+
+mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
+cat << EOF >> %{buildroot}/%{_sysconfdir}/sysconfig/saslauthd
+# Directory in which to place saslauthd's listening socket, pid file, and so
+# on.  This directory must already exist.
+SOCKETDIR=/run/saslauthd
+
+# Mechanism to use when checking passwords.  Run "saslauthd -v" to get a list
+# of which mechanism your installation was compiled with the ablity to use.
+MECH=pam
+
+# Additional flags to pass to saslauthd on the command line.  See saslauthd(8)
+# for the list of accepted flags.
+FLAGS=
+EOF
+
+mkdir -p %{buildroot}/lib/systemd/system
+cat << EOF >> %{buildroot}/lib/systemd/system/saslauthd.service
+[Unit]
+Description=SASL authentication daemon.
+
+[Service]
+Type=forking
+PIDFile=/run/saslauthd/saslauthd.pid
+EnvironmentFile=/etc/sysconfig/saslauthd
+ExecStart=/usr/sbin/saslauthd -m \$SOCKETDIR -a \$MECH \$FLAGS
+RuntimeDirectory=saslauthd
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
+%post
+%{_sbindir}/ldconfig 
+if [ $1 -eq 1 ] ; then
+    # Initial installation
+    # Enabled by default per "runs once then goes away" exception
+    /bin/systemctl preset saslauthd.service  >/dev/null 2>&1 || :
+fi
 %postun	-p /sbin/ldconfig
+%preun
+/bin/systemctl disable saslauthd.service
+
 %clean
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-/etc/rc.d/init.d/saslauthd
-/etc/rc.d/rc0.d/K49saslauthd
-/etc/rc.d/rc1.d/K49saslauthd
-/etc/rc.d/rc2.d/S24saslauthd
-/etc/rc.d/rc3.d/S24saslauthd
-/etc/rc.d/rc4.d/S24saslauthd
-/etc/rc.d/rc5.d/S24saslauthd
-/etc/rc.d/rc6.d/K49saslauthd
 /etc/sysconfig/saslauthd
+/lib/systemd/system/saslauthd.service
 %{_includedir}/*
 %{_libdir}/*.so*
 %{_libdir}/pkgconfig/*
@@ -93,7 +121,10 @@ rm -rf %{buildroot}/*
 %{_sbindir}/*
 %{_mandir}/man3/*
 %{_datadir}/licenses/%{name}/LICENSE
+%{_mandir}/man8/saslauthd.8.gz
 %changelog
+*   Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.1.26-4
+-   Add saslauthd service to systemd.
 *	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.1.26-3
 -	Enable CRAM.
 *	Thu Jul 16 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.26-2
