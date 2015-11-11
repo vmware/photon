@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.6
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -28,15 +28,15 @@ mkdir -p %{buildroot}%{_var}/run
 mkdir -p %{buildroot}/sbin
 mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 mkdir -p %{buildroot}%{_var}/zookeeper
-mkdir -p %{buildroot}/etc/init.d
+mkdir -p %{buildroot}/etc/rc.d/init.d
 
 cp zookeeper-%{version}.jar %{buildroot}%{_libdir}
-cp src/packages/rpm/init.d/zookeeper %{buildroot}/etc/init.d/zookeeper
+cp src/packages/rpm/init.d/zookeeper %{buildroot}/etc/rc.d/init.d/zookeeper
 cp src/packages/update-zookeeper-env.sh %{buildroot}/sbin/update-zookeeper-env.sh
 cp src/packages/templates/conf/zookeeper-env.sh %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo.cfg
 chmod 0755 %{buildroot}/sbin/*
-chmod 0755 %{buildroot}/etc/init.d/zookeeper
+chmod 0755 %{buildroot}/etc/rc.d/init.d/zookeeper
 
 mv bin/* %{buildroot}%{_bindir}
 mv lib/* %{buildroot}%{_libdir}
@@ -77,15 +77,17 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 %defattr(-,root,root)
 %attr(0755,root,hadoop) %{_var}/log/zookeeper
 %attr(0775,root,hadoop) %{_var}/run
-%attr(0775,root,hadoop) /etc/init.d/zookeeper
+%attr(0775,root,hadoop) /etc/rc.d/init.d/zookeeper
 %attr(0775,root,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
 %{_prefix}
 
 %changelog
-* 	Wed Sep 16 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.6-3
--	Udating the dependency after repackaging the openjdk, fixed post scripts
-*	Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
-        Adding ldconfig in post section.
-*   Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
-        Initial build. First version	Initial build. First version
+* Tue Nov 10 2015 Mahmoud Bassiouny<mbassiouny@vmware.com> 3.4.6-4
+- Fix conflicts between zookeeper and chkconfig
+* Wed Sep 16 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.6-3
+- Udating the dependency after repackaging the openjdk, fixed post scripts
+* Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
+- Adding ldconfig in post section.
+* Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
+- Initial build. First version	Initial build. First version
