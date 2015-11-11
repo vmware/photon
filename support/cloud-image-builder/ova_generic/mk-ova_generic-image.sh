@@ -34,7 +34,6 @@ openssl sha1 *.vmdk photon-generic-ova.ovf > photon-generic-ova.mf
 tar cf photon-generic-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-generic-ova.ovf photon-generic-ova.mf photon-generic-ova-disk1.vmdk
 cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-generic-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
-ln -s photon-generic-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-generic-ova.ova
 rm -rf photon-generic-custom
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-ova_generic.raw`
 kpartx -av $DISK_DEVICE
@@ -76,7 +75,6 @@ openssl sha1 *.vmdk photon-generic-custom.ovf > photon-generic-custom.mf
 tar cf photon-generic-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-generic-custom.ovf photon-generic-custom.mf photon-generic-custom-disk1.vmdk
 cp $PHOTON_IMG_OUTPUT_PATH/temp1/photon-generic-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
-ln -s photon-generic-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-generic-custom.ova
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp/
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp1/
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-ova_generic.raw
