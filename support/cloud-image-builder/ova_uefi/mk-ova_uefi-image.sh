@@ -57,7 +57,6 @@ sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about 
 openssl sha1 *.vmdk photon-ova-uefi.ovf > photon-ova-uefi.mf
 tar cf photon-ova-uefi-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-ova-uefi.ovf photon-ova-uefi.mf photon-ova-uefi-disk1.vmdk
 cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-uefi-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
-cd $PHOTON_IMG_OUTPUT_PATH && ln -s photon-ova-uefi-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-ova-uefi.ova
 
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp/
 
