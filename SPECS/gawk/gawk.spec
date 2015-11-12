@@ -10,6 +10,7 @@ Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
 %define sha1 gawk=caabca3c1a59d05807c826c45a4639b82cad612a
 Provides:	/bin/gawk
+Provides:	awk
 Requires:	mpfr
 Requires:	gmp
 %description
