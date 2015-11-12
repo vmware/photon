@@ -9,5 +9,6 @@
 		"dhcp-client","dhcp-server","dhcp-libs","dhcp-devel","initscripts","net-tools",
 	        "jaxws-ri","commons-daemon","runit", "python-pyasn1", "WALinuxAgent", "linux-esx",
 	        "python-Twisted", "python-zope.interface", "python-ipaddr", "chkconfig", "libnss-ato",
-		"procmail","dmidecode","iperf"]
+		"procmail","dmidecode","iperf", "rubygem-backports", "rubygem-builder", "rubygem-highline",
+		"rubygem-libxml-ruby", "rubygem-terminal-table", "rubygem-trollop"]
 }
