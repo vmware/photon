@@ -79,9 +79,6 @@ rm -rf var/log/*
 tar cpjf ../$ROOTFS_TAR_FILENAME .
 mkdir -p $STAGE_DIR
 mv ../$ROOTFS_TAR_FILENAME $STAGE_DIR/
-cd $STAGE_DIR
-ln -fs $ROOTFS_TAR_FILENAME photon-rootfs.tar.bz2
-cd $TEMP_CHROOT
 cd ..
 
 # cleanup
