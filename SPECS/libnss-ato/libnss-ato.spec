@@ -10,6 +10,7 @@ Patch0:     destdir.patch
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
+Provides:	libnss_ato
 Requires:   nss
 BuildRequires: nss-devel
 
