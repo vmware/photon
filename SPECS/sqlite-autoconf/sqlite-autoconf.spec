@@ -10,6 +10,7 @@ Distribution: Photon
 Source0:	http://sqlite.org/2014/%{name}-%{version}.tar.gz
 %define sha1 sqlite-autoconf=a9b0a3d66fb5c2ae51ad2d8a512ca827adc7d59c
 Obsoletes:	libsqlite
+Provides:	sqlite3
 %description
 This package contains most of the static files that comprise the
 www.sqlite.org website including all of the SQL Syntax and the 
