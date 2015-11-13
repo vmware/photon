@@ -21,6 +21,7 @@ Requires:   pcre
 Requires:   apr-util
 Requires:   openssl
 Requires:   openldap
+Provides:	apache2
 %description
 The Apache HTTP Server.
 
@@ -89,7 +90,7 @@ Restart=always
 WantedBy=multi-user.target
 
 EOF
-
+ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
 %post
 /sbin/ldconfig
 if ! getent group apache >/dev/null; then
