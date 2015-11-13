@@ -1,7 +1,7 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -52,12 +52,15 @@ touch %{buildroot}/var/spool/anacron/cron.monthly
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
 
+install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
+ln -sfv ../../../../lib/systemd/system/crond.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/crond.service
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
 %defattr(-,root,root)
+/etc/systemd/system/multi-user.target.wants/crond.service
 /usr/etc/pam.d/*
 %{_bindir}/*
 %{_sbindir}/*
@@ -78,6 +81,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*	Thu Nov 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-2
+-	Initial build. First version
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
 -	Initial build. First version
 
