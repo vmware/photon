@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.2.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -82,8 +82,8 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd rootfstype=ext4 ro loglevel=3 quiet plymouth.enable=0
-photon_linux=/boot/vmlinuz-%{version}
-photon_initrd=/boot/initrd.img-no-kmods
+photon_linux=vmlinuz-%{version}
+photon_initrd=initrd.img-no-kmods
 EOF
 
 #    Cleanup dangling symlinks
@@ -139,6 +139,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/sound
 
 %changelog
+*   Fri Nov 13 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-4
+-   Change the linux image directory.
 *	Wed Nov 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-3
 - 	Added the build essential files in the dev sub-package.
 *	Mon Nov 09 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-2

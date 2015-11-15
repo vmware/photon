@@ -21,11 +21,24 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 [ ${EUID} -eq 0 ]	|| fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}		#	clear/initialize logfile
 
-# Check if passing a partition
-if [ $# -eq 1 ] 
-	then
-		PARTITION=$1
-fi
+while [[ $# > 0 ]]
+do
+    key="$1"
+    shift
+ 
+    case $key in
+        -p|--partitionmountpoint)
+        PARTITION="$1"
+        MOUNTPOINT="$2"
+        shift 2
 
-run_command "Mounting HD" "mount -v -t ext4 ${PARTITION} ${BUILDROOT}" "${LOGFILE}"
+        # make sure the directory exists
+        run_command "Making Directory" "mkdir -p ${BUILDROOT}${MOUNTPOINT}" "${LOGFILE}"
+        run_command "Mounting Partition" "mount -v ${PARTITION} ${BUILDROOT}${MOUNTPOINT}" "${LOGFILE}"
+    ;;
+    *)
+        # unknown option
+    ;;
+    esac
+done
 

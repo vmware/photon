@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       7%{?dist}
+Release:       8%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -78,7 +78,7 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 quiet nordrand noreplace-smp cpu_init_udelay=0 plymouth.enable=0
-photon_linux=/boot/vmlinuz-esx-%{version}
+photon_linux=vmlinuz-esx-%{version}
 EOF
 
 # cleanup dangling symlinks
@@ -120,6 +120,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Fri Nov 13 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-8
+-   Change the linux image directory.
 *   Tue Nov 10 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-7
 -   Get LAPIC timer frequency from HV, skip boot time calibration.
 -   .config: + dummy net driver (M).
