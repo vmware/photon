@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	7.5
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -295,16 +295,8 @@ EOF
 #
 #	8.2. Creating the /etc/fstab File
 #
-cat > %{buildroot}/etc/fstab <<- "EOF"
-#	Begin /etc/fstab
-#	hdparm -I /dev/sda | grep NCQ --> can use barrier
-#system		mnt-pt		type		options			dump fsck
-/dev/sda1	/		    ext4	    defaults,barrier,noatime,noacl,data=ordered 1 1
-/dev/cdrom      /mnt/cdrom      iso9660     ro,noauto              0   0
-# /dev/sda2	swap		swap		pri=1			0 0
-#	mount points
-#	End /etc/fstab
-EOF
+touch %{buildroot}/etc/fstab
+
 #
 #	8.3.2. Configuring Linux Module Load Order
 #
@@ -471,6 +463,8 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 /usr/local/lib64
 %endif
 %changelog
+*   Fri Nov 13 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 7.5-10
+-   Removing /etc/fstab mount entries.
 *   Fri Oct 02 2015 Vinay Kulkarni <kulkarniv@vmware.com> 7.5-9
 -   Dump build-number and release version from macros.
 *   Fri Aug 14 2015 Sharath George <sharathg@vmware.com> 7.5-8

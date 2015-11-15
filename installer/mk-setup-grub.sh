@@ -6,11 +6,11 @@
 #      Author:  sharathg@vmware.com             #
 #     Options:                                  #
 #################################################
-#	Overview
-#		This is a precursor for the vmware build system.
-#		This assumes that an empty hard disk is attached to the build VM.
-#		The path to this empty disk is specified in the HDD variable in config.inc
-#	End
+#    Overview
+#        This is a precursor for the vmware build system.
+#        This assumes that an empty hard disk is attached to the build VM.
+#        The path to this empty disk is specified in the HDD variable in config.inc
+#    End
 #
 
 grub_efi_install()
@@ -39,30 +39,32 @@ grub_mbr_install()
     $grubInstallCmd --force --boot-directory=$BUILDROOT/boot "$HDD"
 }
 
-set -o errexit		# exit if error...insurance ;)
-set -o nounset		# exit if variable not initalized
-set +h			# disable hashall
-PRGNAME=${0##*/}	# script name minus the path
-source config.inc		#	configuration parameters
-source function.inc		#	commonn functions
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
-#LOGFILE=/dev/null		#	uncomment to disable log file
-ARCH=$(uname -m)	# host architecture
-[ ${EUID} -eq 0 ]	|| fail "${PRGNAME}: Need to be root user: FAILURE"
-> ${LOGFILE}		#	clear/initialize logfile
+set -o errexit        # exit if error...insurance ;)
+set -o nounset        # exit if variable not initalized
+set +h            # disable hashall
+PRGNAME=${0##*/}    # script name minus the path
+source config.inc        #    configuration parameters
+source function.inc        #    commonn functions
+LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #    set log file name
+ARCH=$(uname -m)    # host architecture
+[ ${EUID} -eq 0 ]    || fail "${PRGNAME}: Need to be root user: FAILURE"
+> ${LOGFILE}        #    clear/initialize logfile
 
 # Check if passing a HHD and partition
-if [ $# -eq 3 ] 
-	then
+if [ $# -eq 5 ] 
+    then
         BOOTMODE=$1
-	HDD=$2
-	PARTITION=$3
+    HDD=$2
+    ROOT_PARTITION_PATH=$3
+    BOOT_PARTITION_PATH=$4
+    BOOT_DIRECTORY=$5
 fi
 
 #
-#	Install grub2.
+#    Install grub2.
 #
-UUID=$(blkid -s UUID -o value $PARTITION)
+UUID=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
+BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
 
 grubInstallCmd=""
 mkdir -p $BUILDROOT/boot/grub2
@@ -91,10 +93,11 @@ cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 
 function set_rootpartition {
     if [ "\$photon_initrd" ]; then
-        set rootpartition=UUID=\$photon_uuid
+        set rootpartition=UUID=$UUID
     else
-        regexp -s dev '.{2}(.)' \$root
-        regexp -s part '.*(.)' \$root
+        search -n -u $UUID -s rootpartition_device
+        regexp -s dev '.{2}(.)' \$rootpartition_device
+        regexp -s part '.*(.)' \$rootpartition_device
         regexp -s char '.{'\$dev'}(.)' abcdefghij
         set rootpartition=/dev/sd\$char\$part
     fi
@@ -102,9 +105,8 @@ function set_rootpartition {
 
 set default=0
 set timeout=5
-set photon_uuid=$UUID
-search -n -u \$photon_uuid -s
-loadfont /boot/grub2/unifont.pf2
+search -n -u $BOOT_UUID -s
+loadfont "$BOOT_DIRECTORY"grub2/unifont.pf2
 
 insmod gfxterm
 insmod vbe
@@ -117,14 +119,14 @@ gfxpayload=keep
 
 terminal_output gfxterm
 
-set theme=/boot/grub2/themes/photon/theme.txt
-load_env -f /boot/photon.cfg
+set theme="$BOOT_DIRECTORY"grub2/themes/photon/theme.txt
+load_env -f "$BOOT_DIRECTORY"photon.cfg
 set_rootpartition
 
 menuentry "Photon" {
-    linux \$photon_linux root=\$rootpartition \$photon_cmdline
+    linux "$BOOT_DIRECTORY"\$photon_linux root=\$rootpartition \$photon_cmdline
     if [ "\$photon_initrd" ]; then
-        initrd \$photon_initrd
+        initrd "$BOOT_DIRECTORY"\$photon_initrd
     fi
 }
 # End /boot/grub2/grub.cfg
@@ -134,4 +136,3 @@ EOF
 rm -rf "$BUILDROOT"/tools
 rm -rf "$BUILDROOT"/RPMS
 
-#umount $BUILDROOT

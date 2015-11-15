@@ -20,11 +20,30 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 #LOGFILE=/dev/null		#	uncomment to disable log file
 [ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
 [ -z ${BUILDROOT} ]		&& fail "${PRGNAME}: BUILDROOT not set: FAILURE"
-if mountpoint ${BUILDROOT}/run	>/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
-if mountpoint ${BUILDROOT}/sys	>/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
-if mountpoint ${BUILDROOT}/proc	>/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
-if mountpoint ${BUILDROOT}/dev/pts	>/dev/null 2>&1; then umount ${BUILDROOT}/dev/pts; fi
-if mountpoint ${BUILDROOT}/dev	>/dev/null 2>&1; then umount ${BUILDROOT}/dev; fi
 
-if mountpoint ${BUILDROOT}	>/dev/null 2>&1; then umount ${BUILDROOT}; fi
+if mountpoint ${BUILDROOT}/run >/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
+if mountpoint ${BUILDROOT}/sys >/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
+if mountpoint ${BUILDROOT}/proc    >/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
+if mountpoint ${BUILDROOT}/dev/pts >/dev/null 2>&1; then umount ${BUILDROOT}/dev/pts; fi
+if mountpoint ${BUILDROOT}/dev >/dev/null 2>&1; then umount ${BUILDROOT}/dev; fi
+
+while [[ $# > 0 ]]
+do
+    key="$1"
+    shift
+ 
+    case $key in
+        -p|--partitionmountpoint)
+        PARTITION="$1"
+        MOUNTPOINT="$2"
+        shift 2
+
+        # make sure the directory exists
+        if mountpoint ${BUILDROOT}${MOUNTPOINT} >/dev/null 2>&1; then umount ${BUILDROOT}${MOUNTPOINT}; fi
+    ;;
+    *)
+        # unknown option
+    ;;
+    esac
+done
 exit 0
