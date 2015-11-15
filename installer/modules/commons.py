@@ -17,71 +17,103 @@ LOG_NOTICE  = 5
 LOG_INFO    = 6
 LOG_DEBUG   = 7
 
-def partition_disk(disk, docker_partition_size = None, swap_partition_size = None):
+default_partitions = [
+                        {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
+                    ]
+
+def partition_compare(p1, p2):
+    if 'mountpoint' in p1 and 'mountpoint' in p2:
+        if len(p1['mountpoint']) == len(p2['mountpoint']):
+            return cmp(p1['mountpoint'], p2['mountpoint'])
+        return len(p1['mountpoint']) - len(p2['mountpoint'])
+    return 0
+
+def partition_disk(disk, partitions):
     partitions_data = {}
     partitions_data['disk'] = disk
-
-    root_partition_number = 2
-    curr_partition_number = root_partition_number
-    partitions_data['root'] = disk + `root_partition_number`
-
-    if docker_partition_size != None:
-        docker_partition_number = curr_partition_number + 1
-        curr_partition_number = curr_partition_number + 1
-        partitions_data['docker'] = disk + `docker_partition_number`
-
-    if swap_partition_size != None:
-        swap_partition_number = curr_partition_number + 1
-        curr_partition_number = curr_partition_number + 1
-        partitions_data['swap'] = disk + `swap_partition_number`
-
+    partitions_data['partitions'] = partitions
     output = open(os.devnull, 'w')
 
     # Clear the disk
-    process = subprocess.Popen(['sgdisk', '-o', '-g', partitions_data['disk']], stdout = output)
+    process = subprocess.Popen(['sgdisk', '-o', '-g', disk], stdout = output)
     retval = process.wait()
     if retval != 0:
-    	return None
+        log(LOG_ERROR, "Failed clearing disk {0}".format(disk))
+        return None
 
+    # Partitioning the disk
+    extensible_partition = None
+    partitions_count = len(partitions)
+    partition_number = 1
+    # Adding the bios partition
+    partition_cmd = ['sgdisk', '-n', `partitions_count + 1` + ':-2M:']
+    # Adding the known size partitions
+    for partition in partitions:
+        if partition['size'] == 0:
+            # Can not have more than 1 extensible partition 
+            if extensible_partition != None:
+                log(LOG_ERROR, "Can not have more than 1 extensible partition")
+                return None
+            extensible_partition = partition
+        else:
+            partition_cmd.extend(['-n', '{}::+{}M'.format(partition_number, partition['size'])])
+        
+        partition['partition_number'] = partition_number 
+        partition['path'] = disk + `partition_number`
+        partition_number = partition_number + 1
 
-    partition_cmd = ['sgdisk', '-n', '1::+2M']
-    if swap_partition_size != None:
-        partition_cmd.extend(['-n', '{}:-{}M'.format(swap_partition_number, swap_partition_size)])
-    if docker_partition_size != None:
-        partition_cmd.extend(['-n', '{}:-{}M'.format(docker_partition_number, docker_partition_size)])       
-    partition_cmd.extend(['-n', `root_partition_number`, '-p', partitions_data['disk']])
+    # Adding the last extendible partition
+    if extensible_partition:
+        partition_cmd.extend(['-n', `extensible_partition['partition_number']`])
 
+    partition_cmd.extend(['-p', disk])
+
+    # Run the partitioning command
     process = subprocess.Popen(partition_cmd, stdout = output)
     retval = process.wait()
     if retval != 0:
+        log(LOG_ERROR, "Faild partition disk, command: {0}". format(partition_cmd))
         return None
 
     # Add the grub flags
-    process = subprocess.Popen(['sgdisk', '-t1:ef02', partitions_data['disk']], stdout = output)
+    process = subprocess.Popen(['sgdisk', '-t' + `partitions_count + 1` + ':ef02', disk], stdout = output)
     retval = process.wait()
     if retval != 0:
+        log(LOG_ERROR, "Failed to setup grub partition")
         return None
 
-    # format the file system
-    process = subprocess.Popen(['mkfs', '-t', 'ext4', partitions_data['root']], stdout = output)
-    retval = process.wait()
-    if retval != 0:
+    # Format the filesystem
+    for partition in partitions:
+        if "mountpoint" in partition:
+            if partition['mountpoint'] == '/':
+                partitions_data['root'] = partition['path']
+            elif partition['mountpoint'] == '/boot':
+                partitions_data['boot'] = partition['path']
+                partitions_data['bootdirectory'] = '/'
+        if partition['filesystem'] == "swap":
+            process = subprocess.Popen(['mkswap', partition['path']], stdout = output)
+            retval = process.wait()
+            if retval != 0:
+                log(LOG_ERROR, "Failed to create swap partition @ {}".format(partition['path']))
+                return None
+        else:
+            process = subprocess.Popen(['mkfs', '-t', partition['filesystem'], partition['path']], stdout = output)
+            retval = process.wait()
+            if retval != 0:
+                log(LOG_ERROR, "Failed to format {} partition @ {}".format(partition['filesystem'], partition['path']))
+                return None
+
+    # Check if there is no root partition
+    if not 'root' in partitions_data:
+        log(LOG_ERROR, "There is no partition assigned to root '/'")
         return None
 
-    # format the docker partition
-    if docker_partition_size != None:
-        process = subprocess.Popen(['mkfs', '-t', 'ext4', partitions_data['docker']], stdout = output)
-        retval = process.wait()
-        if retval != 0:
-            return None 
+    if not 'boot' in partitions_data:
+        partitions_data['boot'] = partitions_data['root']
+        partitions_data['bootdirectory'] = '/boot/'
 
-    # format the swap partition
-    if swap_partition_size != None:
-        process = subprocess.Popen(['mkswap', partitions_data['swap']], stdout = output)
-        retval = process.wait()
-        if retval != 0:
-            return None
-    	
+    partitions.sort(lambda p1,p2: partition_compare(p1, p2))
+	
     return partitions_data
 
 def replace_string_in_file(filename,  search_string,  replace_string):

@@ -77,7 +77,12 @@ def create_vmdk_and_partition(config, vmdk_path):
             count += 1
         elif line.startswith("ROOT_PARTITION="):
             partitions_data['root'] = line.replace("ROOT_PARTITION=", "").strip()
+            partitions_data['boot'] = partitions_data['root']
+            partitions_data['bootdirectory'] = '/boot/'
             count += 1
+
+    if count == 2:
+        partitions_data['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/', 'filesystem': 'ext4'}]
 
     return partitions_data, count == 2
 

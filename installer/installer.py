@@ -126,16 +126,21 @@ class Installer(object):
             # install grub
             try:
                 if self.install_config['boot'] == 'bios':
-                    process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root']], stdout=self.output)
+                    process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root'], self.install_config['disk']['boot'], self.install_config['disk']['bootdirectory']], stdout=self.output)
                 elif self.install_config['boot'] == 'efi':
-                    process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "efi", self.install_config['disk']['disk'], self.install_config['disk']['root']], stdout=self.output)
+                    process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "efi", self.install_config['disk']['disk'], self.install_config['disk']['root'], self.install_config['disk']['boot'], self.install_config['disk']['bootdirectory']], stdout=self.output)
             except:
                 #install bios if variable is not set.
-                process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root']], stdout=self.output)
+                process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root'], self.install_config['disk']['boot'], self.install_config['disk']['bootdirectory']], stdout=self.output)
 
             retval = process.wait()
 
-        process = subprocess.Popen([self.unmount_disk_command, '-w', self.photon_root], stdout=self.output)
+            self.update_fstab()
+
+        command = [self.unmount_disk_command, '-w', self.photon_root]
+        if not self.install_config['iso_system']:
+            command.extend(self.generate_partitions_param(reverse = True))
+        process = subprocess.Popen(command, stdout=self.output)
         retval = process.wait()
 
         if self.iso_installer:
@@ -264,10 +269,56 @@ class Installer(object):
         else:
             self.copy_rpms()
 
+    def update_fstab(self):
+        fstab_file = open(os.path.join(self.photon_root, "etc/fstab"), "w")
+        fstab_file.write("#system\tmnt-pt\ttype\toptions\tdump\tfsck\n")
+
+        for partition in self.install_config['disk']['partitions']:
+            options = 'defaults'
+            dump = 1
+            fsck = 2
+
+            if 'mountpoint' in partition and partition['mountpoint'] == '/':
+                options = options + ',barrier,noatime,noacl,data=ordered'
+                fsck = 1
+            
+            if partition['filesystem'] == 'swap':
+                mountpoint = 'swap'
+                dump = 0
+                fsck = 0
+            else:
+                mountpoint = partition['mountpoint']
+
+            fstab_file.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                partition['path'],
+                mountpoint,
+                partition['filesystem'],
+                options,
+                dump,
+                fsck
+                ))
+
+        fstab_file.close()
+
+    def generate_partitions_param(self, reverse = False):
+        if reverse:
+            step = -1
+        else:
+            step = 1
+        params = []
+        for partition in self.install_config['disk']['partitions'][::step]:
+            if partition["filesystem"] == "swap":
+                continue
+
+            params.extend(['--partitionmountpoint', partition["path"], partition["mountpoint"]])
+        return params
+
     def initialize_system(self):
         #Setup the disk
         if (not self.install_config['iso_system']):
-            process = subprocess.Popen([self.mount_command, '-w', self.photon_root, self.install_config['disk']['root']], stdout=self.output)
+            command = [self.mount_command, '-w', self.photon_root]
+            command.extend(self.generate_partitions_param())
+            process = subprocess.Popen(command, stdout=self.output)
             retval = process.wait()
         
         self.copy_files()
