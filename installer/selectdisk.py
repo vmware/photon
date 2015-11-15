@@ -50,7 +50,7 @@ class SelectDisk(object):
 
         # Do the partitioning
         self.window.clearerror()
-        partitions_data = modules.commons.partition_disk(self.devices[device_index].path)
+        partitions_data = modules.commons.partition_disk(self.devices[device_index].path, modules.commons.default_partitions)
         if partitions_data == None:
             self.window.adderror('Partitioning failed, you may try again')
         else:
