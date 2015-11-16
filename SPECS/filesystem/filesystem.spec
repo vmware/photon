@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	7.5
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -51,7 +51,6 @@ ln -svfn ../run/lock %{buildroot}/var/lock
 install -vdm 755 %{buildroot}/var/{opt,cache,lib/{color,misc,locate},local}
 install -vdm 755 %{buildroot}/mnt/cdrom
 install -vdm 755 %{buildroot}/mnt/hgfs
-ln -svfn var/opt %{buildroot}/opt
 
 #
 #	6.6. Creating Essential Files and Symlinks
@@ -357,7 +356,6 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 
 /media
 %dir /mnt
-/opt
 %dir /proc
 %dir /root
 %dir /run
@@ -471,6 +469,8 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 /usr/local/lib64
 %endif
 %changelog
+*   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 7.5-10
+-   Removint /opt from filesystem.
 *   Fri Oct 02 2015 Vinay Kulkarni <kulkarniv@vmware.com> 7.5-9
 -   Dump build-number and release version from macros.
 *   Fri Aug 14 2015 Sharath George <sharathg@vmware.com> 7.5-8

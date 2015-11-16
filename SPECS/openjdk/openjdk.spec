@@ -2,7 +2,7 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.51
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -48,15 +48,15 @@ Requires:       %{name} = %{version}
 %build
 
 %install
-install -vdm755 %{buildroot}/opt/OpenJDK-%{version}-bin 
-mv -v %{_builddir}/OpenJDK-%{version}-x86_64-bin/* %{buildroot}/opt/OpenJDK-%{version}-bin/         
-chown -R root:root %{buildroot}/opt/OpenJDK-%{version}-bin
+install -vdm755 %{buildroot}/var/opt/OpenJDK-%{version}-bin 
+mv -v %{_builddir}/OpenJDK-%{version}-x86_64-bin/* %{buildroot}/var/opt/OpenJDK-%{version}-bin/         
+chown -R root:root %{buildroot}/var/opt/OpenJDK-%{version}-bin
 install -vdm644 %{buildroot}/etc/profile.d
 
 cat >> %{buildroot}/etc/profile.d/java-exports.sh <<- "EOF"
 export CLASSPATH=.:/usr/share/java
-export JAVA_HOME=/opt/OpenJDK-%{version}-bin
-export PATH="$PATH:/opt/OpenJDK-%{version}-bin/bin:/opt/OpenJDK-%{version}-bin/jre/bin"
+export JAVA_HOME=/var/opt/OpenJDK-%{version}-bin
+export PATH="$PATH:/var/opt/OpenJDK-%{version}-bin/bin:/var/opt/OpenJDK-%{version}-bin/jre/bin"
 EOF
 
 %clean
@@ -64,34 +64,36 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-/opt/OpenJDK-%{version}-bin/ASSEMBLY_EXCEPTION
-/opt/OpenJDK-%{version}-bin/LICENSE
-/opt/OpenJDK-%{version}-bin/release
-/opt/OpenJDK-%{version}-bin/THIRD_PARTY_README
-/opt/OpenJDK-%{version}-bin/lib
-/opt/OpenJDK-%{version}-bin/include/
+/var/opt/OpenJDK-%{version}-bin/ASSEMBLY_EXCEPTION
+/var/opt/OpenJDK-%{version}-bin/LICENSE
+/var/opt/OpenJDK-%{version}-bin/release
+/var/opt/OpenJDK-%{version}-bin/THIRD_PARTY_README
+/var/opt/OpenJDK-%{version}-bin/lib
+/var/opt/OpenJDK-%{version}-bin/include/
 
 %files	-n openjre
 %defattr(-,root,root)
-/opt/OpenJDK-%{version}-bin/jre/ 
-/opt/OpenJDK-%{version}-bin/bin
-/opt/OpenJDK-%{version}-bin/lib/amd64/jli/
+/var/opt/OpenJDK-%{version}-bin/jre/ 
+/var/opt/OpenJDK-%{version}-bin/bin
+/var/opt/OpenJDK-%{version}-bin/lib/amd64/jli/
 /etc/profile.d/java-exports.sh
 
 %files sample
 %defattr(-,root,root)
-/opt/OpenJDK-%{version}-bin/sample/
+/var/opt/OpenJDK-%{version}-bin/sample/
 
 %files doc
 %defattr(-,root,root)
-/opt/OpenJDK-%{version}-bin/man/
-/opt/OpenJDK-%{version}-bin/demo
+/var/opt/OpenJDK-%{version}-bin/man/
+/var/opt/OpenJDK-%{version}-bin/demo
 
 %files src
 %defattr(-,root,root)
-/opt/OpenJDK-%{version}-bin/src.zip
+/var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*	Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.8.0.51-3
+-	Change to use /var/opt path
 *	Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
 -	Split the openjdk into multiple sub-packages to reduce size. 
 *	Mon Aug 17 2015 Sharath George <sarahc@vmware.com> 1.8.0.51-1
