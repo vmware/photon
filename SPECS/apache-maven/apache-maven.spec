@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -13,7 +13,7 @@ Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version
 Requires: openjre >= 1.8.0.45
 BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.4, wget >= 1.15
 
-%define _prefix /opt/apache-maven-3.3.3
+%define _prefix /var/opt/apache-maven-3.3.3
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
 
@@ -25,10 +25,10 @@ The Maven package contains binaries for a build system
 %setup -q
 
 %build
-MAVEN_DIST_DIR=/opt/apache-maven-3.3.3
+MAVEN_DIST_DIR=/var/opt/apache-maven-3.3.3
 
-export JAVA_HOME=/opt/OpenJDK-1.8.0.51-bin
-export ANT_HOME=/opt/apache-ant-1.9.4
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.51-bin
+export ANT_HOME=/var/opt/apache-ant-1.9.4
 export PATH=$PATH:$ANT_HOME/bin
 
 ant -Dmaven.home=$MAVEN_DIST_DIR
@@ -37,13 +37,13 @@ ant -Dmaven.home=$MAVEN_DIST_DIR
 
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 
-mkdir -p -m 700 %{buildroot}/opt
+mkdir -p -m 700 %{buildroot}/var/opt
 
-cp -r /opt/apache-maven-3.3.3  %{buildroot}/opt
+cp -r /var/opt/apache-maven-3.3.3  %{buildroot}/var/opt
 
 install -d -m 755 %{buildroot}/etc/profile.d/
 
-echo 'export MAVEN_HOME=/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
+echo 'export MAVEN_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
 echo 'export PATH=$MAVEN_HOME/bin:$PATH' >> %{buildroot}/etc/profile.d/%{name}.sh
 echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 
@@ -61,6 +61,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 3.3.3-3
+-	Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.3-2
 -	Updated dependencies after repackaging openjdk.
 *	Thu Jul 9 2015 	Sarah Choi<sarahc@vmware.com> 3.3.3-1

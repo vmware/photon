@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.9.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -17,7 +17,7 @@ Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.
 Requires: openjre >= 1.8.0.45, python2
 BuildRequires: openjre >= 1.8.0.45
 BuildRequires: openjdk >= 1.8.0.45
-%define _prefix /opt/apache-ant-1.9.4
+%define _prefix /var/opt/apache-ant-1.9.4
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
 
@@ -30,13 +30,13 @@ The Ant package contains binaries for a build system
 tar xf %{SOURCE1}
 tar xf %{SOURCE2}
 %build
-ANT_DIST_DIR=/opt/apache-ant-1.9.4
+ANT_DIST_DIR=/var/opt/apache-ant-1.9.4
 
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
 
 mkdir -p -m 700 $ANT_DIST_DIR
 
-export JAVA_HOME=/opt/OpenJDK-1.8.0.51-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.51-bin
 
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
@@ -44,13 +44,13 @@ export JAVA_HOME=/opt/OpenJDK-1.8.0.51-bin
 
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 
-mkdir -p -m 700 %{buildroot}/opt
+mkdir -p -m 700 %{buildroot}/var/opt
 
-cp -r /opt/apache-ant-1.9.4 %{buildroot}/opt
+cp -r /var/opt/apache-ant-1.9.4 %{buildroot}/var/opt
 
 cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/ 
 
-MAVEN_ANT_TASKS_DIR=%{buildroot}/opt/%{name}-%{version}/maven-ant-tasks
+MAVEN_ANT_TASKS_DIR=%{buildroot}/var/opt/%{name}-%{version}/maven-ant-tasks
 
 mkdir -p -m 700 $MAVEN_ANT_TASKS_DIR
 cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/LICENSE $MAVEN_ANT_TASKS_DIR/
@@ -66,6 +66,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_prefix}/maven-ant-tasks/*
 
 %changelog
+*   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.9.4-3
+-	Changed path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.4-2
 -	Updated dependencies after repackaging openjdk.
 *   Wed Aug 12 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4

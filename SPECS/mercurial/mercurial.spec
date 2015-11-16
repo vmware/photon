@@ -1,7 +1,7 @@
 Summary:	Mercurial-3.1.2
 Name:		mercurial
 Version:	3.1.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -24,12 +24,12 @@ make build
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make PREFIX=%{_prefix} install-bin
 
-install -vdm755 %{buildroot}/opt/%{name}-%{version}
-mv -v %{_builddir}/%{name}-%{version}/* %{buildroot}/opt/%{name}-%{version}/
-chown -R root:root %{buildroot}/opt/%{name}-%{version}
+install -vdm755 %{buildroot}/var/opt/%{name}-%{version}
+mv -v %{_builddir}/%{name}-%{version}/* %{buildroot}/var/opt/%{name}-%{version}/
+chown -R root:root %{buildroot}/var/opt/%{name}-%{version}
 
 install -vdm755 %{buildroot}/bin
-ln -sfv ../opt/%{name}-%{version}/hg %{buildroot}/bin/hg
+ln -sfv ../var/opt/%{name}-%{version}/hg %{buildroot}/bin/hg
 cat >> %{buildroot}/.hgrc << "EOF"
 [ui]
 username = "$(id -u)"
@@ -37,7 +37,7 @@ EOF
 
 install -vdm755 %{buildroot}/etc/profile.d
 cat >> %{buildroot}/etc/profile.d/mercurial-exports.sh <<- "EOF"
-export PYTHONPATH="$PYTHONPATH:/opt/%{name}-%{version}/mercurial/pure"
+export PYTHONPATH="$PYTHONPATH:/var/opt/%{name}-%{version}/mercurial/pure"
 EOF
 
 %{_fixperms} %{buildroot}/*
@@ -51,12 +51,14 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 /.hgrc
-/opt/%{name}-%{version}/*
+/var/opt/%{name}-%{version}/*
 /bin/hg
 /etc/profile.d/mercurial-exports.sh
-%exclude /opt/%{name}-%{version}/contrib/plan9
-%exclude /opt/%{name}-%{version}/build/temp.*
+%exclude /var/opt/%{name}-%{version}/contrib/plan9
+%exclude /var/opt/%{name}-%{version}/build/temp.*
 %changelog
+*	Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 3.1.2-3
+-	Change path to /var/opt.
 *	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 3.1.2-2
 -	/etc/profile.d permission fix
 *	Mon Oct 13 2014 Divya Thaluru <dthaluru@vmware.com> 3.1.2-1
