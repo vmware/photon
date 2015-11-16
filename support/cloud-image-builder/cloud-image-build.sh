@@ -15,14 +15,13 @@ BUILD_SCRIPTS_PATH=$1
 IMG_NAME=$2
 SRC_ROOT=$3
 GENERATED_DATA_PATH=$4
-PHOTON_STAGE_PATH=$5
+PHOTON_ISO_PATH=$5
+PHOTON_STAGE_PATH=${PHOTON_ISO_PATH%/*}
 ADDITIONAL_RPMS_PATH=$6
 INSTALLER_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
-PHOTON_ISO_PATH=$PHOTON_STAGE_PATH/photon.iso
 ISO_MOUNT_FOLDER=$PHOTON_STAGE_PATH/iso_mount
 
 PHOTON_IMG_OUTPUT_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
-
 VMDK_CONFIG_FILE=${BUILD_SCRIPTS_PATH}/$IMG_NAME/vmdk_$IMG_NAME.json
 VMDK_CONFIG_SAFE_FILE=${BUILD_SCRIPTS_PATH}/$IMG_NAME/vmdk_safe_$IMG_NAME.json
 
@@ -104,7 +103,7 @@ if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ] && [ $IMG_NAME != "ova_
     cp $ISO_MOUNT_FOLDER/isolinux/initrd.img /tmp/initrd.gz
     gunzip /tmp/initrd.gz
     cd /tmp
-    cpio -id < initrd
+    cpio -idu < initrd
     cp /tmp/installer/boot/initrd.img* $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/boot/
     rm -rf /tmp/initrd*
     rm -rf /tmp/installer
