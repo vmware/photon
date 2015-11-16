@@ -1,7 +1,7 @@
 Summary:	The GNU Database Manager
 Name:		gdbm
 Version:	1.11
-Release:	2%{?dist}
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/gdbm
 Group:		Applications/Databases
@@ -9,7 +9,6 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gdbm/%{name}-%{version}.tar.gz
 %define sha1 gdbm=ce433d0f192c21d41089458ca5c8294efe9806b4
-Provides:       compat-gdbm
 %description
 This is a disk file format database which stores key/data-pairs in
 single files. The actual data of any record being stored is indexed
@@ -41,7 +40,5 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/*
 %{_mandir}/*/*
 %changelog
-*	Wed Nov 11 2015 Anish Swaminathan <anishs@vmware.com> 1.11-2
--	Add provides field.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.11-1
 -	Initial build.	First version
