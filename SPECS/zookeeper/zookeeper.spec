@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.6
-Release:	4%{?dist}
+Release:	5%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -38,12 +38,34 @@ cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo
 chmod 0755 %{buildroot}/sbin/*
 chmod 0755 %{buildroot}/etc/rc.d/init.d/zookeeper
 
+sed -i 's/.*ZOOBINDIR.*\/etc.*/    ZOOBINDIR=\/etc\/zookeeper/g' bin/zkEnv.sh
 mv bin/* %{buildroot}%{_bindir}
 mv lib/* %{buildroot}%{_libdir}
 mv conf/zoo_sample.cfg %{buildroot}%{_sysconfdir}/zookeeper/zoo.cfg
 mv conf/* %{buildroot}%{_sysconfdir}/zookeeper
-cd ..
+pushd ..
 rm -rf %{buildroot}/%{name}-%{version}
+popd
+
+mkdir -p %{buildroot}/lib/systemd/system
+cat << EOF >> %{buildroot}/lib/systemd/system/zookeeper.service
+[Unit]
+Description=Apache ZooKeeper
+After=network.target
+ConditionPathExists=/etc/zookeeper/zoo.cfg
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/zkServer.sh start /etc/zookeeper/zoo.cfg
+ExecStop=/usr/bin/zkServer.sh stop
+User=zookeeper
+Group=hadoop
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
+EOF
 
 %pre
 getent group hadoop 2>/dev/null >/dev/null || /usr/sbin/groupadd -r hadoop
@@ -57,7 +79,12 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --log-dir=%{_var}/log/zookeeper \
        --pid-dir=%{_var}/run \
        --var-dir=%{_var}/zookeeper
-/sbin/ldconfig
+%{_sbindir}/ldconfig 
+if [ $1 -eq 1 ] ; then
+    # Initial installation
+    # Enabled by default per "runs once then goes away" exception
+    /bin/systemctl enable zookeeper.service || :
+fi
 
 %preun
 source %{_sysconfdir}/profile.d/java-exports.sh
@@ -68,6 +95,7 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --pid-dir=%{_var}/run \
        --var-dir=%{_var}/zookeeper \
        --uninstall
+/bin/systemctl disable zookeeper.service
 
 %postun
 /usr/sbin/userdel zookeeper
@@ -80,9 +108,12 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 %attr(0775,root,hadoop) /etc/rc.d/init.d/zookeeper
 %attr(0775,root,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
+/lib/systemd/system/zookeeper.service
 %{_prefix}
 
 %changelog
+* Wed Nov 18 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.6-5
+- Add zookeeper to systemd service.
 * Tue Nov 10 2015 Mahmoud Bassiouny<mbassiouny@vmware.com> 3.4.6-4
 - Fix conflicts between zookeeper and chkconfig
 * Wed Sep 16 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.6-3
