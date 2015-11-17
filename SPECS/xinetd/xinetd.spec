@@ -1,7 +1,7 @@
 Summary:  	xinetd -- A better inetd.
 Name:		xinetd
 Version:	2.3.15
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
@@ -34,7 +34,6 @@ mkdir -p %{buildroot}/etc/rc.d/init.d
 mkdir -p %{buildroot}/etc/xinetd.d
 
 %makeinstall  
-install -m 0755 contrib/xinetd %{buildroot}/etc/rc.d/init.d/xinetd
 install -m 0600 contrib/xinetd.conf %{buildroot}/etc/
 cp contrib/xinetd.d/* %{buildroot}/etc/xinetd.d
 mkdir -p %{buildroot}/lib/systemd/system
@@ -59,12 +58,13 @@ fi
 %doc CHANGELOG COPYRIGHT README xinetd/sample.conf contrib/empty.conf 
 %{_sbindir}/*
 %{_datadir}/man/*/*
-%attr(0750, root, root) %config(noreplace) /etc/rc.d/init.d/xinetd
 %attr(0750, root, root) %config(noreplace) /etc/xinetd.conf
 %attr(0750, root, root) %config(noreplace) /etc/xinetd.d/*
 /lib/systemd/system/xinetd.service
 
 %changelog
+*   Thu Dec 03 2015 Xiaolin Li  <xiaolinl@vmware.com> 2.3.15-2
+-   Remove rc files
 *   Fri Aug 07 2015 Xiaolin Li  <xiaolinl@vmware.com> 2.3.15-1
 -   Add xinetd library to photon
 *   Sun Sep 07 2003 Steve Grubb <linux_4ever@yahoo.com>
