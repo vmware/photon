@@ -34,7 +34,6 @@ mkdir -p %{buildroot}/etc/rc.d/init.d
 mkdir -p %{buildroot}/etc/xinetd.d
 
 %makeinstall  
-install -m 0755 contrib/xinetd %{buildroot}/etc/rc.d/init.d/xinetd
 install -m 0600 contrib/xinetd.conf %{buildroot}/etc/
 cp contrib/xinetd.d/* %{buildroot}/etc/xinetd.d
 mkdir -p %{buildroot}/lib/systemd/system
@@ -59,7 +58,6 @@ fi
 %doc CHANGELOG COPYRIGHT README xinetd/sample.conf contrib/empty.conf 
 %{_sbindir}/*
 %{_datadir}/man/*/*
-%attr(0750, root, root) %config(noreplace) /etc/rc.d/init.d/xinetd
 %attr(0750, root, root) %config(noreplace) /etc/xinetd.conf
 %attr(0750, root, root) %config(noreplace) /etc/xinetd.d/*
 /lib/systemd/system/xinetd.service
