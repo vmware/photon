@@ -28,58 +28,57 @@ mkdir -p %{buildroot}%{_var}/run
 mkdir -p %{buildroot}/sbin
 mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 mkdir -p %{buildroot}%{_var}/zookeeper
-mkdir -p %{buildroot}/etc/rc.d/init.d
 
 cp zookeeper-%{version}.jar %{buildroot}%{_libdir}
-cp src/packages/rpm/init.d/zookeeper %{buildroot}/etc/rc.d/init.d/zookeeper
 cp src/packages/update-zookeeper-env.sh %{buildroot}/sbin/update-zookeeper-env.sh
 cp src/packages/templates/conf/zookeeper-env.sh %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo.cfg
 chmod 0755 %{buildroot}/sbin/*
-chmod 0755 %{buildroot}/etc/rc.d/init.d/zookeeper
 
+sed -i 's/.*ZOOBINDIR.*\/etc.*/    ZOOBINDIR=\/etc\/zookeeper/g' bin/zkEnv.sh
 mv bin/* %{buildroot}%{_bindir}
 mv lib/* %{buildroot}%{_libdir}
 mv conf/zoo_sample.cfg %{buildroot}%{_sysconfdir}/zookeeper/zoo.cfg
 mv conf/* %{buildroot}%{_sysconfdir}/zookeeper
-cd ..
+pushd ..
 rm -rf %{buildroot}/%{name}-%{version}
+popd
 
-%pre
-getent group hadoop 2>/dev/null >/dev/null || /usr/sbin/groupadd -r hadoop
-/usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
+mkdir -p %{buildroot}/lib/systemd/system
+cat << EOF >> %{buildroot}/lib/systemd/system/zookeeper.service
+[Unit]
+Description=Apache ZooKeeper
+After=network.targetsyste
+ConditionPathExists=/etc/zookeeper/zoo.cfg
 
-%post
-source %{_sysconfdir}/profile.d/java-exports.sh
-bash %{_prefix}/sbin/update-zookeeper-env.sh \
-       --prefix=%{_prefix} \
-       --conf-dir=%{_sysconfdir}/zookeeper \
-       --log-dir=%{_var}/log/zookeeper \
-       --pid-dir=%{_var}/run \
-       --var-dir=%{_var}/zookeeper
-/sbin/ldconfig
+[Service]
+Type=forking
+ExecStart=/usr/bin/zkServer.sh start /etc/zookeeper/zoo.cfg
+ExecStop=/usr/bin/zkServer.sh stop
+User=root
+Group=root
+Restart=always
+RestartSec=30
 
-%preun
-source %{_sysconfdir}/profile.d/java-exports.sh
-bash %{_prefix}/sbin/update-zookeeper-env.sh \
-       --prefix=%{_prefix} \
-       --conf-dir=%{_sysconfdir}/zookeeper \
-       --log-dir=%{_var}/log/zookeeper \
-       --pid-dir=%{_var}/run \
-       --var-dir=%{_var}/zookeeper \
-       --uninstall
+[Install]
+WantedBy=multi-user.target
+EOF
+
+install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
+ln -sfv ../../../../lib/systemd/system/zookeeper.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/zookeeper.service
 
 %postun
 /usr/sbin/userdel zookeeper
 /sbin/ldconfig
-
+cd et
 %files
 %defattr(-,root,root)
 %attr(0755,root,hadoop) %{_var}/log/zookeeper
 %attr(0775,root,hadoop) %{_var}/run
-%attr(0775,root,hadoop) /etc/rc.d/init.d/zookeeper
 %attr(0775,root,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
+/etc/systemd/system/multi-user.target.wants/*
+/lib/systemd/system/zookeeper.service
 %{_prefix}
 
 %changelog
