@@ -68,6 +68,7 @@
         "dmidecode",
         "iperf",
         "atftp", 
+	"distrib-compat",
         "rubygem-backports", 
         "rubygem-builder", 
         "rubygem-highline",
