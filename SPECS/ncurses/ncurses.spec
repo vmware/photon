@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	5.9
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.gnu.org/gnu/ncurses/%{name}-%{version}.tar.gz
 %define sha1 ncurses=3e042e5f2c7223bffdaac9646a533b8c758b65b5
+Provides:       libncurses.so.5()(64bit)
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
@@ -135,6 +136,8 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
 %changelog
+*   Wed Nov 18 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 5.9-4
+-   Package provides libncurses.so.5()(64bit)
 *   Tue Nov 10 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 5.9-3
 -   Add libncurses.so.5, and minor fix in the devel package
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 5.9-2
