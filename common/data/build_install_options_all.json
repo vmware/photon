@@ -43,5 +43,11 @@
         "file" : "packages_extra.json",
         "visible" : false,
         "include" : []
+    },
+    "minimal_appliance" : {
+        "title" : "Minimal packages to support appliances.",
+        "file" : "packages_minimal_appliance.json",
+        "visible" : false,
+        "include" : []
     }
 }
