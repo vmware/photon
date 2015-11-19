@@ -1,0 +1,11 @@
+--- a/nss/nss_files/files-XXX.c	2015-11-18 18:17:17.603983784 -0800
++++ b/nss/nss_files/files-XXX.c	2015-11-18 18:19:18.888416770 -0800
+@@ -134,7 +134,7 @@
+ 
+   __libc_lock_lock (lock);
+ 
+-  status = internal_setent (stayopen);
++  status = internal_setent (1);
+ 
+   if (status == NSS_STATUS_SUCCESS && fgetpos (stream, &position) < 0)
+     {

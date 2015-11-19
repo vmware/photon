@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -15,6 +15,7 @@ Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 Source1:	locale-gen.sh
 Source2:	locale-gen.conf
 Patch0:		glibc-2.21-fhs-1.patch
+Patch1:         fix_to_close_nss_files.patch
 Provides:	rtld(GNU_HASH)
 Requires:   filesystem
 %description
@@ -41,6 +42,7 @@ These are the additional language files of glibc.
 %setup -q
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
+%patch1 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -165,6 +167,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.19-7
+-	Adding patch to close nss files database
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.19-6
 -	Handled locale files with macro find_lang
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.19-5
