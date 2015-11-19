@@ -44,9 +44,9 @@
         "visible" : false,
         "include" : []
     },
-    "minimal_appliance" : {
+    "appliance" : {
         "title" : "Minimal packages to support appliances.",
-        "file" : "packages_minimal_appliance.json",
+        "file" : "packages_appliance.json",
         "visible" : false,
         "include" : []
     }
