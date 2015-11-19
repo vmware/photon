@@ -69,6 +69,8 @@
         "iperf",
         "atftp", 
 	"distrib-compat",
+        "crash",
+        "systemtap",
         "rubygem-backports", 
         "rubygem-builder", 
         "rubygem-highline",
