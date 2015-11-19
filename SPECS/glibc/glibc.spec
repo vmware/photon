@@ -167,7 +167,7 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.19-7
+*	Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-7
 -	Adding patch to close nss files database
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.19-6
 -	Handled locale files with macro find_lang
