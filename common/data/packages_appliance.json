@@ -43,7 +43,6 @@
         "tdnf",
         "open-vm-tools",
         "bridge-utils",
-        "cloud-init",
         "krb5",
         "which",
         "gettext",
