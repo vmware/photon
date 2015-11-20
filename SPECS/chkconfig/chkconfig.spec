@@ -1,11 +1,12 @@
 Summary: A system tool for maintaining the /etc/rc*.d hierarchy
 Name: chkconfig
 Version: 1.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 Group: System Environment/Base
 URL: https://git.fedorahosted.org/git/chkconfig.git
 Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.bz2
+Patch0:chkconfig-shortopt.patch
 %define sha1 chkconfig=19a15a6690788686cc173b0d0626eaae01bec0c1
 Requires: libselinux
 Requires: libsepol
@@ -38,7 +39,7 @@ page), ntsysv configures the current runlevel (5 if you're using X).
 
 %prep
 %setup -q
-
+%patch0 -p1
 %build
 
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS" %{?_smp_mflags}
@@ -86,6 +87,9 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Fri Nov 20 2015 Sharath George <sharathg@vmware.com>
+- Adding shortopt for add and delete.
+
 * Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Initial build for PhotonOS.  First version
 
