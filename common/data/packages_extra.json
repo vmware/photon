@@ -78,6 +78,7 @@
         "rubygem-trollop", 
         "rubygem-nokogiri", 
         "rubygem-mini_portile",
+        "rubygem-rbvmomi",
         "compat-gdbm"
             ]
 }
