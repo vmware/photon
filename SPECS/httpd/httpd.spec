@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.12
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -101,6 +101,12 @@ if ! getent passwd apache >/dev/null; then
         -s /bin/false -u 25 apache
 fi
 
+if [ -h /etc/mime.types ]; then
+    mv /etc/mime.types /etc/mime.types.orig
+fi
+
+ln -sf /etc/httpd/conf/mime.types /etc/mime.types
+
 %postun
 /sbin/ldconfig
 if getent passwd apache >/dev/null; then
@@ -108,6 +114,10 @@ if getent passwd apache >/dev/null; then
 fi
 if getent group apache >/dev/null; then
     groupdel apache
+fi
+
+if [ -f /etc/mime.types.orig ]; then
+    mv /etc/mime.types.orig /etc/mime.types
 fi
 
 %files devel
@@ -140,6 +150,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Nov 23 2015 Sharath George <sharathg@vmware.com> 2.4.12-4
+-   Add /etc/mime.types
 *   Tue Sep 29 2015 Xiaolin Li <xiaolinl@vmware.com> 2.4.12-3
 -   Move perl script to tools package.
 *   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-2
