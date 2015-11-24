@@ -1,7 +1,7 @@
 Summary:	The client for the Trivial File Transfer Protocol (TFTP)
 Name:		tftp
 Version:	5.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://www.kernel.org
 Group:		Applications/Internet
@@ -20,7 +20,6 @@ and should not be enabled unless it is expressly needed.
 %package server
 Group: System Environment/Daemons
 Summary: The server for the Trivial File Transfer Protocol (TFTP).
-Requires: xinetd
 
 %description server
 The Trivial File Transfer Protocol (TFTP) is normally used only for
@@ -41,34 +40,39 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}}%{_bindir}
 mkdir -p %{buildroot}}%{_mandir}/man{1,8}
 mkdir -p %{buildroot}}%{_sbindir}
-mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d
+mkdir -p %{buildroot}/%{_var}/lib/tftpboot
 
 %makeinstall
 make INSTALLROOT=%{buildroot} \
     SBINDIR=%{_sbindir} MANDIR=%{_mandir} \
 	install
-install -m755 -d %{buildroot}%{_sysconfdir}/xinetd.d/ %{buildroot}/var/lib/tftpboot
 
-cat << EOF >> %{buildroot}%{_sysconfdir}/xinetd.d/tftp
-# default: off
-# description: The tftp server serves files using the trivial file transfer \
-#	protocol.  The tftp protocol is often used to boot diskless \
-#	workstations, download configuration files to network-aware printers, \
-#	and to start the installation process for some operating systems.
-service tftp
-{
-	socket_type		= dgram
-	protocol		= udp
-	wait			= yes
-	user			= root
-	server			= /usr/sbin/in.tftpd
-	server_args		= -s /var/lib/tftpboot
-	disable			= no
-	per_source		= 11
-	cps			= 100 2
-	flags			= IPv4
-}
+mkdir -p %{buildroot}/lib/systemd/system
+cat << EOF >> %{buildroot}/lib/systemd/system/tftpd.service
+[Unit]
+Description=The tftp server serves files using the trivial file transfer protocol. 
+
+[Service]
+ExecStart=/usr/sbin/in.tftpd -s /var/lib/tftpboot
+StandardInput=socket
+
+[Install]
+Also=tftpd.socket
 EOF
+
+cat << EOF >> %{buildroot}/lib/systemd/system/tftpd.socket
+[Unit]
+Description=Tftp Server Socket
+
+[Socket]
+ListenDatagram=69
+
+[Install]
+WantedBy=sockets.target
+EOF
+
+install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
+ln -sfv ../../../../lib/systemd/system/tftpd.socket  %{buildroot}/etc/systemd/system/multi-user.target.wants/tftpd.socket
 
 %clean
 rm -rf %{buildroot}
@@ -81,12 +85,16 @@ rm -rf %{buildroot}
 
 %files server
 %defattr(-,root,root)
-%config(noreplace) %{_sysconfdir}/xinetd.d/tftp
-%dir %attr(0750,nobody,nobody) /var/lib/tftpboot
+%dir %attr(0750,nobody,nobody) %{_var}/lib/tftpboot
 %{_sbindir}/in.tftpd
 %{_mandir}/man8/*
+%{_sysconfdir}/systemd/system/multi-user.target.wants/tftpd.socket
+/lib/systemd/system/tftpd.service
+/lib/systemd/system/tftpd.socket
 
 %changelog
+*	Mon Nov 23 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-2
+-	Chang tftpd from xinetd service to systemd service.
 *	Mon Jul 27 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-1
 -	Add tftp library to photon.
 * Tue Sep 14 2004 H. Peter Anvin <hpa@zytor.com>
