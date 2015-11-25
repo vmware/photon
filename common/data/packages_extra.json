@@ -81,6 +81,10 @@
         "rubygem-nokogiri", 
         "rubygem-mini_portile",
         "rubygem-rbvmomi",
-        "compat-gdbm"
+        "compat-gdbm",
+        "tiptop",
+        "lttng-tools",
+        "userspace-rcu",
+        "msr-tools"
             ]
 }
