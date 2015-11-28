@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -81,8 +81,12 @@ EOF
 
 make DESTDIR=%{buildroot} install
 rm -f %{buildroot}/sbin/mount.vmhgfs
+mkdir -p %{buildroot}/etc/pam.d
+mv %{buildroot}/usr/etc/pam.d/* %{buildroot}/etc/pam.d/
+rmdir %{buildroot}/usr/etc/pam.d
+chmod -x %{buildroot}/etc/pam.d/vmtoolsd
+
 %post
-ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 /sbin/ldconfig
 /bin/systemctl enable vmtoolsd
 
@@ -90,7 +94,6 @@ ln -s /usr/sbin/mount.vmhgfs /sbin/mount.vmhgfs
 /bin/systemctl disable vmtoolsd
 
 %postun	-p /sbin/ldconfig
-rm -f /sbin/mount.vmhgfs
 
 %files 
 %defattr(-,root,root)
@@ -103,12 +106,13 @@ rm -f /sbin/mount.vmhgfs
 %{_bindir}/*
 %{_sysconfdir}/*
 %{_datadir}/*
-%{_prefix}/etc/*
 /lib/*
 %{_sbindir}/*
 
 
 %changelog
+*       Fri Nov 27 2015 Sharath George <sharathg@vmware.com> 10.0.0-12
+-       Correcting path of pam file.
 *       Tue Sep 15 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-11
 -       Adding ssh RSA public support for password-less login.
 *       Wed Sep 09 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-10
