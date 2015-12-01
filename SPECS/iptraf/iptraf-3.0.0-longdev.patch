@@ -1,0 +1,96 @@
+--- iptraf-3.0.0/src/promisc.c.longdev	2005-09-13 08:42:54.000000000 +0200
++++ iptraf-3.0.0/src/promisc.c	2006-04-05 15:28:07.000000000 +0200
+@@ -61,9 +61,7 @@
+     *list = NULL;
+     fd = open_procnetdev();
+ 
+-    do {
+-        get_next_iface(fd, buf);
+-
++    while (get_next_iface(fd, buf, 8)) {
+         if (strcmp(buf, "") != 0) {
+             ptmp = malloc(sizeof(struct promisc_states));
+             strcpy(ptmp->params.ifname, buf);
+@@ -102,7 +100,7 @@
+                 }
+             }
+         }
+-    } while (strcmp(buf, "") != 0);
++    }
+ }
+ 
+ /*
+--- iptraf-3.0.0/src/ifaces.h.longdev	2005-09-13 08:42:54.000000000 +0200
++++ iptraf-3.0.0/src/ifaces.h	2006-04-05 15:28:17.000000000 +0200
+@@ -6,7 +6,7 @@
+ ***/
+ 
+ FILE *open_procnetdev(void);
+-void get_next_iface(FILE * fd, char *ifname);
++int get_next_iface(FILE * fd, char *ifname, int n);
+ int iface_supported(char *iface);
+ int iface_up(char *iface);
+ void err_iface_unsupported(void);
+--- iptraf-3.0.0/src/ifstats.c.longdev	2005-09-13 08:42:54.000000000 +0200
++++ iptraf-3.0.0/src/ifstats.c	2006-04-05 15:26:59.000000000 +0200
+@@ -128,7 +128,6 @@
+ void initiflist(struct iflist **list)
+ {
+     FILE *fd;
+-    char buf[161];
+     char ifname[10];
+     struct iflist *itmp = NULL;
+     struct iflist *tail = NULL;
+@@ -143,9 +142,7 @@
+         return;
+     }
+ 
+-    do {
+-        strcpy(buf, "");
+-        get_next_iface(fd, ifname);
++    while (get_next_iface(fd, ifname, 8)) {
+         if (strcmp(ifname, "") != 0) {
+             if (!(iface_supported(ifname)))
+                 continue;
+@@ -183,7 +180,7 @@
+             tail = itmp;
+             itmp->next_entry = NULL;
+         }
+-    } while (strcmp(ifname, "") != 0);
++    }
+ 
+     fclose(fd);
+ }
+--- iptraf-3.0.0/src/ifaces.c.longdev	2006-03-31 13:42:39.000000000 +0200
++++ iptraf-3.0.0/src/ifaces.c	2006-04-05 16:18:01.000000000 +0200
+@@ -81,19 +81,23 @@
+ /*
+  * Get the next interface from /proc/net/dev.
+  */
+-void get_next_iface(FILE * fd, char *ifname)
++int get_next_iface(FILE * fd, char *ifname, int n)
+ {
+     char buf[161];
+ 
++    strcpy(ifname, "");
++
+     if (!feof(fd)) {
+         strcpy(buf, "");
+         fgets(buf, 160, fd);
+-        if (strcmp(buf, "") != 0)
+-            strcpy(ifname, ltrim(strtok(buf, ":")));
+-        else
+-            strcpy(ifname, "");
+-    } else
+-        strcpy(ifname, "");
++        if (strcmp(buf, "") != 0) {
++            strncpy(ifname, ltrim(strtok(buf, ":")), n);
++            if (ifname[n - 1] != '\0')
++                strcpy(ifname, "");
++            return 1;
++        }
++    }
++    return 0;
+ }
+ 
+ /*
