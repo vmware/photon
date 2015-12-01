@@ -1,7 +1,7 @@
 Summary:	Systemd-216
 Name:		systemd
 Version:	216
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -71,6 +71,7 @@ for tool in runlevel reboot shutdown poweroff halt telinit; do
      ln -sfv ../bin/systemctl %{buildroot}/sbin/${tool}
 done
 ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
+sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
 
@@ -97,6 +98,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*     Mon Nov 30 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 216-13
+-     Removing the reference of lock user
 *     Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 216-12
 -     Removing la files from packages.
 *	Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 216-11

@@ -24,5 +24,8 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 /usr/sbin/pwconv
 /usr/sbin/grpconv
 /bin/systemd-machine-id-setup
+
+#TODO: This should be removed, systemd should be able to create this file
+/usr/bin/touch /var/run/utmp
 #/sbin/locale-gen.sh
 exit 0
