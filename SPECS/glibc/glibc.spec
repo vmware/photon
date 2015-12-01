@@ -1,10 +1,12 @@
+%define debug_package %{nil}
+%define __os_install_post %{nil}
 %global security_hardening none
 %define glibc_target_cpu %{_build}
 
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -167,6 +169,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*	Wed Dec 1 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-8
+-       Disabling rpm debug package and stripping the libraries
 *	Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-7
 -	Adding patch to close nss files database
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.19-6
