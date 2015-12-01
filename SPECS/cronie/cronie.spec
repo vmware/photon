@@ -1,7 +1,7 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -49,11 +49,15 @@ touch %{buildroot}/var/spool/anacron/cron.daily
 touch %{buildroot}/var/spool/anacron/cron.weekly
 touch %{buildroot}/var/spool/anacron/cron.monthly
 
+install -vdm755 %{buildroot}/%{_sysconfdir}/pam.d
+mv %{buildroot}/usr/etc/pam.d/* %{buildroot}/%{_sysconfdir}/pam.d/.
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
 
 install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
 ln -sfv ../../../../lib/systemd/system/crond.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/crond.service
+
+ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
@@ -61,7 +65,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 /etc/systemd/system/multi-user.target.wants/crond.service
-/usr/etc/pam.d/*
+%{_lib}/systemd/system/cron.service
+%{_sysconfdir}/pam.d/*
 %{_bindir}/*
 %{_sbindir}/*
 %{_mandir}/man1/*
@@ -81,8 +86,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-3
+-	Symlink cron.service to crond.service. 
+-   And move the /usr/etc/pam.d/crond to /etc/pam.d/crond
 *	Thu Nov 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-2
--	Initial build. First version
+-	Add crond to systemd service.
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
 -	Initial build. First version
 
