@@ -1,0 +1,14 @@
+--- iptraf-3.0.0/src/install.sh.orig	2006-01-30 15:37:34.000000000 +0100
++++ iptraf-3.0.0/src/install.sh	2006-01-30 16:10:59.000000000 +0100
+@@ -23,9 +23,9 @@
+ echo "*** Installing executable programs and preparing work directories"
+ echo
+ echo ">>> Installing iptraf in $TARGET"
+-$INSTALL -m 0700 -s iptraf $TARGET
++$INSTALL -m 0700 iptraf $TARGET
+ echo ">>> Installing rvnamed in $TARGET"
+-$INSTALL -m 0700 -s rvnamed $TARGET
++$INSTALL -m 0700 rvnamed $TARGET
+ 
+ if [ ! -d $WORKDIR ]; then
+     echo ">>> Creating IPTraf work directory $WORKDIR"
