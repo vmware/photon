@@ -22,6 +22,7 @@ Source0:	http://perso.wanadoo.fr/sebastien.godard/sysstat-11.1.8.tar.xz
 make %{?_smp_mflags}
 %install
 make install
+mv %{buildroot}/usr/lib64  %{buildroot}/%{_libdir}
 
 %clean
 rm -rf %{buildroot}/*
@@ -31,7 +32,7 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}
 %{_bindir}
 %{_datadir}
-/usr/lib64
+%{_libdir}
 
 %changelog
 *	Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 11.1.8-1
