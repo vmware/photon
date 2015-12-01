@@ -57,8 +57,15 @@ rc_status_overall=0
 # output messages
 msg_done="DONE"
 msg_failed="FAILED"
+msg_missed="MISSED"
 msg_skipped="SKIPPED"
 msg_unused="UNUSED"
+msg_running="RUNNING"
+msg_dead="DEAD"
+msg_unknown="UNKNOWN"
+
+# parent cmd
+rc_action=$1
 
 rc_active ()
 {
@@ -100,6 +107,59 @@ rc_reset ()
   return 0
 }
 
+if [ "$rc_action" = "status" ] ; then
+rc_status ()
+{
+  rc_check
+  ret=$rc_status
+  local op
+  for op ; do
+    case "$op" in
+      -v) case "$rc_status" in
+            0) echo $eopt $msg_running ;;
+            1|2) echo $eopt $msg_dead ;;
+            3) echo $eopt $msg_unused ;;
+            4) echo $eopt $msg_unknown ;;
+          esac
+          rc_status=0 ;;
+      -r) rc_reset ;;
+      -s) echo $eopt msg_skipped ; rc_failed 3 ;;
+      -u) echo $eopt msg_unused ; rc_failed 3 ;;
+      *) echo "rc_status: Usage [-v] [-r] [-s] [-u]" ;;
+    esac
+  done
+  return $ret
+}
+elif [ -n "$rc_action" ] ; then
+# "start", "stop", etc...
+rc_status ()
+{
+  rc_check
+  ret=$rc_status
+  if [ "$rc_action" = "stop" -a $rc_status -eq 7 ] ; then
+    # we've stopped the service: 7 -> 0
+    rc_failed 7
+  fi
+  local op
+  for op ; do
+    case "$op" in
+      -v) case "$rc_status" in
+            0) echo $eopt $msg_done ;;
+            3) echo $eopt $msg_missed ;;
+            5) echo $eopt $msg_skipped ;;
+            6) echo $eopt $msg_unused ;;
+            *) echo $eopt $msg_failed ;;
+          esac
+          rc_status=0 ;;
+      -r) rc_reset ;;
+      -s) echo $eopt msg_skipped ; rc_failed 5 ;;
+      -u) echo $eopt msg_unused ; rc_failed 6 ;;
+      *) echo "rc_status: Usage [-v] [-r] [-s] [-u]" ;;
+    esac
+  done
+  return $ret
+}
+else
 rc_status ()
 {
   rc_check
@@ -113,10 +173,11 @@ rc_status ()
           esac
           rc_status=0 ;;
       -r) rc_reset ;;
-      -s) echo $eopt msg_skipped ; rc_failed 3 ;;
-      -u) echo $eopt msg_unused ; rc_failed 3 ;;
+      -s) echo $eopt msg_skipped ; rc_failed 0 ;;
+      -u) echo $eopt msg_unused ; rc_failed 0 ;;
       *) echo "rc_status: Usage [-v] [-r] [-s] [-u]" ;;
-    esac 
+    esac
   done
   return $ret
 }
+fi
