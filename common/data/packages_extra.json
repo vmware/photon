@@ -86,6 +86,11 @@
         "lttng-tools",
         "userspace-rcu",
 	"mingetty",
-        "msr-tools"
+        "msr-tools",
+        "dstat",
+        "libconfig",
+        "iptraf",
+        "nicstat",
+        "lldpad"
             ]
 }
