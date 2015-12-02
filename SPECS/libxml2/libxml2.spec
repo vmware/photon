@@ -1,14 +1,14 @@
-Summary:	Libxml2-2.9.1
+Summary:	Libxml2-2.9.3
 Name:		libxml2
-Version:	2.9.1
-Release:	3%{?dist}
+Version:	2.9.3
+Release:	1%{?dist}
 License:	MIT
 URL:		http://xmlsoft.org/
 Group:		System Environment/General Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1 libxml2=eb3e2146c6d68aea5c2a4422ed76fe196f933c21
+Source0:	ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
+%define sha1 libxml2=0301ce933637e0ceda049047dbefd18714f59b6e
 Requires:	python2
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
@@ -75,8 +75,12 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
+%{_libdir}/cmake/libxml2/libxml2-config.cmake
+
 
 %changelog
+*   Wed Dec 2 2015 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-1
+-   Update to version 2.9.3
 *   Thu Jul 2 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.9.1-3
 -   Seperate the python module from the main library
 *	Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.9.1-2
