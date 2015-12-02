@@ -1,7 +1,7 @@
 Summary:	Set of scripts and tools to get compatbility with other distributions.
 Name:		distrib-compat
 Version:	0.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		http://photon.org
 Group:		System Environment/Base
@@ -26,6 +26,8 @@ install -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}
 %{_sysconfdir}/*
 /sbin/*
 %changelog
+*	Tue Dec 1 2015 Alexey Makhalov <amakhalov@vmware.com> 0.1-3
+-	rc.status lower case for msg_* output.
 *	Mon Nov 30 2015 Alexey Makhalov <amakhalov@vmware.com> 0.1-2
 -	rc_status() enhancements.
 *	Mon Nov 16 2015 Alexey Makhalov <amakhalov@vmware.com> 0.1-1
