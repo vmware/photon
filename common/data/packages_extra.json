@@ -87,6 +87,13 @@
         "userspace-rcu",
 	    "mingetty",
         "msr-tools",
-        "sysstat"
+        "sysstat",
+		"blktrace",
+		"ethtool",
+		"ltrace",
+		"net-snmp",
+		"pcstat",
+		"sysdig",
+		"iotop"
             ]
 }
