@@ -55,14 +55,14 @@ rc_status_overall=0
 # eopt="-e"
 
 # output messages
-msg_done="DONE"
-msg_failed="FAILED"
-msg_missed="MISSED"
-msg_skipped="SKIPPED"
-msg_unused="UNUSED"
-msg_running="RUNNING"
-msg_dead="DEAD"
-msg_unknown="UNKNOWN"
+msg_done="done"
+msg_failed="failed"
+msg_missed="missed"
+msg_skipped="skipped"
+msg_unused="unused"
+msg_running="running"
+msg_dead="dead"
+msg_unknown="unknown"
 
 # parent cmd
 rc_action=$1
