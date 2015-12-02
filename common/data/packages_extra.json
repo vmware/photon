@@ -88,5 +88,12 @@
 	    "mingetty",
         "msr-tools",
         "sysstat"
+		"blktrace",
+		"ethtool",
+		"ltrace",
+		"net-snmp",
+		"pcstat",
+		"sysdig",
+		"iotop"
             ]
 }
