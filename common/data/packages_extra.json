@@ -87,6 +87,10 @@
         "userspace-rcu",
 	    "mingetty",
         "msr-tools",
-        "sysstat"
-            ]
+        "sysstat",
+        "dstat",
+        "libconfig",
+        "iptraf",
+        "nicstat",
+        "lldpad"
 }
