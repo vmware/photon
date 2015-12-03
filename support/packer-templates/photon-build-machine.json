@@ -9,7 +9,7 @@
       "disk_size": 40960,
       "disk_type_id": 0,
       "guest_os_type": "ubuntu-64",
-      "iso_url": "http://ubuntu.bhs.mirrors.ovh.net/ftp.ubuntu.com/releases/trusty/ubuntu-14.04.2-server-amd64.iso",
+      "iso_url": "http://old-releases.ubuntu.com/releases/14.04.2/ubuntu-14.04.2-server-amd64.iso",
       "iso_checksum": "3bfa6eac84d527380d0cc52db9092cde127f161e",
       "iso_checksum_type": "sha1",
       "ssh_username": "vagrant",
