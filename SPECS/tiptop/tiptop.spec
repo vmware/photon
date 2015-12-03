@@ -18,7 +18,7 @@ Hardware performance monitoring counters have recently received a lot of attenti
 
 %build
 ./configure
-make %{?_smp_mflags}
+make
 %install
 install -D  src/tiptop %{buildroot}%{_bindir}/tiptop
 install -D  src/ptiptop %{buildroot}%{_bindir}/ptiptop
