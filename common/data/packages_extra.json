@@ -71,6 +71,7 @@
 	"distrib-compat",
         "crash",
         "systemtap",
+        "ktap",
         "rubygem-backports", 
         "rubygem-builder", 
         "rubygem-highline",
