@@ -85,6 +85,11 @@
         "tiptop",
         "lttng-tools",
         "userspace-rcu",
-        "msr-tools"
-            ]
+        "msr-tools",
+        "dstat",
+        "libconfig",
+        "iptraf",
+        "nicstat",
+        "lldpad"
+        ]
 }

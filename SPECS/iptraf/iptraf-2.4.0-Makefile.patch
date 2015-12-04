@@ -1,0 +1,11 @@
+--- iptraf-3.0.0/src/Makefile.orig	2005-09-13 11:11:17.000000000 +0200
++++ iptraf-3.0.0/src/Makefile	2006-02-03 13:22:07.000000000 +0100
+@@ -32,7 +32,7 @@
+ # modified (except for -m486 on non-Intel x86 platforms).
+ 
+ CFLAGS		= -Wall #-O2 #-m486
+-DIRS		= -DWORKDIR=\"$(WORKDIR)\" \
++DIRS		= -DWORKDIR=\"$(WORKDIR)\" -DLOCKDIR=\"$(LOCKDIR)\" \
+ 		  -DLOGDIR=\"$(LOGDIR)\" -DEXECDIR=\"$(TARGET)\"
+ LDOPTS		= #-static
+ 
