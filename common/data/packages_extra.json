@@ -94,6 +94,11 @@
 		"net-snmp",
 		"pcstat",
 		"sysdig",
-		"iotop"
-            ]
+		"iotop",
+        "dstat",
+        "libconfig",
+        "iptraf",
+        "nicstat",
+        "lldpad"
+        ]
 }
