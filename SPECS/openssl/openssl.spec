@@ -1,14 +1,14 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
-Version:	1.0.2d
-Release:	3%{?dist}
+Version:	1.0.2e
+Release:	1%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=d01d17b44663e8ffa6a33a5a30053779d9593c3d
+%define sha1 openssl=2c5691496761cb18f98476eefa4d35c835448fb6
 Patch:		c_rehash.patch
 Requires:	bash glibc libgcc 
 
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 /%{_sysconfdir}/ssl/misc/CA.pl
 
 %changelog
+*   Fri Dec 04 2015 Xiaolin Li <xiaolinl@vmware.com> 1.0.2e-1
+-   Update to 1.0.2e.
 *   Wed Dec 02 2015 Anish Swaminathan <anishs@vmware.com> 1.0.2d-3
 -   Follow similar logging to previous openssl versions for c_rehash.
 *   Fri Aug 07 2015 Sharath George <sharathg@vmware.com> 1.0.2d-2
