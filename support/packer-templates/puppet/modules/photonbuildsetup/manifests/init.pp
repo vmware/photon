@@ -19,7 +19,6 @@ class photonbuildsetup {
             'cifs-utils',
             'createrepo',
             'rpm',
-            'git',
             'htop',
             'python-aptdaemon',
             'gdisk',
