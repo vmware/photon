@@ -86,6 +86,7 @@
         "tiptop",
         "lttng-tools",
         "userspace-rcu",
+		"linux-tools",
 	    "mingetty",
         "msr-tools",
         "sysstat",
