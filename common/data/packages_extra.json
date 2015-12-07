@@ -85,12 +85,20 @@
         "tiptop",
         "lttng-tools",
         "userspace-rcu",
-	"mingetty",
-        "msr-tools",
         "dstat",
         "libconfig",
         "iptraf",
         "nicstat",
         "lldpad"
+	    "mingetty",
+        "msr-tools",
+        "sysstat",
+		"blktrace",
+		"ethtool",
+		"ltrace",
+		"net-snmp",
+		"pcstat",
+		"sysdig",
+		"iotop"
             ]
 }
