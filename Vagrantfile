@@ -1,6 +1,70 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+module OS
+  def OS.windows?
+    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+  end
+
+  def OS.mac?
+   (/darwin/ =~ RUBY_PLATFORM) != nil
+  end
+
+  def OS.unix?
+    !OS.windows?
+  end
+
+  def OS.linux?
+    OS.unix? and not OS.mac?
+  end
+end
+
+ENV['VAGRANT_DEFAULT_PROVIDER'] ||= OS.mac? ? 'vmware_fusion' : "vmware_workstation"
+
+fusion_path="/Applications/VMware Fusion.app/Contents/Library"
+if File.directory?(fusion_path)
+  ENV['PATH'] = "#{fusion_path}:#{ENV['PATH']}"
+end
+
+appcatalyst_path="/opt/vmware/appcatalyst/libexec"
+if File.directory?(appcatalyst_path)
+  ENV['PATH'] = "#{appcatalyst_path}:#{ENV['PATH']}"
+end
+
+# Hey Now! thanks StackOverflow: http://stackoverflow.com/a/28801317/1233435
+req_plugins = %w(vagrant-triggers)
+
+if OS.mac?
+  req_plugins << "vagrant-vmware-fusion" if File.directory?(fusion_path)
+  req_plugins << "vagrant-vmware-appcatalyst" if File.directory?(appcatalyst_path)
+else
+  req_plugins << "vagrant-vmware-workstation"
+end
+
+# Cycle through the required plugins and install what's missing.
+plugins_install = req_plugins.select { |plugin| !Vagrant.has_plugin? plugin }
+licensed_plugins = plugins_install.select { |plugin| plugin =~ /vagrant-vmware-(?:fusion|workstation)$/ }
+licensed_plugins.each do |plugin|
+  unless File.exist? "#{ENV["VAGRANT_VMWARE_LICENSE_FILE"]||"./#{plugin}.lic"}"
+    abort "Failed to configure license, you can configure the path with VAGRANT_VMWARE_LICENSE_FILE"
+  end
+end
+
+unless plugins_install.empty?
+  puts "Installing plugins: #{plugins_install.join(' ')}"
+  if system "vagrant plugin install #{plugins_install.join(' ')}"
+    exec "vagrant #{ARGV.join(' ')}"
+  else
+    abort 'Installation of one or more plugins has failed. Aborting.'
+  end
+end
+
+licensed_plugins.each do |plugin|
+  unless system "vagrant plugin license #{plugin} #{ENV["VAGRANT_VMWARE_LICENSE_FILE"]||"./#{plugin}.lic"}"
+    abort "Failed to configure license, you can configure the path with VAGRANT_VMWARE_LICENSE_FILE"
+  end
+end
+
 VAGRANTFILE_API_VERSION = '2'
 
 # VM configuration, as we're compiling an OS from scratch, make sure the
@@ -14,14 +78,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.box_check_update = false
 
-  config.vm.provider('vmware_fusion') do |v|
-    v.vmx['memsize'] = vm_config[:ram]
-    v.vmx['numvcpus'] = vm_config[:cpu]
-  end
-
-  config.vm.provider('vmware_workstation') do |v|
-    v.vmx['memsize'] = vm_config[:ram]
-    v.vmx['numvcpus'] = vm_config[:cpu]
+  %w(vmware_fusion vmware_workstation vmware_appcatalyst).each do |p|
+    config.vm.provider p do |v|
+      v.vmx['memsize'] = vm_config[:ram]
+      v.vmx['numvcpus'] = vm_config[:cpu]
+      v.vmx['ethernet0.virtualDev'] = 'vmxnet3'
+      v.vmx['vhv.enable'] = 'true'
+    end
   end
 
   # Sync the current folder as /workspaces/photon using rsync.

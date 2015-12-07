@@ -37,4 +37,4 @@ fi
 echo "Cleanup the build..."
 sudo make clean
 echo "Shutting down the photon build machine..."
-sudo shutdown -h now
+# sudo shutdown -h now
