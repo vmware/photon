@@ -19,23 +19,19 @@ class Logger(object):
             # add formatter to handler
             fhandler.setFormatter(formatter)
             ch.setFormatter(formatter)
-            
+
             logger.addHandler(ch)
             logger.addHandler(fhandler)
             logger.setLevel(logging.DEBUG)
             logger.info("--------------------------------------------------------------------------")
-            logger.info("Staring Log")
+            logger.info("Starting Log")
             logger.info("--------------------------------------------------------------------------")
         return logger
-        
+
 if __name__ == "__main__":
     #Logger.getLogger("my module")
     t1 =  Logger.getLogger("my module")
     t1.info("test1")
-    t2  = Logger.getLogger("my module")  
+    t2  = Logger.getLogger("my module")
     t2.info("test2")
     t1.info("test3")
-       
-    
-        
-        
