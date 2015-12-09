@@ -17,7 +17,6 @@ source config.inc		#	configuration parameters
 source function.inc		#	commonn functions
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 
-
 # Grab the name of the iso file 
 if [ $# -lt 2 ]
 then
@@ -120,7 +119,8 @@ rm -rf ${BUILDROOT}/RPMS
 cd ${RPMS_PATH}
 mkdir ${WORKINGDIR}/RPMS
 for rpm_name in $RPM_LIST; do
-    FILENAME="`find . -name "$rpm_name-[0-9]*" -or -name "$rpm_name-[a-z][0-9]*" -type f`"
+    pattern=".*/${rpm_name//+/\\+}-[a-z]?[0-9].*\.rpm"
+    FILENAME="`find . -regextype posix-egrep -regex "$pattern" -type f`"
     if [ -n "$FILENAME" ]; then
         cp --parent $FILENAME ${WORKINGDIR}/RPMS/;
     fi
