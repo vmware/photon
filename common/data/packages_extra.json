@@ -93,6 +93,8 @@
 		"blktrace",
 		"ethtool",
 		"ltrace",
+		"netcat",
+		"zip",
 		"net-snmp",
 		"pcstat",
 		"sysdig",
