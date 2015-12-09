@@ -94,6 +94,8 @@
         "lldpad",
 	    "mingetty",
         "msr-tools",
+		"zip",
+		"netcat",
         "sysstat",
 		"blktrace",
 		"ethtool",
