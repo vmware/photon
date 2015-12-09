@@ -19,7 +19,7 @@ information about request queue operations up to user space.
 %setup -q
 
 %build
-make %{?_smp_mflags}
+make
 
 %install
 make install DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir}

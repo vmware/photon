@@ -27,7 +27,6 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 %setup -q
 
 %build
-#autoreconf -fi
 ./configure --prefix=%{_prefix} \
 		--host=ia64-linux \
 		--build=i686 \
@@ -41,7 +40,7 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 		--disable-static \
 		--with-x=no \
 		--enable-as-needed
-make %{?_smp_mflags}
+make
 
 %install
 make install DESTDIR=%{buildroot}
