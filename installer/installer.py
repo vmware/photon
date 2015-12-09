@@ -179,10 +179,10 @@ class Installer(object):
         self.rpms_tobeinstalled = []
         selected_packages = self.install_config['packages']
         for package in selected_packages:
-            pattern = package + '-[0-9]*.rpm'
-            pattern2 = package + '-[a-z][0-9]*.rpm'
+            #metacharacter '+' is used in file name. Escape the metacharacter '+'.
+            pattern = package.replace('+',r'\+') + '-[a-z]?[0-9].*[.]rpm'
             for rpm in rpms:
-                if fnmatch.fnmatch(rpm['filename'], pattern) or fnmatch.fnmatch(rpm['filename'], pattern2):
+                if re.match(pattern, rpm['filename']):
                     rpm['package'] = package
                     self.rpms_tobeinstalled.append(rpm)
                     break
