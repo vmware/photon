@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -17,7 +17,8 @@ Patch3:         remove-netstat.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
-
+BuildRequires:  systemd
+Requires:       systemd
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-configobj
@@ -96,6 +97,8 @@ fi
 
 
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>
+-   Add systemd to Requires and BuildRequires.
 * Thu Sep 17 2015 Kumar Kaushik <kaushikk@vmware.com>
 - Removing netstat and replacing with ip route.
 * Tue Aug 11 2015 Kumar Kaushik <kaushikk@vmware.com>

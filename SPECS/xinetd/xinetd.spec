@@ -1,7 +1,7 @@
 Summary:  	xinetd -- A better inetd.
 Name:		xinetd
 Version:	2.3.15
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
@@ -10,6 +10,8 @@ Source0:	%{name}-%{version}.tar.gz
 %define sha1 xinetd=168d54aeb181e271e68f4c53847c3e6b2574dba6
 Source1:        xinetd.service
 
+BuildRequires:  systemd
+Requires:       systemd
 
 %description
 Xinetd is a powerful inetd replacement. Xinetd has access control 
@@ -63,6 +65,8 @@ fi
 /lib/systemd/system/xinetd.service
 
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.3.15-3
+-   Add systemd to Requires and BuildRequires.
 *   Thu Dec 03 2015 Xiaolin Li  <xiaolinl@vmware.com> 2.3.15-2
 -   Remove rc files
 *   Fri Aug 07 2015 Xiaolin Li  <xiaolinl@vmware.com> 2.3.15-1
