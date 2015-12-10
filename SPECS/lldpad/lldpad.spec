@@ -13,6 +13,8 @@ Distribution:  Photon
 BuildRequires: libconfig
 BuildRequires: libnl-devel
 BuildRequires: readline-devel
+BuildRequires:  systemd
+Requires:       systemd
 
 %description
 The lldpad package comes with utilities to manage an LLDP interface with support for reading and configuring TLVs. TLVs and interfaces are individual controlled allowing flexible configuration for TX only, RX only, or TX/RX modes per TLV.
@@ -33,13 +35,12 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.service \
    	%{buildroot}/lib/systemd/system/lldpad.service
 mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 	%{buildroot}/lib/systemd/system/lldpad.socket
-install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
-ln -sfv ../../../../lib/systemd/system/lldpad.socket \
-	%{buildroot}/etc/systemd/system/multi-user.target.wants/lldpad.socket
 
-
+%preun
+/bin/systemctl disable lldpad.socket
 %post
 /sbin/ldconfig
+/bin/systemctl enable lldpad.socket
 
 %postun
 /sbin/ldconfig
@@ -60,5 +61,8 @@ ln -sfv ../../../../lib/systemd/system/lldpad.socket \
 
 
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.0.1-2
+-   Add systemd to Requires and BuildRequires
+-   Use systemctl to enable/disable service.
 *	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
 -   Initial build.  First version

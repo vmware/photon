@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -10,13 +10,15 @@ Distribution: 	Photon
 Source0:	ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1 cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
-Requires:	openssl
-Requires:	krb5 >= 1.12
-Requires:       Linux-PAM
+BuildRequires:  systemd
 BuildRequires:	openssl-devel
 BuildRequires:  krb5 >= 1.12
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  Linux-PAM
+Requires:   openssl
+Requires:   krb5 >= 1.12
+Requires:       Linux-PAM
+Requires:       systemd
 %description
 The Cyrus SASL package contains a Simple Authentication and Security 
 Layer, a method for adding authentication support to 
@@ -124,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man8/saslauthd.8.gz
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.1.26-5
+-   Add systemd to Requires and BuildRequires.
 *   Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.1.26-4
 -   Add saslauthd service to systemd.
 *	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.1.26-3
