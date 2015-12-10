@@ -1,7 +1,7 @@
 Summary:	Next generation system logger facilty
 Name:		syslog-ng
 Version:	3.6.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPL + LGPL
 URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-system
 Group:		System Environment/Daemons
@@ -86,8 +86,12 @@ rm -rf %{buildroot}/*
 /etc/systemd/system/syslog-ng.service
 /usr/bin/*
 /usr/lib/libsyslog-ng*
+/usr/lib/syslog-ng/lib*.so
 /usr/sbin/syslog-ng
 /usr/sbin/syslog-ng-ctl
+/usr/share/include/scl/*
+/usr/share/tools/*
+/usr/share/xsd/*
 /usr/share/man/*
 
 %files devel
@@ -103,13 +107,11 @@ rm -rf %{buildroot}/*
 /usr/include/syslog-ng/stats/*.h
 /usr/include/syslog-ng/template/*.h
 /usr/include/syslog-ng/transport/*.h
-/usr/lib/syslog-ng/lib*.so
 /usr/lib/pkgconfig/syslog-ng.pc
-/usr/share/include/scl/*
-/usr/share/tools/*
-/usr/share/xsd/*
 
 %changelog
+*       Wed Dec 09 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.6.2-4
+-       Moving files from devel rpm to the main package.
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.6.2-3
 -       Adding preun section.
 *	Sat Jul 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-2
