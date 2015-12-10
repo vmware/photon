@@ -1,7 +1,7 @@
 Summary: Intel LLDP Agent
 Name:    lldpad
 Version: 1.0.1
-Release: 2.git036e314%{?dist}
+Release: 3.git036e314%{?dist}
 License: GPLv2
 URL: http://open-lldp.org/
 Source: %{name}-%{version}.tar.gz
@@ -47,7 +47,6 @@ ln -sfv ../../../../lib/systemd/system/lldpad.socket \
 %files
 %{_sbindir}/*
 %{_libdir}/liblldp_clif.so.*
-%dir %{_sysconfdir}/bash_completion.d/
 %{_sysconfdir}/bash_completion.d/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
@@ -60,5 +59,8 @@ ln -sfv ../../../../lib/systemd/system/lldpad.socket \
 
 
 %changelog
+*	Wed Dec 09 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0.1-2
+-	Updating the provided files by the package.
+
 *	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
 -   Initial build.  First version
