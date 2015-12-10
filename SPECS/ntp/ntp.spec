@@ -1,7 +1,7 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
 Version:	4.2.8p3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms
@@ -9,11 +9,13 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/%{name}-%{version}.tar.gz
 %define sha1 ntp=fc624396f8d9f9bc282da30c8e8e527ade7d420f
-Requires:	libcap >= 2.24
+
 BuildRequires:	which
 BuildRequires:	libcap-devel
+BuildRequires:  systemd
+Requires:       systemd
 Requires:	shadow
-
+Requires:	libcap >= 2.24
 %description
 The ntp package contains a client and server to keep the time 
 synchronized between various computers over a network. This 
@@ -111,6 +113,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/ntp/lib/NTP/Util.pm
 
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-3
+-   Add systemd to Requires and BuildRequires.
 *	Fri Oct 30 2015 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p3-2
 -   Add ntpd to systemd service.
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.8p3-1

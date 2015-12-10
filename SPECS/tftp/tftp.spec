@@ -1,7 +1,7 @@
 Summary:	The client for the Trivial File Transfer Protocol (TFTP)
 Name:		tftp
 Version:	5.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://www.kernel.org
 Group:		Applications/Internet
@@ -9,7 +9,8 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	https://www.kernel.org/pub/software/network/tftp/tftp-hpa/tftp-hpa-%{version}.tar.gz
 %define sha1 tftp=2fe37983ffeaf4063ffaba514c4848635c622d8b
-
+BuildRequires:  systemd
+Requires:       systemd
 %description
 The Trivial File Transfer Protocol (TFTP) is normally used only for
 booting diskless workstations.  The tftp package provides the user
@@ -70,9 +71,10 @@ ListenDatagram=69
 [Install]
 WantedBy=sockets.target
 EOF
-
-install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
-ln -sfv ../../../../lib/systemd/system/tftpd.socket  %{buildroot}/etc/systemd/system/multi-user.target.wants/tftpd.socket
+%preun
+/bin/systemctl disable tftpd.socket
+%post
+/bin/systemctl enable tftpd.socket
 
 %clean
 rm -rf %{buildroot}
@@ -88,11 +90,13 @@ rm -rf %{buildroot}
 %dir %attr(0750,nobody,nobody) %{_var}/lib/tftpboot
 %{_sbindir}/in.tftpd
 %{_mandir}/man8/*
-%{_sysconfdir}/systemd/system/multi-user.target.wants/tftpd.socket
 /lib/systemd/system/tftpd.service
 /lib/systemd/system/tftpd.socket
 
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  5.2-3
+-   Add systemd to Requires and BuildRequires
+-   Use systemctl to enable/disable service.
 *	Mon Nov 23 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-2
 -	Chang tftpd from xinetd service to systemd service.
 *	Mon Jul 27 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-1

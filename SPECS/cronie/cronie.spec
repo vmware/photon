@@ -1,7 +1,7 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -11,6 +11,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	libselinux-devel
 BuildRequires:	Linux-PAM
+BuildRequires:  systemd
+Requires:       systemd
 Requires:	libselinux
 Requires:	Linux-PAM
 %description
@@ -54,17 +56,20 @@ mv %{buildroot}/usr/etc/pam.d/* %{buildroot}/%{_sysconfdir}/pam.d/.
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
 
-install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
-ln -sfv ../../../../lib/systemd/system/crond.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/crond.service
-
 ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
+%preun
+/bin/systemctl disable crond.service
+
+%post
+/sbin/ldconfig
+/bin/systemctl enable crond.service
+
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
-/etc/systemd/system/multi-user.target.wants/crond.service
 %{_lib}/systemd/system/cron.service
 %{_sysconfdir}/pam.d/*
 %{_bindir}/*
@@ -86,6 +91,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-4
+-   Add systemd to Requires and BuildRequires.
+-   Use systemctl to enable/disable service.
 *	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-3
 -	Symlink cron.service to crond.service. 
 -   And move the /usr/etc/pam.d/crond to /etc/pam.d/crond
