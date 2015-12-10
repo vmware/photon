@@ -31,7 +31,7 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 /usr/libexec
 %{_libdir}
 %{_bindir}
-/etc
+/etc/bash_completion.d/* 
 
 %changelog
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1

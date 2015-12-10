@@ -45,10 +45,10 @@ ln -sfv ../../../../lib/systemd/system/lldpad.socket \
 /sbin/ldconfig
 
 %files
+%defattr(-,root,root)
 %{_sbindir}/*
 %{_libdir}/liblldp_clif.so.*
-%dir %{_sysconfdir}/bash_completion.d/
-%{_sysconfdir}/bash_completion.d/*
+/etc/bash_completion.d/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %{_includedir}/*
