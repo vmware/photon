@@ -62,7 +62,7 @@ mkdir -p %{buildroot}/lib/systemd/system
 cat << EOF >> %{buildroot}/lib/systemd/system/ntpd.service
 [Unit]
 Description=Network Time Service
-After=syslog.target network.targe
+After=syslog.target network.target
 Documentation=man:ntpd
 Conflicts=systemd-timesyncd.service
 
