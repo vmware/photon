@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.116
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -23,6 +23,7 @@ BuildRequires:	thin-provisioning-tools
 Requires:	device-mapper-libs = %{version}-%{release}
 Requires:	device-mapper-event-libs = %{version}-%{release}
 Requires:	device-mapper = %{version}-%{release}
+Requires:   systemd
 
 %description
 LVM2 includes all of the support for handling read/write operations on
@@ -380,6 +381,8 @@ systemctl enable lvm2-activate.service
 /usr/lib/tmpfiles.d/lvm2.conf
 /usr/share/man/man8/lvm2-activation-generator.8.gz
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
+-   Add systemd to Requires and BuildRequires
 * Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
 - Packaging systemd service and configuration files
 * Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
