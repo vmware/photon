@@ -1,3 +1,4 @@
+%global __requires_exclude perl\\(.*\\)
 Summary:	Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6. 
 Name:		net-snmp   
 Version:	5.7.3
@@ -9,8 +10,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 net-snmp=97dc25077257680815de44e34128d365c76bd839
-#BuildRequires: python2 python2-libs
-BuildRequires: openssl-devel 
+BuildRequires: openssl-devel perl
+Requires:	perl
 %description
  Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 
@@ -38,6 +39,7 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 		--with-sys-contact="root@localhost" \
 		--with-defaults \
 		--disable-static \
+		--with-x=no \
 		--enable-as-needed
 make %{?_smp_mflags}
 
@@ -52,7 +54,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}
 %{_libdir}/*.so.*
-/sbin/
+/sbin/* 
 
 %files devel
 %defattr(-,root,root)
