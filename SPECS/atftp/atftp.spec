@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -10,6 +10,9 @@ Distribution:   Photon
 Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
 
 %define sha1 atftp=fc9e9f821dfd2f257b4a5c32b948ed60b4e31fd1
+
+BuildRequires:  systemd
+Requires:       systemd
 Provides: tftp-server
 Obsoletes: tftp-server
 
@@ -33,7 +36,6 @@ files using the TFTP protocol.
 
 %prep
 %setup
-
 
 %build
 %configure
@@ -69,9 +71,6 @@ ListenDatagram=69
 WantedBy=sockets.target
 EOF
 
-install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
-ln -sfv ../../../../lib/systemd/system/atftpd.socket  %{buildroot}/etc/systemd/system/multi-user.target.wants/atftpd.socket
-
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 cat << EOF >> %{buildroot}%{_sysconfdir}/sysconfig/atftpd
 ATFTPD_USER=tftp
@@ -87,10 +86,10 @@ getent group tftp 2>/dev/null >/dev/null || /usr/sbin/groupadd -r tftp
 /usr/sbin/useradd --comment "tftp" --shell /bin/bash -M -r --groups tftp tftp
 
 %preun
-
+/bin/systemctl disable atftpd.socket
 
 %post
-
+/bin/systemctl enable atftpd.socket
 
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != '/' ] && rm -rf $RPM_BUILD_ROOT
@@ -101,7 +100,6 @@ getent group tftp 2>/dev/null >/dev/null || /usr/sbin/groupadd -r tftp
 %{_sbindir}/atftpd
 %{_mandir}/man8/in.tftpd.8.gz
 %{_sbindir}/in.tftpd
-%{_sysconfdir}/systemd/system/multi-user.target.wants/atftpd.socket
 /lib/systemd/system/atftpd.service
 /lib/systemd/system/atftpd.socket
 %{_sysconfdir}/sysconfig/atftpd
@@ -114,6 +112,9 @@ getent group tftp 2>/dev/null >/dev/null || /usr/sbin/groupadd -r tftp
 
 
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  0.7.1-3
+-   Add systemd to Requires and BuildRequires.
+-   Use systemctl to enable/disable service.
 *	Mon Nov 23 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.1-2
 -	Chang tftpd from xinetd service to systemd service.
 *       Thu Nov 12 2015 Kumar Kaushik <kaushikk@vmware.com> 0.7.1-1
