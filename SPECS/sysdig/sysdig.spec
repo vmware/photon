@@ -38,7 +38,7 @@ rm -rf %{buildroot}/*
  
 %files
 %defattr(-,root,root)
-/etc
+/etc/bash_completion.d/* 
 %{_bindir}
 /usr/src 
 %{_datadir}
