@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -29,6 +29,8 @@ BuildRequires:	Linux-PAM
 BuildRequires:	openssl-devel
 BuildRequires:	procps-ng-devel
 BuildRequires:	fuse-devel
+BuildRequires:  systemd
+Requires:       systemd
 Requires:	fuse
 Requires:	xerces-c
 Requires:	libdnet
@@ -111,6 +113,8 @@ chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 
 
 %changelog
+*   	Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  10.0.0-13
+-   	Add systemd to Requires and BuildRequires.
 *       Fri Nov 27 2015 Sharath George <sharathg@vmware.com> 10.0.0-12
 -       Correcting path of pam file.
 *       Tue Sep 15 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-11
