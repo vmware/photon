@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.0
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -93,7 +93,8 @@ chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 %preun
 /bin/systemctl disable vmtoolsd
 
-%postun	-p /sbin/ldconfig
+%postun 
+/sbin/ldconfig
 
 %files 
 %defattr(-,root,root)
@@ -111,6 +112,8 @@ chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 
 
 %changelog
+*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 10.0.0-13
+-	Edit post script.
 *       Fri Nov 27 2015 Sharath George <sharathg@vmware.com> 10.0.0-12
 -       Correcting path of pam file.
 *       Tue Sep 15 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-11
