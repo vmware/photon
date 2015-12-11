@@ -3,7 +3,7 @@
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
 Distribution:   Discus
@@ -14,6 +14,7 @@ Source0:        http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
 Source1:        haveged.service
 Requires:       systemd
 
+BuildRequires:  systemd
 BuildRequires:  automake
 BuildRequires:  gdb
 BuildRequires:  coreutils
@@ -106,6 +107,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.9.1-2
+- Add systemd requirement.
 * Sun Jan 13 2013 Jirka Hladky <hladky.jiri@gmail.com> - 1.7h-0
 - Couple of minor updates
 * Sat Jan 12 2013 Jirka Hladky <hladky.jiri@gmail.com> - 1.7g-0

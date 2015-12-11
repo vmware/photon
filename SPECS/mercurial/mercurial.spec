@@ -1,7 +1,7 @@
 Summary:	Mercurial-3.1.2
 Name:		mercurial
 Version:	3.1.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -43,8 +43,9 @@ EOF
 %{_fixperms} %{buildroot}/*
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
 rm /etc/profile.d/java-exports.sh
 %clean
 rm -rf %{buildroot}/*
@@ -57,6 +58,8 @@ rm -rf %{buildroot}/*
 %exclude /var/opt/%{name}-%{version}/contrib/plan9
 %exclude /var/opt/%{name}-%{version}/build/temp.*
 %changelog
+*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.1.2-4
+-	Edit post script.
 *	Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 3.1.2-3
 -	Change path to /var/opt.
 *	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 3.1.2-2

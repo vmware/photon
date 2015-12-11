@@ -1,7 +1,7 @@
 Summary:	Sudo
 Name:		sudo
 Version:	1.8.11p1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
@@ -56,7 +56,8 @@ EOF
 %{_fixperms} %{buildroot}/*
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
+%post
+/sbin/ldconfig
 groupadd wheel
 %postun	-p /sbin/ldconfig
 %clean
@@ -76,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
 %changelog
+*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.8.11p1-5
+-	Edit post script.
 *	Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-4
 -	Fixing permissions on /etc/sudoers file
 *	Fri May 29 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-3
