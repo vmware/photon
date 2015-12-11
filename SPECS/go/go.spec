@@ -10,7 +10,7 @@
 Summary:	Go 
 Name:		go
 Version:	1.4.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://golang/org
 Group:		System Environment/Security
@@ -84,9 +84,10 @@ chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
-%post	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun
+/sbin/ldconfig
 rm /etc/profile.d/go-exports.sh
 rm -rf /opt/%{name}
 exit 0
@@ -111,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.4.2-2
+-	Edit post script.
 *	Mon Aug 03 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.4.2-1
 -	Update to golang release version 1.4.2
 *	Fri Oct 17 2014 Divya Thaluru <dthaluru@vmware.com> 1.3.3-1
