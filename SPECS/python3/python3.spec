@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.4.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -114,14 +114,13 @@ find %{buildroot}%{_libdir} -name '*.o' -delete
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post
--p /sbin/ldconfig
+/sbin/ldconfig
 # Enable below if using 'make install' instead of 'make altinstall'
 #ln -s %{_bindir}/python3 %{_bindir}/python
 #ln -s %{_bindir}/python3-config %{_bindir}/python-config
 #ln -s %{_libdir}/libpython3.4m.so %{_libdir}/libpython3.4.so
 
-%postun
--p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -182,6 +181,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
+-	Edit post script.
 *	Wed Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
 -	Remove python.o file, and minor cleanups.
 *	Wed Jul 1 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3

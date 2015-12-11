@@ -1,7 +1,7 @@
 Summary:	Contains the utilities for the ext2 file system
 Name:		e2fsprogs
 Version:	1.42.9
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://e2fsprogs.sourceforge.net
 Group:		System Environment/Base
@@ -48,8 +48,10 @@ popd
 %check
 cd build
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post
+/sbin/ldconfig
+%postun
+/sbin/ldconfig
 %files -f %{name}.lang
 %defattr(-,root,root)
 %config %{_sysconfdir}/mke2fs.conf
@@ -130,6 +132,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libext2fs.a
 %{_libdir}/libss.so
 %changelog
+*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
+-	Edit post script.
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
 -	Handled locale files with macro find_lang
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2

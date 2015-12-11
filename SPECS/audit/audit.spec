@@ -1,7 +1,7 @@
 Summary:	Kernel Audit Tool
 Name:		audit
 Version:	2.4.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1 audit=ad38f3352e21716e86d73b4e06cc41a5e85882ee
 License:	GPLv2+
@@ -18,6 +18,8 @@ BuildRequires:	tcp_wrappers-devel
 BuildRequires:	libcap-ng-devel
 BuildRequires:	swig
 BuildRequires:  e2fsprogs-devel
+BuildRequires:  systemd
+Requires:	systemd
 Requires:	krb5
 Requires:	openldap
 Requires:	python2
@@ -95,5 +97,7 @@ make install DESTDIR=%{buildroot}
 %{_includedir}/*.h
 
 %changelog
+* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 2.4.4-2
+- Add systemd requirement.
 * Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 2.4.4-1
 - Initial version
