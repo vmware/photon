@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       2.7
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -279,6 +279,8 @@ exit 0
 %{_mandir}/man8/stapsh.8*
 %{_mandir}/man8/systemtap.8*
 %doc AUTHORS COPYING
+%{_bindir}/dtrace
+%{_mandir}/man1/dtrace.1*
 
 %files initscript
 %defattr(-,root,root)
@@ -303,10 +305,8 @@ exit 0
 
 %files sdt-devel
 %defattr(-,root,root)
-%{_bindir}/dtrace
 %{_includedir}/sys/sdt.h
 %{_includedir}/sys/sdt-config.h
-%{_mandir}/man1/dtrace.1*
 %doc NEWS examples
 
 %files server
@@ -333,6 +333,8 @@ exit 0
 
 
 %changelog
+*	Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
+-	Move dtrace to the main package.
 *	Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 2.7-1
 -	Initial build. First version
 
