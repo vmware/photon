@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.2.0
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -56,6 +56,12 @@ Requires:    python2
 %description docs
 The Linux package contains the Linux kernel doc files
 
+%package oprofile
+Summary:    Kernel driver for oprofile, a statistical profiler for Linux systems
+Group:        System Environment/Kernel
+Requires:    %{name} = %{version}-%{release}
+%description oprofile
+Kernel driver for oprofile, a statistical profiler for Linux systems
 
 
 %prep
@@ -108,6 +114,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 %post sound
 /sbin/depmod -aq %{version}
 
+%post oprofile
+/sbin/depmod -aq %{version}
+
 %files
 %defattr(-,root,root)
 /boot/system.map-%{version}
@@ -119,6 +128,7 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{version}/build
 %exclude /lib/modules/%{version}/kernel/drivers/gpu
 %exclude /lib/modules/%{version}/kernel/sound
+%exclude /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %files docs
 %defattr(-,root,root)
@@ -138,7 +148,13 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 /lib/modules/%{version}/kernel/sound
 
+%files oprofile
+%defattr(-,root,root)
+/lib/modules/%{version}/kernel/arch/x86/oprofile/
+
 %changelog
+*	Fri Dec 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-5
+- 	Added oprofile kernel driver sub-package.
 *   Fri Nov 13 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-4
 -   Change the linux image directory.
 *	Wed Nov 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-3
