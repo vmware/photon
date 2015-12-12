@@ -95,6 +95,7 @@
 		"ltrace",
 		"netcat",
 		"zip",
+		"linux-oprofile",
 		"net-snmp",
 		"pcstat",
 		"sysdig",
