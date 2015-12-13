@@ -1,16 +1,17 @@
-Summary:	Systemd-216
+Summary:	Systemd-228
 Name:		systemd
-Version:	216
-Release:	13%{?dist}
+Version:	228
+Release:	1%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://www.freedesktop.org/software/systemd/%{name}-%{version}.tar.xz
-%define sha1 systemd=0d933a2f76db5d30f52429e9b172323bc6abd49a
-Patch0:     	systemd-216-compat-1.patch
+Source0:	%{name}-%{version}.tar.gz
+%define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
 Patch1:		01-enoX-uses-instance-number-for-vmware-hv.patch
+#patch for ostree
+#Patch0:     	systemd-mount.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -22,6 +23,7 @@ BuildRequires:	Linux-PAM
 BuildRequires:	XML-Parser
 BuildRequires:	kbd
 BuildRequires:	kmod
+BuildRequires:	util-linux-devel
 Requires:	kmod
 BuildRequires:	glib-devel
 Requires:	glib
@@ -38,9 +40,10 @@ BLKID_CFLAGS="-I/usr/include/blkid"
 cc_cv_CFLAGS__flto=no
 EOF
 sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
-%patch0 -p1
+#%patch0 -p1
 %patch1 -p1
 %build
+./autogen.sh
 ./configure --prefix=%{_prefix}                                    \
             --sysconfdir=/etc                                       \
             --localstatedir=/var                                    \
@@ -52,8 +55,9 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
             --disable-ldconfig                                      \
             --disable-sysusers                                      \
             --without-python                                        \
+            --disable-manpages                                      \
             --enable-pam                                            \
-            --docdir=%{_prefix}/share/doc/systemd-216                     \
+            --docdir=%{_prefix}/share/doc/systemd-228                     \
             --with-dbuspolicydir=/etc/dbus-1/system.d               \
             --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces    \
             --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services \
@@ -98,17 +102,19 @@ rm -rf %{buildroot}/*
 
 
 %changelog
-*     Mon Nov 30 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 216-13
--     Removing the reference of lock user
-*     Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 216-12
--     Removing la files from packages.
+*   	Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 228-1
+-   	Upgrade systemd version.
+*     	Mon Nov 30 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 216-13
+-    	Removing the reference of lock user
+*     	Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 216-12
+-     	Removing la files from packages.
 *	Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 216-11
 -	Packaging journal log directory
-*	Tue Sep 10 2015 Alexey Makhalov <amakhalov@vmware.com> 216-10
+*	Thu Sep 10 2015 Alexey Makhalov <amakhalov@vmware.com> 216-10
 -	Improve enoX renaming in VMware HV case. Patch is added.
 *	Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
 -	Reduce systemd-networkd boot time (exclude if-rename patch).
-*	Tue Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
+*	Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
 -	Adding sysvinit support 
 *       Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
 -       Fixing networkd/udev race condition for renaming interface.
