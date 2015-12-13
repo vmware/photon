@@ -1,11 +1,10 @@
-diff -Naur systemd-216_/src/udev/udev-builtin-net_id.c systemd-216/src/udev/udev-builtin-net_id.c
---- systemd-216_/src/udev/udev-builtin-net_id.c	2014-08-11 16:54:39.000000000 -0700
-+++ systemd-216/src/udev/udev-builtin-net_id.c	2015-09-10 17:29:14.844864078 -0700
-@@ -141,6 +141,22 @@
-         idx = strtoul(index, NULL, 0);
+diff -ruN systemd-228/src/udev/udev-builtin-net_id.c systemd-228-new/src/udev/udev-builtin-net_id.c
+--- systemd-228/src/udev/udev-builtin-net_id.c	2015-11-17 23:59:06.000000000 -0800
++++ systemd-228-new/src/udev/udev-builtin-net_id.c	2015-12-11 18:22:07.910440956 -0800
+@@ -149,6 +149,21 @@
          if (idx <= 0)
                  return -EINVAL;
-+
+ 
 +        if (idx >> 24) {
 +                unsigned domain, bus, slot, func;
 +                /*
@@ -21,6 +20,7 @@ diff -Naur systemd-216_/src/udev/udev-builtin-net_id.c systemd-216/src/udev/udev
 +                        idx >>= 24;
 +        }
 +
-         snprintf(names->pci_onboard, sizeof(names->pci_onboard), "o%d", idx);
- 
-         names->pci_onboard_label = udev_device_get_sysattr_value(names->pcidev, "label");
+         /* kernel provided port index for multiple ports on a single PCI function */
+         attr = udev_device_get_sysattr_value(dev, "dev_port");
+         if (attr)
+
