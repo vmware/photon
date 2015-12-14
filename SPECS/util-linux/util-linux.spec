@@ -1,14 +1,14 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
-Version:	2.24.1
-Release:	3%{?dist}
+Version:	2.27.1
+Release:	1%{?dist}
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	%{name}-%{version}.tar.xz
-%define sha1 util-linux=ecf75bbb77bba874fc11fc27423aa67b395b7ae5
+%define sha1 util-linux=462bca6320535d39b62216d8609da5531bfef0bb
 BuildRequires:	ncurses-devel
 %description
 Utilities for handling file systems, consoles, partitions,
@@ -67,10 +67,12 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/*
 
 %changelog
-*   Tue Oct 6 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24.1-3
--   Disable static, move header files, .so and config files to devel package.
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.24.1-2
--   Update according to UsrMove.
+*   	Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 2.27.1-1
+-   	Upgrade version.
+*   	Tue Oct 6 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24.1-3
+-   	Disable static, move header files, .so and config files to devel package.
+*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.24.1-2
+-   	Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1
 -	Initial build. First version
 
