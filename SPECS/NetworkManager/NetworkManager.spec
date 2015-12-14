@@ -1,7 +1,7 @@
 Summary:	NetworkManager
 Name:		NetworkManager
 Version:	1.0.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		https://download.gnome.org/sources/NetworkManager/1.0/NetworkManager-1.0.2.tar.xz
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
@@ -24,6 +24,7 @@ BuildRequires:  python-xml
 BuildRequires:	dhcp-client
 BuildRequires:	libsoup-devel
 BuildRequires:  autogen
+BuildRequires:  libgudev-devel
 Requires:		libnl
 Requires:		dbus-glib
 Requires:		glib
@@ -95,6 +96,8 @@ EOF
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Mon Dec 14 2015	Anish Swaminathan<anishs@vmware.com> 1.0.2-4
+-	Adding the missing BuildRequires 
 *	Tue	Sep 22 2015	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 1.0.2-3
 -	Adding the missing Requires list 
 *	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2-2
