@@ -103,6 +103,7 @@
 		"net-snmp",
 		"pcstat",
 		"sysdig",
-		"iotop"
+		"iotop",
+        "rsync"
             ]
 }
