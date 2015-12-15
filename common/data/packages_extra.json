@@ -104,6 +104,7 @@
         "libconfig",
         "iptraf",
         "nicstat",
-        "lldpad"
+        "lldpad",
+        "rsync"
         ]
 }
