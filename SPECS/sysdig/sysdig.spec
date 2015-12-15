@@ -21,7 +21,7 @@ BuildRequires: cmake linux-dev
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} -DBUILD_DRIVER=OFF ..
-make %{?_smp_mflags}
+make 
 
 %install
 cd build
