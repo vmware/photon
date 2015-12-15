@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       9%{?dist}
+Release:       10%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -120,6 +120,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Dec 15 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
+-   Skip rdrand reseed to improve boot time.
+-   .config changes: jolietfs(m), default THP=always, hotplug_cpu(m)
 *   Tue Nov 17 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-9
 -   nordrand cmdline param is removed.
 -   .config: + serial 8250 driver (M).
