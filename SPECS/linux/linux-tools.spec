@@ -9,7 +9,7 @@ Vendor:        VMware, Inc.
 Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
-Requires:         filesystem kmod coreutils
+Requires:         filesystem kmod coreutils binutils
 
 %description
 This package contains the 'perf' performance analysis tools for Linux kernel. 
