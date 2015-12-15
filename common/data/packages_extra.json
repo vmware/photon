@@ -62,6 +62,7 @@
         "python-Twisted", 
         "python-zope.interface", 
         "python-ipaddr", 
+        "pycrypto",
         "chkconfig", 
         "libnss-ato",
         "procmail",
