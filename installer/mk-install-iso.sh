@@ -103,7 +103,8 @@ EOF
 chmod 755 ${BUILDROOT}/init
 
 #adding autologin to the root user
-sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --noclear %I $TERM/g" ${BUILDROOT}/lib/systemd/system/getty@.service
+# and set TERM=linux for installer
+sed -i "s/ExecStart.*/ExecStart=-\/sbin\/agetty --autologin root --noclear %I linux/g" ${BUILDROOT}/lib/systemd/system/getty@.service
 
 #- Step 7 - Create installer script
 if [ "$LIVE_CD" = false ] ; then
