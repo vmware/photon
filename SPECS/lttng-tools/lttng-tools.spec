@@ -16,7 +16,10 @@ BuildRequires: m4
 BuildRequires: elfutils-devel
 BuildRequires: popt-devel
 BuildRequires: userspace-rcu
-
+Requires:      userspace-rcu
+Requires:      elfutils
+Requires:      nss
+Requires:      libxml2
 %description
 LTTng is an open source tracing framework for Linux.
 
