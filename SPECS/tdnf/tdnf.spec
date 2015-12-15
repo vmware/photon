@@ -19,7 +19,7 @@ BuildRequires:	openssl-devel
 
 BuildRequires:	librepo-devel
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 tdnf=6337f9b4045b6a561d58db602a9f6fb127b0cd84
+%define sha1 tdnf=a99ec98b9b4d95d7a4c11de328fda203f9938a50
 
 %description
 tdnf is a yum/dnf equivalent
@@ -86,10 +86,14 @@ mkdir -p %{buildroot}/var/cache/tdnf
 %files devel
     %defattr(-,root,root)
     %{_includedir}/*
-    %{_libdir}/*
+    %{_libdir}/*.a
+    %{_libdir}/*.la
     %exclude %{_libdir}/debug
 
 %changelog
+*       Mon Dec 14 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.5
+-       Support for multiple packages in alter commands
+-       Support url vars for releasever and basearch
 *       Fri Oct 2 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.4
 -       Fix upgrade to work without args, Engage distro-sync
 -       Fix install to resolve to latest available
