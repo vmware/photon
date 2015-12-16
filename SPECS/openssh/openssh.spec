@@ -1,7 +1,7 @@
 Summary:	'Free version of the SSH connectivity tools
 Name:		openssh
 Version:	6.6p1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -12,13 +12,15 @@ Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Patch1:		blfs_systemd_fixes.patch
-Requires:	openssl
-Requires:	Linux-PAM
-Requires: 	shadow
 BuildRequires:  openssl-devel
 BuildRequires:	Linux-PAM
 BuildRequires:  krb5
 BuildRequires:  e2fsprogs-devel
+BuildRequires:  systemd
+Requires:       systemd
+Requires:		openssl
+Requires:		Linux-PAM
+Requires: 		shadow
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
 useful for encrypting authentication and subsequent traffic over a 
@@ -53,8 +55,22 @@ echo "UsePAM yes" >> %{buildroot}/etc/ssh/sshd_config
 pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} install-sshd
 popd
-install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
-ln -sfv ../../../../lib/systemd/system/sshd.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/sshd.service
+
+cat << EOF > %{buildroot}/lib/systemd/system/sshd.service
+[Unit]
+Description=OpenSSH Daemon
+After=network.target sshd-keygen.service
+
+[Service]
+ExecStart=/usr/sbin/sshd -D
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 cat << EOF >> %{buildroot}/lib/systemd/system/sshd-keygen.service
 [Unit]
 Description=Generate sshd host keys
@@ -67,13 +83,17 @@ Before=sshd.service
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/bin/ssh-keygen -A
+[Install]
+WantedBy=multi-user.target
 EOF
-
-ln -sfv ../../../../lib/systemd/system/sshd-keygen.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/sshd-keygen.service
 
 %{_fixperms} %{buildroot}/*
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
+%preun
+/bin/systemctl disable sshd-keygen.service
+/bin/systemctl disable sshd.service
 %post
 /sbin/ldconfig
 chown -v root:sys /var/lib/sshd
@@ -83,7 +103,8 @@ fi
 if ! getent passwd sshd >/dev/null; then
 	useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd -s /bin/false -u 50 sshd
 fi
-
+/bin/systemctl enable sshd-keygen.service
+/bin/systemctl enable sshd.service
 
 %postun
 /sbin/ldconfig
@@ -97,7 +118,6 @@ fi
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-/etc/systemd/system/multi-user.target.wants/*
 /etc/ssh/*
 /lib/systemd/system/sshd.service
 /lib/systemd/system/sshd.socket
@@ -111,6 +131,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com> 6.6p1-4
+-   Add systemd to Requires and BuildRequires.
+-   Use systemctl to enable/disable service.
 *	Fri Jul 17 2015 Divya Thaluru <dthaluru@vmware.com> 6.6p1-3
 -	Enabling ssh-keygen service by default and fixed service file to execute only once.
 *	Tue May 19 2015 Sharath George <sharathg@vmware.com> 6.6p1-2

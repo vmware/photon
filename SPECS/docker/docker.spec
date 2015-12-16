@@ -1,7 +1,7 @@
 Summary:    Docker
 Name:       docker
 Version:    1.9.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    ASL 2.0
 URL:        http://docs.docker.com
 Group:      Applications/File
@@ -9,6 +9,9 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tar.gz
 %define sha1 docker=f5634a6c5336b0ea05e41b2690a91f43dabb8fd2
+
+BuildRequires:  systemd
+Requires:       systemd
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
@@ -21,8 +24,6 @@ mv -v %{_builddir}/%{name}-%{version}/bin/* %{buildroot}/bin/
 chmod +x %{buildroot}/bin/docker-%{version}
 ln -sfv docker-%{version} %{buildroot}/bin/docker
 install -vd %{buildroot}/lib/systemd/system
-#install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
-#ln -sfv ../../../../lib/systemd/system/docker.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/docker.service
 
 cat > %{buildroot}/lib/systemd/system/docker.service <<- "EOF"
 [Unit]
@@ -48,16 +49,26 @@ EOF
 %{_fixperms} %{buildroot}/*
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
+%preun
+/bin/systemctl disable docker.service
+
+%post
+/sbin/ldconfig
+#/bin/systemctl enable docker.service
+
 %postun	-p /sbin/ldconfig
+
+
 %clean
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 /bin/*
 /lib/systemd/system/docker.service
-#/etc/systemd/system/multi-user.target.wants/docker.service
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.9.0-2
+-   Add systemd to Requires and BuildRequires.
+-   Use systemctl to enable/disable service.
 *   Fri Nov 06 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.0-1
 -   Update to version 1.9.0
 *   Mon Aug 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.1-1
