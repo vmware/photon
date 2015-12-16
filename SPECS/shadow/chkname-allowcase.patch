@@ -1,7 +1,13 @@
-diff -ur shadow-original/libmisc/chkname.c shadow-4.1.5.1/libmisc/chkname.c
---- shadow-original/libmisc/chkname.c	2009-07-12 15:24:45.000000000 -0700
-+++ shadow-4.1.5.1/libmisc/chkname.c	2015-10-26 12:09:16.874933768 -0700
-@@ -58,6 +58,7 @@
+--- shadow-4.1.5.1/libmisc/chkname.c	2015-12-15 16:05:25.691984925 -0800
++++ shadow-4.1.5.1/libmisc/chkname.c	2015-12-15 16:07:01.071982033 -0800
+@@ -52,12 +52,13 @@
+ 	 * User/group names must match [a-z_][a-z0-9_-]*[$]
+ 	 */
+ 	if (('\0' == *name) ||
+-	    !((('a' <= *name) && ('z' >= *name)) || ('_' == *name))) {
++	    !((('a' <= *name) && ('z' >= *name)) || ('_' == *name)) || (('A' <= *name) && ('Z' >= *name))) {
+ 		return false;
+ 	}
  
  	while ('\0' != *++name) {
  		if (!(( ('a' <= *name) && ('z' >= *name) ) ||
