@@ -53,6 +53,7 @@
         "dhcp-devel",
         "initscripts",
         "net-tools",
+        "inotify-tools",
         "jaxws-ri",
         "commons-daemon",
         "runit", 
