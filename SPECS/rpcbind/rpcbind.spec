@@ -1,7 +1,7 @@
 Summary:	RPC program number mapper
 Name:		rpcbind
 Version:	0.2.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://nfsv4.bullopensource.org
 Group:	    Applications/Daemons
@@ -50,6 +50,10 @@ install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+%preun
+systemctl disable rpcbind.socket >/dev/null 2>&1
+systemctl disable rpcbind.service >/dev/null 2>&1
+
 %post
 /sbin/ldconfig
 chown -v root:sys /var/lib/rpcbind
@@ -76,5 +80,7 @@ systemctl disable rpcbind.service >/dev/null 2>&1
 %clean
 rm -rf %{buildroot}/*
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  0.2.3-2
+-   Add systemd to Requires and BuildRequires.
 *	Tue Dec 8 2015 Divya Thaluru <dthaluru@vmware.com> 0.2.3-1
 -	Initial build.	First version
