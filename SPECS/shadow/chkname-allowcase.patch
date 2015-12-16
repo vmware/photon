@@ -5,7 +5,7 @@
  	 */
  	if (('\0' == *name) ||
 -	    !((('a' <= *name) && ('z' >= *name)) || ('_' == *name))) {
-+	    !((('a' <= *name) && ('z' >= *name)) || ('_' == *name)) || (('A' <= *name) && ('Z' >= *name))) {
++	    !((('a' <= *name) && ('z' >= *name)) || ('_' == *name) || (('A' <= *name) && ('Z' >= *name)))) {
  		return false;
  	}
  
