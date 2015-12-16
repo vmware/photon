@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.6
-Release:	5%{?dist}
+Release:	6%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -9,6 +9,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source:	http://www.carfab.com/apachesoftware/zookeeper/stable/%{name}-%{version}.tar.gz
 %define sha1 zookeeper=2a9e53f5990dfe0965834a525fbcad226bf93474
+BuildRequires:  systemd
+Requires:       systemd
 Requires: shadow
 Requires: openjre
 Provides: zookeeper
@@ -112,6 +114,8 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 %{_prefix}
 
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  3.4.6-6
+-   Add systemd to Requires and BuildRequires.
 * Wed Nov 18 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.6-5
 - Add zookeeper to systemd service.
 * Tue Nov 10 2015 Mahmoud Bassiouny<mbassiouny@vmware.com> 3.4.6-4

@@ -1,7 +1,7 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.4.21
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
@@ -13,6 +13,8 @@ Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-uni
 %define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:	iptable_rules
 Patch1:		blfs_systemd_fixes.patch
+BuildRequires:  systemd
+Requires:       systemd
 %description
 The next part of this chapter deals with firewalls. The principal 
 firewall tool for Linux is Iptables. You will need to install 
@@ -45,23 +47,26 @@ ln -sfv ../../sbin/xtables-multi %{buildroot}%{_libdir}/iptables-xml
 pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} install-iptables
 popd
-install -vdm755 %{buildroot}/etc/systemd/system/multi-user.target.wants
-ln -sfv ../../../../lib/systemd/system/iptables.service  %{buildroot}/etc/systemd/system/multi-user.target.wants/iptables.service
 install -vdm755 %{buildroot}/etc/systemd/scripts
 cp iptable_rules %{buildroot}/etc/systemd/scripts/iptables
+chmod 755 %{buildroot}/etc/systemd/scripts/iptables
 find %{buildroot} -name '*.a'  -delete
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
+%preun
+/bin/systemctl disable iptables.service
+%post
+/sbin/ldconfig
+/bin/systemctl enable iptables.service
+
 %postun	-p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 /etc/systemd/scripts/iptables
-/etc/systemd/system/multi-user.target.wants/iptables.service
 /lib/systemd/system/iptables.service
 /sbin/*
 %{_bindir}/*
@@ -74,6 +79,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.4.21-3
+-   Add systemd to Requires and BuildRequires.
+-   Use systemctl to enable/disable service.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.4.21-2
 -   Updated group.
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.21-1
