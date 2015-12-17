@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
 Patch1:		01-enoX-uses-instance-number-for-vmware-hv.patch
+Patch2:		systemd-228-loopback-address.patch
 #patch for ostree
 #Patch0:     	systemd-mount.patch
 Requires:	Linux-PAM
@@ -42,6 +43,7 @@ EOF
 sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 #%patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 ./autogen.sh
 ./configure --prefix=%{_prefix}                                    \
@@ -102,6 +104,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   	Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-2
+-   	Patch for loopback address.
 *   	Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 228-1
 -   	Upgrade systemd version.
 *     	Mon Nov 30 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 216-13
