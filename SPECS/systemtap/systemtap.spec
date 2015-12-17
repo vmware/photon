@@ -50,9 +50,7 @@ BuildRequires: rpm-devel
 #BuildRequires: tetex-latex
 #BuildRequires: xmlto
 %endif
-Requires:      gcc
-Requires:      linux-dev
-Requires:      make
+Requires:      elfutils
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -75,7 +73,6 @@ Initscript for Systemtap scripts.
 %package runtime
 Group:         System/Tools
 Summary:       Instrumentation System Runtime
-Requires:      linux-dev
 
 %description runtime
 SystemTap runtime is the runtime component of an instrumentation system for systems running Linux.
