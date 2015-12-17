@@ -7,15 +7,15 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       2.7
-Release:       2%{?dist}
+Version:       2.9
+Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=5562d16446434e1a9a377697c45eb0852303ae41
+%define sha1 systemtap=37ecbc7445ff34db3c8204b1541f25524a0e8024
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -42,17 +42,10 @@ BuildRequires: pkg-config
 %if %with_rpm
 BuildRequires: rpm-devel
 %endif
-# docs
-%if %with_docs
-#BuildRequires: ghostscript
-#BuildRequires: latex2html
-#BuildRequires: tetex-dvips
-#BuildRequires: tetex-latex
-#BuildRequires: xmlto
-%endif
 Requires:      gcc
 Requires:      linux-dev
 Requires:      make
+Requires:	   elfutils 
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -269,10 +262,7 @@ exit 0
 %dir %{_datadir}/systemtap/runtime/linux/uprobes2
 %{_datadir}/systemtap/runtime/linux/uprobes2/*
 %{_datadir}/systemtap/tapset
-%{_mandir}/man1/stap.1*
-%{_mandir}/man1/stap-merge.1*
-%{_mandir}/man1/stap-prep.1*
-%{_mandir}/man1/stap-report.1*
+%{_mandir}/man1
 %{_mandir}/man3/stap*.3stap*
 %{_mandir}/man7/warning::symbols.7stap*
 %{_mandir}/man7/stappaths.7*
@@ -280,7 +270,6 @@ exit 0
 %{_mandir}/man8/systemtap.8*
 %doc AUTHORS COPYING
 %{_bindir}/dtrace
-%{_mandir}/man1/dtrace.1*
 
 %files initscript
 %defattr(-,root,root)
@@ -315,10 +304,7 @@ exit 0
 %{_libexecdir}/systemtap/stap-serverd
 %{_libexecdir}/systemtap/stap-start-server
 %{_libexecdir}/systemtap/stap-stop-server
-#%{_libexecdir}/systemtap/stap-find-servers
-#%{_libexecdir}/systemtap/stap-find-or-start-server
 %{_libexecdir}/systemtap/stap-gen-cert
-#%{_libexecdir}/systemtap/stap-server-connect
 %{_libexecdir}/systemtap/stap-sign-module
 %{_sysconfdir}/rc.d/init.d/stap-server
 %config(noreplace) %{_sysconfdir}/logrotate.d/stap-server
@@ -331,11 +317,10 @@ exit 0
 %{_mandir}/man7/warning::debuginfo.7stap*
 %{_mandir}/man8/stap-server.8*
 
-
 %changelog
+* 	Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar> 2.9-1 
+-	Updated version to 2.9
 *	Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
 -	Move dtrace to the main package.
 *	Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 2.7-1
 -	Initial build. First version
-
-
