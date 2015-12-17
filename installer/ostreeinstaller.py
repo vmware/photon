@@ -107,7 +107,8 @@ class OstreeInstaller(Installer):
         self.execute_modules(modules.commons.PRE_INSTALL)
 
         disk = self.install_config['disk']['disk']
-        self.run("sgdisk -d 2 -n 2::+300M -n 3: -p {}".format(disk), "Updating partition table for OSTree")
+        self.run("sgdisk -d 1 -d 2 -n 1::+2M -n 2::+300M -n 3: -p {}".format(disk), "Updating partition table for OSTree")
+        self.run("sgdisk -t1:ef02 {}".format(disk))
         self.run("mkfs -t ext4 {}2".format(disk))
         self.run("mkfs -t ext4 {}3".format(disk))
         self.run("mount {}3 {}".format(disk, self.photon_root))
