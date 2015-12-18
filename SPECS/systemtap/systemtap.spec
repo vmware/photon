@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       2.7
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -16,6 +16,7 @@ Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
 %define sha1 systemtap=5562d16446434e1a9a377697c45eb0852303ae41
+Patch0:		   systemtap-linux-4.2.0.patch
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -50,6 +51,8 @@ BuildRequires: rpm-devel
 #BuildRequires: tetex-latex
 #BuildRequires: xmlto
 %endif
+Requires:      binutils
+Requires:      elfutils
 Requires:      gcc
 Requires:      linux-dev
 Requires:      make
@@ -103,6 +106,7 @@ SystemTap server is the server component of an instrumentation system for system
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure \
@@ -333,6 +337,10 @@ exit 0
 
 
 %changelog
+*   Fri Dec 18 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-3
+-   Patch stap to work with linux 4.2.0.
+-   systemtap-linux-4.2.0.patch is from 
+-   https://www.sourceware.org/git/gitweb.cgi?p=systemtap.git;a=patch;h=320e1ecb16427b5769f0f5a097d80823ee1fb765 
 *	Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
 -	Move dtrace to the main package.
 *	Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 2.7-1

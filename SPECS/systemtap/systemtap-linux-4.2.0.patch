@@ -1,0 +1,38 @@
+From 320e1ecb16427b5769f0f5a097d80823ee1fb765 Mon Sep 17 00:00:00 2001
+From: David Smith <dsmith@redhat.com>
+Date: Tue, 7 Jul 2015 10:41:43 -0500
+Subject: [PATCH] Fixed BZ1240682 by fixing a rawhide compile problem.
+
+* translate.cxx (translate_pass): Move the inclusion of runtime.h up
+  before the declaration of the module refresh mutex, to avoid compilation
+  problems on rawhide.
+---
+ translate.cxx | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/translate.cxx b/translate.cxx
+index c8230f2..390a73e 100644
+--- a/translate.cxx
++++ b/translate.cxx
+@@ -7944,6 +7944,9 @@ translate_pass (systemtap_session& s)
+       // Emit systemtap_module_refresh() prototype so we can reference it
+       s.op->newline() << "static void systemtap_module_refresh (const char* modname);";
+ 
++      // Be sure to include runtime.h before any real code.
++      s.op->newline() << "#include \"runtime.h\"";
++
+       if (!s.runtime_usermode_p())
+         {
+           // When on-the-fly [dis]arming is used, module_refresh can be called from
+@@ -7962,8 +7965,6 @@ translate_pass (systemtap_session& s)
+           s.op->newline() << "#endif";
+         }
+ 
+-      s.op->newline() << "#include \"runtime.h\"";
+-
+       // Emit embeds ahead of time, in case they affect context layout
+       for (unsigned i=0; i<s.embeds.size(); i++)
+         {
+-- 
+1.9.4
+
