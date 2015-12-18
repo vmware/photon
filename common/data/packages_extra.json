@@ -26,6 +26,7 @@
         "libndp-devel",
         "libnl-devel",
         "logrotate",
+        "sendmail",
         "kpartx",
         "autogen-libopts", 
         "autogen-libopts-devel",
