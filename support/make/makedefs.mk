@@ -11,8 +11,8 @@ TAR=/bin/tar
 RPMBUILD=/usr/bin/rpmbuild
 SED=/usr/bin/sed
 SHASUM=/usr/bin/shasum
-PACKER=/usr/local/bin/packer
-VAGRANT=/usr/bin/vagrant
+PACKER=env packer
+VAGRANT=env vagrant
 VAGRANT_BUILD=vagrant
 
 SRCROOT := $(realpath $(SRCROOT))
