@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -23,6 +23,7 @@ The Maven package contains binaries for a build system
 %prep
 
 %setup -q
+find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 
 %build
 MAVEN_DIST_DIR=/var/opt/apache-maven-3.3.3
@@ -61,6 +62,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*   Tue Jan 5 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.3-4
+-   Increase build timeout from 600000 to 1200000 
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 3.3.3-3
 -	Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.3-2
