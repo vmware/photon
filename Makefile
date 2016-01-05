@@ -41,6 +41,12 @@ else
 PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
+ifdef PHOTON_ENABLE_RPMCHECK
+PHOTON_RPMCHECK_OPTION := -u
+else
+PHOTON_RPMCHECK_OPTION := 
+endif
+
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 
@@ -84,6 +90,7 @@ packages-micro: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) g
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
 minimal: minimal-iso
@@ -146,6 +153,7 @@ packages-minimal: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
@@ -190,6 +198,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
 updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -208,6 +217,7 @@ updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 -k $(PHOTON_INPUT_RPMS_DIR) \
+                $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
 tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -227,6 +237,7 @@ tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                $(PHOTON_RPMCHECK_OPTION) \
                 -m stage1
 
 tool-chain-stage2: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -246,6 +257,7 @@ tool-chain-stage2: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                $(PHOTON_RPMCHECK_OPTION) \
                 -m stage2
 
 
@@ -454,6 +466,7 @@ check-packer-ovf-plugin:
                               -d $(PHOTON_DIST_TAG) \
                               -n $(PHOTON_BUILD_NUMBER) \
                               -v $(PHOTON_RELEASE_VERSION) \
+                              $(PHOTON_RPMCHECK_OPTION) \
                               -l $(PHOTON_LOGS_DIR)
 
 $(TOOLS_BIN):
