@@ -1,12 +1,12 @@
 Summary:	Photon release files
 Name:		photon-release
-Version:	1.3
+Version:	1.4
 Release:	1%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
 Source:		photon-release-%{version}.tar.gz
-%define sha1 photon-release=5e1994075455bcac70699c1afc900ffd5fe5c112
+%define sha1 photon-release=2657a3250ec67b6e09ea763854fa00d625c25b97
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-release
@@ -49,9 +49,12 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon.repo
 %config(noreplace) /etc/yum.repos.d/photon-updates.repo
 %config(noreplace) /etc/yum.repos.d/lightwave.repo
+%config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
-*	Thu Nov 19 2015 Anish Swaminathan <anishs@vmware.com> 1.3-1
+*       Mon Jan 04 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4
+-       Adding photon-extras.repo
+*	Thu Nov 19 2015 Anish Swaminathan <anishs@vmware.com> 1.3
 -	Upgrade photon repo
 *       Fri Aug 14 2015 Sharath George <sharathg@vmware.com> 1.2
 -       Install photon repo links
