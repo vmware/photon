@@ -108,6 +108,8 @@
         "iptraf",
         "nicstat",
         "lldpad",
-        "rsync"
-        ]
+        "rsync",
+        "paramiko",
+        "ecdsa"
+            ]
 }
