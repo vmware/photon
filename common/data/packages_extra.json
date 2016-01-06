@@ -98,6 +98,7 @@
         "msr-tools",
 		"zip",
 		"netcat",
+        "cgroup-utils",
         "sysstat",
 		"blktrace",
 		"ethtool",
