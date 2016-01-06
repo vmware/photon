@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -10,9 +10,13 @@ Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
 #patch for ostree
-Patch0:     	systemd-228-mount.patch
-Patch1:		01-enoX-uses-instance-number-for-vmware-hv.patch
-Patch2:		systemd-228-loopback-address.patch
+Patch0:         systemd-228-mount.patch
+Patch1:         01-enoX-uses-instance-number-for-vmware-hv.patch
+Patch2:         systemd-228-loopback-address.patch
+Patch3:         systemd-228-never-cache-localhost-rr.patch
+Patch4:         systemd-228-parse-error-message.patch
+Patch5:         systemd-228-networking-fixes.patch
+Patch6:         systemd-228-cleanup-recv.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -44,6 +48,11 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+
 %build
 ./autogen.sh
 ./configure --prefix=%{_prefix}                                    \
@@ -104,8 +113,10 @@ rm -rf %{buildroot}/*
 
 
 %changelog
-*   	Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-3
--   	Patch for ostree.
+*       Wed Jan 06 2016 Anish Swaminathan <anishs@vmware.com> 228-4
+-       Patches for minor network fixes.
+*       Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-3
+-       Patch for ostree.
 *   	Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-2
 -   	Patch for loopback address.
 *   	Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 228-1
