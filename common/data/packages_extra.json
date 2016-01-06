@@ -92,6 +92,7 @@
 		"linux-tools",
 	    "mingetty",
         "msr-tools",
+        "cgroup-utils",
         "sysstat",
 		"blktrace",
 		"ethtool",
