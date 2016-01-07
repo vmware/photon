@@ -98,6 +98,7 @@
 		"ltrace",
 		"netcat",
 		"zip",
+        "ntpstat",
 		"linux-oprofile",
 		"net-snmp",
 		"pcstat",
