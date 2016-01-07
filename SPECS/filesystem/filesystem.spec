@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	7.5
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -132,10 +132,6 @@ cat > %{buildroot}/etc/hosts <<- "EOF"
 
 # End /etc/hosts (network card version)
 EOF
-#
-#	7.8. Configuring the system hostname
-#
-echo "HOSTNAME=photon.eng.vmware.com" > %{buildroot}/etc/sysconfig/network
 #
 #	7.9. Configuring the setclock Script"
 #
@@ -375,7 +371,6 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 %dir /etc/sysconfig
 %config(noreplace) /etc/sysconfig/clock
 %config(noreplace) /etc/sysconfig/console
-%config(noreplace) /etc/sysconfig/network
 %dir /etc/systemd/network
 %config(noreplace) /etc/systemd/network/10-dhcp-en.network
 %dir /etc/profile.d
@@ -461,6 +456,8 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 /usr/local/lib64
 %endif
 %changelog
+*   Thu Jan 7 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 7.5-12
+-   Removing /etc/sysconfig/network file.
 *   Mon Nov 16 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 7.5-11
 -   Removing /etc/fstab mount entries.
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 7.5-10
