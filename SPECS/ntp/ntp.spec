@@ -1,7 +1,7 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
 Version:	4.2.8p3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms
@@ -9,6 +9,13 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/%{name}-%{version}.tar.gz
 %define sha1 ntp=fc624396f8d9f9bc282da30c8e8e527ade7d420f
+
+# http://people.redhat.com/rkeech/#ntpstat
+Source1: ntpstat-0.2.tgz
+%define sha1 ntpstat=9b6baf20b5943651a6bf8d6cf9a78e318573b541
+
+#https://github.com/Pardus-Linux/Packages/blob/master/server/ntp/files/fedora/ntpstat-0.2-sysvars.patch
+Patch1: ntpstat-0.2-sysvars.patch
 
 BuildRequires:	which
 BuildRequires:	libcap-devel
@@ -21,8 +28,18 @@ The ntp package contains a client and server to keep the time
 synchronized between various computers over a network. This 
 package is the official reference implementation of the 
 NTP protocol.
+
+%package -n	ntpstat
+Summary:	Utilities
+Group:      Utilities
+%description -n ntpstat
+ntpstat is a utility which reports the synchronisation
+state of the NTP daemon running on the local machine.
+
 %prep
-%setup -q
+%setup -q -a 1
+%patch1 -p1 -b .sysvars
+
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -36,12 +53,19 @@ NTP protocol.
 	--with-binsubdir=sbin \
 	--enable-linuxcaps
 make %{?_smp_mflags}
+make -C ntpstat-0.2 CFLAGS="$CFLAGS"
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 install -v -m755	-d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*		%{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
+
+pushd ntpstat-0.2
+install -m 755 ntpstat %{buildroot}/%{_bindir}
+install -m 644 ntpstat.1 %{buildroot}/%{_mandir}/man8/ntpstat.8
+popd
+
 cat > %{buildroot}/etc/ntp.conf <<- "EOF"
 # Asia
 server 0.asia.pool.ntp.org
@@ -103,6 +127,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
 /lib/systemd/system/ntpd.service
+%exclude %{_bindir}/ntpstat
+%exclude %{_mandir}/man8/ntpstat.8*
 %{_bindir}/*
 %{_datadir}/doc/%{name}-%{version}/*
 %{_datadir}/doc/ntp/*
@@ -112,7 +138,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 %{_datadir}/ntp/lib/NTP/Util.pm
 
+%files -n ntpstat
+%defattr(-,root,root)
+%{_bindir}/ntpstat
+%{_mandir}/man8/ntpstat.8*
+
 %changelog
+*   Thu Jan 7 2016 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-4
+-   Add ntpstat package.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-3
 -   Add systemd to Requires and BuildRequires.
 *	Fri Oct 30 2015 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p3-2
