@@ -1,0 +1,15 @@
+diff -up ntp-4.2.6p1/ntpstat-0.2/ntpstat.c.sysvars ntp-4.2.6p1/ntpstat-0.2/ntpstat.c
+--- ntp-4.2.6p1/ntpstat-0.2/ntpstat.c.sysvars	2010-05-03 11:27:47.000000000 +0200
++++ ntp-4.2.6p1/ntpstat-0.2/ntpstat.c	2010-05-03 11:32:56.000000000 +0200
+@@ -89,9 +89,9 @@ int main (void) {
+     "modem"};         /* 9 */
+   char *newstr;
+   char *dispstr;
+-  const char DISP[] = "rootdispersion=";
++  const char DISP[] = "rootdisp=";
+   const char STRATUM[] = "stratum=";
+-  const char POLL[] = "poll=";
++  const char POLL[] = "tc=";
+   const char REFID[] = "refid=";
+ 
+   /* initialise timeout value */
