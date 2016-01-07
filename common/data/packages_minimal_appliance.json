@@ -52,6 +52,11 @@
         "bindutils",
         "wget",
         "gawk",
+        "ecdsa", 
+        "paramiko",
+        "inotify",
+        "sendmail", 
+        "ntpstat", 
         "lvm2"
     ]
 }
