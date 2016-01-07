@@ -97,6 +97,7 @@
 	    "mingetty",
         "msr-tools",
 		"zip",
+        "ntpstat",
 		"netcat",
         "cgroup-utils",
         "sysstat",
