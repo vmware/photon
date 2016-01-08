@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       8%{?dist}
+Release:       10%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -77,7 +77,7 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 quiet nordrand noreplace-smp cpu_init_udelay=0 plymouth.enable=0
+photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rootfstype=ext4 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
 photon_linux=vmlinuz-esx-%{version}
 EOF
 
@@ -120,6 +120,12 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Dec 15 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
+-   Skip rdrand reseed to improve boot time.
+-   .config changes: jolietfs(m), default THP=always, hotplug_cpu(m)
+*   Tue Nov 17 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-9
+-   nordrand cmdline param is removed.
+-   .config: + serial 8250 driver (M).
 *   Fri Nov 13 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-8
 -   Change the linux image directory.
 *   Tue Nov 10 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-7
