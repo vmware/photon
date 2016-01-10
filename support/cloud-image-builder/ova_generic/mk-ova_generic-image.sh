@@ -32,7 +32,7 @@ sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about 
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp/photon-generic-ova.mf
 openssl sha1 *.vmdk photon-generic-ova.ovf > photon-generic-ova.mf
 tar cf photon-generic-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-generic-ova.ovf photon-generic-ova.mf photon-generic-ova-disk1.vmdk
-cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-generic-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
+mv $PHOTON_IMG_OUTPUT_PATH/temp/photon-generic-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
 rm -rf photon-generic-custom
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-ova_generic.raw`
@@ -73,7 +73,7 @@ sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about 
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp1/photon-generic-custom.mf
 openssl sha1 *.vmdk photon-generic-custom.ovf > photon-generic-custom.mf
 tar cf photon-generic-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-generic-custom.ovf photon-generic-custom.mf photon-generic-custom-disk1.vmdk
-cp $PHOTON_IMG_OUTPUT_PATH/temp1/photon-generic-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
+mv $PHOTON_IMG_OUTPUT_PATH/temp1/photon-generic-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp/
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp1/
