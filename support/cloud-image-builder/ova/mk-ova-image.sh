@@ -32,7 +32,7 @@ sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about 
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova.mf
 openssl sha1 *.vmdk photon-ova.ovf > photon-ova.mf
 tar cf photon-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-ova.ovf photon-ova.mf photon-ova-disk1.vmdk
-cp $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
+mv $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
 rm -rf photon-custom
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-ova.raw`
@@ -73,7 +73,7 @@ sed -i '/\/VirtualSystem>/i \ \t<ProductSection> \n \t\t<Info>Information about 
 rm -f $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom.mf
 openssl sha1 *.vmdk photon-custom.ovf > photon-custom.mf
 tar cf photon-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova photon-custom.ovf photon-custom.mf photon-custom-disk1.vmdk
-cp $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
+mv $PHOTON_IMG_OUTPUT_PATH/temp1/photon-custom-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM.ova $PHOTON_IMG_OUTPUT_PATH/
 cd $PHOTON_IMG_OUTPUT_PATH
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp/
 rm -rf $PHOTON_IMG_OUTPUT_PATH/temp1/
