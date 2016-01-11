@@ -1,11 +1,11 @@
 Summary:	Rocket-fast system for log processing
 Name:		rsyslog
-Version:	8.10.0
+Version:	8.15.0
 Release:	1%{?dist}
 License:	GPLv3+ and ASL 2.0
 URL:		http://www.rsyslog.com/
 Source0:	http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1 rsyslog=9fddcf1121e438e5291f738bb4619230de525e50
+%define sha1 rsyslog=e1d5ff63c96bce9945dc65581c8e195950256d3c
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -23,10 +23,8 @@ Requires:	libgcrypt
 Requires:	liblogging
 Requires:	librelp
 %description
-Cronie contains the standard UNIX daemon crond that runs specified programs at
-scheduled times and related tools. It is based on the original cron and
-has security and configuration enhancements like the ability to use pam and
-SELinux.
+RSYSLOG is the rocket-fast system for log processing.
+It offers high-performance, great security features and a modular design. While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging, being able to accept inputs from a wide variety of sources, transform them, and output to the results to diverse destinations.
 %prep
 %setup -q
 %build
@@ -38,6 +36,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -vd %{buildroot}%{_libdir}/systemd/system/
 mv %{buildroot}/lib/systemd/system/rsyslog.service  %{buildroot}%{_libdir}/systemd/system/rsyslog.service
+find %{buildroot} -name '*.la' -delete
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
@@ -46,11 +45,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %{_sbindir}/*
 %{_libdir}/rsyslog/*.so
-%{_libdir}/rsyslog/*.la
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_libdir}/systemd/system/rsyslog.service
 %changelog
+*   Mon Jan 11  2016 Xiaolin Li <xiaolinl@vmware.com> 8.15.0-1
+-   Update rsyslog to 8.15.0
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 8.10.0-1
 -	Initial build. First version
 
