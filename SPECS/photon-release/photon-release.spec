@@ -1,7 +1,7 @@
 Summary:	Photon release files
 Name:		photon-release
 Version:	1.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		http://photon.org
@@ -33,6 +33,10 @@ done
 install -d -m 755 $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 install -m 644 VMWARE-RPM-GPG-KEY $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 
+cat << EOF >> $RPM_BUILD_ROOT/etc/issue
+Photon 1.0 \n \l
+EOF
+
 %post
 # Remove __db* files to workaround BD version check bug in rpm
 rm -f /var/lib/rpm/__db*
@@ -49,8 +53,11 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon.repo
 %config(noreplace) /etc/yum.repos.d/photon-updates.repo
 %config(noreplace) /etc/yum.repos.d/lightwave.repo
+%config(noreplace) /etc/issue
 
 %changelog
+*   	Mon Jan 11  2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.2
+-   	Add /etc/issue in Photon OS
 *       Fri Aug 14 2015 Sharath George <sharathg@vmware.com> 1.2
 -       Install photon repo links
 *       Wed Jun 17 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1
