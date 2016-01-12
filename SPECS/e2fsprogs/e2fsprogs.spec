@@ -1,14 +1,14 @@
 Summary:	Contains the utilities for the ext2 file system
 Name:		e2fsprogs
-Version:	1.42.9
-Release:	4%{?dist}
+Version:	1.42.13
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://e2fsprogs.sourceforge.net
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha1 e2fsprogs=fb8e3662302bcab1682d567d6ee0ff051faa1bbd
+%define sha1 e2fsprogs=77d1412472ac5a67f8954166ec16c37616074c37
 %description
 The E2fsprogs package contains the utilities for handling
 the ext2 file system.
@@ -132,6 +132,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libext2fs.a
 %{_libdir}/libss.so
 %changelog
+* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-1
+- 	Updated to version 1.42.13
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
 -	Edit post script.
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3

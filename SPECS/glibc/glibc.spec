@@ -5,15 +5,15 @@
 
 Summary:	Main C library
 Name:		glibc
-Version:	2.21
-Release:	8%{?dist}
+Version:	2.22
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1 glibc=1157be3fe63baa81b7ba104a103337775a6ed06f
+%define sha1 glibc=5be95334f197121d8b351059a1c6518305d88e2a
 Source1:	locale-gen.sh
 Source2:	locale-gen.conf
 Patch0:		glibc-2.21-fhs-1.patch
@@ -169,6 +169,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.22-1
+- 	Updated to version 2.22
 *	Tue Dec 1 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-8
 -       Disabling rpm debug package and stripping the libraries
 *	Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-7

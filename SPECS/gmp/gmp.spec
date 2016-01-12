@@ -1,6 +1,6 @@
 Summary:	Math libraries
 Name:		gmp
-Version:	5.1.3
+Version:	6.0.0a
 Release:	1%{?dist}
 License:	LGPLv3+
 URL:		http://www.gnu.org/software/gmp
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gmp/%{name}-%{version}.tar.xz
-%define sha1 gmp=12cfe0911d64fcbd85835df9ddc18c99af8f9a45
+%define sha1 gmp=1aaf78358ab9e34aeb61f3ae08174ee9118ece98
 %description
 The GMP package contains math libraries. These have useful functions
 for arbitrary precision arithmetic.
@@ -61,5 +61,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libgmpxx.so
 %{_libdir}/libgmp.so
 %changelog
+* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 6.0.0-1
+- 	Updated to version 6.0.0
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.1.3-1
 -	Initial build. First version

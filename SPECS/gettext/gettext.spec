@@ -1,14 +1,14 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
-Version:	0.18.3.2
-Release:	2%{?dist}
+Version:	0.19.5.1
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:		http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.gz
-%define sha1 gettext=a2dc46d788edb0078ab20da7bd194bdb6da2f0d9
+Source0:		http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
+%define sha1 gettext=668562227972d2645ac6c5930448ba74df65a53f
 %description
 These allow programs to be compiled with NLS
 (Native Language Support), enabling them to output
@@ -45,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 0.19.5.1-1
+- 	Updated to version 0.19.5.1
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.18.3.2-2
 -	Handled locale files with macro find_lang
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 0.18.3.2-1

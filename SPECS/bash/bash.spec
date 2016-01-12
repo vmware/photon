@@ -1,14 +1,14 @@
 Summary:	Bourne-Again SHell
 Name:		bash
-Version:	4.3
-Release:	4%{?dist}
+Version:	4.3.30
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
-%define sha1 bash=45ac3c5727e7262334f4dfadecdf601b39434e84
+%define sha1 bash=33b1bcc5dca1b72f28b2baeca6efa0d422097964
 Patch0:		http://www.linuxfromscratch.org/patches/downloads/bash/bash-4.3-upstream_fixes-7.patch
 Patch1:		fix-save_bash_input-segfault.patch
 Provides:	/bin/sh
@@ -19,7 +19,7 @@ The package contains the Bourne-Again SHell
 %package lang
 Summary: Additional language files for bash
 Group: System Environment/Base
-Requires: bash >= 4.3
+Requires: bash >= 4.3.30
 %description lang
 These are the additional language files of bash.
 
@@ -237,6 +237,8 @@ rm -f /root/.bash_logout
 %defattr(-,root,root)
 
 %changelog
+* Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
+- Updated to version 4.3.30
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
 -       Adding post unstall section.
 *	Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
