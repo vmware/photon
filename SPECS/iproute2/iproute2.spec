@@ -1,6 +1,6 @@
 Summary:	Basic and advanced IPV4-based networking
 Name:		iproute2
-Version:	3.12.0
+Version:	4.2.0
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/net/iproute2
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
-%define sha1 iproute2=9397376e5d4dcbb1182745cd58625895fcdb868d
+%define sha1 iproute2=2585177e94fddb59418db149692d0726cde30774
 %description
 The IPRoute2 package contains programs for basic and advanced
 IPV4-based networking.
@@ -34,5 +34,7 @@ make	DESTDIR=%{buildroot} \
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.0-1
+- 	Updated to version 4.2.0
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.12.0-1
 -	Initial build. First version
