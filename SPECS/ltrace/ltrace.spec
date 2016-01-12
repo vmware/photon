@@ -8,7 +8,7 @@ Group:		Development/Debuggers
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.ltrace.org/%{name}_%{version}.orig.tar.bz2
-%define sha1 strace=8df2acc8bc135a229917de6ef814f416d38124ca
+%define sha1 ltrace=8df2acc8bc135a229917de6ef814f416d38124ca
 BuildRequires:	elfutils-libelf-devel
 Requires:	elfutils-libelf
 %description
