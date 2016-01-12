@@ -10,7 +10,7 @@ Distribution:	Photon
 Source0:	https://github.com/tobert/pcstat/archive/pcstat-1.zip
 %define sha1 pcstat=cd67c42d291763597dbe3fb19e8e367c54a4a898
 BuildRequires:	unzip go audit git
-#Requires:	elfutils-libelf
+Requires:	go
 %description
 A tool that inspect which pages of a file or files are being cached by the Linux kernel
 
