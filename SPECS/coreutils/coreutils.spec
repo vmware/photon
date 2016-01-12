@@ -1,6 +1,6 @@
 Summary:	Basic system utilities
 Name:		coreutils
-Version:	8.22
+Version:	8.24
 Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
@@ -8,7 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
-%define sha1 coreutils=cc7fe47b21eb49dd2ee4cdb707570f42fb2c8cc6
+%define sha1 coreutils=cf3d9983461c2b0c074a76804c18464e9a474883
 Patch0:		http://www.linuxfromscratch.org/patches/lfs/7.5/coreutils-8.22-i18n-4.patch
 Requires:	gmp
 Provides:	sh-utils
@@ -25,7 +25,7 @@ These are the additional language files of coreutils.
 
 %prep
 %setup -q
-%patch0 -p1
+#%patch0 -p1
 %build
 FORCE_UNSAFE_CONFIGURE=1  ./configure \
 	--prefix=%{_prefix} \
@@ -63,5 +63,7 @@ make -k NON_ROOT_USERNAME=nobody check |& tee %{_specdir}/%{name}-check-log || %
 %defattr(-,root,root)
 
 %changelog
+* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 8.24-1
+- 	Updated to version 8.24
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 8.22-1
 -	Initial build. First version
