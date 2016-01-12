@@ -1,0 +1,424 @@
+Submitted By:            Armin K. <krejzi at email dot com>
+Date:                    2015-05-23
+Initial Package Version: 4.3
+Upstream Status:         Already in upstream patch repo
+Origin:                  Upstream
+Description:             This patch contains upstream patch numbers 031 thru 039
+
+--- a/arrayfunc.c	2014-10-01 18:57:35.000000000 +0200
++++ b/arrayfunc.c	2015-05-21 18:21:02.877941074 +0200
+@@ -404,6 +404,9 @@
+       (*var->assign_func) (var, l->word->word, i, 0);
+     else
+       array_insert (a, i, l->word->word);
++
++  VUNSETATTR (var, att_invisible);	/* no longer invisible */
++
+   return var;
+ }
+ 
+@@ -634,6 +637,10 @@
+ 
+   if (nlist)
+     dispose_words (nlist);
++
++  if (var)
++    VUNSETATTR (var, att_invisible);	/* no longer invisible */
++
+   return (var);
+ }
+ 
+--- a/assoc.c	2011-11-05 21:39:05.000000000 +0100
++++ b/assoc.c	2015-05-21 18:21:00.158956999 +0200
+@@ -436,6 +436,8 @@
+ #if 1
+ 	if (sh_contains_shell_metas (tlist->key))
+ 	  istr = sh_double_quote (tlist->key);
++	else if (ALL_ELEMENT_SUB (tlist->key[0]) && tlist->key[1] == '\0')
++	  istr = sh_double_quote (tlist->key);	
+ 	else
+ 	  istr = tlist->key;	
+ #else
+--- a/bashline.c	2014-10-01 18:57:30.000000000 +0200
++++ b/bashline.c	2015-05-21 18:20:20.630188508 +0200
+@@ -202,6 +202,7 @@
+ extern int last_command_exit_value;
+ extern int array_needs_making;
+ extern int posixly_correct, no_symbolic_links;
++extern int sigalrm_seen;
+ extern char *current_prompt_string, *ps1_prompt;
+ extern STRING_INT_ALIST word_token_alist[];
+ extern sh_builtin_func_t *last_shell_builtin, *this_shell_builtin;
+@@ -4208,8 +4209,9 @@
+ {
+   /* If we're going to longjmp to top_level, make sure we clean up readline.
+      check_signals will call QUIT, which will eventually longjmp to top_level,
+-     calling run_interrupt_trap along the way. */
+-  if (interrupt_state)
++     calling run_interrupt_trap along the way.  The check for sigalrm_seen is
++     to clean up the read builtin's state. */
++  if (terminating_signal || interrupt_state || sigalrm_seen)
+     rl_cleanup_after_signal ();
+   bashline_reset_event_hook ();
+   check_signals_and_traps ();	/* XXX */
+--- a/builtins/common.h	2014-10-01 18:57:47.000000000 +0200
++++ b/builtins/common.h	2015-05-21 18:20:20.631188502 +0200
+@@ -122,6 +122,10 @@
+ /* Functions from getopts.def */
+ extern void getopts_reset __P((int));
+ 
++/* Functions from read.def */
++extern void read_tty_cleanup __P((void));
++extern int read_tty_modified __P((void));
++
+ /* Functions from set.def */
+ extern int minus_o_option_value __P((char *));
+ extern void list_minus_o_opts __P((int, int));
+--- a/builtins/read.def	2014-10-01 18:57:38.000000000 +0200
++++ b/builtins/read.def	2015-05-21 18:20:20.631188502 +0200
+@@ -140,10 +140,12 @@
+ procenv_t alrmbuf;
+ int sigalrm_seen;
+ 
+-static int reading;
++static int reading, tty_modified;
+ static SigHandler *old_alrm;
+ static unsigned char delim;
+ 
++static struct ttsave termsave;
++
+ /* In all cases, SIGALRM just sets a flag that we check periodically.  This
+    avoids problems with the semi-tricky stuff we do with the xfree of
+    input_string at the top of the unwind-protect list (see below). */
+@@ -188,7 +190,6 @@
+   struct stat tsb;
+   SHELL_VAR *var;
+   TTYSTRUCT ttattrs, ttset;
+-  struct ttsave termsave;
+ #if defined (ARRAY_VARS)
+   WORD_LIST *alist;
+ #endif
+@@ -221,7 +222,7 @@
+   USE_VAR(ps2);
+   USE_VAR(lastsig);
+ 
+-  sigalrm_seen = reading = 0;
++  sigalrm_seen = reading = tty_modified = 0;
+ 
+   i = 0;		/* Index into the string that we are reading. */
+   raw = edit = 0;	/* Not reading raw input by default. */
+@@ -438,6 +439,8 @@
+ 	  retval = 128+SIGALRM;
+ 	  goto assign_vars;
+ 	}
++      if (interactive_shell == 0)
++	initialize_terminating_signals ();
+       old_alrm = set_signal_handler (SIGALRM, sigalrm);
+       add_unwind_protect (reset_alarm, (char *)NULL);
+ #if defined (READLINE)
+@@ -482,7 +485,10 @@
+ 	  i = silent ? ttfd_cbreak (fd, &ttset) : ttfd_onechar (fd, &ttset);
+ 	  if (i < 0)
+ 	    sh_ttyerror (1);
++	  tty_modified = 1;
+ 	  add_unwind_protect ((Function *)ttyrestore, (char *)&termsave);
++	  if (interactive_shell == 0)
++	    initialize_terminating_signals ();
+ 	}
+     }
+   else if (silent)	/* turn off echo but leave term in canonical mode */
+@@ -497,7 +503,10 @@
+       if (i < 0)
+ 	sh_ttyerror (1);
+ 
++      tty_modified = 1;
+       add_unwind_protect ((Function *)ttyrestore, (char *)&termsave);
++      if (interactive_shell == 0)
++	initialize_terminating_signals ();
+     }
+ 
+   /* This *must* be the top unwind-protect on the stack, so the manipulation
+@@ -588,6 +597,8 @@
+ 	    }
+ 	  else
+ 	    lastsig = 0;
++	  if (terminating_signal && tty_modified)
++	    ttyrestore (&termsave);	/* fix terminal before exiting */
+ 	  CHECK_TERMSIG;
+ 	  eof = 1;
+ 	  break;
+@@ -978,6 +989,20 @@
+      struct ttsave *ttp;
+ {
+   ttsetattr (ttp->fd, ttp->attrs);
++  tty_modified = 0;
++}
++
++void
++read_tty_cleanup ()
++{
++  if (tty_modified)
++    ttyrestore (&termsave);
++}
++
++int
++read_tty_modified ()
++{
++  return (tty_modified);
+ }
+ 
+ #if defined (READLINE)
+--- a/builtins/set.def	2013-04-19 13:20:34.000000000 +0200
++++ b/builtins/set.def	2015-05-21 18:20:57.876970364 +0200
+@@ -751,9 +751,11 @@
+   WORD_LIST *list;
+ {
+   int unset_function, unset_variable, unset_array, opt, nameref, any_failed;
++  int global_unset_func, global_unset_var;
+   char *name;
+ 
+   unset_function = unset_variable = unset_array = nameref = any_failed = 0;
++  global_unset_func = global_unset_var = 0;
+ 
+   reset_internal_getopt ();
+   while ((opt = internal_getopt (list, "fnv")) != -1)
+@@ -761,10 +763,10 @@
+       switch (opt)
+ 	{
+ 	case 'f':
+-	  unset_function = 1;
++	  global_unset_func = 1;
+ 	  break;
+ 	case 'v':
+-	  unset_variable = 1;
++	  global_unset_var = 1;
+ 	  break;
+ 	case 'n':
+ 	  nameref = 1;
+@@ -777,7 +779,7 @@
+ 
+   list = loptend;
+ 
+-  if (unset_function && unset_variable)
++  if (global_unset_func && global_unset_var)
+     {
+       builtin_error (_("cannot simultaneously unset a function and a variable"));
+       return (EXECUTION_FAILURE);
+@@ -795,6 +797,9 @@
+ 
+       name = list->word->word;
+ 
++      unset_function = global_unset_func;
++      unset_variable = global_unset_var;
++
+ #if defined (ARRAY_VARS)
+       unset_array = 0;
+       if (!unset_function && valid_array_reference (name))
+--- a/jobs.c	2014-10-01 18:57:26.000000000 +0200
++++ b/jobs.c	2015-05-21 18:20:20.632188497 +0200
+@@ -3339,7 +3339,9 @@
+       if (posixly_correct && this_shell_builtin && this_shell_builtin == wait_builtin)
+ 	{
+ 	  interrupt_immediately = 0;
+-	  trap_handler (SIGCHLD);	/* set pending_traps[SIGCHLD] */
++	  /* This was trap_handler (SIGCHLD) but that can lose traps if
++	     children_exited > 1 */
++	  queue_sigchld_trap (children_exited);
+ 	  wait_signal_received = SIGCHLD;
+ 	  /* If we're in a signal handler, let CHECK_WAIT_INTR pick it up;
+ 	     run_pending_traps will call run_sigchld_trap later  */
+--- a/lib/sh/unicode.c	2014-01-30 22:47:19.000000000 +0100
++++ b/lib/sh/unicode.c	2015-05-21 18:20:58.415967207 +0200
+@@ -78,13 +78,15 @@
+   s = strrchr (locale, '.');
+   if (s)
+     {
+-      strcpy (charsetbuf, s+1);
++      strncpy (charsetbuf, s+1, sizeof (charsetbuf) - 1);
++      charsetbuf[sizeof (charsetbuf) - 1] = '\0';
+       t = strchr (charsetbuf, '@');
+       if (t)
+ 	*t = 0;
+       return charsetbuf;
+     }
+-  strcpy (charsetbuf, locale);
++  strncpy (charsetbuf, locale, sizeof (charsetbuf) - 1);
++  charsetbuf[sizeof (charsetbuf) - 1] = '\0';
+   return charsetbuf;
+ }
+ #endif
+--- a/parse.y	2014-10-05 19:52:50.000000000 +0200
++++ b/parse.y	2015-05-21 18:21:00.695953854 +0200
+@@ -2818,11 +2818,16 @@
+     case AND_AND:
+     case OR_OR:
+     case '&':
++    case WHILE:
+     case DO:
++    case UNTIL:
++    case IF:
+     case THEN:
++    case ELIF:
+     case ELSE:
+     case '{':		/* } */
+-    case '(':		/* ) */
++    case '(':		/* )( */
++    case ')':		/* only valid in case statement */
+     case BANG:		/* ! time pipeline */
+     case TIME:		/* time time pipeline */
+     case TIMEOPT:	/* time -p time pipeline */
+--- a/patchlevel.h	2014-10-05 19:52:50.000000000 +0200
++++ b/patchlevel.h	2015-05-21 18:21:02.880941057 +0200
+@@ -25,6 +25,6 @@
+    regexp `^#define[ 	]*PATCHLEVEL', since that's what support/mkversion.sh
+    looks for to find the patch level (for the sccs version string). */
+ 
+-#define PATCHLEVEL 30
++#define PATCHLEVEL 39
+ 
+ #endif /* _PATCHLEVEL_H_ */
+--- a/shell.c	2014-01-14 14:04:32.000000000 +0100
++++ b/shell.c	2015-05-21 18:20:20.632188497 +0200
+@@ -73,6 +73,7 @@
+ #endif
+ 
+ #if defined (READLINE)
++#  include <readline/readline.h>
+ #  include "bashline.h"
+ #endif
+ 
+@@ -909,6 +910,14 @@
+   fflush (stdout);		/* XXX */
+   fflush (stderr);
+ 
++  /* Clean up the terminal if we are in a state where it's been modified. */
++#if defined (READLINE)
++  if (RL_ISSTATE (RL_STATE_TERMPREPPED) && rl_deprep_term_function)
++    (*rl_deprep_term_function) ();
++#endif
++  if (read_tty_modified ())
++    read_tty_cleanup ();
++
+   /* Do trap[0] if defined.  Allow it to override the exit status
+      passed to us. */
+   if (signal_is_trapped (0))
+--- a/sig.c	2014-01-10 21:06:06.000000000 +0100
++++ b/sig.c	2015-05-21 18:20:20.632188497 +0200
+@@ -532,8 +532,10 @@
+ #if defined (READLINE)
+   /* Set the event hook so readline will call it after the signal handlers
+      finish executing, so if this interrupted character input we can get
+-     quick response. */
+-  if (interactive_shell && interactive && no_line_editing == 0)
++     quick response.  If readline is active or has modified the terminal we
++     need to set this no matter what the signal is, though the check for
++     RL_STATE_TERMPREPPED is possibly redundant. */
++  if (RL_ISSTATE (RL_STATE_SIGHANDLER) || RL_ISSTATE (RL_STATE_TERMPREPPED))
+     bashline_set_event_hook ();
+ #endif
+ 
+--- a/subst.h	2014-10-01 18:57:43.000000000 +0200
++++ b/subst.h	2015-05-21 18:20:20.633188491 +0200
+@@ -47,6 +47,7 @@
+ #define ASS_MKASSOC	0x0004
+ #define ASS_MKGLOBAL	0x0008	/* force global assignment */
+ #define ASS_NAMEREF	0x0010	/* assigning to nameref variable */
++#define ASS_FROMREF	0x0020	/* assigning from value of nameref variable */
+ 
+ /* Flags for the string extraction functions. */
+ #define SX_NOALLOC	0x0001	/* just skip; don't return substring */
+--- a/variables.c	2014-10-01 18:57:51.000000000 +0200
++++ b/variables.c	2015-05-21 18:20:59.606960232 +0200
+@@ -2516,10 +2516,27 @@
+      HASH_TABLE *table;
+      int hflags, aflags;
+ {
+-  char *newval;
++  char *newname, *newval;
+   SHELL_VAR *entry;
++#if defined (ARRAY_VARS)
++  arrayind_t ind;
++  char *subp;
++  int sublen;
++#endif
+ 
++  newname = 0;
++#if defined (ARRAY_VARS)
++  if ((aflags & ASS_FROMREF) && (hflags & HASH_NOSRCH) == 0 && valid_array_reference (name))
++    {
++      newname = array_variable_name (name, &subp, &sublen);
++      if (newname == 0)
++	return (SHELL_VAR *)NULL;	/* XXX */
++      entry = hash_lookup (newname, table);
++    }
++  else
++#endif
+   entry = (hflags & HASH_NOSRCH) ? (SHELL_VAR *)NULL : hash_lookup (name, table);
++
+   /* Follow the nameref chain here if this is the global variables table */
+   if (entry && nameref_p (entry) && (invisible_p (entry) == 0) && table == global_variables->table)
+     {
+@@ -2550,6 +2567,16 @@
+       var_setvalue (entry, make_variable_value (entry, value, 0));
+       }
+     }
++#if defined (ARRAY_VARS)
++  else if (entry == 0 && newname)
++    {
++      entry = make_new_array_variable (newname);	/* indexed array by default */
++      if (entry == 0)
++	return entry;
++      ind = array_expand_index (name, subp, sublen);
++      bind_array_element (entry, ind, value, aflags);
++    }
++#endif
+   else if (entry == 0)
+     {
+       entry = make_new_variable (name, table);
+@@ -2670,7 +2697,8 @@
+ 			 normal. */
+ 		      if (nameref_cell (nv) == 0)
+ 			return (bind_variable_internal (nv->name, value, nvc->table, 0, flags));
+-		      return (bind_variable_internal (nameref_cell (nv), value, nvc->table, 0, flags));
++		      /* XXX - bug here with ref=array[index] */
++		      return (bind_variable_internal (nameref_cell (nv), value, nvc->table, 0, flags|ASS_FROMREF));
+ 		    }
+ 		  else
+ 		    v = nv;
+@@ -2805,10 +2833,12 @@
+ #endif
+     v = bind_variable (lhs, rhs, 0);
+ 
+-  if (v && isint)
+-    VSETATTR (v, att_integer);
+-
+-  VUNSETATTR (v, att_invisible);
++  if (v)
++    {
++      if (isint)
++	VSETATTR (v, att_integer);
++      VUNSETATTR (v, att_invisible);
++    }
+ 
+   return (v);
+ }
+--- a/y.tab.c	2014-10-05 19:52:50.000000000 +0200
++++ b/y.tab.c	2015-05-21 18:21:00.783953338 +0200
+@@ -5130,11 +5130,16 @@
+     case AND_AND:
+     case OR_OR:
+     case '&':
++    case WHILE:
+     case DO:
++    case UNTIL:
++    case IF:
+     case THEN:
++    case ELIF:
+     case ELSE:
+     case '{':		/* } */
+-    case '(':		/* ) */
++    case '(':		/* )( */
++    case ')':		/* only valid in case statement */
+     case BANG:		/* ! time pipeline */
+     case TIME:		/* time time pipeline */
+     case TIMEOPT:	/* time -p time pipeline */

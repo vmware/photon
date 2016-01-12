@@ -36,7 +36,7 @@ cp %{SOURCE2} .
 	--enable-libipq \
 	--enable-devel
 	
-make V=0 %{?_smp_mflags}
+make V=0
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
