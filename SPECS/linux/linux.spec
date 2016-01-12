@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.2.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -87,7 +87,7 @@ cp -v .config            %{buildroot}/boot/config-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rootfstype=ext4 ro loglevel=3 quiet plymouth.enable=0
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
 photon_linux=vmlinuz-%{version}
 photon_initrd=initrd.img-no-kmods
 EOF
@@ -153,6 +153,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Jan 12 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-7
+-   Remove rootfstype from the kernel parameter.
 *   Thu Dec 17 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-6
 -	Enabled kprobe for systemtap & disabled dynamic function tracing in config
 *	Fri Dec 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-5
