@@ -1,0 +1,87 @@
+Submitted By:            DJ Lucas <dj@linuxfromscratch.org>
+Date:                    2016-01-08
+Initial Package Version: 2.25.1
+Upstream Status:         Applied
+Origin:                  Upstream
+Description: Fix --dynamic-list so that symbols not in the list are
+still exported. See https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;a=commitdiff_plain;h=e9c1bdad269c0c3352eebcc9481ed65144001b0b;hp=0ed4b0bf3d2ca248778a2ffbcb2c5cafbfdd64dc
+
+
+diff --git a/gold/layout.cc b/gold/layout.cc
+index bcdaac8..7836640 100644
+--- a/gold/layout.cc
++++ b/gold/layout.cc
+@@ -4873,7 +4873,8 @@ Layout::finish_dynamic_section(const Input_objects* input_objects,
+     flags |= elfcpp::DF_STATIC_TLS;
+   if (parameters->options().origin())
+     flags |= elfcpp::DF_ORIGIN;
+-  if (parameters->options().Bsymbolic())
++  if (parameters->options().Bsymbolic()
++      && !parameters->options().have_dynamic_list())
+     {
+       flags |= elfcpp::DF_SYMBOLIC;
+       // Add DT_SYMBOLIC for compatibility with older loaders.
+diff --git a/gold/options.cc b/gold/options.cc
+index 7eb8f27..7f1f69e 100644
+--- a/gold/options.cc
++++ b/gold/options.cc
+@@ -1200,13 +1200,6 @@ General_options::finalize()
+   // in the path, as appropriate.
+   this->add_sysroot();
+ 
+-  // --dynamic-list overrides -Bsymbolic and -Bsymbolic-functions.
+-  if (this->have_dynamic_list())
+-    {
+-      this->set_Bsymbolic(false);
+-      this->set_Bsymbolic_functions(false);
+-    }
+-
+   // Now that we've normalized the options, check for contradictory ones.
+   if (this->shared() && this->is_static())
+     gold_fatal(_("-shared and -static are incompatible"));
+diff --git a/gold/symtab.h b/gold/symtab.h
+index aa0cb68..9413360 100644
+--- a/gold/symtab.h
++++ b/gold/symtab.h
+@@ -604,10 +604,8 @@ class Symbol
+     if (parameters->options().in_dynamic_list(this->name()))
+       return true;
+ 
+-    // If the user used -Bsymbolic or provided a --dynamic-list script,
+-    // then nothing (else) is preemptible.
+-    if (parameters->options().Bsymbolic()
+-        || parameters->options().have_dynamic_list())
++    // If the user used -Bsymbolic, then nothing (else) is preemptible.
++    if (parameters->options().Bsymbolic())
+       return false;
+ 
+     // If the user used -Bsymbolic-functions, then functions are not
+diff --git a/gold/testsuite/Makefile.am b/gold/testsuite/Makefile.am
+index f767c21..7b73f9d 100644
+--- a/gold/testsuite/Makefile.am
++++ b/gold/testsuite/Makefile.am
+@@ -1518,7 +1518,7 @@ dynamic_list_lib1.o: dynamic_list_lib1.cc
+ 	$(CXXCOMPILE) -c -fpic -o $@ $<
+ 
+ dynamic_list_lib2.so: gcctestdir/ld dynamic_list_lib2.o $(srcdir)/dynamic_list_2.t
+-	$(CXXLINK) -Bgcctestdir/ -shared -Wl,--dynamic-list,$(srcdir)/dynamic_list_2.t dynamic_list_lib2.o
++	$(CXXLINK) -Bgcctestdir/ -shared -Wl,-Bsymbolic-functions -Wl,--dynamic-list,$(srcdir)/dynamic_list_2.t dynamic_list_lib2.o
+ dynamic_list_lib2.o: dynamic_list_lib2.cc
+ 	$(CXXCOMPILE) -c -fpic -o $@ $<
+ 
+diff --git a/gold/testsuite/Makefile.in b/gold/testsuite/Makefile.in
+index 217e472..b4ae3fd 100644
+--- a/gold/testsuite/Makefile.in
++++ b/gold/testsuite/Makefile.in
+@@ -5319,7 +5319,7 @@ uninstall-am:
+ @GCC_TRUE@@NATIVE_LINKER_TRUE@	$(CXXCOMPILE) -c -fpic -o $@ $<
+ 
+ @GCC_TRUE@@NATIVE_LINKER_TRUE@dynamic_list_lib2.so: gcctestdir/ld dynamic_list_lib2.o $(srcdir)/dynamic_list_2.t
+-@GCC_TRUE@@NATIVE_LINKER_TRUE@	$(CXXLINK) -Bgcctestdir/ -shared -Wl,--dynamic-list,$(srcdir)/dynamic_list_2.t dynamic_list_lib2.o
++@GCC_TRUE@@NATIVE_LINKER_TRUE@	$(CXXLINK) -Bgcctestdir/ -shared -Wl,-Bsymbolic-functions -Wl,--dynamic-list,$(srcdir)/dynamic_list_2.t dynamic_list_lib2.o
+ @GCC_TRUE@@NATIVE_LINKER_TRUE@dynamic_list_lib2.o: dynamic_list_lib2.cc
+ @GCC_TRUE@@NATIVE_LINKER_TRUE@	$(CXXCOMPILE) -c -fpic -o $@ $<
+ 
+-- 
+1.9.4
+
