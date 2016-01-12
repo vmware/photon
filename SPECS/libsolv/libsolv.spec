@@ -3,7 +3,7 @@ Name:		libsolv
 Version:	0.6.6
 Release:	3%{?dist}
 License:	BSD
-URL:		http://www.cmake.org/
+URL:		https://github.com/openSUSE/libsolv
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 %define sha1 libsolv=dca7ddcc42932a87c5a22196c50cad549f16e414
 Group:		Development/Tools
