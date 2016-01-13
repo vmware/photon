@@ -1,7 +1,7 @@
 Summary:     This package contains the 'perf' performance analysis tools for Linux kernel 
 Name:        linux-tools
 Version:    4.2.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System/Tools
@@ -19,7 +19,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %build
 cd tools/perf
-make 
+sed -i 's/EXTRA_WARNINGS += -Wnested-externs/#EXTRA_WARNINGS += -Wnested-externs/' ../scripts/Makefile.include
+make
 
 %install
 cd tools
@@ -34,6 +35,8 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 /etc/bash_completion.d/* 
 
 %changelog
+*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 4.2.0-2
+-	Fix for new perl
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1
 -   Initial build. First version
 
