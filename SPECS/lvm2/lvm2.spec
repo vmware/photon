@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.116
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -266,7 +266,17 @@ systemctl enable lvm2-activate.service
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/lvm/*
+%dir %{_sysconfdir}/lvm
+%ghost %{_sysconfdir}/lvm/cache/.cache
+%attr(644, -, -) %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
+%dir %{_sysconfdir}/lvm/profile
+%{_sysconfdir}/lvm/profile/command_profile_template.profile
+%{_sysconfdir}/lvm/profile/metadata_profile_template.profile
+%{_sysconfdir}/lvm/profile/thin-generic.profile
+%{_sysconfdir}/lvm/profile/thin-performance.profile
+%dir %{_sysconfdir}/lvm/backup
+%dir %{_sysconfdir}/lvm/cache
+%dir %{_sysconfdir}/lvm/archive
 /lib/udev/rules.d/11-dm-lvm.rules
 /lib/udev/rules.d/69-dm-lvm-metad.rules
 /usr/sbin/blkdeactivate
@@ -381,6 +391,8 @@ systemctl enable lvm2-activate.service
 /usr/lib/tmpfiles.d/lvm2.conf
 /usr/share/man/man8/lvm2-activation-generator.8.gz
 %changelog
+*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
+-   Change config file attributes.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
 -   Add systemd to Requires and BuildRequires
 * Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2

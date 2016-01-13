@@ -1,7 +1,7 @@
 Summary:	'Free version of the SSH connectivity tools
 Name:		openssh
 Version:	6.6p1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -118,7 +118,10 @@ fi
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-/etc/ssh/*
+%attr(0755,root,root) %dir %{_sysconfdir}/ssh
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/moduli
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/ssh_config
+%attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
 /lib/systemd/system/sshd.service
 /lib/systemd/system/sshd.socket
 /lib/systemd/system/sshd@.service
@@ -131,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  6.6p1-5
+-   Change config file attributes.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com> 6.6p1-4
 -   Add systemd to Requires and BuildRequires.
 -   Use systemctl to enable/disable service.
