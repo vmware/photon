@@ -1,14 +1,14 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
-Version:	4.1.5.1
-Release:	6%{?dist}
+Version:	4.2.1
+Release:	1%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://cdn.debian.net/debian/pool/main/s/%{name}/%{name}_%{version}.orig.tar.gz
-%define sha1 shadow=6e4de75de58405d21b0377b926ae770afccd95bc
+Source0:	http://pkg-shadow.alioth.debian.org/releases/%{name}-%{version}.tar.xz
+%define sha1 shadow=0917cbadd4ce0c7c36670e5ecd37bbed92e6d82d
 Source1:	PAM-Configuration-Files-1.1.tar.gz
 %define sha1 PAM=39b8f5513e8886d23e03f4d09a7cbfddb57d9d98
 Patch0: chkname-allowcase.patch   
@@ -98,6 +98,8 @@ done
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
 %changelog
+*	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
+-	Update version
 *       Wed Dec 2 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-6
 -       Fixed PAM Configuration file for passwd
 *	Mon Oct 26 2015 Sharath George <sharathg@vmware.com> 4.1.5.1-5
