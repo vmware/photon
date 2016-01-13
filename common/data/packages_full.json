@@ -4,7 +4,7 @@
                 "python2-tools", "linux-api-headers","gawk","check", "libltdl", "libltdl-devel", "pcre-devel", "glib-devel", 
                 "glibc-devel", "glibc-lang", "zlib-devel", "gettext", "git", "git-lang", "autoconf", "perl", "perl-DBI","perl-Config-IniFiles",
                 "perl-DBIx-Simple", "perl-DBD-SQLite","perl-Exporter-Tiny","perl-JSON-XS","perl-List-MoreUtils","perl-Module-Install",
-                "perl-Module-ScanDeps","perl-Types-Serialiser","perl-WWW-Curl","perl-YAML-Tiny","perl-YAML","perl-common-sense","perl-libintl","tcsh",
+                "perl-Module-ScanDeps","perl-Module-Build","perl-Types-Serialiser","perl-WWW-Curl","perl-YAML-Tiny","perl-YAML","perl-common-sense","perl-libintl","tcsh",
                 "gobject-introspection", "gobject-introspection-devel", "gobject-introspection-python", "procps-ng-devel", 
                 "bash-lang", "kbd", "coreutils-lang", "libxslt", "docbook-xml", "docbook-xsl", "gtk-doc", "popt-devel", "texinfo", "tar", 
                 "kubernetes", "cyrus-sasl", "openldap", "binutils", "binutils-devel", "python-iniparse", "psmisc", "etcd", "openssl-devel", 

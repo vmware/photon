@@ -1,6 +1,6 @@
 Summary:	Displays information about running processes
 Name:		psmisc
-Version:	22.20
+Version:	22.21
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://psmisc.sourceforge.net/
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://prdownloads.sourceforge.net/psmisc/%{name}-%{version}.tar.gz
-%define sha1 psmisc=abdddc8d5c91251bba0f3190956ae9d05c058745
+%define sha1 psmisc=09fabbef4539b58b6b8738a73da3d21d5daa1a58
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description
@@ -34,5 +34,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 22.21-1
+-	Update version
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 22.20-1
 -	Initial build. First version

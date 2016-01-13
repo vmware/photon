@@ -2,7 +2,7 @@
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
 Version:        2.83
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Config-IniFiles/
@@ -14,6 +14,7 @@ BuildArch:      noarch
 BuildRequires:	perl
 Requires:	perl
 BuildRequires:	perl-List-MoreUtils
+BuildRequires:	perl-Module-Build
 Requires:	perl-List-MoreUtils
 
 %description
@@ -43,5 +44,7 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.83-2
+-	Add build requirement
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.83-1
 -	Initial version.
