@@ -3,7 +3,7 @@
 #
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
-Version:	1.0.5
+Version:	1.0.6
 Release:	1%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -19,7 +19,7 @@ BuildRequires:	openssl-devel
 
 BuildRequires:	librepo-devel
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 tdnf=a99ec98b9b4d95d7a4c11de328fda203f9938a50
+%define sha1 tdnf=66a0180aec98e6d3048039aa24e3c294c1d2fb9d
 
 %description
 tdnf is a yum/dnf equivalent
@@ -79,8 +79,7 @@ mkdir -p %{buildroot}/var/cache/tdnf
     %defattr(-,root,root,0755)
     %{_bindir}/tdnf
     %{_libdir}/*.so*
-    /etc/tdnf/*
-    #/etc/yum.repos.d/*
+    %config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
     %dir /var/cache/tdnf
 
 %files devel
@@ -91,6 +90,8 @@ mkdir -p %{buildroot}/var/cache/tdnf
     %exclude %{_libdir}/debug
 
 %changelog
+*       Wed Jan 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.6
+-       Support distroverpkg and add tests to work with make check
 *       Mon Dec 14 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.5
 -       Support for multiple packages in alter commands
 -       Support url vars for releasever and basearch
