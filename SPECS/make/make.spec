@@ -1,6 +1,6 @@
 Summary:	Program for compiling packages
 Name:		make
-Version:	4.0
+Version:	4.1
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/make
@@ -8,7 +8,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/make/%{name}-%{version}.tar.bz2
-%define sha1 make=c819622dc84e2290c351646b8a0ec4df0df12bb6
+%define sha1 make=0d701882fd6fd61a9652cb8d866ad7fc7de54d58
 %description
 The Make package contains a program for compiling packages.
 %prep
@@ -30,5 +30,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/gnumake.h
 %{_mandir}/*/*
 %changelog
+*       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  4.1-1
+-       Update version.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.0-1
 -	Initial build.	First version
