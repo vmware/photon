@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -93,7 +93,8 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 #cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
 find %{buildroot}%{_libdir} -name '*.la' -delete
-%post	-p /sbin/ldconfig
+%post
+/sbin/ldconfig
 %postun	
 /sbin/ldconfig
 %clean
@@ -113,6 +114,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  228-5
+-       Change config file attributes.
 *       Wed Jan 06 2016 Anish Swaminathan <anishs@vmware.com> 228-4
 -       Patches for minor network fixes.
 *       Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-3
