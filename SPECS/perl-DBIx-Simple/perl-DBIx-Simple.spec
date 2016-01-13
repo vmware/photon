@@ -14,6 +14,7 @@ BuildArch:      noarch
 BuildRequires:  perl-DBI >= 1.21
 BuildRequires:  perl
 Requires:  	perl
+Requires:  	perl-Object-Accessor
 Requires:       perl-DBI >= 1.21
 
 %description

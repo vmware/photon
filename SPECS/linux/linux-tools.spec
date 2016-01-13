@@ -1,13 +1,13 @@
-Summary:     This package contains the 'perf' performance analysis tools for Linux kernel 
-Name:        linux-tools
-Version:    4.2.0
-Release:    1%{?dist}
-License:    GPLv2
-URL:        http://www.kernel.org/
+Summary:      This package contains the 'perf' performance analysis tools for Linux kernel 
+Name:         linux-tools
+Version:      4.2.0
+Release:      2%{?dist}
+License:      GPLv2
+URL:          http://www.kernel.org/
 Group:        System/Tools
-Vendor:        VMware, Inc.
+Vendor:       VMware, Inc.
 Distribution: Photon
-Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
+Source0:      http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Requires:         filesystem kmod coreutils binutils
 
@@ -19,6 +19,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %build
 cd tools/perf
+sed -i 's/EXTRA_WARNINGS += -Wnested-externs/#EXTRA_WARNINGS += -Wnested-externs/' ../scripts/Makefile.include
 make 
 
 %install
@@ -34,6 +35,8 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 /etc/bash_completion.d/* 
 
 %changelog
+*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 4.2.0-2
+-	Fix for new perl
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1
 -   Initial build. First version
 
