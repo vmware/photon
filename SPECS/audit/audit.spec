@@ -1,7 +1,7 @@
 Summary:	Kernel Audit Tool
 Name:		audit
 Version:	2.4.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1 audit=ad38f3352e21716e86d73b4e06cc41a5e85882ee
 License:	GPLv2+
@@ -89,6 +89,21 @@ make install DESTDIR=%{buildroot}
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %{_sysconfdir}/*
+%attr(750,root,root) %dir %{_sysconfdir}/audit
+%attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
+%attr(750,root,root) %dir %{_sysconfdir}/audisp
+%attr(750,root,root) %dir %{_sysconfdir}/audisp/plugins.d
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/auditd.conf
+%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/rules.d/audit.rules
+%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audit.rules
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/audispd.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/syslog.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/audispd-zos-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/zos-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/audisp-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/au-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/libaudit.conf
 
 %files devel
 %defattr(-,root,root)
@@ -97,6 +112,8 @@ make install DESTDIR=%{buildroot}
 %{_includedir}/*.h
 
 %changelog
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-3
+- Change config file attributes.
 * Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 2.4.4-2
 - Add systemd requirement.
 * Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 2.4.4-1
