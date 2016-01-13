@@ -1,14 +1,14 @@
 Summary:	Shared libraries, portable interface
 Name:		libtool
-Version:	2.4.2
+Version:	2.4.6
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/libtool
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:		http://ftp.gnu.org/gnu/libtool/%{name}-%{version}.tar.gz
-%define sha1 libtool=22b71a8b5ce3ad86e1094e7285981cae10e6ff88
+Source0:		http://ftp.gnu.org/gnu/libtool/%{name}-%{version}.tar.xz
+%define sha1 libtool=3e7504b832eb2dd23170c91b6af72e15b56eb94e
 %description
 It wraps the complexity of using shared libraries in a 
 consistent, portable interface.
@@ -52,20 +52,15 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/libtool
 %{_datadir}/aclocal/ltoptions.m4
 %{_datadir}/aclocal/libtool.m4
-%{_datadir}/aclocal/argz.m4
 %{_datadir}/aclocal/ltversion.m4
 %{_datadir}/aclocal/lt~obsolete.m4
 %{_datadir}/aclocal/ltdl.m4
 %{_datadir}/aclocal/ltsugar.m4
+%{_datadir}/aclocal/ltargz.m4
 %{_mandir}/man1/libtool.1.gz
 %{_mandir}/man1/libtoolize.1.gz
-%{_datadir}/libtool/config/compile
-%{_datadir}/libtool/config/config.sub
-%{_datadir}/libtool/config/ltmain.sh
-%{_datadir}/libtool/config/depcomp
-%{_datadir}/libtool/config/missing
-%{_datadir}/libtool/config/install-sh
-%{_datadir}/libtool/config/config.guess
+%{_datadir}/libtool/*
+
 %files -n libltdl-devel
 %{_includedir}/libltdl/lt_dlloader.h
 %{_includedir}/libltdl/lt_system.h
@@ -74,10 +69,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libltdl.a
 %{_libdir}/libltdl.so
 %files -n libltdl
-%{_datadir}/libtool/libltdl/*
 %{_libdir}/libltdl.so.7
-%{_libdir}/libltdl.so.7.3.0
+%{_libdir}/libltdl.so.7.3.1
 
 %changelog
+*	Wed Jan 13 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.6-1
+-   Updated to version 2.4.6
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.2-1
 -	Initial build.	First version	
