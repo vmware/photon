@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -135,7 +135,15 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %defattr(-,root,root)
 %dir %{_localstatedir}/cache/nscd
 %dir %{_libdir}/locale
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/nsswitch.conf
+%config(noreplace) %{_sysconfdir}/ld.so.conf
+%config(noreplace) %{_sysconfdir}/rpc
+%dir %{_sysconfdir}/ld.so.conf.d
+%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
+%dir %attr(755,root,root) %{_sysconfdir}/default
+%config(noreplace) %{_sysconfdir}/default/nss
+%config(noreplace) %{_sysconfdir}/nscd.conf
+%{_sysconfdir}/locale-gen.conf
 %ifarch x86_64
 /lib64/*
 %{_lib64dir}/gconv/*
@@ -169,19 +177,21 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
-*	Tue Dec 1 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-8
+*       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.21-9
+-       Change config file attributes.
+*	Tue Dec 1 2015 Divya Thaluru <dthaluru@vmware.com> 2.21-8
 -       Disabling rpm debug package and stripping the libraries
-*	Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-7
+*	Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.21-7
 -	Adding patch to close nss files database
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.19-6
+*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.21-6
 -	Handled locale files with macro find_lang
-*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.19-5
+*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.21-5
         Adding postun section for ldconfig.
-*	Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.19-4
+*	Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.21-4
 	Support glibc building against current rpm version.
-*	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-3
+*	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 2.21-3
 -	Packing locale-gen scripts
-*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19-2
+*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.21-2
 -   	Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.19-1
+*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.21-1
 -	Initial build. First version

@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.6
-Release:	6%{?dist}
+Release:	7%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -30,15 +30,12 @@ mkdir -p %{buildroot}%{_var}/run
 mkdir -p %{buildroot}/sbin
 mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 mkdir -p %{buildroot}%{_var}/zookeeper
-mkdir -p %{buildroot}/etc/rc.d/init.d
 
 cp zookeeper-%{version}.jar %{buildroot}%{_libdir}
-cp src/packages/rpm/init.d/zookeeper %{buildroot}/etc/rc.d/init.d/zookeeper
 cp src/packages/update-zookeeper-env.sh %{buildroot}/sbin/update-zookeeper-env.sh
 cp src/packages/templates/conf/zookeeper-env.sh %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo.cfg
 chmod 0755 %{buildroot}/sbin/*
-chmod 0755 %{buildroot}/etc/rc.d/init.d/zookeeper
 
 sed -i 's/.*ZOOBINDIR.*\/etc.*/    ZOOBINDIR=\/etc\/zookeeper/g' bin/zkEnv.sh
 mv bin/* %{buildroot}%{_bindir}
@@ -107,13 +104,14 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 %defattr(-,root,root)
 %attr(0755,root,hadoop) %{_var}/log/zookeeper
 %attr(0775,root,hadoop) %{_var}/run
-%attr(0775,root,hadoop) /etc/rc.d/init.d/zookeeper
 %attr(0775,root,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
 /lib/systemd/system/zookeeper.service
 %{_prefix}
 
 %changelog
+*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.4.6-7
+-   Remove init.d file.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  3.4.6-6
 -   Add systemd to Requires and BuildRequires.
 * Wed Nov 18 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.6-5
