@@ -20,10 +20,10 @@ perl Makefile.PL --prefix=%{_prefix}
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
-if [ -e %{_libdir}/perl5/5.18.2/x86_64-linux/perllocal.pod ]; then
-cat %{buildroot}/%{_libdir}/perl5/5.18.2/x86_64-linux/perllocal.pod >> %{_libdir}/perl5/5.18.2/x86_64-linux/perllocal.pod
+if [ -e %{_libdir}/perl5/5.22.1/x86_64-linux/perllocal.pod ]; then
+cat %{buildroot}/%{_libdir}/perl5/5.22.1/x86_64-linux/perllocal.pod >> %{_libdir}/perl5/5.22.1/x86_64-linux/perllocal.pod
 fi
-rm %{buildroot}/%{_libdir}/perl5/5.18.2/x86_64-linux/perllocal.pod
+rm %{buildroot}/%{_libdir}/perl5/5.22.1/x86_64-linux/perllocal.pod
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
