@@ -1,6 +1,6 @@
 Summary:	Certificate Authority certificates 
 Name:		ca-certificates
-Version:	20130524
+Version:	20160109
 Release:	1%{?dist}
 License:	Custom
 URL:		http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
@@ -230,5 +230,7 @@ exit 0
 /bin/remove-expired-certs.sh
 /bin/make-cert.pl
 %changelog
+*       Wed Jan 13 2016 Divya Thaluru <dthaluru@vmware.com> 20160109-1
+-       Updating mozilla certdata.txt to latest revision
 *	Wed Oct 15 2014 Divya Thaluru <dthaluru@vmware.com> 20130524-1
 -	Initial build.	First version
