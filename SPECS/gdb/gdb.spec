@@ -1,11 +1,11 @@
 Summary:	C debugger
 Name:		gdb
-Version:	7.8.2	
-Release:	2%{?dist}
+Version:	7.10.1	
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
-Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
-%define sha1 gdb=67cfbc6efcff674aaac3af83d281cf9df0839ff9
+Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
+%define sha1 gdb=7d67703b31444ae41d8b8707455b97d3fac4ad65
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -59,6 +59,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 
 %changelog
+*	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 7.10.1-1
+-	Updated to version 7.10.1
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 7.9.2-2
 -	Handled locale files with macro find_lang
 *	Wed Apr 08 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-1
