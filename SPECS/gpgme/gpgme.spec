@@ -1,14 +1,14 @@
 Summary:	High-Level Crypto API
 Name:		gpgme
-Version:	1.5.3
-Release:	2%{?dist}
+Version:	1.6.0
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.gnupg.org/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 gpgme=8dd7711a4de117994fe2d45879ef8a9900d50f6a
+%define sha1 gpgme=21510323495f6220f8f67610c3c27a23d761d43d
 Requires:	libassuan
 Requires:	libgpg-error
 BuildRequires:	libgpg-error
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/%{_infodir}
 %{_datadir}/aclocal/*
 %{_datadir}/common-lisp/source/gpgme/*
 %changelog
+*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.0-1
+-   Updated to version 1.6.0
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.3-2
 -   Updated group.
 *	Tue Dec 30 2014 Divya Thaluru <dthaluru@vmware.com> 1.5.3-1
