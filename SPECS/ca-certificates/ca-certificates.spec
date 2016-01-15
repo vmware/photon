@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	certdata.txt
 Requires:	openssl
 BuildRequires:	openssl
+Requires:	openssl-perl
 %description
 The Public Key Inrastructure is used for many security issues in a
 Linux system. In order for a certificate to be trusted, it must be
