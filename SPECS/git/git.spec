@@ -1,7 +1,7 @@
 Summary:	Fast distributed version control system
 Name:		git
 Version:	2.1.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://git-scm.com/
 Group:		System Environment/Programming
@@ -19,6 +19,7 @@ Requires:	curl
 Requires:	expat
 Requires:	perl-YAML
 Requires:	perl-DBI
+Requires:       perl-CGI
 
 %description
 Git is a free and open source, distributed version control system 
@@ -82,5 +83,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.1.2-2
+-	Add requires for perl-CGI.
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
 -	Initial build.	First version
