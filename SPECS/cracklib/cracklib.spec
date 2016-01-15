@@ -1,12 +1,12 @@
-# Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.2.tar.gz
+# Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
 
 Summary:	A password strength-checking library.
 Name:		cracklib
-Version:	2.9.2
-Release:	2%{?dist}
+Version:	2.9.6
+Release:	1%{?dist}
 Group:		System Environment/Libraries
 Source:		cracklib-%{version}.tar.gz
-%define sha1 cracklib-2.9.2=a780211a87a284297aa473fe2b50584b842a0e98
+%define sha1 cracklib-2.9.6=9199e7b8830717565a844430653f5a90a04fcd65
 Source1:    cracklib-words-20080507.gz
 %define sha1 cracklib-words=e0cea03e505e709b15b8b950d56cb493166607da
 URL:		http://sourceforge.net/projects/cracklib/
@@ -146,6 +146,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/locale/*
 
 %changelog
+* 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
+- 	Updated to version 2.9.6
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
 -   Updated group.
 
