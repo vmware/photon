@@ -1,11 +1,11 @@
 Summary:	ASN.1 library
 Name:		libtasn1
-Version:	4.5
-Release:	3%{?dist}
+Version:	4.7
+Release:	1%{?dist}
 License:	GPLv3+ and LGPLv2+
 URL:		http://www.gnu.org/software/libtasn1/
 Source0:	http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
-%define sha1 libtasn1=7d648928729ffd38de84fac8b94d3ae0558de472
+%define sha1 libtasn1=1c2cf0b8c7954249cfd7842500fabe1c7fdcd5d5
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -49,6 +49,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %changelog
+* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.7-1
+- 	Updated to version 4.7
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 4.5-3
 -   Moving static lib files to devel package.
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 4.5-2
