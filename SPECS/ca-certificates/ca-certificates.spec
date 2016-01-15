@@ -8,7 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	certdata.txt
-Requires:	openssl
+Requires:	openssl-c_rehash
 BuildRequires:	openssl
 %description
 The Public Key Inrastructure is used for many security issues in a
