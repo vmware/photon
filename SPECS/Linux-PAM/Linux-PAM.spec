@@ -1,14 +1,14 @@
 Summary:	Linux Pluggable Authentication Modules
 Name:		Linux-PAM
-Version:	1.1.8
-Release:	2%{?dist}
+Version:	1.2.1
+Release:	1%{?dist}
 License:	BSD and GPLv2+
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://linux-pam.org/library/%{name}-%{version}.tar.bz2
-%define sha1 Linux-PAM=f8ce53c67363f78d520392fa1c253c4978058be1
+%define sha1 Linux-PAM=3620ab5f5e02272825c426622761a19a1a2facca
 %description
 The Linux PAM package contains Pluggable Authentication Modules used to 
 enable the local system administrator to choose how applications authenticate users.
@@ -16,7 +16,7 @@ enable the local system administrator to choose how applications authenticate us
 %package lang
 Summary: Additional language files for Linux-PAM
 Group: System Environment/Base
-Requires: Linux-PAM >= 1.1.8
+Requires: Linux-PAM >= 1.2.1
 %description lang
 These are the additional language files of Linux-PAM.
 
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
+- 	Updated to version 1.2.1
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
 -   Update according to UsrMove.
 *	Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
