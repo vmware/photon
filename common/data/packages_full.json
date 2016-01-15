@@ -25,7 +25,7 @@
                 "haveged", "haveged-devel", "vim-extra",
                 "postgresql", "openjdk", "apr", "apr-util", "httpd", "openvswitch", "openvswitch-devel", "openvswitch-doc", "eventlog", "syslog-ng", "syslog-ng-devel", "zookeeper", "fuse", "fleet",
                 "nss-altfiles", "apache-maven", "subversion", "mesos", "python3", "python3-libs", "python3-devel", "python3-tools", "fakeroot-ng", "ctags",
-                "libtirpc", "libtirpc-devel", "lsof", "nfs-utils", "cve-check-tool", "flannel", "rpm-build", "dkms", "openssl-perl", "xinetd", "tftp", "tftp-server",
+                "libtirpc", "libtirpc-devel", "lsof", "nfs-utils", "cve-check-tool", "flannel", "rpm-build", "dkms", "openssl-perl", "openssl-c_rehash", "xinetd", "tftp", "tftp-server",
                 "audit","audit-devel","libcap-ng","libcap-ng-devel","tcp_wrappers","tcp_wrappers-devel", "apr-util-devel", "apr-util-ldap", 
                 "apr-util-pgsql", "apr-util-sqlite","openjre", "sshpass", "openjdk-src", "openjdk-sample", "openjdk-doc", "e2fsprogs-devel", "haproxy","libcap-devel",
 		"cython","python-lxml","python-pycparser","python-cffi","python-cryptography"]
