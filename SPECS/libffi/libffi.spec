@@ -1,6 +1,6 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
-Version:	3.1
+Version:	3.2.1
 Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
@@ -8,7 +8,7 @@ Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
-%define sha1 libffi=cb373ef2115ec7c57913b84ca72eee14b10ccdc3
+%define sha1 libffi=280c265b789e041c02e5c97815793dfc283fb1e6
 Provides:	pkgconfig(libffi)
 %description
 The libffi library provides a portable, high level programming interface
@@ -59,5 +59,7 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/licenses/libffi/LICENSE
 %{_mandir}/man3/*
 %changelog
+* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
+- 	Updated to version 3.2.1
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.1-1
 -	Initial build.	First version
