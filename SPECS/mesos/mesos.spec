@@ -68,6 +68,7 @@ make DESTDIR=%{buildroot} install
 %files
 %defattr(-,root,root)
 %{_bindir}/mesos*
+%{_bindir}/easy*
 %{_sbindir}/mesos-*
 %{_libdir}/libmesos*
 %{_libexecdir}/mesos/mesos-*
