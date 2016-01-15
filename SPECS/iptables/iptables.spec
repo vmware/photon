@@ -1,14 +1,14 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
-Version:	1.4.21
-Release:	3%{?dist}
+Version:	1.6.0
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1 iptables=85d4160537546a23a7e42bc26dd7ee62a0ede4c8
+%define sha1 iptables=21a694e75b0d6863cc001f85fb15915d12b8cc22
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:	iptable_rules
@@ -35,6 +35,7 @@ cp %{SOURCE2} .
 	--libdir=%{_libdir} \
 	--with-xtlibdir=%{_libdir}/iptables \
 	--with-pkgconfigdir=%{_libdir}/pkgconfig \
+	--disable-nftables \
 	--enable-libipq \
 	--enable-devel
 	
@@ -76,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
+* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.0-1
+- 	Updated to version 1.6.0
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.4.21-3
 -   Add systemd to Requires and BuildRequires.
 -   Use systemctl to enable/disable service.
