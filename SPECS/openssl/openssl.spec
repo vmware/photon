@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2e
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -31,6 +31,14 @@ Group: Applications/Internet
 Requires: perl
 Requires: openssl = %{version}-%{release}
 %description perl
+Perl scripts that convert certificates and keys to various formats.
+
+%package c_rehash
+Summary: openssl perl scripts
+Group: Applications/Internet
+Requires: perl
+Requires: openssl = %{version}-%{release}
+%description c_rehash
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
@@ -86,11 +94,15 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %files perl
-/%{_bindir}/c_rehash
 /%{_sysconfdir}/ssl/misc/tsget
 /%{_sysconfdir}/ssl/misc/CA.pl
 
+%files c_rehash
+/%{_bindir}/c_rehash
+
 %changelog
+*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.2e-2
+-   Move c_rehash to a seperate subpackage.
 *   Fri Dec 04 2015 Xiaolin Li <xiaolinl@vmware.com> 1.0.2e-1
 -   Update to 1.0.2e.
 *   Wed Dec 02 2015 Anish Swaminathan <anishs@vmware.com> 1.0.2d-3
