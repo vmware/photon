@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       11%{?dist}
+Release:       12%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -86,10 +86,10 @@ rm -f %{buildroot}/lib/modules/%{version}-esx/source
 rm -f %{buildroot}/lib/modules/%{version}-esx/build
 
 # create /use/src/linux-esx-headers-*/ content
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}'
-find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}'
-find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}'
-find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}'
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
+find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
+find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
+find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
 
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
@@ -120,6 +120,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-12
+-   CONFIG_HZ=250
+-   Disable sched autogroup.
 *   Tue Jan 12 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-11
 -   Remove rootfstype from the kernel parameter.
 *   Tue Dec 15 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
