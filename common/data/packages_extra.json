@@ -87,6 +87,7 @@
         "rubygem-rbvmomi",
         "compat-gdbm",
         "tiptop",
+	"irqbalance",
         "lttng-tools",
         "userspace-rcu",
         "dstat",
