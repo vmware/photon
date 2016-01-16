@@ -108,6 +108,7 @@
         "dstat",
         "libconfig",
         "iptraf",
+	"irqbalance",
         "nicstat",
         "lldpad",
         "rsync",
