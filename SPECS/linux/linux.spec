@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.2.0
-Release:    8%{?dist}
+Release:    9%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -153,24 +153,28 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-9
+-   CONFIG_HZ=250
 *   Tue Jan 12 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-8
 -   Remove rootfstype from the kernel parameter.
-* 	Mon Jan 04 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-7
--	Disabled all the tracing options in kernel config.  
+*   Mon Jan 04 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-7
+-   Disabled all the tracing options in kernel config.
+-   Disabled preempt.
+-   Disabled sched autogroup.
 *   Thu Dec 17 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-6
--	Enabled kprobe for systemtap & disabled dynamic function tracing in config
-*	Fri Dec 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-5
-- 	Added oprofile kernel driver sub-package.
+-   Enabled kprobe for systemtap & disabled dynamic function tracing in config
+*   Fri Dec 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-5
+-   Added oprofile kernel driver sub-package.
 *   Fri Nov 13 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-4
 -   Change the linux image directory.
-*	Wed Nov 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-3
-- 	Added the build essential files in the dev sub-package.
-*	Mon Nov 09 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-2
-- 	Enable Geneve module support for generic kernel.
-*	Fri Oct 23 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1
-- 	Upgraded the generic linux kernel to version 4.2.0 & and updated timer handling to full tickless mode. 
-*	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.9-5
-- 	Added driver support for frame buffer devices and ACPI 
+*   Wed Nov 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-3
+-   Added the build essential files in the dev sub-package.
+*   Mon Nov 09 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-2
+-   Enable Geneve module support for generic kernel.
+*   Fri Oct 23 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1
+-   Upgraded the generic linux kernel to version 4.2.0 & and updated timer handling to full tickless mode. 
+*   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.9-5
+-   Added driver support for frame buffer devices and ACPI
 *   Wed Sep 2 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-4
 -   Added mouse ps/2 module.
 *   Fri Aug 14 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-3
