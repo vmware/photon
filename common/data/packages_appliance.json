@@ -55,6 +55,7 @@
         "paramiko",
         "inotify-tools",
         "sendmail", 
+	"irqbalance",
         "ntpstat", 
         "lvm2"
     ]
