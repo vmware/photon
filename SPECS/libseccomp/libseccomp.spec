@@ -9,7 +9,6 @@ Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version
 Url:          https://github.com/seccomp/libseccomp/wiki
 Vendor:       VMware, Inc.
 Distribution: Photon
-Requires:     linux >= 3.5
 
 %description
 The libseccomp library provides an easy to use, platform independent, interface
@@ -67,3 +66,4 @@ make check
 %changelog
 * Sat Jan 16 2016 Fabio Rapposelli <fabio@vmware.com> - 2.2.3-1
 - First release of the package
+
