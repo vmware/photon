@@ -13,6 +13,7 @@ BuildRequires:	python2-devel
 BuildRequires:	python2-libs
 BuildRequires:  python-xml
 BuildRequires:	libxslt
+BuildRequires:	libxslt-devel
 BuildRequires:	cython
 Requires:	python2
 Requires:	libxslt
