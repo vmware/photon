@@ -48,15 +48,15 @@ make
 %defattr(-,root,root)
 /usr/bin
 /usr/share
-/%{_libdir}/libinotifytools.la
+/%{_libdir}/libinotifytools.so.0.4.1
 
 %files devel
 %defattr(-,root,root)
 /usr/include
 /%{_libdir}/libinotifytools.a
-/%{_libdir}/libinotifytools.so.0.4.1
 /%{_libdir}/libinotifytools.so
 /%{_libdir}/libinotifytools.so.0
+/%{_libdir}/libinotifytools.la
 
 %changelog
 *       Mon Dec 14 2015 Kumar Kaushik <kaushikk@vmware.com> 3.13-1
