@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.2.0
-Release:    9%{?dist}
+Release:    10%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -153,6 +153,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Mon Jan 18 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-10
+-   Changed CONFIG_SLUB to CONFIG_SLAB (memory allocator)
 *   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-9
 -   CONFIG_HZ=250
 *   Tue Jan 12 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-8
