@@ -14,6 +14,9 @@ Requires:	libstdc++-devel
 Requires:	libgcc-devel
 Requires:	libgomp-devel
 Requires:	gmp
+Requires:   glibc-devel
+Requires:   linux-api-headers
+Requires:   binutils
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
