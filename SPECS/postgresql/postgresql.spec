@@ -1,6 +1,6 @@
 Summary:	PostgreSQL database engine
 Name:		postgresql
-Version:	9.4.4
+Version:	9.5.0
 Release:	1%{?dist}
 License:	PostgreSQL
 URL:		www.postgresql.org
@@ -8,7 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1 postgresql=e295fee0f1bace740b2db1eaa64ac060e277d5a7
+%define sha1 postgresql=930afeb713b81778f29d32e7bf18fd08ce2aa8f9
 Requires:	openssl
 Requires: 	python2
 BuildRequires: 	perl
@@ -52,6 +52,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_datadir}/postgresql/*
 %changelog
+*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
+-   Updated to version 9.5.0
 *	Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
 -	Update to version 9.4.4.
 *	Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
