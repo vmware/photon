@@ -1,18 +1,15 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
-Version:	2.02.116
-Release:	4%{?dist}
+Version:	2.02.140
+Release:	1%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1 LVM2=5bd2f4c33cdf93e580ea5b8a64bc32cd77be078e
+%define sha1 LVM2=13e3c939093e96d5e2dbc68b162974275f28e9d3
 Source1:	lvm2-activate.service
-Patch0:		lvm2-set-default-preferred_names.patch
-Patch1:		lvm2-enable-lvmetad-by-default.patch
-Patch2:		lvm2-remove-mpath-device-handling-from-udev-rules.patch
 BuildRequires:	libselinux-devel, libsepol-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	readline-devel
@@ -148,9 +145,6 @@ the device-mapper event library.
 
 %prep
 %setup -q -n LVM2.%{version}
-%patch0 -p1 -b .preferred_names
-%patch1 -p1 -b .enable_lvmetad
-%patch2 -p1 -b .udev_no_mpath
 
 %build
 %define _default_pid_dir /run
@@ -274,6 +268,9 @@ systemctl enable lvm2-activate.service
 %{_sysconfdir}/lvm/profile/metadata_profile_template.profile
 %{_sysconfdir}/lvm/profile/thin-generic.profile
 %{_sysconfdir}/lvm/profile/thin-performance.profile
+%{_sysconfdir}/lvm/profile/cache-mq.profile
+%{_sysconfdir}/lvm/profile/cache-smq.profile
+%{_sysconfdir}/lvm/lvmlocal.conf
 %dir %{_sysconfdir}/lvm/backup
 %dir %{_sysconfdir}/lvm/cache
 %dir %{_sysconfdir}/lvm/archive
@@ -328,6 +325,8 @@ systemctl enable lvm2-activate.service
 /usr/sbin/vgs
 /usr/sbin/vgscan
 /usr/sbin/vgsplit
+/usr/sbin/dmstats
+/usr/sbin/lvmconfig
 /usr/share/man/man5/lvm.conf.5.gz
 /usr/share/man/man7/lvmcache.7.gz
 /usr/share/man/man7/lvmthin.7.gz
@@ -381,6 +380,11 @@ systemctl enable lvm2-activate.service
 /usr/share/man/man8/vgs.8.gz
 /usr/share/man/man8/vgscan.8.gz
 /usr/share/man/man8/vgsplit.8.gz
+/usr/share/man/man7/lvmsystemid.7.gz
+/usr/share/man/man8/dmstats.8.gz
+/usr/share/man/man8/lvm-config.8.gz
+/usr/share/man/man8/lvm-lvpoll.8.gz
+/usr/share/man/man8/lvmconfig.8.gz
 /lib/systemd/system-generators/lvm2-activation-generator
 /lib/systemd/system/blk-availability.service
 /lib/systemd/system/lvm2-lvmetad.service
@@ -391,6 +395,8 @@ systemctl enable lvm2-activate.service
 /usr/lib/tmpfiles.d/lvm2.conf
 /usr/share/man/man8/lvm2-activation-generator.8.gz
 %changelog
+* 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.02.140-1
+- 	Updated to version 2.02.140
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
 -   Change config file attributes.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
