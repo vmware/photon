@@ -1,11 +1,11 @@
 Summary:	Packet Analyzer
 Name:		tcpdump
-Version:	4.7.3	
+Version:	4.7.4	
 Release:	1%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 tcpdump=4f085cef7cd4aedc9e402021ec11e3a8b23a6926
+%define sha1 tcpdump=a18c9dbc4b5c4983af9cb52d8e473f5504546f4a
 Group:		Networking
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -32,5 +32,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sbindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.7.4-1
+-   Upgrade version.
 *   Mon Apr 6  2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.7.3-1
 -   Updating version to 4.7.3

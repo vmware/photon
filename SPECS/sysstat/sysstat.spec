@@ -1,14 +1,14 @@
 Summary:	The Sysstat package contains utilities to monitor system performance and usage activity
 Name:		sysstat 
-Version:	11.1.8
+Version:	11.2.0
 Release:	1%{?dist}
 License:	GPLv2 
 URL:		http://sebastien.godard.pagesperso-orange.fr/
 Group:		Development/Debuggers
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://perso.wanadoo.fr/sebastien.godard/sysstat-11.1.8.tar.xz
-%define sha1 sysstat=2da5098c4d6626a85821d943ab3299b003c39f4e
+Source0:	http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
+%define sha1 sysstat=61b70892d864f8bac5714e2fe0a006f0fda6efba
 
 %description
  The Sysstat package contains utilities to monitor system performance and usage activity. Sysstat contains the sar utility, common to many commercial Unixes, and tools you can schedule via cron to collect and historize performance and activity data. 
@@ -35,5 +35,7 @@ rm -rf %{buildroot}/*
 %{_libdir}
 
 %changelog
+*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 11.2.0-1
+-   	Upgrade version.
 *	Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 11.1.8-1
 -	Initial build.	First version
