@@ -1,12 +1,12 @@
 Summary:	NFS client utils
 Name:		nfs-utils
-Version:	1.3.2
-Release:	2%{?dist}
+Version:	1.3.3
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/nfs
 Group:		Applications/Nfs-utils-client
 Source0:    http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.bz2
-%define sha1 nfs-utils=138ad690992d4784c05024d814a2d49ee8ebf6be
+%define sha1 nfs-utils=7c561e6a22a626aed93766bdb0c34e9a4e77b9e7
 Source1:    nfs-client.service
 Source2:    nfs-client.target
 Source3:    rpc-statd.service
@@ -58,6 +58,8 @@ install -m644 %{SOURCE5} %{buildroot}/etc/default/nfs-utils
 /lib/systemd/system/*
 
 %changelog
+* 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-1
+- 	Updated to version 1.3.3
 *	Tue Dec 8 2015 Divya Thaluru <dthaluru@vmware.com> 1.3.2-2
 -	Adding systemd service files
 *	Tue Jul 14 2015 Rongrong Qiu <rqiu@vmware.com> 1.3.2-1
