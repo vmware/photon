@@ -32,7 +32,7 @@ rm -rf %{buildroot}/*
 %files
 %doc AUTHORS COPYING NEWS README ChangeLog
 %defattr(-,root,root)
-/sbin
+/sbin/*
 %{_mandir}
 
 %changelog
