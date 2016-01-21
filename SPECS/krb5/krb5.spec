@@ -1,6 +1,6 @@
 Summary:	The Kerberos newtork authentication system
 Name:		krb5
-Version:	1.12.2
+Version:	1.14
 Release:	1%{?dist}
 License:	MIT
 URL:		http://cyrusimap.web.cmu.edu/
@@ -8,7 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 krb5=6f24800d48d36a33305387a9b6340884b05573b1
+%define sha1 krb5=02973f6605b1170bec812af9c8da4e447eeca9a9
 Requires:	openssl
 Requires:	e2fsprogs
 BuildRequires: 	openssl-devel
@@ -83,11 +83,12 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_datarootdir}/examples/*
-%{_datarootdir}/gnats/*
 %{_datarootdir}/locale/*
 %{_datarootdir}/man/man5/.k5identity.5.gz
 %{_datarootdir}/man/man5/.k5login.5.gz
 %{_docdir}/%{name}-%{version}
 %changelog
+*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
+-	Upgrade version
 *	Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
 -	Initial build.	First version
