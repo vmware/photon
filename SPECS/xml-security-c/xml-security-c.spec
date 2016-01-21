@@ -1,14 +1,14 @@
 Summary:	C++ XML Signature and Encryption library.
 Name:		xml-security-c
-Version:	1.5.1
+Version:	1.7.3
 Release:	1%{?dist}
 License:	Apache Software License
-URL:		http://pkgs.fedoraproject.org/repo/pkgs/xml-security-c/xml-security-c-1.5.1.tar.gz/2c47c4ec12e8d6abe967aa5e5e99000c/xml-security-c-1.5.1.tar.gz
+URL:		http://santuario.apache.org/index.html
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://pkgs.fedoraproject.org/repo/pkgs/xml-security-c/xml-security-c-1.5.1.tar.gz/2c47c4ec12e8d6abe967aa5e5e99000c/%{name}-%{version}.tar.gz
-%define sha1 xml-security-c=e51d3dca7f32cfcc2090d4d20cf8a1d032d95d79
+Source0:	http://apache.mirrors.lucidnetworks.net/santuario/c-library/%{name}-%{version}.tar.gz
+%define sha1 xml-security-c=bcbe98e0bd3695a0b961a223cce53e2f35c4681b
 Requires:	openssl
 Requires:	xerces-c
 BuildRequires:	openssl-devel
@@ -38,8 +38,9 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.a
-%{_libdir}/*.la
 %{_includedir}/*
 %changelog
-*	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 1.5.1
+*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 1.7.3-1
+-   	Upgrade version.
+*	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 1.5.1-1
 	Initial version

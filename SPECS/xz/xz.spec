@@ -1,14 +1,14 @@
 Summary:	Programs for compressing and decompressing files
 Name:		xz
-Version:	5.0.5
-Release:	2%{?dist}
+Version:	5.2.2
+Release:	1%{?dist}
 URL:		http://tukaani.org/xz
 License:	GPLv2+ and GPLv3+ and LGPLv2+
 Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://tukaani.org/xz/%{name}-%{version}.tar.xz
-%define sha1 xz=56f1d78117f0c32bbb1cfd40117aa7f55bee8765
+%define sha1 xz=72c567d3263345844191a7e618779b179d1f49e0
 %description
 The Xz package contains programs for compressing and
 decompressing files
@@ -61,31 +61,20 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/lzmainfo
 %{_bindir}/xzgrep
 %{_bindir}/xzdec
-%{_libdir}/liblzma.so.5.0.5
+%{_libdir}/liblzma.so.5.2.2
 %{_libdir}/liblzma.so.5
 %{_mandir}/man1/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %files devel
 %{_includedir}/lzma.h
-%{_includedir}/lzma/index_hash.h
-%{_includedir}/lzma/index.h
-%{_includedir}/lzma/stream_flags.h
-%{_includedir}/lzma/vli.h
-%{_includedir}/lzma/version.h
-%{_includedir}/lzma/check.h
-%{_includedir}/lzma/lzma.h
-%{_includedir}/lzma/hardware.h
-%{_includedir}/lzma/block.h
-%{_includedir}/lzma/filter.h
-%{_includedir}/lzma/container.h
-%{_includedir}/lzma/bcj.h
-%{_includedir}/lzma/base.h
-%{_includedir}/lzma/delta.h
+%{_includedir}/lzma/*.h
 %{_libdir}/pkgconfig/liblzma.pc
 %{_libdir}/liblzma.a
 %{_libdir}/liblzma.so
 %changelog
+*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 5.2.2-1
+-   Upgrade version.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 5.0.5-2
 -   Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.0.5-1
--	Initial build.	First version
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.0.5-1
+-   Initial build.	First version
