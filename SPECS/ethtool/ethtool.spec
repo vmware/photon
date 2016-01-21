@@ -1,7 +1,7 @@
 Summary:	ethtool is the standard Linux utility for controlling network drivers and hardware, particularly for wired Ethernet devices. 
 Name:		ethtool   
 Version:	4.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2 
 URL:		https://www.kernel.org/pub/software/network/ethtool/
 Group:		Productivity/Networking/Diagnostic
@@ -32,9 +32,11 @@ rm -rf %{buildroot}/*
 %files
 %doc AUTHORS COPYING NEWS README ChangeLog
 %defattr(-,root,root)
-/sbin
+/sbin/*
 %{_mandir}
 
 %changelog
+*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.2-2
+-   	Change file packaging.
 *	Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2-1
 -	Initial build.	First version
