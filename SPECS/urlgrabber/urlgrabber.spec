@@ -2,15 +2,15 @@
 
 Summary:		A high-level cross-protocol url-grabber
 Name: 			urlgrabber
-Version: 		3.10
+Version: 		3.10.1
 Release: 		1%{?dist}
 Source0: 		urlgrabber-%{version}.tar.gz
-%define sha1 urlgrabber=a2ff4fc2056f4d91b412104e04ff0bdc73ec5fb1
+%define sha1 urlgrabber=75206abe4c2498d4ff01498e4a35192a65c92f3e
 License: 		LGPLv2+
 Group: 			Development/Libraries
 BuildRoot: 		%{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildArch: 		noarch
-Url: 			http://linux.duke.edu/projects/urlgrabber/
+Url: 			http://urlgrabber.baseurl.org/
 Vendor:			VMware, Inc.
 Distribution:		Photon
 Provides: 		urlgrabber = %{version}-%{release}
@@ -48,5 +48,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,root,root) /usr/libexec/urlgrabber-ext-down
 
 %changelog
-*	Sat Jan 24 2015 Touseef Liaqat <tliaqat@vmware.com> 3.10
+*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.10.1-1
+-   	Upgrade version.
+*	Sat Jan 24 2015 Touseef Liaqat <tliaqat@vmware.com> 3.10-1
 -	Initial build.	First version
