@@ -1,14 +1,14 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
-Version:	4.10
+Version:	4.11
 Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceforge.net/p/strace/code/ci/master/tree/
 Group:		Development/Debuggers
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://downloads.sourceforge.net/project/strace/strace/4.10/%{name}-%{version}.tar.xz
-%define sha1 strace=5c3ec4c5a9eeb440d7ec70514923c2e7e7f9ab6c
+Source0:	http://downloads.sourceforge.net/project/strace/strace/%{version}/%{name}-%{version}.tar.xz
+%define sha1 strace=8fd717dc3c51b69fde51ce0bdb066404a678363c
 BuildRequires:	libacl-devel, libaio-devel
 
 %description
@@ -39,5 +39,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
-*	Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-1
+*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.11-1
+-   	Upgrade version.
+*	Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 4.10-1
 -	Initial build.	First version

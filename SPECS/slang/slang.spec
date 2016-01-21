@@ -1,12 +1,12 @@
 Summary:	An interpreted language that may be embedded into an application to make the application extensible.
 Name:		slang
-Version:	2.2.4
+Version:	2.3.0
 Release:	1%{?dist}
 License:	GNU General Public License
 URL:		http://www.jedsoft.org/slang/index.html
 Group:		Development/Languages
 Source0:	http://www.jedsoft.org/releases/slang/old/%{name}-%{version}.tar.bz2
-%define sha1 slang=34e68a993888d0ae2ebc7bc31b40bc894813a7e2
+%define sha1 slang=6e26e90307d4569e5feef195648c0858ba27f7ac
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires: readline-devel
@@ -35,11 +35,11 @@ It contains the libraries and header files to create applications
 make -j1
 
 %install
-make DESTDIR=%{buildroot} install_doc_dir=%{_docdir}/slang-2.2.4   \
-     SLSH_DOC_DIR=%{_docdir}/slang-2.2.4/slsh \
+make DESTDIR=%{buildroot} install_doc_dir=%{_docdir}/slang-2.3.0   \
+     SLSH_DOC_DIR=%{_docdir}/slang-2.3.0/slsh \
      install-all
 
-chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.2.4 \
+chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.3.0 \
              %{buildroot}%{_libdir}/slang/v2/modules/*.so
 
 %files
@@ -58,5 +58,7 @@ chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.2.4 \
 
 
 %changelog
-*	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 2.3.0-1
+-   	Upgrade version.
+*	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.2.4-1
 -	Initial build.	First version
