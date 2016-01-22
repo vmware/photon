@@ -4,13 +4,13 @@
 
 Summary:       	Repodata downloading library
 Name:          	librepo
-Version:       	1.7.15
+Version:       	1.7.17
 Release:       	1%{?dist}
 License:       	LGPLv2+
 URL:           	https://github.com/Tojaj/librepo/
 Group:         	System Environment/Libraries
 Source0:       	%{name}-%{version}.tar.gz
-%define sha1 librepo=a753212f721be8782c8c3aa40e450247676b7649
+%define sha1 librepo=e96b735393cd830caca49fe3bf7da767f22d8a8a
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	curl, gpgme, libassuan, libgpg-error
@@ -74,6 +74,8 @@ cp %{_builddir}/%{librepo_name}-%{version}/librepo/*.h %{buildroot}%{_includedir
 %{_includedir}/librepo/*.h
 
 %changelog
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.17-1
+-   Updated to version 1.7.17
 * Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 1.7.15-1
 - Updated version and split devel package.
 * Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>

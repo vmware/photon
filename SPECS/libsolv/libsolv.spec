@@ -1,11 +1,11 @@
-Summary:	Libsolv-0.6.6
+Summary:	Libsolv-0.6.17
 Name:		libsolv
-Version:	0.6.6
-Release:	3%{?dist}
+Version:	0.6.17
+Release:	1%{?dist}
 License:	BSD
 URL:		https://github.com/openSUSE/libsolv
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha1 libsolv=dca7ddcc42932a87c5a22196c50cad549f16e414
+%define sha1 libsolv=11ac5a2530fe05e6e2f7959fa46f33a2e25f01a6
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -38,6 +38,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/*
 %{_includedir}/*
 %changelog
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.17-1
+-   Updated to version 0.6.17
 * 	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.6.6-3
 -	Updated build-requires after creating devel package for db. 
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 0.6.6-2
