@@ -1,7 +1,7 @@
 Summary:	Networking Tools
 Name:		net-tools
 Version:	1.60
-Release:	3%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://net-tools.sourceforge.net
 Group:		System Environment/Base
@@ -12,6 +12,7 @@ Source0:	http://www.tazenda.demon.co.uk/phil/net-tools/%{name}-%{version}.tar.bz
 Patch0: 	http://www.linuxfromscratch.org/patches/blfs/6.3/net-tools-1.60-gcc34-3.patch
 Patch1:		http://www.linuxfromscratch.org/patches/blfs/6.3/net-tools-1.60-kernel_headers-2.patch
 Patch2:		http://www.linuxfromscratch.org/patches/blfs/6.3/net-tools-1.60-mii_ioctl-1.patch
+Patch3:		net-tools-1.60-manydevs.patch
 Obsoletes:	inetutils 
 Requires:	iputils 
 %description
@@ -21,6 +22,7 @@ The Net-tools package is a collection of programs for controlling the network su
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p0
 %build
 yes "" | make config
 sed -i -e 's|HAVE_IP_TOOLS 0|HAVE_IP_TOOLS 1|g' \
@@ -49,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*	Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-5
+-	Added net-tools-1.60-manydevs.patch
 *	Fri Nov 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.60-4
 -	Added ipv6 support. Include hostname and dnshostname.
 *	Thu Oct 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.60-3
