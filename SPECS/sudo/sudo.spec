@@ -1,14 +1,14 @@
 Summary:	Sudo
 Name:		sudo
-Version:	1.8.11p1
-Release:	5%{?dist}
+Version:	1.8.15
+Release:	1%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1 sudo=3c442d59c0e112d4a43ffba434580e93fe1a766f
+%define sha1 sudo=acb5ff3f38fa9e0365f6a91a6620b9846e2ad843
 BuildRequires:	man-db
 BuildRequires:	Linux-PAM
 Requires:	Linux-PAM
@@ -38,6 +38,7 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
+find %{buildroot}/%{_libdir} -name '*.so~' -delete
 cat >> %{buildroot}/etc/sudoers << EOF
 %wheel ALL=(ALL) ALL
 %sudo   ALL=(ALL) ALL
@@ -77,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
 %changelog
+*	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-1
+-	Update to 1.8.15-1.
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.8.11p1-5
 -	Edit post script.
 *	Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.11p1-4
