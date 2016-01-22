@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.9
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -13,6 +13,10 @@ Patch: cgi.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel
 BuildRequires:  openssl-devel
+BuildRequires:	expat >= 2.1.0
+BuildRequires:	libffi >= 3.0.13
+BuildRequires:	sqlite-autoconf
+BuildRequires:	ncurses-devel
 Requires:	bzip2
 Requires:  	openssl
 Provides: 	python-sqlite
@@ -34,10 +38,6 @@ Requires:	expat >= 2.1.0
 Requires:	libffi >= 3.0.13
 Requires:	ncurses
 Requires:	coreutils
-BuildRequires:	expat >= 2.1.0
-BuildRequires:	libffi >= 3.0.13
-BuildRequires:	sqlite-autoconf
-BuildRequires:	ncurses-devel
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size
 # Requires: binutils
@@ -54,6 +54,15 @@ Requires: python2-libs = %{version}-%{release}
 
 %description -n python-xml
 The python-xml package provides the libraries needed for XML manipulation.
+
+%package -n python-curses
+Summary: Python module interface for NCurses Library 
+Group: Applications/System
+Requires: python2-libs = %{version}-%{release}
+Requires: ncurses
+
+%description -n python-curses
+The python-curses package provides interface for ncurses library.
 
 %package devel
 Summary: The libraries and header files needed for Python development.
@@ -177,6 +186,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/python2.7/xml
 %{_libdir}/python2.7/lib-dynload/pyexpat.so
 
+%files -n python-curses
+%{_libdir}/python2.7/curses
+%{_libdir}/python2.7/lib-dynload/_curses*.so
+
 %files devel
 %defattr(-,root,root)
 /usr/include/*
@@ -199,6 +212,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Fri Jan 22 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.9-5
+-	Seperate python-curses package from python-libs package
+
 *	Thu Oct 29 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.7.9-4
 -	Seperate python-xml package from python-libs package
 
