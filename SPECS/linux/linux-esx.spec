@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       12%{?dist}
+Release:       13%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -11,11 +11,12 @@ Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:       config-esx-%{version}
-patch1:        01-clear-linux.patch
-patch2:        02-pci-probe.patch
-patch3:        03-poweroff.patch
-patch4:        04-quiet-boot.patch
-patch5:        05-pv-ops.patch
+patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
+patch2:        01-clear-linux.patch
+patch3:        02-pci-probe.patch
+patch4:        03-poweroff.patch
+patch5:        04-quiet-boot.patch
+patch6:        05-pv-ops.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -55,6 +56,7 @@ The Linux package contains the Linux kernel doc files
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 make mrproper
@@ -120,6 +122,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-13
+-   Fix for CVE-2016-0728
 *   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-12
 -   CONFIG_HZ=250
 -   Disable sched autogroup.
