@@ -1,5 +1,5 @@
 Name:          crash
-Version:       7.1.3
+Version:       7.1.4
 Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
@@ -7,7 +7,7 @@ Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
 Source:        http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha1 crash=bd303380711f2f832c3ed0f135d1ebe16e8802d2
+%define sha1 crash=91049f65bc243bde6ddb31803e7ba2677cc2aa51
 License:       GPL
 BuildRequires: binutils
 BuildRequires: glibc-devel
@@ -62,5 +62,7 @@ cp -p defs.h %{buildroot}%{_includedir}/crash
 %{_includedir}/crash/*.h
 
 %changelog
-*	Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 2.7-1
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1.4-1
+-   Updated to version 7.1.4
+*	Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 7.1.3-1
 -	Initial build. First version
