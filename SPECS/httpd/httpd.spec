@@ -1,14 +1,15 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
-Version:    2.4.12
-Release:    4%{?dist}
+Version:    2.4.18
+Release:    1%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:        http://archive.apache.org/dist/httpd/%{name}-%{version}.tar.bz2
-%define sha1 httpd=bc4681bfd63accec8d82d3cc440fbc8264ce0f17
+%define sha1 httpd=271a129f2f04e3aa694e5c2091df9b707bf8ef80
+Patch0: http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.18-blfs_layout-1.patch
 BuildRequires: openssl
 BuildRequires: openssl-devel
 BuildRequires: pcre-devel
@@ -48,6 +49,7 @@ The httpd-tools of httpd.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure --prefix=%{_sysconfdir}/httpd \
             --exec-prefix=%{_prefix} \
@@ -150,6 +152,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
+-   Updated to version 2.4.18
 *   Mon Nov 23 2015 Sharath George <sharathg@vmware.com> 2.4.12-4
 -   Add /etc/mime.types
 *   Tue Sep 29 2015 Xiaolin Li <xiaolinl@vmware.com> 2.4.12-3
