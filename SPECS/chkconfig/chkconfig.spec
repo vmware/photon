@@ -1,7 +1,7 @@
 Summary: A system tool for maintaining the /etc/rc*.d hierarchy
 Name: chkconfig
-Version: 1.5
-Release: 4%{?dist}
+Version: 1.7
+Release: 1%{?dist}
 License: GPLv2
 Group: System Environment/Base
 URL: https://git.fedorahosted.org/git/chkconfig.git
@@ -9,7 +9,7 @@ Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.bz
 Patch0:chkconfig-shortopt.patch
 Patch1:print-service-on-off.patch
 Patch2:ignore-priorities.patch
-%define sha1 chkconfig=19a15a6690788686cc173b0d0626eaae01bec0c1
+%define sha1 chkconfig=15d51b7aaccd9f8d32ec97461e400090dc169024
 Requires: libselinux
 Requires: libsepol
 Requires: newt
@@ -91,6 +91,9 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7-1
+-   Updated to version 1.7
+
 * Mon Dec 07 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Ability for chkconfig to ignore priorities.
 
