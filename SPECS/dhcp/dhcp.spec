@@ -1,15 +1,16 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
-Version:	4.3.2
+Version:	4.3.3
 Release:	1%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
-Source0:  	ftp://ftp.isc.org/isc/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 dhcp=c7fcc4fa2bd135700b410f47eca238dd67419654
+Source0:  	ftp://ftp.isc.org/isc/%{name}/%{version}/%{name}-%{version}-P1.tar.gz
+%define sha1 dhcp=4e76757a0aebcb9200c1d2ca0f28ff41a5c56586
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/dhcp-4.3.2-client_script-1.patch
+Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/dhcp-4.3.3-P1-client_script-1.patch
+#Patch1:     http://www.linuxfromscratch.org/patches/blfs/svn/dhcp-4.3.3-P1-missing_ipv6-1.patch
 BuildRequires:	systemd
 %description
 The ISC DHCP package contains both the client and server programs for DHCP. dhclient (the client) is used for connecting to a network which uses DHCP to assign network addresses. dhcpd (the server) is used for assigning network addresses on private networks
@@ -39,8 +40,9 @@ The ISC DHCP Client, dhclient, provides a means for configuring one or more netw
 
 
 %prep
-%setup -q
+%setup -qn %{name}-%{version}-P1
 %patch0 -p1
+#%patch1 -p1
 %build
 CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
@@ -60,8 +62,8 @@ CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
     	--with-relay-pid-file=%{_localstatedir}/run/dhcrelay.pid \
     	--enable-log-pid \
 	--enable-paranoia --enable-early-chroot
-    	 
-make %{?_smp_mflags}
+
+make 
 %install
 make DESTDIR=%{buildroot} install
 install -v -m755 client/scripts/linux %{buildroot}/usr/sbin/dhclient-script
@@ -108,7 +110,6 @@ install -v -dm 755 %{buildroot}/var/lib/dhclient
 %files libs
 %defattr(-,root,root)
 %{_libdir}/libdhcpctl.a
-%{_libdir}/libdst.a
 %{_libdir}/libomapi.a
 
 %files devel
@@ -146,5 +147,7 @@ install -v -dm 755 %{buildroot}/var/lib/dhclient
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
+-   Updated to version 4.3.3
 *	Wed Jul 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.3.2-1
 -	Initial build./
