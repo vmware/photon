@@ -37,6 +37,9 @@ Perl scripts that convert certificates and keys to various formats.
 Summary: openssl perl scripts
 Group: Applications/Internet
 Requires: perl
+Requires: perl-DBI
+Requires: perl-DBIx-Simple
+Requires: perl-DBD-SQLite
 Requires: openssl = %{version}-%{release}
 %description c_rehash
 Perl scripts that convert certificates and keys to various formats.
