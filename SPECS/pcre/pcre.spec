@@ -1,14 +1,14 @@
 Summary:	Grep for perl compatible regular expressions
 Name:		pcre
-Version:	8.36
-Release:	2%{?dist}
+Version:	8.38
+Release:	1%{?dist}
 License:	BSD
-URL:		ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.36.tar.gz
+URL:		ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.38.tar.bz2
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.gz
-%define sha1 pcre=fb537757756818133d8157ec878bc11f5a93ef4d
+Source0:	ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
+%define sha1 pcre=ae84e3b3ef0764788ce33b1adeff1add938126e1
 BuildRequires:	bzip2-devel
 BuildRequires:	readline-devel
 Requires:       libgcc
@@ -29,7 +29,7 @@ library.
 %setup -q
 %build
 ./configure --prefix=/usr                     \
-            --docdir=/usr/share/doc/pcre-8.36 \
+            --docdir=/usr/share/doc/pcre-8.38 \
             --enable-unicode-properties       \
             --enable-pcre16                   \
             --enable-pcre32                   \
@@ -65,6 +65,8 @@ ln -sfv $(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/lib/libpcre
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %changelog
+*     Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 8.38-1
+-     Updated to version 8.38
 *	Mon Nov 30 2015 Sharath George <sharathg@vmware.com> 8.36-2
 	Add symlink for libpcre.so.1
 *	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 8.36-1
