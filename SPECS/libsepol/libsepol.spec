@@ -1,11 +1,11 @@
 Summary:	SELinux binary policy manipulation library 
 Name:		libsepol
-Version:	2.4
+Version:	2.5
 Release:	1%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
-Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20150202/%{name}-%{version}.tar.gz
-%define sha1 libsepol=9946b1ab2f2d64edf7c4beaaf098bd916b3a7fd2
+Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}-rc1.tar.gz
+%define sha1 libsepol=0bf77d9849f715b29a8ac901461df0cc46da750b
 URL:		http://www.selinuxproject.org
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -38,7 +38,8 @@ The libsepol-devel package contains the libraries and header files
 needed for developing applications that manipulate binary policies. 
 
 %prep
-%setup -q
+%setup -qn %{name}-%{version}-rc1
+sed  -i 's/int rc;/int rc = SEPOL_OK;/' ./cil/src/cil_binary.c
 
 %build
 make clean
@@ -84,5 +85,7 @@ exit 0
 %{_lib}/libsepol.so.1
 
 %changelog
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
+-   Updated to version 2.5
 *	Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
 -	Initial build.	First version
