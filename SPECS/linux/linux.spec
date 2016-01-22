@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.2.0
-Release:    9%{?dist}
+Release:    10%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -11,6 +11,7 @@ Distribution: Photon
 Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:	config-%{version}
+patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
 BuildRequires:    bc
 BuildRequires:    kbd
 BuildRequires:    kmod
@@ -66,6 +67,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 %prep
 %setup -q -n linux-4.2
+%patch1 -p1
 
 %build
 make mrproper
@@ -153,6 +155,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
+-   Fix for CVE-2016-0728
 *   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-9
 -   CONFIG_HZ=250
 *   Tue Jan 12 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-8
