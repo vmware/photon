@@ -112,6 +112,7 @@
         "lldpad",
         "rsync",
         "paramiko",
-        "ecdsa"
+        "ecdsa",
+		"irqbalance"
             ]
 }
