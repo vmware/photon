@@ -112,15 +112,15 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/check-rpaths-worker
 %{_libdir}/rpm/config.guess
 %{_libdir}/rpm/config.sub
-%{_libdir}/rpm/debugedit
+#%{_libdir}/rpm/debugedit
 %{_libdir}/rpm/desktop-file.prov
-%{_libdir}/rpm/elfdeps
+#%{_libdir}/rpm/elfdeps
 %{_libdir}/rpm/fontconfig.prov
 %{_libdir}/rpm/libtooldeps.sh
 %{_libdir}/rpm/macros
 %{_libdir}/rpm/mkinstalldirs
 %{_libdir}/rpm/pkgconfigdeps.sh
-%{_libdir}/rpm/platform
+#%{_libdir}/rpm/platform
 %{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/rpm.daily
 %{_libdir}/rpm/rpm.log
@@ -134,7 +134,15 @@ rm -rf %{buildroot}
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
 
-%{_libdir}/rpm/platform/*
+%{_libdir}/rpm/platform/sh4-linux/macros
+%{_libdir}/rpm/platform/sh4a-linux/macros
+%{_libdir}/rpm/platform/sparc-linux/macros
+%{_libdir}/rpm/platform/sparc64-linux/macros
+%{_libdir}/rpm/platform/sparc64v-linux/macros
+%{_libdir}/rpm/platform/sparcv8-linux/macros
+%{_libdir}/rpm/platform/sparcv9-linux/macros
+%{_libdir}/rpm/platform/sparcv9v-linux/macros
+%{_libdir}/rpm/platform/x86_64-linux/macros
 %{_libdir}/rpm-plugins/*
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
@@ -161,7 +169,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/perl.prov
 %{_libdir}/rpm/perl.req
 %{_libdir}/rpm/perldeps.pl
-%{_libdir}/rpm/find-debuginfo.sh
+#%{_libdir}/rpm/find-debuginfo.sh
 %{_libdir}/rpm/find-lang.sh
 %{_libdir}/rpm/find-provides
 %{_libdir}/rpm/find-requires
