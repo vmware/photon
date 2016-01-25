@@ -1,15 +1,14 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
-Version:	2.25.1
-Release:	1%{?dist}
+Version:	2.25
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
-%define sha1 binutils=1d597ae063e3947a5f61e23ceda8aebf78405fcd
-Patch0:		http://www.linuxfromscratch.org/patches/downloads/binutils/binutils-2.25.1-gold_export_symbols-1.patch
+%define sha1 binutils=b46cc90ebaba7ffcf6c6d996d60738881b14e50d
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -21,7 +20,6 @@ It contains the libraries and header files to create applications
 for handling compiled objects.
 %prep
 %setup -q
-%patch0 -p1
 rm -fv etc/standards.info
 sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
 %build
@@ -168,8 +166,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libopcodes.so
 
 %changelog
-*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.25.1-1
--   Updated to version 2.25.1
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.25-2
 -	Handled locale files with macro find_lang
 *	Mon Apr 6 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25-1

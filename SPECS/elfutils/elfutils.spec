@@ -1,12 +1,12 @@
 # -*- rpm-spec-*-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.165
-Release:	1%{?dist}
+Version:	0.158
+Release:	4%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 Source0:	elfutils-%{version}.tar.bz2
-%define sha1 elfutils=b994f2f31e6638415d7f8a3c0c7e04e6bc4ca4a9
+%define sha1 elfutils=09adbbf0f3a35bb1bcb77c2eaa40de8d3443af4d
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -159,12 +159,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_includedir}/elfutils/libebl.h
 %{_includedir}/elfutils/libdw.h
 %{_includedir}/elfutils/libdwfl.h
-%{_includedir}/elfutils/known-dwarf.h
-%{_includedir}/elfutils/libdwelf.h
 %{_libdir}/libebl.a
 #%{_libdir}/libasm.so
 %{_libdir}/libdw.so
-%{_libdir}/pkgconfig/*.pc
 
 %files devel-static
 %{_libdir}/libdw.a
@@ -187,8 +184,6 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
-*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 0.165-1
--   Updated to version 0.165
 * Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.158-4
 - Handled locale files with macro find_lang
 * Sat Aug 15 2015 Sharath George <sharathg@vmware.com> 0.158-3
