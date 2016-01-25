@@ -14,5 +14,5 @@
             "cpio", "shadow", "dbus", "python-requests", "pkg-config", "dosfstools", "sed", "json-glib",
             "python-hawkey", "libhif-devel", "grub2-efi", "linux", "cracklib-python", "gpgme-devel",
             "grep", "ostree", "tar", "efibootmgr", "pciutils", "gnutls-devel", "e2fsprogs", "gzip", 
-            "gptfdisk", "tdnf"]
+            "gptfdisk", "tdnf", "python-curses"]
 }
