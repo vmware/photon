@@ -112,9 +112,9 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/check-rpaths-worker
 %{_libdir}/rpm/config.guess
 %{_libdir}/rpm/config.sub
-%{_libdir}/rpm/debugedit
+#%{_libdir}/rpm/debugedit
 %{_libdir}/rpm/desktop-file.prov
-%{_libdir}/rpm/elfdeps
+#%{_libdir}/rpm/elfdeps
 %{_libdir}/rpm/fontconfig.prov
 %{_libdir}/rpm/libtooldeps.sh
 %{_libdir}/rpm/macros
