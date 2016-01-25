@@ -1,12 +1,12 @@
 Summary:        Interface for Python to call C code
 Name:           python-cffi
-Version:        1.3.0
+Version:        1.5.0
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
-Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-1.3.0.tar.gz
-%define sha1 cffi=54a0b2dbbc2f5d99131aa337e217b636652641a9
+Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
+%define sha1 cffi=fd21011ba2a3cab627001b52c69fd7274517e549
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -35,5 +35,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
-* Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 1.3.0-1
-- Initial packaging for Photon
+*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.5.0-1
+-	Upgrade version
+* 	Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 1.3.0-1
+- 	nitial packaging for Photon
