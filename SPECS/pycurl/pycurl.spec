@@ -1,14 +1,14 @@
 %{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           pycurl
-Version:        7.19.5.1
-Release:        2%{?dist}
+Version:        7.21.5
+Release:        1%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
 URL:            http://pycurl.sourceforge.net/
 Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
-%define sha1 pycurl=e448cc05ef05f8645bb9a7873d7a7e0b0035db14
+%define sha1 pycurl=60865d22fc715ca5197117ea3ad32413d3c7402e
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	pycurl
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 7.21.5-1
+-	Upgrade version
 *	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 7.19.5.1-2
 -	Added Doc subpackage. Removed chmod a-x for examples.
 *	Sat Jan 24 2015 Touseef Liaqat <tliaqat@vmware.com> 7.19.5.1
