@@ -52,6 +52,7 @@
         "wget",
         "gawk",
 	"irqbalance",
-        "lvm2"
+        "lvm2",
+        "cifs-utils"
     ]
 }
