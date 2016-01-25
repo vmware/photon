@@ -1,14 +1,14 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
-Version:	4.2.8p3
-Release:	4%{?dist}
+Version:	4.2.8p6
+Release:	1%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/%{name}-%{version}.tar.gz
-%define sha1 ntp=fc624396f8d9f9bc282da30c8e8e527ade7d420f
+%define sha1 ntp=7244b0fb66ceb66283480e8f83a4c4a2099f9cd7
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
@@ -142,12 +142,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
-*   Thu Jan 7 2016 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-4
--   Add ntpstat package.
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-3
--   Add systemd to Requires and BuildRequires.
+*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-1
+-	Upgrade version
+*   	Thu Jan 7 2016 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-4
+-   	Add ntpstat package.
+*   	Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-3
+-   	Add systemd to Requires and BuildRequires.
 *	Fri Oct 30 2015 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p3-2
--   Add ntpd to systemd service.
+-   	Add ntpd to systemd service.
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.8p3-1
 -	Updating to version 4.2.8p3
 *	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.6p5-1
