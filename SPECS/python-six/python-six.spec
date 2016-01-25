@@ -1,12 +1,12 @@
 Name:           python-six
-Version:        1.9.0
+Version:        1.10.0
 Release:        1%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
 Source0:        six-%{version}.tar.gz
-%define sha1 six=d168e6d01f0900875c6ecebc97da72d0fda31129
+%define sha1 six=30d480d2e352e8e4c2aae042cf1bf33368ff0920
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -34,5 +34,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
-* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
-- Initial packaging for Photon
+*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.10.0-1
+-	Upgrade version
+* 	Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+- 	Initial packaging for Photon
