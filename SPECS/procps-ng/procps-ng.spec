@@ -1,14 +1,14 @@
 Summary:	Programs for monitoring processes
 Name:		procps-ng
-Version:	3.3.9
-Release:	2%{?dist}
+Version:	3.3.11
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://procps.sourceforge.net/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1 procps-ng=088c77631745fc75ee41fc29c254a4069be4869a
+%define sha1 procps-ng=1bdca65547df9ed019bd83649b0f8b8eaa017e25
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description
@@ -34,7 +34,6 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
 install -vdm 755 %{buildroot}/%{_lib}
-mv -v %{buildroot}/usr/bin/pidof %{buildroot}/bin
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}/%{_libdir}/libprocps.so) %{buildroot}/%{_libdir}/libprocps.so
 find %{buildroot} -name '*.la' -delete
 %post	-p /sbin/ldconfig
@@ -43,21 +42,21 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root)
 /bin/ps
 /bin/pidof
-%{_bindir}/free
-%{_bindir}/w
-%{_bindir}/pgrep
-%{_bindir}/uptime
-%{_bindir}/vmstat
-%{_bindir}/pmap
-%{_bindir}/tload
-%{_bindir}/pwdx
-%{_bindir}/top
-%{_bindir}/slabtop
-%{_bindir}/watch
-%{_bindir}/pkill
-%{_docdir}/procps-ng-3.3.9/FAQ
-%{_docdir}/procps-ng-3.3.9/README.top
-%{_docdir}/procps-ng-3.3.9/BUGS
+/bin/free
+/bin/w
+/bin/pgrep
+/bin/uptime
+/bin/vmstat
+/bin/pmap
+/bin/tload
+/bin/pwdx
+/bin/top
+/bin/slabtop
+/bin/watch
+/bin/pkill
+%_datadir/locale/*
+%{_docdir}/procps-ng-3.3.11/FAQ
+%{_docdir}/procps-ng-3.3.11/bugs.md
 %{_mandir}/man8/vmstat.8.gz
 %{_mandir}/man8/sysctl.8.gz
 %{_mandir}/man1/slabtop.1.gz
@@ -73,9 +72,10 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/man1/w.1.gz
 %{_mandir}/man1/watch.1.gz
 %{_mandir}/man1/ps.1.gz
+%{_mandir}/man3/*
 %{_mandir}/man5/sysctl.conf.5.gz
-%{_libdir}/libprocps.so.3
-%{_libdir}/libprocps.so.3.0.0
+%{_libdir}/libprocps.so.5
+%{_libdir}/libprocps.so.5.0.0
 /sbin/sysctl
 %files devel
 %{_includedir}/proc/sig.h
@@ -93,7 +93,9 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %changelog
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
--   Update according to UsrMove.
+*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
+-	Upgrade version
+*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
+-   	Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
 -	Initial build. First version
