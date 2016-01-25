@@ -32,6 +32,7 @@
         "gdbm",
         "python2",
         "python2-libs",
+        "python-curses",
         "python-xml",
         "photon-release",
         "sed",
