@@ -33,7 +33,7 @@ class constants(object):
     listToolChainRPMPkgsToInstall=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
         "binutils","binutils-devel",  "gmp","gmp-devel", "mpfr", "mpfr-devel", "mpc",
         "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
-        "pkg-config", "ncurses", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
+        "pkg-config", "ncurses", "ncurses-devel", "bash", "bzip2", "sed","procps-ng","coreutils", "m4","grep",
         "readline","diffutils","gawk", "findutils", "gettext", "gzip","make",  "patch",
         "util-linux", "util-linux-devel", "tar", "xz","libtool", "flex", "flex-devel",  "bison",
         "lua","popt","nspr","sqlite-autoconf","nss","elfutils-libelf",
