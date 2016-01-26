@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:        linux
 Version:    4.2.0
-Release:    10%{?dist}
+Release:    11%{?dist}
 License:    GPLv2
 URL:        http://www.kernel.org/
 Group:        System Environment/Kernel
@@ -155,6 +155,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 4.2.0-11
+-   Revert CONFIG_HZ=250
 *   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
 -   Fix for CVE-2016-0728
 *   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-9
