@@ -1,16 +1,16 @@
 Summary:	Package manager
 Name:		rpm
-Version:	4.11.2
-Release:	6%{?dist}
+Version:	4.13.0
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://rpm.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
-%define sha1 rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
-Source1:	http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
-%define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
+Source0:	http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}-rc1.tar.bz2
+%define sha1 rpm-4.13.0=536fff19797e9fe49fd7f35ec0109356061bf033
+Source1:	http://download.oracle.com/berkeley-db/db-6.1.26.tar.gz
+%define sha1 db=5ae05c6c4a1766270fd5cfb28539e2b7a19c33b2
 Source2:	rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
 #Requires: nspr
@@ -29,6 +29,7 @@ BuildRequires:	lua-devel
 BuildRequires:	popt-devel
 BuildRequires:	nss-devel
 BuildRequires:	elfutils-devel
+BuildRequires:  libarchive-devel
 %description
 RPM package manager
 
@@ -50,10 +51,10 @@ Summary: Binaries, scripts and libraries needed to build rpms.
 Binaries, libraries and scripts to build rpms.
 
 %prep
-%setup -q
-%setup -q -T -D -a 1
-%setup -q -T -D -a 2
-mv db-5.3.28 db
+%setup -qn %{name}-%{version}-rc1
+%setup -qn %{name}-%{version}-rc1 -T -D -a 1 
+%setup -qn %{name}-%{version}-rc1 -T -D -a 2 
+mv db-6.1.26 db
 %build
 ./autogen.sh --noconfigure
 ./configure \
@@ -120,7 +121,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/macros
 %{_libdir}/rpm/mkinstalldirs
 %{_libdir}/rpm/pkgconfigdeps.sh
-%{_libdir}/rpm/platform
+#%{_libdir}/rpm/platform
 %{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/rpm.daily
 %{_libdir}/rpm/rpm.log
@@ -128,7 +129,10 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/rpm2cpio.sh
 %{_libdir}/rpm/rpmdb_*
 %{_libdir}/rpm/rpmdeps
-%{_libdir}/rpm/rpmpopt-4.11.2
+%{_libdir}/rpm/rpmpopt-4.13.0-rc1
+%{_libdir}/rpm/appdata.prov
+
+
 %{_libdir}/rpm/rpmrc
 %{_libdir}/rpm/tgpg
 %{_libdir}/librpmbuild.so
@@ -155,12 +159,12 @@ rm -rf %{buildroot}
 %{_bindir}/rpmbuild
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
-%{_libdir}/rpm/osgideps.pl
-%{_libdir}/rpm/perldeps.pl
-%{_libdir}/rpm/macros.perl
+%{_bindir}/rpm2archive
+#%{_libdir}/rpm/osgideps.pl
+#%{_libdir}/rpm/perldeps.pl
 %{_libdir}/rpm/perl.prov
 %{_libdir}/rpm/perl.req
-%{_libdir}/rpm/perldeps.pl
+#%{_libdir}/rpm/perldeps.pl
 %{_libdir}/rpm/find-debuginfo.sh
 %{_libdir}/rpm/find-lang.sh
 %{_libdir}/rpm/find-provides
@@ -175,7 +179,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/macros.python
 %{_libdir}/rpm/fileattrs/*
 %{_libdir}/rpm/script.req
-%{_libdir}/rpm/tcl.req
+#%{_libdir}/rpm/tcl.req
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -194,6 +198,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 4.13.0-1
+-   Updated to version 4.13.0
 *   Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
 -   Moving build utils to a different package.
 *	Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
