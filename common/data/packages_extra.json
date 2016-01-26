@@ -26,7 +26,6 @@
         "libndp-devel",
         "libnl-devel",
         "logrotate",
-        "sendmail",
         "kpartx",
         "autogen-libopts", 
         "autogen-libopts-devel",
@@ -54,7 +53,6 @@
         "dhcp-devel",
         "initscripts",
         "net-tools",
-        "inotify-tools",
         "jaxws-ri",
         "commons-daemon",
         "runit", 
@@ -99,7 +97,6 @@
 		"ltrace",
 		"netcat",
 		"zip",
-        "ntpstat",
 		"linux-oprofile",
 		"net-snmp",
 		"pcstat",
@@ -112,7 +109,5 @@
         "nicstat",
         "lldpad",
         "rsync",
-        "paramiko",
-        "ecdsa"
             ]
 }
