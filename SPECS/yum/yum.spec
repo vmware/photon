@@ -1,7 +1,7 @@
 Summary:	RPM installer/updater
 Name:		yum
 Version:	3.4.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
@@ -194,5 +194,7 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %exclude %{_mandir}/man*/yum-updatesd*
 
 %changelog
+*   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.3-3
+-   Updated to release to 3.4.3 for liblua update.
 *	Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 3.4.3-2
 -	Adding python and python-libs as run time dependent packages
