@@ -1,11 +1,13 @@
---- LVM2.2.02.108/conf/example.conf.in	2014-07-23 16:21:02.000000000 +0100
-+++ LVM2.2.02.108-new/conf/example.conf.in	2014-07-23 23:05:06.000000000 +0100
-@@ -58,7 +58,7 @@
-     # preferred_names = [ ]
+diff --git a/conf/example.conf.in b/new/conf/example.conf.in
+index 60f8023..19dce47 100644
+--- a/conf/example.conf.in
++++ b/new/conf/example.conf.in
+@@ -104,7 +104,7 @@ devices {
+ 	# Prefer the path with least value in lexicographical order.
+ 	# 
+ 	# Example
+-	# preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
++	preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
+ 	# 
+ 	# This configuration option does not have a default value defined.
  
-     # Try to avoid using undescriptive /dev/dm-N names, if present.
--    # preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
-+    preferred_names = [ "^/dev/mpath/", "^/dev/mapper/mpath", "^/dev/[hs]d" ]
- 
-     # In case no prefererred name matches or if preferred_names are not
-     # defined at all, builtin rules are used to determine the preference.

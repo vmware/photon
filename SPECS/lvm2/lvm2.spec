@@ -1,14 +1,14 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
-Version:	2.02.116
-Release:	4%{?dist}
+Version:	2.02.141
+Release:	1%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1 LVM2=5bd2f4c33cdf93e580ea5b8a64bc32cd77be078e
+%define sha1 LVM2=d48b403ca10d407df394889d8dafd167a4bd4819
 Source1:	lvm2-activate.service
 Patch0:		lvm2-set-default-preferred_names.patch
 Patch1:		lvm2-enable-lvmetad-by-default.patch
@@ -149,7 +149,7 @@ the device-mapper event library.
 %prep
 %setup -q -n LVM2.%{version}
 %patch0 -p1 -b .preferred_names
-%patch1 -p1 -b .enable_lvmetad
+#%patch1 -p1 -b .enable_lvmetad
 %patch2 -p1 -b .udev_no_mpath
 
 %build
@@ -174,6 +174,7 @@ the device-mapper event library.
 	--enable-applib \
 	--enable-cmdlib \
 	--enable-dmeventd \
+	--enable-use_lvmetad \
 	--enable-python-bindings \
 	--enable-blkid_wiping \
 	--enable-lvmetad \
@@ -328,6 +329,8 @@ systemctl enable lvm2-activate.service
 /usr/sbin/vgs
 /usr/sbin/vgscan
 /usr/sbin/vgsplit
+/usr/sbin/dmstats
+/usr/sbin/lvmconfig
 /usr/share/man/man5/lvm.conf.5.gz
 /usr/share/man/man7/lvmcache.7.gz
 /usr/share/man/man7/lvmthin.7.gz
@@ -381,6 +384,11 @@ systemctl enable lvm2-activate.service
 /usr/share/man/man8/vgs.8.gz
 /usr/share/man/man8/vgscan.8.gz
 /usr/share/man/man8/vgsplit.8.gz
+/usr/share/man/man7/lvmsystemid.7.gz
+/usr/share/man/man8/dmstats.8.gz
+/usr/share/man/man8/lvm-config.8.gz
+/usr/share/man/man8/lvm-lvpoll.8.gz
+/usr/share/man/man8/lvmconfig.8.gz
 /lib/systemd/system-generators/lvm2-activation-generator
 /lib/systemd/system/blk-availability.service
 /lib/systemd/system/lvm2-lvmetad.service
@@ -390,6 +398,10 @@ systemctl enable lvm2-activate.service
 /lib/systemd/system/lvm2-pvscan@.service
 /usr/lib/tmpfiles.d/lvm2.conf
 /usr/share/man/man8/lvm2-activation-generator.8.gz
+/etc/lvm/lvmlocal.conf
+/etc/lvm/profile/cache-mq.profile
+/etc/lvm/profile/cache-smq.profile
+
 %changelog
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
 -   Change config file attributes.
