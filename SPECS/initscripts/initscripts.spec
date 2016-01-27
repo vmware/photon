@@ -1,12 +1,12 @@
 Summary:	Scripts to bring up network interfaces and legacy utilities
 Name:		initscripts
-Version:	9.63
+Version:	9.65
 License:	GPLv2
 Group:		System Environment/Base
 Release:	1%{?dist}
 URL:		http://fedorahosted.org/releases/i/n/initscripts/
-Source0:	http://fedorahosted.org/releases/i/n/initscripts/initscripts-%{version}.tar.bz2
-%define sha1 initscripts=023b3e5e234746c5874339f3ccd9424ff8b145bd
+Source0:	https://fedorahosted.org/releases/i/n/initscripts/initscripts-9.65.tar.bz2
+%define sha1 initscripts=0a231ab94ce7ef050a7c2c35a5183450abe58a39
 Vendor:     	VMware, Inc.
 Distribution:   Photon
 Requires:	systemd
@@ -156,6 +156,8 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
+*   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.65-1
+-   Updated to version 9.65
 * Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 9.63-1
 - Got Spec file from source tar ball and modified it to be compatible to build in Photon 
 * Mon May 18 2015 Lukáš Nykrýn <lnykryn@redhat.com> - 9.63-1
