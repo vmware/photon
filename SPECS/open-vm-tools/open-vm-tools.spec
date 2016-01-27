@@ -1,14 +1,14 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
-Version:	10.0.0
-Release:	13%{?dist}
+Version:	10.0.5
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools-10.0.0.tar.gz
-%define sha1 open-vm-tools=1658ab1b73438e746bb6f11f16fe570eaf753747
+Source0:    http://downloads.sourceforge.net/project/open-vm-tools/open-vm-tools-10.0.5-3227872.tar.gz
+%define sha1 open-vm-tools=81fa7f23d44428db05d22bde704544638227822a
 Source1:        gosc-scripts.tar.gz
 %define sha1 gosc-scripts=a87bb5b95f78923ac6053513b3364a119795a5d0
 Patch0:		open-vm-tools-service-link.patch
@@ -39,8 +39,8 @@ Requires:	openssl
 %description
 VmWare virtualization user mode tools
 %prep
-%setup -q
-%setup -a 1
+%setup -qn open-vm-tools-10.0.5-3227872
+%setup -a 1 -n open-vm-tools-10.0.5-3227872
 %patch0 -p1
 %patch1 -p1
 %patch2 -p0
@@ -112,6 +112,8 @@ chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 
 
 %changelog
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 10.0.5-1
+-   Updated to version 10.0.5
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 10.0.0-13
 -	Edit post script.
 *       Fri Nov 27 2015 Sharath George <sharathg@vmware.com> 10.0.0-12
