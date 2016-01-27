@@ -87,6 +87,14 @@ class ToolChainUtils(object):
         for package in constants.listToolChainRPMPkgsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+
+            rpmFileNewVersion = None
+            if rpmFile is not None and ("ncurses" in package):
+                self.logger.info("New version of " + package)
+                rpmFileNewVersion = rpmFile
+                if "devel" not in package:
+                    rpmFile = None
+
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
@@ -101,6 +109,9 @@ class ToolChainUtils(object):
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package
+            if rpmFileNewVersion is not None:
+                rpmFiles += " " + rpmFileNewVersion
+                packages += " " + package
 
         self.logger.debug("Installing toolchain rpms:" + packages)
         cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
@@ -202,6 +213,14 @@ class ToolChainUtils(object):
         for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+
+            rpmFileNewVersion = None
+            if rpmFile is not None and ("ncurses" in package):
+                self.logger.info("New version of " + package)
+                rpmFileNewVersion = rpmFile
+                if "devel" not in package:
+                    rpmFile = None
+
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
@@ -215,6 +234,10 @@ class ToolChainUtils(object):
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package
+
+            if rpmFileNewVersion is not None:
+                rpmFiles += " " + rpmFileNewVersion
+                packages += " " + package
 
         self.logger.debug("Installing rpms:"+packages)
         cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
