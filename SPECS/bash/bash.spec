@@ -11,6 +11,8 @@ Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha1 bash=33b1bcc5dca1b72f28b2baeca6efa0d422097964
 Patch0:   http://www.linuxfromscratch.org/patches/downloads/bash/bash-4.3.30-upstream_fixes-2.patch
 Patch1:   fix-save_bash_input-segfault.patch
+BuildRequires:  ncurses-devel
+Requires: ncurses
 Provides:	/bin/sh
 Provides:	/bin/bash
 %description
