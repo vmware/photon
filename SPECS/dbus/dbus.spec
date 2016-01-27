@@ -1,12 +1,12 @@
 Summary:	DBus for systemd
 Name:		dbus
-Version:	1.10.6
-Release:	1%{?dist}
+Version:	1.8.8
+Release:	4%{?dist}
 License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File
 Source0:	http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
-%define sha1 dbus=4247d7f86a0164d7dd3eb18a74670eb863ac342c
+%define sha1 dbus=e0d10e8b4494383c7e366ac80a942ba45a705a96
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	expat
@@ -48,8 +48,6 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %{_oldincludedir}/*
 %{_bindir}/*
 %{_lib}/*
-%{_datadir}/dbus-1/session.conf
-%{_datadir}/dbus-1/system.conf
 /lib/*
 %{_libexecdir}/*
 %{_docdir}/*
@@ -69,8 +67,6 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %{_libdir}/*.so
 
 %changelog
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 1.10.6-1
--   Updated to version 1.10.6
 *	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.8-4
 -	Created devel sub-package
 *   Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 1.8.8-3
