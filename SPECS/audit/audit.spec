@@ -65,10 +65,10 @@ make install DESTDIR=%{buildroot}
 
 %post
 /sbin/ldconfig
-%systemd_post auditd.service
+/bin/systemctl enable  auditd.service
 
 %preun
-%systemd_preun auditd.service
+/bin/systemctl disable auditd.service
 
 %postun
 /sbin/ldconfig
