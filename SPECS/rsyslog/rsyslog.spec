@@ -27,6 +27,7 @@ RSYSLOG is the rocket-fast system for log processing.
 It offers high-performance, great security features and a modular design. While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging, being able to accept inputs from a wide variety of sources, transform them, and output to the results to diverse destinations.
 %prep
 %setup -q
+sed -i 's/Requires=syslog.socket/;Requires=syslog.socket/' rsyslog.service.in
 %build
 ./configure \
 	--prefix=%{_prefix} \
