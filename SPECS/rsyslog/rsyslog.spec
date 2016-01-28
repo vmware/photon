@@ -39,8 +39,14 @@ mv %{buildroot}/lib/systemd/system/rsyslog.service  %{buildroot}%{_libdir}/syste
 find %{buildroot} -name '*.la' -delete
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post
+/sbin/ldconfig
+/bin/systemctl enable  rsyslog.service
+
+%postun
+/sbin/ldconfig
+/bin/systemctl disable rsyslog.service
+
 %files
 %defattr(-,root,root)
 %{_sbindir}/*
