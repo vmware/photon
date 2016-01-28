@@ -19,7 +19,7 @@ BuildRequires: newt-devel
 BuildRequires: gettext 
 BuildRequires: popt-devel 
 BuildRequires: libselinux-devel
-Conflicts: initscripts
+Conflicts: initscripts <= 5.30-1
 
 %description
 Chkconfig is a basic system utility.  It updates and queries runlevel
