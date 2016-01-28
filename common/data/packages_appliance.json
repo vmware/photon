@@ -42,6 +42,8 @@
         "vim",
         "db",
         "tdnf",
+        "rsyslog",
+        "audit",
         "open-vm-tools",
         "bridge-utils",
         "krb5",
