@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
-Version:	7.5
-Release:	13%{?dist}
+Version:	1.0
+Release:	1%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -409,29 +409,6 @@ EOF
 #		chapter 9.1. The End
 #
 
-echo "VMware Photon Linux %{photon_release_version}" > %{buildroot}/etc/photon-release
-echo "PHOTON_BUILD_NUMBER=%{photon_build_number}" >> %{buildroot}/etc/photon-release
-
-cat > %{buildroot}/etc/lsb-release <<- "EOF"
-DISTRIB_ID="VMware Photon"
-DISTRIB_RELEASE="%{photon_release_version}"
-DISTRIB_CODENAME=Photon
-DISTRIB_DESCRIPTION="VMware Photon %{photon_release_version}"
-EOF
-
-cat > %{buildroot}/usr/lib/os-release <<- "EOF"
-NAME="VMware Photon"
-VERSION="%{photon_release_version}"
-ID=photon
-VERSION_ID=%{photon_release_version} | cut -d- -f1
-PRETTY_NAME="VMware Photon/Linux"
-ANSI_COLOR="1;34"
-HOME_URL="https://vmware.github.io/photon/"
-BUG_REPORT_URL="https://github.com/vmware/photon/issues"
-EOF
-
-ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
-
 
 %files
 %defattr(-,root,root)
@@ -460,10 +437,6 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 %config(noreplace) /etc/group
 %config(noreplace) /etc/hosts
 %config(noreplace) /etc/inputrc
-%config(noreplace) /etc/photon-release
-%config(noreplace) /etc/lsb-release
-%config(noreplace) /usr/lib/os-release
-%config(noreplace) /etc/os-release
 %config(noreplace) /etc/mtab
 %config(noreplace) /etc/passwd
 %config(noreplace) /etc/profile
@@ -559,6 +532,8 @@ ln -sv ../usr/lib/os-release %{buildroot}/etc/os-release
 /usr/local/lib64
 %endif
 %changelog
+*   Mon Jan 18 2016 Anish Swaminathan <anishs@vmware.com> 1.0-1
+-   Reset version to match with Photon version
 *   Wed Jan 13 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 7.5-13
 -   Support to set proxy configuration file - SLES proxy configuration implementation.
 *   Thu Jan 7 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 7.5-12
