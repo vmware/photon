@@ -35,7 +35,8 @@ sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 ./configure \
 	--disable-nologin \
 	--disable-silent-rules \
-	--disable-static
+	--disable-static \
+	--without-python
 make %{?_smp_mflags}
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
