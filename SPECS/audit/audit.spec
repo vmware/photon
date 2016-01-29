@@ -61,6 +61,9 @@ The libraries and header files needed for audit development.
 make %{?_smp_mflags}
 
 %install
+mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
+mkdir -p %{buildroot}/%{_var}/log/audit
+mkdir -p %{buildroot}/%{_var}/spool/audit
 make install DESTDIR=%{buildroot}
 
 %post
@@ -89,6 +92,10 @@ make install DESTDIR=%{buildroot}
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %{_sysconfdir}/*
+%{_var}/log/audit
+%{_var}/spool/audit
+%{_sysconfdir}/audispd/plugins.d
+%{_sysconfdir}/audit/rules.d
 
 %files devel
 %defattr(-,root,root)
