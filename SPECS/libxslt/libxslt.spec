@@ -29,7 +29,8 @@ Header files for doing development with libxslt.
 	--prefix=%{_prefix} \
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
-	--disable-static
+	--disable-static \
+	--without-python
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
