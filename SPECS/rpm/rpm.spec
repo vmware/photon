@@ -57,7 +57,7 @@ mv db-5.3.28 db
 %build
 ./autogen.sh --noconfigure
 ./configure \
-	CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss' \
+	CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
         --prefix=%{_prefix} \
         --exec-prefix=%{_prefix} \
