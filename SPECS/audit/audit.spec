@@ -1,7 +1,7 @@
 Summary:	Kernel Audit Tool
 Name:		audit
 Version:	2.4.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1 audit=ad38f3352e21716e86d73b4e06cc41a5e85882ee
 License:	GPLv2+
@@ -61,6 +61,9 @@ The libraries and header files needed for audit development.
 make %{?_smp_mflags}
 
 %install
+mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
+mkdir -p %{buildroot}/%{_var}/log/audit
+mkdir -p %{buildroot}/%{_var}/spool/audit
 make install DESTDIR=%{buildroot}
 
 %post
@@ -88,7 +91,10 @@ make install DESTDIR=%{buildroot}
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%{_sysconfdir}/*
+%{_var}/log/audit
+%{_var}/spool/audit
+%{_sysconfdir}/audispd/plugins.d
+%{_sysconfdir}/audit/rules.d
 %attr(750,root,root) %dir %{_sysconfdir}/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
 %attr(750,root,root) %dir %{_sysconfdir}/audisp
@@ -112,6 +118,8 @@ make install DESTDIR=%{buildroot}
 %{_includedir}/*.h
 
 %changelog
+* Fri Jan 29 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-4
+- Add directories for auditd service.
 * Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-3
 - Change config file attributes.
 * Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 2.4.4-2
