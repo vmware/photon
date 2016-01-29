@@ -28,7 +28,7 @@ class constants(object):
     listCoreToolChainRPMPackages=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
         "binutils","binutils-devel",  "gmp","gmp-devel", "mpfr", "mpfr-devel", "mpc",
         "libgcc","libgcc-devel","libstdc++","libstdc++-devel","libgomp","libgomp-devel","gcc",
-        "pkg-config","bash"]
+        "pkg-config", "ncurses", "bash"]
     
     listToolChainRPMPkgsToInstall=["linux-api-headers", "glibc","glibc-devel",  "zlib","zlib-devel",  "file",
         "binutils","binutils-devel",  "gmp","gmp-devel", "mpfr", "mpfr-devel", "mpc",
