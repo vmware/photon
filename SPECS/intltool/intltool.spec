@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	Intltool-0.50.2 
 Name:		intltool
 Version:	0.50.2

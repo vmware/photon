@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	Set of scripts and tools to get compatbility with other distributions.
 Name:		distrib-compat
 Version:	0.1

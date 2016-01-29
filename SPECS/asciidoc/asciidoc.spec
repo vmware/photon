@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:    AsciiDoc is a human readable text document format
 Name:       asciidoc
 Version:    8.6.9

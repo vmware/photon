@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	The Sysstat package contains utilities to monitor system performance and usage activity
 Name:		sysstat 
 Version:	11.2.0

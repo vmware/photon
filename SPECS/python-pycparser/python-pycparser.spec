@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:        Python C parser
 Name:           python-pycparser
 Version:        2.14

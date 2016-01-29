@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:		pcstat 
 Version:	1

@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    18

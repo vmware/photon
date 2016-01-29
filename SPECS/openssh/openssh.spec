@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	'Free version of the SSH connectivity tools
 Name:		openssh
 Version:	7.1p2
