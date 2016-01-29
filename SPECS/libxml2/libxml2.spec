@@ -1,6 +1,6 @@
-Summary:	Libxml2-2.9.3
+Summary:	Libxml2-2.9.2
 Name:		libxml2
-Version:	2.9.3
+Version:	2.9.2
 Release:	1%{?dist}
 License:	MIT
 URL:		http://xmlsoft.org/
@@ -8,7 +8,7 @@ Group:		System Environment/General Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
-%define sha1 libxml2=0301ce933637e0ceda049047dbefd18714f59b6e
+%define sha1 libxml2=f46a37ea6d869f702e03f393c376760f3cbee673
 Requires:	python2
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
@@ -37,6 +37,11 @@ Static libraries and header files for the support library for libxml
 
 %prep
 %setup -q
+sed \
+  -e /xmlInitializeCatalog/d \
+  -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
+          ((ent->children == NULL) \&\& (ctxt->options \& XML_PARSE_NOENT))) \&\&/' \
+  -i parser.c
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -79,6 +84,10 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Thu Jan 28 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.2-1
+-   Downgrade to version 2.9.2
+-   libxml 2.9.3 has been found to have major functional issues. 
+-   Until these are resolved, please roadmap updating to 2.9.2.
 *   Wed Dec 2 2015 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-1
 -   Update to version 2.9.3
 *   Thu Jul 2 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.9.1-3
