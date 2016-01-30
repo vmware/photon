@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.141
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -22,8 +22,9 @@ BuildRequires:	systemd
 BuildRequires:	thin-provisioning-tools
 Requires:	device-mapper-libs = %{version}-%{release}
 Requires:	device-mapper-event-libs = %{version}-%{release}
+Requires:       device-mapper-event = %{version}-%{release}
 Requires:	device-mapper = %{version}-%{release}
-Requires:   systemd
+Requires:       systemd
 
 %description
 LVM2 includes all of the support for handling read/write operations on
@@ -118,6 +119,12 @@ Requires:	device-mapper-event-libs = %{version}-%{release}
 %description -n device-mapper-event
 This package contains the dmeventd daemon for monitoring the state
 of device-mapper devices.
+
+%post -n device-mapper-event
+systemctl enable dm-event.service
+
+%preun -n device-mapper-event
+systemctl disable dm-event.service
 
 %package -n	device-mapper-event-libs
 Summary:	Device-mapper event daemon shared library
@@ -403,6 +410,8 @@ systemctl enable lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
+* Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2 
+- Adding device mapper event to Requires
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
 -   Change config file attributes.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
