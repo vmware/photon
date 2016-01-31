@@ -112,9 +112,17 @@ class PackageUtils(object):
             sourcePath = cmdUtils.findFile(source,constants.sourcePath)
             if sourcePath is None or len(sourcePath) == 0:
                 sourcePath = cmdUtils.findFile(source,constants.specPath)
-            if sourcePath is None or len(sourcePath) == 0:
-                self.logger.error("Missing source: "+source+". Cannot find sources for package: "+package)
-                raise Exception("Missing source")
+                if sourcePath is None or len(sourcePath) == 0:
+                    if sha1 is None:
+                        self.logger.error("No sha1 found or missing source for "+source)
+                        raise Exception("No sha1 found or missing source")
+                    else:
+                        self.logger.error("Missing source: "+source+". Cannot find sources for package: "+package)
+                        raise Exception("Missing source")
+            else:
+                if sha1 is None:
+                    self.logger.error("No sha1 found for "+source)
+                    raise Exception("No sha1 found")
             if len(sourcePath) > 1:
                 self.logger.error("Multiple sources found for source:"+source+"\n"+ ",".join(sourcePath) +"\nUnable to determine one.")
                 raise Exception("Multiple sources found")
