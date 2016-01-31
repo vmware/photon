@@ -8,7 +8,7 @@ Group:		System Environment/Services
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
-%define sha1 irqbalance=bffafb547dd24a15645dbd1968c440218de6425d
+%define sha1 v1=bffafb547dd24a15645dbd1968c440218de6425d
 BuildRequires:  systemd
 Requires:  systemd
 %description
