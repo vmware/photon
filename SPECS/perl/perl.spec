@@ -9,7 +9,7 @@
 Summary:	Practical Extraction and Report Language
 Name:		perl
 Version:	5.22.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv1+
 URL:		http://www.perl.org/
 Group:		Development/Languages
@@ -45,6 +45,7 @@ sh Configure -des \
 	-Dman3dir=%{_mandir}/man3 \
 	-Dpager=%{_bindir}"/less -isR" \
 	-Duseshrplib \
+	-Dusethreads \
         -DPERL_RANDOM_DEVICE="/dev/erandom"
 
 make VERBOSE=1 %{?_smp_mflags}
@@ -61,6 +62,8 @@ unset BUILD_ZLIB BUILD_BZIP2
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Thu Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
+-	Enable threads
 *	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-1
 -	Update version
 *	Thu Jun 4 2015 Touseef Liaqat <tliaqat@vmware.com> 5.18.2-2
