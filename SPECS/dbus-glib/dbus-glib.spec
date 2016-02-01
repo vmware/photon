@@ -1,7 +1,7 @@
 Summary:	Glib interfaces to D-Bus API 
 Name:		dbus-glib
 Version:	0.104
-Release:	2%{?dist}
+Release:	3%{?dist}
 License: 	AFL and GPLv2+
 Group: 		System Environment/Libraries
 Source0:	http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
@@ -20,6 +20,7 @@ The D-Bus GLib package contains GLib interfaces to the D-Bus API.
 %package devel
 Summary:	Libraries and headers for the D-Bus GLib bindings
 Requires:	glib-devel
+Requires:	dbus-devel
 Requires:	%{name} = %{version}
 
 %description devel
@@ -58,6 +59,8 @@ make DESTDIR=%{buildroot} install
 
 
 %changelog
+*   	Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 0.104-3
+-   	Add requires to dbus-glib-devel
 * 	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.104-2
 -	Updated build requires after creating devel package for dbus
 *	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.104-1

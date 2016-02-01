@@ -1,20 +1,21 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.0.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            http://go.microsoft.com/fwlink/?LinkId=250998
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
 %define sha1 WALinuxAgent=90448cc3f48f21a23a0932d1cf05e75d5a5bf158
+Vendor:		VMware, Inc.
+Distribution:	Photon
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
-Requires:       python-setuptools
 Requires:       python-pyasn1
 Requires:       openssh
 Requires:       openssl
@@ -26,7 +27,6 @@ Requires:       iptables
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
-Vendor:         Microsoft Corporation
 
 %description
 The Windows Azure Linux Agent supports the provisioning and running of Linux
@@ -79,6 +79,8 @@ fi
 
 
 %changelog
+* Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.14-3
+- Removed redundant requires 
 * Thu Aug 6 2015 Anish Swaminathan <anishs@vmware.com>
 - Added sha1sum
 * Fri Mar 13 2015 - mbassiouny@vmware.com
