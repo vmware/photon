@@ -1,14 +1,14 @@
 Summary:	A high-level scripting language
 Name:		python2
-Version:	2.7.9
-Release:	5%{?dist}
+Version:	2.7.11
+Release:	1%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://www.python.org/ftp/python/2.7.9/Python-%{version}.tar.xz
-%define sha1 Python=3172f6e957713c2d9fca462cc16068222fd1b9d3
+Source0:	http://www.python.org/ftp/python/2.7.11/Python-%{version}.tar.xz
+%define sha1 Python=c3b8bbe3f084c4d4ea13ffb03d75a5e22f9756ff
 Patch: cgi.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel
@@ -212,6 +212,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   	Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.7.11-1
+-   	Upgrade version
+
 *	Fri Jan 22 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.9-5
 -	Seperate python-curses package from python-libs package
 

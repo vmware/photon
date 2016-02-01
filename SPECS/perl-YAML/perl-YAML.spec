@@ -2,7 +2,7 @@
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
 Version:        1.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
@@ -31,12 +31,11 @@ specification.
 %setup -q -n YAML-%{version}
 
 %build
-perl Makefile.PL INSTALLDIRS=vendor 
+perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
 make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
-rm %{buildroot}%{perl_vendorlib}/x86_64-linux/auto/YAML/.packlist
 find %{buildroot} -name 'perllocal.pod' -delete
 
 %check
@@ -82,6 +81,8 @@ make test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
+*	Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 1.14-2
+-	Fix for multithreaded perl
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1
 -	Initial version.
 
