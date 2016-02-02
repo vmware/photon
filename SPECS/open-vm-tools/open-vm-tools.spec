@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -20,6 +20,7 @@ Patch5:         skipreboot.patch
 Patch6:         GOSC-counterBug.patch
 Patch7:         LighwaveHostPatch.patch
 Patch8:         GOSC-ssh-support.patch
+Patch9:         GOSC-vcenter-photon.patch
 BuildRequires: 	glib-devel
 BuildRequires: 	xerces-c-devel
 BuildRequires: 	xml-security-c-devel
@@ -52,6 +53,7 @@ VmWare virtualization user mode tools
 %patch6 -p0
 %patch7 -p0
 %patch8 -p0
+%patch9 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -123,6 +125,8 @@ fi
 
 
 %changelog
+*       Mon Feb 01 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-2
+-       Making interface file name according to convention.
 *	Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-1
 -	Upgrade version.
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 10.0.0-13
