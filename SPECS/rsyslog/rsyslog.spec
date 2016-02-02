@@ -30,7 +30,9 @@ It offers high-performance, great security features and a modular design. While 
 %build
 ./configure \
 	--prefix=%{_prefix} \
-        --enable-relp
+    --enable-relp \
+    --enable-imptcp
+    
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
