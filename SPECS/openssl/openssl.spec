@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2e
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -63,6 +63,7 @@ make
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
 ln -sf %{_libdir}/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
+ln -sf %{_libdir}/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -104,6 +105,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2e-3
+-   Add symlink for libcrypto
 *   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.2e-2
 -   Move c_rehash to a seperate subpackage.
 *   Fri Dec 04 2015 Xiaolin Li <xiaolinl@vmware.com> 1.0.2e-1
