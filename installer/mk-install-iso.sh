@@ -141,6 +141,14 @@ done
 #creating rpm repo in cd..
 createrepo --database ${WORKINGDIR}/RPMS
 
+repodatadir=${WORKINGDIR}/RPMS/repodata
+if [ -d $repodatadir ]; then
+    pushd $repodatadir
+    metaDataFile=`find -type f -name "*primary.xml.gz"`
+    ln -sfv $metaDataFile primary.xml.gz
+    popd
+fi
+
 rm -rf ${BUILDROOT}/LOGS
 
 if [ "$LIVE_CD" = false ] ; then
