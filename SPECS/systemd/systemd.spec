@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
+Source1:        99-vmware-hotplug.rules
 #patch for ostree
 Patch0:         systemd-228-mount.patch
 Patch1:         01-enoX-uses-instance-number-for-vmware-hv.patch
@@ -93,6 +94,8 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 #cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
 find %{buildroot}%{_libdir} -name '*.la' -delete
+install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
+
 %post
 /sbin/ldconfig
 %postun	
@@ -114,6 +117,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  228-6
+-       Add hotplug udev rules.
 *       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  228-5
 -       Change config file attributes.
 *       Wed Jan 06 2016 Anish Swaminathan <anishs@vmware.com> 228-4
