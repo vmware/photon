@@ -77,14 +77,15 @@ class Installer(object):
             self.window.addstr(0, 0, 'Opps, Installer got interrupted.\n\nPress any key to get to the bash...')
             self.window.content_window().getch()
 
-        modules.commons.dump(modules.commons.LOG_ERROR, modules.commons.LOG_FILE_NAME)        
+        modules.commons.dump(modules.commons.LOG_FILE_NAME)        
         sys.exit(1)
 
     def install(self, params):
         try:
             return self.unsafe_install(params)
-        except:
+        except Exception as inst:
             if self.iso_installer:
+                modules.commons.log(modules.commons.LOG_ERROR, repr(inst))
                 self.exit_gracefully(None, None)
             else:
                 raise
@@ -375,7 +376,7 @@ class Installer(object):
                 item = name_size_pairs[index + 1] 
                 size = item[item.find("(") + 1:item.find(")")]
                 return int(size)
-
+        raise LookupError("Cannot find package {} in the repo.".format(package))
     def get_size_of_packages(self):
         #call tdnf info to get the install size of all the packages.
         process = subprocess.Popen(['tdnf', 'info', '--installroot', self.photon_root], stdout=subprocess.PIPE)
