@@ -16,6 +16,8 @@ BuildRequires:	libgcrypt-devel
 BuildRequires:	liblogging-devel
 BuildRequires:	librelp-devel
 BuildRequires:  autogen
+BuildRequires:  gnutls-devel
+Requires:   gnutls
 Requires:	systemd
 Requires:	libestr
 Requires:	json-c
@@ -31,8 +33,12 @@ It offers high-performance, great security features and a modular design. While 
 ./configure \
 	--prefix=%{_prefix} \
     --enable-relp \
-    --enable-imptcp
-    
+    --enable-gnutls\
+	--enable-imfile \
+	--enable-imjournal \
+	--enable-impstats \
+	--enable-imptcp
+
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
