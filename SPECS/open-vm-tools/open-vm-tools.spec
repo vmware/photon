@@ -1,7 +1,7 @@
 Summary:	Usermode tools for VmWare virts
 Name:		open-vm-tools
 Version:	10.0.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		https://github.com/vmware/open-vm-tools
 Group:		Applications/System
@@ -11,6 +11,8 @@ Source0:    https://github.com/vmware/open-vm-tools/archive/%{name}-%{version}.t
 %define sha1 open-vm-tools=9d29a17cce539b032317d0a8c55977666daa137e
 Source1:        gosc-scripts.tar.gz
 %define sha1 gosc-scripts=a87bb5b95f78923ac6053513b3364a119795a5d0
+Source2:        vmtoolsd.service
+Source3:        vgauthd.service
 Patch0:		open-vm-tools-service-link.patch
 Patch1:         open-vm-tools-GOSC-photon.patch
 Patch2:         GOSC-VCA.patch
@@ -65,23 +67,8 @@ make %{?_smp_mflags}
 install -vdm 755 %{buildroot}/lib/systemd/system
 install -vdm 755 %{buildroot}/usr/share/open-vm-tools/GOSC/
 cp -r gosc-scripts %{buildroot}/usr/share/open-vm-tools/GOSC
-
-#stuff to enable vmtoolsd service
-cat >> %{buildroot}/lib/systemd/system/vmtoolsd.service <<-EOF
-[Unit]
-Description=Service for virtual machines hosted on VMware
-Documentation=http://open-vm-tools.sourceforge.net/about.php
-ConditionVirtualization=vmware
-After=cloud-final.service
-
-[Service]
-ExecStart=/usr/bin/vmtoolsd
-TimeoutStopSec=5
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
+install -p -m 644 %{SOURCE2} %{buildroot}/lib/systemd/system
+install -p -m 644 %{SOURCE3} %{buildroot}/lib/systemd/system
 
 make DESTDIR=%{buildroot} install
 rm -f %{buildroot}/sbin/mount.vmhgfs
@@ -94,10 +81,12 @@ mv %{buildroot}%{_sysconfdir}/vmware-tools/vm-support %{buildroot}%{_bindir}
 
 %post
 /sbin/ldconfig
-/bin/systemctl enable vmtoolsd
+%systemd_post vgauthd.service
+%systemd_post vmtoolsd.service
 
 %preun
-/bin/systemctl disable vmtoolsd
+%systemd_preun vmtoolsd.service
+%systemd_preun vgauthd.service
 # Tell VMware that open-vm-tools is being uninstalled
 if [ "$1" = "0" -a                      \
      -e %{_bindir}/vmware-checkvm -a    \
@@ -108,6 +97,8 @@ fi
 
 %postun 
 /sbin/ldconfig
+%systemd_postun_with_restart vmtoolsd.service
+%systemd_postun_with_restart vgauthd.service
 
 %files 
 %defattr(-,root,root)
@@ -125,6 +116,8 @@ fi
 
 
 %changelog
+*	Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-3
+-	Add vgauthd service.
 *       Tue Feb 02 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-2
 -       Making interface file name according to convention.
 *	Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-1
