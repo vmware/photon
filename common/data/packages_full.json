@@ -28,7 +28,7 @@
                 "libtirpc", "libtirpc-devel", "lsof", "nfs-utils", "cve-check-tool", "flannel", "rpm-build", "dkms", "openssl-perl", "openssl-c_rehash", "xinetd", "tftp", "tftp-server",
                 "audit","audit-devel","libcap-ng","libcap-ng-devel","tcp_wrappers","tcp_wrappers-devel", "apr-util-devel", "apr-util-ldap", 
                 "apr-util-pgsql", "apr-util-sqlite","openjre", "sshpass", "openjdk-src", "openjdk-sample", "openjdk-doc", "e2fsprogs-devel", "haproxy","libcap-devel",
-		"cython","python-lxml","python-pycparser","python-cffi","python-cryptography","cifs-utils","cifs-utils-devel","python-curses"]
+		"cython","python-lxml","python-pycparser","python-cffi","python-cryptography","cifs-utils","cifs-utils-devel","python-curses","c-ares","c-ares-devel"]
 }
 
 
