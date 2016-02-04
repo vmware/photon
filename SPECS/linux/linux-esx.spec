@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       13%{?dist}
+Release:       14%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -11,12 +11,14 @@ Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:       config-esx-%{version}
-patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
-patch2:        01-clear-linux.patch
-patch3:        02-pci-probe.patch
-patch4:        03-poweroff.patch
-patch5:        04-quiet-boot.patch
-patch6:        05-pv-ops.patch
+Patch0:        RDS-race-condition-on-unbound-socket-null-deref.patch
+Patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
+Patch2:        01-clear-linux.patch
+Patch3:        02-pci-probe.patch
+Patch4:        03-poweroff.patch
+Patch5:        04-quiet-boot.patch
+Patch6:        05-pv-ops.patch
+Patch7:        ovl-fix-permission-checking-for-setattr.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -51,12 +53,14 @@ The Linux package contains the Linux kernel doc files
 
 %prep
 %setup -q -n linux-4.2
+%patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 make mrproper
@@ -122,6 +126,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  4.2.0-14
+-   Fixes for CVE-2015-7990/6937 and CVE-2015-8660.
 *   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-13
 -   Fix for CVE-2016-0728
 *   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-12

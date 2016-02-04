@@ -1,29 +1,31 @@
 %global security_hardening none
 Summary:        Kernel
-Name:        linux
-Version:    4.2.0
-Release:    11%{?dist}
-License:    GPLv2
-URL:        http://www.kernel.org/
-Group:        System Environment/Kernel
-Vendor:        VMware, Inc.
-Distribution: Photon
-Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
+Name:           linux
+Version:    	4.2.0
+Release:    	12%{?dist}
+License:    	GPLv2
+URL:        	http://www.kernel.org/
+Group:        	System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution: 	Photon
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:	config-%{version}
-patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
-BuildRequires:    bc
-BuildRequires:    kbd
-BuildRequires:    kmod
-BuildRequires:     glib-devel
-BuildRequires:     xerces-c-devel
-BuildRequires:     xml-security-c-devel
-BuildRequires:     libdnet
-BuildRequires:     libmspack
-BuildRequires:    Linux-PAM
-BuildRequires:    openssl-devel
-BuildRequires:    procps-ng-devel
-Requires:         filesystem kmod coreutils
+Patch0:         KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
+Patch1:         RDS-race-condition-on-unbound-socket-null-deref.patch
+Patch2:         ovl-fix-permission-checking-for-setattr.patch
+BuildRequires:  bc
+BuildRequires:  kbd
+BuildRequires:  kmod
+BuildRequires:  glib-devel
+BuildRequires:  xerces-c-devel
+BuildRequires:  xml-security-c-devel
+BuildRequires:  libdnet
+BuildRequires:  libmspack
+BuildRequires:  Linux-PAM
+BuildRequires:  openssl-devel
+BuildRequires:  procps-ng-devel
+Requires:       filesystem kmod coreutils
 
 %description
 The Linux package contains the Linux kernel. 
@@ -67,7 +69,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 %prep
 %setup -q -n linux-4.2
+%patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 make mrproper
@@ -155,6 +159,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  4.2.0-12
+-   Fixes for CVE-2015-7990/6937 and CVE-2015-8660.
 *   Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 4.2.0-11
 -   Revert CONFIG_HZ=250
 *   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
