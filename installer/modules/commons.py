@@ -135,3 +135,9 @@ def dump(type, filename):
     process = subprocess.Popen([command], shell=True)
     retval = process.wait()
     return retval
+
+def dump(filename):
+    command = "journalctl | grep --line-buffered \"{0}\" > {1}".format(SIGNATURE, filename)
+    process = subprocess.Popen([command], shell=True)
+    retval = process.wait()    
+    return retval
