@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.6
-Release:	7%{?dist}
+Release:	8%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -67,8 +67,8 @@ WantedBy=multi-user.target
 EOF
 
 %pre
-getent group hadoop 2>/dev/null >/dev/null || /usr/sbin/groupadd -r hadoop
-/usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
+getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
+getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
 
 %post
 source %{_sysconfdir}/profile.d/java-exports.sh
@@ -110,17 +110,19 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 %{_prefix}
 
 %changelog
+*   Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com>  3.4.6-8
+-   Edit pre install script.
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.4.6-7
 -   Remove init.d file.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  3.4.6-6
 -   Add systemd to Requires and BuildRequires.
-* Wed Nov 18 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.6-5
-- Add zookeeper to systemd service.
-* Tue Nov 10 2015 Mahmoud Bassiouny<mbassiouny@vmware.com> 3.4.6-4
-- Fix conflicts between zookeeper and chkconfig
-* Wed Sep 16 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.6-3
-- Udating the dependency after repackaging the openjdk, fixed post scripts
-* Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
-- Adding ldconfig in post section.
-* Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
-- Initial build. First version	Initial build. First version
+*   Wed Nov 18 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.6-5
+-   Add zookeeper to systemd service.
+*   Tue Nov 10 2015 Mahmoud Bassiouny<mbassiouny@vmware.com> 3.4.6-4
+-   Fix conflicts between zookeeper and chkconfig
+*   Wed Sep 16 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.6-3
+-   Udating the dependency after repackaging the openjdk, fixed post scripts
+*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
+-   Adding ldconfig in post section.
+*   Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
+-   Initial build. First version	Initial build. First version
