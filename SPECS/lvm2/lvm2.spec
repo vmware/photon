@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.141
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -115,16 +115,20 @@ Summary:	Device-mapper event daemon
 Group:		System Environment/Base
 Requires:	device-mapper = %{version}-%{release}
 Requires:	device-mapper-event-libs = %{version}-%{release}
+Requires:       systemd
 
 %description -n device-mapper-event
 This package contains the dmeventd daemon for monitoring the state
 of device-mapper devices.
 
 %post -n device-mapper-event
+%systemd_post dm-event.socket
 systemctl enable dm-event.service
+systemctl enable dm-event.socket
+systemctl start dm-event.socket
 
 %preun -n device-mapper-event
-systemctl disable dm-event.service
+%systemd_preun dm-event.service dm-event.socket
 
 %package -n	device-mapper-event-libs
 Summary:	Device-mapper event daemon shared library
@@ -259,8 +263,8 @@ systemctl enable lvm2-activate.service
 %defattr(-,root,root,-)
 %attr(555, -, -) %{_sbindir}/dmeventd
 %{_mandir}/man8/dmeventd.8.gz
-/lib/systemd/system/dm-event.service
-/lib/systemd/system/dm-event.socket
+%{_unitdir}/dm-event.socket
+%{_unitdir}/dm-event.service
 
 %files -n device-mapper-event-libs
 %defattr(555,root,root,-)
@@ -410,14 +414,16 @@ systemctl enable lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
-* Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2 
-- Adding device mapper event to Requires
+*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3 
+-   Fix post scripts for lvm
+*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2 
+-   Adding device mapper event to Requires
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
 -   Change config file attributes.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
 -   Add systemd to Requires and BuildRequires
-* Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
-- Packaging systemd service and configuration files
-* Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
-- Initial version
+*   Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
+-   Packaging systemd service and configuration files
+*   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
+-   Initial version
 

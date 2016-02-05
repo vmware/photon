@@ -1,7 +1,7 @@
 Summary:	Certificate Authority certificates 
 Name:		ca-certificates
 Version:	20160109
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Custom
 URL:		http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
 Group:		System Environment/Security
@@ -220,7 +220,7 @@ install -Dm644 bin/remove-expired-certs.sh %{buildroot}/bin/remove-expired-certs
 %{_fixperms} %{buildroot}/*
 %post 
 cd /etc/ssl/certs;
-for file in *.pem; do ln -s $file `openssl x509 -hash -noout -in $file`.0; done
+for file in *.pem; do ln -sf $file `openssl x509 -hash -noout -in $file`.0; done
 exit 0
 %clean
 %files
@@ -231,6 +231,8 @@ exit 0
 /bin/remove-expired-certs.sh
 /bin/make-cert.pl
 %changelog
+*	Mon Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3
+-	Force create links for certificates
 *	Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 20160109-2
 -	Remove c_rehash dependency
 *       Wed Jan 13 2016 Divya Thaluru <dthaluru@vmware.com> 20160109-1
