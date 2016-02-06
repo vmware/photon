@@ -1,7 +1,7 @@
 Summary:	'Free version of the SSH connectivity tools
 Name:		openssh
 Version:	6.6p1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -18,9 +18,9 @@ BuildRequires:  krb5
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
 Requires:       systemd
-Requires:		openssl
-Requires:		Linux-PAM
-Requires: 		shadow
+Requires:	openssl
+Requires:	Linux-PAM
+Requires: 	shadow
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
 useful for encrypting authentication and subsequent traffic over a 
@@ -91,29 +91,22 @@ EOF
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
+%pre
+getent group sshd >/dev/null || groupadd -g 50 sshd
+getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd -s /bin/false -u 50 sshd
 %preun
 /bin/systemctl disable sshd-keygen.service
 /bin/systemctl disable sshd.service
 %post
 /sbin/ldconfig
 chown -v root:sys /var/lib/sshd
-if ! getent group sshd >/dev/null; then
-	groupadd -g 50 sshd
-fi
-if ! getent passwd sshd >/dev/null; then
-	useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd -s /bin/false -u 50 sshd
-fi
 /bin/systemctl enable sshd-keygen.service
 /bin/systemctl enable sshd.service
 
 %postun
 /sbin/ldconfig
-if getent passwd sshd >/dev/null; then
-	userdel sshd
-fi
-if getent group sshd >/dev/null; then
-	groupdel sshd
-fi
+%systemd_postun_with_restart sshd.service sshd-keygen.service
+
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -134,11 +127,13 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
-*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  6.6p1-5
--   Change config file attributes.
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com> 6.6p1-4
--   Add systemd to Requires and BuildRequires.
--   Use systemctl to enable/disable service.
+*	Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com> 6.6p1-6
+-	Add pre install scripts in the rpm
+*   	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  6.6p1-5
+-   	Change config file attributes.
+*   	Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com> 6.6p1-4
+-   	Add systemd to Requires and BuildRequires.
+-   	Use systemctl to enable/disable service.
 *	Fri Jul 17 2015 Divya Thaluru <dthaluru@vmware.com> 6.6p1-3
 -	Enabling ssh-keygen service by default and fixed service file to execute only once.
 *	Tue May 19 2015 Sharath George <sharathg@vmware.com> 6.6p1-2
