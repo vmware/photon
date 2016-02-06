@@ -1,7 +1,7 @@
 Summary:	RPC program number mapper
 Name:		rpcbind
 Version:	0.2.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		http://nfsv4.bullopensource.org
 Group:	    Applications/Daemons
@@ -51,36 +51,39 @@ install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
+%pre
+rpcid=`getent passwd rpc | cut -d: -f 3`
+if [ -n "$rpcid" -a "$rpcid" != "31" ]; then
+	userdel  rpc 2> /dev/null || :
+	groupdel rpc 2> /dev/null || : 
+fi
+if [ -z "$rpcid" -o "$rpcid" != "31" ]; then
+	groupadd -g 31 rpc > /dev/null 2>&1
+	useradd -d /var/lib/rpcbind -g rpc -s /bin/false -u 31 rpc > /dev/null 2>&1
+fi
 %preun
 %systemd_preun rpcbind.service rpcbind.socket
+if [ $1 -eq 0 ]; then
+	userdel  rpc 2>/dev/null || :
+	groupdel rpc 2>/dev/null || :
+fi
 
 %post
 /sbin/ldconfig
 chown -v root:sys /var/lib/rpcbind
-if ! getent group rpc >/dev/null; then
-	groupadd -g 31 rpc
-fi
-if ! getent passwd rpc >/dev/null; then
-	useradd -d /var/lib/rpcbind -g rpc -s /bin/false -u 31 rpc
-fi
 systemctl enable rpcbind.socket >/dev/null 2>&1
 systemctl enable rpcbind.service >/dev/null 2>&1
-
 
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart rpcbind.service rpcbind.socket
-if getent passwd rpc >/dev/null; then
-	userdel rpc
-fi
-if getent group rpc >/dev/null; then
-	groupdel rpc
-fi
 
 %clean
 rm -rf %{buildroot}/*
 %changelog
-*	Mon Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-3
+*	Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-4
+-	Add pre install scripts in the rpm
+*	Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-3
 -	Edit scripts in the rpm
 *   	Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  0.2.3-2
 -   	Add systemd to Requires and BuildRequires.
