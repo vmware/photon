@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -18,6 +18,7 @@ Patch3:         systemd-228-never-cache-localhost-rr.patch
 Patch4:         systemd-228-parse-error-message.patch
 Patch5:         systemd-228-networking-fixes.patch
 Patch6:         systemd-228-cleanup-recv.patch
+Patch7:         systemd-228-fix-reading-routes.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -53,6 +54,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 ./autogen.sh
@@ -117,6 +119,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Sat Feb 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-7
+-       Added patch: fix-reading-routes.
 *       Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  228-6
 -       Add hotplug udev rules.
 *       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  228-5
