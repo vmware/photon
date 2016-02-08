@@ -1,6 +1,6 @@
 Summary:	Mesos
 Name:		mesos
-Version:	0.24.0
+Version:	0.27.0
 Release:	1%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 mesos=8d9f09ca34478e0f021437d480f8ad5e0d426eba
+%define sha1 mesos=d8c88b6f74bbe4be92637857ea69bffb7bbc191c
 BuildRequires:	openjre >= 1.8.0.45
 BuildRequires:  openjdk >= 1.8.0.45
 BuildRequires:	curl
@@ -32,15 +32,15 @@ Requires:	openjre >= 1.8.0.45
 Requires:	subversion >= 1.8.13
 
 %description
- This package installs mesos services that allow photon to run tasks in mesos
- framework.
+This package installs mesos services that allow photon to run tasks in mesos
+framework.
 
 %package	devel
 Summary:	Header and development files for mesos
 Requires:	%{name} = %{version}
 %description    devel
- mesos-devel package contains header files, pkfconfig files, and libraries
- needed to build applications for mesos.
+mesos-devel package contains header files, pkfconfig files, and libraries
+needed to build applications for mesos.
 
 %prep
 %setup -q
@@ -84,17 +84,26 @@ make DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
-*	Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
--	Upgrade to mesos 0.24.0
-*	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
--	Updated the dependencies after repackaging the openjdk. 
-*	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
--	Move headers, pc, dev libs into devel pkg.
-*	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
--	Update to mesos 0.23.0.
-*	Fri Aug 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.1-3
--	Disable parallel build. Fix Requires.
-*	Thu Jul 16 2015 Alexey Makhalov <amakhalov@vmware.com> 0.22.1-2
--	Untar with --no-same-owner to get it compilable in container.
-*	Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 0.22.1-1
--	Initial build.	First version
+* Mon Feb 08 2016 Kiril Nesenko <knesenko@vmware.com> 0.27.0-1
+- Upgrade to mesos 0.27.0
+
+* Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
+- Upgrade to mesos 0.24.0
+
+* Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
+- Updated the dependencies after repackaging the openjdk.
+
+* Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
+- Move headers, pc, dev libs into devel pkg.
+
+* Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
+- Update to mesos 0.23.0.
+
+* Fri Aug 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.1-3
+- Disable parallel build. Fix Requires.
+
+* Thu Jul 16 2015 Alexey Makhalov <amakhalov@vmware.com> 0.22.1-2
+- Untar with --no-same-owner to get it compilable in container.
+
+* Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 0.22.1-1
+- Initial build.	First version
