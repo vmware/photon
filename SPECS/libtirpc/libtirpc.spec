@@ -1,9 +1,10 @@
 Summary:	Libraries for Transport Independent RPC
 Name:		libtirpc
 Version:	1.0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Source0:	http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
 %define sha1 libtirpc=8da1636f98b5909c0d587e7534bc1e91f5c1a970
+Patch0:         libtirpc-1.0.1-bindrsvport-blacklist.patch
 License:	BSD
 Group:		System Environment/Libraries
 URL:		http://nfsv4.bullopensource.org/
@@ -35,6 +36,7 @@ This package includes header files and libraries necessary for developing progra
 
 %prep
 %setup -q
+%patch0
 
 %build
 ./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
@@ -65,7 +67,9 @@ make install DESTDIR=%{buildroot}
    
 
 %changelog
+* 	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.0.1-2
+- 	Added patch for bindresvport blacklist
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
 - 	Updated to version 1.0.1
-* Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.2-1
-- Initial version
+* 	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.2-1
+- 	Initial version
