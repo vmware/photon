@@ -1,7 +1,7 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -26,10 +26,11 @@ SELinux.
 autoreconf
 ./configure \
 	--prefix=%{_prefix} \
-	--with-pam	\
-	--with-selinux \
-	--enable-anacron \
-	--enable-pie \
+        --sysconfdir=/etc   \
+	--with-pam	    \
+	--with-selinux      \
+	--enable-anacron    \
+	--enable-pie        \
 	--enable-relro
 make %{?_smp_mflags}
 %install
@@ -52,7 +53,6 @@ touch %{buildroot}/var/spool/anacron/cron.weekly
 touch %{buildroot}/var/spool/anacron/cron.monthly
 
 install -vdm755 %{buildroot}/%{_sysconfdir}/pam.d
-mv %{buildroot}/usr/etc/pam.d/* %{buildroot}/%{_sysconfdir}/pam.d/.
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
 
@@ -91,12 +91,14 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-4
--   Add systemd to Requires and BuildRequires.
--   Use systemctl to enable/disable service.
+*   	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-5
+-   	Change default sysconfdir.
+*   	Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-4
+-   	Add systemd to Requires and BuildRequires.
+-   	Use systemctl to enable/disable service.
 *	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-3
 -	Symlink cron.service to crond.service. 
--   And move the /usr/etc/pam.d/crond to /etc/pam.d/crond
+-   	And move the /usr/etc/pam.d/crond to /etc/pam.d/crond
 *	Thu Nov 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-2
 -	Add crond to systemd service.
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
