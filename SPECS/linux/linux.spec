@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	12%{?dist}
+Release:    	13%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,6 +14,7 @@ Source1:	config-%{version}
 Patch0:         KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
 Patch1:         RDS-race-condition-on-unbound-socket-null-deref.patch
 Patch2:         ovl-fix-permission-checking-for-setattr.patch
+Patch3:         double-tcp_mem-limits.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -72,6 +73,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 make mrproper
@@ -159,6 +161,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Mon Feb 08 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-13
+-   Double tcp_mem limits, patch is added.
 *   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  4.2.0-12
 -   Fixes for CVE-2015-7990/6937 and CVE-2015-8660.
 *   Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 4.2.0-11

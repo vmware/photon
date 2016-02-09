@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       14%{?dist}
+Release:       15%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -13,12 +13,13 @@ Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 Source1:       config-esx-%{version}
 Patch0:        RDS-race-condition-on-unbound-socket-null-deref.patch
 Patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
-Patch2:        01-clear-linux.patch
-Patch3:        02-pci-probe.patch
-Patch4:        03-poweroff.patch
-Patch5:        04-quiet-boot.patch
-Patch6:        05-pv-ops.patch
-Patch7:        ovl-fix-permission-checking-for-setattr.patch
+Patch2:        ovl-fix-permission-checking-for-setattr.patch
+Patch3:        double-tcp_mem-limits.patch
+Patch4:        01-clear-linux.patch
+Patch5:        02-pci-probe.patch
+Patch6:        03-poweroff.patch
+Patch7:        04-quiet-boot.patch
+Patch8:        05-pv-ops.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -61,6 +62,7 @@ The Linux package contains the Linux kernel doc files
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %build
 make mrproper
@@ -126,6 +128,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Mon Feb 08 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-15
+-   Double tcp_mem limits, patch is added.
 *   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  4.2.0-14
 -   Fixes for CVE-2015-7990/6937 and CVE-2015-8660.
 *   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-13
