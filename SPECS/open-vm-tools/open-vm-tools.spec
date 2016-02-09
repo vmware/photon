@@ -1,19 +1,19 @@
-Summary:	Usermode tools for VmWare virts
-Name:		open-vm-tools
-Version:	10.0.5
-Release:	3%{?dist}
-License:	LGPLv2+
-URL:		https://github.com/vmware/open-vm-tools
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:    https://github.com/vmware/open-vm-tools/archive/%{name}-%{version}.tar.gz
+Summary:        Usermode tools for VmWare virts
+Name:           open-vm-tools
+Version:        10.0.5
+Release:        4%{?dist}
+License:        LGPLv2+
+URL:            https://github.com/vmware/open-vm-tools
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-%{version}.tar.gz
 %define sha1 open-vm-tools=9d29a17cce539b032317d0a8c55977666daa137e
 Source1:        gosc-scripts.tar.gz
 %define sha1 gosc-scripts=a87bb5b95f78923ac6053513b3364a119795a5d0
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
-Patch0:		open-vm-tools-service-link.patch
+Patch0:         open-vm-tools-service-link.patch
 Patch1:         open-vm-tools-GOSC-photon.patch
 Patch2:         GOSC-VCA.patch
 Patch3:         GOSC-return-code.patch
@@ -23,23 +23,24 @@ Patch6:         GOSC-counterBug.patch
 Patch7:         LighwaveHostPatch.patch
 Patch8:         GOSC-ssh-support.patch
 Patch9:         GOSC-vcenter-photon.patch
-BuildRequires: 	glib-devel
-BuildRequires: 	xerces-c-devel
-BuildRequires: 	xml-security-c-devel
-BuildRequires: 	libdnet
-BuildRequires: 	libmspack
-BuildRequires:	Linux-PAM
-BuildRequires:	openssl-devel
-BuildRequires:	procps-ng-devel
-BuildRequires:	fuse-devel
+Patch10:        GOSC-preserve-network-onboot.patch
+BuildRequires:  glib-devel
+BuildRequires:  xerces-c-devel
+BuildRequires:  xml-security-c-devel
+BuildRequires:  libdnet
+BuildRequires:  libmspack
+BuildRequires:  Linux-PAM
+BuildRequires:  openssl-devel
+BuildRequires:  procps-ng-devel
+BuildRequires:  fuse-devel
 BuildRequires:  systemd
-Requires:	fuse
-Requires:	xerces-c
-Requires:	libdnet
-Requires:	libmspack
-Requires:	glib
-Requires:	xml-security-c
-Requires:	openssl
+Requires:       fuse
+Requires:       xerces-c
+Requires:       libdnet
+Requires:       libmspack
+Requires:       glib
+Requires:       xml-security-c
+Requires:       openssl
 Requires:       systemd
 %description
 VmWare virtualization user mode tools
@@ -56,6 +57,7 @@ VmWare virtualization user mode tools
 %patch7 -p0
 %patch8 -p0
 %patch9 -p0
+%patch10 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -116,14 +118,16 @@ fi
 
 
 %changelog
-*	Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-3
--	Add vgauthd service.
+*       Tue Feb 09 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 10.0.5-4
+-       Preserve network onboot config.
+*       Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-3
+-       Add vgauthd service.
 *       Tue Feb 02 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-2
 -       Making interface file name according to convention.
-*	Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-1
--	Upgrade version.
-*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 10.0.0-13
--	Edit post script.
+*       Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-1
+-       Upgrade version.
+*       Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 10.0.0-13
+-       Edit post script.
 *       Fri Nov 27 2015 Sharath George <sharathg@vmware.com> 10.0.0-12
 -       Correcting path of pam file.
 *       Tue Sep 15 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-11
@@ -158,7 +162,7 @@ fi
 -       Fixing GOSC to work on VCA.
 *       Tue Apr 21 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-3
 -       Adding guest optimizations support for photon.
-*	Tue Apr 21 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.0-2
+*       Tue Apr 21 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.0-2
 -       Added open-vm-tools-stderr_r-fix upstream patch and removed glibc patch.
 *       Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 9.10.0-1
 -       Initial version

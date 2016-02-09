@@ -1,0 +1,67 @@
+--- gosc-scripts.patch/imc-shell/imgcust-scripts/PhotonCustomization.sh 2016-02-09 11:32:19.575876794 -0800
++++ gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh 2016-02-09 13:12:51.465462321 -0800
+@@ -10,8 +10,6 @@
+ 
+   local ciConfigPath="/tmp/cloud-config.ci"
+ 
+-  rm -rf /etc/systemd/network/*
+-
+   ConfigFile_LoadConfigFile $configPath
+ 
+   tmpOvfEnvFile="/tmp/gctemp.xml"
+@@ -49,6 +47,8 @@
+   rm -rf /var/lib/cloud/instance*
+ 
+   GenerateCloudInitConfig content "GetInterfaceByMacAddressIPAddrShow" $tmpOvfEnvFile
++  # Once the cloud-config file been generated, remove the existing network config files.
++  rm -rf /etc/systemd/network/*
+ 
+   # If you don't quote the variable when you echo it, newlines are lost.
+   echo "${content}" > $ciConfigPath
+
+--- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2016-02-09 11:32:19.587876578 -0800
++++ gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2016-02-09 11:53:50.294060966 -0800
+@@ -392,7 +392,7 @@
+ 
+   Debug "Patching /etc/hosts with [$res]"
+   echo "${res}" > /etc/hosts
+-  "127.0.0.1   localhost" >> /etc/hosts
++  echo "127.0.0.1    localhost" >> /etc/hosts
+ }
+ 
+ # Detects interface name by MAC address out of 'ip addr show' output.
+@@ -937,10 +937,12 @@
+     local ifCfg=
+     ${addrShowVar} ${mac} "" ifCfg
+     Debug "ifCfg: $ifCfg"
+-
++    local cfgPath=`ls /etc/systemd/network/*$ifCfg.network*`
++    [ -z "$cfgPath" ] && cfgPath="/etc/systemd/network/10-$ifCfg.network"
++    Debug "Config path: $cfgPath"
+     export formatResult=$formatResult$(${CAT} <<EOF
+ 
+-    - path: /etc/systemd/network/10-$ifCfg.network
++    - path: $cfgPath
+       permissions: 0644
+       content: |
+         [Match]
+@@ -960,12 +962,18 @@
+       ipv4Addr=$(ConfigFile_GetFirstIpV4Addr $nic)
+       ipv4Mask=$(ConfigFile_GetFirstIpV4Mask $nic)
+       ipv4Gw=$(ConfigFile_GetFirstIpV4Gw $nic)
++      local gatewayStr="Gateway=$ipv4Gw"
++      if [ "$ipv4Gw" = "0.0.0.0" ]
++      then
++         Debug "Found an empty gateway"
++         gatewayStr=""
++      fi
+       ipv4AddrPrefix=$(MaskStrToBits "$ipv4Addr $ipv4Mask")
+ 
+       export formatResult=$formatResult$(${CAT} <<EOF
+ 
+         Address=$ipv4AddrPrefix
+-        Gateway=$ipv4Gw
++        $gatewayStr
+ EOF
+ )
+       ipv6Cnt=$(ConfigFile_GetIpV6Cnt $nic)
