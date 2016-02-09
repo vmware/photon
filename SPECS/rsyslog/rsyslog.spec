@@ -49,11 +49,11 @@ find %{buildroot} -name '*.la' -delete
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post
 /sbin/ldconfig
-/bin/systemctl enable  rsyslog.service
+%systemd_post  rsyslog.service
 
 %postun
 /sbin/ldconfig
-/bin/systemctl disable rsyslog.service
+%systemd_preun rsyslog.service
 
 %files
 %defattr(-,root,root)
