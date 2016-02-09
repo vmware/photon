@@ -1,8 +1,6 @@
 # /etc/rc.status
 # This file contains a functions to record, display, and return the actual
 # rc status information in init scripts.
-# See https://en.opensuse.org/openSUSE:Packaging_init_scripts#Status_Functions
-# for more info.
 #
 # The following functions are provided:
 #
@@ -45,6 +43,59 @@
 #          parameter num defines that it should display num lines above the
 #          actual cursor position.
 
+# Check if the service is used under systemd but not started with
+if test -z "$SYSTEMD_NO_WRAP" && /usr/bin/mountpoint -q /sys/fs/cgroup/systemd; then
+    if test $PPID -ne 1 -a $# -eq 1 ; then
+	_rc_base=
+	_sd_opts=
+	case "$0" in
+	/etc/init.d/boot.*)
+	    _rc_base=${0##*/boot.} ;;
+	/etc/init.d/*|/etc/rc.d/*)
+	    _rc_base=${0##*/} ;;
+	*/rc*)
+	    if test -L "$0"; then
+		_rc_base=`readlink "$0"`
+		_rc_base=${_rc_base##*/}
+		case "$_rc_base" in
+		boot.*) _rc_base=${_rc_base#boot.}
+		esac
+	    else
+		_rc_base=${0##*/rc}
+	    fi
+	    ;;
+	esac
+	_rc_system=$(/usr/bin/systemctl show --system --no-pager -p NeedDaemonReload \
+		     -p UnitFileState -p LoadState "${_rc_base}.service" 2>/dev/null)
+	case "$_rc_system" in
+	*LoadState=masked*)
+	    echo "Error: ${_rc_base} is masked out and forbidden by systemd" 1>&2
+	    exit 2 ;;
+	*UnitFileState=static*)
+	    echo "Skipped: ${_rc_base} is overwritten by a native systemd unit" 1>&2
+	    exit 2 ;;
+	*NeedDaemonReload=yes*)
+	    /usr/bin/systemctl --system --no-pager daemon-reload
+	esac
+	unset _rc_system
+	case "$1" in
+	    status)
+		SYSTEMD_NO_WRAP=1 "$0" "$1"
+		_sd_opts='--lines=0 --full --output=cat'
+		;;
+	    start|stop|reload|restart|try-restart|force-reload)
+		echo "my redirecting to systemctl $1 ${_rc_base}.service" 1>&2
+		_sd_opts='--ignore-dependencies'
+		;;
+	    *)	unset _rc_base
+	esac
+	if test -n "$_rc_base" -a -x /usr/bin/systemctl ; then
+	    exec /usr/bin/systemctl $_sd_opts $1 "${_rc_base}.service"
+	fi
+	unset _rc_base _sd_opts
+    fi
+fi
+
 # local rc status
 rc_status=0
 
@@ -66,6 +117,7 @@ msg_unknown="unknown"
 
 # parent cmd
 rc_action=$1
+rc_base=$2
 
 rc_active ()
 {
@@ -124,7 +176,7 @@ rc_status ()
           rc_status=0 ;;
       -r) rc_reset ;;
       -s) echo $eopt msg_skipped ; rc_failed 3 ;;
-      -u) echo $eopt msg_unused ; rc_failed 3 ;;
+       -u) echo $eopt msg_unused ; rc_failed 3 ;;
       *) echo "rc_status: Usage [-v] [-r] [-s] [-u]" ;;
     esac
   done
@@ -134,6 +186,8 @@ elif [ -n "$rc_action" ] ; then
 # "start", "stop", etc...
 rc_status ()
 {
+  echo $rc_base
+  echo $rc_action
   rc_check
   ret=$rc_status
   if [ "$rc_action" = "stop" -a $rc_status -eq 7 ] ; then
