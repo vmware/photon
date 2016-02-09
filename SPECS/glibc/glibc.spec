@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -16,11 +16,12 @@ Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 %define sha1 glibc=5be95334f197121d8b351059a1c6518305d88e2a
 Source1:	locale-gen.sh
 Source2:	locale-gen.conf
-Patch0:   http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-upstream_i386_fix-1.patch
-Patch1:   http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-largefile-1.patch
-Patch2:   http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-fhs-1.patch
+Patch0:   	http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-upstream_i386_fix-1.patch
+Patch1:   	http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-largefile-1.patch
+Patch2:   	http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-fhs-1.patch
+Patch3:		glibc-2.22-bindrsvport-blacklist.patch
 Provides:	rtld(GNU_HASH)
-Requires:   filesystem
+Requires:       filesystem
 %description
 This library provides the basic routines for allocating memory,
 searching directories, opening and closing files, reading and
@@ -47,6 +48,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -171,6 +173,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+* 	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  2.22-2
+- 	Added patch for bindresvport blacklist
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.22-1
 - 	Updated to version 2.22
 *	Tue Dec 1 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-8
