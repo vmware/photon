@@ -1,7 +1,7 @@
 Summary:	Set of scripts and tools to get compatbility with other distributions.
 Name:		distrib-compat
 Version:	0.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2
 URL:		http://photon.org
 Group:		System Environment/Base
@@ -31,6 +31,8 @@ ln -s sysctl.d/99-compat.conf %{buildroot}/%{_sysconfdir}/sysctl.conf
 %{_sysconfdir}/*
 /sbin/*
 %changelog
+*       Mon Feb 08 2016 Kumar Kaushik <kaushikk@vmware.com> 0.1-5
+-       Replacing rc.status to support re-routing to systemctl config.
 *	Mon Dec 14 2015 Alexey Makhalov <amakhalov@vmware.com> 0.1-4
 -	Added sysctl.conf as a symlink. Added 90-va-tune-up.conf
 *	Tue Dec 1 2015 Alexey Makhalov <amakhalov@vmware.com> 0.1-3
