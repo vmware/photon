@@ -1,7 +1,7 @@
 Summary:       Set of scripts and tools to get compatbility with other distributions.
 Name:          distrib-compat
 Version:       0.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://photon.org
 Group:         System Environment/Base
@@ -31,6 +31,8 @@ ln -s sysctl.d/99-compat.conf %{buildroot}/%{_sysconfdir}/sysctl.conf
 %{_sysconfdir}/*
 /sbin/*
 %changelog
+*    Web Feb 10 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2-2
+-    Added ifup and ifdown for NIC interfaces
 *    Sun Feb 7 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 0.2-1
 -    Added ifup and ifdown for NIC interfaces
 *    Mon Dec 14 2015 Alexey Makhalov <amakhalov@vmware.com> 0.1-4

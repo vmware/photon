@@ -45,6 +45,27 @@
 #          parameter num defines that it should display num lines above the
 #          actual cursor position.
 
+if test -z "$PREVENT_LOOP" && test $PPID -ne 1 && test $# -eq 1 ; then
+  unit_name=
+  case "$0" in
+    /etc/init.d/*|/etc/rc.d/*)
+    unit_name=${0##*/} ;;
+  */rc*)
+    unit_name=`readlink "$0"`
+    unit_name=${unit_name##*/}
+    ;;
+  esac
+  if test -n "$unit_name"; then
+    if [ "$1" =  "status" ]; then
+      PREVENT_LOOP=1 "$0" "$1"
+      exec /usr/bin/systemctl -l status  "${unit_name}.service"
+    else
+      exec /usr/bin/systemctl --ignore-dependencies $1 "${unit_name}.service"
+    fi
+  fi
+  unset unit_name
+fi
+
 # local rc status
 rc_status=0
 
