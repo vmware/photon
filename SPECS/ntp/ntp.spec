@@ -64,19 +64,11 @@ install -m 644 ntpstat.1 %{buildroot}/%{_mandir}/man8/ntpstat.8
 popd
 
 cat > %{buildroot}/etc/ntp.conf <<- "EOF"
-server scrootdc02.vmware.com
-# Asia
-server 0.asia.pool.ntp.org
-# Australia
-server 0.oceania.pool.ntp.org
-# Europe
-server 0.europe.pool.ntp.org
-# North America
-server 0.north-america.pool.ntp.org
-# South America
-server 2.south-america.pool.ntp.org
-driftfile /var/cache/ntp.drift
-pidfile   /var/run/ntpd.pid
+tinker panic 0
+restrict default kod nomodify notrap nopeer
+restrict 127.0.0.1
+restrict -6 ::1
+driftfile /var/lib/ntp/drift/ntp.drift
 EOF
 install -D -m644 COPYRIGHT %{buildroot}%{_datadir}/licenses/%{name}/LICENSE
 rm -rf %{buildroot}/etc/rc.d/*
@@ -93,10 +85,9 @@ Conflicts=systemd-timesyncd.service
 [Service]
 Type=forking
 ExecStart=/usr/bin/ntpd -g -u ntp:ntp
-PrivateTmp=true
+Restart=always
 
 [Install]
-
 WantedBy=multi-user.target
 EOF
 %check
