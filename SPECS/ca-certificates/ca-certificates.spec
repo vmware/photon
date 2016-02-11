@@ -1,7 +1,7 @@
 Summary:	Certificate Authority certificates 
 Name:		ca-certificates
 Version:	20160109
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Custom
 URL:		http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
 Group:		System Environment/Security
@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	certdata.txt
 Requires: 	openssl
 BuildRequires:	openssl
+Provides:       ca-certificates-mozilla
 %description
 The Public Key Inrastructure is used for many security issues in a
 Linux system. In order for a certificate to be trusted, it must be
@@ -231,6 +232,8 @@ exit 0
 /bin/remove-expired-certs.sh
 /bin/make-cert.pl
 %changelog
+*	Wed Feb 10 2016 Anish Swaminathan <anishs@vmware.com> 20160109-4
+-	Add Provides field
 *	Mon Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3
 -	Force create links for certificates
 *	Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 20160109-2
