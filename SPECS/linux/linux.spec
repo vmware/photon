@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	13%{?dist}
+Release:    	14%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -161,6 +161,14 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Feb 11 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-14
+-   Full tickless -> idle tickless + simple CPU time accounting
+-   SLUB -> SLAB
+-   Disable NUMA balancing
+-   Disable stack protector
+-   No build_forced no-CBs CPUs
+-   Disable Expert configuration mode
+-   Disable most of debug features from 'Kernel hacking'
 *   Mon Feb 08 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-13
 -   Double tcp_mem limits, patch is added.
 *   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  4.2.0-12
