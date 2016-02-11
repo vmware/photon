@@ -31,7 +31,7 @@ ln -s sysctl.d/99-compat.conf %{buildroot}/%{_sysconfdir}/sysctl.conf
 %{_sysconfdir}/*
 /sbin/*
 %changelog
-*    Web Feb 10 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2-2
+*    Wed Feb 10 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2-2
 -    Added ifup and ifdown for NIC interfaces
 *    Sun Feb 7 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 0.2-1
 -    Added ifup and ifdown for NIC interfaces
