@@ -1,28 +1,32 @@
 %global security_hardening none
 Summary:        Kernel
-Name:        linux
-Version:    4.2.0
-Release:    8%{?dist}
-License:    GPLv2
-URL:        http://www.kernel.org/
-Group:        System Environment/Kernel
-Vendor:        VMware, Inc.
-Distribution: Photon
-Source0:    http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
+Name:           linux
+Version:    	4.2.0
+Release:    	14%{?dist}
+License:    	GPLv2
+URL:        	http://www.kernel.org/
+Group:        	System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution: 	Photon
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:	config-%{version}
-BuildRequires:    bc
-BuildRequires:    kbd
-BuildRequires:    kmod
-BuildRequires:     glib-devel
-BuildRequires:     xerces-c-devel
-BuildRequires:     xml-security-c-devel
-BuildRequires:     libdnet
-BuildRequires:     libmspack
-BuildRequires:    Linux-PAM
-BuildRequires:    openssl-devel
-BuildRequires:    procps-ng-devel
-Requires:         filesystem kmod coreutils
+Patch0:         KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
+Patch1:         RDS-race-condition-on-unbound-socket-null-deref.patch
+Patch2:         ovl-fix-permission-checking-for-setattr.patch
+Patch3:         double-tcp_mem-limits.patch
+BuildRequires:  bc
+BuildRequires:  kbd
+BuildRequires:  kmod
+BuildRequires:  glib-devel
+BuildRequires:  xerces-c-devel
+BuildRequires:  xml-security-c-devel
+BuildRequires:  libdnet
+BuildRequires:  libmspack
+BuildRequires:  Linux-PAM
+BuildRequires:  openssl-devel
+BuildRequires:  procps-ng-devel
+Requires:       filesystem kmod coreutils
 
 %description
 The Linux package contains the Linux kernel. 
@@ -66,6 +70,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 %prep
 %setup -q -n linux-4.2
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 make mrproper
@@ -153,10 +161,30 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Feb 11 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-14
+-   Full tickless -> idle tickless + simple CPU time accounting
+-   SLUB -> SLAB
+-   Disable NUMA balancing
+-   Disable stack protector
+-   No build_forced no-CBs CPUs
+-   Disable Expert configuration mode
+-   Disable most of debug features from 'Kernel hacking'
+*   Mon Feb 08 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-13
+-   Double tcp_mem limits, patch is added.
+*   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  4.2.0-12
+-   Fixes for CVE-2015-7990/6937 and CVE-2015-8660.
+*   Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 4.2.0-11
+-   Revert CONFIG_HZ=250
+*   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
+-   Fix for CVE-2016-0728
+*   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-9
+-   CONFIG_HZ=250
 *   Tue Jan 12 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-8
 -   Remove rootfstype from the kernel parameter.
 *   Mon Jan 04 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-7
--   Disabled all the tracing options in kernel config.  
+-   Disabled all the tracing options in kernel config.
+-   Disabled preempt.
+-   Disabled sched autogroup.
 *   Thu Dec 17 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-6
 -   Enabled kprobe for systemtap & disabled dynamic function tracing in config
 *   Fri Dec 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-5

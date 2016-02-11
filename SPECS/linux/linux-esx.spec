@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       10%{?dist}
+Release:       15%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -11,11 +11,15 @@ Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
 %define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:       config-esx-%{version}
-patch1:        01-clear-linux.patch
-patch2:        02-pci-probe.patch
-patch3:        03-poweroff.patch
-patch4:        04-quiet-boot.patch
-patch5:        05-pv-ops.patch
+Patch0:        RDS-race-condition-on-unbound-socket-null-deref.patch
+Patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
+Patch2:        ovl-fix-permission-checking-for-setattr.patch
+Patch3:        double-tcp_mem-limits.patch
+Patch4:        01-clear-linux.patch
+Patch5:        02-pci-probe.patch
+Patch6:        03-poweroff.patch
+Patch7:        04-quiet-boot.patch
+Patch8:        05-pv-ops.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -50,11 +54,15 @@ The Linux package contains the Linux kernel doc files
 
 %prep
 %setup -q -n linux-4.2
+%patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 make mrproper
@@ -77,7 +85,7 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet nordrand noreplace-smp cpu_init_udelay=0 plymouth.enable=0
+photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
 photon_linux=vmlinuz-esx-%{version}
 EOF
 
@@ -120,11 +128,23 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
-*   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
+*   Mon Feb 08 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-15
+-   Double tcp_mem limits, patch is added.
+*   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  4.2.0-14
+-   Fixes for CVE-2015-7990/6937 and CVE-2015-8660.
+*   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-13
+-   Fix for CVE-2016-0728
+*   Wed Jan 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-12
 -   CONFIG_HZ=250
 -   Disable sched autogroup.
-*   Tue Jan 12 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-9
+*   Tue Jan 12 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-11
 -   Remove rootfstype from the kernel parameter.
+*   Tue Dec 15 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-10
+-   Skip rdrand reseed to improve boot time.
+-   .config changes: jolietfs(m), default THP=always, hotplug_cpu(m)
+*   Tue Nov 17 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-9
+-   nordrand cmdline param is removed.
+-   .config: + serial 8250 driver (M).
 *   Fri Nov 13 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.2.0-8
 -   Change the linux image directory.
 *   Tue Nov 10 2015 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-7
