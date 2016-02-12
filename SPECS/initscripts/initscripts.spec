@@ -60,6 +60,8 @@ rm -f \
 %endif
 
 rm -f %{buildroot}%{_sysconfdir}/rc.d/rc.local %{buildroot}%{_sysconfdir}/rc.local
+rm -f %{buildroot}%{_sbindir}/ifdown
+rm -f %{buildroot}%{_sbindir}/ifup
 touch %{buildroot}%{_sysconfdir}/rc.d/rc.local
 chmod 755 %{buildroot}%{_sysconfdir}/rc.d/rc.local
 
@@ -74,10 +76,8 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 %config(noreplace) %{_sysconfdir}/sysconfig/netconsole
 %config(noreplace) %{_sysconfdir}/sysconfig/readonly-root
 %{_sysconfdir}/sysconfig/network-scripts/ifdown
-%{_sbindir}/ifdown
 %{_sysconfdir}/sysconfig/network-scripts/ifdown-post
 %{_sysconfdir}/sysconfig/network-scripts/ifup
-%{_sbindir}/ifup
 #%dir %{_sysconfdir}/sysconfig/console
 %dir %{_sysconfdir}/sysconfig/modules
 %{_sysconfdir}/sysconfig/network-scripts/network-functions
