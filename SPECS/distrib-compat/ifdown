@@ -1,0 +1,19 @@
+#!/bin/bash
+fail() {
+    local _red="\\033[1;31m"
+    local _normal="\\033[0;39m"
+    [ -n "$*" ] && printf "${_red}$*${_normal}\n"
+    exit 1
+}
+
+[ $# -ne 1 ] && fail "Incorrect args: ifup <ifname>"
+
+interface=$1
+
+#flush the adress
+ip addr flush $interface || fail "Cannot flush IP address for $interface"
+
+#Bring the interface down
+ip link set dev $interface down || fail "Cannot bring $interface down"
+
+exit 0
