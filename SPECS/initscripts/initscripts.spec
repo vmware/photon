@@ -7,11 +7,14 @@ Release:	1%{?dist}
 URL:		http://fedorahosted.org/releases/i/n/initscripts/
 Source0:	https://fedorahosted.org/releases/i/n/initscripts/initscripts-9.65.tar.bz2
 %define sha1 initscripts=0a231ab94ce7ef050a7c2c35a5183450abe58a39
+Patch0:     service.patch
 Vendor:     	VMware, Inc.
 Distribution:   Photon
 Requires:	systemd
 Requires:	iproute2
 BuildRequires:	glib-devel 
+BuildRequires:	python2
+BuildRequires:	python2-libs
 BuildRequires:	popt-devel 
 BuildRequires:	gettext 
 BuildRequires:	pkg-config 
@@ -42,6 +45,7 @@ Binaries of init network
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 make
@@ -156,6 +160,8 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
+* Fri Feb 12 2016 Divya Thaluru <dthaluru@vmware.com> 9.65-2
+- Fixing service script to start services using systemctl by default
 *   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.65-1
 -   Updated to version 9.65
 * Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 9.63-1
