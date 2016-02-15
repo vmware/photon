@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       15%{?dist}
+Release:       16%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -15,11 +15,12 @@ Patch0:        RDS-race-condition-on-unbound-socket-null-deref.patch
 Patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
 Patch2:        ovl-fix-permission-checking-for-setattr.patch
 Patch3:        double-tcp_mem-limits.patch
-Patch4:        01-clear-linux.patch
-Patch5:        02-pci-probe.patch
-Patch6:        03-poweroff.patch
-Patch7:        04-quiet-boot.patch
-Patch8:        05-pv-ops.patch
+Patch4:         veth-do-not-modify-ip_summed.patch
+Patch5:        01-clear-linux.patch
+Patch6:        02-pci-probe.patch
+Patch7:        03-poweroff.patch
+Patch8:        04-quiet-boot.patch
+Patch9:        05-pv-ops.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -63,6 +64,7 @@ The Linux package contains the Linux kernel doc files
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 make mrproper
@@ -128,6 +130,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Sun Feb 14 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-16
+-   veth patch: don’t modify ip_summed
 *   Mon Feb 08 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-15
 -   Double tcp_mem limits, patch is added.
 *   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  4.2.0-14

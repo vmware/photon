@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	14%{?dist}
+Release:    	15%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,6 +15,7 @@ Patch0:         KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
 Patch1:         RDS-race-condition-on-unbound-socket-null-deref.patch
 Patch2:         ovl-fix-permission-checking-for-setattr.patch
 Patch3:         double-tcp_mem-limits.patch
+Patch4:         veth-do-not-modify-ip_summed.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -74,6 +75,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 make mrproper
@@ -161,6 +163,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Sun Feb 14 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-15
+-   veth patch: don’t modify ip_summed
 *   Thu Feb 11 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-14
 -   Full tickless -> idle tickless + simple CPU time accounting
 -   SLUB -> SLAB
