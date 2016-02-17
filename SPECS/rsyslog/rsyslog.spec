@@ -1,11 +1,13 @@
 Summary:	Rocket-fast system for log processing
 Name:		rsyslog
 Version:	8.15.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+ and ASL 2.0
 URL:		http://www.rsyslog.com/
 Source0:	http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
 %define sha1 rsyslog=e1d5ff63c96bce9945dc65581c8e195950256d3c
+Source1:        rsyslog.service
+Source2:        50-rsyslog-journald.conf
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -17,7 +19,7 @@ BuildRequires:	liblogging-devel
 BuildRequires:	librelp-devel
 BuildRequires:  autogen
 BuildRequires:  gnutls-devel
-Requires:   gnutls
+Requires:   	gnutls
 Requires:	systemd
 Requires:	libestr
 Requires:	json-c
@@ -32,8 +34,8 @@ It offers high-performance, great security features and a modular design. While 
 %build
 ./configure \
 	--prefix=%{_prefix} \
-    --enable-relp \
-    --enable-gnutls\
+    	--enable-relp \
+    	--enable-gnutls\
 	--enable-imfile \
 	--enable-imjournal \
 	--enable-impstats \
@@ -43,7 +45,10 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -vd %{buildroot}%{_libdir}/systemd/system/
-mv %{buildroot}/lib/systemd/system/rsyslog.service  %{buildroot}%{_libdir}/systemd/system/rsyslog.service
+install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
+rm -f %{buildroot}/lib/systemd/system/rsyslog.service
+install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
+install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 find %{buildroot} -name '*.la' -delete
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -62,9 +67,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_libdir}/systemd/system/rsyslog.service
+%{_sysconfdir}/systemd/journald.conf.d/*
 %changelog
-*   Mon Jan 11  2016 Xiaolin Li <xiaolinl@vmware.com> 8.15.0-1
--   Update rsyslog to 8.15.0
+*   	Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  8.15.0-2
+-   	Add journald conf and new service file.
+*   	Mon Jan 11  2016 Xiaolin Li <xiaolinl@vmware.com> 8.15.0-1
+-   	Update rsyslog to 8.15.0
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 8.10.0-1
 -	Initial build. First version
 
