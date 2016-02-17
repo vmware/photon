@@ -38,6 +38,7 @@ class Installer(object):
         self.chroot_command = "./mk-run-chroot.sh"
         self.setup_grub_command = "./mk-setup-grub.sh"
         self.unmount_disk_command = "./mk-unmount-disk.sh"
+        self.create_swapfile_command = "./mk-swapfile.sh"
 
         if self.iso_installer:
             self.working_directory = "/mnt/photon-root"
@@ -132,7 +133,8 @@ class Installer(object):
 
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
-
+            self.create_swapfile()
+   
         self.finalize_system()
 
         if not self.install_config['iso_system']:
@@ -150,7 +152,6 @@ class Installer(object):
                 process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root'], self.install_config['disk']['boot'], self.install_config['disk']['bootdirectory']], stdout=self.output)
 
             retval = process.wait()
-
             self.update_fstab()
 
         command = [self.unmount_disk_command, '-w', self.photon_root]
@@ -243,6 +244,15 @@ class Installer(object):
                 fsck
                 ))
 
+        if self.iso_installer:
+            fstab_file.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                "/swapfile",
+                "none",
+                "swap",
+                "defaults",
+                0,
+                0
+                ))
         fstab_file.close()
 
     def generate_partitions_param(self, reverse = False):
@@ -391,8 +401,12 @@ class Installer(object):
             size = self.get_install_size_of_a_package(name_size_pairs, package)
             progressbar_num_items += size;
             self.size_of_packages[package] = size;
-        self.progress_bar.update_num_items(progressbar_num_items)    
+        self.progress_bar.update_num_items(progressbar_num_items) 
 
+    def create_swapfile(self):
+        #Setup the disk
+        process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.create_swapfile_command, '-w', self.photon_root], stdout=self.output)
+        retval = process.wait()
 
     def run(self, command, comment = None):
         if comment != None:
