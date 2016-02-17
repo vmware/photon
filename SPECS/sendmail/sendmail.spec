@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -133,7 +133,8 @@ EOF
 cd /etc/mail
 m4 m4/cf.m4 sendmail.mc > sendmail.cf
 
-chmod 773 /var/spool/clientmqueue
+chmod 700 /var/spool/clientmqueue
+chown smmsp:smmsp /var/spool/clientmqueue
 
 /bin/systemctl enable sendmail
 
@@ -160,6 +161,8 @@ rm -rf /etc/mail
 
 
 %changelog
+*       Wed Feb 17 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-2
+-       Changing permission and owner of clientmqueue.
 *       Tue Jan 05 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-1
 -       Initial build.  First version
 
