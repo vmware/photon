@@ -1,0 +1,18 @@
+[Unit]
+Description=System Logging Service
+Requires=syslog.socket
+Documentation=man:rsyslogd(8)
+Documentation=http://www.rsyslog.com/doc/
+Conflicts=syslog-ng.service
+
+[Service]
+Type=notify
+ExecStart=/usr/sbin/rsyslogd -n $RSYSLOGD_PARAMS
+StandardOutput=null
+Environment=RSYSLOGD_PARAMS=
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=syslog.service

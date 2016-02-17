@@ -1,7 +1,7 @@
 Summary:	Next generation system logger facilty
 Name:		syslog-ng
 Version:	3.6.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL + LGPL
 URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-system
 Group:		System Environment/Daemons
@@ -9,8 +9,9 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://my.balabit.com/downloads/syslog-ng/open-source-edition/%{version}/source/%{name}_%{version}.tar.gz
 %define sha1 syslog-ng=53b14cae037a5ca996fd7b67cf16d29970afedf9
+Source1:        60-syslog-ng-journald.conf
 Requires:	glib
-Requires:   eventlog
+Requires:   	eventlog
 Requires:	python2
 BuildRequires:	eventlog
 BuildRequires:	glib-devel
@@ -64,7 +65,8 @@ find %{buildroot} -name "*.la" -exec rm -f {} \;
 rm %{buildroot}/%{_libdir}/pkgconfig/syslog-ng-test.pc
 rm %{buildroot}/%{_libdir}/syslog-ng/libtest/libsyslog-ng-test.a
 rm -rf %{buildroot}/%{_infodir}
-
+install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
+install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -93,6 +95,7 @@ rm -rf %{buildroot}/*
 /usr/share/include/scl/*
 /usr/share/tools/*
 /usr/share/man/*
+%{_sysconfdir}/systemd/journald.conf.d/*
 
 %files devel
 /usr/include/syslog-ng/*.h
@@ -110,6 +113,8 @@ rm -rf %{buildroot}/*
 /usr/lib/pkgconfig/syslog-ng.pc
 
 %changelog
+*   	Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  3.6.4-2
+-   	Add journald conf file.
 *   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.6.4-1
 -   	Upgrade version.
 *       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.6.2-5
