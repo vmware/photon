@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	15%{?dist}
+Release:    	16%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -97,7 +97,7 @@ cp -v .config            %{buildroot}/boot/config-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
+photon_cmdline=net.ifnames=0 init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
 photon_linux=vmlinuz-%{version}
 photon_initrd=initrd.img-no-kmods
 EOF
@@ -163,6 +163,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Sun Feb 18 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.0-16
+-   Disabling network renaming
 *   Sun Feb 14 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-15
 -   veth patch: don’t modify ip_summed
 *   Thu Feb 11 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-14
