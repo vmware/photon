@@ -125,16 +125,19 @@ if __name__ == '__main__':
     parser = OptionParser(usage)
 
     parser.add_option("-i", "--iso-path",  dest="iso_path")
+    parser.add_option("-j", "--src-iso-path",  dest="src_iso_path")
     parser.add_option("-v", "--vmdk-path", dest="vmdk_path")
     parser.add_option("-w",  "--working-directory",  dest="working_directory", default="/mnt/photon-root")
     parser.add_option("-l",  "--log-path",  dest="log_path", default="../stage/LOGS")
     parser.add_option("-r",  "--rpm-path",  dest="rpm_path", default="../stage/RPMS")
+    parser.add_option("-x",  "--srpm-path",  dest="srpm_path", default="../stage/SRPMS")
     parser.add_option("-o", "--output-data-path", dest="output_data_path", default="../stage/common/data/")
     parser.add_option("-f", "--force", action="store_true", dest="force", default=False)
     parser.add_option("-p", "--package-list-file", dest="package_list_file", default="../common/data/build_install_options_all.json")
     parser.add_option("-m", "--stage-path", dest="stage_path", default="../stage")
     parser.add_option("-c", "--dracut-configuration", dest="dracut_configuration_file", default="../common/data/dracut_configuration.json")
     parser.add_option("-s", "--json-data-path", dest="json_data_path", default="../stage/common/data/")
+    parser.add_option("-g", "--enable-src-iso", action="store_true", dest="enable_src_iso", default=False)
     (options,  args) = parser.parse_args()
     if options.iso_path:
         # Check the arguments
@@ -233,6 +236,9 @@ if __name__ == '__main__':
         live_cd = get_live_cd_status_string(options.package_list_file)
         process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd, options.json_data_path])
         retval = process.wait()
+        if options.enable_src_iso:
+            process = subprocess.Popen(['./mk-src-iso.sh', '-w', options.working_directory, options.src_iso_path, options.srpm_path, rpm_list])
+            retval = process.wait()
 
     # Cleaning up for vmdk
     if 'vmdk_install' in config and config['vmdk_install']:

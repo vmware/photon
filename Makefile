@@ -161,12 +161,15 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
+                -j $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).src.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
+                -x $(PHOTON_STAGE)/SRPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
                 -s $(PHOTON_DATA_DIR) \
+                --enable-src-iso \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
