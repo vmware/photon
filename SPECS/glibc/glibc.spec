@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.21
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -15,8 +15,9 @@ Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 Source1:	locale-gen.sh
 Source2:	locale-gen.conf
 Patch0:		glibc-2.21-fhs-1.patch
+Patch1:         glibc-2.21-CVE-2015-7547.patch
 Provides:	rtld(GNU_HASH)
-Requires:   filesystem
+Requires:   	filesystem
 %description
 This library provides the basic routines for allocating memory,
 searching directories, opening and closing files, reading and
@@ -41,6 +42,7 @@ These are the additional language files of glibc.
 %setup -q
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
+%patch1 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -191,6 +193,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %lang(zh_TW) %{_datarootdir}/locale/zh_TW/LC_MESSAGES/libc.mo
 
 %changelog
+* 	Fri Feb 19 2016 Anish Swaminathan <anishs@vmware.com>  2.21-6
+- 	Added patch for CVE-2015-7547
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.19-5
         Adding postun section for ldconfig.
 *	Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.19-4
