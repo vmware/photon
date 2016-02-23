@@ -1,12 +1,12 @@
 Summary:	Google Daemon
 Name:		google-daemon
-Version:	1.3.1
+Version:	1.3.3
 Release:	1%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://github.com/GoogleCloudPlatform/compute-image-packages/
-Source0:	google-daemon-%{version}.tar.gz
-%define sha1 google-daemon=c55ad60bd29a46afb12d70158d6fa2c5569ec2b4
+Source0:	compute-image-packages-%{version}.tar.gz
+%define sha1 compute-image-packages=dd115b7d56c08a3c62180a9b72552a54f7babd4f
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	google-daemon
@@ -20,7 +20,7 @@ Configures ssh to accept the accounts' public keys from the instance metadata.
 
 
 %prep
-%setup -q
+%setup -q -n compute-image-packages-%{version}/%{name}
 
 %build
 
@@ -43,6 +43,8 @@ rm -rf $RPM_BUILD_ROOT
 %exclude /LICENSE
 
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-1
+-   Updated to version 1.3.3
 *   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 1.3.1-1
 -   Upgrade version
 *   Mon Aug 10 2015 Anish Swaminathan <anishs@vmware.com> 1.2.7-1

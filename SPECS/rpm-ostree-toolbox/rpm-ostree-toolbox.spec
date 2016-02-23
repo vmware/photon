@@ -1,6 +1,6 @@
 Summary: 	Extra tools for rpm-ostree
 Name: 		rpm-ostree-toolbox
-Version: 	2015.3
+Version: 	2015.12
 Release: 	1%{?dist}
 #VCS: https://github.com/cgwalters/rpm-ostree-toolbox
 # This tarball is generated via "make -C packaging -f Makefile.dist-packaging dist-snapshot"
@@ -8,7 +8,7 @@ Release: 	1%{?dist}
 # It doesn't follow the Github guidelines because they only work for
 # github; the infrastructure above is generic for any git repository.
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 rpm-ostree-toolbox=bd8e4b5da029990845233bceac765322c62db848
+%define sha1 rpm-ostree-toolbox=6dd8680d90992942f775596c98d6dfbd9465e47f
 License: 	LGPLv2+
 URL: 		https://github.com/cgwalters/rpm-ostree-toolbox
 Vendor:		VMware, Inc.
@@ -105,10 +105,6 @@ getent passwd %{unprivileged_user} >/dev/null || \
 %files
 %doc COPYING README.md src/py/config.ini.sample
 %{_bindir}/rpm-ostree-toolbox
-%{_bindir}/rpm-ostree-toolbox-kinit
-%{_bindir}/rpm-ostree-toolbox-build-monitor
-%{_bindir}/rpm-ostree-toolbox-git-monitor
-%{_bindir}/rpm-ostree-toolbox-watch
 %{_libdir}/%{name}/
 %{_datadir}/%{name}/
 %{_mandir}/man1/%{name}*.gz
@@ -116,16 +112,9 @@ getent passwd %{unprivileged_user} >/dev/null || \
 %dir %{_localstatedir}/lib/%{name}
 %attr(0755,%{unprivileged_user},%{unprivileged_group}) %{_localstatedir}/lib/%{name}
 
-%config %{_sysconfdir}/sysconfig/%{name}-template
-
-/usr/lib/systemd/system/rpm-ostree-toolbox-build-monitor@.service
-/usr/lib/systemd/system/rpm-ostree-toolbox-git-monitor.service
-/usr/lib/systemd/system/rpm-ostree-toolbox-kinit@.service
-/usr/lib/systemd/system/rpm-ostree-toolbox-kinit@.timer
-/usr/lib/systemd/system/rpm-ostree-toolbox-watch@.service
-
-
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 2015.12-1
+-   Updated to version 2015.12
 * Sat May 24 2014 Colin Walters <walters@verbum.org> - 2014.11-1
 - Initial package
 
