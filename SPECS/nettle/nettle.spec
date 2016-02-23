@@ -1,11 +1,11 @@
 Summary:	Low level cryptographic libraries
 Name:		nettle
-Version:	3.1.1
-Release:	2%{?dist}
+Version:	3.2
+Release:	1%{?dist}
 License:	LGPLv3+ or GPLv2+
 URL:            http://www.lysator.liu.se/~nisse/nettle/
 Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 nettle=1836601393522124787e029466935408e22dd204
+%define sha1 nettle=b2eb5b36e65a8d3ed60ff81ec897044dead6dae0
 Group: 		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -56,6 +56,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %changelog
+*   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 3.2-1
+-   Updated to version 3.2
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.1-2
 -   Moving static lib files to devel package.
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.1.1-1
