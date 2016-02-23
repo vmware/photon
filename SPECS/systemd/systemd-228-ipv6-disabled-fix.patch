@@ -1,0 +1,64 @@
+diff -ru systemd-228/src/network/networkd-link.c systemd-228-1/src/network/networkd-link.c
+--- systemd-228/src/network/networkd-link.c	2015-11-17 23:59:06.000000000 -0800
++++ systemd-228-1/src/network/networkd-link.c	2016-02-22 21:32:34.266133364 -0800
+@@ -134,6 +134,26 @@
+         return link->network->ip_forward & ADDRESS_FAMILY_IPV6;
+ }
+ 
++static bool link_ipv6_disabled(Link *link) {
++        const char *p = NULL;
++        int r;
++        if (link->flags & IFF_LOOPBACK)
++                return true;
++        /* Make this a NOP if IPv6 is not available */
++        if (!socket_ipv6_is_supported())
++                return true;
++
++        p = strjoina("/proc/sys/net/ipv6/conf/", link->ifname, "/disable_ipv6");
++        _cleanup_free_ char *val = NULL;
++        r = read_one_line_file(p, &val);
++        if (r < 0)
++                log_link_warning_errno(link, r, "Cannot read ipv6 state for interface: %m");
++	if (streq(val, "0"))
++                return false;
++        
++        return true;
++}
++
+ bool link_ipv6_accept_ra_enabled(Link *link) {
+         if (link->flags & IFF_LOOPBACK)
+                 return false;
+@@ -602,22 +622,17 @@
+         Iterator i;
+ 
+         assert(link);
+-
+         if (!link->network)
+                 return;
+-
+         if (!link->static_configured)
+                 return;
+-
+         if (link_ipv4ll_enabled(link))
+                 if (!link->ipv4ll_address ||
+                     !link->ipv4ll_route)
+                         return;
+-
+-        if (link_ipv6ll_enabled(link))
++        if (!link_ipv6_disabled(link) && link_ipv6ll_enabled(link))
+                 if (in_addr_is_null(AF_INET6, (const union in_addr_union*) &link->ipv6ll_address) > 0)
+                         return;
+-
+         if ((link_dhcp4_enabled(link) && !link_dhcp6_enabled(link) &&
+              !link->dhcp4_configured) ||
+             (link_dhcp6_enabled(link) && !link_dhcp4_enabled(link) &&
+@@ -625,8 +640,7 @@
+             (link_dhcp4_enabled(link) && link_dhcp6_enabled(link) &&
+              !link->dhcp4_configured && !link->dhcp6_configured))
+                 return;
+-
+-        if (link_ipv6_accept_ra_enabled(link) && !link->ndisc_configured)
++        if (!link_ipv6_disabled(link) && link_ipv6_accept_ra_enabled(link) && !link->ndisc_configured)
+                 return;
+ 
+         SET_FOREACH(a, link->addresses, i)
