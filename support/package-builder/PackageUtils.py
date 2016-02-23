@@ -6,6 +6,7 @@ from constants import constants
 import re
 from time import sleep
 import PullSources
+from PackageInfo import SourcePackageInfo
 
 class PackageUtils(object):
     
@@ -36,12 +37,16 @@ class PackageUtils(object):
         self.noDepsRPMFilesToInstallInAOneShot=""
         self.noDepsPackagesToInstallInAOneShot=""
     
-    def getRPMDestDir(self,rpmName,rpmDir):
+    def getRPMArch(self,rpmName):
         arch=""
         if rpmName.find("x86_64") != -1:
-            arch='x86_64'
+            arch="x86_64"
         elif rpmName.find("noarch") != -1:
             arch="noarch"
+        return arch
+
+    def getRPMDestDir(self,rpmName,rpmDir):
+        arch = self.getRPMArch(rpmName)
         rpmDestDir=rpmDir+"/"+arch
         return rpmDestDir
     
@@ -158,13 +163,19 @@ class PackageUtils(object):
         finally:
             if destLogPath is not None:
                 shutil.copy2(chrootLogsFilePath, destLogPath)
-
+        self.logger.info("RPM build is successful")
+        arch = self.getRPMArch(listRPMFiles[0])
+       
         for rpmFile in listRPMFiles:
             self.copyRPM(chrootID+"/"+rpmFile, constants.rpmPath)
-
+        
         for srpmFile in listSRPMFiles:
             self.copyRPM(chrootID+"/"+srpmFile, constants.sourceRpmPath)
+            srpmName = os.path.basename(srpmFile)
+            package,version,release = self.findPackageInfoFromSourceRPMFile(srpmFile)
+            SourcePackageInfo.addSRPMData(package,version,release,arch,srpmName)
 
+    
     def buildRPM(self,specFile,logFile,chrootCmd):
         
         rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
@@ -242,7 +253,23 @@ class PackageUtils(object):
         version=rpmfile[versionindex+1:releaseindex]
         release=rpmfile[releaseindex+1:]
         return packageName,version,release
-    
+
+    def findPackageInfoFromSourceRPMFile(self,sourcerpmfile):
+        sourcerpmfile=os.path.basename(sourcerpmfile)
+        sourcerpmfile=sourcerpmfile.replace(".src.rpm","")
+        releaseindex=sourcerpmfile.rfind("-")
+        if releaseindex == -1:
+            self.logger.error("Invalid source rpm file:"+sourcerpmfile)
+            raise Exception("Invalid Source RPM")
+        versionindex=sourcerpmfile[0:releaseindex].rfind("-")
+        if versionindex == -1:
+            self.logger.error("Invalid source rpm file:"+sourcerpmfile)
+            raise Exception("Invalid source RPM")
+        packageName=sourcerpmfile[0:versionindex]
+        version=sourcerpmfile[versionindex+1:releaseindex]
+        release=sourcerpmfile[releaseindex+1:]
+        return packageName,version,release
+ 
     def findInstalledRPMPackages(self, chrootID):
         cmd = self.rpmBinary+" "+self.queryRpmPackageOptions
         chrootCmd=self.runInChrootCommand+" "+chrootID
