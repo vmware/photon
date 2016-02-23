@@ -15,8 +15,6 @@ BuildRequires: python-setuptools
 Requires:       python2
 Requires:		python2-libs
 
-BuildArch:      noarch
-
 %description
 This package is intended to be independently reusable in any Python project. It is maintained by the Zope Toolkit project.
 
