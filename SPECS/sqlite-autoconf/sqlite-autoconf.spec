@@ -1,15 +1,15 @@
-%define sourcever 3080301
+%define sourcever 3110000
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		sqlite-autoconf
-Version:	3.8.3.1
-Release:	2%{?dist}
+Version:	3.11.0
+Release:	1%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:	http://sqlite.org/2014/%{name}-3080301.tar.gz
-%define sha1 sqlite-autoconf=a9b0a3d66fb5c2ae51ad2d8a512ca827adc7d59c
+Source0:	http://sqlite.org/2016/%{name}-3110000.tar.gz
+%define sha1 sqlite-autoconf=e2d300e4b24af5ecd67a1396488893fa44864e36
 Obsoletes:	libsqlite
 Provides:	sqlite3
 %description
@@ -29,7 +29,7 @@ C/C++ interface specs and other miscellaneous documentation.
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
 	--disable-static
-make %{?_smp_mflags}
+make -j1
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 %{_mandir}/man1/*
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.11.0-1
+-   Updated to version 3.11.0
 *	Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 3.8.3.1-2
 - 	Fix versioning
 *	Mon Oct 7 2014 Divya Thaluru <dthaluru@vmware.com> 3080301-1
