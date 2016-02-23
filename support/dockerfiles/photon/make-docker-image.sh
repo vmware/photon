@@ -49,12 +49,14 @@ yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CH
 yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT install -y tdnf vim bash coreutils photon-release $MAIN_PACKAGE
 yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT clean all
 
+cp $(pwd)/stage/RPMS/noarch/photon-release*.rpm $TEMP_CHROOT
 cp /etc/resolv.conf $TEMP_CHROOT/etc/
 
 # # reinstalling inside to make sure rpmdb is created for tdnf.
 # # TODO find better solution.
 chroot $TEMP_CHROOT bash -c \
-   "tdnf install -y filesystem; \
+   "rpm -Uvh --nodeps photon-release*.rpm; \
+    tdnf install -y filesystem; \
     tdnf install -y glibc ; \
     tdnf install -y bash ; \
     tdnf install -y coreutils ; \
@@ -63,12 +65,12 @@ chroot $TEMP_CHROOT bash -c \
     tdnf install -y findutils ; \
     tdnf install -y vim ; \
     tdnf install -y grep ; \
-    tdnf install -y which ; \
-    tdnf install -y photon-release;"
+    tdnf install -y which ;"
 
 
 cd $TEMP_CHROOT
 # cleanup anything not needed inside rootfs
+rm -f photon-release*.rpm
 rm -rf usr/src/
 rm -rf home/*
 # rm -rf var/lib/yum/*
