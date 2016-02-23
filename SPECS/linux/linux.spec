@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	16%{?dist}
+Release:    	17%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -16,6 +16,7 @@ Patch1:         RDS-race-condition-on-unbound-socket-null-deref.patch
 Patch2:         ovl-fix-permission-checking-for-setattr.patch
 Patch3:         double-tcp_mem-limits.patch
 Patch4:         veth-do-not-modify-ip_summed.patch
+Patch5:         sysctl-sched_weighted_cpuload_uses_rla.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -76,6 +77,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 make mrproper
@@ -163,6 +165,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Mon Feb 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-17
+-   Added sysctl param to control weighted_cpuload() behavior
 *   Sun Feb 18 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.0-16
 -   Disabling network renaming
 *   Sun Feb 14 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-15
