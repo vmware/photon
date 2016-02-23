@@ -1,14 +1,14 @@
 Summary:	Contains a parser generator
 Name:		bison
-Version:	3.0.2
-Release:	3%{?dist}
+Version:	3.0.4
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
-%define sha1 bison=aeb1e3544007124009e5203afe86a5676580d444
+%define sha1 bison=8270497aad88c7dd4f2c317298c50513fb0c3c8e
 BuildRequires:	m4
 Requires:	m4
 BuildRequires:	flex
@@ -35,7 +35,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/%{name}/*
 %{_datarootdir}/aclocal/*
 %{_mandir}/*/*
+%{_docdir}/bison/*
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.4-1
+-   Updated to version 3.0.4
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 3.0.2-3
 -	Handled locale files with macro find_lang
 *	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 3.0.2-2

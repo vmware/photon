@@ -1,14 +1,14 @@
 Summary:	C++ xml parser.
 Name:		xerces-c
-Version:	3.1.2
+Version:	3.1.3
 Release:	1%{?dist}
 License:	Apache License
 URL:		http://xerces.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://mirrors.advancedhosters.com/apache//xerces/c/3/sources/%{name}-%{version}.tar.gz
-%define sha1 xerces-c=3f9ecc4956df069c1d95b885fc687eb4e474a4ad
+Source0:	http://mirrors.advancedhosters.com/apache//xerces/c/3/sources/%{name}-%{version}.tar.xz
+%define sha1 xerces-c=44aa39f8b9ccbfcaf58771634761cbea1084e8f1
 %description
 Xerces-C++ is a validating XML parser written in a portable subset of C++
 %package	devel
@@ -39,6 +39,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.la
 
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.1.3-1
+-   Updated to version 3.1.3
 *	Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 3.1.2-1
 -	Updating Package to 3.1.2
 *	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 3.1.1
