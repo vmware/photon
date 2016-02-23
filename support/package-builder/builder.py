@@ -12,6 +12,7 @@ from SpecUtils import Specutils
 from StringUtils import StringUtils
 import collections
 import traceback
+from PackageInfo import SourcePackageInfo
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -35,16 +36,18 @@ def main():
     parser.add_option("-v",  "--release-version", dest="releaseVersion",  default="NNNnNNN")
     parser.add_option("-u",  "--enable-rpmcheck", dest="rpmCheck",  default=False, action ="store_true")
     parser.add_option("-a",  "--source-rpm-path",  dest="sourceRpmPath",  default="../../stage/SRPMS")
+    parser.add_option("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../common/data/pkg_info.json")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
     if not os.path.isdir(options.logPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
-    
+
     logger=Logger.getLogger(options.logPath+"/Main")
     
     errorFlag=False
     package = None
+    pkgInfoJsonFile=options.pkgInfoFile
     if not os.path.isdir(options.sourcePath):
         logger.error("Given Sources Path is not a directory:"+options.sourcePath)
         errorFlag = True
@@ -102,25 +105,10 @@ def main():
     else:
         logger.info("Package to build:"+package)
 
-    '''    
-    listPackages=["acl","attr","autoconf","automake","bash","bc","bindutils","binutils","bison","boost","btrfs-progs","bzip2","ca-certificates","cdrkit","check",
-                  "cloud-init","cmake","coreutils","cpio","cracklib","createrepo","curl","cyrus-sasl","db","dbus","deltarpm","diffutils","docbook-xml","docbook-xsl",
-                  "docker","dracut","e2fsprogs","elfutils","etcd","expat","file","filesystem","findutils","flex","gawk","gcc","gdb","gdbm","gettext","git",
-                  "glib","glibc","glibmm","gmp","go","gobject-introspection","google-daemon","google-startup-scripts","gperf","gpgme","gptfdisk","grep","groff",
-                  "grub","gtk-doc","gzip","haveged","hawkey","iana-etc","inetutils","intltool","iproute2","iptables","itstool","json-glib","kbd","kmod","krb5",
-                  "kubernetes","less","libaio","libassuan","libcap","libdnet","libffi","libgpg-error","libgsystem","libhif","libmspack","libpcap","libpipeline",
-                  "librepo","libselinux","libsepol","libsigc++","libsolv","libtool","libxml2","libxslt","libyaml","linux","linux-api-headers","Linux-PAM","lua",
-                  "lvm2","lzo","m4","make","man-db","man-pages","mercurial","mpc","mpfr","nano","ncurses","nspr","nss","ntp","openldap","openssh","openssl",
-                  "open-vm-tools","ostree","parted","patch","pcre","perl","perl-common-sense","perl-Config-IniFiles","perl-DBD-SQLite","perl-DBI","perl-DBIx-Simple",
-                  "perl-Exporter-Tiny","perl-JSON-XS","perl-libintl","perl-List-MoreUtils","perl-Module-Install","perl-Module-ScanDeps","perl-Types-Serialiser",
-                  "perl-WWW-Curl","perl-YAML","perl-YAML-Tiny","photon-release","pkg-config","popt","procps-ng","psmisc","pycurl","pygobject","python2",
-                  "python-configobj","python-iniparse","python-jsonpatch","python-jsonpointer","python-prettytable","python-requests","python-setuptools",
-                  "python-six","PyYAML","readline","rocket","rpm","rpm-ostree","rpm-ostree-toolbox","ruby","sed","shadow","sqlite-autoconf","strace","sudo",
-                  "swig","systemd","tar","tcpdump","tcsh","tdnf","texinfo","thin-provisioning-tools","tzdata","unzip","urlgrabber","util-linux","vim","wget",
-                  "which","xerces-c","XML-Parser","xml-security-c","xz","yum","yum-metadata-parser","zlib"]
-    '''
     try:
         constants.initialize(options)
+        SourcePackageInfo.setLogging()
+        SourcePackageInfo.loadPkgInfoFromFile(pkgInfoJsonFile)
         if package == "packages_list":
             buildPackagesList(options.specPath, options.buildRootPath+"/../packages_list.csv")
         elif package == "sources_list":
@@ -141,7 +129,9 @@ def main():
         # print stacktrace
         traceback.print_exc()
         sys.exit(1)
-    
+
+    logger.info("Writing Package info to the file:"+pkgInfoJsonFile)
+    SourcePackageInfo.writePkgListToFile(pkgInfoJsonFile)   
     sys.exit(0)
 
 def buildToolChain(buildThreads):

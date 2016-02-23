@@ -49,9 +49,12 @@ class ToolChainUtils(object):
             cmd=self.rpmbuildCommand+" -ba --nocheck --define \'_topdir "+chrootID+constants.topDirPath+"\' --define \'_dbpath "+chrootID+"/var/lib/rpm\' --define \'dist "+constants.dist+"\' --define \'photon_build_number "+constants.buildNumber+"\' --define \'photon_release_version "+constants.releaseVersion+"\' "+specFile
             self.logger.info(cmd)
             cmdUtils.runCommandInShell(cmd,self.logPath+"/filesystem.log")
-            filesystemrpmFile = cmdUtils.findFile(package+"-*.rpm", chrootID+constants.topDirPath+"/RPMS")
+            filesystemrpmFile = cmdUtils.findFile(package+"-[0-9]*.rpm", chrootID+constants.topDirPath+"/RPMS")
+            filesystemsrpmFile = cmdUtils.findFile(package+"-[0-9]*.src.rpm", chrootID+constants.topDirPath+"/SRPMS")
             if len(filesystemrpmFile) > 0:
                 shutil.copy2(filesystemrpmFile[0],constants.rpmPath+"/x86_64/")
+            if len(filesystemsrpmFile) > 0:
+                shutil.copy2(filesystemsrpmFile[0],constants.sourceRpmPath+"/")
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 self.logger.error("Cannot find filesystem rpm")
