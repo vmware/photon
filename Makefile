@@ -56,7 +56,7 @@ clean-install clean-chroot build-updated-packages
 
 THREADS?=1
 
-all: iso minimal-iso docker-image ostree-host-iso live-iso cloud-image-all
+all: iso minimal-iso docker-image ostree-host-iso live-iso cloud-image-all src-iso
 
 micro: micro-iso
 	@:
@@ -161,14 +161,33 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
+                -j $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).src.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
+                -x $(PHOTON_STAGE)/SRPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
                 -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
+src-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+	@echo "Building Photon Full Source ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        sudo $(PHOTON_INSTALLER) \
+                -j $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).src.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -x $(PHOTON_STAGE)/SRPMS \
+                -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+                -o $(PHOTON_STAGE)/common/data \
+                -s $(PHOTON_DATA_DIR) \
+                -u $(PHOTON_GENERATED_DATA_DIR)/pkg_info.json\
+                -z $(PHOTON_STAGE)/pkg_info.txt\
+                -f > \
+                $(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
 
 pkgtree:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
@@ -198,6 +217,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                -w $(PHOTON_GENERATED_DATA_DIR)/pkg_info.json\
                 $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 

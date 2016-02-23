@@ -6,6 +6,7 @@ from constants import constants
 import re
 from time import sleep
 import PullSources
+from PackageInfo import SourcePackageInfo
 
 class PackageUtils(object):
     
@@ -36,12 +37,16 @@ class PackageUtils(object):
         self.noDepsRPMFilesToInstallInAOneShot=""
         self.noDepsPackagesToInstallInAOneShot=""
     
-    def getRPMDestDir(self,rpmName,rpmDir):
+    def getRPMArch(self,rpmName):
         arch=""
         if rpmName.find("x86_64") != -1:
-            arch='x86_64'
+            arch="x86_64"
         elif rpmName.find("noarch") != -1:
             arch="noarch"
+        return arch
+
+    def getRPMDestDir(self,rpmName,rpmDir):
+        arch = self.getRPMArch(rpmName)
         rpmDestDir=rpmDir+"/"+arch
         return rpmDestDir
     
@@ -158,13 +163,26 @@ class PackageUtils(object):
         finally:
             if destLogPath is not None:
                 shutil.copy2(chrootLogsFilePath, destLogPath)
-
+        self.logger.info("RPM build is successful")
+        arch = self.getRPMArch(listRPMFiles[0])
+       
         for rpmFile in listRPMFiles:
             self.copyRPM(chrootID+"/"+rpmFile, constants.rpmPath)
-
+        
         for srpmFile in listSRPMFiles:
             self.copyRPM(chrootID+"/"+srpmFile, constants.sourceRpmPath)
+            srpmName = os.path.basename(srpmFile)
+            listSRPMAttributes = srpmName.split("-")
+            self.logger.info("length of srpm attributes")
+            self.logger.info(listSRPMAttributes)
 
+            if len(listSRPMAttributes) == 3 :
+                srpmPackageName = listSRPMAttributes[0]
+                version = listSRPMAttributes[1]
+                release = listSRPMAttributes[2].replace(".src.rpm","")
+                SourcePackageInfo.addSRPMData(srpmPackageName,version,release,arch,srpmName)
+
+    
     def buildRPM(self,specFile,logFile,chrootCmd):
         
         rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
