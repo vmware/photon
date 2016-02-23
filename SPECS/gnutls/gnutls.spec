@@ -1,11 +1,11 @@
 Summary:	The GnuTLS Transport Layer Security Library
 Name:		gnutls
-Version:	3.4.8
+Version:	3.4.9
 Release:	q%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.4/%{name}-%{version}.tar.xz
-%define sha1 gnutls=fe72df168c1c661ec8fdd6d2059b935bd202003a
+%define sha1 gnutls=04df5ec2bb1282704e99b15fd64892026fb95f1c
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -68,6 +68,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*   Thu Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.9-1
+-   Updated to version 3.4.9
 *   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.8-1
 -   Updated to version 3.4.8
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.2-3
