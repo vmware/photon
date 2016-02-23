@@ -1,11 +1,11 @@
-Summary:	Check-0.9.14
+Summary:	Check-0.10.0
 Name:		check
-Version:	0.9.14
-Release:	2%{?dist}
+Version:	0.10.0
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://check.sourceforge.net/
 Source0:	http://sourceforge.net/projects/check/files/latest/download/%{name}-%{version}.tar.gz
-%define sha1 check=4b79e2d485d014ddb438e322b64235347d57b0ff
+%define sha1 check=35d3a53446aea7b21a770faedb358d0fc7cba76d
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
@@ -36,6 +36,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/doc/%{name}/*
 /usr/share/aclocal/*
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 0.10.0-1
+-   Updated to version 0.10.0
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 0.9.14-2
 -   Updated group.
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 0.9.14-1
