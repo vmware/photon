@@ -32,7 +32,7 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q -n %{name}-%{version}
 %build
-./configure --prefix=/usr --with-gpm-support
+./configure --prefix=/usr --with-gpm-support --without-python
 make
 %install
 make DESTDIR=%{buildroot} install

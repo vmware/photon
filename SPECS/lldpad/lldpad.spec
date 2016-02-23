@@ -24,6 +24,8 @@ The lldpad package comes with utilities to manage an LLDP interface with support
 
 %prep
 %setup -q -n open-lldp-036e314
+sed -i "s/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2 -std=gnu89/" Makefile.am
+sed -i "s/u8 arglen;/u8 arglen = 0;/g" lldp_util.c
 
 %build
 ./bootstrap.sh
