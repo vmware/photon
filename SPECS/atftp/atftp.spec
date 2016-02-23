@@ -36,6 +36,7 @@ files using the TFTP protocol.
 
 %prep
 %setup
+sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
 %configure

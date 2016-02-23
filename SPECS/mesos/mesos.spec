@@ -49,8 +49,8 @@ Requires:	%{name} = %{version}
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.in
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.in
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
+	CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
+	CXXFLAGS="%{optflags} -Wno-deprecated-declarations" \
 	--disable-silent-rules \
 	--prefix=%{_prefix} \
 	--bindir=%{_bindir} \
