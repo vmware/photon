@@ -1,12 +1,12 @@
 Summary:	Text editor
 Name:		nano
-Version:	2.2.6
-Release:	2%{?dist}
+Version:	2.5.2
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.nano-editor.org/
 Group:		Applications/Editors
 Source0:	http://www.nano-editor.org/dist/v2.2/%{name}-%{version}.tar.gz
-%define sha1 nano=f2a628394f8dda1b9f28c7e7b89ccb9a6dbd302a
+%define sha1 nano=ee21ed3f3771f6959bf430ab9e80de56026798b8
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	ncurses-devel
@@ -34,7 +34,11 @@ install -v -m644 %{_builddir}/%{name}-%{version}/doc/texinfo/nano.html %{_docdir
 %{_mandir}/fr/man*/*
 %{_infodir}/%{name}-%{version}/*
 %{_datadir}/nano/*
+%{_datadir}/doc/nano-2.5.2/*
+
 %changelog
+*       Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.2-1
+-       Updating to new version.
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.2.6-2
 -	Handled locale files with macro find_lang
 *	Tue Dec 30 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.2.6-1

@@ -2,15 +2,15 @@
 
 Summary: 	Creates a common metadata repository
 Name: 		createrepo
-Version: 	0.10.3
+Version: 	0.10.4
 Release: 	1%{?dist}
 License:	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0: 	%{name}-%{version}.tar.gz
-%define sha1 createrepo=9dfd0e935b3180096ccd61611db3c85c968eea4f
-URL: 		http://linux.duke.edu/metadata/
+%define sha1 createrepo=b4e88b3a8cb4b4ef7154991d33948e3d05bd9663
+URL: 		http://createrepo.baseurl.org/download/
 BuildArchitectures: noarch
 Requires: python2 >= 2.1, rpm-devel, rpm >= 0:4.1.1, libxml2
 Requires: yum-metadata-parser, yum >= 3.2.7
@@ -49,6 +49,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{python_sitelib}/createrepo
 
 %changelog
+* Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.10.4
+- Updating to new version.
 * Thu Dec 20 2007 Seth Vidal <skvidal at fedoraproject.org>
 - beginning of the new version
 
