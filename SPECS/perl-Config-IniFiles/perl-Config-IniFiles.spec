@@ -1,13 +1,13 @@
 # Got the intial spec from Fedora and modified it
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
-Version:        2.83
-Release:        2%{?dist}
+Version:        2.88
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Config-IniFiles/
 Source0:        http://www.cpan.org/authors/id/S/SH/SHLOMIF/Config-IniFiles-%{version}.tar.gz
-%define sha1 Config-IniFiles=a84bf7ec97ffb79558b8fa5eef7b32e361ebcd15
+%define sha1 Config-IniFiles=c22a627d4724597c7399bfe88b372af379723b54
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
@@ -44,6 +44,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 2.88-1
+-   Updated to version 2.88
 *	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.83-2
 -	Add build requirement
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.83-1
