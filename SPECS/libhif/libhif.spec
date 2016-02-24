@@ -1,14 +1,14 @@
 # Copied from inside of libhif.<version>.tar.gz
-%define libhif_version %{name}-%{name}_0_2_0
+%define libhif_version %{name}-%{name}_0_2_2
 
 Summary:   	Simple package manager built on top of hawkey and librepo
 Name:		libhif
-Version:   	0.2.0
+Version:   	0.2.2
 Release:   	1%{?dist}
 License:   	LGPLv2+
 URL:       	https://github.com/hughsie/libhif
-Source0:   	http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.gz
-%define sha1 libhif=7de667ee0a26f448c5a0c9f56dc5c304d7c282aa
+Source0:   	http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+%define sha1 libhif=2816f914e25a1a625503b4b474a8ad63969e8c7e
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -47,8 +47,8 @@ Provides: pkgconfig(libhif)
 GLib headers and libraries for libhif.
 
 %prep
-%setup -q -n %{libhif_version}
-
+#%setup -q -n %{libhif_version}
+%setup -q
 %build
 
 ./autogen.sh --prefix=/usr \
@@ -82,5 +82,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libhif*.la
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+*       Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.2.2-1
+-       Updated to new version.
 *       Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 0.2.0-1
 -       Updated version
