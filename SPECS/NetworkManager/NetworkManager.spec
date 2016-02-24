@@ -1,11 +1,11 @@
 Summary:	NetworkManager
 Name:		NetworkManager
-Version:	1.0.2
-Release:	4%{?dist}
+Version:	1.0.10
+Release:	1%{?dist}
 License:	LGPLv2+
-URL:		https://download.gnome.org/sources/NetworkManager/1.0/NetworkManager-1.0.2.tar.xz
+URL:		https://wiki.gnome.org/Projects/NetworkManager
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
-%define sha1 NetworkManager=e6183286935dd87a4885f187e533729a6d6a8e79
+%define sha1 NetworkManager=1c199fdfb9fff9e7f540d51952699ce815a12369
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -87,7 +87,7 @@ EOF
 %{_datadir}/doc/*  
 %{_datadir}/locale/*
 %{_datadir}/polkit-1/*
-/lib/udev/rules.d/77-nm-olpc-mesh.rules
+/lib/udev/rules.d/*.rules
 %files devel
 %defattr(-,root,root)
 %{_includedir}/NetworkManager/*.h
@@ -96,6 +96,8 @@ EOF
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  1.0.10-1
+- 	Upgrade to 1.0.10
 *	Mon Dec 14 2015	Anish Swaminathan<anishs@vmware.com> 1.0.2-4
 -	Adding the missing BuildRequires 
 *	Tue	Sep 22 2015	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 1.0.2-3

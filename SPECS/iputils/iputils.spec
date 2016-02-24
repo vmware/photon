@@ -1,13 +1,13 @@
 Summary:	Programs for basic networking
 Name:		iputils
-Version:	s20151218
+Version:	20151218
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/inetutils
 Group:		Applications/Communications
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://www.skbuff.net/iputils/%{name}-%{version}.tar.bz2
+Source0:	http://www.skbuff.net/iputils/%{name}-s%{version}.tar.bz2
 BuildRequires: libcap-devel openssl-devel gnutls-devel libgcrypt-devel
 Requires:		libcap 
 Requires:		openssl
@@ -18,7 +18,7 @@ Obsoletes:		inetutils
 %description
 The Iputils package contains programs for basic networking.
 %prep
-%setup -q
+%setup -q -n %{name}-s%{version}
 
 %build
 make %{?_smp_mflags} 
@@ -63,7 +63,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 
 %changelog
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
--   Updated to version 2.4.18
+*   	Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
+-   	Updated to version 2.4.18
 *	Tue Oct 20 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.2-1
 -	Initial build.	First version

@@ -1,15 +1,15 @@
 Summary:	Jax WS Reference Implementation
 Name:		jaxws-ri
-Version:	2.2.5
-Release:	2%{?dist}
+Version:	2.2.10
+Release:	1%{?dist}
 License:	CDDL-1.0, GPLv2
-URL:		http://jax-ws.java.net/2.2.5
+URL:		http://jax-ws.java.net/%{version}
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
-Source0:	http://jax-ws.java.net/2.2.5/%{name}-%{version}.tar.gz
-%define sha1 jaxws-ri=b48b4592bd75991838d1ec003158f6b4ae05ebff
+Source0:	http://jax-ws.java.net/%{version}/%{name}-%{version}.tar.gz
+%define sha1 jaxws-ri=0f2f00cfd3783f94fa940cc8ef678d47fb748c8c
 Requires: openjre >= 1.8.0.45
 
 %define _prefix /opt/%{name}-%{version}
@@ -44,8 +44,11 @@ rm -rf %{buildroot}/*
 %{_prefix}/distributionREADME_WMforJava2.0.txt
 %{_bindir}/*
 %{_libdir}/*.jar
+%{_libdir}/plugins/*.jar
 
 %changelog
+* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  2.2.10-1
+- 	Upgrade to 2.2.10
 *	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.2.5-2
 -	Updated dependency after repackaging openjdk.
 *	Thu Jul 9 2015 Sriram Nambakam <snambakam@vmware.com> 2.2.5
