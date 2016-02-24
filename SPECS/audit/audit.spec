@@ -1,9 +1,9 @@
 Summary:	Kernel Audit Tool
 Name:		audit
-Version:	2.4.4
-Release:	4%{?dist}
+Version:	2.5
+Release:	1%{?dist}
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1 audit=ad38f3352e21716e86d73b4e06cc41a5e85882ee
+%define sha1 audit=b684a8dca31776a4184044733cd5fd4b1b652298
 License:	GPLv2+
 Group:		System Environment/Security
 URL:		http://people.redhat.com/sgrubb/audit/
@@ -93,8 +93,6 @@ make install DESTDIR=%{buildroot}
 %{_mandir}/man8/*
 %{_var}/log/audit
 %{_var}/spool/audit
-%{_sysconfdir}/audispd/plugins.d
-%{_sysconfdir}/audit/rules.d
 %attr(750,root,root) %dir %{_sysconfdir}/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
 %attr(750,root,root) %dir %{_sysconfdir}/audisp
@@ -110,6 +108,7 @@ make install DESTDIR=%{buildroot}
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/audisp-remote.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/au-remote.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/libaudit.conf
+/usr/share/aclocal/audit.m4
 
 %files devel
 %defattr(-,root,root)
@@ -118,6 +117,8 @@ make install DESTDIR=%{buildroot}
 %{_includedir}/*.h
 
 %changelog
+* Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  2.5-1
+- Upgrade to 2.5
 * Fri Jan 29 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-4
 - Add directories for auditd service.
 * Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-3
