@@ -1,11 +1,11 @@
 Summary:        Common development macros for GNOME
 Name:           gnome-common
-Version:        3.14.0
+Version:        3.18.0
 Release:        1%{?dist}
 License:        GPL
 URL:            https://www.gnome.org/
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha1 gnome-common=555ac7de25821f243f1838faa4d602da50237303
+%define sha1 gnome-common=332e514961374a54dc065b86032eaeb03d6d3cee
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -35,16 +35,15 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 %{_bindir}/gnome-autogen.sh
-%{_bindir}/gnome-doc-common
 /usr/share/aclocal/ax_check_enable_debug.m4
 /usr/share/aclocal/ax_code_coverage.m4
 /usr/share/aclocal/gnome-code-coverage.m4
 /usr/share/aclocal/gnome-common.m4
 /usr/share/aclocal/gnome-compiler-flags.m4
-/usr/share/gnome-common/data/omf.make
-/usr/share/gnome-common/data/xmldocs.make
 
 %changelog
+* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.18.0-1
+- 	Upgrade to 3.18.0
 *       Tue Aug 11 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.14.0-1
 -       Add gnome-common v3.14.0
 
