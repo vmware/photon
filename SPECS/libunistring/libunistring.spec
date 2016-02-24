@@ -1,11 +1,11 @@
 Summary:	GNU Unicode string library
 Name:		libunistring
-Version:	0.9.5
+Version:	0.9.6
 Release: 	1%{?dist}
 License:	LGPLv3+
 Url:		http://www.gnu.org/software/libunistring/
 Source0:	http://ftp.gnu.org/gnu/libunistring/%{name}-%{version}.tar.xz
-%define sha1 libunistring=ccb81e629380385d682b71c8e96eba4a7ef43af7
+%define sha1 libunistring=d34dd5371c4b34863a880f2206e2d00532effdd6
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -45,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/unistring/*.h
 %{_libdir}/*.so
 %changelog
+*   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 0.9.6-1
+-   Updated to version 0.9.6
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 0.9.5-1
 -	Initial build. First version
 

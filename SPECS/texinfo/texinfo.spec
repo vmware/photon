@@ -1,14 +1,14 @@
 Summary:	Reading, writing, and converting info pages
 Name:		texinfo
-Version:	5.2
-Release:	3%{?dist}
+Version:	6.1
+Release:	1%{?dist}
 License:	GPLv3+
-URL:		http://www.gnu.org/software/texinfo/
+URL:		http://ftp.gnu.org/gnu/texinfo/texinfo-6.1.tar.xz
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	%{name}-%{version}.tar.xz
-%define sha1 texinfo=fbbc35c5857d11d1164c8445c78b66ad6d472072
+%define sha1 texinfo=d39c2e35ddb0aff6ebdd323ce53729bd215534fa
 %description
 The Texinfo package contains programs for reading, writing,
 and converting info pages.
@@ -34,7 +34,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/texinfo/*
 %dir %{_datarootdir}/texmf
 %{_datarootdir}/texmf/*
+%{_libdir}/*
 %changelog
+*   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 6.1-1
+-   Updated to version 6.1
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-3
 -	Handled locale files with macro find_lang
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 5.2-2
