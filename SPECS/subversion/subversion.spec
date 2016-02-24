@@ -1,14 +1,14 @@
 Summary:    	The Apache Subversion control system
 Name:       	subversion
-Version:    	1.8.13
+Version:    	1.9.3
 Release:    	5%{?dist}
 License:    	Apache License 2.0
 URL:        	http://subversion.apache.org/
 Group:      	Utilities/System
 Vendor:     	VMware, Inc.
 Distribution: 	Photon
-Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
-%define sha1 subversion=437cf662b7ed27d2254aa7ca334fdd74b49262ef
+Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
+%define sha1 subversion=27e8df191c92095f48314a415194ec37c682cbcf
 Requires:   	apr
 Requires:   	apr-util
 BuildRequires: 	apr-devel
@@ -43,7 +43,7 @@ make -j1 DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_bindir}/svn*
 %{_libdir}/libsvn_*.so.*
-%{_mandir}/*
+%{_datadir}/*
 
 %files devel
 %{_includedir}/*
@@ -52,6 +52,8 @@ make -j1 DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.9.3-1
+-   Updated to version 1.9.3
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-5
 -	Handled locale files with macro find_lang
 * 	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.13-4
