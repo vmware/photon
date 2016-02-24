@@ -1,15 +1,15 @@
 Summary:	Package manager
 Name:		rpm
-Version:	4.11.2
-Release:	6%{?dist}
+Version:	4.12.0.1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://rpm.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
-%define sha1 rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
-Source1:	http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
+Source0:	http://rpm.org/releases/rpm-4.12.x/%{name}-%{version}.tar.bz2
+%define sha1 rpm-4.12.0.1=d416bdb249b246b00b2d5d34c66e7f5a68a62524
+Source1:    http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:	rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
@@ -29,6 +29,7 @@ BuildRequires:	lua-devel
 BuildRequires:	popt-devel
 BuildRequires:	nss-devel
 BuildRequires:	elfutils-devel
+BuildRequires:  libarchive-devel
 %description
 RPM package manager
 
@@ -120,7 +121,6 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/macros
 %{_libdir}/rpm/mkinstalldirs
 %{_libdir}/rpm/pkgconfigdeps.sh
-%{_libdir}/rpm/platform
 %{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/rpm.daily
 %{_libdir}/rpm/rpm.log
@@ -128,7 +128,8 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/rpm2cpio.sh
 %{_libdir}/rpm/rpmdb_*
 %{_libdir}/rpm/rpmdeps
-%{_libdir}/rpm/rpmpopt-4.11.2
+%{_libdir}/rpm/rpmpopt-4.12.0.1
+%{_libdir}/rpm/appdata.prov
 %{_libdir}/rpm/rpmrc
 %{_libdir}/rpm/tgpg
 %{_libdir}/librpmbuild.so
@@ -155,9 +156,8 @@ rm -rf %{buildroot}
 %{_bindir}/rpmbuild
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
+%{_bindir}/rpm2archive
 %{_libdir}/rpm/osgideps.pl
-%{_libdir}/rpm/perldeps.pl
-%{_libdir}/rpm/macros.perl
 %{_libdir}/rpm/perl.prov
 %{_libdir}/rpm/perl.req
 %{_libdir}/rpm/perldeps.pl
@@ -194,6 +194,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*   Wed Feb 24 2016 Xiaolin Li <xiaolinl@vmware.com> 4.12.0.1-1
+-   Updated to version 4.12.0.1
 *   Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
 -   Moving build utils to a different package.
 *	Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
