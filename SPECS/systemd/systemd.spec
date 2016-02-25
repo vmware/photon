@@ -65,7 +65,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
             --localstatedir=/var                                    \
             --config-cache                                          \
             --with-rootprefix=                                      \
-            --with-rootlibdir=/usr/lib                                  \
+            --with-rootlibdir=/usr/lib                              \
             --enable-split-usr                                      \
             --disable-firstboot                                     \
             --disable-ldconfig                                      \
@@ -73,11 +73,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
             --without-python                                        \
             --disable-manpages                                      \
             --enable-pam                                            \
-            --docdir=%{_prefix}/share/doc/systemd-228                     \
-            --with-dbuspolicydir=/etc/dbus-1/system.d               \
-            --with-dbusinterfacedir=%{_prefix}/share/dbus-1/interfaces    \
-            --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services \
-            --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
+            --docdir=%{_prefix}/share/doc/systemd-228               \
 	    --enable-compat-libs \
 	    --with-sysvinit-path=/etc/rc.d/init.d \
 	    --with-rc-local-script-path-start=/etc/rc.d/rc.local

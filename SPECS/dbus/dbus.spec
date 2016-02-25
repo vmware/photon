@@ -1,20 +1,23 @@
 Summary:	DBus for systemd
 Name:		dbus
-Version:	1.8.8
-Release:	4%{?dist}
+Version:	1.11.0
+Release:	1%{?dist}
 License:	GPLv2+ or AFL
 URL:		http://www.freedesktop.org/wiki/Software/dbus
 Group:		Applications/File
 Source0:	http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
-%define sha1 dbus=e0d10e8b4494383c7e366ac80a942ba45a705a96
+%define sha1 dbus=b53ba143b3bc1808eabd4628379f59ea6836694c
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	expat
 BuildRequires:	systemd
 BuildRequires:	xz-devel
+BuildRequires:	libselinux-devel
 Requires:	expat
 Requires:	systemd
 Requires:	xz
+Requires:   shadow
+Requires:	libselinux
 %description
 The dbus package contains dbus.
 
@@ -30,16 +33,44 @@ It contains the libraries and header files to create applications
 ./configure --prefix=%{_prefix}                 \
             --sysconfdir=%{_sysconfdir}         \
             --localstatedir=%{_var}             \
-            --docdir=%{_datadir}/doc/dbus-1.8.8  \
-            --with-console-auth-dir=/run/console
-
+            --docdir=%{_datadir}/doc/dbus-1.11.0 \
+            --with-console-auth-dir=/run/console \
+            --without-systemdsystemunitdir \
+            --disable-doxygen-docs         \
+            --disable-xml-docs \
+			--enable-libaudit \
+			--with-system-socket=/run/dbus/system_bus_socket \
+			--with-system-pid-file=/run/dbus/messagebus.pid \
+			--with-dbus-user=dbus \
+			--enable-user-session \
+			--enable-selinux=yes
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+
 install -vdm755 %{buildroot}%{_lib}
-ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libdbus-1.so) %{buildroot}%{_libdir}/libdbus-1.so
-rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
+#ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libdbus-1.so) %{buildroot}%{_libdir}/libdbus-1.so
+#rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 #ln -sv %{buildroot}%{_sysconfdir}/machine-id %{buildroot}%{_sharedstatedir}/dbus
+
+%pre
+if ! getent group dbus >/dev/null; then
+	groupadd -g 18 messagebusruby
+fi
+if ! getent passwd messagebus >/dev/null; then
+	useradd -c "D-Bus Message Daemon User" -d /var/run/dbus -u 18 -g messagebus -s /bin/false messagebus
+fi
+
+%post 
+/sbin/ldconfig
+chown -v      dbus  /usr/libexec/dbus-daemon-launch-helper
+chmod -v      4750  /usr/libexec/dbus-daemon-launch-helper
+%preun
+%systemd_preun stop dbus.service dbus.socket
+
+%postun
+%systemd_postun
+
 %files
 %defattr(-,root,root)
 /etc/*
@@ -48,9 +79,9 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %{_oldincludedir}/*
 %{_bindir}/*
 %{_lib}/*
-/lib/*
+#/lib/*
 %{_libexecdir}/*
-%{_docdir}/*
+%{_datadir}/*
 %{_sharedstatedir}/*
 %exclude %{_libdir}/debug/*
 %exclude %{_libdir}/*.la
@@ -67,6 +98,8 @@ rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 %{_libdir}/*.so
 
 %changelog
+*   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 1.11.0-1
+-   Updated to version 1.11.0
 *	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.8-4
 -	Created devel sub-package
 *   Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 1.8.8-3
