@@ -1,11 +1,11 @@
 Summary:	The Automated Text and Program Generation Tool
 Name:		autogen
-Version:	5.18.6
+Version:	5.18.7
 Release:	1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/autogen/
 Source0:        ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
-%define sha1 autogen=044b40cf06db7da1159bafbeeeb5b0449fff1bed
+%define sha1 autogen=0fe4466094d4b583c3a45b234987f9850fd84f83
 Group:		System Environment/Tools
 Vendor:		VMware, Inc.
 BuildRequires:	guile-devel
@@ -79,10 +79,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.la
 
 %changelog
-*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 5.18.6-1
--   Updated to version 5.18.6
-*   Tue Sep 29 2015 Xiaolin Li <xiaolinl@vmware.com> 5.18.5-2
--   Create a seperate libopts package.
+*       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 5.18.7-1
+-       Updated version tp 5.16.7.
+*       Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 5.18.6-1
+-       Updated to version 5.18.6
+*       Tue Sep 29 2015 Xiaolin Li <xiaolinl@vmware.com> 5.18.5-2
+-       Create a seperate libopts package.
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 5.18.5-1
 -	Initial build. First version
 

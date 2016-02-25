@@ -1,14 +1,14 @@
 Summary:	Programs for finding and viewing man pages
 Name:		man-db
-Version:	2.6.6
-Release:	2%{?dist}
+Version:	2.7.5
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.nongnu.org/man-db
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:		%{name}-%{version}.tar.xz
-%define sha1 man-db=ba27924ef024527ad562017d956ffd3375bccc8d
+Source0:		%{name}-%{version}.tar.gz
+%define sha1 man-db=dbd822f8c6743da9fad95e0bac919b8f844d9264
 Requires:	libpipeline
 Requires:	gdbm
 Requires:	xz
@@ -49,7 +49,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/man-db/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
+%{_libdir}/tmpfiles.d/man-db.conf
 %changelog
+*       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 2.7.5-1
+-       Updated to new version.
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.6.6-2
 -	Handled locale files with macro find_lang
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.6.6-1

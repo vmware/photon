@@ -1,11 +1,11 @@
 Summary:	Libcap-2.24
 Name:		libcap
-Version:	2.24
-Release:	2%{?dist}
+Version:	2.25
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
-%define sha1 libcap=b2754cddb614567de445ffdaac7a00b9671b858a
+%define sha1 libcap=f0b102e4a68e1bbdcb6b143b63c34a250e473088
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -41,6 +41,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
+%{_sbindir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -50,7 +51,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_lib64dir}/libcap.so
 
 %changelog
-*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24-2
--   Moving static lib files to devel package.
+*       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 2.25-1
+-       Updating Version.
+*       Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24-2
+-       Moving static lib files to devel package.
 *	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.24-1
 -	Initial version

@@ -1,8 +1,8 @@
 %define _use_internal_dependency_generator 0
 Summary:	OpenJDK 
 Name:		openjdk
-Version:	1.8.0.51
-Release:	3%{?dist}
+Version:	1.8.0.72
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -10,7 +10,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 AutoReqProv: 	no
 Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJDK-%{version}-x86_64-bin.tar.xz
-%define sha1 OpenJDK=498263b52777406f02405ed610fa756f6b36f5df
+%define sha1 OpenJDK=0c705d7b13f4e22611d2da654209f469a6297f26
 %description
 The OpenJDK package installs java class library and javac java compiler. 
 
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 1.8.0.72-1
+-       Updated Verison.
 *	Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.8.0.51-3
 -	Change to use /var/opt path
 *	Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
