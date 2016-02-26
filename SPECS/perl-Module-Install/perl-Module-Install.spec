@@ -4,17 +4,19 @@
 
 Summary:        Standalone, extensible Perl module installer
 Name:           perl-Module-Install
-Version:        1.14
+Version:        1.16
 Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
 Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/Module-Install-%{version}.tar.gz
-%define sha1 Module-Install=255bff1bdf9e7b0f67eff15d0b4d52662c0f67d7
+%define sha1 Module-Install=fd0ad651247e6fb932925f4d7e270ec442a066e1
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
 BuildRequires:  perl
+BuildRequires:  perl-YAML-Tiny
+Requires:  perl-YAML-Tiny
 Requires:	perl
 
 %description
@@ -44,6 +46,8 @@ make test AUTOMATED_TESTING=1
 %{_mandir}/man3/*
 
 %changelog
+*	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com> 1.16-1
+-	Upgrade version to 1.16
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1
 -	Initial version.
 

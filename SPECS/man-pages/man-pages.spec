@@ -1,6 +1,6 @@
 Summary:	Man pages
 Name:		man-pages
-Version:	3.59
+Version:	4.04
 Release:	1%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
@@ -8,7 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/docs/man-pages/%{name}-%{version}.tar.xz
-%define sha1 man-pages=76eae3fb069a6df2195081408e7ea2784722385b
+%define sha1 man-pages=a8fe81cbea71d1b0bdf9e6d185dd5826da575010
 BuildArch:	noarch
 %description
 The Man-pages package contains over 1,900 man pages.
@@ -31,6 +31,8 @@ rm -vf %{buildroot}%{_mandir}/man5/passwd.5
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %changelog
+* 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.04-1
+- 	Upgrade to 4.04
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.59-1
 -	Initial build. First version
 
