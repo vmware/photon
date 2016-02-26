@@ -1,11 +1,11 @@
-Summary:	Cmake-3.0.2
+Summary:	Cmake-3.4.3
 Name:		cmake
-Version:	3.2.1
-Release:	2%{?dist}
+Version:	3.4.3
+Release:	1%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
-Source0:	http://www.cmake.org/files/v3.2/%{name}-%{version}.tar.gz
-%define sha1 cmake=53c1fe2aaae3b2042c0fe5de177f73ef6f7b267f
+Source0:	http://www.cmake.org/files/v3.4/%{name}-%{version}.tar.gz
+%define sha1 cmake=49e4f05d46d4752e514b19ba36bf97d20a7da66a
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -31,8 +31,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
 %changelog
-*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 3.2.1.2
--   Updated group.
+*       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 3.4.3-1
+-       Updated version.
+*       Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 3.2.1.2
+-       Updated group.
 *	Mon Apr 6 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.1-1
 -	Update to 3.2.1
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 3.0.2-1
