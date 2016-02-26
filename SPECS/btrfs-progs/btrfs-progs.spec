@@ -1,12 +1,12 @@
 Name:		btrfs-progs
-Version:	3.18.2
+Version:	4.4
 Release:	1%{?dist}
 Summary:	Userspace programs for btrfs
 Group:		System Environment/Base
 License:	GPLv2+
 URL:		http://btrfs.wiki.kernel.org/index.php/Main_Page
-Source0:	https://www.kernel.org/pub/linux/kernel/people/kdave/%{name}/%{name}-%{version}.tar.gz
-%define sha1 btrfs-progs=2d279d13c51f929055a6eefa2bd95d1daf2c0a93
+Source0:	https://www.kernel.org/pub/linux/kernel/people/kdave/%{name}/%{name}-v%{version}.tar.gz
+%define sha1 btrfs-progs=392dfb225fccec466e1fc95477f8ef25e24ba028
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	lzo-devel
@@ -30,9 +30,11 @@ You should install btrfs-progs-devel if you want to develop
 btrfs filesystem-specific programs.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q -n %{name}-v%{version}
 
 %build
+./autogen.sh
+%configure
 make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 
 %install
@@ -58,6 +60,7 @@ rm -rf %{buildroot}
 %{_sbindir}/btrfs-zero-log
 %{_sbindir}/btrfs-find-root
 %{_sbindir}/btrfs-show-super
+%{_sbindir}/btrfs-select-super
 
 %files devel
 %{_includedir}/*
@@ -65,5 +68,7 @@ rm -rf %{buildroot}
 %{_libdir}/libbtrfs.a
 
 %changelog
-* Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1
-- Initial version
+* 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.4-1
+- 	Upgrade to 4.4
+* 	Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1
+- 	Initial version
