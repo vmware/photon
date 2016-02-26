@@ -2,13 +2,13 @@
 
 Name:       	gobject-introspection
 Summary:    	Introspection system for GObject-based libraries
-Version:    	1.43.3
-Release:    	4%{?dist}
+Version:    	1.46.0
+Release:    	1%{?dist}
 Group:      	Development/Libraries
 License:    	GPLv2+, LGPLv2+, MIT
 URL:        	http://live.gnome.org/GObjectIntrospection
 Source0:    	%{name}-%{version}.tar.xz
-%define sha1 gobject-introspection=eb4db77dfb7bf26e25dbfc8d03eb38be7adfb7cc
+%define sha1 gobject-introspection=ca4842479b119da1c8d3fbf5006adcc46920ce72
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  gettext
@@ -99,9 +99,11 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %doc %{_mandir}/man1/*.gz
 
 %changelog
-*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-4
--   Moving static lib files to devel package.
-*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-3
--   Removing la files from packages.
+*       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.46.0-1
+-       Updated version.
+*       Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-4
+-       Moving static lib files to devel package.
+*       Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-3
+-       Removing la files from packages.
 *	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.43.3-2
 -	Added more requirements for devel subpackage.
