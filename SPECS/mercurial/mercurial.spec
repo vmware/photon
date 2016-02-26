@@ -1,14 +1,14 @@
 Summary:	Mercurial-3.1.2
 Name:		mercurial
-Version:	3.1.2
-Release:	4%{?dist}
+Version:	3.7.1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://mercurial.selenic.com/release/%{name}-%{version}.tar.gz
-%define sha1 mercurial=ae7e16454cee505da895c2497f09711f35287459
+%define sha1 mercurial=8ce55b297c6a62e987657498746eeca870301ffb
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
 Requires:	python2
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %exclude /var/opt/%{name}-%{version}/contrib/plan9
 %exclude /var/opt/%{name}-%{version}/build/temp.*
 %changelog
+*       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 3.7.1-1
+-       Updating Version.
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.1.2-4
 -	Edit post script.
 *	Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 3.1.2-3
