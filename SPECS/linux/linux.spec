@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	17%{?dist}
+Release:    	18%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -165,6 +165,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Feb 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-18
+-   Added rpcsec_gss_krb5 and nfs_fscache
 *   Mon Feb 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-17
 -   Added sysctl param to control weighted_cpuload() behavior
 *   Sun Feb 18 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.0-16
