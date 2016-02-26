@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	Docbook-xsl-1.78.1
 Name:		docbook-xsl
 Version:	1.78.1

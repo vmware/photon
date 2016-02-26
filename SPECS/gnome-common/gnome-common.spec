@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:        Common development macros for GNOME
 Name:           gnome-common
 Version:        3.18.0

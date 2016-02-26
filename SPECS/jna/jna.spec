@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	Java Native Access
 Name:		jna
 Version:	4.1.0

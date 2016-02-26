@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 # Got the intial spec from Fedora and modified it
 Summary:	An enhanced version of csh, the C shell
 Name:		tcsh
@@ -88,7 +89,8 @@ if [ ! -x %{_bindir}/tcsh ]; then
  mv /etc/shells.rpm /etc/shells
 fi
 
-%files -f tcsh.lang
+#%files -f tcsh.lang
+%files
 %defattr(-,root,root,-)
 %{_bindir}/tcsh
 %{_bindir}/csh

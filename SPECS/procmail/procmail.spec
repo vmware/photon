@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	Autonomous Mail Processor
 Name:		procmail
 Version:	3.22

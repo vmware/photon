@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.21

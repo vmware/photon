@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	Etcd-2.1.1
 Name:		etcd
 Version:	2.1.1
