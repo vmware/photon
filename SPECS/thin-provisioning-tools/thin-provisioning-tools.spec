@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary: 	Thin provisioning tools
 Name:		thin-provisioning-tools
 Version:	0.4.1

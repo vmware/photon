@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Name:           cloud-init
 Version:        0.7.6
 Release:        7%{?dist}

@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Name:           python-zope.interface
 Version:        4.1.3
 Release:        1%{?dist}

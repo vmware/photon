@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	libnss-ato
 Name:		libnss-ato
 Version:	2.3.6

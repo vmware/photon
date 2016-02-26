@@ -1,4 +1,5 @@
 %global security_hardening none
+%define debug_package %{nil}
 Summary:        A UNIX init scheme with service supervision
 Name:           runit
 Version:        2.1.2

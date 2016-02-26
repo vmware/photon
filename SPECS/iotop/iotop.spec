@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 Summary:	Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity. 
 Name:		iotop  
 Version:	0.6
