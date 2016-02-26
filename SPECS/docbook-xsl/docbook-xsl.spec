@@ -1,11 +1,11 @@
-Summary:	Docbook-xsl-1.78.1
+Summary:	Docbook-xsl-1.79.1
 Name:		docbook-xsl
-Version:	1.78.1
-Release:	2%{?dist}
+Version:	1.79.1
+Release:	1%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
-%define sha1 docbook-xsl=1d668c845bb43c65115d1a1d9542f623801cfb6f
+%define sha1 docbook-xsl=7487b2acc7106253bb77fcddc7e1a9788601ad23
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -20,15 +20,15 @@ allowing you to utilize transformations already written for that standard.
 %setup -q
 %build
 %install
-install -v -m755 -d %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.78.1 &&
+install -v -m755 -d %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1 &&
 
 cp -v -R VERSION common eclipse epub extensions fo highlighting html \
          htmlhelp images javahelp lib manpages params profiling \
          roundtrip slides template tests tools webhelp website \
          xhtml xhtml-1_1 \
-    %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.78.1
+    %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1
 
-pushd %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.78.1
+pushd %{buildroot}/usr/share/xml/docbook/xsl-stylesheets-1.79.1
 ln -s VERSION VERSION.xsl
 popd
 
@@ -46,23 +46,23 @@ if [ ! -f /etc/xml/catalog ]; then
 fi &&
 
 xmlcatalog --noout --add "rewriteSystem" \
-           "http://docbook.sourceforge.net/release/xsl/1.78.1" \
-           "/usr/share/xml/docbook/xsl-stylesheets-1.78.1" \
+           "http://docbook.sourceforge.net/release/xsl/1.79.1" \
+           "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
     /etc/xml/catalog &&
 
 xmlcatalog --noout --add "rewriteURI" \
-           "http://docbook.sourceforge.net/release/xsl/1.78.1" \
-           "/usr/share/xml/docbook/xsl-stylesheets-1.78.1" \
+           "http://docbook.sourceforge.net/release/xsl/1.79.1" \
+           "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
     /etc/xml/catalog &&
 
 xmlcatalog --noout --add "rewriteSystem" \
            "http://docbook.sourceforge.net/release/xsl/current" \
-           "/usr/share/xml/docbook/xsl-stylesheets-1.78.1" \
+           "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
     /etc/xml/catalog &&
 
 xmlcatalog --noout --add "rewriteURI" \
            "http://docbook.sourceforge.net/release/xsl/current" \
-           "/usr/share/xml/docbook/xsl-stylesheets-1.78.1" \
+           "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
     /etc/xml/catalog
 %postun
 rm -rf /etc/xml/catalog
@@ -73,7 +73,9 @@ rm -rf /etc/xml/catalog
 %{_docdir}/*
 
 %changelog
-*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.78.1-2
--   Updated group.
+*       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.79.1-1
+-       Updated version.
+*       Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.78.1-2
+-       Updated group.
 *	Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 1.78.1-1
 -	Initial build. First version
