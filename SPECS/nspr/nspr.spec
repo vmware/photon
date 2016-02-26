@@ -1,6 +1,6 @@
 Summary:	Platform-neutral API
 Name:		nspr
-Version:	4.11
+Version:	4.12
 Release:	1%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.mozilla.org/pub/mozilla.org/%{name}/releases/v%{version}/src/%{name}-%{version}.tar.gz
-%define sha1 nspr=171ba99640e1c4d8d5b8085f3a09622c05f9b7fc
+%define sha1 nspr=14fb67a0e686a5c662f92e7f59dfd10053f327dd
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
 for system level and libc like functions.
@@ -40,6 +40,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 %{_datarootdir}/aclocal/*
 %changelog
+*       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 4.12-1
+-       Updated to version 4.12
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11-1
 - 	Updated to version 4.11
 *	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 4.10.8-1
