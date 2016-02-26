@@ -1,7 +1,7 @@
 Summary:	Attr-2.4.47
 Name:		attr
 Version:	2.4.47
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	http://download.savannah.gnu.org/releases/attr/%{name}-%{version}.src.tar.gz
@@ -30,13 +30,14 @@ rm %{buildroot}/%{_libdir}/*.la
 
 #the man pages are already installed by man-pages package
 rm -rv %{buildroot}/%{_mandir}/man2
+rm -fv %{buildroot}%{_mandir}/man5/attr.5*
+rmdir "%{buildroot}%{_mandir}/man5"
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 %{_mandir}/man1/*
 %{_mandir}/man3/*
-%{_mandir}/man5/*
 %{_libdir}/*.so
 %{_bindir}/*
 /lib/*.so.*
@@ -44,5 +45,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/locale/*
 %{_docdir}/%{name}-%{version}/*
 %changelog
+* 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  2.4.47-2
+- 	Remove man pages provided by man-pages
 *	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.47-1
 -	Initial version
