@@ -1,14 +1,14 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
-Version:    2.50.0
-Release:    5%{?dist}
+Version:    2.53.90
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.50/%{name}-%{version}.tar.xz
-%define sha1 libsoup=8bd422bd5d19b5e2630bbb35dfb06354b1d56442
+%define sha1 libsoup=d8511f0a8a07e4f5125c9354be7d43d62ea55eb3
 BuildRequires:   glib
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
@@ -53,7 +53,7 @@ These are the additional language files of libsoup.
 
 %build
 export CFLAGS="%{optflags}"
-./configure  --prefix=%{_prefix}
+./configure  --prefix=%{_prefix} --disable-vala
 
 make %{?_smp_mflags}
 
@@ -84,6 +84,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %defattr(-,root,root)
 
 %changelog
+*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 2.53.90-1
+-   Updated version.
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-5
 -   Moving static lib files to devel package.
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-4
