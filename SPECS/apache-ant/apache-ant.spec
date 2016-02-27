@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
-Version:	1.9.4
-Release:	3%{?dist}
+Version:	1.9.6
+Release:	1%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-ant=01fe8219e50765beafc69de8b7886f882dee73ec
+%define sha1 apache-ant=de7c2287bca23fc32007b28e56c28f330cf7be26
 Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
@@ -17,7 +17,7 @@ Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.
 Requires: openjre >= 1.8.0.45, python2
 BuildRequires: openjre >= 1.8.0.45
 BuildRequires: openjdk >= 1.8.0.45
-%define _prefix /var/opt/apache-ant-1.9.4
+%define _prefix /var/opt/apache-ant-%{version}
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
 
@@ -30,7 +30,7 @@ The Ant package contains binaries for a build system
 tar xf %{SOURCE1}
 tar xf %{SOURCE2}
 %build
-ANT_DIST_DIR=/var/opt/apache-ant-1.9.4
+ANT_DIST_DIR=/var/opt/apache-ant-%{version}
 
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
 
@@ -46,7 +46,7 @@ export JAVA_HOME=/var/opt/OpenJDK-1.8.0.51-bin
 
 mkdir -p -m 700 %{buildroot}/var/opt
 
-cp -r /var/opt/apache-ant-1.9.4 %{buildroot}/var/opt
+cp -r /var/opt/apache-ant-%{version} %{buildroot}/var/opt
 
 cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/ 
 
@@ -66,6 +66,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_prefix}/maven-ant-tasks/*
 
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
+-   Updated to version 1.9.6
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.9.4-3
 -	Changed path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.4-2

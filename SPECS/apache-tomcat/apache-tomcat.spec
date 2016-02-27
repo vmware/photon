@@ -1,6 +1,6 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
-Version:	7.0.63
+Version:	7.0.68
 Release:	3%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
@@ -8,8 +8,8 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
-Source0:	http://mirrors.gigenet.com/apache/tomcat/tomcat-7/v7.0.63/src/%{name}-%{version}.tar.gz
-%define sha1 apache-tomcat=ddd520f6df2414f10b6b0832dcacd7889f2dbff0
+Source0:	http://mirrors.gigenet.com/apache/tomcat/tomcat-7/v7.0.68/bin/%{name}-%{version}.tar.gz
+%define sha1 apache-tomcat=3e8481f74968d80cb9cb0b7ca1a0ed40e4a707e7
 Requires: openjre >= 1.8.0.45
 
 %define _prefix /var/opt/%{name}-%{version}
@@ -23,7 +23,7 @@ The Apache Tomcat package contains binaries for the Apache Tomcat servlet contai
 
 %prep
 
-%setup -q
+%setup -qn %{name}-%{version}
 %build
 
 %install
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.68-1
+-   Upgraded to version 7.0.68
 *	Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 7.0.63-3
 -	Change path to /var/opt.
 *	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
