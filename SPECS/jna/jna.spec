@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
-Version:	4.1.0
-Release:	3%{?dist}
+Version:	4.2.1
+Release:	1%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -9,11 +9,11 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
-%define sha1 jna=c520c1be533619d3cbc3ad448d49a8f24ee60bda
+%define sha1 jna=30a1132f9ca6b3222eccd380a3f4149aa7df3f59
 Requires: openjre >= 1.8.0.45
 BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.4
 
-%define _prefix /var/opt/jna-4.1.0
+%define _prefix /var/opt/jna-4.2.1
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
@@ -31,7 +31,7 @@ Sources for JNA
 %setup -q
 %build
 ANT_HOME=/var/opt/apache-ant-1.9.4
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.51-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
 
 #disabling all tests
 $ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
@@ -65,6 +65,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
+-   Updating version
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 4.1.0-3
 -   Changing path to /var/optttt.
 *   Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.0-2

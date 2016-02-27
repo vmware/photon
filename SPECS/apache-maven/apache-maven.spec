@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -28,7 +28,7 @@ find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 %build
 MAVEN_DIST_DIR=/var/opt/apache-maven-3.3.9
 
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.51-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
 export ANT_HOME=/var/opt/apache-ant-1.9.4
 export PATH=$PATH:$ANT_HOME/bin
 
@@ -62,15 +62,17 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 3.3.9-2
+-   Updated JAVA_HOME path to point to latest JDK.
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.9-1
 -   Updated to version 3.3.9
 *   Tue Jan 5 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.3-4
 -   Increase build timeout from 600000 to 1200000 
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 3.3.3-3
--	Change path to /var/opt.
+-   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.3-2
--	Updated dependencies after repackaging openjdk.
-*	Thu Jul 9 2015 	Sarah Choi<sarahc@vmware.com> 3.3.3-1
--	Add a script to set environment variables for MAVEN 
-*	Fri May 22 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
--	Initial build.	First version
+-   Updated dependencies after repackaging openjdk.
+*   Thu Jul 9 2015 	Sarah Choi<sarahc@vmware.com> 3.3.3-1
+-   Add a script to set environment variables for MAVEN 
+*   Fri May 22 2015 Sriram Nambakam <snambakam@vmware.com> 1.9.4
+-   Initial build.	First version

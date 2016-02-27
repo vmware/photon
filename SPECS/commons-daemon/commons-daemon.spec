@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -24,7 +24,7 @@ The JNA package contains libraries for interop from Java to native libraries.
 %setup -q -n %{name}-%{version}-src
 %build
 ANT_HOME=/var/opt/apache-ant-1.9.4
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.51-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
 
 $ANT_HOME/bin/ant dist
 
@@ -58,9 +58,11 @@ chmod -R 755 $DIST_DIR
 %{_prefix}/*.jar
 
 %changelog
+*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.15-4
+-   Updated JAVA_HOME path to point to latest JDK.
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.0.15-3
--	Changing path to /var/opt.
+-   Changing path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-2
--	Updated dependencies after repackaging openjdk. 
+-   Updated dependencies after repackaging openjdk. 
 *   Wed Jul 15 2015 Sriram Nambakam <snambakam@vmware.com> 1.0.15-1
 -   Initial commit
