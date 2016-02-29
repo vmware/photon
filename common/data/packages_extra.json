@@ -115,6 +115,7 @@
         "rsync",
         "paramiko",
         "ecdsa",
-        "kexec-tools"
+        "kexec-tools",
+        "traceroute"
             ]
 }
