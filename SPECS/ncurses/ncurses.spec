@@ -1,15 +1,15 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
-Version:	6.0
-Release:	1%{?dist}
+Version:	5.9
+Release:	4%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.gnu.org/gnu/ncurses/%{name}-%{version}.tar.gz
-%define sha1 ncurses=acd606135a5124905da770803c05f1f20dd3b21c
-Provides:       libncurses.so.6()(64bit)
+%define sha1 ncurses=3e042e5f2c7223bffdaac9646a533b8c758b65b5
+Provides:       libncurses.so.5()(64bit)
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
@@ -47,14 +47,14 @@ ln -sfv libncurses.so %{buildroot}%{_libdir}/libcurses.so
 ln -sfv libncursesw.a %{buildroot}%{_libdir}/libcursesw.a
 ln -sfv libncurses.a %{buildroot}%{_libdir}/libcurses.a
 install -vdm 755  %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-ln -sv %{_lib}/libncursesw.so.6.0 %{buildroot}%{_libdir}/libncurses.so.6
+ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
 %defattr(-,root,root)
 %{_bindir}/captoinfo
-%{_bindir}/ncursesw6-config
+%{_bindir}/ncursesw5-config
 %{_bindir}/clear
 %{_bindir}/tabs
 %{_bindir}/tic
@@ -64,27 +64,46 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %{_bindir}/tput
 %{_bindir}/infotocap
 %{_bindir}/toe
-%{_libdir}/libmenuw.so.*
-%{_libdir}/libformw.so.*
-%{_libdir}/libmenuw.so.*
-%{_libdir}/libpanelw.so.*
-%{_libdir}/libpanelw.so.*
-%{_libdir}/libformw.so.*
+%{_libdir}/libmenuw.so.5
+%{_libdir}/libformw.so.5.9
+%{_libdir}/libmenuw.so.5.9
+%{_libdir}/libpanelw.so.5
+%{_libdir}/libpanelw.so.5.9
+%{_libdir}/libformw.so.5
 %{_datadir}/tabset/*
-%{_docdir}/ncurses-6.0/html/*
-%{_docdir}/ncurses-6.0/*.doc
+%{_docdir}/ncurses-5.9/html/*
+%{_docdir}/ncurses-5.9/*.doc
 %{_mandir}/man7/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man3/*
 %{_datadir}/terminfo/*
-%{_libdir}/libncursesw.so.*
-%{_libdir}/libncursesw.so.*
-%{_libdir}/libncurses.so.*
+%{_libdir}/libncursesw.so.5
+%{_libdir}/libncursesw.so.5.9
+%{_libdir}/libncurses.so.5
 %{_libdir}/terminfo
 
 %files devel
-%{_includedir}/*.h
+%{_includedir}/cursesm.h
+%{_includedir}/form.h
+%{_includedir}/cursslk.h
+%{_includedir}/ncurses.h
+%{_includedir}/cursesw.h
+%{_includedir}/termcap.h
+%{_includedir}/unctrl.h
+%{_includedir}/term.h
+%{_includedir}/eti.h
+%{_includedir}/ncurses_dll.h
+%{_includedir}/curses.h
+%{_includedir}/cursesapp.h
+%{_includedir}/menu.h
+%{_includedir}/tic.h
+%{_includedir}/panel.h
+%{_includedir}/etip.h
+%{_includedir}/term_entry.h
+%{_includedir}/cursesp.h
+%{_includedir}/nc_tparm.h
+%{_includedir}/cursesf.h
 %{_libdir}/libncurses.a
 %{_libdir}/libformw.a
 %{_libdir}/libpanel.a

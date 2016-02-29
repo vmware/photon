@@ -1,19 +1,22 @@
 %define _use_internal_dependency_generator 0
 Summary:	Contains the GNU compiler collection
 Name:		gcc
-Version:	5.3.0
-Release:	1%{?dist}
+Version:	4.8.2
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha1 gcc=0612270b103941da08376df4d0ef4e5662a2e9eb
+%define sha1 gcc=810fb70bd721e1d9f446b6503afe0a9088b62986
 Requires:	libstdc++-devel
 Requires:	libgcc-devel
 Requires:	libgomp-devel
 Requires:	gmp
+Requires:   glibc-devel
+Requires:   linux-api-headers
+Requires:   binutils
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
@@ -69,27 +72,27 @@ This package contains development headers and static library for libgomp
 
 %prep
 %setup -q
-sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
-sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
-
+case `uname -m` in
+	i?86) sed -i 's/^T_CFLAGS =$/& -fomit-frame-pointer/' gcc/Makefile.in ;;
+esac
+sed -i -e /autogen/d -e /check.sh/d fixincludes/Makefile.in
+mv -v libmudflap/testsuite/libmudflap.c++/pass41-frag.cxx{,.disable}
 install -vdm 755 ../gcc-build
 %build
 cd ../gcc-build
 SED=sed \
 ../%{name}-%{version}/configure \
 	--prefix=%{_prefix} \
-	--enable-languages=c,c++ \
 	--enable-shared \
 	--enable-threads=posix \
 	--enable-__cxa_atexit \
 	--enable-clocale=gnu \
- 	--enable-languages=c,c++ \
+	--enable-languages=c,c++ \
 	--disable-multilib \
 	--disable-bootstrap \
-	--with-system-zlib
-#	--disable-silent-rules
-#sed -i '/-D_FORTIFY_SOURCE=2 for preprocessor/,+2d' `dirname $(gcc --print-libgcc-file-name)`/../specs
-make
+	--with-system-zlib \
+	--disable-silent-rules
+make %{?_smp_mflags}
 %install
 pushd ../gcc-build
 make DESTDIR=%{buildroot} install
