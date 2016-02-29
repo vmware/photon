@@ -13,6 +13,16 @@ Provides:       libncurses.so.6()(64bit)
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
+
+%package compat
+Summary: Ncurses compatibility libraries
+Group: System Environment/Libraries
+Provides: libncurses.so.5()(64bit)
+
+%description compat
+This package contains the ABI version 5 of the ncurses libraries for
+compatibility.
+
 %package	devel
 Summary:	Header and development files for ncurses
 Requires:	%{name} = %{version}
@@ -21,6 +31,9 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q
 %build
+mkdir v6
+pushd v6
+ln -s ../configure .
 ./configure \
 	--prefix=%{_prefix} \
 	--mandir=%{_mandir} \
@@ -30,8 +43,24 @@ It contains the libraries and header files to create applications
 	--enable-widec \
 	--disable-silent-rules
 make %{?_smp_mflags}
+popd
+mkdir v5
+pushd v5
+ln -s ../configure .
+./configure \
+	--prefix=%{_prefix} \
+	--mandir=%{_mandir} \
+	--with-shared \
+	--without-debug \
+	--enable-pc-files \
+	--enable-widec \
+	--disable-silent-rules \
+	--with-abi-version=5
+make %{?_smp_mflags}
+popd
 %install
-make DESTDIR=%{buildroot} install
+make -C v5 DESTDIR=%{buildroot} install.libs
+make -C v6 DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libncursesw.so) %{buildroot}%{_libdir}/libncursesw.so
 for lib in ncurses form panel menu ; do \
@@ -49,8 +78,12 @@ ln -sfv libncurses.a %{buildroot}%{_libdir}/libcurses.a
 install -vdm 755  %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 ln -sv %{_lib}/libncursesw.so.6.0 %{buildroot}%{_libdir}/libncurses.so.6
 cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+%post compat -p /sbin/ldconfig
+%postun compat -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
 %{_bindir}/captoinfo
@@ -64,12 +97,7 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %{_bindir}/tput
 %{_bindir}/infotocap
 %{_bindir}/toe
-%{_libdir}/libmenuw.so.*
-%{_libdir}/libformw.so.*
-%{_libdir}/libmenuw.so.*
-%{_libdir}/libpanelw.so.*
-%{_libdir}/libpanelw.so.*
-%{_libdir}/libformw.so.*
+%{_libdir}/lib*.so.6*
 %{_datadir}/tabset/*
 %{_docdir}/ncurses-6.0/html/*
 %{_docdir}/ncurses-6.0/*.doc
@@ -78,10 +106,11 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %{_mandir}/man5/*
 %{_mandir}/man3/*
 %{_datadir}/terminfo/*
-%{_libdir}/libncursesw.so.*
-%{_libdir}/libncursesw.so.*
-%{_libdir}/libncurses.so.*
 %{_libdir}/terminfo
+
+%files compat
+%{_libdir}/lib*.so.5*
+%{_bindir}/ncursesw5-config
 
 %files devel
 %{_includedir}/*.h
