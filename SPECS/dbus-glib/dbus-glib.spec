@@ -36,6 +36,10 @@ Headers and static libraries for the D-Bus GLib bindings
 	--disable-gtk-doc
  
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 %post	-p /sbin/ldconfig

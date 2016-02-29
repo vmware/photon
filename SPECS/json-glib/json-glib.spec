@@ -52,6 +52,9 @@ Header files for the json-glib library.
 
 %{__make}
 
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 rm -rf $RPM_BUILD_ROOT
 

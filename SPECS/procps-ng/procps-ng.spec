@@ -30,6 +30,10 @@ It contains the libraries and header files to create applications
 	--disable-kill \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
+%check
+make VERBOSE=1 V=1 %{?_smp_mflags} check
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin

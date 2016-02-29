@@ -38,6 +38,10 @@ library.
             --enable-pcretest-libreadline     \
             --disable-static
 make %{?_smp_mflags}
+
+%check
+make check ; ./RunTest
+
 %install
 make DESTDIR=%{buildroot} install
 mv -v %{buildroot}/usr/lib/libpcre.so.* %{buildroot}/lib &&
