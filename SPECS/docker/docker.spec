@@ -1,14 +1,14 @@
 Summary:    Docker
 Name:       docker
-Version:    1.9.0
-Release:    2%{?dist}
+Version:    1.10.2
+Release:    1%{?dist}
 License:    ASL 2.0
 URL:        http://docs.docker.com
 Group:      Applications/File
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tar.gz
-%define sha1 docker=f5634a6c5336b0ea05e41b2690a91f43dabb8fd2
+Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz 
+%define sha1 docker=852e82ae0057f17c9a965569989abe92d0ea1606
 
 BuildRequires:  systemd
 Requires:       systemd
@@ -16,13 +16,13 @@ Requires:       systemd
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
 %prep
-%setup -q
+%setup -qn usr
 %build
 %install
 install -vdm755 %{buildroot}/bin
-mv -v %{_builddir}/%{name}-%{version}/bin/* %{buildroot}/bin/
-chmod +x %{buildroot}/bin/docker-%{version}
-ln -sfv docker-%{version} %{buildroot}/bin/docker
+mv -v local/bin/* %{buildroot}/bin/
+chmod +x %{buildroot}/bin/docker
+ln -sfv docker %{buildroot}/bin/docker
 install -vd %{buildroot}/lib/systemd/system
 
 cat > %{buildroot}/lib/systemd/system/docker.service <<- "EOF"
@@ -66,6 +66,8 @@ rm -rf %{buildroot}/*
 /bin/*
 /lib/systemd/system/docker.service
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.2-1
+-   Upgraded to version 1.10.2
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.9.0-2
 -   Add systemd to Requires and BuildRequires.
 -   Use systemctl to enable/disable service.

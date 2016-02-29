@@ -11,7 +11,7 @@ BuildArch:      x86_64
 Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.0.15-src.tar.gz
 %define sha1 commons-daemon=ca6a448d1d214f714e214b35809a2117568970e3
 Requires: openjre >= 1.8.0.45
-BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.4
+BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.6
 
 %define _prefix /var/opt/%{name}-%{version}
 %define _bindir %{_prefix}/bin
@@ -23,7 +23,7 @@ The JNA package contains libraries for interop from Java to native libraries.
 
 %setup -q -n %{name}-%{version}-src
 %build
-ANT_HOME=/var/opt/apache-ant-1.9.4
+ANT_HOME=/var/opt/apache-ant-1.9.6
 export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
 
 $ANT_HOME/bin/ant dist
@@ -39,7 +39,7 @@ cd $CURDIR
 
 %install
 
-ANT_HOME=/var/opt/apache-ant-1.9.4
+ANT_HOME=/var/opt/apache-ant-1.9.6
 DIST_DIR=%{buildroot}%{_prefix}
 
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
