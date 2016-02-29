@@ -1,18 +1,17 @@
-%global commit	ed470048eed1c50ca042d3fbc7ac4e5d86bd64d5
-
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
-Version:        0.5.2
+Version:        0.5.5
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
-Source0:        https://github.com/coreos/flannel/archive/%{commit}/flannel-ed47004.tar.gz
-%define sha1 flannel-ed47004=c71c695e51fc9adb81f0e94f13451a4fbf12fd16
+Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.zip
+%define sha1 flannel=835f5743510982ad436a2e030ea706c95262862a
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  etcd >= 2.0.0
 BuildRequires:  gcc
+BuildRequires:  unzip
 BuildRequires:  go
 Requires:       etcd >= 2.0.0
 
@@ -22,7 +21,7 @@ host OS for use with containers. flannel uses etcd to store the network
 configuration, allocated subnets, and additional data.
 
 %prep
-%setup -n %{name}-%{commit}
+%setup -n %{name}-%{version}
 
 %build
 ./build
@@ -43,5 +42,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/flanneld
 
 %changelog
+*   	 Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.5.5-1
+-   	 Upgraded to version 0.5.5
 *        Mon Aug 03 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.5.2-1
 -        Add flannel package to photon.
