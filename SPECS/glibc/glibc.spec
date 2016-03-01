@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -113,7 +113,7 @@ cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
 	group: files
 	shadow: files
 
-	hosts: files dns
+	hosts: files resolve
 	networks: files
 
 	protocols: files
@@ -175,6 +175,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+* 	Tue Mar 01 2016 Anish Swaminathan <anishs@vmware.com>  2.22-4
+- 	Use systemd-resolved for dns
 * 	Tue Feb 16 2016 Anish Swaminathan <anishs@vmware.com>  2.22-3
 - 	Added patch for CVE-2015-7547
 * 	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  2.22-2
