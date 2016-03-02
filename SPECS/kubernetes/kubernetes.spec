@@ -3,12 +3,12 @@
 
 Summary:	Kubernetes cluster management
 Name:		kubernetes
-Version:	1.0.2
+Version:	1.1.8
 Release:	1%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/GoogleCloudPlatform/kubernetes
 Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v%{version}/%{name}-v%{version}.tar.gz
-%define sha1 kubernetes-v%{version}.tar.gz=fb3b57031958b2604d2d7112133f147206803601
+%define sha1 kubernetes-v%{version}.tar.gz=496e4e214804df9271c1065150a9e553b518dd42
 Source1:	https://github.com/GoogleCloudPlatform/kubernetes/archive/%{commit}/kubernetes-e310e61.tar.gz
 %define sha1 kubernetes-e310e61=a77e22b1677450c94f7b5eaf50586bb6adcf7e6d
 Group:		Development/Tools
@@ -21,7 +21,7 @@ Requires:	shadow
 Kubernetes is an open source implementation of container cluster management.
 
 %prep -p exit
-%setup -qn "./kubernetes"
+%setup -qn %{name}
 tar xf %{SOURCE1}
 
 %build
@@ -33,7 +33,7 @@ tar -C tmp/ -xvf server/kubernetes-server-linux-amd64.tar.gz
 
 install -m 755 -d %{buildroot}%{_bindir}
 
-binaries=(kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubelet kubectl kubernetes hyperkube)
+binaries=(kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubelet kubectl hyperkube)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} tmp/kubernetes/server/bin/${bin}
@@ -89,6 +89,8 @@ getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
+-   Upgraded to version 1.1.8
 *	Mon Aug 3 2015 Tom Scanlan <tscanlan@vmware.com> 1.0.2-1
 -	bump up to latest release
 *	Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
