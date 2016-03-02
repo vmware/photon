@@ -71,6 +71,8 @@ make DESTDIR=%{buildroot} install
 %{_bindir}/easy*
 %{_sbindir}/mesos-*
 %{_libdir}/libmesos*
+%{_libdir}/libload*
+%{_libdir}/liblog*
 %{_libexecdir}/mesos/mesos-*
 %{_prefix}/etc/mesos/*
 %{_prefix}/share/mesos/*

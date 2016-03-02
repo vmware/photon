@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -10,8 +10,8 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}-src.tar.gz
 %define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
-Requires: openjre >= 1.8.0.45, apache-ant >= 1.9.4
-BuildRequires: openjre >= 1.8.0.45, apache-ant >= 1.9.4
+Requires: openjre >= 1.8.0.45, apache-ant >= 1.9.6
+BuildRequires: openjre >= 1.8.0.45, apache-ant >= 1.9.6
 BuildRequires: openjdk >= 1.8.0.45
 %define _prefix /var/opt/ant-contrib
 
@@ -22,12 +22,12 @@ The Ant Contrib project is a collection of tasks for Apache Ant.
 
 %setup -n %{name}
 %build
-ANT_HOME=/var/opt/apache-ant-1.9.4
+ANT_HOME=/var/opt/apache-ant-1.9.6
 export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
 mkdir -p -m 700 %{_prefix}
 $ANT_HOME/bin/ant -Ddist.dir="%{_prefix}" -Dproject.version="1.0b3" dist
 %install
-ANT_HOME=/var/opt/apache-ant-1.9.4
+ANT_HOME=/var/opt/apache-ant-1.9.6
 ANT_CONTRIB_DIST_DIR=%{buildroot}%{name}-%{version}
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p -m 700 %{buildroot}/var/opt
@@ -38,6 +38,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wi
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Wed Mar 02 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3.0-5
+-   Updated apache-ant to version 1.9.6
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0b3.0-4
 -   Updated JAVA_HOME path to point to latest.
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.0b3.0-2
