@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	19%{?dist}
+Release:    	20%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -18,6 +18,7 @@ Patch3:         double-tcp_mem-limits.patch
 Patch4:         veth-do-not-modify-ip_summed.patch
 Patch5:         sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch6:         watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch7:         SUNRPC-Ensure-that-we-wait-for-connections-to-comple.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -80,6 +81,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
 make mrproper
@@ -167,6 +169,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed Mar 02 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-20
+-   Patch: SUNRPC: Ensure that we wait for connections to complete
+    before retrying
 *   Fri Feb 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-19
 -   Disable watchdog under VMware hypervisor.
 *   Thu Feb 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-18
