@@ -1,13 +1,13 @@
 # Got the intial spec from Fedora and modified it
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
-Version:        1.14
-Release:        2%{?dist}
+Version:        1.15
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
 Source0:        http://search.cpan.org/CPAN/authors/id/I/IN/INGY/YAML-%{version}.tar.gz
-%define sha1 YAML=9124d31d1cf147e11dc90950ddc7041379d07cdf
+%define sha1 YAML=c297e548f0398f2cbd93ce593be083517538f5f5
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
@@ -81,6 +81,8 @@ make test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.15-1
+-   Updated to version 1.15
 *	Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 1.14-2
 -	Fix for multithreaded perl
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1

@@ -1,12 +1,12 @@
 # Got the intial spec from Fedora and modified it
 Summary:        Recursively scan Perl code for dependencies
 Name:           perl-Module-ScanDeps
-Version:        1.18
+Version:        1.20
 Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 Source0:        http://search.cpan.org/CPAN/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz 
-%define sha1 Module-ScanDeps=f12767be803f28e685be29e6bc9430361179de09
+%define sha1 Module-ScanDeps=d4fe7c14629b2bba7910e0b7260760893b4aff8b
 URL:            http://search.cpan.org/dist/Module-ScanDeps/
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -41,5 +41,7 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.20-1
+-   Upgraded to version 1.20
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.18-1
 -	Initial version.
