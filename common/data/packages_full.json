@@ -2,7 +2,7 @@
     "packages":["unzip", "gmp-devel", "sudo", "bzip2-devel", "XML-Parser", "intltool", "mercurial", "libsigc++", "boost", 
                 "libgomp-devel", "libstdc++-devel", "libgcc-devel", "gcc", "bison", "gdb", "libpipeline", "python2-devel", 
                 "python2-tools", "linux-api-headers","gawk","check", "libltdl", "libltdl-devel", "pcre-devel", "glib-devel", 
-                "glibc-devel", "glibc-lang", "zlib-devel", "gettext", "git", "git-lang", "autoconf", "perl", "perl-DBI","perl-Config-IniFiles",
+                "glibc-devel", "glibc-lang", "zlib-devel", "gettext", "git", "git-lang", "autoconf", "perl", "perl-DBI","perl-Config-IniFiles", "perl-File-HomeDir", "perl-File-Which",
                 "perl-DBIx-Simple", "perl-DBD-SQLite","perl-Exporter-Tiny","perl-JSON-XS","perl-List-MoreUtils","perl-Module-Install",
                 "perl-Module-ScanDeps","perl-Module-Build","perl-Object-Accessor","perl-Types-Serialiser","perl-WWW-Curl","perl-YAML-Tiny","perl-YAML","perl-common-sense","perl-libintl","perl-CGI","tcsh",
                 "gobject-introspection", "gobject-introspection-devel", "gobject-introspection-python", "procps-ng-devel", 
