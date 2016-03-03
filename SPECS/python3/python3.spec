@@ -1,14 +1,14 @@
 Summary:	A high-level scripting language
 Name:		python3
-Version:	3.4.3
-Release:	3%{?dist}
+Version:	3.5.1
+Release:	1%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1 Python=7ca5cd664598bea96eec105aa6453223bb6b4456
+%define sha1 Python=0186da436db76776196612b98bb9c2f76acfe90e
 Patch:          cgi3.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel
@@ -102,7 +102,7 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} altinstall
-chmod -v 755 %{buildroot}%{_libdir}/libpython3.4m.so.1.0
+chmod -v 755 %{buildroot}%{_libdir}/libpython3.5m.so.1.0
 %{_fixperms} %{buildroot}/*
 
 # Remove unused stuff
@@ -120,6 +120,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 #ln -s %{_bindir}/python3-config %{_bindir}/python-config
 #ln -s %{_libdir}/libpython3.4m.so %{_libdir}/libpython3.4.so
 
+%post libs
+export PYTHONHOME=/usr
+export PYTHONPATH=/usr/lib/python3.4
+
 %postun -p /sbin/ldconfig
 
 %clean
@@ -132,37 +136,37 @@ rm -rf %{buildroot}/*
 %{_bindir}/pyvenv*
 %{_bindir}/python*
 %{_bindir}/pip*
-%{_bindir}/easy_install-3.4
+%{_bindir}/easy_install-3.5
 %{_mandir}/*/*
 
-%dir %{_libdir}/python3.4
-%dir %{_libdir}/python3.4/site-packages
+%dir %{_libdir}/python3.5
+%dir %{_libdir}/python3.5/site-packages
 
 %{_libdir}/libpython3.so
-%{_libdir}/libpython3.4m.so
-%{_libdir}/libpython3.4m.so.1.0
-%{_libdir}/pkgconfig/python-3.4.pc
+%{_libdir}/libpython3.5m.so
+%{_libdir}/libpython3.5m.so.1.0
+%{_libdir}/pkgconfig/python-3.5.pc
 # Enable below if using 'make install' instead of 'make altinstall'
 #%{_libdir}/pkgconfig/python-3.4m.pc
 #%{_libdir}/pkgconfig/python3.pc
 
-%exclude %{_libdir}/python3.4/ctypes/test
-%exclude %{_libdir}/python3.4/distutils/tests
-%exclude %{_libdir}/python3.4/sqlite3/test
-%exclude %{_libdir}/python3.4/idlelib/idle_test
-%exclude %{_libdir}/python3.4/test
-%exclude %{_libdir}/python3.4/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.5/ctypes/test
+%exclude %{_libdir}/python3.5/distutils/tests
+%exclude %{_libdir}/python3.5/sqlite3/test
+%exclude %{_libdir}/python3.5/idlelib/idle_test
+%exclude %{_libdir}/python3.5/test
+%exclude %{_libdir}/python3.5/lib-dynload/_ctypes_test.*.so
 
 %files libs
 %defattr(-,root,root)
 %doc LICENSE README
-%{_libdir}/python3.4
-%exclude %{_libdir}/python3.4/ctypes/test
-%exclude %{_libdir}/python3.4/distutils/tests
-%exclude %{_libdir}/python3.4/sqlite3/test
-%exclude %{_libdir}/python3.4/idlelib/idle_test
-%exclude %{_libdir}/python3.4/test
-%exclude %{_libdir}/python3.4/lib-dynload/_ctypes_test.*.so
+%{_libdir}/python3.5
+%exclude %{_libdir}/python3.5/ctypes/test
+%exclude %{_libdir}/python3.5/distutils/tests
+%exclude %{_libdir}/python3.5/sqlite3/test
+%exclude %{_libdir}/python3.5/idlelib/idle_test
+%exclude %{_libdir}/python3.5/test
+%exclude %{_libdir}/python3.5/lib-dynload/_ctypes_test.*.so
 
 %files devel
 %defattr(-,root,root)
@@ -176,11 +180,13 @@ rm -rf %{buildroot}/*
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_libdir}/python3.4/lib2to3
+%{_libdir}/python3.5/lib2to3
 %{_bindir}/2to3*
 %{_bindir}/idle*
 
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
+-   Updated to version 3.5.1
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
 -	Edit post script.
 *	Wed Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
