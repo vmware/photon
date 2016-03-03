@@ -1,6 +1,6 @@
 Summary:	Programs for processing and formatting text
 Name:		groff
-Version:	1.22.2
+Version:	1.22.3
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/groff
@@ -8,7 +8,16 @@ Group:		Applications/Text
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/groff/%{name}-%{version}.tar.gz
-%define sha1 groff=37223941e25bb504bf54631daaabb01b147dc1d3
+%define sha1 groff=61a6808ea1ef715df9fa8e9b424e1f6b9fa8c091
+Provides:	perl(oop_fh.pl)
+Provides:	perl(main_subs.pl)
+Provides:   perl(man.pl)
+Provides:   perl(subs.pl)
+Requires: perl
+Requires: perl-DBI
+Requires: perl-DBIx-Simple
+Requires: perl-DBD-SQLite
+Requires: perl-File-HomeDir
 %description
 The Groff package contains programs for processing
 and formatting text.
@@ -16,13 +25,12 @@ and formatting text.
 %setup -q
 %build
 PAGE=letter ./configure \
-	--prefix=%{_prefix} 
-make %{?_smp_mflags}
+	--prefix=%{_prefix} \
+	--with-grofferdir=%{_datadir}/%{name}/%{version}/groffer
+make
 %install
 install -vdm 755 %{_defaultdocdir}/%{name}-1.22/pdf
 make DESTDIR=%{buildroot} install
-ln -sv eqn %{buildroot}%{_bindir}/geqn
-ln -sv tbl %{buildroot}%{_bindir}/gtbl
 rm -rf %{buildroot}%{_infodir}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -34,5 +42,7 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.22.3-1
+-   Updated to version 1.22.3
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.22.2-1
 -	Initial build. First version
