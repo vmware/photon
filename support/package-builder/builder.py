@@ -184,24 +184,29 @@ def buildSourcesList(specPath, yamlDir, singleFile=False):
                 if os.path.isfile(specFile) and specFile.endswith(".spec"):
                     spec=Specutils(specFile)
                     modified = len(spec.getPatchNames()) > 0
-                    ss=spec.getSourceURLs()
-                    for s in ss:
-                        if (s.startswith("http") or s.startswith("ftp")):
-                            ossname=strUtils.getPackageNameFromURL(s)
-                            ossversion=strUtils.getPackageVersionFromURL(s)
-                            if not singleFile:
-                                yamlFile = open(yamlDir+ossname+"-"+ossversion+".yaml", "w")
-                            yamlFile.write("vmwsource:"+ossname+":"+ossversion+":\n")
-                            yamlFile.write("  repository: VMWsource\n")
-                            yamlFile.write("  name: '"+ossname+"'\n")
-                            yamlFile.write("  version: '"+ossversion+"'\n")
-                            yamlFile.write("  url: "+s+"\n")
-                            yamlFile.write("  license: UNKNOWN\n")
-                            if modified:
-                                yamlFile.write("  modified: true\n")
-                            yamlFile.write("\n")
-                            if not singleFile:
-                                yamlFile.close()
+                    listSourceURLs=spec.getSourceURLs()
+                    ossname = spec.getBasePackageName()
+                    ossversion = spec.getVersion()
+                    url = None
+                    if len(listSourceURLs) > 0:
+                        sourceURL = listSourceURLs[0]
+                        if sourceURL.startswith("http") or sourceURL.startswith("ftp"):
+                            url = sourceURL;
+                        else:
+                            url=spec.getURL(ossname)
+                    if not singleFile:
+                        yamlFile = open(yamlDir+ossname+"-"+ossversion+".yaml", "w")
+                    yamlFile.write("vmwsource:"+ossname+":"+ossversion+":\n")
+                    yamlFile.write("  repository: VMWsource\n")
+                    yamlFile.write("  name: '"+ossname+"'\n")
+                    yamlFile.write("  version: '"+ossversion+"'\n")
+                    yamlFile.write("  url: "+str(url)+"\n")
+                    yamlFile.write("  license: UNKNOWN\n")
+                    if modified:
+                        yamlFile.write("  modified: true\n")
+                    yamlFile.write("\n")
+                    if not singleFile:
+                        yamlFile.close()
     if singleFile:
         yamlFile.close()
 

@@ -34,6 +34,7 @@ class Package(object):
         self.buildarch="x86_64"
         self.distribution="Photon"
         self.basePkgName=""
+        self.URL=""
         
         self.sources=[]
         self.checksums={}
