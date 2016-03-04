@@ -1,7 +1,7 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -39,12 +39,15 @@ install -vdm700 %{buildroot}/usr/var/spool/cron
 install -vd %{buildroot}%{_sysconfdir}/sysconfig/
 install -vd %{buildroot}%{_sysconfdir}/cron.d/
 install -vd %{buildroot}%{_sysconfdir}/cron.hourly
+install -vd %{buildroot}%{_sysconfdir}/cron.daily
+install -vd %{buildroot}%{_sysconfdir}/cron.weekly
+install -vd %{buildroot}%{_sysconfdir}/cron.monthly
 install -vd %{buildroot}/var/spool/anacron
 
 install -m 644 crond.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/crond
 install -m 644 contrib/anacrontab %{buildroot}%{_sysconfdir}/anacrontab
-install -c -m755 contrib/0hourly %{buildroot}%{_sysconfdir}/cron.d/0hourly
-install -c -m755 contrib/0anacron %{buildroot}%{_sysconfdir}/cron.hourly/0anacron
+install -c -m644 contrib/0hourly %{buildroot}%{_sysconfdir}/cron.d/0hourly
+install -c -m644 contrib/0anacron %{buildroot}%{_sysconfdir}/cron.hourly/0anacron
 install -m 644 contrib/dailyjobs %{buildroot}%{_sysconfdir}/cron.d/dailyjobs
 
 touch %{buildroot}%{_sysconfdir}/cron.deny
@@ -81,6 +84,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %dir %{_sysconfdir}/sysconfig/
 %dir %{_sysconfdir}/cron.d/
 %dir %{_sysconfdir}/cron.hourly
+%dir %{_sysconfdir}/cron.daily
+%dir %{_sysconfdir}/cron.weekly
+%dir %{_sysconfdir}/cron.monthly
 %{_sysconfdir}/anacrontab
 %{_sysconfdir}/cron.d/*
 %{_sysconfdir}/cron.deny
@@ -91,6 +97,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*   	Fri Mar 04 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-6
+-   	Add folders to sysconfdir.
 *   	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-5
 -   	Change default sysconfdir.
 *   	Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-4
