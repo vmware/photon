@@ -1,6 +1,6 @@
 Summary:	Time zone data
 Name:		tzdata
-Version:	2013i
+Version:	2016a
 Release:	1%{?dist}
 URL:		http://www.iana.org/time-zones
 License:	Public Domain
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha1 tzdata=0fe77c8cca50b5f20d73e9c2a5b4fadca34c1504
+%define sha1 tzdata=9ba86f3bfc1c7c3470eeb6963dd6ac84c9195d69
 BuildArch:	noarch
 %description
 Sources for time zone and daylight saving time data
@@ -39,5 +39,7 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_sysconfdir}/localtime
 %{_datadir}/*
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2016a-1
+-   Upgraded to version 2016a
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2013i-1
 -	Initial build. First version

@@ -5,13 +5,13 @@
 
 Summary:        Build and install Perl modules
 Name:           perl-Module-Build
-Version:        0.4214
+Version:        0.4216
 Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Build/
 Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/Module-Build-%{version}.tar.gz
-%define sha1 Module-Build=4da2002098518ae035a9f87e0749d9d57483d107
+%define sha1 Module-Build=5c834111722666be6da4bed7b159a184dad5f569
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
@@ -45,6 +45,8 @@ LANG=C TEST_SIGNATURE=1 MB_TEST_EXPERIMENTAL=1 ./Build test
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.4216-1
+-   Upgraded to version 0.4216
 *	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 0.4214-1
 -	Initial version.
 

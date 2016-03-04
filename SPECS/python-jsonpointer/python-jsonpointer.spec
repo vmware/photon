@@ -1,12 +1,12 @@
 Name:           python-jsonpointer
-Version:        1.7
+Version:        1.10
 Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
 Source0:        jsonpointer-%{version}.tar.gz
-%define sha1 jsonpointer=0dff85fd348b9adb4607ec47bd419fe33094474b
+%define sha1 jsonpointer=74db9372f71d8af9cd380e34fe1a0e274e6cd7cc
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -35,5 +35,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/jsonpointer
 
 %changelog
-* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
-- Initial packaging for Photon
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10-1
+-   Updated to version 1.10
+*   Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+-   Initial packaging for Photon
