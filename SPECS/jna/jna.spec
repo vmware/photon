@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -11,7 +11,7 @@ BuildArch:      x86_64
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
 %define sha1 jna=30a1132f9ca6b3222eccd380a3f4149aa7df3f59
 Requires: openjre >= 1.8.0.45
-BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.4
+BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.6
 
 %define _prefix /var/opt/jna-4.2.1
 
@@ -30,7 +30,7 @@ Sources for JNA
 
 %setup -q
 %build
-ANT_HOME=/var/opt/apache-ant-1.9.4
+ANT_HOME=/var/opt/apache-ant-1.9.6
 export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
 
 #disabling all tests
@@ -39,7 +39,7 @@ $ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*
 
 %install
 
-ANT_HOME=/var/opt/apache-ant-1.9.4
+ANT_HOME=/var/opt/apache-ant-1.9.6
 JNA_DIST_DIR=%{buildroot}%{_prefix}
 
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -65,6 +65,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+* 	Thu Mar 03 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-2
+    Updated the apache-ant version to 1.9.6
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
 -   Updating version
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 4.1.0-3
