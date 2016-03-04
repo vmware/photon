@@ -1,0 +1,12 @@
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index c350385..a71233f 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2243,6 +2243,7 @@ static void xs_tcp_setup_socket(struct work_struct *work)
+ 		/* We're probably in TIME_WAIT. Get rid of existing socket,
+ 		 * and retry
+ 		 */
++		transport->srcport = 0;
+ 		xs_tcp_force_close(xprt);
+ 		break;
+ 	case 0:

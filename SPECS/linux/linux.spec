@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	20%{?dist}
+Release:    	21%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -19,6 +19,7 @@ Patch4:         veth-do-not-modify-ip_summed.patch
 Patch5:         sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch6:         watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch7:         SUNRPC-Ensure-that-we-wait-for-connections-to-comple.patch
+Patch8:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -82,6 +83,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %build
 make mrproper
@@ -169,6 +171,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Fri Mar 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-21
+-   Patch: SUNRPC: Do not reuse srcport for TIME_WAIT socket.
 *   Wed Mar 02 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-20
 -   Patch: SUNRPC: Ensure that we wait for connections to complete
     before retrying
