@@ -5,6 +5,7 @@ Version:	0.165
 Release:	1%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
+URL:        	https://fedorahosted.org/elfutils/
 Source0:	elfutils-%{version}.tar.bz2
 %define sha1 elfutils=b994f2f31e6638415d7f8a3c0c7e04e6bc4ca4a9
 Vendor:		VMware, Inc.
