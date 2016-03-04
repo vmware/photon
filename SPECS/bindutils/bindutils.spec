@@ -29,12 +29,24 @@ make -C bin/dig %{?_smp_mflags}
 %install
 make -C bin/dig DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
+mkdir -p %{buildroot}/%{_sysconfdir}
+mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
+cat << EOF >> %{buildroot}/%{_sysconfdir}/named.conf
+zone "." in {
+    type master;
+    allow-update {none;}; // no DDNS by default
+};
+EOF
+echo "d /run/named 0755 named named - -" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/named.conf
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/man1/*
+%{_sysconfdir}/*
+%{_prefix}/lib/tmpfiles.d/named.conf
+
 
 %changelog
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.10.3-1
