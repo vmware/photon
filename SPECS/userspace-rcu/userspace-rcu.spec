@@ -3,7 +3,7 @@ Name:    userspace-rcu
 Version: 0.9.1
 Release: 1%{?dist}
 License: LGPLv2+
-URL: LGPLv2+
+URL: http://liburcu.org
 Source: %{name}-%{version}.tar.bz2
 %define sha1 userspace-rcu=ca1b603655c3c5bf5d5b6254117999e3ae5f6751
 Group:      Development/Tools

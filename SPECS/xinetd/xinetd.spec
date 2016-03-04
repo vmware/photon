@@ -6,7 +6,8 @@ License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
 Distribution: 	Photon
-Source0:	%{name}-%{version}.tar.gz
+URL:        	http://www.xinetd.org
+Source0:	https://github.com/xinetd-org/xinetd/archive/%{name}-%{version}.tar.gz
 %define sha1 xinetd=168d54aeb181e271e68f4c53847c3e6b2574dba6
 Source1:        xinetd.service
 
