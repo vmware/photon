@@ -1,6 +1,6 @@
 {
     "packages": ["gc", "libunistring", "libffi", "libltdl", "gmp", "guile", "openssl",
-                 "autogen", "ncurses", "ca-certificates", "libtasn1", "e2fsprogs", "nettle",
+                 "autogen", "ncurses", "ncurses-compat", "ca-certificates", "libtasn1", "e2fsprogs", "nettle",
                  "bzip2", "e2fsprogs-devel", "xz", "readline", "glibc", "sqlite-autoconf",
                  "bash", "python2", "python2-libs", "python-xml", "nspr", "gnutls", "filesystem", "libgcc", "krb5",
                  "libassuan", "libxml2", "expat", "gdbm", "openssl-devel", "popt", "curl",
