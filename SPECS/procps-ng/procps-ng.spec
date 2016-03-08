@@ -35,6 +35,8 @@ make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}/%{_libdir}/libprocps.so) %{buildroot}/%{_libdir}/libprocps.so
+install -vdm 755 %{buildroot}/%{_sbindir}
+ln -s %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
 find %{buildroot} -name '*.la' -delete
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -54,6 +56,7 @@ find %{buildroot} -name '*.la' -delete
 /bin/slabtop
 /bin/watch
 /bin/pkill
+%{_sbindir}/pidof
 %_datadir/locale/*
 %{_docdir}/procps-ng-3.3.11/FAQ
 %{_docdir}/procps-ng-3.3.11/bugs.md
