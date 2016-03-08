@@ -261,6 +261,7 @@ if __name__ == '__main__':
         retval = process.wait()
         list_rpms = rpm_list.split(" ")
         list_rpms = list(set(list_rpms))
+        list_rpms.sort()
         generate_pkginfo_text_file(list_rpms, options.pkginfo_json_file, options.pkginfo_txt_file)
 
     # Cleaning up for vmdk
