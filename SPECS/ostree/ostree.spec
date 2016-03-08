@@ -1,7 +1,7 @@
 Summary:	Git for operating system binaries
 Name:		ostree
 Version:	2015.7
-Release:	2%{?dist}
+Release:	3%{?dist}
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1 ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
 Source1:	91-ostree.preset
@@ -63,7 +63,7 @@ The %{name}-devel package includes the header files for the %{name} library
 
 %prep
 %autosetup -Sgit -n %{name}-%{version}
-git clone git://git.gnome.org/libglnx libglnx
+git clone https://github.com/GNOME/libglnx libglnx
 git clone https://github.com/mendsley/bsdiff bsdiff
 
 #pwd
@@ -126,8 +126,10 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
-*   Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 2015.7-2
--   Add dracut, mkinitcpio and libsoup as dependencies
+*   	Tue Mar 08 2016 Anish Swaminathan <anishs@vmware.com> 2015.7-3
+-   	Change git location for libglnx
+*   	Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 2015.7-2
+-   	Add dracut, mkinitcpio and libsoup as dependencies
 *	Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
 -	Updated the version
 *	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.11-1
