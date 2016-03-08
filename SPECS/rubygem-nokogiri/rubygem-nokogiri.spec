@@ -9,8 +9,8 @@ Summary: Nokogiri is an HTML, XML, SAX, and Reader parser.
 Group: Development/Languages
 License: MIT
 URL: https://rubygems.org/gems/nokogiri/
-Source0: https://rubygems.org/downloads/nokogiri-%{version}-java.gem
-%define sha1 nokogiri=c054b456b6227bc007565b35a24c5b97638b3049
+Source0: https://rubygems.org/downloads/nokogiri-%{version}.gem
+%define sha1 nokogiri=d6a374a969abd6105d19076558e57a5cbb10e484
 BuildRequires: ruby
 Requires: ruby
 %description
