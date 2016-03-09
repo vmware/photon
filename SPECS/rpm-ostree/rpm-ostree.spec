@@ -1,11 +1,11 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
-Version:        2015.7
+Version:        2015.11
 Release:        1%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
-%define sha1 rpm-ostree=9a0fa260d8671d9998b5f5509de1bbadd42f7127
-Source1:        libglnx-58a9a5c.tar.gz
-%define sha1 libglnx=ba892544e28201508450dd123a4ebd4dfe6d5ea7
+%define sha1 rpm-ostree=e849d88b2c583472568f1adb2cf96f0b2547b81c
+Source1:        libglnx-8a7943f.tar.gz
+%define sha1 libglnx=f5cb55a38e625fc0ed2a4e58d437f0aca39d72fb
 License:        LGPLv2+
 URL:            https://github.com/cgwalters/rpm-ostree
 Vendor:		VMware, Inc.
@@ -59,7 +59,7 @@ Includes the header files for the rpm-ostree library.
 
 %prep
 %setup -q
-cat /usr/src/photon/SOURCES/libglnx-58a9a5c.tar.gz | tar -xvvzf -
+cat /usr/src/photon/SOURCES/libglnx-8a7943f.tar.gz | tar -xvvzf -
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -77,8 +77,10 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/man*/*.gz
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/*.typelib
-
-
+%{_sysconfdir}/dbus-1/system.d/org.projectatomic.rpmostree1.conf
+%{_libdir}/systemd/system/rpm-ostreed.service
+%{_libexecdir}/rpm-ostreed
+%{_datadir}/dbus-1/system-services/org.projectatomic.rpmostree1.service
 
 %files devel
 %{_libdir}/lib*.so
@@ -87,5 +89,7 @@ find %{buildroot} -name '*.la' -delete
 %{_datadir}/gir-1.0/*-1.0.gir
 
 %changelog
+*   Wed Mar 09 2016 Xiaolin Li <xiaolinl@vmware.com> 2015.11-1
+-   Update ostree to 2015.11
 *	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
 -	Added new version of rpm-ostree
