@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -21,6 +21,7 @@ Patch1:   	http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-
 Patch2:   	http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-fhs-1.patch
 Patch3:		glibc-2.22-bindrsvport-blacklist.patch
 Patch4:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-upstream_fixes-1.patch
+Patch5:		glibc-2.22-res_query_assert.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -51,6 +52,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -175,6 +177,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+* 	Tue Mar 08 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  2.22-4
+- 	Added patch for res_qeury assertion with bad dns config
 * 	Tue Feb 16 2016 Anish Swaminathan <anishs@vmware.com>  2.22-3
 - 	Added patch for CVE-2015-7547
 * 	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  2.22-2

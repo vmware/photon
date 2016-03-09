@@ -1,0 +1,23 @@
+Submitted By:            Priyesh Padmavilasom <ppadmavilasom at vmware dot com>
+Date:                    2016-03-08
+Initial Package Version: 2.22
+Upstream Status:         Not Applicable
+Origin:                  Self
+Description:             This patch fixes an issue that could potentially
+                         set dns address headers without checking the content
+                         of the header. This issue was easily reproducible 
+                         with an ipv6 dns entry with ipv6 disabled or an
+                         ipv4 dns entry with ipv4 disabled.
+
+--- a/resolv/res_query.c	2015-08-04 23:42:21.000000000 -0700
++++ b/resolv/res_query.c	2016-03-08 13:05:17.000000000 -0800
+@@ -245,7 +245,8 @@
+ 	/* We simplify the following tests by assigning HP to HP2 or
+ 	   vice versa.  It is easy to verify that this is the same as
+ 	   ignoring all tests of HP or HP2.  */
+-	if (answerp2 == NULL || *resplen2 < (int) sizeof (HEADER))
++	if (answerp2 == NULL || *answerp2 == NULL
++            || *resplen2 < (int) sizeof (HEADER))
+ 	  {
+ 	    hp2 = hp;
+ 	  }
