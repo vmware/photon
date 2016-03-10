@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3.30
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -11,6 +11,7 @@ Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha1 bash=33b1bcc5dca1b72f28b2baeca6efa0d422097964
 Patch0:   http://www.linuxfromscratch.org/patches/downloads/bash/bash-4.3.30-upstream_fixes-2.patch
 Patch1:   fix-save_bash_input-segfault.patch
+Patch2:   bash-4.3.patch
 Provides:	/bin/sh
 Provides:	/bin/bash
 %description
@@ -27,6 +28,7 @@ These are the additional language files of bash.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -114,8 +116,8 @@ export LANG="${LANG:-C}"
 # End /etc/profile.d/i18n.sh
 EOF
 
-cat > %{buildroot}/etc/bashrc << "EOF"
-# Begin /etc/bashrc
+cat > %{buildroot}/etc/bash.bashrc << "EOF"
+# Begin /etc/bash.bashrc
 # Written for Beyond Linux From Scratch
 # by James Robertson <jameswrobertson@earthlink.net>
 # updated by Bruce Dubbs <bdubbs@linuxfromscratch.org>
@@ -149,7 +151,10 @@ fi
 
 unset RED GREEN NORMAL
 
-# End /etc/bashrc
+if test -n "$SSH_CONNECTION" -a -z "$PROFILEREAD"; then
+     . /etc/profile > /dev/null 2>&1
+fi
+# End /etc/bash.bashrc
 EOF
 
 
@@ -193,8 +198,8 @@ cat > %{buildroot}/etc/skel/.bashrc << "EOF"
 # programs are in /etc/profile.  System wide aliases and functions are
 # in /etc/bashrc.
 
-if [ -f "/etc/bashrc" ] ; then
-  source /etc/bashrc
+if [ -f "/etc/bash.bashrc" ] ; then
+  source /etc/bash.bashrc
 fi
 
 # End ~/.bashrc
@@ -237,8 +242,11 @@ rm -f /root/.bash_logout
 %defattr(-,root,root)
 
 %changelog
-* Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
-- Updated to version 4.3.30
+*       Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
+-       Adding compile options to load bash.bashrc file and
+        loading source file during non-inetractive non-login shell
+*       Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
+-       Updated to version 4.3.30
 *       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
 -       Adding post unstall section.
 *	Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
