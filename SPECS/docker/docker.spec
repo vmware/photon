@@ -20,10 +20,8 @@ Docker is a platform for developers and sysadmins to develop, ship and run appli
 %build
 %install
 install -vdm755 %{buildroot}/usr/bin
-install -vdm755 %{buildroot}/bin
 mv -v local/bin/* %{buildroot}/usr/bin/
 chmod +x %{buildroot}/usr/bin/docker
-ln -sfv docker %{buildroot}/bin/docker
 install -vd %{buildroot}/lib/systemd/system
 
 cat > %{buildroot}/lib/systemd/system/docker.service <<- "EOF"
@@ -64,7 +62,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-/bin/*
 %{_bindir}
 /lib/systemd/system/docker.service
 %changelog
