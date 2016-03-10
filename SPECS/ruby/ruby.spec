@@ -1,7 +1,7 @@
 Summary:	Ruby
 Name:		ruby
 Version:	2.3.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSDL
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -11,6 +11,8 @@ Source0:	http://cache.ruby-lang.org/pub/ruby/2.3/%{name}-%{version}.tar.gz
 %define sha1 ruby=2dfcf7f33bda4078efca30ae28cb89cd0e36ddc4
 BuildRequires:	openssl-devel
 BuildRequires:	ca-certificates
+BuildRequires:	readline-devel
+BuildRequires:	readline
 Requires:	ca-certificates
 Requires:	openssl
 Requires:	gmp
@@ -48,6 +50,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Tue Mar 09 2016 Divya Thaluru <dthaluru@vmware.com> 2.3.0-2
+-   Adding readline support
 *   Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.0-1
 -   Updated to 2.3.0-1
 *   Tue Apr 28 2015 Fabio Rapposelli <fabio@vmware.com> 2.2.1-2
