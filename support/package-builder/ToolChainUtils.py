@@ -94,10 +94,10 @@ class ToolChainUtils(object):
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
                     if package == "util-linux-devel":
-                        self.logger.info("No old verion of util-linux-devel exists, skip until the new version is built")
+                        self.logger.info("No old version of util-linux-devel exists, skip until the new version is built")
                         continue
                     if package == "flex-devel":
-                        self.logger.info("No old verion of flex-devel exists, skip until the new version is built")
+                        self.logger.info("No old version of flex-devel exists, skip until the new version is built")
                         continue
 
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
@@ -163,7 +163,7 @@ class ToolChainUtils(object):
             self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
             return None
     
-    def buildCoreToolChainPackages(self):
+    def buildCoreToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile):
         self.logger.info("Building core tool chain packages.....")
         chrootID=None
         try:
@@ -184,7 +184,7 @@ class ToolChainUtils(object):
                     raise Exception("creating chroot failed")
                 self.installToolChainRPMS(chrootID)
                 pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
-                pkgUtils.buildRPMSForGivenPackage(package, chrootID,destLogPath)
+                pkgUtils.buildRPMSForGivenPackage(package, chrootID, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
                 chrUtils.destroyChroot(chrootID)
                 chrootID=None
             self.logger.info("Successfully built toolchain")
@@ -209,10 +209,10 @@ class ToolChainUtils(object):
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
                     if package == "util-linux-devel":
-                        self.logger.info("No old verion of util-linux-devel exists, skip until the new version is built")
+                        self.logger.info("No old version of util-linux-devel exists, skip until the new version is built")
                         continue
                     if package == "flex-devel":
-                        self.logger.info("No old verion of flex-devel exists, skip until the new version is built")
+                        self.logger.info("No old version of flex-devel exists, skip until the new version is built")
                         continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise Exception("Input Error")

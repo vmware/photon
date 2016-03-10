@@ -1,0 +1,6 @@
+{
+    "dummy_package": { 
+        "files": ["path_to_file1_to_be_copied","path_to_file2_to_be_copied"], 
+        "macros": ["macro1 value1","macro2 value2"]
+    }
+}
