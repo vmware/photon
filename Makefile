@@ -216,7 +216,8 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
-                -w $(PHOTON_DATA_DIR)/pkg_info.json\
+                -w $(PHOTON_DATA_DIR)/pkg_info.json \
+                -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
@@ -485,6 +486,7 @@ check-packer-ovf-plugin:
                               -d $(PHOTON_DIST_TAG) \
                               -n $(PHOTON_BUILD_NUMBER) \
                               -v $(PHOTON_RELEASE_VERSION) \
+                              -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_OPTION) \
                               -l $(PHOTON_LOGS_DIR)
 

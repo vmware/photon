@@ -7,6 +7,8 @@ class ThreadPool(object):
     inactiveWorkerThreads=[]
     mapPackageToCycle={}
     listAvailableCyclicPackages=[]
+    listBuildOptionPackages=[]
+    pkgBuildOptionFile=""
     logger=None
     statusEvent=None
     
@@ -27,7 +29,14 @@ class ThreadPool(object):
         
     @staticmethod
     def addWorkerThread(workerThreadName):
-        workerThread = WorkerThread.WorkerThread(ThreadPool.statusEvent,workerThreadName,ThreadPool.mapPackageToCycle,ThreadPool.listAvailableCyclicPackages,ThreadPool.logger)
+        workerThread = WorkerThread.WorkerThread(
+				ThreadPool.statusEvent,
+				workerThreadName,
+				ThreadPool.mapPackageToCycle,
+				ThreadPool.listAvailableCyclicPackages,
+				ThreadPool.logger,
+				ThreadPool.listBuildOptionPackages,
+				ThreadPool.pkgBuildOptionFile)
         ThreadPool.mapWorkerThreads[workerThreadName]=workerThread
    
     @staticmethod

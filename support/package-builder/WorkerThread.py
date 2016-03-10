@@ -5,13 +5,15 @@ import ThreadPool
  
 class WorkerThread(threading.Thread):
     
-    def __init__(self,event,name,mapPackageToCycle,listAvailableCyclicPackages,logger):
+    def __init__(self,event,name,mapPackageToCycle,listAvailableCyclicPackages,logger,listBuildOptionPackages,pkgBuildOptionFile):
         threading.Thread.__init__(self)
         self.statusEvent=event
         self.name=name
         self.mapPackageToCycle=mapPackageToCycle
         self.listAvailableCyclicPackages=listAvailableCyclicPackages
         self.logger=logger
+        self.listBuildOptionPackages=listBuildOptionPackages
+        self.pkgBuildOptionFile=pkgBuildOptionFile
         
     def run(self):
         buildThreadFailed=False
@@ -23,7 +25,7 @@ class WorkerThread(threading.Thread):
             if pkg is None:
                 break
             self.logger.info("Thread "+self.name+" is building package:"+ pkg)
-            pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,"build-"+pkg)
+            pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
             t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))
             t.start()
             t.join()
