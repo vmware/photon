@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       16%{?dist}
+Release:       17%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -130,6 +130,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Mar 09 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-17
+-   Enable ACPI hotplug support in kernel config
 *   Sun Feb 14 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-16
 -   veth patch: don’t modify ip_summed
 *   Mon Feb 08 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-15
