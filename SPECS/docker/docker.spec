@@ -19,9 +19,10 @@ Docker is a platform for developers and sysadmins to develop, ship and run appli
 %setup -qn usr
 %build
 %install
+install -vdm755 %{buildroot}/usr/bin
 install -vdm755 %{buildroot}/bin
-mv -v local/bin/* %{buildroot}/bin/
-chmod +x %{buildroot}/bin/docker
+mv -v local/bin/* %{buildroot}/usr/bin/
+chmod +x %{buildroot}/usr/bin/docker
 ln -sfv docker %{buildroot}/bin/docker
 install -vd %{buildroot}/lib/systemd/system
 
@@ -64,6 +65,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 /bin/*
+%{_bindir}
 /lib/systemd/system/docker.service
 %changelog
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.2-1
