@@ -9,7 +9,7 @@ import shutil
 
 class PackageBuilder(object):
     
-    def __init__(self,mapPackageToCycles,listAvailableCyclicPackages,logName=None,logPath=None):
+    def __init__(self,mapPackageToCycles,listAvailableCyclicPackages,listBuildOptionPackages,pkgBuildOptionFile,logName=None,logPath=None):
         if logName is None:
             logName = "PackageBuilder"
         if logPath is None:
@@ -20,6 +20,8 @@ class PackageBuilder(object):
         self.mapPackageToCycles = mapPackageToCycles
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
         self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
+        self.listBuildOptionPackages=listBuildOptionPackages
+        self.pkgBuildOptionFile=pkgBuildOptionFile
         
     def prepareBuildRoot(self,chrootName,isToolChainPackage=False):
         chrootID=None
@@ -100,7 +102,7 @@ class PackageBuilder(object):
                 pkgUtils.installRPMSInAOneShot(chrootID,destLogPath)
                 self.logger.info("Finished installing the build time dependent packages......")
             pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
-            pkgUtils.buildRPMSForGivenPackage(package,chrootID,destLogPath)
+            pkgUtils.buildRPMSForGivenPackage(package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,destLogPath)
             self.logger.info("Successfully built the package:"+package)
         except Exception as e:
             self.logger.error("Failed while building package:" + package)

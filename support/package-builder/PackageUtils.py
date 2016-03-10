@@ -7,6 +7,8 @@ import re
 from time import sleep
 import PullSources
 from PackageInfo import SourcePackageInfo
+import json
+import collections
 
 class PackageUtils(object):
     
@@ -132,9 +134,17 @@ class PackageUtils(object):
                 self.logger.error("Multiple sources found for source:"+source+"\n"+ ",".join(sourcePath) +"\nUnable to determine one.")
                 raise Exception("Multiple sources found")
             self.logger.info("Copying... Source path :" + source + " Source filename: " + sourcePath[0])
-            shutil.copy2(sourcePath[0],  destDir)
+            shutil.copy2(sourcePath[0], destDir)
     
-    def buildRPMSForGivenPackage(self,package, chrootID,destLogPath=None):
+    def copyAdditionalBuildFiles(self,listAdditionalFiles,destDir):
+        cmdUtils = CommandUtils()
+        index=0
+        for source in listAdditionalFiles:
+            if os.path.exists(source):
+                shutil.copytree(source, destDir+str(index))
+                index = index + 1
+        
+    def buildRPMSForGivenPackage(self,package,chrootID,listBuildOptionPackages,pkgBuildOptionFile,destLogPath=None):
         self.logger.info("Building rpm's for package:"+package)
 
         listSourcesFiles = constants.specData.getSources(package)
@@ -152,11 +162,31 @@ class PackageUtils(object):
 #        if os.geteuid()==0:
         self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
         self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
-        
+
+        listAdditionalFiles = []
+        macros = []
+        if package in listBuildOptionPackages:
+            jsonData = open(pkgBuildOptionFile)
+            pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+            jsonData.close()
+            pkgs_sorted = pkg_build_option_json.items()
+            for pkg in pkgs_sorted:
+                p = str(pkg[0].encode('utf-8'))
+                if p == package:
+                    filelist = pkg[1]["files"]
+                    for f in filelist:
+                        listAdditionalFiles.append(str(f.encode('utf-8')))
+                    macrolist = pkg[1]["macros"]
+                    for macro in macrolist:
+                        macros.append(str(macro.encode('utf-8')))
+            
+            chrootAdditionalPath=chrootID+constants.topDirPath+"/ADDITIONAL"
+            self.copyAdditionalBuildFiles(listAdditionalFiles,chrootAdditionalPath)
+
         listRPMFiles=[]
         listSRPMFiles=[]
         try:
-            listRPMFiles,listSRPMFiles = self.buildRPM(chrootSpecPath+"/"+specName,chrootLogsFilePath, chrootCmd)
+            listRPMFiles,listSRPMFiles = self.buildRPM(chrootSpecPath+"/"+specName,chrootLogsFilePath,chrootCmd,package,macros)
         except Exception as e:
             self.logger.error("Failed while building rpm:"+package)
             raise e
@@ -176,11 +206,13 @@ class PackageUtils(object):
             SourcePackageInfo.addSRPMData(package,version,release,arch,srpmName)
 
     
-    def buildRPM(self,specFile,logFile,chrootCmd):
+    def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
         
         rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
         if not constants.rpmCheck:
             rpmBuildcmd+=" "+self.rpmbuildNocheckOption
+        for macro in macros:
+            rpmBuildcmd+=' --define \\\"%s\\\"' % macro
         rpmBuildcmd+=" "+self.rpmbuildBuildNum+" "+self.rpmbuildReleaseVer
         rpmBuildcmd+=" "+specFile
         

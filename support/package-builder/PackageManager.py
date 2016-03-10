@@ -26,6 +26,8 @@ class PackageManager(object):
         self.mapOutputThread={}
         self.mapThreadsLaunchTime={}
         self.listAvailableCyclicPackages=[]
+        self.listBuildOptionPackages=[]
+        self.pkgBuildOptionFile="" 
         
     def readPackageBuildData(self, listPackages):
         try:
@@ -87,24 +89,28 @@ class PackageManager(object):
     def buildToolChain(self):
         try:
             tUtils=ToolChainUtils()
-            tUtils.buildCoreToolChainPackages()
+            tUtils.buildCoreToolChainPackages(self.listBuildOptionPackages, self.pkgBuildOptionFile)
         except Exception as e:
             self.logger.error("Unable to build tool chain")
             self.logger.error(e)
             raise e
     
-    def buildToolChainPackages(self, buildThreads):
+    def buildToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
         self.buildToolChain()
         self.buildGivenPackages(constants.listToolChainPackages, buildThreads)
         
-    def buildPackages(self,listPackages, buildThreads):
-        self.buildToolChainPackages(buildThreads)
+    def buildPackages(self,listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
+        self.listBuildOptionPackages = listBuildOptionPackages
+        self.pkgBuildOptionFile = pkgBuildOptionFile
+        self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
         self.buildGivenPackages(listPackages, buildThreads)
     
     def initializeThreadPool(self,statusEvent):
         ThreadPool.clear()
         ThreadPool.mapPackageToCycle=self.mapPackageToCycle
         ThreadPool.listAvailableCyclicPackages=self.listAvailableCyclicPackages
+        ThreadPool.listBuildOptionPackages=self.listBuildOptionPackages
+        ThreadPool.pkgBuildOptionFile=self.pkgBuildOptionFile
         ThreadPool.logger=self.logger
         ThreadPool.statusEvent=statusEvent
         

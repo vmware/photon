@@ -27,7 +27,7 @@ def main():
     parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
     parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="../../common/data/build_install_options_all.json")
     parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
-    parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Numbeer of working threads")
+    parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Number of working threads")
     parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
     parser.add_option("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
     parser.add_option("-d",  "--dist", dest="dist",  default="")
@@ -37,6 +37,7 @@ def main():
     parser.add_option("-u",  "--enable-rpmcheck", dest="rpmCheck",  default=False, action ="store_true")
     parser.add_option("-a",  "--source-rpm-path",  dest="sourceRpmPath",  default="../../stage/SRPMS")
     parser.add_option("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../common/data/pkg_info.json")
+    parser.add_option("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -66,7 +67,9 @@ def main():
     
     if not os.path.isfile(options.inputJSONFile) and not options.installPackage:
         logger.error("Given JSON File is not a file:"+options.inputJSONFile)
-        errorFlag = True
+        errorFlag = True    
+    if not os.path.isfile(options.pkgBuildOptionFile):
+        logger.warning("Given JSON File is not a file:"+options.pkgBuildOptionFile)
         
     if options.inputRPMSPath is not None and not os.path.isdir(options.inputRPMSPath):
         logger.error("Given input RPMS Path is not a directory:"+options.publishRPMSPath)
@@ -104,6 +107,8 @@ def main():
         logger.info("JSON File :" + options.inputJSONFile)
     else:
         logger.info("Package to build:"+package)
+    
+    listBuildOptionPackages = get_packages_with_build_options(options.pkgBuildOptionFile)
 
     try:
         constants.initialize(options)
@@ -120,9 +125,9 @@ def main():
             pkgManager = PackageManager()
             pkgManager.buildToolChainPackages(options.buildThreads)
         elif options.installPackage:
-            buildAPackage(package, options.buildThreads)
+            buildAPackage(package, listBuildOptionPackages, options.pkgBuildOptionFile, options.buildThreads)
         else:
-            buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption,logger, options.buildThreads)
+            buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption, listBuildOptionPackages, options.pkgBuildOptionFile, logger, options.buildThreads)
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
@@ -210,13 +215,13 @@ def buildSourcesList(specPath, yamlDir, singleFile=False):
     if singleFile:
         yamlFile.close()
 
-def buildAPackage(package, buildThreads):
+def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
     listPackages=[]
     listPackages.append(package)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackages, buildThreads)
+    pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
 
-def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger, buildThreads):
+def buildPackagesFromGivenJSONFile(inputJSONFile, buildOption, listBuildOptionPackages, pkgBuildOptionFile, logger, buildThreads):
     listPackages = get_all_package_names(inputJSONFile)
 
     listPackagesToBuild=[]
@@ -226,7 +231,20 @@ def buildPackagesFromGivenJSONFile(inputJSONFile,buildOption,logger, buildThread
     logger.info("List of packages to build:")
     logger.info(listPackagesToBuild)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackagesToBuild, buildThreads)
+    pkgManager.buildPackages(listPackagesToBuild, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+
+def get_packages_with_build_options(pkg_build_options_file):
+    packages = []
+    if os.path.exists(pkg_build_options_file):
+        jsonData = open(pkg_build_options_file)
+        pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+        jsonData.close()
+        pkgs_sorted = pkg_build_option_json.items()
+        for pkg in pkgs_sorted:
+            p =  pkg[0].encode('utf-8')
+            packages.append(str(p))
+
+    return packages
     
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)
