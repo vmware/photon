@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -175,6 +175,9 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+* 	Fri Mar 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  2.22-4
+- 	Added patch for res_qeury assertion with bad dns config
+-       Details: https://sourceware.org/bugzilla/show_bug.cgi?id=19791
 * 	Tue Feb 16 2016 Anish Swaminathan <anishs@vmware.com>  2.22-3
 - 	Added patch for CVE-2015-7547
 * 	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  2.22-2
