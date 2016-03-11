@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -20,6 +20,7 @@ Patch5:         systemd-228-networking-fixes.patch
 Patch6:         systemd-228-cleanup-recv.patch
 Patch7:         systemd-228-fix-reading-routes.patch
 Patch8:         systemd-228-ipv6-disabled-fix.patch
+Patch9:        systemd-228-swap-disconnect-order-fix.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -60,6 +61,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 ./autogen.sh
@@ -123,6 +125,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-10
+-       Added patch for swap disconnect order
 *       Thu Mar 10 2016 XIaolin Li <xiaolinl@vmware.com> 228-9
 -       Enable manpages.
 *       Fri Feb 19 2016 Anish Swaminathan <anishs@vmware.com>  228-8
