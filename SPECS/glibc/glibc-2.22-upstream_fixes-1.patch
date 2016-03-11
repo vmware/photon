@@ -1048,7 +1048,16 @@ Description:             Various fixes identified upstream
  	struct timespec now, timeout, finish;
  	struct pollfd pfd[1];
  	int ptimeout;
-@@ -1040,6 +1167,8 @@
+@@ -1030,6 +1157,8 @@
+ 
+ 	int retval;
+  retry_reopen:
++	if (resplen2 != NULL)
++	  *resplen2 = 0;
+ 	retval = reopen (statp, terrno, ns);
+ 	if (retval <= 0)
+ 		return retval;
+@@ -1040,11 +1169,11 @@
  	int need_recompute = 0;
  	int nwritten = 0;
  	int recvresp1 = 0;
@@ -1057,6 +1066,11 @@ Description:             Various fixes identified upstream
  	int recvresp2 = buf2 == NULL;
  	pfd[0].fd = EXT(statp).nssocks[ns];
  	pfd[0].events = POLLOUT;
+-	if (resplen2 != NULL)
+-	  *resplen2 = 0;
+  wait:
+ 	if (need_recompute) {
+ 	recompute_resend:
 @@ -1203,55 +1332,56 @@
  		int *thisresplenp;
  
