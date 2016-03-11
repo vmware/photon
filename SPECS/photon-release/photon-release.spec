@@ -1,7 +1,7 @@
 Summary:	Photon release files
 Name:		photon-release
 Version:	1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
@@ -90,6 +90,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Fri Mar 11 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-2
+-       Update release to 2.
 *       Mon Jan 11 2016 Anish Swaminathan <anishs@vmware.com> 1.0-1
 -       Reset version to match with Photon version
 *       Mon Jan 04 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4
