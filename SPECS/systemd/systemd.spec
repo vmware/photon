@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -32,6 +32,9 @@ BuildRequires:	XML-Parser
 BuildRequires:	kbd
 BuildRequires:	kmod
 BuildRequires:	util-linux-devel
+BuildRequires:    libxslt
+BuildRequires:    docbook-xsl
+BuildRequires:    docbook-xml
 Requires:	kmod
 BuildRequires:	glib-devel
 Requires:	glib
@@ -71,7 +74,6 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
             --disable-ldconfig                                      \
             --disable-sysusers                                      \
             --without-python                                        \
-            --disable-manpages                                      \
             --enable-pam                                            \
             --docdir=%{_prefix}/share/doc/systemd-228                     \
             --with-dbuspolicydir=/etc/dbus-1/system.d               \
@@ -121,6 +123,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Thu Mar 10 2016 XIaolin Li <xiaolinl@vmware.com> 228-9
+-       Enable manpages.
 *       Fri Feb 19 2016 Anish Swaminathan <anishs@vmware.com>  228-8
 -       Added patch to get around systemd-networkd wait online timeout
 *       Sat Feb 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-7
