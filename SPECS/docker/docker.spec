@@ -31,7 +31,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/bin/docker -d -s overlay
+ExecStart=/bin/docker daemon -s overlay
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
