@@ -37,6 +37,7 @@
         "photon-release",
         "sed",
         "grep",
+        "lsof",
         "cpio",
         "gzip",
         "vim",
