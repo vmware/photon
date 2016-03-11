@@ -7,7 +7,7 @@
             "openssl-devel", "libselinux", "libxml2", "expat", "curl", "coreutils",
             "libsepol", "popt", "gobject-introspection", "rpm-devel", "db", "sqlite-autoconf",
             "nspr", "libxml2-devel", "hawkey-devel", "lua", "libarchive", "nss", "rpm", "librepo",
-            "librepo-devel", "dracut", "cracklib", "ncurses", "zlib", "file", "elfutils-libelf",
+            "librepo-devel", "dracut", "cracklib", "ncurses", "ncurses-compat", "zlib", "file", "elfutils-libelf",
             "libsoup", "device-mapper-libs", "hawkey", "readline", "libsoup-devel", "device-mapper",
             "mkinitcpio", "python2-libs", "python-xml", "dracut-tools", "libgsystem", "nettle-devel", "libhif",
             "libtasn1-devel", "libarchive-devel", "cracklib-dicts", "findutils", "efivar", "grub2",
