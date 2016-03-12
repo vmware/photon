@@ -1,0 +1,719 @@
+diff -uNr systemd-228/Makefile.am systemd-228-duid/Makefile.am
+--- systemd-228/Makefile.am	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/Makefile.am	2016-03-02 10:09:54.608710021 +0000
+@@ -5288,6 +5288,8 @@
+ libnetworkd_core_la_SOURCES = \
+ 	src/libsystemd-network/network-internal.h \
+ 	src/network/networkd.h \
++	src/network/networkd-conf.h \
++	src/network/networkd-conf.c \
+ 	src/network/networkd-link.h \
+ 	src/network/networkd-link.c \
+ 	src/network/networkd-netdev.h \
+@@ -5334,6 +5336,7 @@
+ 	src/network/networkd-util.c
+ 
+ nodist_libnetworkd_core_la_SOURCES = \
++	src/network/networkd-gperf.c \
+ 	src/network/networkd-network-gperf.c \
+ 	src/network/networkd-netdev-gperf.c
+ 
+@@ -5425,6 +5428,7 @@
+ 	org.freedesktop.network1.busname
+ 
+ gperf_gperf_sources += \
++	src/network/networkd-gperf.gperf \
+ 	src/network/networkd-network-gperf.gperf \
+ 	src/network/networkd-netdev-gperf.gperf
+ endif
+diff -uNr systemd-228/src/libsystemd-network/dhcp-identifier.c systemd-228-duid/src/libsystemd-network/dhcp-identifier.c
+--- systemd-228/src/libsystemd-network/dhcp-identifier.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/libsystemd-network/dhcp-identifier.c	2016-03-08 19:10:16.549834068 +0000
+@@ -45,7 +45,7 @@
+         if (r < 0)
+                 return r;
+ 
+-        unaligned_write_be16(&duid->type, DHCP6_DUID_EN);
++        unaligned_write_be16(&duid->type, DHCP_DUID_TYPE_EN);
+         unaligned_write_be32(&duid->en.pen, SYSTEMD_PEN);
+ 
+         *len = sizeof(duid->type) + sizeof(duid->en);
+diff -uNr systemd-228/src/libsystemd-network/dhcp-identifier.h systemd-228-duid/src/libsystemd-network/dhcp-identifier.h
+--- systemd-228/src/libsystemd-network/dhcp-identifier.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/libsystemd-network/dhcp-identifier.h	2016-03-08 19:09:50.035594522 +0000
+@@ -27,13 +27,23 @@
+ #include "sparse-endian.h"
+ #include "unaligned.h"
+ 
++typedef enum DHCPDUIDType {
++        DHCP_DUID_TYPE_RAW       = 0,
++        DHCP_DUID_TYPE_LLT       = 1,
++        DHCP_DUID_TYPE_EN        = 2,
++        DHCP_DUID_TYPE_LL        = 3,
++        DHCP_DUID_TYPE_UUID      = 4,
++        _DHCP_DUID_TYPE_MAX,
++        _DHCP_DUID_TYPE_INVALID  = -1,
++} DHCPDUIDType;
++
+ /* RFC 3315 section 9.1:
+  *      A DUID can be no more than 128 octets long (not including the type code).
+  */
+ #define MAX_DUID_LEN 128
+ 
+ struct duid {
+-        uint16_t type;
++        be16_t type;
+         union {
+                 struct {
+                         /* DHCP6_DUID_LLT */
+@@ -63,3 +73,32 @@
+ 
+ int dhcp_identifier_set_duid_en(struct duid *duid, size_t *len);
+ int dhcp_identifier_set_iaid(int ifindex, uint8_t *mac, size_t mac_len, void *_id);
++
++static inline int dhcp_validate_duid_len(be16_t duid_type, size_t duid_len) {
++        struct duid d;
++
++        assert_return(duid_len > 0 && duid_len <= MAX_DUID_LEN, -EINVAL);
++
++        switch (be16toh(duid_type)) {
++        case DHCP_DUID_TYPE_LLT:
++                if (duid_len <= sizeof(d.llt))
++                        return -EINVAL;
++                break;
++        case DHCP_DUID_TYPE_EN:
++                if (duid_len != sizeof(d.en))
++                        return -EINVAL;
++                break;
++        case DHCP_DUID_TYPE_LL:
++                if (duid_len <= sizeof(d.ll))
++                        return -EINVAL;
++                break;
++        case DHCP_DUID_TYPE_UUID:
++                if (duid_len != sizeof(d.uuid))
++                        return -EINVAL;
++                break;
++        default:
++                /* accept unknown type in order to be forward compatible */
++                break;
++        }
++        return 0;
++}
+diff -uNr systemd-228/src/libsystemd-network/dhcp6-protocol.h systemd-228-duid/src/libsystemd-network/dhcp6-protocol.h
+--- systemd-228/src/libsystemd-network/dhcp6-protocol.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/libsystemd-network/dhcp6-protocol.h	2016-03-08 19:11:23.522912072 +0000
+@@ -64,13 +64,6 @@
+ #define DHCP6_REB_TIMEOUT                       10 * USEC_PER_SEC
+ #define DHCP6_REB_MAX_RT                        600 * USEC_PER_SEC
+ 
+-enum {
+-        DHCP6_DUID_LLT                          = 1,
+-        DHCP6_DUID_EN                           = 2,
+-        DHCP6_DUID_LL                           = 3,
+-        DHCP6_DUID_UUID                         = 4,
+-};
+-
+ enum DHCP6State {
+         DHCP6_STATE_STOPPED                     = 0,
+         DHCP6_STATE_INFORMATION_REQUEST         = 1,
+diff -uNr systemd-228/src/libsystemd-network/network-internal.c systemd-228-duid/src/libsystemd-network/network-internal.c
+--- systemd-228/src/libsystemd-network/network-internal.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/libsystemd-network/network-internal.c	2016-03-05 01:11:32.488809001 +0000
+@@ -337,6 +337,34 @@
+         return 0;
+ }
+ 
++int config_parse_iaid_value(const char *unit,
++                            const char *filename,
++                            unsigned line,
++                            const char *section,
++                            unsigned section_line,
++                            const char *lvalue,
++                            int ltype,
++                            const char *rvalue,
++                            void *data,
++                            void *userdata) {
++        uint32_t iaid_value;
++        int r;
++
++        assert(filename);
++        assert(lvalue);
++        assert(rvalue);
++        assert(data);
++
++        if ((r = safe_atou32(rvalue, &iaid_value)) < 0) {
++                log_syntax(unit, LOG_ERR, filename, line, 0, "Unable to read IAID: %s", rvalue);
++                return r;
++        }
++
++        *((be32_t *)data) = htobe32(iaid_value);
++
++        return 0;
++}
++
+ void serialize_in_addrs(FILE *f, const struct in_addr *addresses, size_t size) {
+         unsigned i;
+ 
+diff -uNr systemd-228/src/libsystemd-network/network-internal.h systemd-228-duid/src/libsystemd-network/network-internal.h
+--- systemd-228/src/libsystemd-network/network-internal.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/libsystemd-network/network-internal.h	2016-03-05 00:21:30.051448662 +0000
+@@ -62,6 +62,10 @@
+                          const char *section, unsigned section_line, const char *lvalue,
+                          int ltype, const char *rvalue, void *data, void *userdata);
+ 
++int config_parse_iaid_value(const char *unit, const char *filename, unsigned line,
++                            const char *section, unsigned section_line, const char *lvalue,
++                            int ltype, const char *rvalue, void *data, void *userdata);
++
+ int net_get_unique_predictable_data(struct udev_device *device, uint64_t *result);
+ const char *net_get_name(struct udev_device *device);
+ 
+diff -uNr systemd-228/src/libsystemd-network/sd-dhcp-client.c systemd-228-duid/src/libsystemd-network/sd-dhcp-client.c
+--- systemd-228/src/libsystemd-network/sd-dhcp-client.c	2016-02-25 12:35:20.922338566 +0000
++++ systemd-228-duid/src/libsystemd-network/sd-dhcp-client.c	2016-03-09 04:50:31.887585611 +0000
+@@ -77,7 +77,7 @@
+                         } _packed_ ll;
+                         struct {
+                                 /* 255: Node-specific (RFC 4361) */
+-                                uint32_t iaid;
++                                be32_t iaid;
+                                 struct duid duid;
+                         } _packed_ ns;
+                         struct {
+@@ -292,6 +292,51 @@
+         return 0;
+ }
+ 
++int sd_dhcp_client_set_iaid_duid(sd_dhcp_client *client, be32_t iaid,
++                                 size_t duid_len, struct duid *duid) {
++        DHCP_CLIENT_DONT_DESTROY(client);
++        int r;
++        assert_return(client, -EINVAL);
++        zero(client->client_id);
++
++        client->client_id.type = 255;
++
++        /* If IAID is not configured, generate it. */
++        if (iaid == 0) {
++                r = dhcp_identifier_set_iaid(client->index, client->mac_addr,
++                                             client->mac_addr_len,
++                                             &client->client_id.ns.iaid);
++                if (r < 0)
++                        return r;
++        } else
++                client->client_id.ns.iaid = iaid;
++
++        /* If DUID is not configured, generate DUID-EN. */
++        if (duid_len == 0) {
++                r = dhcp_identifier_set_duid_en(&client->client_id.ns.duid,
++                                                &duid_len);
++                if (r < 0)
++                        return r;
++        } else {
++                r = dhcp_validate_duid_len(client->client_id.type,
++                                           duid_len - sizeof(client->client_id.type));
++                if (r < 0)
++                        return r;
++                memcpy(&client->client_id.ns.duid, duid, duid_len);
++        }
++
++        client->client_id_len = sizeof(client->client_id.type) + duid_len +
++                                sizeof(client->client_id.ns.iaid);
++
++        if (!IN_SET(client->state, DHCP_STATE_INIT, DHCP_STATE_STOPPED)) {
++                log_dhcp_client(client, "Configured IAID+DUID, restarting.");
++                client_stop(client, SD_DHCP_CLIENT_EVENT_STOP);
++                sd_dhcp_client_start(client);
++        }
++
++        return 0;
++}
++
+ int sd_dhcp_client_set_hostname(sd_dhcp_client *client,
+                                 const char *hostname) {
+         char *new_hostname = NULL;
+@@ -460,7 +505,6 @@
+         if (client->arp_type == ARPHRD_ETHER)
+                 memcpy(&packet->dhcp.chaddr, &client->mac_addr, ETH_ALEN);
+ 
+-        /* If no client identifier exists, construct an RFC 4361-compliant one */
+         if (client->client_id_len == 0) {
+                 size_t duid_len;
+ 
+diff -uNr systemd-228/src/libsystemd-network/sd-dhcp6-client.c systemd-228-duid/src/libsystemd-network/sd-dhcp6-client.c
+--- systemd-228/src/libsystemd-network/sd-dhcp6-client.c	2016-02-25 12:35:20.923338535 +0000
++++ systemd-228-duid/src/libsystemd-network/sd-dhcp6-client.c	2016-03-09 04:51:25.276192260 +0000
+@@ -184,41 +184,30 @@
+         return dhcp_identifier_set_duid_en(&client->duid, &client->duid_len);
+ }
+ 
+-int sd_dhcp6_client_set_duid(
+-                sd_dhcp6_client *client,
+-                uint16_t type,
+-                uint8_t *duid, size_t duid_len) {
++int sd_dhcp6_client_set_duid(sd_dhcp6_client *client, size_t duid_len,
++                             struct duid *duid) {
++        int r;
+         assert_return(client, -EINVAL);
+-        assert_return(duid, -EINVAL);
+-        assert_return(duid_len > 0 && duid_len <= MAX_DUID_LEN, -EINVAL);
+-
+         assert_return(IN_SET(client->state, DHCP6_STATE_STOPPED), -EBUSY);
+ 
+-        switch (type) {
+-        case DHCP6_DUID_LLT:
+-                if (duid_len <= sizeof(client->duid.llt))
+-                        return -EINVAL;
+-                break;
+-        case DHCP6_DUID_EN:
+-                if (duid_len != sizeof(client->duid.en))
+-                        return -EINVAL;
+-                break;
+-        case DHCP6_DUID_LL:
+-                if (duid_len <= sizeof(client->duid.ll))
+-                        return -EINVAL;
+-                break;
+-        case DHCP6_DUID_UUID:
+-                if (duid_len != sizeof(client->duid.uuid))
+-                        return -EINVAL;
+-                break;
+-        default:
+-                /* accept unknown type in order to be forward compatible */
+-                break;
++        if (duid_len > 0) {
++                r = dhcp_validate_duid_len(duid->type,
++                                           duid_len - sizeof(duid->type));
++                if (r < 0)
++                        return r;
++
++                memcpy(&client->duid, duid, duid_len);
++                client->duid_len = duid_len;
+         }
+ 
+-        client->duid.type = htobe16(type);
+-        memcpy(&client->duid.raw.data, duid, duid_len);
+-        client->duid_len = duid_len + sizeof(client->duid.type);
++        return 0;
++}
++
++int sd_dhcp6_client_set_iaid(sd_dhcp6_client *client, be32_t iaid) {
++        assert_return(client, -EINVAL);
++        assert_return(IN_SET(client->state, DHCP6_STATE_STOPPED), -EBUSY);
++
++        client->ia_na.id = iaid;
+ 
+         return 0;
+ }
+diff -uNr systemd-228/src/network/networkd-conf.c systemd-228-duid/src/network/networkd-conf.c
+--- systemd-228/src/network/networkd-conf.c	1970-01-01 00:00:00.000000000 +0000
++++ systemd-228-duid/src/network/networkd-conf.c	2016-03-09 04:49:44.986734341 +0000
+@@ -0,0 +1,133 @@
++/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
++
++/***
++  This file is part of systemd.
++
++  Copyright 2014 Tom Gundersen <teg@jklm.no>
++
++  systemd is free software; you can redistribute it and/or modify it
++  under the terms of the GNU Lesser General Public License as published by
++  the Free Software Foundation; either version 2.1 of the License, or
++  (at your option) any later version.
++
++  systemd is distributed in the hope that it will be useful, but
++  WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++  Lesser General Public License for more details.
++
++  You should have received a copy of the GNU Lesser General Public License
++  along with systemd; If not, see <http://www.gnu.org/licenses/>.
++ ***/
++
++#include <ctype.h>
++
++#include "conf-parser.h"
++#include "def.h"
++#include "dhcp-identifier.h"
++#include "networkd-conf.h"
++#include "string-table.h"
++
++int manager_parse_config_file(Manager *m) {
++        assert(m);
++
++        return config_parse_many(PKGSYSCONFDIR "/networkd.conf",
++                                 CONF_PATHS_NULSTR("systemd/networkd.conf.d"),
++                                 "DUID\0",
++                                 config_item_perf_lookup, networkd_gperf_lookup,
++                                 false, m);
++}
++
++static const char* const dhcp_duid_type_table[_DHCP_DUID_TYPE_MAX] = {
++        [DHCP_DUID_TYPE_RAW]  = "raw",
++        [DHCP_DUID_TYPE_LLT]  = "link-layer-time",
++        [DHCP_DUID_TYPE_EN]   = "vendor",
++        [DHCP_DUID_TYPE_LL]   = "link-layer",
++        [DHCP_DUID_TYPE_UUID] = "uuid"
++};
++DEFINE_PRIVATE_STRING_TABLE_LOOKUP_FROM_STRING(dhcp_duid_type, DHCPDUIDType);
++DEFINE_CONFIG_PARSE_ENUM(config_parse_dhcp_duid_type, dhcp_duid_type, DHCPDUIDType, "Failed to parse DHCP DUID type");
++
++int config_parse_dhcp_duid_raw(
++                const char *unit,
++                const char *filename,
++                unsigned line,
++                const char *section,
++                unsigned section_line,
++                const char *lvalue,
++                int ltype,
++                const char *rvalue,
++                void *data,
++                void *userdata) {
++        int r;
++        long byte;
++        char *cbyte, *pnext;
++        const char *pduid = (const char *)rvalue;
++        size_t count = 0, duid_len = 0;
++        Manager *m = userdata;
++
++        assert(filename);
++        assert(lvalue);
++        assert(rvalue);
++        assert(m);
++        assert(m->dhcp_duid_type != _DHCP_DUID_TYPE_INVALID);
++
++        switch (m->dhcp_duid_type) {
++        case DHCP_DUID_TYPE_LLT:
++                /* RawData contains DUID-LLT link-layer address (offset 6) */
++                duid_len = 6;
++                break;
++        case DHCP_DUID_TYPE_EN:
++                /* RawData contains DUID-EN identifier (offset 4) */
++                duid_len = 4;
++                break;
++        case DHCP_DUID_TYPE_LL:
++                /* RawData contains DUID-LL link-layer address (offset 2) */
++                duid_len = 2;
++                break;
++        case DHCP_DUID_TYPE_UUID:
++                /* RawData specifies UUID (offset 0) - fall thru */
++        case DHCP_DUID_TYPE_RAW:
++                /* First two bytes of RawData is DUID Type - fall thru */
++        default:
++                break;
++        }
++
++        if (m->dhcp_duid_type != DHCP_DUID_TYPE_RAW)
++                m->dhcp_duid.type = htobe16(m->dhcp_duid_type);
++
++        /* RawData contains DUID in format " NN:NN:NN... " */
++        while (true) {
++                r = extract_first_word(&pduid, &cbyte, ":", 0);
++                if (r < 0) {
++                        log_error("Failed to read DUID.");
++                        return -EINVAL;
++                }
++                if (r == 0)
++                        break;
++                if (duid_len >= MAX_DUID_LEN) {
++                        log_error("DUID length exceeds maximum length.");
++                        return -EINVAL;
++                }
++
++                errno = 0;
++                byte = strtol(cbyte, &pnext, 16);
++                if ((errno == ERANGE && (byte == LONG_MAX || byte == LONG_MIN))
++                    || (errno != 0 && byte == 0) || (cbyte == pnext)) {
++                        log_error("Invalid DUID byte: %s.", cbyte);
++                        return -EINVAL; 
++                }
++
++                /* If DHCP_DUID_TYPE_RAW, first two bytes holds DUID Type */
++                if ((m->dhcp_duid_type == DHCP_DUID_TYPE_RAW) && (count < 2)) {
++                        m->dhcp_duid.type |= (byte << (8 * count));
++                        count++;
++                        continue;
++                }
++
++                m->dhcp_duid.raw.data[duid_len++] = byte;
++        }
++
++        m->dhcp_duid_len = sizeof(m->dhcp_duid.type) + duid_len;
++
++        return 0;
++}
+diff -uNr systemd-228/src/network/networkd-conf.h systemd-228-duid/src/network/networkd-conf.h
+--- systemd-228/src/network/networkd-conf.h	1970-01-01 00:00:00.000000000 +0000
++++ systemd-228-duid/src/network/networkd-conf.h	2016-03-04 23:38:54.358051952 +0000
+@@ -0,0 +1,32 @@
++/*-*- Mode: C; c-basic-offset: 8; indent-tabs-mode: nil -*-*/
++
++#pragma once
++
++/***
++  This file is part of systemd.
++
++  Copyright 2014 Tom Gundersen <teg@jklm.no>
++
++  systemd is free software; you can redistribute it and/or modify it
++  under the terms of the GNU Lesser General Public License as published by
++  the Free Software Foundation; either version 2.1 of the License, or
++  (at your option) any later version.
++
++  systemd is distributed in the hope that it will be useful, but
++  WITHOUT ANY WARRANTY; without even the implied warranty of
++  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++  Lesser General Public License for more details.
++
++  You should have received a copy of the GNU Lesser General Public License
++  along with systemd; If not, see <http://www.gnu.org/licenses/>.
++***/
++
++#include "networkd.h"
++
++
++int manager_parse_config_file(Manager *m);
++
++const struct ConfigPerfItem* networkd_gperf_lookup(const char *key, unsigned length);
++
++int config_parse_dhcp_duid_type(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
++int config_parse_dhcp_duid_raw(const char *unit, const char *filename, unsigned line, const char *section, unsigned section_line, const char *lvalue, int ltype, const char *rvalue, void *data, void *userdata);
+diff -uNr systemd-228/src/network/networkd-dhcp4.c systemd-228-duid/src/network/networkd-dhcp4.c
+--- systemd-228/src/network/networkd-dhcp4.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/network/networkd-dhcp4.c	2016-03-05 03:32:51.425790425 +0000
+@@ -624,7 +624,13 @@
+ 
+         switch (link->network->dhcp_client_identifier) {
+         case DHCP_CLIENT_ID_DUID:
+-                /* Library defaults to this. */
++                /* If configured, apply user specified DUID and/or IAID */
++                r = sd_dhcp_client_set_iaid_duid(link->dhcp_client,
++                                                 link->network->iaid_value,
++                                                 link->manager->dhcp_duid_len,
++                                                 &link->manager->dhcp_duid);
++                if (r < 0)
++                        return r;
+                 break;
+         case DHCP_CLIENT_ID_MAC:
+                 r = sd_dhcp_client_set_client_id(link->dhcp_client,
+diff -uNr systemd-228/src/network/networkd-dhcp6.c systemd-228-duid/src/network/networkd-dhcp6.c
+--- systemd-228/src/network/networkd-dhcp6.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/network/networkd-dhcp6.c	2016-03-09 04:47:31.178808785 +0000
+@@ -232,6 +232,16 @@
+         if (r < 0)
+                 goto error;
+ 
++        r = sd_dhcp6_client_set_iaid(client, link->network->iaid_value);
++        if (r < 0)
++                goto error;
++
++        r = sd_dhcp6_client_set_duid(client,
++                                     link->manager->dhcp_duid_len,
++                                     &link->manager->dhcp_duid);
++        if (r < 0)
++                goto error;
++
+         r = sd_dhcp6_client_set_index(client, link->ifindex);
+         if (r < 0)
+                 goto error;
+diff -uNr systemd-228/src/network/networkd-gperf.gperf systemd-228-duid/src/network/networkd-gperf.gperf
+--- systemd-228/src/network/networkd-gperf.gperf	1970-01-01 00:00:00.000000000 +0000
++++ systemd-228-duid/src/network/networkd-gperf.gperf	2016-03-04 23:38:54.360051890 +0000
+@@ -0,0 +1,18 @@
++%{
++#include <stddef.h>
++#include "conf-parser.h"
++#include "networkd-conf.h"
++%}
++struct ConfigPerfItem;
++%null_strings
++%language=ANSI-C
++%define slot-name section_and_lvalue
++%define hash-function-name networkd_gperf_hash
++%define lookup-function-name networkd_gperf_lookup
++%readonly-tables
++%omit-struct-type
++%struct-type
++%includes
++%%
++DUID.Type,           config_parse_dhcp_duid_type,            0,            offsetof(Manager, dhcp_duid_type)
++DUID.RawData,        config_parse_dhcp_duid_raw,             0,            offsetof(Manager, dhcp_duid)
+diff -uNr systemd-228/src/network/networkd-link.c systemd-228-duid/src/network/networkd-link.c
+--- systemd-228/src/network/networkd-link.c	2016-02-25 12:35:35.578880571 +0000
++++ systemd-228-duid/src/network/networkd-link.c	2016-03-08 19:39:21.769597517 +0000
+@@ -2650,6 +2650,13 @@
+                                                            ARPHRD_ETHER);
+                                 if (r < 0)
+                                         return log_link_warning_errno(link, r, "Could not update MAC address in DHCP client: %m");
++
++                                r = sd_dhcp_client_set_iaid_duid(link->dhcp_client,
++                                                                 link->network->iaid_value,
++                                                                 link->manager->dhcp_duid_len,
++                                                                 &link->manager->dhcp_duid);
++                                if (r < 0)
++                                        return log_link_warning_errno(link, r, "Could not update DUID/IAID in DHCP client: %m");
+                         }
+ 
+                         if (link->dhcp6_client) {
+@@ -2659,6 +2666,17 @@
+                                                             ARPHRD_ETHER);
+                                 if (r < 0)
+                                         return log_link_warning_errno(link, r, "Could not update MAC address in DHCPv6 client: %m");
++
++                                r = sd_dhcp6_client_set_iaid(link->dhcp6_client,
++                                                             link->network->iaid_value);
++                                if (r < 0)
++                                        return log_link_warning_errno(link, r, "Could not update DHCPv6 IAID: %m");
++
++                                r = sd_dhcp6_client_set_duid(link->dhcp6_client,
++                                                             link->manager->dhcp_duid_len,
++                                                             &link->manager->dhcp_duid);
++                                if (r < 0)
++                                        return log_link_warning_errno(link, r, "Could not update DHCPv6 DUID: %m");
+                         }
+                 }
+         }
+diff -uNr systemd-228/src/network/networkd-manager.c systemd-228-duid/src/network/networkd-manager.c
+--- systemd-228/src/network/networkd-manager.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/network/networkd-manager.c	2016-03-04 23:38:54.360051890 +0000
+@@ -1025,6 +1025,8 @@
+         if (r < 0)
+                 return r;
+ 
++        m->dhcp_duid_type = _DHCP_DUID_TYPE_INVALID;
++
+         *ret = m;
+         m = NULL;
+ 
+diff -uNr systemd-228/src/network/networkd-network-gperf.gperf systemd-228-duid/src/network/networkd-network-gperf.gperf
+--- systemd-228/src/network/networkd-network-gperf.gperf	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/network/networkd-network-gperf.gperf	2016-03-02 10:08:21.910077851 +0000
+@@ -26,6 +26,7 @@
+ Match.Architecture,                     config_parse_net_condition,                     CONDITION_ARCHITECTURE,        offsetof(Network, match_arch)
+ Link.MACAddress,                        config_parse_hwaddr,                            0,                             offsetof(Network, mac)
+ Link.MTUBytes,                          config_parse_iec_size,                          0,                             offsetof(Network, mtu)
++Link.IAIDValue,                         config_parse_iaid_value,                        0,                             offsetof(Network, iaid_value)
+ Network.Description,                    config_parse_string,                            0,                             offsetof(Network, description)
+ Network.Bridge,                         config_parse_netdev,                            0,                             offsetof(Network, bridge)
+ Network.Bond,                           config_parse_netdev,                            0,                             offsetof(Network, bond)
+diff -uNr systemd-228/src/network/networkd-network.h systemd-228-duid/src/network/networkd-network.h
+--- systemd-228/src/network/networkd-network.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/network/networkd-network.h	2016-03-05 01:05:51.228958313 +0000
+@@ -31,6 +31,7 @@
+ #include "networkd-route.h"
+ #include "networkd-fdb.h"
+ #include "networkd-util.h"
++#include "sparse-endian.h"
+ 
+ #define DHCP_ROUTE_METRIC 1024
+ #define IPV4LL_ROUTE_METRIC 2048
+@@ -129,6 +130,7 @@
+ 
+         struct ether_addr *mac;
+         unsigned mtu;
++        be32_t iaid_value;
+ 
+         bool lldp;
+ 
+diff -uNr systemd-228/src/network/networkd.c systemd-228-duid/src/network/networkd.c
+--- systemd-228/src/network/networkd.c	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/network/networkd.c	2016-03-09 04:46:38.578940271 +0000
+@@ -23,6 +23,7 @@
+ 
+ #include "capability-util.h"
+ #include "networkd.h"
++#include "networkd-conf.h"
+ #include "signal-util.h"
+ #include "user-util.h"
+ 
+@@ -91,6 +92,10 @@
+                 goto out;
+         }
+ 
++        r = manager_parse_config_file(m);
++        if (r < 0)
++                log_warning_errno(r, "Failed to parse configuration file: %m");
++
+         r = manager_load_config(m);
+         if (r < 0) {
+                 log_error_errno(r, "Could not load configuration files: %m");
+diff -uNr systemd-228/src/network/networkd.h systemd-228-duid/src/network/networkd.h
+--- systemd-228/src/network/networkd.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/network/networkd.h	2016-03-04 23:38:54.358051952 +0000
+@@ -37,6 +37,7 @@
+ #include "networkd-address-pool.h"
+ #include "networkd-link.h"
+ #include "networkd-util.h"
++#include "dhcp-identifier.h"
+ 
+ struct Manager {
+         sd_netlink *rtnl;
+@@ -63,6 +64,10 @@
+         LIST_HEAD(AddressPool, address_pools);
+ 
+         usec_t network_dirs_ts_usec;
++
++        DHCPDUIDType dhcp_duid_type;
++        size_t dhcp_duid_len;
++        struct duid dhcp_duid;
+ };
+ 
+ extern const char* const network_dirs[];
+diff -uNr systemd-228/src/systemd/sd-dhcp-client.h systemd-228-duid/src/systemd/sd-dhcp-client.h
+--- systemd-228/src/systemd/sd-dhcp-client.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/systemd/sd-dhcp-client.h	2016-03-05 03:01:11.147477242 +0000
+@@ -29,6 +29,7 @@
+ 
+ #include "sd-event.h"
+ #include "sd-dhcp-lease.h"
++#include "sparse-endian.h"
+ 
+ #include "_sd-common.h"
+ 
+@@ -42,6 +43,7 @@
+         SD_DHCP_CLIENT_EVENT_RENEW              = 4,
+ };
+ 
++struct duid;
+ typedef struct sd_dhcp_client sd_dhcp_client;
+ 
+ typedef void (*sd_dhcp_client_cb_t)(sd_dhcp_client *client, int event,
+@@ -59,6 +61,8 @@
+                            size_t addr_len, uint16_t arp_type);
+ int sd_dhcp_client_set_client_id(sd_dhcp_client *client, uint8_t type,
+                                  const uint8_t *data, size_t data_len);
++int sd_dhcp_client_set_iaid_duid(sd_dhcp_client *client, be32_t iaid,
++                                 size_t duid_len, struct duid *duid);
+ int sd_dhcp_client_get_client_id(sd_dhcp_client *client, uint8_t *type,
+                                  const uint8_t **data, size_t *data_len);
+ int sd_dhcp_client_set_mtu(sd_dhcp_client *client, uint32_t mtu);
+diff -uNr systemd-228/src/systemd/sd-dhcp6-client.h systemd-228-duid/src/systemd/sd-dhcp6-client.h
+--- systemd-228/src/systemd/sd-dhcp6-client.h	2015-11-18 07:59:06.000000000 +0000
++++ systemd-228-duid/src/systemd/sd-dhcp6-client.h	2016-03-08 19:15:39.763557526 +0000
+@@ -28,6 +28,7 @@
+ 
+ #include "sd-event.h"
+ #include "sd-dhcp6-lease.h"
++#include "sparse-endian.h"
+ 
+ #include "_sd-common.h"
+ 
+@@ -41,6 +42,7 @@
+         SD_DHCP6_CLIENT_EVENT_INFORMATION_REQUEST       = 13,
+ };
+ 
++struct duid;
+ typedef struct sd_dhcp6_client sd_dhcp6_client;
+ 
+ typedef void (*sd_dhcp6_client_cb_t)(sd_dhcp6_client *client, int event,
+@@ -52,8 +54,9 @@
+ int sd_dhcp6_client_set_local_address(sd_dhcp6_client *client, const struct in6_addr *local_address);
+ int sd_dhcp6_client_set_mac(sd_dhcp6_client *client, const uint8_t *addr,
+                             size_t addr_len, uint16_t arp_type);
+-int sd_dhcp6_client_set_duid(sd_dhcp6_client *client, uint16_t type, uint8_t *duid,
+-                             size_t duid_len);
++int sd_dhcp6_client_set_duid(sd_dhcp6_client *client, size_t duid_len,
++                             struct duid *duid);
++int sd_dhcp6_client_set_iaid(sd_dhcp6_client *client, be32_t iaid);
+ int sd_dhcp6_client_set_information_request(sd_dhcp6_client *client, int enabled);
+ int sd_dhcp6_client_get_information_request(sd_dhcp6_client *client, int *enabled);
+ int sd_dhcp6_client_set_request_option(sd_dhcp6_client *client,
