@@ -50,6 +50,9 @@ mkdir -p  %{buildroot}/%{_localstatedir}/log
 mkdir -p -m 0700 %{buildroot}/%{_sharedstatedir}/waagent
 touch %{buildroot}/%{_localstatedir}/log/waagent.log
 
+%check
+%{__python} setup.py check && %{__python} setup.py test
+
 %post
 /sbin/chkconfig --add waagent
 

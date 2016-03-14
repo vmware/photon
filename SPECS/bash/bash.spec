@@ -215,6 +215,9 @@ dircolors -p > %{buildroot}/etc/dircolors
 %find_lang %{name}
 rm -rf %{buildroot}/%{_infodir}
 
+%check
+make check
+
 %post
 test -e /root/.bash_profile || cp /etc/skel/.bash_profile /root
 test -e /root/.bashrc || cp /etc/skel/.bashrc /root

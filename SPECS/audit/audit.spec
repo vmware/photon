@@ -66,6 +66,9 @@ mkdir -p %{buildroot}/%{_var}/log/audit
 mkdir -p %{buildroot}/%{_var}/spool/audit
 make install DESTDIR=%{buildroot}
 
+%check
+make check
+
 %post
 /sbin/ldconfig
 /bin/systemctl enable  auditd.service
