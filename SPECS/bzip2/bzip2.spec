@@ -41,8 +41,10 @@ rm -v %{buildroot}%{_bindir}/{bunzip2,bzcat}
 ln -sv bzip2 %{buildroot}/usr/bin/bunzip2
 ln -sv bzip2 %{buildroot}/usr/bin/bzcat
 find %{buildroot} -name '*.a'  -delete
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files

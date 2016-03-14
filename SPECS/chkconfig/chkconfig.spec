@@ -62,6 +62,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/chkconfig.d
 
 %find_lang %{name}
 
+%check
+echo '*** chkconfig check is probably not supported by source, the test-suite will NOT run ***'
+
 %clean
 rm -rf %{buildroot}
 
