@@ -32,6 +32,11 @@ ANT_CONTRIB_DIST_DIR=%{buildroot}%{name}-%{version}
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p -m 700 %{buildroot}/var/opt
 cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wildcards "*.jar"
+
+%check
+echo '*** ant-contrib check is probably not supported by source, the test-suite will NOT run ***'
+
+
 %files
 %defattr(-,root,root)
 %{_prefix}/*.jar
