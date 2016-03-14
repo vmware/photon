@@ -60,8 +60,10 @@ install -vd %{buildroot}%{_libdir}/systemd/system/
 install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
 
 ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make check
+
 %preun
 /bin/systemctl disable crond.service
 
