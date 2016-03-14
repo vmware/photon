@@ -52,6 +52,9 @@ cp %{_builddir}/%{name}-%{version}-src/dist/%{name}-%{version}.jar $DIST_DIR
 
 chmod -R 755 $DIST_DIR
 
+%check
+echo '*** commons-daemon check is probably not supported by source, the test-suite will NOT run ***'
+
 %files
 %defattr(-,root,root)
 %{_bindir}/jsvc
