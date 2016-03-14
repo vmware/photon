@@ -24,6 +24,9 @@ make
 %install
 make install DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir}
 
+%check
+echo '*** blktrace check is probably not supported by source, the test-suite will NOT run ***'
+
 %clean
 rm -rf %{buildroot}/*
  
