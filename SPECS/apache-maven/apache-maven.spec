@@ -48,6 +48,9 @@ echo 'export MAVEN_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.
 echo 'export PATH=$MAVEN_HOME/bin:$PATH' >> %{buildroot}/etc/profile.d/%{name}.sh
 echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 
+%check
+echo '*** apache-maven check is probably not supported by source, the test-suite will NOT run ***'
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
