@@ -38,6 +38,9 @@ rm -rf %{buildroot}/var/opt/%{name}-%{version}/temp
 rm -f %{buildroot}/var/opt/%{name}-%{version}/RUNNING.txt
 rm -f %{buildroot}/var/opt/%{name}-%{version}/RELEASE-NOTES
 
+%check
+echo '*** apache-tomcat check is probably not supported by source, the test-suite will NOT run ***'
+
 %clean
 rm -rf %{buildroot}/*
 
