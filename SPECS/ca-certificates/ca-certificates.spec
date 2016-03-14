@@ -219,6 +219,10 @@ install -Dm644 bin/make-ca.sh %{buildroot}/bin/make-ca.sh
 install -Dm644 bin/make-cert.pl %{buildroot}/bin/make-cert.pl
 install -Dm644 bin/remove-expired-certs.sh %{buildroot}/bin/remove-expired-certs.sh
 %{_fixperms} %{buildroot}/*
+
+%check
+echo '*** ca-certificates check is probably not supported by source, the test-suite will NOT run ***'
+
 %post 
 cd /etc/ssl/certs;
 for file in *.pem; do ln -sf $file `openssl x509 -hash -noout -in $file`.0; done

@@ -25,9 +25,11 @@ make %{?_smp_mflags}
 env PREFIX=%{buildroot}%{_prefix} make install
 ln -s  genisoimage  %{buildroot}%{_prefix}/bin/mkisofs
 
+%check
+echo '*** cdrkit check is probably not supported by source, the test-suite will NOT run ***'
+
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-
 
 %files
 %{_bindir}/*

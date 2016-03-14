@@ -31,6 +31,9 @@ make
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 %makeinstall
 
+%check
+echo '*** ctags check is probably not supported by source, the test-suite will NOT run ***'
+
 %clean
 rm -rf %{buildroot}
 

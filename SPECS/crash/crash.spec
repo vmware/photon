@@ -47,6 +47,9 @@ mkdir -p %{buildroot}%{_includedir}/crash
 chmod 0644 defs.h
 cp -p defs.h %{buildroot}%{_includedir}/crash
 
+%check
+echo '*** crash check is probably not supported by source, the test-suite will NOT run ***'
+
 %clean
 [ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
 
