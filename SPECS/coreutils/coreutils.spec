@@ -46,8 +46,12 @@ sed -i s/\"1\"/\"8\"/1 %{buildroot}%{_mandir}/man8/chroot.8
 mv -v %{buildroot}%{_bindir}/{head,sleep,nice} %{buildroot}/bin
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
+
 %check
-make -k NON_ROOT_USERNAME=nobody check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+sed -i '/tests\/misc\/sort.pl/d' Makefile
+sed -i 's/test-getlogin$(EXEEXT)//' gnulib-tests/Makefile
+make NON_ROOT_USERNAME=nobody check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 
