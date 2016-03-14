@@ -76,6 +76,10 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 rm %{buildroot}/usr/lib/libexpat.so
+
+%check
+make check
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 

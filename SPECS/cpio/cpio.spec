@@ -32,6 +32,10 @@ install -v -m755 -d %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/html/* %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/cpio.{html,txt} %{buildroot}/%{_docdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
+
+%check
+make check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

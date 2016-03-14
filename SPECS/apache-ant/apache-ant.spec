@@ -59,6 +59,9 @@ cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/README.txt $MAVEN_ANT_T
 chown -R root:root $MAVEN_ANT_TASKS_DIR
 chmod 644 $MAVEN_ANT_TASKS_DIR/*
 
+%check
+echo '*** apache-ant check is probably not supported by source, the test-suite will NOT run ***'
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
