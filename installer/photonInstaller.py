@@ -207,6 +207,7 @@ if __name__ == '__main__':
     base_path = os.path.dirname(options.package_list_file)
 
     packages = []
+    packages_ks = []
     additional_files_to_copy_from_stage_to_iso = []
     if config['iso_system'] == True:
         for install_option in options_sorted:
@@ -214,6 +215,11 @@ if __name__ == '__main__':
                 json_wrapper_package_list = JsonWrapper(os.path.join(base_path, install_option[1]["file"]))
                 package_list_json = json_wrapper_package_list.read()
                 packages = package_list_json["packages"]
+            if install_option[0] == "ks":
+                json_wrapper_package_list_ks = JsonWrapper(os.path.join(base_path, install_option[1]["file"]))
+                package_list_json_ks = json_wrapper_package_list_ks.read()
+                packages_ks = package_list_json_ks["packages"]
+
     else:
         packages = PackageSelector.get_packages_to_install(options_sorted, config['type'], options.output_data_path)
 
@@ -241,17 +247,31 @@ if __name__ == '__main__':
     process = subprocess.Popen(['mkdir', '-p', os.path.join(options.working_directory, "photon-chroot")])
     retval = process.wait()
 
+    if config['iso_system'] == True:
+        process = subprocess.Popen(['mkdir', '-p', os.path.join(options.working_directory, "photon-chroot_ks")])
+        retval = process.wait()
+
     config['working_directory'] = options.working_directory
 
     # Run the installer
     package_installer = Installer(config, rpm_path = options.rpm_path, log_path = options.log_path)
     package_installer.install(None)
+    if config['iso_system'] == True:
+        config_ks=config
+        config_ks['packages'] = packages_ks
+        package_installer_ks = Installer(config_ks, rpm_path = options.rpm_path, log_path = options.log_path, photon_root="/photon-chroot_ks")
+        package_installer_ks.install(None)
+
 
     # Making the iso if needed
     if options.iso_path:
         rpm_list = " ".join(create_rpm_list_to_copy_in_iso(options.package_list_file, options.output_data_path))
         files_to_copy = " ".join(create_additional_file_list_to_copy_in_iso(os.path.abspath(options.stage_path), options.package_list_file))
         live_cd = get_live_cd_status_string(options.package_list_file)
+        process = subprocess.Popen(['./mk-initrd.sh', '-w', options.working_directory, "initrd.img", options.package_list_file, live_cd, options.json_data_path, "photon-chroot" ])
+        retval = process.wait()
+        process = subprocess.Popen(['./mk-initrd.sh', '-w', options.working_directory, "initrd_ks.img", options.package_list_file, live_cd, options.json_data_path, "photon-chroot_ks" ])
+        retval = process.wait()
         process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd, options.json_data_path])
         retval = process.wait()
 

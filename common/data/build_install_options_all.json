@@ -49,5 +49,11 @@
         "file" : "packages_appliance.json",
         "visible" : false,
         "include" : []
+    },
+    "ks" : {
+        "title" : "Minimal packages to kickstart.",
+        "file" : "packages_ks.json",
+        "visible" : false,
+        "include" : []
     }
 }
