@@ -1,17 +1,18 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.2.8
-Release:    	1%{?dist}
+Version:    	4.2.0
+Release:    	21%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b97bee7c8db5c4da53e754b8bad8ff9646016a73
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
+%define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
 Source1:	config-%{version}
 Patch0:         KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
+Patch1:         RDS-race-condition-on-unbound-socket-null-deref.patch
 Patch2:         ovl-fix-permission-checking-for-setattr.patch
 Patch3:         double-tcp_mem-limits.patch
 Patch4:         veth-do-not-modify-ip_summed.patch
@@ -73,13 +74,15 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 
 %prep
-%setup -q
+%setup -q -n linux-4.2
 %patch0 -p1
+%patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 %patch8 -p1
 
 %build
@@ -168,8 +171,6 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
-*   Wed Mar 09 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.8-1
--   Upgraded to version 4.2.8
 *   Fri Mar 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-21
 -   Patch: SUNRPC: Do not reuse srcport for TIME_WAIT socket.
 *   Wed Mar 02 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-20
