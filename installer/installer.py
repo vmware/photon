@@ -25,7 +25,7 @@ from actionresult import ActionResult
 from __builtin__ import isinstance
 
 class Installer(object):
-    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
+    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None, photon_root="/photon-chroot"):
         self.install_config = install_config
         self.ks_config = ks_config
         self.iso_installer = iso_installer
@@ -45,7 +45,7 @@ class Installer(object):
             self.working_directory = self.install_config['working_directory']
         else:
             self.working_directory = "/mnt/photon-root"
-        self.photon_root = self.working_directory + "/photon-chroot";
+        self.photon_root = self.working_directory + photon_root;
 
         self.restart_command = "shutdown"
 
@@ -107,7 +107,6 @@ class Installer(object):
         self.execute_modules(modules.commons.PRE_INSTALL)
 
         self.initialize_system()
-
         if self.iso_installer:
             self.get_size_of_packages()
             selected_packages = self.install_config['packages']
@@ -134,8 +133,10 @@ class Installer(object):
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
 
+        modules.commons.log(modules.commons.LOG_INFO, 'Finalizing installation')
         self.finalize_system()
 
+        modules.commons.log(modules.commons.LOG_INFO, 'After Finalizing installation')
         if not self.install_config['iso_system']:
             # Execute post installation modules
             self.execute_modules(modules.commons.POST_INSTALL)
@@ -261,6 +262,7 @@ class Installer(object):
 
     def initialize_system(self):
         #Setup the disk
+
         if (not self.install_config['iso_system']):
             command = [self.mount_command, '-w', self.photon_root]
             command.extend(self.generate_partitions_param())
@@ -280,13 +282,20 @@ class Installer(object):
     def finalize_system(self):
         #Setup the disk
         process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.finalize_command, '-w', self.photon_root], stdout=self.output)
+        modules.commons.log(modules.commons.LOG_INFO, 'Heee installation')
         retval = process.wait()
         initrd_dir = 'boot'
         initrd_file_name = 'initrd.img-no-kmods'
+        modules.commons.log(modules.commons.LOG_INFO, 'H2222 installation')
         if self.iso_installer:
             # just copy the initramfs /boot -> /photon_mnt/boot
+            modules.commons.log(modules.commons.LOG_INFO, 'H3333 installation')
+            modules.commons.log(modules.commons.LOG_INFO, initrd_dir)
+            modules.commons.log(modules.commons.LOG_INFO, initrd_file_name)
+            modules.commons.log(modules.commons.LOG_INFO, self.photon_root)
             shutil.copy(os.path.join(initrd_dir, initrd_file_name), self.photon_root + '/boot/')
             # unmount the installer directory
+            modules.commons.log(modules.commons.LOG_INFO, 'H4444 installation')
             process = subprocess.Popen(['umount', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
             # remove the installer directory

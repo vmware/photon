@@ -1,18 +1,9 @@
 {   
-    "packages": ["gc", "gmp", "libgcc", "libunistring", "libltdl", "libstdc++", "libffi",
-            "xz", "attr", "openssl", "pcre", "guile", "ca-certificates",
-            "kmod", "glib", "autogen", "libtasn1", "bzip2", "libcap", "Linux-PAM",
-            "nettle", "filesystem", "systemd", "gnutls", "python2", "glibc", "libgpg-error",
-            "bash", "libassuan", "gpgme", "libsolv", "util-linux", "glib-networking",
-            "openssl-devel", "libselinux", "libxml2", "expat", "curl", "coreutils",
-            "libsepol", "popt", "gobject-introspection", "rpm-devel", "db", "sqlite-autoconf",
-            "nspr", "libxml2-devel", "hawkey-devel", "lua", "libarchive", "nss", "rpm", "librepo",
-            "librepo-devel", "dracut", "cracklib", "ncurses", "zlib", "file", "elfutils-libelf",
-            "libsoup", "device-mapper-libs", "hawkey", "readline", "libsoup-devel", "device-mapper",
-            "mkinitcpio", "python2-libs", "python-xml", "dracut-tools", "libgsystem", "nettle-devel", "libhif",
-            "libtasn1-devel", "libarchive-devel", "cracklib-dicts", "findutils", "efivar", "grub2",
-            "cpio", "shadow", "dbus", "python-requests", "pkg-config", "dosfstools", "sed", "json-glib",
-            "python-hawkey", "libhif-devel", "grub2-efi", "linux", "cracklib-python", "gpgme-devel",
-            "grep", "ostree", "tar", "efibootmgr", "pciutils", "gnutls-devel", "e2fsprogs", "gzip", 
-            "gptfdisk", "tdnf", "python-curses"]
+    "packages": ["glibc","zlib","filesystem","file","gmp","libgcc","libstdc++","bash","sed",
+                  "bzip2","pkg-config","ncurses","cracklib","cracklib-dicts","cracklib-python",
+                  "shadow","coreutils","grep","readline","findutils","xz","util-linux","e2fsprogs",
+                  "libffi","expat","linux","cpio","Linux-PAM","attr","libcap", "libselinux", "systemd","dbus",
+                  "elfutils-libelf","sqlite-autoconf","nspr","nss","popt","lua","rpm","gptfdisk","tar", "librepo", 
+                  "hawkey", "gzip","python2","python2-libs","pcre","glib", "tdnf", "python-requests", "python-xml",
+                  "grub2","dracut", "curl"]
 }
