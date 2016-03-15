@@ -1,7 +1,7 @@
 Summary:       Set of scripts and tools to get compatbility with other distributions.
 Name:          distrib-compat
 Version:       0.1
-Release:       6%{?dist}
+Release:       5%{?dist}
 License:       GPLv2
 URL:           http://photon.org
 Group:         System Environment/Base
@@ -13,7 +13,6 @@ Source1:      rc.status
 Source2:      90-va-tune-up.conf
 Source3:      ifup
 Source4:      ifdown
-Source5:      50-security-hardening.conf
 %description
 Set of scripts and tools to get compatbility with other distributions.
 It includes: rc.status, startproc, killproc, checkproc, ifup and ifdown.
@@ -28,7 +27,6 @@ install -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 install -m 0755 %{SOURCE3} %{buildroot}/sbin
 install -m 0755 %{SOURCE4} %{buildroot}/sbin
-install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/sysctl.d
 touch %{buildroot}/%{_sysconfdir}/sysctl.d/99-compat.conf
 chmod 644 %{buildroot}/%{_sysconfdir}/sysctl.d/99-compat.conf
 ln -s sysctl.d/99-compat.conf %{buildroot}/%{_sysconfdir}/sysctl.conf
@@ -37,8 +35,6 @@ ln -s sysctl.d/99-compat.conf %{buildroot}/%{_sysconfdir}/sysctl.conf
 %{_sysconfdir}/*
 /sbin/*
 %changelog
-*    Thu Mar 10 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.1-6
--    Added the security hardening configuration file. 
 *    Thu Feb 11 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 0.1-5
 -    Move ifup and ifdown outside the sources tar.gz
 *    Wed Feb 10 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2-2
