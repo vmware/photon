@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.8
-Release:    	2%{?dist}
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -100,9 +100,6 @@ cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
 cp -v System.map        %{buildroot}/boot/system.map-%{version}
 cp -v .config            %{buildroot}/boot/config-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-
-chmod -v 400 %{buildroot}/boot/system.map-%{version}
-
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=net.ifnames=0 init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
@@ -171,8 +168,6 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
-*   Thu Mar 10 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.8-2
--   Restrict the permissions of the /boot/System.map-X file
 *   Wed Mar 09 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.8-1
 -   Upgraded to version 4.2.8
 *   Fri Mar 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-21
