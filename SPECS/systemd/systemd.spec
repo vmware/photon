@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
 Source1:        99-vmware-hotplug.rules
+Source2:        50-security-hardening.conf
 #patch for ostree
 Patch0:         systemd-228-mount.patch
 Patch1:         01-enoX-uses-instance-number-for-vmware-hv.patch
@@ -105,7 +106,7 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
 find %{buildroot}%{_libdir} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
-
+install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d 
 %post
 /sbin/ldconfig
 %postun	
@@ -127,6 +128,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Mon Mar 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 228-12
+-       Install the security hardening script as part of systemd
 *       Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-11
 -       Added patch for dhcp preservation via duid iaid configurability
 *       Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-10
