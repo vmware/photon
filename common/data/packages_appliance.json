@@ -58,6 +58,7 @@
 	"irqbalance",
         "lvm2",
         "cifs-utils",
-        "c-ares"
+        "c-ares",
+        "distrib-compat"
     ]
 }
