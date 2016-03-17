@@ -5,7 +5,7 @@
 Summary: A New Scripting Dynamic Tracing Tool For Linux
 Name:    ktap
 Version: 0.4
-Release: 1.gitfca420f%{?dist}
+Release: 1%{?dist}
 License: GPLv2
 URL: https://github.com/ktap/ktap
 Source: %{name}-master.zip
