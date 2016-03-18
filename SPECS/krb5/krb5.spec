@@ -1,7 +1,7 @@
 Summary:	The Kerberos newtork authentication system
 Name:		krb5
 Version:	1.14
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 krb5=02973f6605b1170bec812af9c8da4e447eeca9a9
+Patch0:         krb5-1.14-skip-unnecessary-mech-calls.patch
 Requires:	openssl
 Requires:	e2fsprogs
 BuildRequires: 	openssl-devel
@@ -19,6 +20,7 @@ which can improve your network's security by eliminating the insecure
 practice of clear text passwords.
 %prep
 %setup -q
+%patch0 -p1
 %build
 
 cd src &&
@@ -88,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/man/man5/.k5login.5.gz
 %{_docdir}/%{name}-%{version}
 %changelog
+* 	Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
+- 	Add patch for skipping unnecessary mech calls in gss_inquire_cred
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
 -	Upgrade version
 *	Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
