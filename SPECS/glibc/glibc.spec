@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -141,7 +141,13 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %defattr(-,root,root)
 %dir %{_localstatedir}/cache/nscd
 %dir %{_libdir}/locale
-%{_sysconfdir}/*
+%dir %{_sysconfdir}/ld.so.conf.d
+%config(noreplace) %{_sysconfdir}/nsswitch.conf
+%config(noreplace) %{_sysconfdir}/ld.so.conf
+%config(noreplace) %{_sysconfdir}/rpc
+%config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
+%config %{_sysconfdir}/locale-gen.conf
+%config(noreplace) %{_sysconfdir}/nscd.conf
 %ifarch x86_64
 /lib64/*
 %{_lib64dir}/gconv/*
@@ -175,6 +181,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+* 	Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  2.22-5
+- 	Change conf file qualifiers
 * 	Fri Mar 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  2.22-4
 - 	Added patch for res_qeury assertion with bad dns config
 -       Details: https://sourceware.org/bugzilla/show_bug.cgi?id=19791
