@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.18
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -80,19 +80,18 @@ Description=The Apache HTTP Server
 After=network.target remote-fs.target nss-lookup.target
 
 [Service]
-Type=notify
-
-ExecStart=/usr/sbin/httpd \$OPTIONS -DFOREGROUND
-ExecReload=/usr/sbin/httpd \$OPTIONS -k graceful
-KillSignal=SIGWINCH
-KillMode=mixed
-Restart=always
+Type=forking
+PIDFile=/var/run/httpd.pid
+ExecStart=/usr/sbin/httpd -k start
+ExecStop=/usr/sbin/httpd -k stop
+ExecReload=/usr/sbin/httpd -k graceful
 
 [Install]
 WantedBy=multi-user.target
 
 EOF
 ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
+ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
 %post
 /sbin/ldconfig
 if ! getent group apache >/dev/null; then
@@ -108,6 +107,11 @@ if [ -h /etc/mime.types ]; then
 fi
 
 ln -sf /etc/httpd/conf/mime.types /etc/mime.types
+/bin/systemctl enable httpd.service
+
+%preun
+/bin/systemctl stop httpd.service
+/bin/systemctl disable httpd.service
 
 %postun
 /sbin/ldconfig
@@ -144,6 +148,7 @@ fi
 %{_sysconfdir}/httpd/error/*
 %{_sysconfdir}/httpd/htdocs/*
 %{_sysconfdir}/httpd/icons/*
+%{_sysconfdir}/httpd/httpd.conf
 %dir %{_sysconfdir}/httpd/logs
 
 %files tools
@@ -152,6 +157,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Mar 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.4.18-2
+-   Fixing systemd service
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
 -   Updated to version 2.4.18
 *   Mon Nov 23 2015 Sharath George <sharathg@vmware.com> 2.4.12-4
