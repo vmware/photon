@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	21%{?dist}
+Release:    	22%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -119,6 +119,8 @@ find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" 
 find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
 find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
 
+chmod -v 400 %{buildroot}/boot/system.map-%{version}
+
 cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release} # copy .config manually to be where it's expected to be
 ln -sf "/usr/src/%{name}-headers-%{version}-%{release}" "%{buildroot}/lib/modules/%{version}/build"
 
@@ -171,6 +173,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Dec 17 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-22
+-   Restrict the permissions of the /boot/System.map-X file
 *   Fri Mar 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-21
 -   Patch: SUNRPC: Do not reuse srcport for TIME_WAIT socket.
 *   Wed Mar 02 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-20
