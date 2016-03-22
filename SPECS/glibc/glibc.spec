@@ -1,12 +1,12 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
-%global security_hardening none
+%global security_hardening nonow
 %define glibc_target_cpu %{_build}
 
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -181,6 +181,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+* 	Mon Mar 21 2016 Alexey Makhalov <amakhalov@vmware.com>  2.22-6
+- 	Security hardening: nonow
 * 	Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  2.22-5
 - 	Change conf file qualifiers
 * 	Fri Mar 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  2.22-4
