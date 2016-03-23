@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	21%{?dist}
+Release:    	22%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -110,6 +110,9 @@ photon_linux=vmlinuz-%{version}
 photon_initrd=initrd.img-no-kmods
 EOF
 
+# Restrict the permission on system.map-X file
+chmod -v 400 %{buildroot}/boot/system.map-%{version}
+
 #    Cleanup dangling symlinks
 rm -rf %{buildroot}/lib/modules/%{version}/source
 rm -rf %{buildroot}/lib/modules/%{version}/build
@@ -171,6 +174,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Mar 17 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-22
+-   Restrict the permissions of the /boot/System.map-X file
 *   Fri Mar 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-21
 -   Patch: SUNRPC: Do not reuse srcport for TIME_WAIT socket.
 *   Wed Mar 02 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-20
