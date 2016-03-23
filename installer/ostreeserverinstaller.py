@@ -18,7 +18,6 @@ import sys
 import glob
 import urllib
 import modules.commons
-import xml.etree.ElementTree as ET
 from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
 from windowstringreader import WindowStringReader

@@ -94,15 +94,6 @@ class OstreeInstaller(Installer):
         self.progress_bar.initialize("Initializing installation...")
         self.progress_bar.show()
         
-        self.progress_bar.show_loading("Unpacking local OSTree repo")
-        
-        if self.default_repo:
-            self.run("mkdir repo")
-            self.run("tar --warning=none -xf /mnt/cdrom/ostree-repo.tar.gz -C repo")
-            self.local_repo_path = "/installer/repo/"
-            self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
-            self.ostree_ref = self.repo_config['OSTREEREFS']
-
 
         self.execute_modules(modules.commons.PRE_INSTALL)
 
@@ -114,6 +105,19 @@ class OstreeInstaller(Installer):
         self.run("mount {}3 {}".format(disk, self.photon_root))
         self.run("mkdir -p {} ".format(sysroot_boot))
         self.run("mount {}2 {}".format(disk, sysroot_boot))
+
+        self.progress_bar.show_loading("Unpacking local OSTree repo")
+        
+        if self.default_repo:
+            self.run("rm -rf /installer/boot")
+            self.run("mkdir /mnt/photon-root/photon-chroot/repo")
+            self.run("tar --warning=none -xf /mnt/cdrom/ostree-repo.tar.gz -C /mnt/photon-root/photon-chroot/repo")
+            self.local_repo_path = "/mnt/photon-root/photon-chroot/repo"
+            self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
+            self.ostree_ref = self.repo_config['OSTREEREFS']
+
+
+        self.progress_bar.update_loading_message("Unpacking done")
 
         self.deploy_ostree(self.ostree_repo_url, self.ostree_ref)
 
