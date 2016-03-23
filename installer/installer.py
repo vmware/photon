@@ -17,7 +17,6 @@ import signal
 import sys
 import glob
 import modules.commons
-import xml.etree.ElementTree as ET
 from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
 from window import Window
@@ -104,6 +103,13 @@ class Installer(object):
                 if retval != 0:
                     modules.commons.log(modules.commons.LOG_INFO, "Failed to reset repo")
                     self.exit_gracefully(None, None)
+
+            cmdoption = 's/cachedir=\/var/cachedir={}/g'.format(self.photon_root.replace('/','\/'))
+            process = subprocess.Popen(['sed', '-i', cmdoption,'/etc/tdnf/tdnf.conf']) 
+            retval = process.wait()
+            if retval != 0:
+                modules.commons.log(modules.commons.LOG_INFO, "Failed to reset tdnf cachedir")
+                self.exit_gracefully(None, None)
         self.execute_modules(modules.commons.PRE_INSTALL)
 
         self.initialize_system()
@@ -291,6 +297,9 @@ class Installer(object):
             retval = process.wait()
             # remove the installer directory
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
+            retval = process.wait()
+            # remove the tdnf cache directory
+            process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "cache")], stdout=self.output)
             retval = process.wait()
         elif not self.install_config['vmdk_install']:
             #Build the initramfs by passing in the kernel version

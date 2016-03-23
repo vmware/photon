@@ -37,7 +37,9 @@ cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
 #
 if [[	$# -gt 0 ]] && [[ $1 == 'install' ]]; then
 	mkdir -p ${BUILDROOT}/var/lib/rpm
+	mkdir -p ${BUILDROOT}/cache/tdnf
 	rpm   --root ${BUILDROOT} --initdb
+
     tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes
 else
 	RPMPKG="$(find RPMS -name 'filesystem-[0-9]*.rpm' -print)"
