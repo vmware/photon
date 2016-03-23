@@ -163,6 +163,13 @@ if [ "$LIVE_CD" = false ] ; then
     #Remove the include files.
     rm -rf ${BUILDROOT}/usr/include
 
+    rm ${BUILDROOT}/lib64/libmvec*
+    rm ${BUILDROOT}/usr/sbin/grub2-sparc64-setup
+    rm ${BUILDROOT}/usr/sbin/grub2-reboot
+    rm ${BUILDROOT}/usr/sbin/grub2-probe
+    rm ${BUILDROOT}/usr/sbin/grub2-bios-setup
+    rm ${BUILDROOT}/usr/sbin/grub2-macbless
+
     # TODO: mbassiouny, Find a clean way to do that
     for i in `ls ${BUILDROOT}/usr/share/`; do
     	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' ]; then
