@@ -1,17 +1,21 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
 %define sha1 cronie=bbf154a6db7c9802664d1f0397b5e7ae9a9618e4
+#https://github.com/Puppet-Finland/runparts
+Source1: runparts-master.zip
+%define sha1 runparts=8adc59edb9bc53525c29075c6f043f619cfbfa64
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	libselinux-devel
 BuildRequires:	Linux-PAM
 BuildRequires:  systemd
+BuildRequires:	unzip
 Requires:       systemd
 Requires:	libselinux
 Requires:	Linux-PAM
@@ -21,7 +25,8 @@ scheduled times and related tools. It is based on the original cron and
 has security and configuration enhancements like the ability to use pam and
 SELinux.
 %prep
-%setup -q
+%setup -q -a 1
+sed -i "s/\/usr\/sbin\/anacron -s/\/usr\/sbin\/anacron -s -S \/var\/spool\/anacron/" contrib/0anacron
 %build
 autoreconf
 ./configure \
@@ -58,6 +63,7 @@ touch %{buildroot}/var/spool/anacron/cron.monthly
 install -vdm755 %{buildroot}/%{_sysconfdir}/pam.d
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
+install -c -m755  runparts-master/files/run-parts %{buildroot}/%{_bindir}/run-parts
 
 ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
 %check
@@ -97,6 +103,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*   	Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-7
+-   	Add run-parts command.
 *   	Fri Mar 04 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-6
 -   	Add folders to sysconfdir.
 *   	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-5
