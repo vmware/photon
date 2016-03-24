@@ -1,12 +1,12 @@
 Summary:	Photon release files
 Name:		photon-release
 Version:	1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
 Source:		photon-release-%{version}.tar.gz
-%define sha1 photon-release=1f0714be48e7d17bad757b02011c1a1fa9329548
+%define sha1 photon-release=1aab22ad635ad83d22bfe6fa50a67e5cd82fd6c5
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-release
@@ -90,6 +90,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-2
+-       yum repo gpgkey to VMWARE-RPM-GPG-KEY.
 *       Mon Jan 11 2016 Anish Swaminathan <anishs@vmware.com> 1.0-1
 -       Reset version to match with Photon version
 *       Mon Jan 04 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4
