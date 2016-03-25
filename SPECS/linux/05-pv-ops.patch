@@ -1,7 +1,7 @@
 From d5e7229bec41406a4040a1ac9131e24cb1f8768d Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 30 Sep 2015 23:00:00 +0000
-Subject: [PATCH 1/7] Measure correct boot time.
+Subject: [PATCH 01/11] Measure correct boot time.
 
 ---
  arch/x86/Kconfig          |  8 ++++++++
@@ -98,7 +98,7 @@ index 5650655..c386186 100644
 From 500436e32d4dffae5d78f12be72c2e6784ab8cfb Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 2 Oct 2015 20:00:06 +0000
-Subject: [PATCH 2/7] PV io_delay for VMware guest.
+Subject: [PATCH 02/11] PV io_delay for VMware guest.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 13 +++++++++++++
@@ -149,7 +149,7 @@ index 628a059..8fdd031 100644
 From adff5db39b45d8adef2b4579ec46ab1bb721a81f Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 7 Oct 2015 22:53:18 +0000
-Subject: [PATCH 3/7] Improved tsc based sched_clock & clocksource.
+Subject: [PATCH 03/11] Improved tsc based sched_clock & clocksource.
 
 ---
  arch/x86/Kconfig             |  1 +
@@ -327,7 +327,7 @@ index c0a2051..284a7ba 100644
 From 3bd5760c3b1f6cb39568361561d7d1e5440f1109 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 12 Oct 2015 22:43:38 +0000
-Subject: [PATCH 4/7] Move read_boot_clock64 into pv_time_ops.
+Subject: [PATCH 04/11] Move read_boot_clock64 into pv_time_ops.
 
 ---
  arch/x86/Kconfig                      | 14 ++++++--
@@ -635,7 +635,7 @@ index 284a7ba..615aeb4 100644
 From aa93eaec3f709633007ab6ce3ddbb8aaa455b557 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 5 Nov 2015 21:02:52 +0000
-Subject: [PATCH 5/7] Fix clocksource_vmware issue in VM version <= 10
+Subject: [PATCH 05/11] Fix clocksource_vmware issue in VM version <= 10
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++++++++++++++++++++++++++++++++++++++---
@@ -733,7 +733,7 @@ index 1bf1fe3..0b89bb9 100644
 From 245c6ff168fabde177b5b6023356b6005b0efbef Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 10 Nov 2015 11:46:57 +0000
-Subject: [PATCH 6/7] Get lapic timer frequency from HV, skip calibration
+Subject: [PATCH 06/11] Get lapic timer frequency from HV, skip calibration
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++---------------------------------------
@@ -823,7 +823,7 @@ index 0b89bb9..b16618b 100644
 From 23055114ca27a04044ebbe38853834e0aa869da0 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 15 Dec 2015 21:31:18 +0000
-Subject: [PATCH 7/7] Skip rdrand reseed
+Subject: [PATCH 07/11] Skip rdrand reseed
 
 ---
  arch/x86/kernel/cpu/common.c | 2 ++
@@ -861,6 +861,455 @@ index 136ac74..0685891 100644
  #endif
  }
 +#endif
+-- 
+1.9.1
+
+
+From bd806a16d202bf9dc41fbe3f8e39545e704adf9e Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 3 Dec 2015 00:46:46 +0000
+Subject: [PATCH 08/11] STA implementation. first version.
+
+---
+ arch/x86/kernel/cpu/vmware.c | 163 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 163 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index b16618b..cf1fb64 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -28,6 +28,8 @@
+ #include <asm/hypervisor.h>
+ #include <asm/timer.h>
+ #include <linux/sched.h>
++#include <linux/cpu.h>
++#include <asm/pci_x86.h>
+ 
+ #define CPUID_VMWARE_INFO_LEAF	0x40000000
+ #define VMWARE_HYPERVISOR_MAGIC	0x564D5868
+@@ -38,6 +40,10 @@
+ #define VMWARE_PORT_CMD_GETVCPU_INFO	68
+ #define VMWARE_PORT_CMD_LEGACY_X2APIC	3
+ #define VMWARE_PORT_CMD_VCPU_RESERVED	31
++#define VMWARE_PORT_CMD_STEALCLOCK	91
++# define CMD_STEALCLOCK_ENABLE		0
++# define CMD_STEALCLOCK_DISABLE		1
++
+ 
+ #define VMWARE_PORT(cmd, eax, ebx, ecx, edx)				\
+ 	__asm__("inl (%%dx)" :						\
+@@ -47,6 +53,34 @@
+ 			"2"(VMWARE_HYPERVISOR_PORT), "3"(UINT_MAX) :	\
+ 			"memory");
+ 
++struct vmware_steal_time {
++	uint64_t clock;	/* stolen time counter in units of vtsc */
++	uint64_t reserved;
++};
++static DEFINE_PER_CPU(struct vmware_steal_time, steal_time) __aligned(64);
++static int has_steal_clock = 0;
++
++static int vmware_cmd_stealclock(int subcmd, uint32_t arg1, uint32_t arg2)
++{
++	uint32_t result, info;
++	__asm__ __volatile__ ("inl (%%dx)"
++		:	"=a" (result),
++			"=c" (info)
++		:       "a"  (VMWARE_HYPERVISOR_MAGIC),
++			"c"  (VMWARE_PORT_CMD_STEALCLOCK),
++			"d"  (VMWARE_HYPERVISOR_PORT),
++			"b"  (subcmd),
++			"S"  (arg1),
++			"D"  (arg2));
++	return result;
++}
++#define STEALCLOCK_ENABLE(pa)					\
++	vmware_cmd_stealclock(CMD_STEALCLOCK_ENABLE,		\
++			      (pa) >> 32, (pa) & 0xffffffff)
++
++#define STEALCLOCK_DISABLE()					\
++	vmware_cmd_stealclock(CMD_STEALCLOCK_DISABLE, 0, 0)
++
+ static inline int __vmware_platform(void)
+ {
+ 	uint32_t eax, ebx, ecx, edx;
+@@ -134,6 +168,114 @@ static void vmware_read_boot_clock64(struct timespec64 *ts)
+ 	}
+ }
+ 
++static uint64_t vmware_steal_clock(int cpu)
++{
++	struct vmware_steal_time *steal;
++
++	steal = &per_cpu(steal_time, cpu);
++	return mul_u64_u32_shr(steal->clock, vmware_cyc2ns.cyc2ns_mul,
++			       CYC2NS_SCALE_FACTOR);
++}
++
++static void vmware_register_steal_time(void)
++{
++	int cpu = smp_processor_id();
++	struct vmware_steal_time *st = &per_cpu(steal_time, cpu);
++
++	if (!has_steal_clock)
++		return;
++
++	memset(st, 0, sizeof(*st));
++
++	if (STEALCLOCK_ENABLE(slow_virt_to_phys(st)) != 0) {
++		has_steal_clock = 0;
++		return;
++	}
++
++	pr_info("vmware-stealtime: cpu %d, pa %llx\n",
++		cpu, (unsigned long long) slow_virt_to_phys(st));
++}
++
++void vmware_disable_steal_time(void)
++{
++	if (!has_steal_clock)
++		return;
++
++	STEALCLOCK_DISABLE();
++}
++
++static void vmware_guest_cpu_init(void)
++{
++	if (has_steal_clock)
++		vmware_register_steal_time();
++}
++
++#ifdef CONFIG_SMP
++static void __init vmware_smp_prepare_boot_cpu(void)
++{
++	vmware_guest_cpu_init();
++	native_smp_prepare_boot_cpu();
++}
++
++static void vmware_guest_cpu_online(void *dummy)
++{
++	vmware_guest_cpu_init();
++}
++
++static void vmware_guest_cpu_offline(void *dummy)
++{
++	vmware_disable_steal_time();
++}
++
++static int vmware_cpu_notify(struct notifier_block *self, unsigned long action,
++			  void *hcpu)
++{
++	int cpu = (unsigned long)hcpu;
++	switch (action) {
++	case CPU_ONLINE:
++	case CPU_DOWN_FAILED:
++	case CPU_ONLINE_FROZEN:
++		smp_call_function_single(cpu, vmware_guest_cpu_online,
++			NULL, 0);
++		break;
++	case CPU_DOWN_PREPARE:
++	case CPU_DOWN_PREPARE_FROZEN:
++		smp_call_function_single(cpu, vmware_guest_cpu_offline,
++			NULL, 1);
++		break;
++	default:
++		break;
++	}
++	return NOTIFY_OK;
++}
++
++static struct notifier_block vmware_cpu_notifier = {
++        .notifier_call  = vmware_cpu_notify,
++};
++#endif
++
++static int sta_enabled = 1; /* steal time accounting */
++static int parse_vmw_no_sta(char *arg)
++{
++        sta_enabled = 0;
++        return 0;
++}
++
++early_param("vmw-no-sta", parse_vmw_no_sta);
++
++static __init int activate_jump_labels(void)
++{
++	if (has_steal_clock) {
++		static_key_slow_inc(&paravirt_steal_enabled);
++		if (sta_enabled)
++			static_key_slow_inc(&paravirt_steal_rq_enabled);
++	}
++
++	return 0;
++}
++arch_initcall(activate_jump_labels);
++
++
+ static void __init paravirt_ops_setup(void)
+ {
+ 	pv_info.name = "VMware";
+@@ -141,9 +283,18 @@ static void __init paravirt_ops_setup(void)
+ 	pv_time_ops.sched_clock = vmware_sched_clock;
+ 	pv_time_ops.read_boot_clock64 = vmware_read_boot_clock64;
+ 
++	/*
++	 * TODO: check for STEAL_TIME support
++	 */
++	if (1) {
++		has_steal_clock = 1;
++		pv_time_ops.steal_clock = vmware_steal_clock;
++	}
++
+ #ifdef CONFIG_X86_IO_APIC
+ 	no_timer_check = 1;
+ #endif
++
+ }
+ 
+ static void __init vmware_platform_setup(void)
+@@ -176,6 +327,18 @@ static void __init vmware_platform_setup(void)
+ 	clocksource_register_khz(&clocksource_vmware, vtsc_khz);
+ 
+ 	paravirt_ops_setup();
++
++#ifdef CONFIG_SMP
++	smp_ops.smp_prepare_boot_cpu = vmware_smp_prepare_boot_cpu;
++	register_cpu_notifier(&vmware_cpu_notifier);
++#else
++	vmware_guest_cpu_init();
++#endif
++
++#ifdef CONFIG_PCI
++	/* PCI BIOS service won't work from a PV guest. */
++	pci_probe &= ~PCI_PROBE_BIOS;
++#endif
+ }
+ 
+ /*
+-- 
+1.9.1
+
+
+From 8496145f4f5fcd430e5d8f493066a8e54aaaf96b Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Wed, 13 Jan 2016 22:54:04 +0000
+Subject: [PATCH 09/11] STA. updated version
+
+---
+ arch/x86/kernel/cpu/vmware.c | 34 ++++++++++++++++++++++++----------
+ 1 file changed, 24 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index cf1fb64..196703c 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -41,16 +41,23 @@
+ #define VMWARE_PORT_CMD_LEGACY_X2APIC	3
+ #define VMWARE_PORT_CMD_VCPU_RESERVED	31
+ #define VMWARE_PORT_CMD_STEALCLOCK	91
+-# define CMD_STEALCLOCK_ENABLE		0
+-# define CMD_STEALCLOCK_DISABLE		1
++# define CMD_STEALCLOCK_STATUS		0
++#  define STEALCLOCK_IS_NOT_AVALIABLE	0
++#  define STEALCLOCK_IS_ENABLED		1
++#  define STEALCLOCK_IS_DISABLED	2
++# define CMD_STEALCLOCK_ENABLE		1
++# define CMD_STEALCLOCK_DISABLE		2
+ 
+ 
+ #define VMWARE_PORT(cmd, eax, ebx, ecx, edx)				\
++	VMWARE_PORT2(cmd, eax, ebx, ecx, edx, UINT_MAX)
++
++#define VMWARE_PORT2(cmd, eax, ebx, ecx, edx, arg)			\
+ 	__asm__("inl (%%dx)" :						\
+ 			"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :	\
+ 			"0"(VMWARE_HYPERVISOR_MAGIC),			\
+ 			"1"(VMWARE_PORT_CMD_##cmd),			\
+-			"2"(VMWARE_HYPERVISOR_PORT), "3"(UINT_MAX) :	\
++			"2"(VMWARE_HYPERVISOR_PORT), "3"(arg) :		\
+ 			"memory");
+ 
+ struct vmware_steal_time {
+@@ -60,6 +67,13 @@ struct vmware_steal_time {
+ static DEFINE_PER_CPU(struct vmware_steal_time, steal_time) __aligned(64);
+ static int has_steal_clock = 0;
+ 
++static int vmware_is_stealclock_available(void)
++{
++	uint32_t eax, ebx, ecx, edx;
++	VMWARE_PORT2(STEALCLOCK, eax, ebx, ecx, edx, CMD_STEALCLOCK_STATUS);
++	printk("%s:%d %d %d\n", __FUNCTION__, __LINE__, eax, ebx);
++	return eax == 0 && ebx != STEALCLOCK_IS_NOT_AVALIABLE;
++}
+ static int vmware_cmd_stealclock(int subcmd, uint32_t arg1, uint32_t arg2)
+ {
+ 	uint32_t result, info;
+@@ -283,10 +297,7 @@ static void __init paravirt_ops_setup(void)
+ 	pv_time_ops.sched_clock = vmware_sched_clock;
+ 	pv_time_ops.read_boot_clock64 = vmware_read_boot_clock64;
+ 
+-	/*
+-	 * TODO: check for STEAL_TIME support
+-	 */
+-	if (1) {
++	if (vmware_is_stealclock_available()) {
+ 		has_steal_clock = 1;
+ 		pv_time_ops.steal_clock = vmware_steal_clock;
+ 	}
+@@ -328,12 +339,15 @@ static void __init vmware_platform_setup(void)
+ 
+ 	paravirt_ops_setup();
+ 
++	/* vmware_cpu_notifier is used only by STA */
++	if (has_steal_clock) {
+ #ifdef CONFIG_SMP
+-	smp_ops.smp_prepare_boot_cpu = vmware_smp_prepare_boot_cpu;
+-	register_cpu_notifier(&vmware_cpu_notifier);
++		smp_ops.smp_prepare_boot_cpu = vmware_smp_prepare_boot_cpu;
++		register_cpu_notifier(&vmware_cpu_notifier);
+ #else
+-	vmware_guest_cpu_init();
++		vmware_guest_cpu_init();
+ #endif
++	}
+ 
+ #ifdef CONFIG_PCI
+ 	/* PCI BIOS service won't work from a PV guest. */
+-- 
+1.9.1
+
+
+From a8f165433de453994aef84a9d6bf1704a18b3a95 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 15 Mar 2016 22:29:23 +0000
+Subject: [PATCH 10/11] STA: version with a single backdoor command.
+
+---
+ arch/x86/kernel/cpu/vmware.c | 35 +++++++++++++++--------------------
+ 1 file changed, 15 insertions(+), 20 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 196703c..743b8ad 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -41,12 +41,9 @@
+ #define VMWARE_PORT_CMD_LEGACY_X2APIC	3
+ #define VMWARE_PORT_CMD_VCPU_RESERVED	31
+ #define VMWARE_PORT_CMD_STEALCLOCK	91
+-# define CMD_STEALCLOCK_STATUS		0
+-#  define STEALCLOCK_IS_NOT_AVALIABLE	0
+-#  define STEALCLOCK_IS_ENABLED		1
+-#  define STEALCLOCK_IS_DISABLED	2
+-# define CMD_STEALCLOCK_ENABLE		1
+-# define CMD_STEALCLOCK_DISABLE		2
++# define STEALCLOCK_IS_NOT_AVALIABLE	-1
++# define STEALCLOCK_IS_DISABLED		0
++# define STEALCLOCK_IS_ENABLED		1
+ 
+ 
+ #define VMWARE_PORT(cmd, eax, ebx, ecx, edx)				\
+@@ -62,19 +59,12 @@
+ 
+ struct vmware_steal_time {
+ 	uint64_t clock;	/* stolen time counter in units of vtsc */
+-	uint64_t reserved;
++	uint64_t reserved[7];
+ };
+ static DEFINE_PER_CPU(struct vmware_steal_time, steal_time) __aligned(64);
+ static int has_steal_clock = 0;
+ 
+-static int vmware_is_stealclock_available(void)
+-{
+-	uint32_t eax, ebx, ecx, edx;
+-	VMWARE_PORT2(STEALCLOCK, eax, ebx, ecx, edx, CMD_STEALCLOCK_STATUS);
+-	printk("%s:%d %d %d\n", __FUNCTION__, __LINE__, eax, ebx);
+-	return eax == 0 && ebx != STEALCLOCK_IS_NOT_AVALIABLE;
+-}
+-static int vmware_cmd_stealclock(int subcmd, uint32_t arg1, uint32_t arg2)
++static int vmware_cmd_stealclock(uint32_t arg1, uint32_t arg2)
+ {
+ 	uint32_t result, info;
+ 	__asm__ __volatile__ ("inl (%%dx)"
+@@ -83,17 +73,22 @@ static int vmware_cmd_stealclock(int subcmd, uint32_t arg1, uint32_t arg2)
+ 		:       "a"  (VMWARE_HYPERVISOR_MAGIC),
+ 			"c"  (VMWARE_PORT_CMD_STEALCLOCK),
+ 			"d"  (VMWARE_HYPERVISOR_PORT),
+-			"b"  (subcmd),
++			"b"  (0),
+ 			"S"  (arg1),
+ 			"D"  (arg2));
+ 	return result;
+ }
+ #define STEALCLOCK_ENABLE(pa)					\
+-	vmware_cmd_stealclock(CMD_STEALCLOCK_ENABLE,		\
+-			      (pa) >> 32, (pa) & 0xffffffff)
++	(vmware_cmd_stealclock((pa) >> 32, (pa) & 0xffffffff)   \
++			== STEALCLOCK_IS_ENABLED)
+ 
+ #define STEALCLOCK_DISABLE()					\
+-	vmware_cmd_stealclock(CMD_STEALCLOCK_DISABLE, 0, 0)
++	vmware_cmd_stealclock(0, 1)
++
++static int vmware_is_stealclock_available(void)
++{
++	return STEALCLOCK_DISABLE() != STEALCLOCK_IS_NOT_AVALIABLE;
++}
+ 
+ static inline int __vmware_platform(void)
+ {
+@@ -201,7 +196,7 @@ static void vmware_register_steal_time(void)
+ 
+ 	memset(st, 0, sizeof(*st));
+ 
+-	if (STEALCLOCK_ENABLE(slow_virt_to_phys(st)) != 0) {
++	if (!STEALCLOCK_ENABLE(slow_virt_to_phys(st))) {
+ 		has_steal_clock = 0;
+ 		return;
+ 	}
+-- 
+1.9.1
+
+
+From 27b9b08cf68f55fbfa297eb047f7d1309e0a60cf Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 25 Mar 2016 01:14:17 +0000
+Subject: [PATCH 11/11] Remove delays for smpboot
+
+---
+ arch/x86/kernel/smpboot.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index b1f3ed9..8f0be52 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -560,7 +560,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
+ 	/*
+ 	 * Give the other CPU some time to accept the IPI.
+ 	 */
+-	udelay(200);
++//	udelay(200);
+ 	if (APIC_INTEGRATED(apic_version[boot_cpu_physical_apicid])) {
+ 		maxlvt = lapic_get_maxlvt();
+ 		if (maxlvt > 3)			/* Due to the Pentium erratum 3AP.  */
+@@ -665,7 +665,7 @@ wakeup_secondary_cpu_via_init(int phys_apicid, unsigned long start_eip)
+ 		/*
+ 		 * Give the other CPU some time to accept the IPI.
+ 		 */
+-		udelay(300);
++//		udelay(300);
+ 
+ 		pr_debug("Startup point 1\n");
+ 
+@@ -675,7 +675,7 @@ wakeup_secondary_cpu_via_init(int phys_apicid, unsigned long start_eip)
+ 		/*
+ 		 * Give the other CPU some time to accept the IPI.
+ 		 */
+-		udelay(200);
++//		udelay(200);
+ 
+ 		if (maxlvt > 3)		/* Due to the Pentium erratum 3AP.  */
+ 			apic_write(APIC_ESR, 0);
 -- 
 1.9.1
 
