@@ -1,7 +1,7 @@
 Summary:	Utilities for loading kernel modules
 Name:		kmod
 Version:	21
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:		Applications/System
@@ -29,10 +29,9 @@ make VERBOSE=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install
 install -vdm 755 %{buildroot}/sbin
-for target in depmod insmod modinfo modprobe rmmod; do
+for target in depmod insmod lsmod modinfo modprobe rmmod; do
 	ln -sv /bin/kmod %{buildroot}/sbin/$target
 done
-ln -sv kmod %{buildroot}/bin/lsmod
 find %{buildroot} -name '*.la' -delete
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -48,7 +47,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/*
 %{_datadir}/bash-completion/completions/kmod
 %changelog
-*	Wed Jan 13 2016 Xiaolin Li <xiaolinl@vmware.com> 21-1
+*   Fri Mar 25 2016 Alexey Makhalov <amakhalov@vmware.com> 21-2
+-   /bin/lsmod -> /sbin/lsmod
+*   Wed Jan 13 2016 Xiaolin Li <xiaolinl@vmware.com> 21-1
 -   Updated to version 21
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 16-1
--	Initial build. First version	
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 16-1
+-   Initial build. First version
