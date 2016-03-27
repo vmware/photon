@@ -1,14 +1,14 @@
 Summary:	Boost 
 Name:		boost
-Version:	1.56.0
-Release:	2%{?dist}
+Version:	1.60.0
+Release:	1%{?dist}
 License:	Boost Software License V1
 URL:		http://www.boost.org/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://downloads.sourceforge.net/boost/boost_1_56_0.tar.bz2
-%define sha1 boost=f94bb008900ed5ba1994a1072140590784b9b5df
+Source0:	http://downloads.sourceforge.net/boost/boost_1_60_0.tar.bz2
+%define sha1 boost=7f56ab507d3258610391b47fef6b11635861175a
 BuildRequires:	bzip2-devel
 
 %description
@@ -25,7 +25,7 @@ The boost-devel package contains libraries, header files and documentation
 for developing applications that use boost.
 
 %prep
-%setup -qn boost_1_56_0
+%setup -qn boost_1_60_0
 %build
 ./bootstrap.sh --prefix=%{buildroot}%{_prefix}
 ./b2 %{?_smp_mflags} stage threading=multi link=shared
