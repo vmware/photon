@@ -49,7 +49,7 @@ install -vd %{buildroot}/var/spool/anacron
 install -m 644 crond.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/crond
 install -m 644 contrib/anacrontab %{buildroot}%{_sysconfdir}/anacrontab
 install -c -m644 contrib/0hourly %{buildroot}%{_sysconfdir}/cron.d/0hourly
-install -c -m644 contrib/0anacron %{buildroot}%{_sysconfdir}/cron.hourly/0anacron
+install -c -m755 contrib/0anacron %{buildroot}%{_sysconfdir}/cron.hourly/0anacron
 install -m 644 contrib/dailyjobs %{buildroot}%{_sysconfdir}/cron.d/dailyjobs
 
 touch %{buildroot}%{_sysconfdir}/cron.deny
