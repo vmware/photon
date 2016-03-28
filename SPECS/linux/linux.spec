@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	22%{?dist}
+Release:    	23%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -174,6 +174,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Mon Mar 28 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-23
+-   Enabled Regular stack protection in Linux kernel in config
 *   Thu Mar 17 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-22
 -   Restrict the permissions of the /boot/System.map-X file
 *   Fri Mar 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-21
