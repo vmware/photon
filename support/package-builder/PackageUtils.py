@@ -136,13 +136,16 @@ class PackageUtils(object):
             self.logger.info("Copying... Source path :" + source + " Source filename: " + sourcePath[0])
             shutil.copy2(sourcePath[0], destDir)
     
-    def copyAdditionalBuildFiles(self,listAdditionalFiles,destDir):
+    def copyAdditionalBuildFiles(self,listAdditionalFiles,chrootID):
         cmdUtils = CommandUtils()
-        index=0
-        for source in listAdditionalFiles:
+        for additionalFile in listAdditionalFiles:
+            source = additionalFile["src"].encode('utf-8')
+            destDir = chrootID + additionalFile["dst"].encode('utf-8')
             if os.path.exists(source):
-                shutil.copytree(source, destDir+str(index))
-                index = index + 1
+                if os.path.isfile(source):
+                    shutil.copy(source, destDir)
+                else:
+                    shutil.copytree(source, destDir)
         
     def buildRPMSForGivenPackage(self,package,chrootID,listBuildOptionPackages,pkgBuildOptionFile,destLogPath=None):
         self.logger.info("Building rpm's for package:"+package)
@@ -175,13 +178,13 @@ class PackageUtils(object):
                 if p == package:
                     filelist = pkg[1]["files"]
                     for f in filelist:
-                        listAdditionalFiles.append(str(f.encode('utf-8')))
+                        listAdditionalFiles.append(f)
                     macrolist = pkg[1]["macros"]
                     for macro in macrolist:
                         macros.append(str(macro.encode('utf-8')))
             
             chrootAdditionalPath=chrootID+constants.topDirPath+"/ADDITIONAL"
-            self.copyAdditionalBuildFiles(listAdditionalFiles,chrootAdditionalPath)
+            self.copyAdditionalBuildFiles(listAdditionalFiles,chrootID)
 
         listRPMFiles=[]
         listSRPMFiles=[]
