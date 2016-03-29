@@ -1,7 +1,7 @@
 Summary:       Set of scripts and tools to get compatbility with other distributions.
 Name:          distrib-compat
 Version:       0.1
-Release:       5%{?dist}
+Release:       6%{?dist}
 License:       GPLv2
 URL:           http://photon.org
 Group:         System Environment/Base
@@ -35,6 +35,8 @@ ln -s sysctl.d/99-compat.conf %{buildroot}/%{_sysconfdir}/sysctl.conf
 %{_sysconfdir}/*
 /sbin/*
 %changelog
+*    Tue Mar 29 2016 Vinay Kulkarni <kulkarniv@vmware.com> 0.1-6
+-    Do arping only for IPv4 addresses.
 *    Thu Feb 11 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 0.1-5
 -    Move ifup and ifdown outside the sources tar.gz
 *    Wed Feb 10 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2-2

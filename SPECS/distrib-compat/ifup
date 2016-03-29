@@ -64,12 +64,16 @@ ip addr flush $interface || fail "Cannot flush IP address for $interface"
 ip link set dev $interface up || fail "Cannot bring $interface up"
 
 if [[ -n  $address ]] ; then
-    #Check for duplicates
-    arping -D -q -I $interface -c 2 $address
-    retval=$?
-    [ $retval -eq 1 ] && success "IP already exists in the network, will exit gracefully"
-    [ $retval -eq 2 ] && fail "Cannot procceed. $interface is down"
-    [ $retval -ne 0 ] && fail "Unknown error!"
+    if [[ $address =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        echo "Performing duplicate address check for IPv4 address $address"
+        arping -D -q -I $interface -c 2 $address
+        retval=$?
+        [ $retval -eq 1 ] && success "IP already exists in the network, will exit gracefully"
+        [ $retval -eq 2 ] && fail "Cannot procceed. $interface is down"
+        [ $retval -ne 0 ] && fail "Unknown error!"
+    else
+        echo "Skipping duplicate address check for IPv6 address $address"
+    fi
 fi
 
 print_message "Everything is good, IP is not assigned elsewhere, will restart systemd-networkd"
