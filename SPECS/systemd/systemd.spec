@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	13%{?dist}
+Release:	14%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -131,6 +131,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Wed Mar 30 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-14
+-       Update DHCP DUID, IAID configuration patch.
 *       Wed Mar 30 2016 Kumar Kaushik <kaushikk@vmware.com>  228-13
 -       Install the security hardening script as part of systemd.
 *       Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com>  228-12
