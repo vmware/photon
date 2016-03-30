@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
 Source1:        99-vmware-hotplug.rules
+Source2:        50-security-hardening.conf
 #patch for ostree
 Patch0:         systemd-228-mount.patch
 Patch1:         01-enoX-uses-instance-number-for-vmware-hv.patch
@@ -107,6 +108,7 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
 find %{buildroot}%{_libdir} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
+install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 
 %post
 /sbin/ldconfig
@@ -129,6 +131,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Wed Mar 30 2016 Kumar Kaushik <kaushikk@vmware.com>  228-13
+-       Install the security hardening script as part of systemd.
 *       Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com>  228-12
 -       Added patch for timedatectl /etc/adjtime PR2749.
 *       Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-11
