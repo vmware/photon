@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       18%{?dist}
+Release:       19%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -25,6 +25,7 @@ Patch10:       02-pci-probe.patch
 Patch11:       03-poweroff.patch
 Patch12:       04-quiet-boot.patch
 Patch13:       05-pv-ops.patch
+Patch14:       06-sunrpc.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -73,6 +74,7 @@ The Linux package contains the Linux kernel doc files
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
 
 %build
 make mrproper
@@ -138,6 +140,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Mar 29 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-19
+-   Support kmsg dumping to vmware.log on panic
+-   sunrpc: xs_bind uses ip_local_reserved_ports
 *   Thu Mar 24 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-18
 -   Apply photon8 config (+stack protector regular)
 -   pv-ops patch: added STA support
