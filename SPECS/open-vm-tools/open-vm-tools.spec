@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.0.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -24,7 +24,6 @@ Patch7:         LighwaveHostPatch.patch
 Patch8:         GOSC-ssh-support.patch
 Patch9:         GOSC-vcenter-photon.patch
 Patch10:        GOSC-preserve-network-onboot.patch
-Patch11:        datetimectlFix.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -59,7 +58,6 @@ VmWare virtualization user mode tools
 %patch8 -p0
 %patch9 -p0
 %patch10 -p0
-%patch11 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -120,7 +118,9 @@ fi
 
 
 %changelog
-*       Tue Mar 25 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-5
+*       Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-6
+-       Replacing timedatectl patch with upstream systemd.
+*       Fri Mar 25 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-5
 -       Time data ctl fix for ignoring message print in stderr.
 *       Tue Feb 09 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 10.0.5-4
 -       Preserve network onboot config.
