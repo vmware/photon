@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	23%{?dist}
+Release:    	24%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -20,6 +20,8 @@ Patch5:         sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch6:         watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch7:         SUNRPC-Ensure-that-we-wait-for-connections-to-comple.patch
 Patch8:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch9:         06-sunrpc.patch
+Patch10:        vmware-log-kmsg-dump-on-panic.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -84,6 +86,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
+%patch10 -p1
 
 %build
 make mrproper
@@ -174,6 +178,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Mar 29 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-24
+-   Support kmsg dumping to vmware.log on panic
+-   sunrpc: xs_bind uses ip_local_reserved_ports
 *   Mon Mar 28 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-23
 -   Enabled Regular stack protection in Linux kernel in config
 *   Thu Mar 17 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-22
@@ -189,7 +196,7 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 -   Added rpcsec_gss_krb5 and nfs_fscache
 *   Mon Feb 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-17
 -   Added sysctl param to control weighted_cpuload() behavior
-*   Sun Feb 18 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.0-16
+*   Thu Feb 18 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.0-16
 -   Disabling network renaming
 *   Sun Feb 14 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-15
 -   veth patch: don’t modify ip_summed
