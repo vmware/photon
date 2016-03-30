@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -10,7 +10,6 @@ Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
 Source1:        99-vmware-hotplug.rules
-Source2:        50-security-hardening.conf
 #patch for ostree
 Patch0:         systemd-228-mount.patch
 Patch1:         01-enoX-uses-instance-number-for-vmware-hv.patch
@@ -22,7 +21,8 @@ Patch6:         systemd-228-cleanup-recv.patch
 Patch7:         systemd-228-fix-reading-routes.patch
 Patch8:         systemd-228-ipv6-disabled-fix.patch
 Patch9:         systemd-228-swap-disconnect-order-fix.patch
-Patch10:         systemd-228-duid-iaid-dhcp-preserve.patch
+Patch10:        systemd-228-duid-iaid-dhcp-preserve.patch
+Patch11:        systemd-228-timedatectl-PR2749.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -65,6 +65,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 
 %build
 ./autogen.sh
@@ -106,7 +107,7 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
 find %{buildroot}%{_libdir} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
-install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d 
+
 %post
 /sbin/ldconfig
 %postun	
@@ -128,8 +129,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
-*       Mon Mar 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 228-12
--       Install the security hardening script as part of systemd
+*       Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com>  228-12
+-       Added patch for timedatectl /etc/adjtime PR2749.
 *       Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-11
 -       Added patch for dhcp preservation via duid iaid configurability
 *       Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-10
