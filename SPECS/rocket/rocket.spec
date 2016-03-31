@@ -19,8 +19,10 @@ Rocket is a CLI for running app containers, and an implementation of the App Con
 install -vdm755 %{buildroot}/bin
 mv -v %{_builddir}/rkt-v%{version}/* %{buildroot}/bin/
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+echo '*** rocket check is probably not supported by source, the test-suite will NOT run ***'
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %clean

@@ -24,6 +24,9 @@ go build
 mkdir -p %{buildroot}/usr/local/bin
 cp -a pcstat %{buildroot}/usr/local/bin
 
+%check
+echo '*** pcstat check is probably not supported by source, the test-suite will NOT run ***'
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -32,5 +35,5 @@ rm -rf %{buildroot}/*
 /usr/local/bin
 
 %changelog
-*	Wed Nov 25 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.7.3-1
+*	Wed Nov 25 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1-1
 -	Initial build.	First version

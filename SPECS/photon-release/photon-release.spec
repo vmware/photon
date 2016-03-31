@@ -65,6 +65,9 @@ cat > %{buildroot}/etc/issue.net <<- "EOF"
 Welcome to Photon 1.0 (x86_64) - Kernel %r (%t)
 EOF
 
+%check
+echo '*** photon-release check is probably not supported by source, the test-suite will NOT run ***'
+
 %post
 # Remove __db* files to workaround BD version check bug in rpm
 rm -f /var/lib/rpm/__db*

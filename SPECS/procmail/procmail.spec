@@ -27,6 +27,9 @@ mkdir -p %{buildroot}%{_mandir}/man{1,5}
 make BASENAME=%{buildroot}%{_prefix} MANDIR=${RPM_BUILD_ROOT}%{_mandir}  install
 make BASENAME=%{buildroot}%{_prefix} install-suid
 
+%check
+echo '*** procmail check is probably not supported by source, the test-suite will NOT run ***'
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

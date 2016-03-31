@@ -30,10 +30,13 @@ install -D rdmsr %{buildroot}%{_sbindir}/rdmsr
 install -D wrmsr %{buildroot}%{_sbindir}/wrmsr
 install -D cpuid %{buildroot}%{_sbindir}/msr-cpuid
 
+%check
+echo '*** msr-tools check is probably not supported by source, the test-suite will NOT run ***'
+
 %files
 %defattr(-,root,root)
 %{_sbindir}/*
 
 %changelog
-*	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 2.3-1
+*	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 1.3-1
 -   Initial build.  First version

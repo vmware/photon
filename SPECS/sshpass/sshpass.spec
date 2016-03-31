@@ -21,7 +21,7 @@ rm -rf %{buildroot}
 make prefix=%{_prefix}	DESTDIR=%{buildroot} install
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+echo '*** sshpass check is probably not supported by source, the test-suite will NOT run ***'
 
 %clean 
 rm -rf %{buildroot}/*

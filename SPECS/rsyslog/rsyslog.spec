@@ -50,8 +50,10 @@ rm -f %{buildroot}/lib/systemd/system/rsyslog.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 find %{buildroot} -name '*.la' -delete
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+echo '*** rsyslog check is probably not supported by source, the test-suite will NOT run ***'
+
 %post
 /sbin/ldconfig
 /bin/systemctl enable  rsyslog.service
