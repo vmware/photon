@@ -28,6 +28,10 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python tests.py
+python ext_tests.py
+
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/*
@@ -35,5 +39,5 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/jsonpatch
 
 %changelog
-* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.9-1
 - Initial packaging for Photon
