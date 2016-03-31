@@ -37,6 +37,9 @@ make
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+make test
+
 %files
 %defattr(-,root,root)
 %{_libdir}/libnewt.so.0*
@@ -51,5 +54,5 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+*	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 0.52.18-1
 -	Initial build.	First version

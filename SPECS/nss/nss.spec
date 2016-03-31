@@ -58,6 +58,9 @@ install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 %post	-p /sbin/ldconfig
 
+%check
+HOST=localhost DOMSUF=localdomain ./all.sh
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -71,7 +74,7 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 
 
 %changelog
-* 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
+* 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21-1
 - 	Updated to version 3.21
 *       Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2
 -       Version update. Firefox requirement.
