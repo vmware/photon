@@ -26,6 +26,7 @@ make
 make DESTDIR=%{buildroot} install
 install -v -m644 %{_builddir}/%{name}-%{version}/doc/nanorc.sample %{_sysconfdir}
 install -v -m644 %{_builddir}/%{name}-%{version}/doc/texinfo/nano.html %{_docdir}/%{name}-%{version}.html
+
 %find_lang %{name}
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -35,6 +36,9 @@ install -v -m644 %{_builddir}/%{name}-%{version}/doc/texinfo/nano.html %{_docdir
 %{_infodir}/%{name}-%{version}/*
 %{_datadir}/nano/*
 %{_datadir}/doc/nano-2.5.2/*
+
+%check
+make check
 
 %changelog
 *       Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.2-1
