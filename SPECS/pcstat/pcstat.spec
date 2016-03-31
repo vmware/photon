@@ -24,6 +24,9 @@ go build
 mkdir -p %{buildroot}/usr/local/bin
 cp -a pcstat %{buildroot}/usr/local/bin
 
+%check
+echo '*** pcstat check is probably not supported by source, the test-suite will NOT run ***'
+
 %clean
 rm -rf %{buildroot}/*
 

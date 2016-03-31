@@ -38,7 +38,8 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+echo '*** sqlite-autoconf check is probably not supported by source, the test-suite will NOT run ***'
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean

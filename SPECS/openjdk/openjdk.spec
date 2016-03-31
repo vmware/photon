@@ -59,6 +59,10 @@ export JAVA_HOME=/var/opt/OpenJDK-%{version}-bin
 export PATH="$PATH:/var/opt/OpenJDK-%{version}-bin/bin:/var/opt/OpenJDK-%{version}-bin/jre/bin"
 EOF
 
+%check
+echo '*** openjdk check is probably not supported by source, the test-suite will NOT run ***'
+
+
 %clean
 rm -rf %{buildroot}/*
 

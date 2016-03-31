@@ -30,6 +30,9 @@ install -D rdmsr %{buildroot}%{_sbindir}/rdmsr
 install -D wrmsr %{buildroot}%{_sbindir}/wrmsr
 install -D cpuid %{buildroot}%{_sbindir}/msr-cpuid
 
+%check
+echo '*** msr-tools check is probably not supported by source, the test-suite will NOT run ***'
+
 %files
 %defattr(-,root,root)
 %{_sbindir}/*
