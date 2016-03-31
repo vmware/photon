@@ -29,10 +29,13 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python ipaddr_test.py
+
 %files
 %defattr(-,root,root)
 %{python_sitelib}/*
 
 %changelog
-* Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+* Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.1.11-1
 - Initial packaging for Photon

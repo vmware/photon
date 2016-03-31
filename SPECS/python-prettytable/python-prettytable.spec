@@ -34,10 +34,13 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python prettytable_test.py
+
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/*
 
 %changelog
-* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 0.7.2-1
 - Initial packaging for Photon

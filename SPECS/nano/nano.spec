@@ -26,6 +26,10 @@ make
 make DESTDIR=%{buildroot} install
 install -v -m644 %{_builddir}/%{name}-%{version}/doc/nanorc.sample %{_sysconfdir}
 install -v -m644 %{_builddir}/%{name}-%{version}/doc/texinfo/nano.html %{_docdir}/%{name}-%{version}.html
+
+%check
+make check
+
 %find_lang %{name}
 %files -f %{name}.lang
 %defattr(-,root,root)
