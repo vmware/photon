@@ -33,7 +33,8 @@ make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make check
+
 %files
 %defattr(-,root,root)
 /bin/*

@@ -42,7 +42,8 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_infodir}/*
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
