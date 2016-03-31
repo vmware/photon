@@ -1,7 +1,7 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
 Version:	4.3.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/%{name}/%{version}/%{name}-%{version}-P1.tar.gz
@@ -10,7 +10,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/dhcp-4.3.3-P1-client_script-1.patch
-#Patch1:     http://www.linuxfromscratch.org/patches/blfs/svn/dhcp-4.3.3-P1-missing_ipv6-1.patch
+Patch1:         dhcp-4.3.3-CVE-2016-2774.patch
 BuildRequires:	systemd
 %description
 The ISC DHCP package contains both the client and server programs for DHCP. dhclient (the client) is used for connecting to a network which uses DHCP to assign network addresses. dhcpd (the server) is used for assigning network addresses on private networks
@@ -42,7 +42,7 @@ The ISC DHCP Client, dhclient, provides a means for configuring one or more netw
 %prep
 %setup -qn %{name}-%{version}-P1
 %patch0 -p1
-#%patch1 -p1
+%patch1 -p1
 %build
 CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
@@ -147,7 +147,9 @@ install -v -dm 755 %{buildroot}/var/lib/dhclient
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
--   Updated to version 4.3.3
+* 	Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  4.3.3-2
+- 	Add patch for CVE-2016-2774
+*   	Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
+-   	Updated to version 4.3.3
 *	Wed Jul 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.3.2-1
 -	Initial build./
