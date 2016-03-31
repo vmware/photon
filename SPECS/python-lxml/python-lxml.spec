@@ -31,6 +31,9 @@ The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxs
 %install
 %{__python} setup.py install --skip-build --root %{buildroot}
 
+%check
+make test
+
 %clean
 rm -rf %{buildroot}
 

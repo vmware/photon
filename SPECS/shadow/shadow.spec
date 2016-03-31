@@ -81,6 +81,7 @@ do
     install -v -m644 %{buildroot}%{_sysconfdir}/pam.d/chage %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
     sed -i "s/chage/$PROGRAM/" %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
 done
+
 %find_lang %{name}
 %post
 %{_sbindir}/pwconv
@@ -97,6 +98,10 @@ done
 %{_sbindir}/*
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
+
+%check
+make check
+
 %changelog
 *       Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
 -       Enabling pam_limits module in a session
