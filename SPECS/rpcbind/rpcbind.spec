@@ -49,7 +49,7 @@ install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
 %{_unitdir}/*
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make check
 
 %pre
 rpcid=`getent passwd rpc | cut -d: -f 3`

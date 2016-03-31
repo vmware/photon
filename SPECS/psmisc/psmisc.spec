@@ -29,7 +29,8 @@ mv -v %{buildroot}%{_bindir}/fuser   %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/killall %{buildroot}/bin
 %find_lang %{name}
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make check
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 /bin/*

@@ -88,8 +88,9 @@ WantedBy=multi-user.target
 EOF
 
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make tests
 
 %pre
 getent group sshd >/dev/null || groupadd -g 50 sshd
