@@ -58,6 +58,9 @@ install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 %post	-p /sbin/ldconfig
 
+%check
+HOST=localhost DOMSUF=localdomain ./all.sh
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

@@ -81,6 +81,10 @@ do
     install -v -m644 %{buildroot}%{_sysconfdir}/pam.d/chage %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
     sed -i "s/chage/$PROGRAM/" %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
 done
+
+%check
+make check
+
 %find_lang %{name}
 %post
 %{_sbindir}/pwconv
