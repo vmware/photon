@@ -37,7 +37,14 @@ cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
 #
 if [[	$# -gt 0 ]] && [[ $1 == 'install' ]]; then
 	mkdir -p ${BUILDROOT}/var/lib/rpm
+	mkdir -p ${BUILDROOT}/cache/tdnf
+	#Setup the disk
+	dd if=/dev/zero of=${BUILDROOT}/cache/swapfile bs=1M count=50
+    mkswap -v1 ${BUILDROOT}/cache/swapfile
+    swapon ${BUILDROOT}/cache/swapfile
+    
 	rpm   --root ${BUILDROOT} --initdb
+
     tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes
 else
 	RPMPKG="$(find RPMS -name 'filesystem-[0-9]*.rpm' -print)"
