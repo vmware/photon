@@ -116,6 +116,7 @@
         "paramiko",
         "ecdsa",
         "kexec-tools",
-        "traceroute"
+        "traceroute",
+        "initramfs"
             ]
 }
