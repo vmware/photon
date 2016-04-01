@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	14%{?dist}
+Release:	15%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -24,6 +24,7 @@ Patch8:         systemd-228-ipv6-disabled-fix.patch
 Patch9:         systemd-228-swap-disconnect-order-fix.patch
 Patch10:        systemd-228-duid-iaid-dhcp-preserve.patch
 Patch11:        systemd-228-timedatectl-PR2749.patch
+Patch12:        systemd-228-query-duid.patch
 Requires:	Linux-PAM
 Requires:	libcap
 Requires:	xz
@@ -67,6 +68,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 %build
 ./autogen.sh
@@ -129,8 +131,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 %dir %{_localstatedir}/log/journal
 
-
 %changelog
+*       Wed Mar 31 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-15
+-       Patch to query DHCP DUID, IAID.
 *       Wed Mar 30 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-14
 -       Update DHCP DUID, IAID configuration patch.
 *       Wed Mar 30 2016 Kumar Kaushik <kaushikk@vmware.com>  228-13
