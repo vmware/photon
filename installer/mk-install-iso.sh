@@ -163,6 +163,31 @@ if [ "$LIVE_CD" = false ] ; then
     #Remove the include files.
     rm -rf ${BUILDROOT}/usr/include
 
+    rm ${BUILDROOT}/lib64/libmvec*
+    rm ${BUILDROOT}/usr/sbin/grub2-sparc64-setup
+    rm ${BUILDROOT}/usr/sbin/grub2-reboot
+    rm ${BUILDROOT}/usr/sbin/grub2-probe
+    rm ${BUILDROOT}/usr/sbin/grub2-bios-setup
+    rm ${BUILDROOT}/usr/sbin/grub2-macbless
+    rm ${BUILDROOT}/usr/bin/grub2-makerescue
+    rm ${BUILDROOT}/usr/bin/grub2-fstest
+    rm ${BUILDROOT}/usr/bin/grub2-syslinux2cfg
+    rm ${BUILDROOT}/usr/bin/grub2-mkstandalone
+
+    rm S{BUILDROOT}/usr/bin/systemd-nspawn
+    rm S{BUILDROOT}/usr/bin/systemd-analyze
+
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/lib2to3
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/lib-tk
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/ensurepip
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/encoding
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/distutils
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/pydoc_data
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/idlelib
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/unittest 
+
+    rm ${BUILDROOT}/installer/boot/initrd.img-no-kmods
+
     # TODO: mbassiouny, Find a clean way to do that
     for i in `ls ${BUILDROOT}/usr/share/`; do
     	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' ]; then
@@ -174,7 +199,7 @@ fi
 
 # Generate the intird
 pushd $BUILDROOT
-(find . | cpio -o -H newc --quiet | gzip -9 ) > ${WORKINGDIR}/isolinux/initrd.img
+(find . | cpio -o -H newc --quiet | xz --format=lzma ) > ${WORKINGDIR}/isolinux/initrd.img
 popd
 rm -rf $BUILDROOT
 

@@ -32,7 +32,9 @@ class OstreeInstaller(Installer):
     def pull_repo(self, repo_url, repo_ref):
         if self.default_repo:
             self.run("ostree remote add --repo={}/ostree/repo --set=gpg-verify=false photon {}".format(self.photon_root, repo_url), "Adding OSTree remote")
-            self.run("ostree pull-local --repo={}/ostree/repo {}".format(self.photon_root, self.local_repo_path), "Pulling OSTree repo")
+            #self.run("mv {}/* {}/ostree/repo/.".format(self.photon_root, self.local_repo_path))
+            self.run("tar --warning=none -xf /mnt/cdrom/ostree-repo.tar.gz -C {}/ostree/repo".format(self.photon_root))
+            #self.run("ostree pull-local --repo={}/ostree/repo {}".format(self.photon_root, self.local_repo_path), "Pulling OSTree repo")
             self.run("mv {}/ostree/repo/refs/heads {}/ostree/repo/refs/remotes/photon".format(self.photon_root, self.photon_root))
             self.run("mkdir -p {}/ostree/repo/refs/heads".format(self.photon_root, self.photon_root))
         else:
@@ -94,16 +96,6 @@ class OstreeInstaller(Installer):
         self.progress_bar.initialize("Initializing installation...")
         self.progress_bar.show()
         
-        self.progress_bar.show_loading("Unpacking local OSTree repo")
-        
-        if self.default_repo:
-            self.run("mkdir repo")
-            self.run("tar --warning=none -xf /mnt/cdrom/ostree-repo.tar.gz -C repo")
-            self.local_repo_path = "/installer/repo/"
-            self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
-            self.ostree_ref = self.repo_config['OSTREEREFS']
-
-
         self.execute_modules(modules.commons.PRE_INSTALL)
 
         disk = self.install_config['disk']['disk']
@@ -114,6 +106,18 @@ class OstreeInstaller(Installer):
         self.run("mount {}3 {}".format(disk, self.photon_root))
         self.run("mkdir -p {} ".format(sysroot_boot))
         self.run("mount {}2 {}".format(disk, sysroot_boot))
+
+        self.progress_bar.show_loading("Unpacking local OSTree repo")
+
+        if self.default_repo:
+            self.run("rm -rf /installer/boot")
+            self.local_repo_path = "{}/repo".format(self.photon_root)
+            self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
+            self.ostree_ref = self.repo_config['OSTREEREFS']
+
+
+        self.progress_bar.update_loading_message("Unpacking done")
+
 
         self.deploy_ostree(self.ostree_repo_url, self.ostree_ref)
 
