@@ -163,6 +163,35 @@ if [ "$LIVE_CD" = false ] ; then
     #Remove the include files.
     rm -rf ${BUILDROOT}/usr/include
 
+    rm ${BUILDROOT}/lib64/libmvec*
+    rm ${BUILDROOT}/usr/sbin/grub2-bios-setup
+    rm ${BUILDROOT}/usr/sbin/grub2-probe
+    rm ${BUILDROOT}/usr/sbin/grub2-macbless
+    rm ${BUILDROOT}/usr/sbin/grub2-reboot   
+    rm ${BUILDROOT}/usr/sbin/grub2-sparc64-setup
+    rm ${BUILDROOT}/usr/sbin/sln
+    
+    rm ${BUILDROOT}/usr/bin/grub2-mkrescue
+    rm ${BUILDROOT}/usr/bin/grub2-fstest
+    rm ${BUILDROOT}/usr/bin/grub2-syslinux2cfg
+    rm ${BUILDROOT}/usr/bin/grub2-mkstandalone
+
+    rm ${BUILDROOT}/usr/bin/localedef
+    rm ${BUILDROOT}/usr/bin/systemd-nspawn
+    rm ${BUILDROOT}/usr/bin/systemd-analyze
+    rm -rf ${BUILDROOT}/usr/lib64/gconv
+
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/lib2to3
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/lib-tk
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/ensurepip
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/encoding
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/distutils
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/pydoc_data
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/idlelib
+    rm -rf ${BUILDROOT}/usr/lib/python2.7/unittest 
+
+    rm ${BUILDROOT}/installer/boot/initrd.img-no-kmods
+
     # TODO: mbassiouny, Find a clean way to do that
     for i in `ls ${BUILDROOT}/usr/share/`; do
     	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' ]; then
