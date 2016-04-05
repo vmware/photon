@@ -286,6 +286,10 @@ class Installer(object):
         if self.iso_installer:
             # just copy the initramfs /boot -> /photon_mnt/boot
             shutil.copy(os.path.join(initrd_dir, initrd_file_name), self.photon_root + '/boot/')
+
+            modules.commons.dump(modules.commons.LOG_FILE_NAME)
+            shutil.copy(modules.commons.LOG_FILE_NAME, self.photon_root + '/var/log/')
+
             # unmount the installer directory
             process = subprocess.Popen(['umount', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
