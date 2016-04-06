@@ -1,4 +1,4 @@
-desktop-image: "photon.tga"
+desktop-image: "photon.png"
 desktop-color: "#FFFFFF"
 title-text : " "
 terminal-box : "terminal_*.tga" 
