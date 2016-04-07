@@ -35,7 +35,7 @@ from license import License
 from ostreeserverselector import OSTreeServerSelector
 
 class IsoInstaller(object):
-
+    
     def get_config(self, path):
         if path.startswith("http://"):
             # Do 5 trials to get the kick start
@@ -92,27 +92,52 @@ class IsoInstaller(object):
             return False, error_msg
         return (ord(hostname[0]) in self.alpha_chars) and (hostname[-1] not in ['.', '-']), error_msg
 
-    def validate_ostree_url_input(self, text):
-        status = 0
-        if not text:
+    def validate_ostree_url_input(self, ostree_repo_url):
+        if not ostree_repo_url:
             return False, "Error: Invalid input"
 
-        try:
-           if text.startswith("https"):
-               status = urllib2.urlopen(text,cafile="/usr/lib/python2.7/site-packages/requests/cacert.pem").getcode()
-           else:
-               status = urllib2.urlopen(text).getcode()
+        exception_text = "Error: Invalid or unreachable URL"
+        error_text = "Error: Repo URL not accessible"
+        ret = self.validate_http_response(ostree_repo_url, [], exception_text, error_text)
+        if ret != "":
+            return False, ret
 
-        except:
-            return False , "Error: Invalid or unreachable Url"
-        else:
-            if status != 200:
-                return False , "Error: URL not accessible"
+        exception_text = "Error: Invalid repo - missing config"
+        ret = self.validate_http_response(
+            ostree_repo_url + "/config",
+            [ [".*\[core\]\s*", 1, "Error: Invalid config - 'core' group expected" ],
+              ["\s*mode[ \t]*=[ \t]*archive-z2[^ \t]", 1, "Error: can't pull from repo in 'bare' mode, 'archive-z2' mode required" ] ],
+            exception_text, exception_text)
+        if ret != "":
+            return False, ret
+    
+        exception_text = "Error: Invalid repo - missing refs"
+        ret = self.validate_http_response(ostree_repo_url + "/refs/heads", [], exception_text, exception_text)
+        if ret != "":
+            return False, ret
+
+        exception_text = "Error: Invalid repo - missing objects"
+        ret = self.validate_http_response(ostree_repo_url + "/objects", [], exception_text, exception_text)
+        if ret != "":
+            return False, ret
+
+        self.ostree_repo_url = ostree_repo_url
 
         return True, None
 
-    def validate_ostree_refs_input(self, text):
-        return not (not text), "Error: Invalid input"
+    def validate_ostree_refs_input(self, ostree_repo_ref):
+        if not ostree_repo_ref:
+            return False, "Error: Invalid input"
+
+        ret = self.validate_http_response(
+                self.ostree_repo_url  + '/refs/heads/' + ostree_repo_ref,
+                [ ["^\s*[0-9A-Fa-f]{64}\s*$", 1, "Error: Incomplete Refspec path, or unexpected Refspec format"] ],
+                "Error: Invalid Refspec path",
+                "Error: Refspec not accessible")
+        if ret != "":
+            return False, ret
+
+        return True, None
 
     def validate_password(self, text):
         try:
@@ -124,6 +149,28 @@ class IsoInstaller(object):
     def generate_password_hash(self,  password):
         shadow_password = crypt.crypt(password, "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
         return shadow_password
+
+    def validate_http_response(self, url, checks, exception_text, error_text):
+        try:
+            if url.startswith("https"):
+                response = urllib2.urlopen(url,cafile="/usr/lib/python2.7/site-packages/requests/cacert.pem")
+            else:
+                response = urllib2.urlopen(url)
+
+        except:
+            return exception_text
+        else:
+            if response.getcode() != 200:
+                return error_text
+        
+        html = response.read()
+        
+        for pattern, count, failed_check_text in checks:
+            match = re.findall(pattern, html)
+            if len(match) != count:
+                return failed_check_text
+
+        return ""
 
     def __init__(self, stdscreen, options_file):
         self.screen = stdscreen
@@ -225,7 +272,7 @@ class IsoInstaller(object):
                     None, # set of accepted chars
                     self.validate_ostree_refs_input, # validation function of the input
                     None, # post processing of the input field
-                    'Please provide the Ref in OSTree repo', 'OSTree Repo Ref:', 2, install_config,
+                    'Please provide the Refspec in OSTree repo', 'OSTree Repo Refspec:', 2, install_config,
                     "photon/tp2/x86_64/minimal")
             
             items = items + [
