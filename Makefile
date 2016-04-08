@@ -471,7 +471,7 @@ endif
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
 
-%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
