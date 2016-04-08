@@ -1,34 +1,36 @@
-Summary:	Package manager
-Name:		rpm
-Version:	4.11.2
-Release:	6%{?dist}
-License:	GPLv2+
-URL:		http://rpm.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
+Summary:          Package manager
+Name:              rpm
+Version:          4.11.2
+Release:          7%{?dist}
+License:          GPLv2+
+URL:              http://rpm.org
+Group:            Applications/System
+Vendor:           VMware, Inc.
+Distribution:     Photon
+Source0:          http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
 %define sha1 rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
-Source1:	http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
+Source1:          http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
-Source2:	rpm-system-configuring-scripts-2.2.tar.gz
+Source2:          rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
-#Requires: nspr
-Requires: 	nss 
-Requires: 	popt
-Requires: 	libgcc
-Requires: 	lua
-Requires: 	zlib
-Requires: 	file
-Requires: 	bash
-Requires:	elfutils-libelf
-BuildRequires:	python2
-BuildRequires:	python2-libs
-BuildRequires:	python2-devel
-BuildRequires:	lua-devel
-BuildRequires:	popt-devel
-BuildRequires:	nss-devel
-BuildRequires:	elfutils-devel
+#Requires:        nspr
+Requires:         nss 
+Requires:         popt
+Requires:         libgcc
+Requires:         lua
+Requires:         zlib
+Requires:         file
+Requires:         bash
+Requires:         elfutils-libelf
+Requires:         libcap
+BuildRequires:    python2
+BuildRequires:    python2-libs
+BuildRequires:    python2-devel
+BuildRequires:    lua-devel
+BuildRequires:    popt-devel
+BuildRequires:    nss-devel
+BuildRequires:    elfutils-devel
+BuildRequires:    libcap-devel
 %description
 RPM package manager
 
@@ -57,7 +59,7 @@ mv db-5.3.28 db
 %build
 ./autogen.sh --noconfigure
 ./configure \
-	CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
+    CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
         --prefix=%{_prefix} \
         --exec-prefix=%{_prefix} \
@@ -73,16 +75,17 @@ mv db-5.3.28 db
         --mandir=%{_mandir} \
         --infodir=%{_infodir} \
         --disable-dependency-tracking \
-       	--disable-static \
+        --disable-static \
         --enable-python \
-	--with-lua \
-	--disable-silent-rules
+        --with-cap \
+        --with-lua \
+        --disable-silent-rules
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
-#	System macros and prefix
+# System macros and prefix
 install -dm 755 %{buildroot}%{_sysconfdir}/rpm
 pushd rpm-system-configuring-scripts
 install -vm644 macros %{buildroot}%{_sysconfdir}/rpm/
@@ -90,7 +93,7 @@ install -vm755 brp-strip-debug-symbols %{buildroot}%{_libdir}/rpm/
 install -vm755 brp-strip-unneeded %{buildroot}%{_libdir}/rpm/
 popd
 %post -p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}
 %files -f %{name}.lang
@@ -194,15 +197,17 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
-*   Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
--   Moving build utils to a different package.
-*	Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
--	Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.
-*	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 4.11.2-4
--	Add pkgconfig Provides directive
-*	Thu Jun 18 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-3
--	Do no strip debug info from .debug files
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-2
--	Removing perl-module-scandeps package from run time required packages
-*	Tue Jan 13 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-1
--	Initial build. First version
+*    Fri Apr 08 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.11.2-7
+-    Build rpm with capabilities.
+*    Thu Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
+-    Moving build utils to a different package.
+*    Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
+-    Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.
+*    Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 4.11.2-4
+-    Add pkgconfig Provides directive
+*    Thu Jun 18 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-3
+-    Do no strip debug info from .debug files
+*    Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-2
+-    Removing perl-module-scandeps package from run time required packages
+*    Tue Jan 13 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-1
+-    Initial build. First version

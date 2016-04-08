@@ -1,19 +1,19 @@
-Summary:	Programs for basic networking
-Name:		iputils
-Version:	20151218
-Release:	1%{?dist}
-License:	GPLv2+
-URL:		http://www.gnu.org/software/inetutils
-Group:		Applications/Communications
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://www.skbuff.net/iputils/%{name}-s%{version}.tar.bz2
-BuildRequires: libcap-devel openssl-devel gnutls-devel libgcrypt-devel
-Requires:		libcap 
-Requires:		openssl
-Requires:		gnutls
-Requires:		libgcrypt
-Obsoletes:		inetutils
+Summary:          Programs for basic networking
+Name:             iputils
+Version:          20151218
+Release:          2%{?dist}
+License:          GPLv2+
+URL:              http://www.gnu.org/software/inetutils
+Group:            Applications/Communications
+Vendor:           VMware, Inc.
+Distribution:     Photon
+Source0:          http://www.skbuff.net/iputils/%{name}-s%{version}.tar.bz2
+BuildRequires:    libcap-devel openssl-devel gnutls-devel libgcrypt-devel
+Requires:         libcap 
+Requires:         openssl
+Requires:         gnutls
+Requires:         libgcrypt
+Obsoletes:        inetutils
 %define sha1 iputils=df9fb125356565496ef7d3fe4aaac0904f3fc054
 %description
 The Iputils package contains programs for basic networking.
@@ -59,11 +59,22 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 %doc RELNOTES
-%{_sbindir}/*
-%{_bindir}/*
+%{_sbindir}/rdisc
+%{_sbindir}/ninfod
+%{_sbindir}/ping6
+%{_sbindir}/tracepath
+%{_sbindir}/tracepath6
+%{_bindir}/tracepath
+%{_bindir}/tracepath6
+%caps(cap_net_raw=p) %{_sbindir}/clockdiff
+%caps(cap_net_raw=p) %{_sbindir}/arping
+%caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping
+%caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
-*   	Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
--   	Updated to version 2.4.18
-*	Tue Oct 20 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.2-1
--	Initial build.	First version
+*   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.4.18-2
+-   Fixing permissions for binaries
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
+-   Updated to version 2.4.18
+*   Tue Oct 20 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.2-1
+-   Initial build.    First version
