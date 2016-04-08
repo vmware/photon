@@ -19,6 +19,7 @@ BuildRequires:  xz-devel
 Requires:	bzip2
 Requires:	ncurses
 Requires:  	openssl
+Requires:  	python3-libs
 Requires:  	readline
 Requires:  	xz
 Provides: 	python-sqlite

@@ -19,6 +19,7 @@ BuildRequires:	sqlite-autoconf
 BuildRequires:	ncurses-devel
 Requires:	bzip2
 Requires:  	openssl
+Requires:  	python2-libs
 Provides: 	python-sqlite
 Provides: 	python(abi)
 Provides: 	/bin/python
