@@ -30,6 +30,7 @@
         "zlib-devel",
         "gettext",
         "git",
+        "lsscsi",
         "git-lang",
         "autoconf",
         "perl",

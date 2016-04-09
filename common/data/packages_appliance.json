@@ -26,6 +26,7 @@
         "systemd",
         "dbus",
         "file",
+        "lsscsi",
         "e2fsprogs",
         "rpm",
         "openssh",
