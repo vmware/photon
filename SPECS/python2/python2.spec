@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -19,6 +19,7 @@ BuildRequires:	sqlite-autoconf
 BuildRequires:	ncurses-devel
 Requires:	bzip2
 Requires:  	openssl
+Requires:  	python2-libs = %{version}-%{release}
 Provides: 	python-sqlite
 Provides: 	python(abi)
 Provides: 	/bin/python
@@ -32,7 +33,6 @@ version is for backward compatibility with other dependent packages.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-Requires: python2 = %{version}-%{release}
 Requires:	sqlite-autoconf
 Requires:	expat >= 2.1.0
 Requires:	libffi >= 3.0.13
@@ -212,6 +212,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   	Sun Apr 10 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-2
+-   	Fix python2 and python2-libs dependencies
+
 *   	Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.7.11-1
 -   	Upgrade version
 
