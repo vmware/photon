@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.5.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -19,6 +19,7 @@ BuildRequires:  xz-devel
 Requires:	bzip2
 Requires:	ncurses
 Requires:  	openssl
+Requires:  	python3-libs = %{version}-%{release}
 Requires:  	readline
 Requires:  	xz
 Provides: 	python-sqlite
@@ -35,7 +36,6 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-Requires: python3 = %{version}-%{release}
 BuildRequires:	expat >= 2.1.0
 BuildRequires:	libffi >= 3.0.13
 BuildRequires:	ncurses-devel
@@ -185,6 +185,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   	Sun Apr 10 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-2
+-   	Fix python3 and python3-libs dependencies
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
 -   Updated to version 3.5.1
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
