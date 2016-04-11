@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.2.0
-Release:       19%{?dist}
+Release:       20%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -97,7 +97,7 @@ cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
+photon_cmdline=net.ifnames=0 init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
 photon_linux=vmlinuz-esx-%{version}
 EOF
 
@@ -140,6 +140,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Fri Apr 08 2016 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-20
+-   Disable network interface renaming.
 *   Tue Mar 29 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-19
 -   Support kmsg dumping to vmware.log on panic
 -   sunrpc: xs_bind uses ip_local_reserved_ports
