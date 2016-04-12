@@ -36,6 +36,7 @@
         "python-curses",
         "python-xml",
         "photon-release",
+        "photon-repos",
         "sed",
         "grep",
         "lsof",

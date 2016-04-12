@@ -8,7 +8,7 @@
                 "linux", 
                 "iptables", "ca-certificates",
                 "dbus", "docker",
-                "photon-release"
+                "photon-release", "photon-repos"
                 ]
 }
 

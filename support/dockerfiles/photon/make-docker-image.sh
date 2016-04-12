@@ -17,17 +17,9 @@ TEMP_CHROOT=$(pwd)/temp_chroot
 ROOTFS_TAR_FILENAME=photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.tar.bz2
 STAGE_DIR=$(pwd)/stage
 
-sudo createrepo $STAGE_DIR/RPMS
+rm -rf /etc/yum.repos.d/*
 
-cat > yum.conf <<- EOF
-
-[main]
-cachedir=$(pwd)/temp_chroot/var/cache/yum
-keepcache=1
-debuglevel=2
-logfile=$(pwd)/temp_chroot/var/log/yum.log
-exactarch=1
-obsoletes=1
+cat > /etc/yum.repos.d/photon-local.repo <<- EOF
 
 [photon-local]
 name=VMware Photon Linux 1.0(x86_64)
@@ -42,42 +34,21 @@ EOF
 rm -rf $TEMP_CHROOT 
 mkdir $TEMP_CHROOT
 
-# use host's yum to install in chroot
-mkdir -p $TEMP_CHROOT/var/lib/rpm
 rpm --root $TEMP_CHROOT/ --initdb
-yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT install -y filesystem glibc
-yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT install -y tdnf vim bash coreutils photon-release $MAIN_PACKAGE
-yum -c yum.conf --disablerepo=* --enablerepo=photon-local --installroot=$TEMP_CHROOT clean all
+tdnf upgrade -y tdnf 
+tdnf --installroot $TEMP_CHROOT/ install -y bash coreutils filesystem findutils glibc grep photon-release photon-repos tdnf util-linux vim which
 
-cp $(pwd)/stage/RPMS/noarch/photon-release*.rpm $TEMP_CHROOT
-cp /etc/resolv.conf $TEMP_CHROOT/etc/
-
-# # reinstalling inside to make sure rpmdb is created for tdnf.
-# # TODO find better solution.
-chroot $TEMP_CHROOT bash -c \
-   "rpm -Uvh --nodeps photon-release*.rpm; \
-    tdnf install -y filesystem; \
-    tdnf install -y glibc ; \
-    tdnf install -y bash ; \
-    tdnf install -y coreutils ; \
-    tdnf install -y util-linux; \
-    tdnf install -y tdnf ; \
-    tdnf install -y findutils ; \
-    tdnf install -y vim ; \
-    tdnf install -y grep ; \
-    tdnf install -y which ;"
-
+rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
 cd $TEMP_CHROOT
 # cleanup anything not needed inside rootfs
-rm -f photon-release*.rpm
 rm -rf usr/src/
 rm -rf home/*
 # rm -rf var/lib/yum/*
 rm -rf var/log/*
 
 #find var/cache/tdnf/photon/rpms -type f -name "*.rpm" -exec rm {} \;
-
+tdnf install -y tar
 tar cpjf ../$ROOTFS_TAR_FILENAME .
 mkdir -p $STAGE_DIR
 mv ../$ROOTFS_TAR_FILENAME $STAGE_DIR/
@@ -85,5 +56,4 @@ cd ..
 
 # cleanup
 rm -rf $TEMP_CHROOT
-rm yum.conf
 
