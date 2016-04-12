@@ -113,7 +113,6 @@
         "wget",
         "Linux-PAM-lang",
         "make",
-        "bindutils",
         "gperf",
         "lua-devel",
         "less",
