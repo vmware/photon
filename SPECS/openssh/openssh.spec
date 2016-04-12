@@ -44,7 +44,7 @@ tar xf %{SOURCE1}
     	--with-pam \
 	--with-maintype=man \
 	--with-kerberos5=/usr
-make %{?_smp_mflags}
+make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
