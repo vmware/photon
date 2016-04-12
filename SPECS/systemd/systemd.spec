@@ -1,7 +1,7 @@
 Summary:	Systemd-228
 Name:		systemd
 Version:	228
-Release:	15%{?dist}
+Release:	16%{?dist}
 License:	LGPLv2+ and GPLv2+ and MIT
 URL:		http://www.freedesktop.org/wiki/Software/systemd/
 Group:		System Environment/Security
@@ -103,6 +103,7 @@ for tool in runlevel reboot shutdown poweroff halt telinit; do
 done
 ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
+sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/lib/systemd/network/99-default.link
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
 
@@ -132,6 +133,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*       Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-16
+-       Disable network interface renaming.
 *       Wed Mar 31 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-15
 -       Patch to query DHCP DUID, IAID.
 *       Wed Mar 30 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-14
