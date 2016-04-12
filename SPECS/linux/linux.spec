@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	24%{?dist}
+Release:    	25%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -109,7 +109,7 @@ cp -v .config            %{buildroot}/boot/config-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=net.ifnames=0 init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
 photon_linux=vmlinuz-%{version}
 photon_initrd=initrd.img-no-kmods
 EOF
@@ -178,6 +178,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-25
+-   Revert network interface renaming disable in kernel.
 *   Tue Mar 29 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-24
 -   Support kmsg dumping to vmware.log on panic
 -   sunrpc: xs_bind uses ip_local_reserved_ports
