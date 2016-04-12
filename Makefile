@@ -341,6 +341,7 @@ generate-dep-lists:
 	done
 
 docker-image:
+	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
 		-it \
 		--rm \
@@ -349,7 +350,7 @@ docker-image:
 		-e PHOTON_BUILD_NUMBER=$(PHOTON_BUILD_NUMBER) \
 		-e PHOTON_RELEASE_VERSION=$(PHOTON_RELEASE_VERSION) \
 		-v `pwd`:/workspace \
-		vmware/build-photon \
+		photon-build \
 		./support/dockerfiles/photon/make-docker-image.sh tdnf
 
 install-docker-image: docker-image
