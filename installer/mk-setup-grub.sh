@@ -85,7 +85,7 @@ fi
 
 cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
-cp boot/splash.tga ${BUILDROOT}/boot/grub2/themes/photon/photon.tga
+cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
 cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
@@ -111,6 +111,7 @@ loadfont "$BOOT_DIRECTORY"grub2/unifont.pf2
 insmod gfxterm
 insmod vbe
 insmod tga
+insmod png
 insmod ext2
 insmod part_gpt
 
