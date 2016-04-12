@@ -13,6 +13,7 @@ Requires:	libpipeline
 Requires:	gdbm
 Requires:	xz
 Requires: 	groff
+Requires:   shadow
 BuildRequires:	libpipeline
 BuildRequires:	gdbm
 BuildRequires:	xz
@@ -38,8 +39,25 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name} --all-name
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%pre
+if ! getent group man >/dev/null; then
+    groupadd -r man
+fi
+if ! getent passwd apache >/dev/null; then
+    useradd -c "man" -d /var/cache/man -g man \
+        -s /bin/false -M -r man
+fi
+%post -p /sbin/ldconfig
+
+%postun	
+/sbin/ldconfig
+if getent passwd man >/dev/null; then
+    userdel man
+fi
+if getent group man >/dev/null; then
+    groupdel man
+fi
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_sysconfdir}/man_db.conf
