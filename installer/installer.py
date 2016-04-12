@@ -131,6 +131,12 @@ class Installer(object):
                     self.exit_gracefully(None, None)
 
 
+        process = subprocess.Popen(['rpm', '--import', '/etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY'], stdout=self.output, stderr=subprocess.STDOUT)
+        retval = process.wait()
+        if retval != 0:
+            modules.commons.log(modules.commons.LOG_ERROR, "Failed gpg key import with error code {}".format(retval))
+            self.exit_gracefully(None, None)
+
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
 
