@@ -27,6 +27,7 @@
         "dbus",
         "file",
         "lsscsi",
+        "sg3_utils",
         "e2fsprogs",
         "rpm",
         "openssh",
