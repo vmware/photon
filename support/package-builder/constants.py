@@ -17,7 +17,7 @@ class constants(object):
     inputRPMSPath=""
     rpmCheck=False
     sourceRpmPath=""
-    noDepsPackageList=["texinfo","bzip2","gettext","man-db","nspr","xz","bison","openjdk","go"]
+    noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","openjdk","go"]
     listToolChainPackages=[
         "linux-api-headers",
         "glibc",
@@ -71,7 +71,6 @@ class constants(object):
         "python2",
         "rpm",
         "groff",
-        "man-db",
         "man-pages",
         "cpio"]
 
@@ -165,7 +164,6 @@ class constants(object):
         "autoconf",
         "automake",
         "groff",
-        "man-db",
         "man-pages",
         "elfutils",
         "cpio"]
@@ -249,7 +247,6 @@ class constants(object):
         "rpm-build",
         "rpm-devel",
         "groff",
-        "man-db",
         "man-pages",
         "cpio"]
 
