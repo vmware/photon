@@ -1,12 +1,12 @@
 Summary:	Photon release files
 Name:		photon-release
 Version:	1.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
-Source:		%{name}-%{version}.2.tar.gz
-%define sha1 photon-release=4c03ec658315e25873e5e5f3e77c0006ddfeecc6
+Source:		%{name}-%{version}.4.tar.gz
+%define sha1 photon-release=d67b149f28117f1ad30acb585f180f8fa951f679
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-release
@@ -17,7 +17,7 @@ Requires:       rpm
 Photon release files such as yum configs and other /etc/ release related files
 
 %prep
-%setup -q -n %{name}-%{version}.2
+%setup -q -n %{name}-%{version}.4
 
 %build
 
@@ -25,13 +25,6 @@ Photon release files such as yum configs and other /etc/ release related files
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/etc
 install -d $RPM_BUILD_ROOT/usr/lib
-install -d -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
-for file in *repo ; do
-  install -m 644 $file $RPM_BUILD_ROOT/etc/yum.repos.d
-done
-
-install -d -m 755 $RPM_BUILD_ROOT/etc/pki/rpm-gpg
-install -m 644 VMWARE-RPM-GPG-KEY $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 
 echo "VMware Photon Linux %{photon_release_version}" > %{buildroot}/etc/photon-release
 echo "PHOTON_BUILD_NUMBER=%{photon_build_number}" >> %{buildroot}/etc/photon-release
@@ -66,22 +59,12 @@ Welcome to Photon 1.0 (x86_64) - Kernel %r (%t)
 EOF
 
 %post
-# Remove __db* files to workaround BD version check bug in rpm
-rm -f /var/lib/rpm/__db*
-rpm --import /etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%dir /etc/yum.repos.d
-/etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
-%config(noreplace) /etc/yum.repos.d/photon-iso.repo
-%config(noreplace) /etc/yum.repos.d/photon.repo
-%config(noreplace) /etc/yum.repos.d/photon-updates.repo
-%config(noreplace) /etc/yum.repos.d/lightwave.repo
-%config(noreplace) /etc/yum.repos.d/photon-extras.repo
 %config(noreplace) /etc/photon-release
 %config(noreplace) /etc/lsb-release
 %config(noreplace) /usr/lib/os-release
@@ -90,9 +73,11 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Mon Apr 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-4
+-       Split up repo and gpg key files to photon-repos
 *  		Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-3
 -		yum repo gpgkey to VMWARE-RPM-GPG-KEY.
-*  		Tue Mar 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-2
+*  		Wed Mar 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-2
 -		Add revision to photon-release
 *       Mon Jan 11 2016 Anish Swaminathan <anishs@vmware.com> 1.0-1
 -       Reset version to match with Photon version
