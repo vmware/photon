@@ -24,7 +24,7 @@ Above command will create a new commit that will have your package related chang
 
 ## RPM-OSTree Host
 
-OSTree host is the installation of Photon that retrives the images from RPM-OSTree server during installation. It can get atomic updates from the same server in its life time.
+OSTree host is the installation of Photon that retrieves the images from RPM-OSTree server during installation. It can get atomic updates from the same server in its life time.
 
 ## Upgrading the Host installations
 
