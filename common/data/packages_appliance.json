@@ -37,6 +37,7 @@
         "python-xml",
         "photon-release",
         "photon-repos",
+        "sg3_utils",
         "sed",
         "grep",
         "lsof",
