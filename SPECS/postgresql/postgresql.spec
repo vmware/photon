@@ -7,36 +7,63 @@ URL:		www.postgresql.org
 Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:	Photon
+Provides:	%{name}
+
 Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
 %define sha1 postgresql=905bc31bc4d500e9498340407740a61835a2022e
-Requires:	openssl
-Requires: 	python2
-BuildRequires: 	perl
-BuildRequires:	python2
-BuildRequires:  openssl
-BuildRequires:  krb5
-BuildRequires:  openldap
-BuildRequires:  libxml2
-BuildRequires:  python2
-BuildRequires:  libxslt
-BuildRequires:  readline-devel
+
+# Common libraries needed
+BuildRequires:	krb5
+BuildRequires:	libxml2-devel
+BuildRequires:	openldap
+BuildRequires:	perl
+BuildRequires:	readline-devel
+BuildRequires:	openssl-devel
+BuildRequires:	zlib-devel
+Requires:		krb5
+Requires:		libxml2
+Requires:		openldap
+Requires:		openssl
+Requires:		readline
+Requires:		zlib
+
+Requires:   %{name}-libs = %{version}-%{release}
 
 %description
-PostgreSQL is an object-relational database management system. 
+PostgreSQL is an object-relational database management system.
+
+%package libs
+Summary:    Libraries for use with PostgreSQL
+Group:      Applications/Databases
+Provides:   %{name}-libs
+
+%description libs
+The postgresql-libs package provides the essential shared libraries for any
+PostgreSQL client program or interface. You will need to install this package
+to use any other PostgreSQL package or any clients that need to connect to a
+PostgreSQL server.
 
 %prep
 %setup -q
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
 ./configure \
-	--prefix=%{_prefix} \
 	--enable-thread-safety \
-        --docdir=%{_docdir}/postgresql-%{version} 
+	--prefix=%{_prefix} \
+	--with-ldap \
+	--with-libxml \
+	--with-openssl \
+	--with-gssapi \
+	--with-readline \
+	--with-system-tzdata=%{_datadir}/zoneinfo \
+	--docdir=%{_docdir}/postgresql
 make %{?_smp_mflags}
+cd contrib && make %{?_smp_mflags}
+
 %install
-cd src
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} &&
+make install DESTDIR=%{buildroot}
+cd contrib && make install DESTDIR=%{buildroot}
 
 %{_fixperms} %{buildroot}/*
 %check
@@ -44,13 +71,90 @@ make install DESTDIR=%{buildroot} &&
 %postun	-p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%{_bindir}/*
-%{_libdir}/*
-%exclude %{_libdir}/debug/
-%{_includedir}/*
+%{_bindir}/initdb
+%{_bindir}/oid2name
+%{_bindir}/pg_archivecleanup
+%{_bindir}/pg_basebackup
+%{_bindir}/pg_controldata
+%{_bindir}/pg_ctl
+%{_bindir}/pg_receivexlog
+%{_bindir}/pg_recvlogical
+%{_bindir}/pg_resetxlog
+%{_bindir}/pg_rewind
+%{_bindir}/pg_standby
+%{_bindir}/pg_test_fsync
+%{_bindir}/pg_test_timing
+%{_bindir}/pg_upgrade
+%{_bindir}/pg_xlogdump
+%{_bindir}/pgbench
+%{_bindir}/postgres
+%{_bindir}/postmaster
+%{_bindir}/vacuumlo
 %{_datadir}/postgresql/*
+%{_libdir}/libpgcommon.a
+%{_libdir}/libpgport.a
+%{_libdir}/libpq.a
+%{_libdir}/postgresql/*
+%{_docdir}/postgresql/extension/*.example
+%{_includedir}/postgresql/*
+%exclude %{_includedir}/postgresql/informix/*
+%exclude %{_includedir}/postgresql/internal/*
+%exclude %{_libdir}/debug/
+%exclude %{_datadir}/postgresql/pg_service.conf.sample
+%exclude %{_datadir}/postgresql/psqlrc.sample
+
+%files libs
+%{_bindir}/clusterdb
+%{_bindir}/createdb
+%{_bindir}/createlang
+%{_bindir}/createuser
+%{_bindir}/dropdb
+%{_bindir}/droplang
+%{_bindir}/dropuser
+%{_bindir}/ecpg
+%{_bindir}/pg_config
+%{_bindir}/pg_dump
+%{_bindir}/pg_dumpall
+%{_bindir}/pg_isready
+%{_bindir}/pg_restore
+%{_bindir}/psql
+%{_bindir}/reindexdb
+%{_bindir}/vacuumdb
+%{_includedir}/ecpg_config.h
+%{_includedir}/ecpg_informix.h
+%{_includedir}/ecpgerrno.h
+%{_includedir}/ecpglib.h
+%{_includedir}/ecpgtype.h
+%{_includedir}/libpq-events.h
+%{_includedir}/libpq-fe.h
+%{_includedir}/libpq/libpq-fs.h
+%{_includedir}/pg_config.h
+%{_includedir}/pg_config_ext.h
+%{_includedir}/pg_config_manual.h
+%{_includedir}/pg_config_os.h
+%{_includedir}/pgtypes_date.h
+%{_includedir}/pgtypes_error.h
+%{_includedir}/pgtypes_interval.h
+%{_includedir}/pgtypes_numeric.h
+%{_includedir}/pgtypes_timestamp.h
+%{_includedir}/postgres_ext.h
+%{_includedir}/postgresql/informix/*
+%{_includedir}/postgresql/internal/*
+%{_includedir}/sql3types.h
+%{_includedir}/sqlca.h
+%{_includedir}/sqlda-compat.h
+%{_includedir}/sqlda-native.h
+%{_includedir}/sqlda.h
+%{_libdir}/libecpg*
+%{_libdir}/libpgtypes*
+%{_libdir}/libpq*
+%{_libdir}/pkgconfig/*
+%{_datadir}/postgresql/pg_service.conf.sample
+%{_datadir}/postgresql/psqlrc.sample
+
 %changelog
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
 -   Updated to version 9.5.1
