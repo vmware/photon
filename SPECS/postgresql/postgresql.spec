@@ -1,6 +1,6 @@
 Summary:	PostgreSQL database engine
 Name:		postgresql
-Version:	9.5.1
+Version:	9.5.2
 Release:	1%{?dist}
 License:	PostgreSQL
 URL:		www.postgresql.org
@@ -8,7 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1 postgresql=905bc31bc4d500e9498340407740a61835a2022e
+%define sha1 postgresql=e139e5607fafd96926463123f7751086adaad724
 Requires:	openssl
 Requires: 	python2
 BuildRequires: 	perl
@@ -22,7 +22,7 @@ BuildRequires:  libxslt
 BuildRequires:  readline-devel
 
 %description
-PostgreSQL is an object-relational database management system. 
+PostgreSQL is an object-relational database management system.
 
 %prep
 %setup -q
@@ -31,7 +31,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
 ./configure \
 	--prefix=%{_prefix} \
 	--enable-thread-safety \
-        --docdir=%{_docdir}/postgresql-%{version} 
+        --docdir=%{_docdir}/postgresql-%{version}
 make %{?_smp_mflags}
 %install
 cd src
@@ -52,6 +52,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_datadir}/postgresql/*
 %changelog
+*   Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
+-   Updated to version 9.5.2
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
 -   Updated to version 9.5.1
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
