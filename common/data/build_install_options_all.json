@@ -5,34 +5,27 @@
         "visible" : false,
         "include" : []
     },
-    "micro" : {
-        "title" : "1. Photon Micro",
-        "file" : "packages_micro.json",
-        "visible" : true,
-        "include" : []
-
-    },
     "minimal" : {
-        "title" : "2. Photon Minimal",
+        "title" : "1. Photon Minimal",
         "file" : "packages_minimal.json",
         "visible" : true,
         "include" : []
     },
     "full" : {
-        "title" : "3. Photon Full",
+        "title" : "2. Photon Full",
         "file" : "packages_full.json",
         "visible" : true,
         "include" : ["minimal"]
     },
     "ostree_host" : {
-        "title" : "4. Photon OSTree Host",
+        "title" : "3. Photon OSTree Host",
         "file" : "packages_ostree_host.json",
         "visible" : true,
         "include" : [],
         "additional-files" : ["ostree-repo.tar.gz"]
     },
     "ostree_server" : {
-        "title" : "5. Photon OSTree Server",
+        "title" : "4. Photon OSTree Server",
         "file" : "packages_ostree_server.json",
         "visible" : true,
         "include" : ["minimal"],
