@@ -37,6 +37,11 @@ cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
 #
 if [[	$# -gt 0 ]] && [[ $1 == 'install' ]]; then
 	mkdir -p ${BUILDROOT}/var/lib/rpm
+	mkdir -p ${BUILDROOT}/cache/tdnf
+	#Setup the disk
+	dd if=/dev/zero of=${BUILDROOT}/cache/swapfile bs=1M count=64
+    mkswap -v1 ${BUILDROOT}/cache/swapfile
+    swapon ${BUILDROOT}/cache/swapfile
 	rpm   --root ${BUILDROOT} --initdb
     tdnf install filesystem photon-repos --installroot ${BUILDROOT} --nogpgcheck --assumeyes
     rpm --root ${BUILDROOT} --import ${BUILDROOT}/etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
