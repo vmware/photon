@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.5.4
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -75,7 +75,6 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
-rm %{buildroot}/usr/lib/libexpat.so
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -86,7 +85,6 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 %{_libdir}/aprutil.exp
-%{_libdir}/libexpat.so.*
 %{_libdir}/libaprutil-%{apuver}.so.*
 %{_libdir}/apr-util-%{apuver}/apr_crypto_nss*
 %{_libdir}/apr-util-%{apuver}/apr_crypto_openssl*
@@ -96,7 +94,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %{_libdir}/libaprutil-%{apuver}.*a
 %{_libdir}/libaprutil-%{apuver}.so
-%{_libdir}/libexpat.*a
 %{_bindir}/*
 %{_includedir}/*
 %{_libdir}/pkgconfig/apr-util-%{apuver}.pc
@@ -114,6 +111,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+*   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.4-6
+-   remove libexpat files
 *	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.4-5
 -	Updated build-requires after creating devel package for apr. 
 *   Wed Sep 16 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.4-4
