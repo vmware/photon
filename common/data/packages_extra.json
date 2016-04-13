@@ -71,6 +71,7 @@
         "dmidecode",
         "iperf",
         "atftp",
+        "atftp-client",
 	"distrib-compat",
         "crash",
         "systemtap",

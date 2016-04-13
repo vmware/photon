@@ -22,12 +22,13 @@ multicast) as specified in RFC1350, RFC2090, RFC2347, RFC2348 and RFC2349.
 Atftpd also support multicast protocol knowed as mtftp, defined in the PXE
 specification. The server supports being started from inetd(8) as well as
 a deamon using init scripts.
+Provides: tftp
+Obsoletes: tftp
 
 %package client
 Summary: Advanced Trivial File Transfer Protocol (ATFTP) - TFTP client
 Group: Applications/Internet
-Provides: tftp
-Obsoletes: tftp
+
 
 %description client
 Advanced Trivial File Transfer Protocol client program for requesting
@@ -83,14 +84,24 @@ ATFTPD_BIND_ADDRESSES=
 EOF
 
 %pre
-getent group tftp 2>/dev/null >/dev/null || /usr/sbin/groupadd -r tftp
-/usr/sbin/useradd --comment "tftp" --shell /bin/bash -M -r --groups tftp tftp
+getent group  tftp  >/dev/null || groupadd -r tftp
+getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
 
 %preun
 /bin/systemctl disable atftpd.socket
 
+
 %post
 /bin/systemctl enable atftpd.socket
+
+%postun
+/sbin/ldconfig
+if getent passwd tftp >/dev/null; then
+    userdel tftp
+fi
+if getent group tftp >/dev/null; then
+    groupdel tftp
+fi
 
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != '/' ] && rm -rf $RPM_BUILD_ROOT
