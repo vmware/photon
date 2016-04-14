@@ -25,6 +25,9 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 /usr/sbin/grpconv
 /bin/systemd-machine-id-setup
 
+# Importing the pubkey
+rpm --import /etc/pki/rpm-gpg/*
+
 #TODO: This should be removed, systemd should be able to create this file
 /usr/bin/touch /var/run/utmp
 #/sbin/locale-gen.sh

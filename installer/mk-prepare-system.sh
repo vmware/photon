@@ -38,8 +38,7 @@ cd ${BUILDROOT} || fail "${PRGNAME}: Change directory: ${BUILDROOT}: FAILURE"
 if [[	$# -gt 0 ]] && [[ $1 == 'install' ]]; then
 	mkdir -p ${BUILDROOT}/var/lib/rpm
 	rpm   --root ${BUILDROOT} --initdb
-    tdnf install filesystem photon-repos --installroot ${BUILDROOT} --nogpgcheck --assumeyes
-    rpm --root ${BUILDROOT} --import ${BUILDROOT}/etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+    tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes
 else
 	RPMPKG="$(find RPMS -name 'filesystem-[0-9]*.rpm' -print)"
 	[ -z ${RPMPKG} ] && fail "	Filesystem rpm package missing: Can not continue"
