@@ -19,6 +19,7 @@
         "util-linux",
         "kmod",
         "linux",
+        "sg3_utils",
         "ca-certificates",
         "curl",
         "iptables",
