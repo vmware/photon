@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.5.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -118,7 +118,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /sbin/ldconfig
 #ln -s %{_bindir}/python3 %{_bindir}/python
 #ln -s %{_bindir}/python3-config %{_bindir}/python-config
-ln -s %{_libdir}/libpython3.5m.so %{_libdir}/libpython3.5.so
+ln -sf %{_libdir}/libpython3.5m.so %{_libdir}/libpython3.5.so
 
 %post libs
 export PYTHONHOME=/usr
@@ -186,6 +186,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Thu Apr 14 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-4
+-   update link creation options to -sf libpython3.5m.so
 *   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
 -   update python to require python-libs
 *   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
