@@ -50,7 +50,7 @@ x86_64/cpio-2.11-2.ph1tp2.x86_64.rpm
 x86_64/libtool-2.4.2-1.ph1tp2.x86_64.rpm
 x86_64/sqlite-autoconf-3080301-1.ph1tp2.x86_64.rpm
 x86_64/libffi-3.1-1.ph1tp2.x86_64.rpm
-x86_64/openssl-devel-1.0.2d-2.ph1tp2.x86_64.rpm
+x86_64/openssl-devel-1.0.2g-1.ph1.x86_64.rpm
 x86_64/readline-6.3-3.ph1tp2.x86_64.rpm
 x86_64/util-linux-2.24.1-2.ph1tp2.x86_64.rpm
 x86_64/elfutils-devel-0.158-3.ph1tp2.x86_64.rpm
@@ -65,7 +65,7 @@ x86_64/nspr-4.10.8-1.ph1tp2.x86_64.rpm
 x86_64/diffutils-3.3-2.ph1tp2.x86_64.rpm
 x86_64/zlib-1.2.8-2.ph1tp2.x86_64.rpm
 x86_64/elfutils-0.158-3.ph1tp2.x86_64.rpm
-x86_64/openssl-1.0.2d-2.ph1tp2.x86_64.rpm
+x86_64/openssl-1.0.2g-1.ph1.x86_64.rpm
 x86_64/libgomp-4.8.2-4.ph1tp2.x86_64.rpm
 x86_64/libgomp-devel-4.8.2-4.ph1tp2.x86_64.rpm
 x86_64/bison-3.0.2-2.ph1tp2.x86_64.rpm
