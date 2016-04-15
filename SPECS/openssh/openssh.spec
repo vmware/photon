@@ -1,6 +1,6 @@
 Summary:	'Free version of the SSH connectivity tools
 Name:		openssh
-Version:	7.1p2
+Version:	7.2p2
 Release:	1%{?dist}
 License:	BSD
 URL:		http://openssh.org
@@ -8,7 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1 openssh=9202f5a2a50c8a55ecfb830609df1e1fde97f758
+%define sha1 openssh=70e35d7d6386fe08abbd823b3a12a3ca44ac6d38
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Patch1:		blfs_systemd_fixes.patch
@@ -127,6 +127,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Fri Apr 15 2016 Xiaolin Li <xiaolinl@vmware.com> 7.2p2-1
+-   Updated to version 7.2p2
 *   Thu Mar 17 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1p2-1
 -   Updated to version 7.1p2
 *	Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com> 6.6p1-6
