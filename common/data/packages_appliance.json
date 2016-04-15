@@ -62,6 +62,7 @@
         "lvm2",
         "cifs-utils",
         "c-ares",
-        "distrib-compat"
+        "distrib-compat",
+        "initramfs"
     ]
 }
