@@ -1,12 +1,12 @@
 Name:           python-Twisted
-Version:        15.5.0
+Version:        16.1.1
 Release:        1%{?dist}
 Url:            https://twistedmatrix.com
 Summary:        An asynchronous networking framework written in Python
 License:        MIT
 Group:          Development/Languages/Python
 Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
-%define sha1 Twisted=c7db4b949fc27794ca94677f66082f49be43f283
+%define sha1 Twisted=202449e218600f7c21c6cf66a00b68b59bedb7d2
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -39,6 +39,8 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/*
 
 %changelog
+*   	Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 16.1.1-1
+-   	Updated to version 16.1.1 
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 15.5.0-1
 -	Upgrade version
 * 	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
