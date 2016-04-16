@@ -1,0 +1,13 @@
+[Unit]
+Description=Containerd Daemon
+Documentation=https://containerd.tools/
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/docker-containerd --listen /run/containerd.sock --runtime /usr/bin/docker-runc
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target

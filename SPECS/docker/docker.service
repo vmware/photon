@@ -1,0 +1,20 @@
+[Unit]
+Description=Docker Daemon
+Documentation=http://docs.docker.com
+Wants=network-online.target
+After=network-online.target docker-containerd.service
+Requires=docker-containerd.service
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/docker daemon \
+          --containerd /run/containerd.sock
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-abnormal
+LimitNOFILE=1048576
+LimitNPROC=1048576
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
