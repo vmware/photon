@@ -1,38 +1,24 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.2.0
-Release:    	25%{?dist}
+Version:    	4.4.7
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
-%define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.7.tar.xz
+%define sha1 linux=f3af32c54dcaae3eb55892dc2c1bcc1d8a46868a
 Source1:	config-%{version}
-Patch0:         KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
-Patch1:         RDS-race-condition-on-unbound-socket-null-deref.patch
-Patch2:         ovl-fix-permission-checking-for-setattr.patch
-Patch3:         double-tcp_mem-limits.patch
-Patch4:         veth-do-not-modify-ip_summed.patch
-Patch5:         sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch6:         watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch7:         SUNRPC-Ensure-that-we-wait-for-connections-to-comple.patch
-Patch8:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch9:         06-sunrpc.patch
-Patch10:        vmware-log-kmsg-dump-on-panic.patch
+Patch0:         double-tcp_mem-limits.patch
+Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
+Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch4:         06-sunrpc.patch
+Patch5:         vmware-log-kmsg-dump-on-panic.patch
 BuildRequires:  bc
-BuildRequires:  kbd
-BuildRequires:  kmod
-BuildRequires:  glib-devel
-BuildRequires:  xerces-c-devel
-BuildRequires:  xml-security-c-devel
-BuildRequires:  libdnet
-BuildRequires:  libmspack
-BuildRequires:  Linux-PAM
 BuildRequires:  openssl-devel
-BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod coreutils
 
 %description
@@ -76,18 +62,13 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 
 %prep
-%setup -q -n linux-4.2
+%setup -q
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
 
 %build
 make mrproper
@@ -103,19 +84,19 @@ install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
-cp -v System.map        %{buildroot}/boot/system.map-%{version}
-cp -v .config            %{buildroot}/boot/config-%{version}
+cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}-%{release}
+cp -v System.map        %{buildroot}/boot/system.map-%{version}-%{release}
+cp -v .config            %{buildroot}/boot/config-%{version}-%{release}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
-photon_linux=vmlinuz-%{version}
+photon_linux=vmlinuz-%{version}-%{release}
 photon_initrd=initrd.img-no-kmods
 EOF
 
 # Restrict the permission on system.map-X file
-chmod -v 400 %{buildroot}/boot/system.map-%{version}
+chmod -v 400 %{buildroot}/boot/system.map-%{version}-%{release}
 
 #    Cleanup dangling symlinks
 rm -rf %{buildroot}/lib/modules/%{version}/source
@@ -144,9 +125,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 
 %files
 %defattr(-,root,root)
-/boot/system.map-%{version}
-/boot/config-%{version}
-/boot/vmlinuz-%{version}
+/boot/system.map-%{version}-%{release}
+/boot/config-%{version}-%{release}
+/boot/vmlinuz-%{version}-%{release}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 /lib/firmware/*
 /lib/modules/*
@@ -178,6 +159,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Apr 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.7-1
+-   Switch to linux-4.4
 *   Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-25
 -   Revert network interface renaming disable in kernel.
 *   Tue Mar 29 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-24
