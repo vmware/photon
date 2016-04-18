@@ -1,6 +1,6 @@
 # This package depends on exact version of kernel rpm
 # since it provides kernel modules 
-%define LINUX_VERSION 4.2.0
+%define LINUX_VERSION 4.4.7
 
 Summary: A New Scripting Dynamic Tracing Tool For Linux
 Name:    ktap
