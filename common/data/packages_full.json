@@ -256,6 +256,7 @@
         "python-curses",
         "c-ares",
         "c-ares-devel",
+        "dnsmasq",
         "ddclient"
     ]
 }
