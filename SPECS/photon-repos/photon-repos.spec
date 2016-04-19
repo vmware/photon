@@ -1,12 +1,12 @@
 Summary:	Photon repo files, gpg keys
 Name:		photon-repos
 Version:	1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
-Source:		%{name}-%{version}.tar.gz
-%define sha1 photon-repos=0be4c46922ad6f990e28e05fef75e2d1341aaf4a
+Source:		%{name}-%{version}-2.tar.gz
+%define sha1 photon-repos=edc12265d30aa9fc7680aba6aec3cd70417ef5ce
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-repos
@@ -47,5 +47,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*       Mon Apr 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-2
+-       Fix regression in photon-extras gpg key location
 *       Mon Apr 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-1
 -       Initial
