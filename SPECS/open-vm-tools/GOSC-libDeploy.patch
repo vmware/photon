@@ -1,0 +1,51 @@
+diff -ru open-vm-tools-10.0.5/libDeployPkg/linuxDeployment.c open-vm-tools-modified/libDeployPkg/linuxDeployment.c
+--- open-vm-tools-10.0.5/libDeployPkg/linuxDeployment.c	2015-11-23 22:59:42.000000000 -0800
++++ open-vm-tools-modified/libDeployPkg/linuxDeployment.c	2016-04-19 16:51:28.434617505 -0700
+@@ -549,13 +549,17 @@
+    close(fd);
+ 
+    // Create space and copy the command
+-   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH);
++   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH + 1);
+    if (!*command) {
+       SetDeployError("Error allocating memory.");
+       return FALSE;
+    }
++   
++   // will pad with '\0' if necessary
++   strncpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
++   // hdr.command is a structure of fixed length VMWAREDEPLOYPKG_CMD_LENGTH
++   (*command)[VMWAREDEPLOYPKG_CMD_LENGTH] = '\0'; 
+ 
+-   memcpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
+    *archiveType = hdr.payloadType;
+ 
+    return TRUE;
+@@ -907,6 +911,18 @@
+          return DEPLOY_ERROR;
+       }
+    }
++   if ((strstr(command, "scripts/Customize.pl") != NULL) || (strstr(command, "scripts/customize.sh") != NULL)) {
++      free (command);
++      const char* PHOTON_OS_LAUNCH_COMMAND = "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh /tmp/.vmware/linux/deploy/cust.cfg";
++
++       // The command will be parsed alter and can be of arbitrary length
++       command = strdup(PHOTON_OS_LAUNCH_COMMAND);
++       if (!command) {
++          SetDeployError("Error allocating memory.");
++          return DEPLOY_ERROR;
++       }
++       _DeployPkg_SkipReboot(true);
++   }
+ 
+    // Run the deployment command
+    sLog(log_info, "Launching deployment %s. \n", command);
+@@ -988,7 +1004,7 @@
+       //TODO: What should be done if cleanup fails ??
+    }
+    free (cleanupCommand);
+-
++   
+    //Reset the guest OS
+    if (!sSkipReboot && !deploymentResult) {
+       // Reboot the Vm
