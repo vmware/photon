@@ -117,7 +117,7 @@ EOF
 #
 cat > %{buildroot}/etc/systemd/network/10-dhcp-en.network <<- "EOF"
 [Match]
-Name=*
+Name=e*
 
 [Network]
 DHCP=yes
