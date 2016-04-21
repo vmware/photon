@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -532,6 +532,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Wed Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 1.0-2
+-   Version update for network file change
 *   Mon Jan 18 2016 Anish Swaminathan <anishs@vmware.com> 1.0-1
 -   Reset version to match with Photon version
 *   Wed Jan 13 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 7.5-13
