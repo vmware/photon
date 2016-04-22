@@ -65,14 +65,6 @@ class PackageBuilder(object):
             if packageName is not None:
                 listInstalledPackages.append(packageName)
         return listInstalledPackages
-    
-    def buildPackageThreadAPI(self,package,outputMap, threadName,):
-        try:
-            self.buildPackage(package)
-            outputMap[threadName]=True
-        except Exception as e:
-            self.logger.error(e)
-            outputMap[threadName]=False
         
     def buildPackage(self,package):
         #should initialize a logger based on package name
