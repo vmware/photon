@@ -4,6 +4,7 @@
         "file" : "packages_minimal.json",
         "visible" : false,
         "include" : [],
-        "live-cd" : true
+        "live-cd" : true,
+        "additional-files" : ["COPYING"]
     }
 }

@@ -324,7 +324,9 @@ $(PHOTON_STAGE):
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
 	@echo "Building LOGS folder..."
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
-	@echo "Creating data folder for generated files..."
+	@echo "Creating COPYING file..."
+	install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
+
 
 generate-dep-lists:
 	$(RMDIR) $(PHOTON_GENERATED_DATA_DIR)

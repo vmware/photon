@@ -3,7 +3,8 @@
         "title" : "ISO Packages",
         "file" : "packages_iso.json",
         "visible" : false,
-        "include" : []
+        "include" : [],
+        "additional-files" : ["COPYING"]
     },
     "minimal" : {
         "title" : "Photon Minimal",
