@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -271,7 +271,7 @@ for script in /etc/profile.d/*.sh ; do
 done
 
 unset script RED GREEN NORMAL
-
+umask 027
 # End /etc/profile
 EOF
 #
@@ -532,7 +532,9 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
-*   Wed Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 1.0-2
+*   Fri Apr 22 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-3
+-   Setting default umask value to 027
+*   Thu Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 1.0-2
 -   Version update for network file change
 *   Mon Jan 18 2016 Anish Swaminathan <anishs@vmware.com> 1.0-1
 -   Reset version to match with Photon version
