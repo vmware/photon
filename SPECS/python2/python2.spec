@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -17,6 +17,7 @@ BuildRequires:	expat >= 2.1.0
 BuildRequires:	libffi >= 3.0.13
 BuildRequires:	sqlite-autoconf
 BuildRequires:	ncurses-devel
+BuildRequires:	readline-devel
 Requires:	bzip2
 Requires:  	openssl
 Requires:	python2-libs = %{version}-%{release}
@@ -212,6 +213,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*  	Tue Apr 26 2016 Nick Shi <nshi@vmware.com> 2.7.11-3
+-  	Adding readline module into python2-libs
+
 *   	Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-2
 -   	update python to require python-libs
 
