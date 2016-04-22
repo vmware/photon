@@ -17,6 +17,7 @@ BuildRequires:	expat >= 2.1.0
 BuildRequires:	libffi >= 3.0.13
 BuildRequires:	sqlite-autoconf
 BuildRequires:	ncurses-devel
+BuildRequires:	readline-devel
 Requires:	bzip2
 Requires:  	openssl
 Requires:	python2-libs = %{version}-%{release}
