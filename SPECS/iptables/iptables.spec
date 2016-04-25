@@ -1,7 +1,7 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.6.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
@@ -58,8 +58,10 @@ find %{buildroot} -name '*.la' -delete
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post
 /sbin/ldconfig
-
-%postun	-p /sbin/ldconfig
+systemctl enable iptables.service
+%postun
+/sbin/ldconfig
+systemctl disable iptables.service
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -77,8 +79,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
-* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.0-1
-- 	Updated to version 1.6.0
+*   Thu Apr 21 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
+-   Enabled iptable service. Added iptable rule to accept ssh connections by default.
+*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.0-1
+-   Updated to version 1.6.0
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.4.21-3
 -   Add systemd to Requires and BuildRequires.
 -   Use systemctl to enable/disable service.
