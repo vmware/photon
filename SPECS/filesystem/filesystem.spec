@@ -239,12 +239,13 @@ pathappend () {
 export -f pathremove pathprepend pathappend
 
 # Set the initial path
-export PATH=$PATH:/bin:/usr/bin
+# Block unnessary as this is set elsewhere.
+# export PATH=$PATH:/bin:/usr/bin
 
-if [ $EUID -eq 0 ] ; then
-        pathappend /sbin:/usr/sbin
-        unset HISTFILE
-fi
+# if [ $EUID -eq 0 ] ; then
+#         pathappend /sbin:/usr/sbin
+#         unset HISTFILE
+# fi
 
 # Setup some environment variables.
 export HISTSIZE=1000
