@@ -117,7 +117,13 @@ def main():
         if package == "packages_list":
             buildPackagesList(options.specPath, options.buildRootPath+"/../packages_list.csv")
         elif package == "sources_list":
-            buildSourcesList(options.specPath, options.buildRootPath+"/../")
+            if not os.path.isdir("../../stage/yaml_sources"):
+                cmdUtils.runCommandInShell("mkdir -p ../../stage/yaml_sources")
+            buildSourcesList(options.specPath,"../../stage/yaml_sources", options.buildRootPath+"/../",logger)
+        elif package == "srpms_list":
+            if not os.path.isdir("../../stage/yaml_srpms"):
+                cmdUtils.runCommandInShell("mkdir -p ../../stage/yaml_srpms")
+            buildSRPMList(options.specPath,options.sourceRpmPath,"../../stage/yaml_srpms",logger)
         elif options.toolChainStage == "stage1":
             pkgManager = PackageManager()
             pkgManager.buildToolChain()
@@ -175,12 +181,13 @@ def buildPackagesList(specPath, csvFilename):
                     csvFile.write(name+","+version+","+license+","+url+","+sources+","+patches+"\n")
     csvFile.close()
 
-def buildSourcesList(specPath, yamlDir, singleFile=False):
+def buildSourcesList(specPath,sourcePath, yamlDir, logger, singleFile=False):
     strUtils = StringUtils()
     if singleFile:
         yamlFile = open(yamlDir+"sources_list.yaml", "w")
     lst = os.listdir(specPath)
     lst.sort()
+    import PullSources
     for dirEntry in lst:
         specDir = os.path.join(specPath, dirEntry)
         if os.path.isdir(specDir):
@@ -193,6 +200,14 @@ def buildSourcesList(specPath, yamlDir, singleFile=False):
                     ossname = spec.getBasePackageName()
                     ossversion = spec.getVersion()
                     url = None
+                    listSourceNames = spec.getSourceNames()
+                    sourceName = None
+                    if len(listSourceNames) >0:
+                        sourceName=listSourceNames[0]
+                        sha1 = spec.getChecksumForSource(sourceName)                       
+                        if sha1 is not None:
+                            PullSources.get(sourceName, sha1, sourcePath, constants.pullsourcesConfig)
+
                     if len(listSourceURLs) > 0:
                         sourceURL = listSourceURLs[0]
                         if sourceURL.startswith("http") or sourceURL.startswith("ftp"):
@@ -200,13 +215,15 @@ def buildSourcesList(specPath, yamlDir, singleFile=False):
                         else:
                             url=spec.getURL(ossname)
                     if not singleFile:
-                        yamlFile = open(yamlDir+ossname+"-"+ossversion+".yaml", "w")
+                        yamlFile = open(yamlDir+"/"+ossname+"-"+ossversion+".yaml", "w")
                     yamlFile.write("vmwsource:"+ossname+":"+ossversion+":\n")
                     yamlFile.write("  repository: VMWsource\n")
                     yamlFile.write("  name: '"+ossname+"'\n")
                     yamlFile.write("  version: '"+ossversion+"'\n")
                     yamlFile.write("  url: "+str(url)+"\n")
                     yamlFile.write("  license: UNKNOWN\n")
+                    if sourceName is not None:
+                        yamlFile.write("  vmwsource-distribution: "+str(sourceName)+"\n")
                     if modified:
                         yamlFile.write("  modified: true\n")
                     yamlFile.write("\n")
@@ -214,6 +231,51 @@ def buildSourcesList(specPath, yamlDir, singleFile=False):
                         yamlFile.close()
     if singleFile:
         yamlFile.close()
+    logger.info("Generated source yaml files for all packages")
+
+def buildSRPMList(specPath,srpmPath, yamlDir, logger, singleFile=False):
+    strUtils = StringUtils()
+    if singleFile:
+        yamlFile = open(yamlDir+"srpm_list.yaml", "w")
+    lst = os.listdir(specPath)
+    lst.sort()
+    cmdUtils = CommandUtils()
+    for dirEntry in lst:
+        specDir = os.path.join(specPath, dirEntry)
+        if os.path.isdir(specDir):
+            for specEntry in os.listdir(specDir):
+                specFile = os.path.join(specDir, specEntry)
+                if os.path.isfile(specFile) and specFile.endswith(".spec"):
+                    spec=Specutils(specFile)
+                    ossname = spec.getBasePackageName()
+                    ossversion = spec.getVersion()
+                    ossrelease = spec.getRelease()
+                    listFoundSRPMFiles = cmdUtils.findFile(ossname+"-"+ossversion+"-"+ossrelease+".src.rpm",srpmPath)
+                    srpmName = None
+                    if len(listFoundSRPMFiles) == 1:
+                        srpmFullPath = listFoundSRPMFiles[0];
+                        srpmName = os.path.basename(srpmFullPath)
+                        cpcmd = "cp "+ srpmFullPath +" "+yamlDir+"/"
+                        returnVal = cmdUtils.runCommandInShell(cpcmd)
+                        if not returnVal:
+                            logger.error("Copy SRPM File is failed for package:"+ossname)
+                    else:
+                         logger.error("SRPM file is not found:" +ossname)
+                    if not singleFile:
+                        yamlFile = open(yamlDir+"/"+ossname+"-"+ossversion+"-"+ossrelease+".yaml", "w")
+                    yamlFile.write("baseos:"+ossname+":"+ossversion+"-"+ossrelease+":\n")
+                    yamlFile.write("  repository: BaseOS\n")
+                    yamlFile.write("  name: '"+ossname+"'\n")
+                    yamlFile.write("  version: '"+ossversion+"-"+ossrelease+"'\n")
+                    yamlFile.write("  baseos-style: rpm\n")
+                    yamlFile.write("  baseos-source: '"+str(srpmName)+"'\n")
+                    yamlFile.write("  baseos-osname: 'Photon OS'\n")
+                    yamlFile.write("\n")
+                    if not singleFile:
+                        yamlFile.close()
+    if singleFile:
+        yamlFile.close()
+    logger.info("Generated srpm yaml files for all packages")
 
 def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
     listPackages=[]

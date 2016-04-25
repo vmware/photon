@@ -30,6 +30,10 @@ class Specutils(object):
     def getChecksums(self):
         pkg = self.spec.packages.get('default')
         return pkg.checksums
+
+    def getChecksumForSource(self,source):
+        pkg = self.spec.packages.get('default')
+        return pkg.checksums.get(source)
     
     def getSourceURLs(self):
         sourceNames=[]
