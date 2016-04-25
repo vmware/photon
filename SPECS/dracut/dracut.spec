@@ -1,11 +1,11 @@
 # Copied this spec file from inside of dracut-041.tar.xz and edited later.
 
 %define dracutlibdir %{_prefix}/lib/dracut
-%define _unitdir /lib/systemd/system
+%define _unitdir /usr/lib/systemd/system
 
 Name:		dracut
 Version:	044
-Release:	1%{?dist}
+Release:	2%{?dist}
 Group:		System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -145,5 +145,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
-*       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
+*       Thu Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
+-       Fix incorrect systemd directory.
+*	Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
 -       Updating Version.
+
