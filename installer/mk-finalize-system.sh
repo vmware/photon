@@ -24,6 +24,9 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
 /usr/sbin/pwconv
 /usr/sbin/grpconv
 /bin/systemd-machine-id-setup
+/usr/bin/touch /etc/locale.conf
+/bin/echo "LANG=en_US.UTF-8" > /etc/locale.conf
+
 
 # Importing the pubkey
 rpm --import /etc/pki/rpm-gpg/*
