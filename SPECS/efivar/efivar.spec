@@ -9,11 +9,13 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	https://github.com/rhinstaller/efivar/releases/download/%{version}/%{name}-%{version}.tar.bz2
 %define sha1 efivar=a66a6d00b59bffe07cbdfc98c727d749157d4140
+Patch0:     workaround-rename-of-linux-nvme.h.patch
 BuildRequires: popt-devel
 %description
 efivar provides a simle CLI to the UEFI variable facility
 %prep
 %setup -q
+%patch0 -p1
 %build
 make %{?_smp_mflags} PREFIX=%{_prefix} \
     libdir=%{_libdir} \
