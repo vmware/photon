@@ -1,6 +1,6 @@
 Summary:	This package contains programs to find files
 Name:		findutils
-Version:	4.4.2
+Version:	4.6.0
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/findutils
@@ -8,7 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/findutils/%{name}-%{version}.tar.gz
-%define sha1 findutils=e8dd88fa2cc58abffd0bfc1eddab9020231bb024
+%define sha1 findutils=f18e8aaee3f3d4173a1f598001003be8706d28b0
 %description
 These programs are provided to recursively search through a
 directory tree and to create, maintain, and search a database
@@ -40,5 +40,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libexecdir}/*
 %{_mandir}/*/*
 %changelog
+*   	Tue Apr 26 2016 Anish Swaminathan <anishs@vmware.com> 4.6.0-1
+-   	Updated to version 4.6.0
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.4.2-1
 -	Initial build.	First version
