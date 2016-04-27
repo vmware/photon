@@ -62,7 +62,7 @@ cd $BUILD_SCRIPTS_PATH
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-${IMG_NAME}.raw`
 
 echo "Mapping device partition to loop device"
-kpartx -av $DISK_DEVICE
+kpartx -avs $DISK_DEVICE
 
 DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
 
@@ -83,6 +83,8 @@ rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow.bak
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow-
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/machine-id
 touch $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/machine-id
+rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
+echo "/dev/sda2    /    ext4    defaults,barrier,noatime,noacl,data=ordered 1 1" >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
 
 mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
 mount -o bind /dev $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
@@ -99,16 +101,6 @@ fi
 
 if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ] && [ $IMG_NAME != "ova_ovs" ]
   then
-    #Copy the initrd image
-    rm -rf /tmp/initrd*
-    rm -rf /tmp/installer
-    cp $ISO_MOUNT_FOLDER/isolinux/initrd.img /tmp/initrd.gz
-    gunzip /tmp/initrd.gz
-    cd /tmp
-    cpio -idu < initrd
-    cp /tmp/installer/boot/initrd.img* $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/boot/
-    rm -rf /tmp/initrd*
-    rm -rf /tmp/installer
     cd $BUILD_SCRIPTS_PATH
     if [ $IMG_NAME = "gce" ]
       then

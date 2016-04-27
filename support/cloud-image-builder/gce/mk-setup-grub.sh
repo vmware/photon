@@ -15,11 +15,21 @@
 grub_efi_install()
 {
     mkdir $BUILDROOT/boot/efi
-    mkfs.vfat /dev/sda1
-    mount -t vfat /dev/sda1 $BUILDROOT/boot/efi
+    #
+    # if it is a loop device then we should mount the dev mapped boot partition
+    #
+    if [[ $HDD == *"loop"* ]]
+    then
+         BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
+    else
+         BOOT_PARTITION=${HDD}1
+    fi
+    mkfs.vfat $BOOT_PARTITION
+    mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
-    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck --debug
-    mv $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
+    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
+    rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
+    cp efi/bootx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
     umount $BUILDROOT/boot/efi
 }
 
@@ -40,20 +50,24 @@ ARCH=$(uname -m)    # host architecture
 [ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}        #   clear/initialize logfile
 
-# Check if passing a HHD and partition
-if [ $# -eq 3 ] 
-	then
-        BOOTMODE=$1
-		HDD=$2
-		PARTITION=$3
+# Check if passing a HDD and partition
+if [ $# -eq 5 ] 
+    then
+       BOOTMODE=$1
+       HDD=$2
+       ROOT_PARTITION_PATH=$3
+       BOOT_PARTITION_PATH=$4
+       BOOT_DIRECTORY=$5
 fi
 
 #
-#   Install grub2.
+#	Install grub2.
 #
+UUID=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
+BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
 echo "Changing boot loader to MBR type on raw disk"
+
 sgdisk -m 1:2 "$HDD"
-UUID=$(blkid -s UUID -o value $PARTITION)
 
 grubInstallCmd=""
 mkdir -p $BUILDROOT/boot/grub2
@@ -64,10 +78,11 @@ if [ -z $grubInstallCmd ]; then
 echo "Unable to find grub install command"
 exit 1
 fi
-
+echo "Current directory is"
+pwd
 cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
-cp boot/splash.tga ${BUILDROOT}/boot/grub2/themes/photon/photon.tga
+cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
 cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 
@@ -149,11 +164,11 @@ menuentry 'GNU/Linux' --class gnu-linux --class gnu --class os $menuentry_id_opt
     else
       search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
     fi
-    echo    'Loading Linux 4.2.0 ...'
-    linux   /boot/vmlinuz-4.2.0 root=/dev/sda2 ro console=ttyS0,38400n8 
+    echo    'Loading Linux 4.4.7 ...'
+    linux   /boot/vmlinuz-4.4.7 root=/dev/sda2 ro console=ttyS0,38400n8 
 }
 submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced-UUID_PLACEHOLDER' {
-    menuentry 'GNU/Linux, with Linux 4.2.0' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.2.0-advanced-UUID_PLACEHOLDER' {
+    menuentry 'GNU/Linux, with Linux 4.4.7' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.4.7-advanced-UUID_PLACEHOLDER' {
         load_video
         set gfxpayload=keep
         insmod gzio
@@ -165,10 +180,10 @@ submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced
         else
           search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
         fi
-        echo    'Loading Linux 4.2.0 ...'
-        linux   /boot/vmlinuz-4.2.0 root=/dev/sda2 ro console=ttyS0,38400n8 
+        echo    'Loading Linux 4.4.7 ...'
+        linux   /boot/vmlinuz-4.4.7 root=/dev/sda2 ro console=ttyS0,38400n8 
     }
-    menuentry 'GNU/Linux, with Linux 4.2.0 (recovery mode)' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.2.0-recovery-UUID_PLACEHOLDER' {
+    menuentry 'GNU/Linux, with Linux 4.4.7 (recovery mode)' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.4.7-recovery-UUID_PLACEHOLDER' {
         load_video
         set gfxpayload=keep
         insmod gzio
@@ -180,8 +195,8 @@ submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced
         else
           search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
         fi
-        echo    'Loading Linux 4.2.0 ...'
-        linux   /boot/vmlinuz-4.2.0 root=/dev/sda2 ro single console=ttyS0,38400n8
+        echo    'Loading Linux 4.4.7 ...'
+        linux   /boot/vmlinuz-4.4.7 root=/dev/sda2 ro single console=ttyS0,38400n8
     }
 }
 
