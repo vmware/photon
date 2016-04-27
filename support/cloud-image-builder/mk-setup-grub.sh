@@ -15,11 +15,21 @@
 grub_efi_install()
 {
     mkdir $BUILDROOT/boot/efi
-    mkfs.vfat /dev/sda1
-    mount -t vfat /dev/sda1 $BUILDROOT/boot/efi
+    #
+    # if it is a loop device then we should mount the dev mapped boot partition
+    #
+    if [[ $HDD == *"loop"* ]]
+    then
+         BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
+    else
+         BOOT_PARTITION=${HDD}1
+    fi
+    mkfs.vfat $BOOT_PARTITION
+    mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
-    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck --debug
-    mv $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
+    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
+    rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
+    cp efi/bootx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
     umount $BUILDROOT/boot/efi
 }
 
@@ -31,6 +41,7 @@ grub_mbr_install()
 set -o errexit		# exit if error...insurance ;)
 set -o nounset		# exit if variable not initalized
 set +h			# disable hashall
+set -x
 PRGNAME=${0##*/}	# script name minus the path
 source config.inc		#	configuration parameters
 source function.inc		#	commonn functions
@@ -40,18 +51,22 @@ ARCH=$(uname -m)	# host architecture
 [ ${EUID} -eq 0 ]	|| fail "${PRGNAME}: Need to be root user: FAILURE"
 > ${LOGFILE}		#	clear/initialize logfile
 
-# Check if passing a HHD and partition
-if [ $# -eq 3 ] 
-	then
-        BOOTMODE=$1
-		HDD=$2
-		PARTITION=$3
+# Check if passing a HDD and partition
+if [ $# -eq 5 ] 
+    then
+       BOOTMODE=$1
+       HDD=$2
+       ROOT_PARTITION_PATH=$3
+       BOOT_PARTITION_PATH=$4
+       BOOT_DIRECTORY=$5
 fi
 
 #
 #	Install grub2.
 #
-UUID=$(blkid -s UUID -o value $PARTITION)
+UUID=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
+BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
+
 
 grubInstallCmd=""
 mkdir -p $BUILDROOT/boot/grub2
@@ -72,7 +87,7 @@ fi
 
 cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
-cp boot/splash.tga ${BUILDROOT}/boot/grub2/themes/photon/photon.tga
+cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
 cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 cat > "$BUILDROOT"/boot/grub2/grub.cfg << "EOF"
@@ -85,6 +100,7 @@ loadfont /boot/grub2/unifont.pf2
 insmod gfxterm
 insmod vbe
 insmod tga
+insmod png
 
 set gfxmode="640x480"
 gfxpayload=keep
@@ -96,7 +112,7 @@ set theme=/boot/grub2/themes/photon/theme.txt
 menuentry "Photon" {
 	insmod ext2
     insmod part_gpt
-	linux /boot/vmlinuz-4.2.0 init=/lib/systemd/systemd root=UUID=UUID_PLACEHOLDER loglevel=3 ro
+	linux /boot/vmlinuz-4.4.7 init=/lib/systemd/systemd root=UUID=UUID_PLACEHOLDER loglevel=7 ro
 	initrd /boot/initrd.img-no-kmods
 }
 # End /boot/grub2/grub.cfg
