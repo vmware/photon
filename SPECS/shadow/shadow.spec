@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.2.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -9,8 +9,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://pkg-shadow.alioth.debian.org/releases/%{name}-%{version}.tar.xz
 %define sha1 shadow=0917cbadd4ce0c7c36670e5ecd37bbed92e6d82d
-Source1:	PAM-Configuration-Files-1.2.tar.gz
-%define sha1 PAM=ce8ae30a91a541f519ec5daed3e793d618f42432
+Source1:	PAM-Configuration-Files-1.3.tar.gz
+%define sha1 PAM=35b491506cefbafeb63a86a89084775123be971b
 Patch0: chkname-allowcase.patch   
 BuildRequires: 	cracklib
 BuildRequires: 	cracklib-devel
@@ -98,6 +98,8 @@ done
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
 %changelog
+*   Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-3
+-   Enabling pam_systemd module in a session.
 *       Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
 -       Enabling pam_limits module in a session
 *	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
