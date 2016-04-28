@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.2.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -72,6 +72,9 @@ for FUNCTION in FAIL_DELAY               \
 do
     sed -i "s/^${FUNCTION}/# &/" %{buildroot}/etc/login.defs
 done
+
+sed -i "s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    365/" %{buildroot}/etc/login.defs
+
 pushd PAM-Configuration-Files
 install -vm644 * %{buildroot}%{_sysconfdir}/pam.d/
 popd
@@ -98,6 +101,8 @@ done
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
 %changelog
+*       Wed Apr 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
+-       Setting password aging limits to 365 days
 *       Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
 -       Enabling pam_limits module in a session
 *	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
