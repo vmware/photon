@@ -10,11 +10,11 @@ fi
 cat <<EOF > `dirname $(gcc --print-libgcc-file-name)`/../specs
 # add sec hardening flags for cc1.
 *cc1:
-+ %{!fno-stack-protector:-fstack-protector} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
++ %{!fno-stack-protector-strong:-fstack-protector-strong} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
 
 # add sec hardening flags for cc1.
 *cc1plus:
-+ %{!fno-stack-protector:-fstack-protector} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
++ %{!fno-stack-protector-strong:-fstack-protector-strong} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
 
 # add -D_FORTIFY_SOURCE=2 for preprocessor.
 *cpp:
