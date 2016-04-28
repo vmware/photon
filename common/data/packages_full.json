@@ -124,6 +124,7 @@
         "xml-security-c-devel",
         "nss-devel",
         "ncurses-devel",
+        "ncurses-compat", 
         "tzdata",
         "itstool",
         "sed-lang",
