@@ -1,22 +1,19 @@
 %define _use_internal_dependency_generator 0
 Summary:	Contains the GNU compiler collection
 Name:		gcc
-Version:	4.8.2
-Release:	6%{?dist}
+Version:	5.3.0
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha1 gcc=810fb70bd721e1d9f446b6503afe0a9088b62986
+%define sha1 gcc=0612270b103941da08376df4d0ef4e5662a2e9eb
 Requires:	libstdc++-devel
 Requires:	libgcc-devel
 Requires:	libgomp-devel
 Requires:	gmp
-Requires:   glibc-devel
-Requires:   linux-api-headers
-Requires:   binutils
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
@@ -72,11 +69,9 @@ This package contains development headers and static library for libgomp
 
 %prep
 %setup -q
-case `uname -m` in
-	i?86) sed -i 's/^T_CFLAGS =$/& -fomit-frame-pointer/' gcc/Makefile.in ;;
-esac
-sed -i -e /autogen/d -e /check.sh/d fixincludes/Makefile.in
-mv -v libmudflap/testsuite/libmudflap.c++/pass41-frag.cxx{,.disable}
+sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
+sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
+
 install -vdm 755 ../gcc-build
 %build
 cd ../gcc-build
@@ -90,9 +85,10 @@ SED=sed \
 	--enable-languages=c,c++ \
 	--disable-multilib \
 	--disable-bootstrap \
-	--with-system-zlib \
-	--disable-silent-rules
-make %{?_smp_mflags}
+	--with-system-zlib
+#	--disable-silent-rules
+#sed -i '/-D_FORTIFY_SOURCE=2 for preprocessor/,+2d' `dirname $(gcc --print-libgcc-file-name)`/../specs
+make
 %install
 pushd ../gcc-build
 make DESTDIR=%{buildroot} install
@@ -213,15 +209,17 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 4.8.2-6
--	Handled locale files with macro find_lang
+*   Mon Mar 28 2016 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-1
+-   Update version to 5.3
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 4.8.2-6
+-   Handled locale files with macro find_lang
 *   Mon Nov 02 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.8.2-5
 -   Put libatomic.so into its own package.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-4
 -   Updated group.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 4.8.2-3
 -   Update according to UsrMove.
-*	Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.8.2-2
--	Packaging .la files
-*	Tue Apr 01 2014 baho-utot <baho-utot@columbus.rr.com> 4.8.2-1
--	Initial build. First version
+*   Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.8.2-2
+-   Packaging .la files
+*   Tue Apr 01 2014 baho-utot <baho-utot@columbus.rr.com> 4.8.2-1
+-   Initial build. First version
