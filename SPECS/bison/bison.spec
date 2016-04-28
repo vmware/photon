@@ -1,7 +1,7 @@
 Summary:	Contains a parser generator
 Name:		bison
 Version:	3.0.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
 Group:		System Environment/Base
@@ -12,7 +12,6 @@ Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
 BuildRequires:	m4
 Requires:	m4
 BuildRequires:	flex
-Requires:	flex
 %description
 This package contains a parser generator
 %prep
@@ -37,6 +36,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 %{_docdir}/bison/*
 %changelog
+*   Thu Apr 27 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.4-2
+-   Removed requires for flex
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.4-1
 -   Updated to version 3.0.4
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 3.0.2-3
