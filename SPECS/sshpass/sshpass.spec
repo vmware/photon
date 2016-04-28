@@ -1,7 +1,7 @@
 Summary:	Noninteractive ssh password provider 
 Name:		sshpass
 Version:	1.05
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/sshpass/
 Source0:	http://downloads.sourceforge.net/project/sshpass/sshpass/1.05/sshpass-1.05.tar.gz
@@ -9,6 +9,7 @@ Source0:	http://downloads.sourceforge.net/project/sshpass/sshpass/1.05/sshpass-1
 Group:		Applications/Networking
 Vendor:		VMware, Inc.
 Distribution:	Photon
+Requires:       openssh
 %description
 sshpass is a utility designed for running ssh using the mode referred to as "keyboard-interactive" password authentication, but in non-interactive mode. 
 %prep
@@ -33,5 +34,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1
 
 %changelog
+*	Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 1.05-2
+-	Add requires for openssh
 *	Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.05-1
 -	Initial version
