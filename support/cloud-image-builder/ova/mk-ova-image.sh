@@ -36,7 +36,7 @@ mv $PHOTON_IMG_OUTPUT_PATH/temp/photon-ova-$PHOTON_RELEASE_VER-$PHOTON_BUILD_NUM
 cd $PHOTON_IMG_OUTPUT_PATH
 rm -rf photon-custom
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-ova.raw`
-kpartx -avs $DISK_DEVICE
+kpartx -av $DISK_DEVICE
 
 DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
 
