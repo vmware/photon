@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.0.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -9,20 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-%{version}.tar.gz
 %define sha1 open-vm-tools=9d29a17cce539b032317d0a8c55977666daa137e
-Source1:        gosc-scripts.tar.gz
-%define sha1 gosc-scripts=a87bb5b95f78923ac6053513b3364a119795a5d0
+Source1:        gosc-scripts-1.0.tar.gz
+%define sha1 gosc-scripts-1.0=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 Patch0:         open-vm-tools-service-link.patch
 Patch1:         GOSC-libDeploy.patch
-Patch2:         GOSC-VCA.patch
-Patch3:         GOSC-return-code.patch
-Patch4:         GOSC-NFS-MOUNT.patch
-Patch5:         GOSC-counterBug.patch
-Patch6:         LighwaveHostPatch.patch
-Patch7:         GOSC-ssh-support.patch
-Patch8:         GOSC-vcenter-photon.patch
-Patch9:         GOSC-preserve-network-onboot.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -48,14 +40,6 @@ VmWare virtualization user mode tools
 %setup -a 1
 %patch0 -p1
 %patch1 -p1
-%patch2 -p0
-%patch3 -p0
-%patch4 -p0
-%patch5 -p0
-%patch6 -p0
-%patch7 -p0
-%patch8 -p0
-%patch9 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -116,6 +100,8 @@ fi
 
 
 %changelog
+*       Fri Apr 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-8
+-       Combining all GOSC scripts patches and fixing bug#1648133.
 *       Tue Apr 19 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-7
 -       Fixing libDeploy not to overwrite for SRM cust needs.
 *       Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-6
