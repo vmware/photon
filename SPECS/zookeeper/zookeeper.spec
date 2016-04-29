@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -9,6 +9,9 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source:	http://www.carfab.com/apachesoftware/zookeeper/stable/%{name}-%{version}.tar.gz
 %define sha1 zookeeper=51b61611a329294f75aed82f3a4517a4b6ff116f
+Source1:	zookeeper.service
+Source2:	zkEnv.sh
+Patch0:		zookeeper-3.4.8-server.patch
 BuildRequires:  systemd
 Requires:       systemd
 Requires: shadow
@@ -19,27 +22,29 @@ ZooKeeper is a centralized service for maintaining configuration information, na
 
 %prep
 %setup -q
+%patch0 -p1
 
 %install
 mkdir -p %{buildroot}%{_prefix}
 mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{_libdir}
+mkdir -p %{buildroot}%{_libdir}/java/zookeeper
+mkdir -p %{buildroot}%{_libdir}/zookeeper
 mkdir -p %{buildroot}%{_var}/log/zookeeper
 mkdir -p %{buildroot}%{_sysconfdir}/zookeeper
-mkdir -p %{buildroot}%{_var}/run
+mkdir -p %{buildroot}%{_var}/run/zookeeper
 mkdir -p %{buildroot}/sbin
 mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 mkdir -p %{buildroot}%{_var}/zookeeper
 
-cp zookeeper-%{version}.jar %{buildroot}%{_libdir}
+cp zookeeper-%{version}.jar %{buildroot}%{_libdir}/java/zookeeper
 cp src/packages/update-zookeeper-env.sh %{buildroot}/sbin/update-zookeeper-env.sh
 cp src/packages/templates/conf/zookeeper-env.sh %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo.cfg
 chmod 0755 %{buildroot}/sbin/*
 
-sed -i 's/.*ZOOBINDIR.*\/etc.*/    ZOOBINDIR=\/etc\/zookeeper/g' bin/zkEnv.sh
 mv bin/* %{buildroot}%{_bindir}
-mv lib/* %{buildroot}%{_libdir}
+mv lib/*.jar %{buildroot}%{_libdir}/java/zookeeper
+mv lib/* %{buildroot}%{_libdir}/zookeeper
 mv conf/zoo_sample.cfg %{buildroot}%{_sysconfdir}/zookeeper/zoo.cfg
 mv conf/* %{buildroot}%{_sysconfdir}/zookeeper
 pushd ..
@@ -47,25 +52,8 @@ rm -rf %{buildroot}/%{name}-%{version}
 popd
 
 mkdir -p %{buildroot}/lib/systemd/system
-cat << EOF >> %{buildroot}/lib/systemd/system/zookeeper.service
-[Unit]
-Description=Apache ZooKeeper
-After=network.target
-ConditionPathExists=/etc/zookeeper/zoo.cfg
-
-[Service]
-Type=forking
-ExecStart=/usr/bin/zkServer.sh start /etc/zookeeper/zoo.cfg
-ExecStop=/usr/bin/zkServer.sh stop
-User=zookeeper
-Group=hadoop
-Restart=always
-RestartSec=30
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
+cp %{SOURCE1} %{buildroot}/lib/systemd/system/zookeeper.service
+cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
 %pre
 getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
 getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
@@ -76,7 +64,7 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
        --log-dir=%{_var}/log/zookeeper \
-       --pid-dir=%{_var}/run \
+       --pid-dir=%{_var}/run/zookeeper \
        --var-dir=%{_var}/zookeeper
 %{_sbindir}/ldconfig 
 if [ $1 -eq 1 ] ; then
@@ -91,7 +79,7 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
        --log-dir=%{_var}/log/zookeeper \
-       --pid-dir=%{_var}/run \
+       --pid-dir=%{_var}/run/zookeeper \
        --var-dir=%{_var}/zookeeper \
        --uninstall
 /bin/systemctl disable zookeeper.service
@@ -102,14 +90,16 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 
 %files
 %defattr(-,root,root)
-%attr(0755,root,hadoop) %{_var}/log/zookeeper
-%attr(0775,root,hadoop) %{_var}/run
-%attr(0775,root,hadoop) /sbin/update-zookeeper-env.sh
+%attr(0755,zookeeper,hadoop) %{_var}/log/zookeeper
+%attr(0775,zookeeper,hadoop) %{_var}/run/zookeeper
+%attr(0775,zookeeper,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
 /lib/systemd/system/zookeeper.service
 %{_prefix}
 
 %changelog
+*   Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-2
+-   Added logic to set classpath
 *   Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com>  3.4.8-1
 -   Updating version.
 *   Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com>  3.4.6-8
