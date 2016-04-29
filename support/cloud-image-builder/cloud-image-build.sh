@@ -62,7 +62,7 @@ cd $BUILD_SCRIPTS_PATH
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-${IMG_NAME}.raw`
 
 echo "Mapping device partition to loop device"
-kpartx -avs $DISK_DEVICE
+kpartx -av $DISK_DEVICE
 
 DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
 
