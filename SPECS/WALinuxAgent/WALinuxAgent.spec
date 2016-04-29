@@ -1,13 +1,13 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.0.14
-Release:        3%{?dist}
+Version:        2.0.18
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            http://go.microsoft.com/fwlink/?LinkId=250998
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
-%define sha1 WALinuxAgent=90448cc3f48f21a23a0932d1cf05e75d5a5bf158
+%define sha1 WALinuxAgent=76238745a0ec598920f37a6445e383dab23c9f1b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -79,6 +79,8 @@ fi
 
 
 %changelog
+* Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-1
+- Update to 2.0.18
 * Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.14-3
 - Removed redundant requires 
 * Thu Aug 6 2015 Anish Swaminathan <anishs@vmware.com>
