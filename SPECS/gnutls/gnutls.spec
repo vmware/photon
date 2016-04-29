@@ -1,11 +1,12 @@
 Summary:	The GnuTLS Transport Layer Security Library
 Name:		gnutls
-Version:	3.4.9
-Release:	q%{?dist}
+Version:	3.4.11
+Release:	1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.4/%{name}-%{version}.tar.xz
-%define sha1 gnutls=04df5ec2bb1282704e99b15fd64892026fb95f1c
+%define sha1 gnutls=55f73d1ea2b3335fea514fad6faa1e72006ae9f9
+Patch0:     gnutls_3.4.11_default_priority.patch
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -35,11 +36,13 @@ developing applications that use gnutls.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
 	--without-p11-kit \
-	--enable-openssl-compatibility
+	--disable-openssl-compatibility \
+	--with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -68,6 +71,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*   Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-1
+-   Updated to version 3.4.11
 *   Thu Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.9-1
 -   Updated to version 3.4.9
 *   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.8-1
