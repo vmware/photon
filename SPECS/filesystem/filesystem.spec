@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -161,7 +161,9 @@ EOF
 cat > %{buildroot}/etc/hosts <<- "EOF"
 # Begin /etc/hosts (network card version)
 
-127.0.0.1	localhost
+::1         localhost ipv6-localhost ipv6-loopback
+127.0.0.1   localhost.localdomain
+127.0.0.1   localhost
 
 # End /etc/hosts (network card version)
 EOF
@@ -533,6 +535,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Fri Apr 29 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0-4
+-   Updating the /etc/hosts file
 *   Fri Apr 22 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-3
 -   Setting default umask value to 027
 *   Thu Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 1.0-2
