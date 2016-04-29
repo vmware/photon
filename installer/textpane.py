@@ -55,13 +55,16 @@ class TextPane(Action):
                 # Adjust the words on the lines
                 while len(line) > line_width:
                     sep_index = line_width
-                    while line[sep_index-1] != ' ' and line[sep_index] != ' ':
+
+                    while sep_index > 0 and line[sep_index-1] != ' ' and line[sep_index] != ' ':
                         sep_index = sep_index - 1
-                    currLine = line[:sep_index]
-                    if line[sep_index] == ' ':
-                        line = line[sep_index + 1:]
-                    else:
-                        line = line[sep_index:]
+
+                    current_line_width=sep_index
+                    if sep_index == 0:
+                        current_line_width = line_width
+                    currLine = line[:current_line_width]
+                    line = line.strip()
+                    line = line[current_line_width:]
 
                     # Lengthen the line with spaces
                     self.lines.append(currLine + ' ' * (line_width - len(currLine)))
