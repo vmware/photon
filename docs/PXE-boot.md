@@ -46,7 +46,7 @@ Setting up server instruction is based on an Ubuntu 14.04 machine assuming that 
 ```
 ##Optional: http server setup
 This is step is only needed if:
-* Planning to serve the ks config file through this server, please refer to [Kickstart suuport](kickstart.md) for more details.
+* Planning to serve the ks config file through this server, please refer to [Kickstart support](kickstart.md) for more details.
 * Serving your local yum repo.
 You can install apache http web server
 ```
@@ -61,7 +61,7 @@ Copy the RPMS repo.
 ```
 cp -r /mnt/photon-iso/RPMS /var/www/html/
 ```
-To support ks, may be you can copy the sample config from the iso and editing it, please refer to [Kickstart suuport](kickstart.md) for more details.
+To support ks, may be you can copy the sample config from the iso and editing it, please refer to [Kickstart support](kickstart.md) for more details.
 ```
 cp /mnt/photon-iso/isolinux/sample_ks.cfg /var/www/html/my_ks.cfg
 ```
@@ -69,14 +69,20 @@ cp /mnt/photon-iso/isolinux/sample_ks.cfg /var/www/html/my_ks.cfg
 ##PXE boot files setup
 * Mount photon.iso to get linux and initrd images
 ```
-mkdir /tmp/photon-iso
-sudo mount <photon_iso> /tmp/photon-iso/
+mkdir /mnt/photon-iso
+sudo mount <photon_iso> /mnt/photon-iso/
 ```
 * Setting the PXE boot files
 ```
+wget https://www.kernel.org/pub/linux/utils/boot/syslinux/syslinux-6.03.tar.gz
+tar -xvf syslinux-6.03.tar.gz
 pushd /var/lib/tftpboot
-cp -r /tmp/photon-iso/isolinux/* .
-cp /usr/lib/syslinux/pxelinux.0 .
+cp -r /mnt/photon-iso/isolinux/* .
+cp ~/syslinux-6.03/bios/com32/elflink/ldlinux/ldlinux.c32 .
+cp ~/syslinux-6.03/bios/com32/lib/libcom32.c32 .
+cp ~/syslinux-6.03/bios/com32/libutil/libutil.c32 .
+cp ~/syslinux-6.03/bios/com32/menu/vesamenu.c32 .
+cp ~/syslinux-6.03/bios/core/pxelinux.0 .
 mkdir pxelinux.cfg
 mv isolinux.cfg pxelinux.cfg/default
 ```
@@ -85,4 +91,5 @@ mv isolinux.cfg pxelinux.cfg/default
 sed -i "s/append/append repo=http:\/\/172.16.78.134\/RPMS/g" menu.cfg
 popd
 ```
-* Optionally, you can add your ks config file, please refer [Kickstart suuport](kickstart.md) for more details.
+* Optionally, you can add your ks config file, please refer [Kickstart support](kickstart.md) for more details.
+
