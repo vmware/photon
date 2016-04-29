@@ -73,7 +73,7 @@ do
     sed -i "s/^${FUNCTION}/# &/" %{buildroot}/etc/login.defs
 done
 
-sed -i "s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    365/" %{buildroot}/etc/login.defs
+sed -i "s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/" %{buildroot}/etc/login.defs
 
 pushd PAM-Configuration-Files
 install -vm644 * %{buildroot}%{_sysconfdir}/pam.d/
@@ -101,6 +101,8 @@ done
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
 %changelog
+*       Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
+-       Setting password aging limits to 90 days
 *       Wed Apr 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
 -       Setting password aging limits to 365 days
 *       Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
