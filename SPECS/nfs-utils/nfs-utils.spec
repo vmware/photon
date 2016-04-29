@@ -1,7 +1,7 @@
 Summary:	NFS client utils
 Name:		nfs-utils
 Version:	1.3.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/nfs
 Group:		Applications/Nfs-utils-client
@@ -41,11 +41,18 @@ install -v -m644 utils/mount/nfsmount.conf /etc/nfsmount.conf
 
 mkdir -p %{buildroot}/lib/systemd/system/
 mkdir -p %{buildroot}/etc/default
+mkdir -p %{buildroot}/etc/export.d
+mkdir -p %{buildroot}/var/lib/nfs/v4recovery
+touch %{buildroot}/etc/exports
+
 install -m644 %{SOURCE1} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE4} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE5} %{buildroot}/etc/default/nfs-utils
+install -m644 systemd/nfs-server.service %{buildroot}/lib/systemd/system/
+install -m644 systemd/proc-fs-nfsd.mount %{buildroot}/lib/systemd/system/
+install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 
 %files
 %defattr(-,root,root)
@@ -55,9 +62,12 @@ install -m644 %{SOURCE5} %{buildroot}/etc/default/nfs-utils
 %{_sbindir}/*
 %{_sharedstatedir}/*
 /etc/default/nfs-utils
+/etc/exports
 /lib/systemd/system/*
 
 %changelog
+*   Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-2
+-   Add nfs-server.service to rpm.
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-1
 - 	Updated to version 1.3.3
 *	Tue Dec 8 2015 Divya Thaluru <dthaluru@vmware.com> 1.3.2-2
