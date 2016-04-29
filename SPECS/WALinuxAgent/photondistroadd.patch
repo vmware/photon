@@ -1,7 +1,7 @@
-diff -rupN WALinuxAgent-2.0.14/waagent WALinuxAgent-2.0.14-new/waagent
---- WALinuxAgent-2.0.14/waagent	2015-07-02 02:26:10.000000000 -0700
-+++ WALinuxAgent-2.0.14-new/waagent	2015-07-15 12:50:34.031122491 -0700
-@@ -1581,6 +1581,139 @@ class fedoraDistro(redhatDistro):
+diff -ru WALinuxAgent-2.0.18/waagent WALinuxAgent-2.0.18-new/waagent
+--- WALinuxAgent-2.0.18/waagent	2016-04-01 01:29:50.000000000 -0700
++++ WALinuxAgent-2.0.18-new/waagent	2016-04-29 01:03:04.294204270 -0700
+@@ -2403,6 +2403,139 @@
          Run('/sbin/usermod ' + user + ' -G ""')
          super(fedoraDistro, self).DeleteAccount(user)
  
@@ -141,7 +141,7 @@ diff -rupN WALinuxAgent-2.0.14/waagent WALinuxAgent-2.0.14-new/waagent
  ############################################################    
  #	FreeBSD
  ############################################################    
-@@ -5823,6 +5956,7 @@ def GetMyDistro(dist_class_name=''):
+@@ -6934,6 +7067,7 @@
      Return MyDistro object.
      NOTE: Logging is not initialized at this point.
      """
