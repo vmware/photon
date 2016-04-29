@@ -53,6 +53,8 @@
         "perl-common-sense",
         "perl-libintl",
         "perl-CGI",
+        "libevent",
+        "pgbouncer",
         "perl-JSON-Any",
         "perl-Net-SSLeay",
         "perl-IO-Socket-SSL",
