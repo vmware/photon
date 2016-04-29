@@ -1,14 +1,14 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.4.7
+Version:	4.4.8
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.7.tar.xz
-%define sha1 linux=f3af32c54dcaae3eb55892dc2c1bcc1d8a46868a
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.8.tar.xz
+%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
@@ -18,13 +18,15 @@ The Linux API Headers expose the kernel's API for use by Glibc.
 make mrproper
 make headers_check
 %install
-cd %{_builddir}/linux-4.4.7
+cd %{_builddir}/linux-%{version}
 make INSTALL_HDR_PATH=%{buildroot}%{_prefix} headers_install
 find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -delete
 %files
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
+-   Update to linux-4.4.8
 *   Thu Apr 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.7-1
 -   Upgrading kernel version to 4.4.7
 *   Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1
