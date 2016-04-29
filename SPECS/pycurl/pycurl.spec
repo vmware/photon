@@ -2,7 +2,7 @@
 
 Name:           pycurl
 Version:        7.21.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -36,6 +36,9 @@ Documentation and examples for pycurl
 rm -f doc/*.xml_validity
 #chmod a-x examples/*
 
+# removing prebuilt-binaries
+rm -f tests/fake-curl/libcurl/*.so
+
 %build
 CFLAGS="$RPM_OPT_FLAGS -DHAVE_CURL_OPENSSL" python setup.py build
 
@@ -56,6 +59,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*	Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 7.21.5-2
+-	Removing prebuilt binaries
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 7.21.5-1
 -	Upgrade version
 *	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 7.19.5.1-2
