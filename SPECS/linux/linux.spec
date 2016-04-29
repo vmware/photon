@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.7
-Release:    	2%{?dist}
+Version:    	4.4.8
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.7.tar.xz
-%define sha1 linux=f3af32c54dcaae3eb55892dc2c1bcc1d8a46868a
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
+%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -17,6 +17,7 @@ Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
+Patch6:         net-Driver-Vmxnet3-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 BuildRequires:  bc
 BuildRequires:  openssl-devel
 Requires:       filesystem kmod coreutils
@@ -60,6 +61,13 @@ Requires:    %{name} = %{version}-%{release}
 %description oprofile
 Kernel driver for oprofile, a statistical profiler for Linux systems
 
+%package tools
+Summary:    This package contains the 'perf' performance analysis tools for Linux kernel 
+Group:      System/Tools
+Requires:   %{name} = %{version}-%{release}
+%description tools
+This package contains the 'perf' performance analysis tools for Linux kernel 
+
 
 %prep
 %setup -q
@@ -69,6 +77,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 make mrproper
@@ -159,7 +168,10 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
-*   Tue Apr 28 2016 Nick Shi <nshi@vmware.com> 4.4.7-2
+*   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
+-   Update to linux-4.4.8
+-   Added net-Drivers-Vmxnet3-set-... patch
+*   Thu Apr 28 2016 Nick Shi <nshi@vmware.com> 4.4.7-2
 -   Compile cramfs.ko to allow mounting cramfs image
 *   Tue Apr 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.7-1
 -   Switch to linux-4.4
