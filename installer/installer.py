@@ -249,6 +249,8 @@ class Installer(object):
                 dump,
                 fsck
                 ))
+        # Add the cdrom entry
+        fstab_file.write("/dev/cdrom\t/mnt/cdrom\tiso9660\tro,noauto\t0\t0\n")
 
         fstab_file.close()
 
