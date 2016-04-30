@@ -1,7 +1,7 @@
 Summary:	Domain Name System software
 Name:		bindutils
 Version:	9.10.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ISC
 URL:		http://www.isc.org/downloads/bind/
 Source0:	ftp://ftp.isc.org/isc/bind9/bind-9-10-3-p2/bind-%{version}-P2.tar.gz
@@ -40,6 +40,26 @@ EOF
 echo "d /run/named 0755 named named - -" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/named.conf
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
+%pre
+if ! getent group named >/dev/null; then
+    groupadd -r named
+fi
+if ! getent passwd named >/dev/null; then
+    useradd -g named -d /var/lib/bind\
+        -s /bin/false -M -r named
+fi
+%post -p /sbin/ldconfig
+
+%postun	
+/sbin/ldconfig
+if getent passwd named >/dev/null; then
+    userdel named
+fi
+if getent group named >/dev/null; then
+    groupdel named
+fi
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -49,6 +69,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 
 %changelog
+*   Fri Apr 29 2016 Xiaolin Li <xiaolinl@vmware.com> 9.10.3-2
+-   Add group named and user named
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.10.3-1
 -   Updated to version 9.10.3
 *	Tue Aug 11 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.1-1
