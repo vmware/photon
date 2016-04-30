@@ -1,7 +1,7 @@
 Summary:    	Docker
 Name:       	docker
 Version:    	1.11.0
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	ASL 2.0
 URL:        	http://docs.docker.com
 Group:      	Applications/File
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker-containerd.service
 
 %changelog
+*   Sat Apr 30 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-2
+-   Add $DOCKER_OPTS to start in docker.service
 *   Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-1
 -   Updated to version 1.11.0.
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.2-1

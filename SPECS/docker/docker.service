@@ -7,7 +7,8 @@ Requires=docker-containerd.service
 
 [Service]
 Type=notify
-ExecStart=/usr/bin/docker daemon \
+EnvironmentFile=-/etc/default/docker
+ExecStart=/usr/bin/docker daemon $DOCKER_OPTS \
           --containerd /run/containerd.sock
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
