@@ -12,7 +12,6 @@ Provides:	initramfs
 BuildRequires:       linux
 BuildRequires:       dracut
 BuildRequires:       ostree
-
 %description
 Photon release files such as yum configs and other /etc/ release related files
 
