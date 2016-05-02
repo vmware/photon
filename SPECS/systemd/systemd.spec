@@ -70,6 +70,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
 ./autogen.sh
@@ -136,6 +137,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*	 Mon May 12 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 228-18
+-	 Updated the MaxTasks to infinity in system.conf file
 *    Thu Apr 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com>  228-17
 -    Set the default.target to the multi-user.target
 *    Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-16
