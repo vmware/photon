@@ -9,10 +9,10 @@ Source:		photon-release-1.0.2.tar.gz
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	initramfs
-BuildRequires:       linux
+BuildRequires:       linux = 4.4.7
 BuildRequires:       dracut
 BuildRequires:       ostree
-
+Requires:	linux = 4.4.7
 %description
 Photon release files such as yum configs and other /etc/ release related files
 
@@ -23,7 +23,7 @@ echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev x
 echo 'add_dracutmodules+=" ostree systemd "' > /etc/dracut.conf.d/ostree.conf
 
 %build
-dracut --force --kver  4.2.0 initrd.img-no-kmods 
+dracut --force --kver  4.4.7  initrd.img-no-kmods 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/boot
