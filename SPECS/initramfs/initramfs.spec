@@ -1,7 +1,8 @@
+%define LINUX_VERSION 4.4.8
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 Source:		photon-release-1.0.2.tar.gz
@@ -9,9 +10,10 @@ Source:		photon-release-1.0.2.tar.gz
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	initramfs
-BuildRequires:       linux
+BuildRequires:       linux = %{LINUX_VERSION}
 BuildRequires:       dracut
 BuildRequires:       ostree
+Requires:	     linux = %{LINUX_VERSION}
 
 %description
 Photon release files such as yum configs and other /etc/ release related files
@@ -23,7 +25,7 @@ echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev x
 echo 'add_dracutmodules+=" ostree systemd "' > /etc/dracut.conf.d/ostree.conf
 
 %build
-dracut --force --kver  4.2.0 initrd.img-no-kmods 
+dracut --force --kver %{LINUX_VERSION} initrd.img-no-kmods
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/boot
@@ -40,5 +42,7 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-no-kmods 
 
 %changelog
-*  		Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-1
--		Initial version.
+*   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-2
+-   Update to linux-4.4.8
+*   Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-1
+-   Initial version.
