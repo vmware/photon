@@ -125,7 +125,7 @@ load_env -f "$BOOT_DIRECTORY"photon.cfg
 set_rootpartition
 
 menuentry "Photon" {
-    linux "$BOOT_DIRECTORY"\$photon_linux root=\$rootpartition \$photon_cmdline
+    linux "$BOOT_DIRECTORY"\$photon_linux root=\$rootpartition net.ifnames=0 \$photon_cmdline
     if [ "\$photon_initrd" ]; then
         initrd "$BOOT_DIRECTORY"\$photon_initrd
     fi
