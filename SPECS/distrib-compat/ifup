@@ -68,7 +68,7 @@ if [[ -n  $address ]] ; then
         echo "Performing duplicate address check for IPv4 address $address"
         arping -D -q -I $interface -c 2 $address
         retval=$?
-        [ $retval -eq 1 ] && success "IP already exists in the network, will exit gracefully"
+        [ $retval -eq 1 ] && fail "Error: IP already exists in the network"
         [ $retval -eq 2 ] && fail "Cannot procceed. $interface is down"
         [ $retval -ne 0 ] && fail "Unknown error!"
     else
