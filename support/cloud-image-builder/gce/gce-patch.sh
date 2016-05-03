@@ -32,7 +32,7 @@ echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
 # Remove ssh host keys and add script to regenerate them at boot time.
 
-rm /etc/ssh/ssh_host_*
+rm -f /etc/ssh/ssh_host_*
 
 printf "GOOGLE\n" > /etc/ssh/sshd_not_to_be_run
 

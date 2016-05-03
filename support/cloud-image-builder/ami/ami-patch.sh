@@ -1,33 +1,23 @@
 #!/bin/bash
 
-
 cd /lib/systemd/system/multi-user.target.wants/
 
 ln -s ../docker.service docker.service
-ln -s ../eth0.service eth0.service
-
 cd /
 
 echo "127.0.0.1 localhost" >> /etc/hosts
 
-# Set UTC timezone
-# ln -sf /usr/share/zoneinfo/UTC /etc/localtime
-
 # Update /etc/resolv.conf
-
 rm /etc/resolv.conf
-
 echo "nameserver 172.31.0.2" >> /etc/resolv.conf
 echo "search ec2.internal" >> /etc/resolv.conf
 
 
 # Remove ssh host keys and add script to regenerate them at boot time.
-
-rm /etc/ssh/ssh_host_*
+rm -f /etc/ssh/ssh_host_*
 
 sudo groupadd docker
 sudo groupadd sudo
-
 
 rm /root/.ssh/authorized_keys   
 

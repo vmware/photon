@@ -5,15 +5,12 @@ cd /lib/systemd/system/multi-user.target.wants/
 # Create links in multi-user.target to auto-start these scripts and services.
 
 ln -s ../docker.service docker.service
-ln -s ../eth0.service eth0.service
 ln -s ../waagent.service waagent.service
 ln -s ../sshd-keygen.service sshd-keygen.service
 
-
-
 # Remove ssh host keys and add script to regenerate them at boot time.
 
-rm /etc/ssh/ssh_host_*
+rm -f /etc/ssh/ssh_host_*
 
 sudo groupadd docker
 sudo groupadd sudo
@@ -53,7 +50,6 @@ echo "Tunnel no" >> /etc/ssh/ssh_config
 echo "ServerAliveInterval 180" >> /etc/ssh/ssh_config
 
 sed -i '/.*linux.*vmlinuz/ s/$/ console=ttyS0 earlyprintk=ttyS0 rootdelay=30/' /boot/grub/grub.cfg
-
 
 # Disable loading/unloading of modules
 echo 1 > /proc/sys/kernel/modules_disabled
