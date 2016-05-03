@@ -1,0 +1,42 @@
+From f0d437809d23999cb25207cfbe80c61e5703fdc1 Mon Sep 17 00:00:00 2001
+From: Shrikrishna Khare <skhare@vmware.com>
+Date: Wed, 20 Apr 2016 18:12:29 -0700
+Subject: Driver: Vmxnet3: set CHECKSUM_UNNECESSARY for IPv6 packets
+
+For IPv6, if the device indicates that the checksum is correct, set
+CHECKSUM_UNNECESSARY.
+
+Reported-by: Subbarao Narahari <snarahari@vmware.com>
+Signed-off-by: Shrikrishna Khare <skhare@vmware.com>
+Signed-off-by: Jin Heo <heoj@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 12 ++++++++----
+ drivers/net/vmxnet3/vmxnet3_int.h |  4 ++--
+ 2 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index fc895d0..4a67e4f 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1152,12 +1152,16 @@ vmxnet3_rx_csum(struct vmxnet3_adapter *adapter,
+ 		union Vmxnet3_GenericDesc *gdesc)
+ {
+ 	if (!gdesc->rcd.cnc && adapter->netdev->features & NETIF_F_RXCSUM) {
+-		/* typical case: TCP/UDP over IP and both csums are correct */
+-		if ((le32_to_cpu(gdesc->dword[3]) & VMXNET3_RCD_CSUM_OK) ==
+-							VMXNET3_RCD_CSUM_OK) {
++		if (gdesc->rcd.v4 &&
++		    (le32_to_cpu(gdesc->dword[3]) &
++		     VMXNET3_RCD_CSUM_OK) == VMXNET3_RCD_CSUM_OK) {
++			skb->ip_summed = CHECKSUM_UNNECESSARY;
++			BUG_ON(!(gdesc->rcd.tcp || gdesc->rcd.udp));
++			BUG_ON(gdesc->rcd.frg);
++		} else if (gdesc->rcd.v6 && (le32_to_cpu(gdesc->dword[3]) &
++					     (1 << VMXNET3_RCD_TUC_SHIFT))) {
+ 			skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 			BUG_ON(!(gdesc->rcd.tcp || gdesc->rcd.udp));
+-			BUG_ON(!(gdesc->rcd.v4  || gdesc->rcd.v6));
+ 			BUG_ON(gdesc->rcd.frg);
+ 		} else {
+ 			if (gdesc->rcd.csum) {
