@@ -87,10 +87,22 @@ class IsoInstaller(object):
         raise Exception("Can not mount the cd")
 
     def validate_hostname(self, hostname):
-        error_msg = "It should start with alpha char and ends with alpha-numeric char"
+        error_empty = "Empty hostname or domain is not allowed"
+        error_dash = "Hostname or domain should not start or end with '-'"
+        error_hostname = "Hostname should start with alpha char and <= 64 chars"
+
         if (hostname == None or len(hostname) == 0):
-            return False, error_msg
-        return (ord(hostname[0]) in self.alpha_chars) and (hostname[-1] not in ['.', '-']), error_msg
+            return False, error_empty
+
+        fields = hostname.split('.')
+        for field in fields:
+            if len(field) == 0:
+                return False, error_empty
+            if field[0] == '-' or field[-1] == '-':
+                return False, error_dash
+
+        machinename = fields[0]
+        return (len(machinename) <= 64) and (ord(machinename[0]) in self.alpha_chars), error_hostname
 
     def validate_ostree_url_input(self, ostree_repo_url):
         if not ostree_repo_url:
