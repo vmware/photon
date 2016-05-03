@@ -1,27 +1,23 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.2.0
-Release:    	27%{?dist}
+Version:    	4.4.8
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
-%define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
+%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
 Source1:	config-%{version}
-Patch0:         KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
-Patch1:         RDS-race-condition-on-unbound-socket-null-deref.patch
-Patch2:         ovl-fix-permission-checking-for-setattr.patch
-Patch3:         double-tcp_mem-limits.patch
-Patch4:         veth-do-not-modify-ip_summed.patch
-Patch5:         sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch6:         watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch7:         SUNRPC-Ensure-that-we-wait-for-connections-to-comple.patch
-Patch8:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch9:         06-sunrpc.patch
-Patch10:        vmware-log-kmsg-dump-on-panic.patch
+Patch0:         double-tcp_mem-limits.patch
+Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
+Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch4:         06-sunrpc.patch
+Patch5:         vmware-log-kmsg-dump-on-panic.patch
+Patch6:         net-Driver-Vmxnet3-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -76,7 +72,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 
 %prep
-%setup -q -n linux-4.2
+%setup -q
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -84,10 +80,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
 
 %build
 make mrproper
@@ -178,6 +170,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed May 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
+-   Update to linux-4.4.8
+-   Added net-Drivers-Vmxnet3-set-... patch
 *   Tue May 03 2016 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-27
 -   Compile Intel GigE and VMXNET3 as part of kernel.
 *   Tue Apr 28 2016 Nick Shi <nshi@vmware.com> 4.2.0-26
