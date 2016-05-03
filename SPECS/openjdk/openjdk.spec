@@ -2,7 +2,7 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.72
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -71,11 +71,54 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/THIRD_PARTY_README
 /var/opt/OpenJDK-%{version}-bin/lib
 /var/opt/OpenJDK-%{version}-bin/include/
+/var/opt/OpenJDK-%{version}-bin/bin/appletviewer
+/var/opt/OpenJDK-%{version}-bin/bin/extcheck
+/var/opt/OpenJDK-%{version}-bin/bin/idlj
+/var/opt/OpenJDK-%{version}-bin/bin/jar
+/var/opt/OpenJDK-%{version}-bin/bin/jarsigner
+/var/opt/OpenJDK-%{version}-bin/bin/java-rmi.cgi
+/var/opt/OpenJDK-%{version}-bin/bin/javac
+/var/opt/OpenJDK-%{version}-bin/bin/javadoc
+/var/opt/OpenJDK-%{version}-bin/bin/javah
+/var/opt/OpenJDK-%{version}-bin/bin/javap
+/var/opt/OpenJDK-%{version}-bin/bin/jcmd
+/var/opt/OpenJDK-%{version}-bin/bin/jconsole
+/var/opt/OpenJDK-%{version}-bin/bin/jdb
+/var/opt/OpenJDK-%{version}-bin/bin/jdeps
+/var/opt/OpenJDK-%{version}-bin/bin/jhat
+/var/opt/OpenJDK-%{version}-bin/bin/jinfo
+/var/opt/OpenJDK-%{version}-bin/bin/jjs
+/var/opt/OpenJDK-%{version}-bin/bin/jmap
+/var/opt/OpenJDK-%{version}-bin/bin/jps
+/var/opt/OpenJDK-%{version}-bin/bin/jrunscript
+/var/opt/OpenJDK-%{version}-bin/bin/jsadebugd
+/var/opt/OpenJDK-%{version}-bin/bin/jstack
+/var/opt/OpenJDK-%{version}-bin/bin/jstat
+/var/opt/OpenJDK-%{version}-bin/bin/jstatd
+/var/opt/OpenJDK-%{version}-bin/bin/mkcacerts
+/var/opt/OpenJDK-%{version}-bin/bin/native2ascii
+/var/opt/OpenJDK-%{version}-bin/bin/rmic
+/var/opt/OpenJDK-%{version}-bin/bin/schemagen
+/var/opt/OpenJDK-%{version}-bin/bin/serialver
+/var/opt/OpenJDK-%{version}-bin/bin/wsgen
+/var/opt/OpenJDK-%{version}-bin/bin/wsimport
+/var/opt/OpenJDK-%{version}-bin/bin/xjc
+
 
 %files	-n openjre
 %defattr(-,root,root)
-/var/opt/OpenJDK-%{version}-bin/jre/ 
-/var/opt/OpenJDK-%{version}-bin/bin
+
+/var/opt/OpenJDK-%{version}-bin/jre/
+/var/opt/OpenJDK-%{version}-bin/bin/java
+/var/opt/OpenJDK-%{version}-bin/bin/keytool
+/var/opt/OpenJDK-%{version}-bin/bin/orbd
+/var/opt/OpenJDK-%{version}-bin/bin/pack200
+/var/opt/OpenJDK-%{version}-bin/bin/policytool
+/var/opt/OpenJDK-%{version}-bin/bin/rmid
+/var/opt/OpenJDK-%{version}-bin/bin/rmiregistry
+/var/opt/OpenJDK-%{version}-bin/bin/servertool
+/var/opt/OpenJDK-%{version}-bin/bin/tnameserv
+/var/opt/OpenJDK-%{version}-bin/bin/unpack200
 /var/opt/OpenJDK-%{version}-bin/lib/amd64/jli/
 /etc/profile.d/java-exports.sh
 
@@ -93,6 +136,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*       Mon May 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.72-3
+-       Move tools like javac to openjdk
 *       Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.72-2
 -       Adding openjre as run time dependency for openjdk package
 *       Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.8.0.72-1
