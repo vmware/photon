@@ -1,0 +1,12 @@
+diff -Naur ktap-master.old/runtime/kp_obj.c ktap-master/runtime/kp_obj.c
+--- ktap-master.old/runtime/kp_obj.c	2015-12-03 15:26:28.000000000 -0800
++++ ktap-master/runtime/kp_obj.c	2016-04-22 20:03:46.509227970 -0700
+@@ -44,7 +44,7 @@
+ 
+ /* memory allocation flag */
+ #define KTAP_ALLOC_FLAGS ((GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN) \
+-			 & ~__GFP_WAIT)
++			 & ~__GFP_RECLAIM)
+ 
+ /*
+  * TODO: It's not safe to call into facilities in the kernel at-large,
