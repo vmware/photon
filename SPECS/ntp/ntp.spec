@@ -1,7 +1,7 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
 Version:	4.2.8p6
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms
@@ -13,7 +13,7 @@ Source0:	http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/%{name}-%{version}.tar.gz
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
 %define sha1 ntpstat=729cf2c9f10da43554f26875e91e1973d4498761
-
+Source2: ntp.sysconfig
 BuildRequires:	which
 BuildRequires:	libcap-devel
 BuildRequires:	unzip
@@ -58,6 +58,8 @@ install -v -m755	-d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*		%{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
 
+mkdir -p %{buildroot}/etc/sysconfig
+cp %{SOURCE2} %{buildroot}/etc/sysconfig/ntp
 pushd ntpstat-master
 install -m 755 ntpstat %{buildroot}/%{_bindir}
 install -m 644 ntpstat.1 %{buildroot}/%{_mandir}/man8/ntpstat.8
@@ -84,6 +86,7 @@ Conflicts=systemd-timesyncd.service
 
 [Service]
 Type=forking
+EnvironmentFile=/etc/sysconfig/ntp
 ExecStart=/usr/bin/ntpd -g -u ntp:ntp
 Restart=always
 
@@ -114,6 +117,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
+%attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
 %exclude %{_bindir}/ntpstat
 %exclude %{_mandir}/man8/ntpstat.8*
@@ -132,6 +136,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*	Thu May 12 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.8p6-3
+-	Adding ntp sysconfig file
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-2
 -	Edit scriptlets.
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-1
