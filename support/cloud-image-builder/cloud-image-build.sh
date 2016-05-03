@@ -72,6 +72,8 @@ echo "ROOT_PARTITION=/dev/mapper/${DEVICE_NAME}p2"
 rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 
+UUID_VALUE=$(blkid -s UUID -o value /dev/mapper/${DEVICE_NAME}p2)
+
 mkdir -p $ISO_MOUNT_FOLDER
 mount -o loop $PHOTON_ISO_PATH $ISO_MOUNT_FOLDER
 mount -v -t ext4 /dev/mapper/${DEVICE_NAME}p2 $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
@@ -84,8 +86,7 @@ rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow-
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/machine-id
 touch $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/machine-id
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
-echo "/dev/sda2    /    ext4    defaults,barrier,noatime,noacl,data=ordered 1 1" >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
-
+echo "UUID=$UUID_VALUE    /    ext4    defaults,barrier,noatime,noacl,data=ordered 1 1" >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
 mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
 mount -o bind /dev $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
 mount -o bind /dev/pts $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
@@ -105,21 +106,15 @@ if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ] && [ $IMG_NAME != "ova_
     if [ $IMG_NAME = "gce" ]
       then
         cp ntpd.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
+        cp eth0.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
     fi
     if [ $IMG_NAME != "ova_generic" ]
       then
-        cp ntpd.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
-        cp eth0.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
-        cp -f docker.service $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
-        cp -f docker.socket $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/lib/systemd/system/
         if [ -e $IMG_NAME/cloud-photon.cfg ]
           then
             cp -f $IMG_NAME/cloud-photon.cfg $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/cloud/cloud.cfg
         fi
-    
         cp $IMG_NAME/$IMG_NAME-patch.sh $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/
-
-
         cp /etc/resolv.conf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/
         echo "chrooting and running patch inside the chroot"
         chroot $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME} /bin/bash -c "/$IMG_NAME-patch.sh"
