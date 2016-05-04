@@ -1,7 +1,7 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.7.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
@@ -48,18 +48,28 @@ WantedBy=multi-user.target
 EOF
 
 %pre
-/sbin/groupadd -r %{name}
-/sbin/useradd -g %{name} %{name}
+if ! getent group %{name} >/dev/null; then
+    /sbin/groupadd -r %{name}
+fi
+if ! getent passwd %{name} >/dev/null; then
+    /sbin/useradd -g %{name} %{name}
+fi
 
 %post
 chown %{name}:%{name} /var/log/%{name}
 chown %{name}:%{name} /var/run/%{name}
 
 %postun
-/sbin/userdel pgbouncer
-/sbin/groupdel pgbouncer
-rm -rf /var/log/%{name}
-rm -rf /var/run/%{name}
+if [ $1 -eq 0 ] ; then
+    if getent passwd %{name} >/dev/null; then
+        /sbin/userdel %{name}
+    fi
+    if getent group %{name} >/dev/null; then
+        /sbin/groupdel %{name}
+    fi
+    rm -rf /var/log/%{name}
+    rm -rf /var/run/%{name}
+fi
 
 %files
 %defattr(-,root,root,-)
@@ -73,5 +83,7 @@ rm -rf /var/run/%{name}
 /var/run/pgbouncer
 
 %changelog
+*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 1.7.2-2
+-	Edit scriptlets.
 *       Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 1.7.2-1
 -       Initial Version.

@@ -1,7 +1,7 @@
 Summary:	Mercurial-3.1.2
 Name:		mercurial
 Version:	3.7.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -41,14 +41,21 @@ export PYTHONPATH="$PYTHONPATH:/var/opt/%{name}-%{version}/mercurial/pure"
 EOF
 
 %{_fixperms} %{buildroot}/*
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post -p /sbin/ldconfig
+
 %postun
 /sbin/ldconfig
-rm /etc/profile.d/java-exports.sh
+if [ $1 -eq 0 ] ; then
+    rm /etc/profile.d/java-exports.sh
+fi
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 /.hgrc
@@ -58,6 +65,8 @@ rm -rf %{buildroot}/*
 %exclude /var/opt/%{name}-%{version}/contrib/plan9
 %exclude /var/opt/%{name}-%{version}/build/temp.*
 %changelog
+*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.7.1-2
+-	Edit postun script.
 *       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 3.7.1-1
 -       Updating Version.
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.1.2-4
