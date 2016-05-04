@@ -1,7 +1,7 @@
 Summary:	Docbook-xml-4.5
 Name:		docbook-xml
 Version:	4.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	MIT
 URL:		http://www.docbook.org
 Source0:	http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
@@ -126,14 +126,44 @@ do
     "file:///etc/xml/docbook" \
     /etc/xml/catalog
 done
-%postun
-rm /etc/xml/catalog
-rm /etc/xml/docbook
+
+%preun
+if [ $1 -eq 0 ] ; then
+    if [ -f /etc/xml/catalog ]; then
+        xmlcatalog --noout --del \
+        "file:///etc/xml/docbook" /etc/xml/catalog
+    fi
+    if [ -f /etc/xml/docbook ]; then
+        xmlcatalog --noout --del \
+        "file:///usr/share/xml/docbook/docbook-xml-4.5" /etc/xml/docbook
+        
+        for DTDVERSION in 4.1.2 4.2 4.3 4.4 %{version}
+        do
+            xmlcatalog --noout --del \
+            "http://www.oasis-open.org/docbook/xml/$DTDVERSION/docbookx.dtd" /etc/xml/docbook
+        done
+
+        for file in `find /usr/share/xml/docbook/%{name}-%{version}/*.dtd -printf "%f\n"`
+        do
+            xmlcatalog --noout --del \
+            "file:///usr/share/xml/docbook/docbook-xml-4.5/$file" /etc/xml/docbook
+        done
+
+        for file in `find /usr/share/xml/docbook/%{name}-%{version}/*.mod -printf "%f\n"`
+        do
+            xmlcatalog --noout --del \
+            "file:///usr/share/xml/docbook/docbook-xml-4.5/$file" /etc/xml/docbook
+        done
+    fi
+fi
+
 %files
 %defattr(-,root,root)
 /usr/share/xml/docbook/%{name}-%{version}
 /etc/xml
 %changelog
+*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.5.1-5
+-   Fixing rpm upgrade scenarios
 *   Thu Mar 10 2016 XIaolin Li <xiaolinl@vmware.com> 4.5.1-4
 -   Correct the local folder name.
 *   Mon Jul 6 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.5.1-3

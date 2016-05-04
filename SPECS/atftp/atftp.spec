@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -84,25 +84,25 @@ ATFTPD_BIND_ADDRESSES=
 EOF
 
 %pre
-getent group  tftp  >/dev/null || groupadd -r tftp
-getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
-
+if [ $1 -eq 1 ] ; then
+    getent group  tftp  >/dev/null || groupadd -r tftp
+    getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
+fi
 %preun
-/bin/systemctl disable atftpd.socket
-
-
+%systemd_preun atftpd.socket
 %post
-/bin/systemctl enable atftpd.socket
-
+/sbin/ldconfig
+%systemd_post atftpd.socket
 %postun
 /sbin/ldconfig
-if getent passwd tftp >/dev/null; then
-    userdel tftp
+if [ $1 -eq 0 ] ; then
+    if getent passwd tftp >/dev/null; then
+        userdel tftp
+    fi
+    if getent group tftp >/dev/null; then
+        groupdel tftp
+    fi
 fi
-if getent group tftp >/dev/null; then
-    groupdel tftp
-fi
-
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != '/' ] && rm -rf $RPM_BUILD_ROOT
 
@@ -124,6 +124,8 @@ fi
 
 
 %changelog
+*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-4
+-   Fixing rpm upgrade scenarios
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  0.7.1-3
 -   Add systemd to Requires and BuildRequires.
 -   Use systemctl to enable/disable service.

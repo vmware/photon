@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -59,21 +59,22 @@ getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
 getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
 
 %post
-source %{_sysconfdir}/profile.d/java-exports.sh
-bash %{_prefix}/sbin/update-zookeeper-env.sh \
+if [ $1 -eq 1 ] ; then
+    # Initial installation
+    # Enabled by default per "runs once then goes away" exception
+    source %{_sysconfdir}/profile.d/java-exports.sh
+    bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
        --log-dir=%{_var}/log/zookeeper \
        --pid-dir=%{_var}/run/zookeeper \
        --var-dir=%{_var}/zookeeper
-%{_sbindir}/ldconfig 
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    # Enabled by default per "runs once then goes away" exception
-    /bin/systemctl enable zookeeper.service || :
 fi
-
+%{_sbindir}/ldconfig
+%systemd_post zookeeper.service
+ 
 %preun
+if [ $1 -eq 0 ] ; then
 source %{_sysconfdir}/profile.d/java-exports.sh
 bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
@@ -82,10 +83,15 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --pid-dir=%{_var}/run/zookeeper \
        --var-dir=%{_var}/zookeeper \
        --uninstall
-/bin/systemctl disable zookeeper.service
+fi
+%systemd_preun zookeeper.service
 
 %postun
-/usr/sbin/userdel zookeeper
+%systemd_postun zookeeper.service
+if [ $1 -eq 0 ] ; then
+    /usr/sbin/userdel zookeeper
+    /usr/sbin/groupdel hadoop
+fi
 /sbin/ldconfig
 
 %files
@@ -98,6 +104,8 @@ bash %{_prefix}/sbin/update-zookeeper-env.sh \
 %{_prefix}
 
 %changelog
+*   Mon May 2 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-3
+-   Fixing rpm upgrade scenarios
 *   Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-2
 -   Added logic to set classpath
 *   Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com>  3.4.8-1

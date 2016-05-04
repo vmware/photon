@@ -1,7 +1,7 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -63,16 +63,20 @@ install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/cron
 install -c -m755  %{SOURCE1} %{buildroot}/%{_bindir}/run-parts
 
 ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%preun
-/bin/systemctl disable crond.service
 
 %post
 /sbin/ldconfig
-/bin/systemctl enable crond.service
+%systemd_post crond.service
 
-%postun	-p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+%systemd_postun crond.service
+
+%preun
+%systemd_preun crond.service
 
 %files
 %defattr(-,root,root)
@@ -100,6 +104,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*       Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-8
+-       Fixing rpm upgrade scenarios
 *   	Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-7
 -   	Add run-parts command.
 *   	Fri Mar 04 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-6
