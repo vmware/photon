@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3.30
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -221,15 +221,17 @@ dircolors -p > %{buildroot}/etc/dircolors
 rm -rf %{buildroot}/%{_infodir}
 
 %post
-test -e /root/.bash_profile || cp /etc/skel/.bash_profile /root
-test -e /root/.bashrc || cp /etc/skel/.bashrc /root
-test -e /root/.bash_logout || cp /etc/skel/.bash_logout /root
-
+if [ $1 -eq 1 ] ; then
+    if [ ! -f "/root/.bash_logout" ] ; then
+        cp /etc/skel/.bash_logout /root/.bash_logout
+    fi
+fi
 %postun
-rm -f /root/.bashrc
-rm -f /root/.bash_profile
-rm -f /root/.bash_logout
-
+if [ $1 -eq 0 ] ; then
+    if [ -f "/root/.bash_logout" ] ; then
+        rm -f /root/.bash_logout
+    fi
+fi
 %files
 %defattr(-,root,root)
 /bin/*
@@ -242,13 +244,15 @@ rm -f /root/.bash_logout
 %defattr(-,root,root)
 
 %changelog
-*       Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
--       Adding compile options to load bash.bashrc file and
-        loading source file during non-inetractive non-login shell
-*       Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
--       Updated to version 4.3.30
-*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
--       Adding post unstall section.
+*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.3.30-3
+-   Fixing spec file to handle rpm upgrade scenario correctly
+*   Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
+-   Adding compile options to load bash.bashrc file and
+    loading source file during non-inetractive non-login shell
+*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
+-   Updated to version 4.3.30
+*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
+-   Adding post unstall section.
 *	Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
 -	Fix segfault in save_bash_input.
 *	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2

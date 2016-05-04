@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -102,14 +102,14 @@ EOF
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post
 %{_sbindir}/ldconfig 
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    # Enabled by default per "runs once then goes away" exception
-    /bin/systemctl preset saslauthd.service  >/dev/null 2>&1 || :
-fi
-%postun	-p /sbin/ldconfig
+%systemd_post saslauthd.service
+
+%postun
+/sbin/ldconfig
+%systemd_postun saslauthd.service
+
 %preun
-/bin/systemctl disable saslauthd.service
+%systemd_preun saslauthd.service
 
 %clean
 rm -rf %{buildroot}/*
@@ -126,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man8/saslauthd.8.gz
 %changelog
+*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-6
+-   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.1.26-5
 -   Add systemd to Requires and BuildRequires.
 *   Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.1.26-4
