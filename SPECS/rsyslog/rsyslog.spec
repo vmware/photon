@@ -1,7 +1,7 @@
 Summary:	Rocket-fast system for log processing
 Name:		rsyslog
 Version:	8.15.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+ and ASL 2.0
 URL:		http://www.rsyslog.com/
 Source0:	http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -54,11 +54,14 @@ find %{buildroot} -name '*.la' -delete
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post
 /sbin/ldconfig
-/bin/systemctl enable  rsyslog.service
+%systemd_post rsyslog.service
+
+%preun
+%systemd_preun rsyslog.service
 
 %postun
 /sbin/ldconfig
-/bin/systemctl disable rsyslog.service
+
 
 %files
 %defattr(-,root,root)
@@ -69,6 +72,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/systemd/system/rsyslog.service
 %{_sysconfdir}/systemd/journald.conf.d/*
 %changelog
+*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  8.15.0-3
+-   	Use systemd macros for post, preun and postun to respect upgrades
 *   	Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  8.15.0-2
 -   	Add journald conf and new service file.
 *   	Mon Jan 11  2016 Xiaolin Li <xiaolinl@vmware.com> 8.15.0-1

@@ -1,7 +1,7 @@
 Summary:	Very secure and very small FTP daemon.
 Name:		vsftpd
 Version:	3.0.2
-Release:	1
+Release:	2%{?dist}
 License:	GPLv2 with exceptions
 URL:		https://security.appspot.com/vsftpd.html
 Group:		System Environment/Daemons
@@ -41,30 +41,34 @@ pasv_max_port=40100
 EOF
 
 %post
-install -v -d -m 0755 %{_datadir}/vsftpd/empty
-install -v -d -m 0755 /home/ftp
-if ! getent group vsftpd >/dev/null; then
-    groupadd -g 47 vsftpd
-fi
-if ! getent group ftp >/dev/null; then
-    groupadd -g 45 ftp
-fi
-if ! getent passwd vsftpd >/dev/null; then
-    useradd -c "vsftpd User"  -d /dev/null -g vsftpd -s /bin/false -u 47 vsftpd
-fi
-if ! getent passwd ftp >/dev/null; then
-    useradd -c anonymous_user -d /home/ftp -g ftp    -s /bin/false -u 45 ftp
+if [ $1 -eq 1 ] ; then
+  install -v -d -m 0755 %{_datadir}/vsftpd/empty
+  install -v -d -m 0755 /home/ftp
+  if ! getent group vsftpd >/dev/null; then
+      groupadd -g 47 vsftpd
+  fi
+  if ! getent group ftp >/dev/null; then
+      groupadd -g 45 ftp
+  fi
+  if ! getent passwd vsftpd >/dev/null; then
+      useradd -c "vsftpd User"  -d /dev/null -g vsftpd -s /bin/false -u 47 vsftpd
+  fi
+  if ! getent passwd ftp >/dev/null; then
+      useradd -c anonymous_user -d /home/ftp -g ftp    -s /bin/false -u 45 ftp
+  fi
 fi
 
 %postun
-if getent passwd vsftpd >/dev/null; then
-    userdel vsftpd
-fi
-if getent passwd ftp >/dev/null; then
-    userdel ftp
-fi
-if getent group vsftpd >/dev/null; then
-    groupdel vsftpd
+if [ $1 -eq 0 ] ; then
+  if getent passwd vsftpd >/dev/null; then
+      userdel vsftpd
+  fi
+  if getent passwd ftp >/dev/null; then
+      userdel ftp
+  fi
+  if getent group vsftpd >/dev/null; then
+      groupdel vsftpd
+  fi
 fi
 
 %files
@@ -74,5 +78,7 @@ fi
 %{_datadir}/*
 %exclude %{_libdir}/debug
 %changelog
+*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.2-2
+-   	Fix for upgrade issues
 *	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 3.0.2-1
 -	initial version
