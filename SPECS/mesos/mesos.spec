@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.24.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -24,12 +24,14 @@ BuildRequires:	python2 >= 2.6
 BuildRequires:	python2-libs
 BuildRequires:  python-xml
 BuildRequires:	python2-devel
+BuildRequires:  python-setuptools
 Requires:	apr >= 1.5.2
 Requires:	apr-util >= 1.5.4
 Requires:	cyrus-sasl >= 2.1.26
 Requires:	expat
 Requires:	openjre >= 1.8.0.45
 Requires:	subversion >= 1.8.13
+
 
 %description
  This package installs mesos services that allow photon to run tasks in mesos
@@ -68,7 +70,6 @@ make DESTDIR=%{buildroot} install
 %files
 %defattr(-,root,root)
 %{_bindir}/mesos*
-%{_bindir}/easy*
 %{_sbindir}/mesos-*
 %{_libdir}/libmesos*
 %{_libexecdir}/mesos/mesos-*
@@ -84,6 +85,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2
+-	Add python-setuptools to build requires.
 *	Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
 -	Upgrade to mesos 0.24.0
 *	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
