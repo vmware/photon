@@ -1,7 +1,7 @@
 Summary:  	xinetd -- A better inetd.
 Name:		xinetd
 Version:	2.3.15
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
@@ -54,7 +54,7 @@ if [ $1 -eq 1 ] ; then
 fi
 
 %preun
-/bin/systemctl disable xinetd.service
+%systemd_preun xinetd.service
 
 %files
 %defattr(-, root, root)
@@ -66,6 +66,8 @@ fi
 /lib/systemd/system/xinetd.service
 
 %changelog
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.15-4
+-   Fix upgrade issues
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.3.15-3
 -   Add systemd to Requires and BuildRequires.
 *   Thu Dec 03 2015 Xiaolin Li  <xiaolinl@vmware.com> 2.3.15-2
