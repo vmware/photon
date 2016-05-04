@@ -4,7 +4,7 @@
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
 Version:	1.0.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	VMware
@@ -44,6 +44,9 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}/var/cache/tdnf
+ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
+mkdir -p %{buildroot}%{_includedir}/tdnf
+mv %{buildroot}%{_includedir}/*.h %{buildroot}%{_includedir}/tdnf
 
 # Pre-install
 %pre
@@ -58,7 +61,6 @@ mkdir -p %{buildroot}/var/cache/tdnf
     # First argument is 2 => Upgrade
 
     /sbin/ldconfig
-    ln -sf %{_bindir}/tdnf %{_bindir}/tyum
 
 # Pre-uninstall
 %preun
@@ -70,7 +72,6 @@ mkdir -p %{buildroot}/var/cache/tdnf
 %postun
 
     /sbin/ldconfig
-    rm -f %{_bindir}/tyum
 
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
@@ -78,18 +79,21 @@ mkdir -p %{buildroot}/var/cache/tdnf
 %files
     %defattr(-,root,root,0755)
     %{_bindir}/tdnf
+    %{_bindir}/tyum
     %{_libdir}/*.so*
     %config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
     %dir /var/cache/tdnf
 
 %files devel
     %defattr(-,root,root)
-    %{_includedir}/*
+    %{_includedir}/tdnf/*.h
     %{_libdir}/*.a
     %{_libdir}/*.la
     %exclude %{_libdir}/debug
 
 %changelog
+*       Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.8-3
+-       Fix link installs, fix devel header dir
 *       Fri Apr 1 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.8-2
 -       Update version which was missed with 1.0.8-1, apply string limits
 *       Fri Apr 1 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.8-1

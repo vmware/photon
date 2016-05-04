@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            http://go.microsoft.com/fwlink/?LinkId=250998
@@ -51,7 +51,9 @@ mkdir -p -m 0700 %{buildroot}/%{_sharedstatedir}/waagent
 touch %{buildroot}/%{_localstatedir}/log/waagent.log
 
 %post
-/sbin/chkconfig --add waagent
+if [ $1 -eq 1 ] ; then
+  /sbin/chkconfig --add waagent
+fi
 
 %preun -p /bin/sh
 if [ $1 = 0 ]; then
@@ -79,6 +81,8 @@ fi
 
 
 %changelog
+* Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.18-2
+- Fix for upgrade issues
 * Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-1
 - Update to 2.0.18
 * Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.14-3
