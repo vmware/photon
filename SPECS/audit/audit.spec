@@ -1,7 +1,7 @@
 Summary:	Kernel Audit Tool
 Name:		audit
 Version:	2.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1 audit=b684a8dca31776a4184044733cd5fd4b1b652298
 License:	GPLv2+
@@ -68,13 +68,14 @@ make install DESTDIR=%{buildroot}
 
 %post
 /sbin/ldconfig
-/bin/systemctl enable  auditd.service
-
-%preun
-/bin/systemctl disable auditd.service
+%systemd_post  auditd.service
 
 %postun
 /sbin/ldconfig
+%systemd_postun auditd.service
+
+%preun
+%systemd_preun auditd.service
 
 %files 
 %defattr(-,root,root)
@@ -117,6 +118,8 @@ make install DESTDIR=%{buildroot}
 %{_includedir}/*.h
 
 %changelog
+* Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-2
+- Fixing spec file to handle rpm upgrade scenario correctly
 * Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  2.5-1
 - Upgrade to 2.5
 * Fri Jan 29 2016 Anish Swaminathan <anishs@vmware.com>  2.4.4-4
