@@ -1,7 +1,7 @@
 Summary:	Docbook-xsl-1.79.1
 Name:		docbook-xsl
 Version:	1.79.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
@@ -65,14 +65,20 @@ xmlcatalog --noout --add "rewriteURI" \
            "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" \
     /etc/xml/catalog
 %postun
-rm -rf /etc/xml/catalog
-
+if [ $1 -eq 0 ] ; then
+    if [ -f /etc/xml/catalog ]; then
+        xmlcatalog --noout --del \
+        "/usr/share/xml/docbook/xsl-stylesheets-1.79.1" /etc/xml/catalog
+    fi
+fi
 %files
 %defattr(-,root,root)
 /usr/share/xml/docbook/*
 %{_docdir}/*
 
 %changelog
+*       Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.79.1-2
+-       Fixing rpm upgrade scenarios
 *       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.79.1-1
 -       Updated version.
 *       Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.78.1-2

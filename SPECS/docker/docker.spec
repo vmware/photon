@@ -1,7 +1,7 @@
 Summary:    	Docker
 Name:       	docker
 Version:    	1.11.0
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 License:    	ASL 2.0
 URL:        	http://docs.docker.com
 Group:      	Applications/File
@@ -30,13 +30,13 @@ cp %{SOURCE2} %{buildroot}/lib/systemd/system/docker-containerd.service
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %preun
-/bin/systemctl disable docker.service
-/bin/systemctl disable docker-containerd.service
+%systemd_preun docker.service
+%systemd_preun docker-containerd.service
 
 %post
 /sbin/ldconfig
-#/bin/systemctl enable docker-containerd.service
-#/bin/systemctl enable docker.service
+#%systemd_post docker-containerd.service
+#%systemd_post docker.service
 
 %postun	-p /sbin/ldconfig
 
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker-containerd.service
 
 %changelog
+*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-3
+-   Fixing rpm upgrade scenarios
 *   Sat Apr 30 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-2
 -   Add $DOCKER_OPTS to start in docker.service
 *   Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-1

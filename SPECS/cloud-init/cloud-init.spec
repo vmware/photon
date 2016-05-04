@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -60,30 +60,23 @@ cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-
 %post
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    # Enabled by default per "runs once then goes away" exception
-    /bin/systemctl enable cloud-config.service     >/dev/null 2>&1 || :
-    /bin/systemctl enable cloud-final.service      >/dev/null 2>&1 || :
-    /bin/systemctl enable cloud-init.service       >/dev/null 2>&1 || :
-    /bin/systemctl enable cloud-init-local.service >/dev/null 2>&1 || :
-fi
+%systemd_post cloud-config.service
+%systemd_post cloud-final.service
+%systemd_post cloud-init.service
+%systemd_post cloud-init-local.service
 
 %preun
-if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable cloud-config.service >/dev/null 2>&1 || :
-    /bin/systemctl --no-reload disable cloud-final.service  >/dev/null 2>&1 || :
-    /bin/systemctl --no-reload disable cloud-init.service   >/dev/null 2>&1 || :
-    /bin/systemctl --no-reload disable cloud-init-local.service >/dev/null 2>&1 || :
-    # One-shot services -> no need to stop
-fi
+%systemd_preun cloud-config.service
+%systemd_preun cloud-final.service
+%systemd_preun cloud-init.service
+%systemd_preun cloud-init-local.service
 
 %postun
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-# One-shot services -> no need to restart
+%systemd_postun cloud-config.service
+%systemd_postun cloud-final.service
+%systemd_postun cloud-init.service
+%systemd_postun cloud-init-local.service
 
 %files
 %license LICENSE
@@ -97,6 +90,8 @@ fi
 
 
 %changelog
+*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-8
+-   Clean up post, preun, postun sections.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>
 -   Add systemd to Requires and BuildRequires.
 * Thu Sep 17 2015 Kumar Kaushik <kaushikk@vmware.com>
