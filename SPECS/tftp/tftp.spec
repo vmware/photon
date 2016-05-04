@@ -1,7 +1,7 @@
 Summary:	The client for the Trivial File Transfer Protocol (TFTP)
 Name:		tftp
 Version:	5.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		http://www.kernel.org
 Group:		Applications/Internet
@@ -72,9 +72,10 @@ ListenDatagram=69
 WantedBy=sockets.target
 EOF
 %preun
-/bin/systemctl disable tftpd.socket
+%systemd_preun tftpd.socket
+
 %post
-/bin/systemctl enable tftpd.socket
+%systemd_preun tftpd.socket
 
 %clean
 rm -rf %{buildroot}
@@ -94,6 +95,8 @@ rm -rf %{buildroot}
 /lib/systemd/system/tftpd.socket
 
 %changelog
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.2-4
+-   Fix for upgrade issues
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  5.2-3
 -   Add systemd to Requires and BuildRequires
 -   Use systemctl to enable/disable service.

@@ -1,13 +1,14 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.vim.org/pub/mail/sendmail/sendmail-r8/sendmail.8.15.2.tar.gz
+BuildRequires:	systemd
 BuildRequires:  openldap
 BuildRequires:  openssl-devel
 BuildRequires:  db-devel
@@ -121,32 +122,35 @@ install -v -m700 -d /var/spool/mqueue
 
 
 %post
+if [ $1 -eq 1 ] ; then
+  echo $(hostname) > /etc/mail/local-host-names
+  cat > /etc/mail/aliases << "EOF"
+  postmaster: root
+  MAILER-DAEMON: root
 
-echo $(hostname) > /etc/mail/local-host-names
-cat > /etc/mail/aliases << "EOF"
-postmaster: root
-MAILER-DAEMON: root
+  EOF
+  /bin/newaliases
 
-EOF
-/bin/newaliases
+  cd /etc/mail
+  m4 m4/cf.m4 sendmail.mc > sendmail.cf
 
-cd /etc/mail
-m4 m4/cf.m4 sendmail.mc > sendmail.cf
+  chmod 700 /var/spool/clientmqueue
+  chown smmsp:smmsp /var/spool/clientmqueue
+fi
 
-chmod 700 /var/spool/clientmqueue
-chown smmsp:smmsp /var/spool/clientmqueue
-
-/bin/systemctl enable sendmail
+%systemd_post sendmail.service
 
 %preun
-/bin/systemctl disable sendmail
+%systemd_preun sendmail.service
 
 
 %postun
-userdel smmsp
-groupdel smmsp
+if [ $1 -eq 0 ] ; then
+  userdel smmsp
+  groupdel smmsp
 
-rm -rf /etc/mail
+  rm -rf /etc/mail
+fi
 
 %files
 %{_sysconfdir}/*
@@ -161,6 +165,8 @@ rm -rf /etc/mail
 
 
 %changelog
+*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-3
+-   	Fix for upgrade issues
 *       Wed Feb 17 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-2
 -       Changing permission and owner of clientmqueue.
 *       Tue Jan 05 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-1
