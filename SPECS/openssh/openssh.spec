@@ -1,7 +1,7 @@
-Summary:	'Free version of the SSH connectivity tools
+Summary:	Free version of the SSH connectivity tools
 Name:		openssh
 Version:	7.1p2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -94,18 +94,28 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %pre
 getent group sshd >/dev/null || groupadd -g 50 sshd
 getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd -s /bin/false -u 50 sshd
+
 %preun
-/bin/systemctl disable sshd-keygen.service
-/bin/systemctl disable sshd.service
+%systemd_preun sshd.service sshd-keygen.service
+
 %post
 /sbin/ldconfig
-chown -v root:sys /var/lib/sshd
-/bin/systemctl enable sshd-keygen.service
-/bin/systemctl enable sshd.service
+if [ $1 -eq 1 ] ; then
+    chown -v root:sys /var/lib/sshd
+fi
+%systemd_post sshd.service sshd-keygen.service
 
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart sshd.service sshd-keygen.service
+if [ $1 -eq 0 ] ; then
+    if getent passwd sshd >/dev/null; then
+        userdel sshd
+    fi
+    if getent group sshd >/dev/null; then
+        groupdel sshd
+    fi
+fi
 
 %clean
 rm -rf %{buildroot}/*
@@ -127,8 +137,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
-*   Thu Mar 17 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1p2-1
--   Updated to version 7.1p2
+*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 7.1p2-2
+-	Edit scriptlets.
+*   	Thu Mar 17 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1p2-1
+-   	Updated to version 7.1p2
 *	Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com> 6.6p1-6
 -	Add pre install scripts in the rpm
 *   	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  6.6p1-5
