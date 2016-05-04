@@ -1,7 +1,7 @@
 Summary:	RPC program number mapper
 Name:		rpcbind
 Version:	0.2.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		http://nfsv4.bullopensource.org
 Group:	    Applications/Daemons
@@ -70,9 +70,10 @@ fi
 
 %post
 /sbin/ldconfig
-chown -v root:sys /var/lib/rpcbind
-systemctl enable rpcbind.socket >/dev/null 2>&1
-systemctl enable rpcbind.service >/dev/null 2>&1
+if [ $1 -eq 1 ] ; then
+    chown -v root:sys /var/lib/rpcbind
+fi
+%systemd_post rpcbind.socket rpcbind.service
 
 %postun
 /sbin/ldconfig
@@ -81,6 +82,8 @@ systemctl enable rpcbind.service >/dev/null 2>&1
 %clean
 rm -rf %{buildroot}/*
 %changelog
+*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-5
+-	Edit scriptlets.
 *	Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-4
 -	Add pre install scripts in the rpm
 *	Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-3

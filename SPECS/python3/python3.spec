@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.5.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -116,8 +116,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post
 /sbin/ldconfig
-#ln -s %{_bindir}/python3 %{_bindir}/python
-#ln -s %{_bindir}/python3-config %{_bindir}/python-config
 ln -sf %{_libdir}/libpython3.5m.so %{_libdir}/libpython3.5.so
 
 %post libs
@@ -125,7 +123,9 @@ export PYTHONHOME=/usr
 export PYTHONPATH=/usr/lib/python3.5
 
 %postun
-rm %{_libdir}/libpython3.5.so
+if [ $1 -eq 0 ] ; then
+    rm %{_libdir}/libpython3.5.so
+fi
 /sbin/ldconfig
 
 %clean
@@ -186,12 +186,14 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
-*   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
--   update python to require python-libs
-*   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
--   Providing python3 binaries instead of the minor versions.
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
--   Updated to version 3.5.1
+*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4
+-	Edit scriptlets.
+*   	Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
+-   	update python to require python-libs
+*   	Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
+-   	Providing python3 binaries instead of the minor versions.
+*   	Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
+-   	Updated to version 3.5.1
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
 -	Edit post script.
 *	Mon Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
