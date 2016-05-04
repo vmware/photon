@@ -1,7 +1,7 @@
 Summary:	Next generation system logger facilty
 Name:		syslog-ng
 Version:	3.6.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPL + LGPL
 URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-system
 Group:		System Environment/Daemons
@@ -13,10 +13,12 @@ Source1:        60-syslog-ng-journald.conf
 Requires:	glib
 Requires:   	eventlog
 Requires:	python2
+Requires:	systemd
 BuildRequires:	eventlog
 BuildRequires:	glib-devel
 BuildRequires:	python2-libs
 BuildRequires:	python2-devel
+BuildRequires:	systemd
 
 %description
  The syslog-ng application is a flexible and highly scalable
@@ -73,11 +75,13 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post
-mkdir -p /usr/var/
-/bin/systemctl enable syslog-ng
+if [ $1 -eq 1 ] ; then
+  mkdir -p /usr/var/
+fi
+%systemd_post syslog-ng.service
 
 %preun
-/bin/systemctl disable syslog-ng
+%systemd_preun syslog-ng.service
 
 %clean
 rm -rf %{buildroot}/*
@@ -113,6 +117,8 @@ rm -rf %{buildroot}/*
 /usr/lib/pkgconfig/syslog-ng.pc
 
 %changelog
+*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  3.6.4-3
+-   	Fix for upgrade issues
 *   	Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  3.6.4-2
 -   	Add journald conf file.
 *   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.6.4-1

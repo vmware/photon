@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       2.9
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -188,20 +188,22 @@ test -e ~stap-server && chmod 755 ~stap-server
 exit 0
 
 %post server
-test -e %{_localstatedir}/log/stap-server/log || {
-touch %{_localstatedir}/log/stap-server/log
-chmod 664 %{_localstatedir}/log/stap-server/log
-chown stap-server:stap-server %{_localstatedir}/log/stap-server/log
-}
+if [ $1 -eq 1 ] ; then
+  test -e %{_localstatedir}/log/stap-server/log || {
+  touch %{_localstatedir}/log/stap-server/log
+  chmod 664 %{_localstatedir}/log/stap-server/log
+  chown stap-server:stap-server %{_localstatedir}/log/stap-server/log
+  }
 
-if test ! -e ~stap-server/.systemtap/ssl/server/stap.cert; then
+  if test ! -e ~stap-server/.systemtap/ssl/server/stap.cert; then
 	runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
 
 	%{_bindir}/stap-authorize-server-cert ~stap-server/.systemtap/ssl/server/stap.cert
 	%{_bindir}/stap-authorize-signing-cert ~stap-server/.systemtap/ssl/server/stap.cert
+  fi
+  /sbin/chkconfig --add stap-server
+  exit 0
 fi
-/sbin/chkconfig --add stap-server
-exit 0
 
 %preun server
 if [ $1 = 0 ] ; then
@@ -217,8 +219,10 @@ fi
 exit 0
 
 %post initscript
-/sbin/chkconfig --add systemtap
-exit 0
+if [ $1 -eq 1 ] ; then
+	/sbin/chkconfig --add systemtap
+	exit 0
+fi
 
 %preun initscript
 if [ $1 = 0 ] ; then
@@ -234,12 +238,16 @@ fi
 exit 0
 
 %post
-(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+if [ $1 -eq 1 ] ; then
+	(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+fi
 
 %preun
-(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+if [ $1 -eq 0 ] ; then
+	(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+fi
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -318,6 +326,8 @@ exit 0
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
+-   	Fix for upgrade issues
 * 	Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar> 2.9-1 
 -	Updated version to 2.9
 *	Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
