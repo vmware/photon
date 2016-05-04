@@ -1,7 +1,7 @@
 Summary:	Sudo
 Name:		sudo
 Version:	1.8.15
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
@@ -59,7 +59,9 @@ EOF
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post
 /sbin/ldconfig
-groupadd wheel
+if [ $1 -eq 1 ] ; then
+  groupadd wheel
+fi
 %postun	-p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
@@ -78,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
 %changelog
+*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-2
+-   	Fix for upgrade issues
 *	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-1
 -	Update to 1.8.15-1.
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.8.11p1-5
