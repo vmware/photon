@@ -1,7 +1,7 @@
 Summary: 	Extra tools for rpm-ostree
 Name: 		rpm-ostree-toolbox
 Version: 	2015.12
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 #VCS: https://github.com/cgwalters/rpm-ostree-toolbox
 # This tarball is generated via "make -C packaging -f Makefile.dist-packaging dist-snapshot"
 # which is really just a wrapper for "git archive".
@@ -34,50 +34,6 @@ Requires:	python2
 Requires:	shadow
 Requires:	perl-Config-IniFiles
 Requires:	perl-JSON-XS
-# 
-# %global unprivileged_user rpmostreecompose
-# %global unprivileged_group rpmostreecompose
-# 
-# Requires: python
-# Requires: python-iniparse
-# Requires: pygobject2
-# Requires: gjs
-# Requires: libvirt-python
-# Requires: libguestfs-tools-c
-# Requires: libguestfs-gobject
-# # Needed for libguests
-# Requires: kernel
-# 
-# Requires: rpm-ostree
-# Requires: lorax
-# 
-# %if 0%{?fedora}
-# Requires: docker-io
-# %else
-# Requires: docker
-# %endif
-# 
-# # Imagefactory
-# Requires: imagefactory >= 1.1.7-1
-# Requires: imagefactory-plugins-TinMan >= 1.1.7-1
-# Requires: imagefactory-plugins-OVA >= 1.1.7-1
-# Requires: imagefactory-plugins-vSphere >= 1.1.7-1
-# Requires: imagefactory-plugins-RHEVM >= 1.1.7-1
-# Requires: imagefactory-plugins-IndirectionCloud >= 1.1.7-1
-# 
-# Requires: VMDKstream >= 0.3-1
-# 
-# %if 0%{?rhel}
-# %else
-# Requires: libguestfs-xfs
-# %endif
-# # Needed for rpmostree-build-monitor
-# Requires:       python-qpid
-# Requires:       cyrus-sasl-gssapi
-# Requires:       python-saslwrapper
-# Requires(pre):  shadow-utils
-# Requires:       systemd-units
-# Requires(post): systemd-units
 
 %description
 Various utilities and scripts for working with rpm-ostree based
@@ -95,9 +51,9 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot} INSTALL="install -p -c"
 
 %pre
-getent group %{unprivileged_group} >/dev/null || groupadd -r %{unprivileged_group}
-getent passwd %{unprivileged_user} >/dev/null || \
-  useradd -r -g %{unprivileged_group} -d %{_localstatedir}/lib/%{name} -s /sbin/nologin -c "RPM OStree Toolbox user" %{unprivileged_user}
+getent group rpmostreecompose >/dev/null || groupadd -r rpmostreecompose
+getent passwd rpmostreecompose >/dev/null || \
+  useradd -r -g rpmostreecompose -d %{_localstatedir}/lib/%{name} -s /sbin/nologin -c "RPM OStree Toolbox user" rpmostreecompose
 
 %post
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
@@ -110,11 +66,13 @@ getent passwd %{unprivileged_user} >/dev/null || \
 %{_mandir}/man1/%{name}*.gz
 
 %dir %{_localstatedir}/lib/%{name}
-%attr(0755,%{unprivileged_user},%{unprivileged_group}) %{_localstatedir}/lib/%{name}
+%attr(0755,rpmostreecompose,rpmostreecompose) %{_localstatedir}/lib/%{name}
 
 %changelog
+*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 2015.12-2
+-   Clean up the spec file.
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 2015.12-1
 -   Updated to version 2015.12
-* Sat May 24 2014 Colin Walters <walters@verbum.org> - 2014.11-1
-- Initial package
+*   Sat May 24 2014 Colin Walters <walters@verbum.org> - 2014.11-1
+-   Initial package
 
