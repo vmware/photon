@@ -1,7 +1,7 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
 Version:	4.2.8p6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms
@@ -101,14 +101,13 @@ if ! getent passwd ntp >/dev/null; then
 fi
 %post
 %{_sbindir}/ldconfig 
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    # Enabled by default per "runs once then goes away" exception
-    /bin/systemctl enable ntpd.service     >/dev/null 2>&1 || :
-fi
+%systemd_post ntpd.service
 
 %preun
-/bin/systemctl disable ntpd.service
+%systemd_preun ntpd.service
+
+%postun
+%systemd_postun_with_restart ntpd.service
 
 %clean
 rm -rf %{buildroot}/*
@@ -133,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-2
+-	Edit scriptlets.
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-1
 -	Upgrade version
 *   	Thu Jan 7 2016 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-4

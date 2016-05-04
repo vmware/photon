@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.0.5
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -65,12 +65,10 @@ mv %{buildroot}%{_sysconfdir}/vmware-tools/vm-support %{buildroot}%{_bindir}
 
 %post
 /sbin/ldconfig
-%systemd_post vgauthd.service
-%systemd_post vmtoolsd.service
+%systemd_post vgauthd.service vmtoolsd.service
 
 %preun
-%systemd_preun vmtoolsd.service
-%systemd_preun vgauthd.service
+%systemd_preun vmtoolsd.service vgauthd.service
 # Tell VMware that open-vm-tools is being uninstalled
 if [ "$1" = "0" -a                      \
      -e %{_bindir}/vmware-checkvm -a    \
@@ -81,8 +79,7 @@ fi
 
 %postun 
 /sbin/ldconfig
-%systemd_postun_with_restart vmtoolsd.service
-%systemd_postun_with_restart vgauthd.service
+%systemd_postun_with_restart vmtoolsd.service vgauthd.service
 
 %files 
 %defattr(-,root,root)
@@ -100,6 +97,8 @@ fi
 
 
 %changelog
+*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-9
+-	Edit scriptlets.
 *       Fri Apr 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-8
 -       Combining all GOSC scripts patches and fixing bug#1648133.
 *       Tue Apr 19 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-7
