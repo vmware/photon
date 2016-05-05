@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -108,7 +108,7 @@ systemd-network:x:76:
 systemd-resolve:x:77:
 systemd-timesync:x:78:
 nogroup:x:99:
-users:x:100:audio
+users:x:100:
 sudo:x:27:
 wheel:x:28:
 EOF
@@ -535,6 +535,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Wed May 4 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-5
+-   Removing non-existent users from /etc/group file
 *   Fri Apr 29 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0-4
 -   Updating the /etc/hosts file
 *   Fri Apr 22 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-3
