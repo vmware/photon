@@ -63,7 +63,7 @@ fi
 #
 #    Install grub2.
 #
-UUID=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
+PARTUUID=$(blkid -s PARTUUID -o value $ROOT_PARTITION_PATH)
 BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
 
 grubInstallCmd=""
@@ -91,18 +91,6 @@ cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg
 
-function set_rootpartition {
-    if [ "\$photon_initrd" ]; then
-        set rootpartition=UUID=$UUID
-    else
-        search -n -u $UUID -s rootpartition_device
-        regexp -s dev '.{2}(.)' \$rootpartition_device
-        regexp -s part '.*(.)' \$rootpartition_device
-        regexp -s char '.{'\$dev'}(.)' abcdefghij
-        set rootpartition=/dev/sd\$char\$part
-    fi
-}
-
 set default=0
 set timeout=5
 search -n -u $BOOT_UUID -s
@@ -122,7 +110,7 @@ terminal_output gfxterm
 
 set theme="$BOOT_DIRECTORY"grub2/themes/photon/theme.txt
 load_env -f "$BOOT_DIRECTORY"photon.cfg
-set_rootpartition
+set rootpartition=PARTUUID=$PARTUUID
 
 menuentry "Photon" {
     linux "$BOOT_DIRECTORY"\$photon_linux root=\$rootpartition net.ifnames=0 \$photon_cmdline
