@@ -103,6 +103,7 @@ for tool in runlevel reboot shutdown poweroff halt telinit; do
      ln -sfv ../bin/systemctl %{buildroot}/sbin/${tool}
 done
 ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
+sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/lib/systemd/network/99-default.link
 rm -f %{buildroot}%{_var}/log/README
