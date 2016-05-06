@@ -118,6 +118,7 @@
         "ecdsa",
         "kexec-tools",
         "traceroute",
-        "bindutils"
+        "bindutils",
+        "libusb"
             ]
 }
