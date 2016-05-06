@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.18
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -92,39 +92,46 @@ WantedBy=multi-user.target
 EOF
 ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
 ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
+
 %post
 /sbin/ldconfig
-if ! getent group apache >/dev/null; then
-    groupadd -g 25 apache
-fi
-if ! getent passwd apache >/dev/null; then
-    useradd -c "Apache Server" -d /srv/www -g apache \
-        -s /bin/false -u 25 apache
-fi
+if [ $1 -eq 1 ]; then
+    # this is initial installation
+    if ! getent group apache >/dev/null; then
+        groupadd -g 25 apache
+    fi
+    if ! getent passwd apache >/dev/null; then
+        useradd -c "Apache Server" -d /srv/www -g apache \
+            -s /bin/false -u 25 apache
+    fi
 
-if [ -h /etc/mime.types ]; then
-    mv /etc/mime.types /etc/mime.types.orig
+    if [ -h /etc/mime.types ]; then
+        mv /etc/mime.types /etc/mime.types.orig
+    fi
 fi
 
 ln -sf /etc/httpd/conf/mime.types /etc/mime.types
-/bin/systemctl enable httpd.service
+%systemd_post httpd.service
 
 %preun
-/bin/systemctl stop httpd.service
-/bin/systemctl disable httpd.service
+%systemd_preun httpd.service
 
 %postun
 /sbin/ldconfig
-if getent passwd apache >/dev/null; then
-    userdel apache
-fi
-if getent group apache >/dev/null; then
-    groupdel apache
-fi
+if [ $1 -eq 0 ]; then
+    # this is delete operation
+    if getent passwd apache >/dev/null; then
+        userdel apache
+    fi
+    if getent group apache >/dev/null; then
+        groupdel apache
+    fi
 
-if [ -f /etc/mime.types.orig ]; then
-    mv /etc/mime.types.orig /etc/mime.types
+    if [ -f /etc/mime.types.orig ]; then
+        mv /etc/mime.types.orig /etc/mime.types
+    fi
 fi
+%systemd_postun_with_restart httpd.service
 
 %files devel
 %defattr(-,root,root)
@@ -157,6 +164,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.4.18-3
+-   Adding upgrade support in pre/post/un script.
 *   Mon Mar 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.4.18-2
 -   Fixing systemd service
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
