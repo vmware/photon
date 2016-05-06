@@ -4,7 +4,7 @@
 Summary:	Kubernetes cluster management
 Name:		kubernetes
 Version:	1.1.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/GoogleCloudPlatform/kubernetes
 Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v%{version}/%{name}-v%{version}.tar.gz
@@ -65,9 +65,19 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 rm -rf %{buildroot}/*
 
 %pre
-getent group kube >/dev/null || groupadd -r kube
-getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
-        -c "Kubernetes user" kube
+if [$1 -eq 1]; then
+    # Initial installation.
+    getent group kube >/dev/null || groupadd -r kube
+    getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
+            -c "Kubernetes user" kube
+fi
+
+%postun
+if [$1 -eq 0]; then
+    # Package deletion
+    userdel kube
+    groupdel kube 
+fi
 
 %files
 %defattr(-,root,root)
@@ -89,8 +99,10 @@ getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
--   Upgraded to version 1.1.8
+*       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.8-2
+-       Adding support to pre/post/un scripts for package upgrade.
+*       Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
+-       Upgraded to version 1.1.8
 *	Mon Aug 3 2015 Tom Scanlan <tscanlan@vmware.com> 1.0.2-1
 -	bump up to latest release
 *	Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
