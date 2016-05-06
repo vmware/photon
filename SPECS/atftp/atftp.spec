@@ -13,6 +13,7 @@ Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{na
 
 BuildRequires:  systemd
 Requires:       systemd
+Requires:	shadow
 Provides: tftp-server
 Obsoletes: tftp-server
 
