@@ -10,7 +10,7 @@
 Summary:	Go 
 Name:		go
 Version:	1.4.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		https://golang/org
 Group:		System Environment/Security
@@ -84,13 +84,24 @@ chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
+%pre
+if[ $1 -eq 2 ];then
+  #This is upgrade scenario
+  rm /etc/profile.d/go-exports.sh
+  rm -rf /opt/%{name}
+  exit 0
+fi
+
 %post -p /sbin/ldconfig
 
 %postun
 /sbin/ldconfig
-rm /etc/profile.d/go-exports.sh
-rm -rf /opt/%{name}
-exit 0
+if[ $1 -eq 0 ]; then
+  #This is uninstall
+  rm /etc/profile.d/go-exports.sh
+  rm -rf /opt/%{name}
+  exit 0
+fi
 
 %clean
 rm -rf %{buildroot}/*
@@ -112,6 +123,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.2-3
+-       Handling upgrade scenario pre/post/un scripts.
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.4.2-2
 -	Edit post script.
 *	Mon Aug 03 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.4.2-1

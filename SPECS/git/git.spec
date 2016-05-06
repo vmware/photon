@@ -1,7 +1,7 @@
 Summary:	Fast distributed version control system
 Name:		git
 Version:	2.8.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://git-scm.com/
 Group:		System Environment/Programming
@@ -58,9 +58,22 @@ make DESTDIR=%{buildroot} install
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
+%pre
+if[ $1 -eq 2 ]; then
+  # This is upgrade.
+  git config --system --unset http.sslCAPath
+fi
+
+%preun
+if[ $1 -eq 0 ]; then
+  # This is uninstall operation
+  git config --system --unset http.sslCAPath
+fi
+
 %post
 git config --system http.sslCAPath /etc/ssl/certs
 exit 0
+
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -83,6 +96,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2
+-       Handling the upgrade scenario.
 *   	Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 2.8.1-1
 -   	Updated to version 2.8.1 
 *   	Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.7.1-1

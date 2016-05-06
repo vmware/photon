@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.141
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -122,13 +122,20 @@ This package contains the dmeventd daemon for monitoring the state
 of device-mapper devices.
 
 %post -n device-mapper-event
-%systemd_post dm-event.socket
-systemctl enable dm-event.service
-systemctl enable dm-event.socket
-systemctl start dm-event.socket
-
+%systemd_post dm-event.service dm-event.socket 
+if [ $1 -eq 1 ];then
+    # This is initial installation
+    systemctl start dm-event.socket
+fi
 %preun -n device-mapper-event
+if [ $1 -eq 0];then
+    # This is erase operation
+    systemctl stop dm-event.socket
+fi
 %systemd_preun dm-event.service dm-event.socket
+
+%postun -n device-mapper-event
+%systemd_postun_with_restart dm-event.service dm-event.socket
 
 %package -n	device-mapper-event-libs
 Summary:	Device-mapper event daemon shared library
@@ -204,14 +211,17 @@ make install_systemd_units DESTDIR=%{buildroot}
 make install_systemd_generators DESTDIR=%{buildroot}
 make install_tmpfiles_configuration DESTDIR=%{buildroot}
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
+
+%preun
+%systemd_preun lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
+
 %post
 /sbin/ldconfig
-systemctl enable lvm2-lvmetad.service
-systemctl enable lvm2-monitor.service
-systemctl enable lvm2-activate.service
+%systemd_post lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
 
 %postun
 /sbin/ldconfig
+%systemd_postun_with_restart lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
 
 %files	devel
 %defattr(-,root,root,-)
@@ -414,6 +424,8 @@ systemctl enable lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
+*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
+-   Adding upgrade support in pre/post/un scripts.
 *   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3 
 -   Fix post scripts for lvm
 *   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2 
