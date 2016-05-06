@@ -1,7 +1,7 @@
 Summary: Intel LLDP Agent
 Name:    lldpad
 Version: 1.0.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2
 URL: http://open-lldp.org/
 Source: %{name}-%{version}.tar.gz
@@ -42,13 +42,13 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 	%{buildroot}/lib/systemd/system/lldpad.socket
 
 %preun
-/bin/systemctl disable lldpad.socket
+%systemd_preun lldpad.socket
 %post
 /sbin/ldconfig
-/bin/systemctl enable lldpad.socket
-
+%systemd_post lldpad.socket
 %postun
 /sbin/ldconfig
+%systemd_postun_with_restart lldpad.socket
 
 %files
 %defattr(-,root,root)
@@ -65,9 +65,11 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 
 
 %changelog
+*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com>  1.0.1-3
+-   Adding support in pre/post/un scripts for upgrade.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.0.1-2
 -   Add systemd to Requires and BuildRequires.
 -   The source is based on git://open-lldp.org/open-lldp commit 036e314
 -   Use systemctl to enable/disable service.
-*	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
+*   Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
 -   Initial build.  First version

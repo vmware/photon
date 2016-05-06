@@ -1,7 +1,7 @@
 Summary:	Irqbalance daemon
 Name:		irqbalance
 Version:	1.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		https://github.com/Irqbalance/irqbalance
 Group:		System Environment/Services
@@ -29,10 +29,14 @@ make DESTDIR=%{buildroot} install
 install -D -m 0644 misc/irqbalance.env %{buildroot}/etc/sysconfig/irqbalance
 sed -i 's#/path/to/irqbalance.env#/etc/sysconfig/irqbalance#' misc/irqbalance.service
 install -D -m 0644 misc/irqbalance.service %{buildroot}%{_prefix}/lib/systemd/system/irqbalance.service
+
 %post
 %systemd_post %{name}.service
 %preun
 %systemd_preun %{name}.service
+%postun
+%systemd_postun_with_restart %{name}.service
+
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/*
@@ -42,5 +46,7 @@ install -D -m 0644 misc/irqbalance.service %{buildroot}%{_prefix}/lib/systemd/sy
 %{_datadir}/*
 
 %changelog
+*  Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.0-2
+-  Adding package upgrade support.
 *  Fri Jan 15 2016 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-1
 -  Initial version
