@@ -45,7 +45,6 @@ echo "Host *" >> /etc/ssh/ssh_config
 echo "Protocol 2" >> /etc/ssh/ssh_config
 echo "ForwardAgent no" >> /etc/ssh/ssh_config
 echo "ForwardX11 no" >> /etc/ssh/ssh_config
-echo "X11Forwarding no" >> /etc/ssh/ssh_config
 echo "HostbasedAuthentication no" >> /etc/ssh/ssh_config
 echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config
 echo "Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc" >> /etc/ssh/ssh_config
