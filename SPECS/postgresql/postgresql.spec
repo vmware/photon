@@ -1,6 +1,6 @@
 Summary:	PostgreSQL database engine
 Name:		postgresql
-Version:	9.5.1
+Version:	9.5.2
 Release:	1%{?dist}
 License:	PostgreSQL
 URL:		www.postgresql.org
@@ -10,7 +10,7 @@ Distribution:	Photon
 Provides:	%{name}
 
 Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1 postgresql=905bc31bc4d500e9498340407740a61835a2022e
+%define sha1 postgresql=e139e5607fafd96926463123f7751086adaad724
 
 # Common libraries needed
 BuildRequires:	krb5
@@ -156,10 +156,12 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
-*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
--   Updated to version 9.5.1
-*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
--   Updated to version 9.5.0
+*       Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
+-       Updated to version 9.5.2
+*       Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
+-       Updated to version 9.5.1
+*       Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
+-       Updated to version 9.5.0
 *	Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
 -	Update to version 9.4.4.
 *	Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
