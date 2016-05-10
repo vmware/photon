@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            http://go.microsoft.com/fwlink/?LinkId=250998
@@ -14,6 +14,7 @@ Distribution:	Photon
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  systemd
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-pyasn1
@@ -24,6 +25,7 @@ Requires:       sed
 Requires:       grep
 Requires:       sudo
 Requires:       iptables
+Requires:       systemd
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
@@ -42,7 +44,7 @@ find . -type f -exec chmod 0644 {} +
 %pre -p /bin/sh
 
 %build
-#%{__python} setup.py build
+%{__python} setup.py build
 
 %install
 %{__python} setup.py install --prefix=%{_prefix} --lnx-distro='photon' --init-system='systemd' --root=%{buildroot}
@@ -51,23 +53,17 @@ mkdir -p -m 0700 %{buildroot}/%{_sharedstatedir}/waagent
 touch %{buildroot}/%{_localstatedir}/log/waagent.log
 
 %post
-/sbin/chkconfig --add waagent
+%systemd_post waagent.service
 
-%preun -p /bin/sh
-if [ $1 = 0 ]; then
-	/sbin/service waagent stop >/dev/null 2>&1
-	/sbin/chkconfig --del waagent
-fi
+%preun
+%systemd_preun waagent.service
 
-%postun -p /bin/sh
-if [ "$1" -ge "1" ]; then
-	/sbin/service waagent restart >/dev/null 2>&1 || :
-fi
+%postun
+%systemd_postun_with_restart waagent.service
 
 
 %files
 /usr/lib/systemd/system/*
-#%attr(0755,root,root) %{_initddir}/waagent
 %attr(0755,root,root) %{_sysconfdir}/udev/rules.d/99-azure-product-uuid.rules
 %defattr(0644,root,root,0755)
 %doc Changelog LICENSE-2.0.txt NOTICE README
@@ -79,6 +75,8 @@ fi
 
 
 %changelog
+* Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-2
+- Edit post scripts
 * Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-1
 - Update to 2.0.18
 * Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.14-3
