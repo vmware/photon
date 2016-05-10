@@ -1,13 +1,13 @@
 Summary:       USB Utils
 Name:          usbutils
 Version:       008
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2+
 URL:           http://linux-usb.sourceforge.net
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:       http://downloads.sourceforge.net/linux-usb/%{name}-%{version}.tar.xz
+Source0:       https://www.kernel.org/pub/linux/utils/usb/usbutils/%{name}-%{version}.tar.xz
 %define sha1 usbutils=233dee6cd6829476be778554984045663b568b18
 Source1:       usb.ids
 BuildRequires: libusb-devel
@@ -45,6 +45,7 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/misc/
 %{_datadir}/misc/usb.ids
 
 %changelog
+* Tue May 10 2016 Nick Shi <nshi@vmware.com> - 008-2
+- Update Source0 to the correct link
 * Fri May 06 2016 Nick Shi <nshi@vmware.com> - 008-1
 - Initial version
-
