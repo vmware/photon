@@ -119,6 +119,7 @@
         "kexec-tools",
         "traceroute",
         "bindutils",
-        "libusb"
+        "libusb",
+        "usbutils"
             ]
 }
