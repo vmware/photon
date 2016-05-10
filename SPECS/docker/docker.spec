@@ -1,7 +1,7 @@
 Summary:    	Docker
 Name:       	docker
 Version:    	1.11.0
-Release:    	3%{?dist}
+Release:    	4%{?dist}
 License:    	ASL 2.0
 URL:        	http://docs.docker.com
 Group:      	Applications/File
@@ -35,8 +35,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post
 /sbin/ldconfig
-#%systemd_post docker-containerd.service
-#%systemd_post docker.service
 
 %postun	-p /sbin/ldconfig
 
@@ -50,6 +48,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker-containerd.service
 
 %changelog
+*   Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-4
+-   Remove commented post actions
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-3
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Sat Apr 30 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-2
