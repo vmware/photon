@@ -1,14 +1,19 @@
 import os
 import commons
+import random
 
 install_phase = commons.POST_INSTALL
 enabled = True
 
 def execute(name, ks_config, config, root):
+    hostname = ""
+    if ks_config and "hostname" in ks_config:
+        hostname = ks_config["hostname"].strip(" ")
+    if hostname == "":
+        random_id = '%12x' % random.randrange(16**12)
+        hostname = "photon-" + random_id.strip()
 
-    if ks_config:
-        config["hostname"] = ks_config["hostname"]
-    hostname = config['hostname']
+    config['hostname'] = hostname
 
     hostname_file = os.path.join(root, 'etc/hostname')
     hosts_file = os.path.join(root, 'etc/hosts')
