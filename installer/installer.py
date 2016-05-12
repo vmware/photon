@@ -381,6 +381,11 @@ class Installer(object):
             self.progress_bar.update_loading_message(comment)
 
         modules.commons.log(modules.commons.LOG_INFO, "Installer: {} ".format(command))
-        process = subprocess.Popen([command], shell=True, stdout=self.output)
-        retval = process.wait()
-        return retval
+        process = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE)
+        out,err = process.communicate()
+        if err != None and err != 0 and "systemd-tmpfiles" not in command:
+            modules.commons.log(modules.commons.LOG_ERROR, "Installer: failed in {} with error code {}".format(command, err))
+            modules.commons.log(modules.commons.LOG_ERROR, out)
+            self.exit_gracefully(None, None)
+
+        return err
