@@ -105,23 +105,21 @@ class OstreeInstaller(Installer):
         self.run("mkdir -p {} ".format(sysroot_boot))
         self.run("mount {}2 {}".format(disk, sysroot_boot))
 
-        self.progress_bar.show_loading("Unpacking local OSTree repo")
-
         #Setup the disk
         self.run("dd if=/dev/zero of={}/swapfile bs=1M count=64".format(self.photon_root))
+        self.run("chmod 600 {}/swapfile".format(self.photon_root))
         self.run("mkswap -v1 {}/swapfile".format(self.photon_root))
         self.run("swapon {}/swapfile".format(self.photon_root))
 
         if self.default_repo:
             self.run("rm -rf /installer/boot")
             self.run("mkdir -p {}/repo".format(self.photon_root))
+            self.progress_bar.show_loading("Unpacking local OSTree repo")
             self.run("tar --warning=none -xf /mnt/cdrom/ostree-repo.tar.gz -C {}/repo".format(self.photon_root))
             self.local_repo_path = "{}/repo".format(self.photon_root)
             self.ostree_repo_url = self.repo_config['OSTREEREPOURL']
             self.ostree_ref = self.repo_config['OSTREEREFS']
-
-
-        self.progress_bar.update_loading_message("Unpacking done")
+            self.progress_bar.update_loading_message("Unpacking done")
 
 
         self.deploy_ostree(self.ostree_repo_url, self.ostree_ref)
