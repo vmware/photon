@@ -1,31 +1,27 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.2.0
-Release:       19%{?dist}
+Version:       4.4.8
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.2.tar.xz
-%define sha1 linux=5e65d0dc94298527726fcd7458b6126e60fb2a8a
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
 Source1:       config-esx-%{version}
-Patch0:        RDS-race-condition-on-unbound-socket-null-deref.patch
-Patch1:        KEYS-Fix-keyring-ref-leak-in-join_session_keyring.patch
-Patch2:        ovl-fix-permission-checking-for-setattr.patch
-Patch3:        double-tcp_mem-limits.patch
-Patch4:        veth-do-not-modify-ip_summed.patch
-Patch5:        sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch6:        watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch7:        SUNRPC-Ensure-that-we-wait-for-connections-to-comple.patch
-Patch8:        SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch9:        01-clear-linux.patch
-Patch10:       02-pci-probe.patch
-Patch11:       03-poweroff.patch
-Patch12:       04-quiet-boot.patch
-Patch13:       05-pv-ops.patch
-Patch14:       06-sunrpc.patch
+Patch0:        double-tcp_mem-limits.patch
+Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
+Patch2:        linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch3:        SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch4:        net-Driver-Vmxnet3-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch5:        01-clear-linux.patch
+Patch6:        02-pci-probe.patch
+Patch7:        03-poweroff.patch
+Patch8:        04-quiet-boot.patch
+Patch9:        05-pv-ops.patch
+Patch10:       06-sunrpc.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -59,7 +55,7 @@ Requires:      %{name} = %{version}-%{release}
 The Linux package contains the Linux kernel doc files
 
 %prep
-%setup -q -n linux-4.2
+%setup -q -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -71,10 +67,6 @@ The Linux package contains the Linux kernel doc files
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
 
 %build
 make mrproper
@@ -140,6 +132,10 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Fri May 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
+-   Update to linux-4.4.8
+-   Added net-Drivers-Vmxnet3-set-... patch
+-   Added e1000e module
 *   Tue Mar 29 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-19
 -   Support kmsg dumping to vmware.log on panic
 -   sunrpc: xs_bind uses ip_local_reserved_ports
