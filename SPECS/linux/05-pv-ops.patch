@@ -1,7 +1,7 @@
-From d5e7229bec41406a4040a1ac9131e24cb1f8768d Mon Sep 17 00:00:00 2001
+From 6021a95a6b7ffb8df8823337d4ca05807c2eb6e5 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 30 Sep 2015 23:00:00 +0000
-Subject: [PATCH 01/12] Measure correct boot time.
+Subject: [PATCH 01/13] Measure correct boot time.
 
 ---
  arch/x86/Kconfig          |  8 ++++++++
@@ -10,10 +10,10 @@ Subject: [PATCH 01/12] Measure correct boot time.
  3 files changed, 35 insertions(+)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index b3a1a5d..24141ac 100644
+index db3622f..3f6337e 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -708,6 +708,14 @@ config KVM_DEBUG_FS
+@@ -710,6 +710,14 @@ config KVM_DEBUG_FS
  	  Statistics are displayed in debugfs filesystem. Enabling this option
  	  may incur significant overhead.
  
@@ -29,7 +29,7 @@ index b3a1a5d..24141ac 100644
  
  config PARAVIRT_TIME_ACCOUNTING
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index 1d40ca8..eccf2d7 100644
+index ffdc0e8..0f54608 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
 @@ -65,6 +65,16 @@ startup_64:
@@ -46,10 +46,10 @@ index 1d40ca8..eccf2d7 100644
 +	mov	%rdx, tsc_at_head(%rip)
 +#endif
 +
- 	/*
- 	 * Compute the delta between the address I am compiled to run at and the
- 	 * address I am actually running at.
-@@ -512,6 +522,12 @@ early_gdt_descr:
+ 	/* Sanitize CPU configuration */
+ 	call verify_cpu
+ 
+@@ -520,6 +530,12 @@ early_gdt_descr:
  early_gdt_descr_base:
  	.quad	INIT_PER_CPU_VAR(gdt_page)
  
@@ -63,10 +63,10 @@ index 1d40ca8..eccf2d7 100644
  	/* This must match the first entry in level2_kernel_pgt */
  	.quad   0x0000000000000000
 diff --git a/init/main.c b/init/main.c
-index 5650655..c386186 100644
+index 9e64d70..ccc9a22 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -929,6 +929,9 @@ static int try_to_run_init_process(const char *init_filename)
+@@ -928,6 +928,9 @@ static int try_to_run_init_process(const char *init_filename)
  }
  
  static noinline void __init kernel_init_freeable(void);
@@ -76,7 +76,7 @@ index 5650655..c386186 100644
  
  static int __ref kernel_init(void *unused)
  {
-@@ -944,6 +947,14 @@ static int __ref kernel_init(void *unused)
+@@ -943,6 +946,14 @@ static int __ref kernel_init(void *unused)
  
  	flush_delayed_fput();
  
@@ -95,10 +95,10 @@ index 5650655..c386186 100644
 1.9.1
 
 
-From 500436e32d4dffae5d78f12be72c2e6784ab8cfb Mon Sep 17 00:00:00 2001
+From 1dc2e9f9a9d8d8065fa096b5551ca646086a72ed Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 2 Oct 2015 20:00:06 +0000
-Subject: [PATCH 02/12] PV io_delay for VMware guest.
+Subject: [PATCH 02/13] PV io_delay for VMware guest.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 13 +++++++++++++
@@ -146,10 +146,10 @@ index 628a059..8fdd031 100644
 1.9.1
 
 
-From adff5db39b45d8adef2b4579ec46ab1bb721a81f Mon Sep 17 00:00:00 2001
+From faf39d20732abb865f003b46a567ea42d0841e92 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 7 Oct 2015 22:53:18 +0000
-Subject: [PATCH 03/12] Improved tsc based sched_clock & clocksource.
+Subject: [PATCH 03/13] Improved tsc based sched_clock & clocksource.
 
 ---
  arch/x86/Kconfig             |  1 +
@@ -159,10 +159,10 @@ Subject: [PATCH 03/12] Improved tsc based sched_clock & clocksource.
  4 files changed, 69 insertions(+), 11 deletions(-)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 24141ac..ca0be27 100644
+index 3f6337e..8182ad6 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -711,6 +711,7 @@ config KVM_DEBUG_FS
+@@ -713,6 +713,7 @@ config KVM_DEBUG_FS
  config VMWARE
  	bool "VMware Guest support"
  	depends on PARAVIRT
@@ -277,10 +277,10 @@ index 8fdd031..004825e 100644
 +	}
 +}
 diff --git a/init/main.c b/init/main.c
-index c386186..5650655 100644
+index ccc9a22..9e64d70 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -929,9 +929,6 @@ static int try_to_run_init_process(const char *init_filename)
+@@ -928,9 +928,6 @@ static int try_to_run_init_process(const char *init_filename)
  }
  
  static noinline void __init kernel_init_freeable(void);
@@ -290,7 +290,7 @@ index c386186..5650655 100644
  
  static int __ref kernel_init(void *unused)
  {
-@@ -947,14 +944,6 @@ static int __ref kernel_init(void *unused)
+@@ -946,14 +943,6 @@ static int __ref kernel_init(void *unused)
  
  	flush_delayed_fput();
  
@@ -306,7 +306,7 @@ index c386186..5650655 100644
  		ret = run_init_process(ramdisk_execute_command);
  		if (!ret)
 diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
-index c0a2051..284a7ba 100644
+index caf4041..86d8a78 100644
 --- a/kernel/sched/clock.c
 +++ b/kernel/sched/clock.c
 @@ -385,8 +385,10 @@ u64 cpu_clock(int cpu)
@@ -324,10 +324,10 @@ index c0a2051..284a7ba 100644
 1.9.1
 
 
-From 3bd5760c3b1f6cb39568361561d7d1e5440f1109 Mon Sep 17 00:00:00 2001
+From 543bcc0aa46846859c92be5effde0d900a456c2a Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 12 Oct 2015 22:43:38 +0000
-Subject: [PATCH 04/12] Move read_boot_clock64 into pv_time_ops.
+Subject: [PATCH 04/13] Move read_boot_clock64 into pv_time_ops.
 
 ---
  arch/x86/Kconfig                      | 14 ++++++--
@@ -341,10 +341,10 @@ Subject: [PATCH 04/12] Move read_boot_clock64 into pv_time_ops.
  8 files changed, 83 insertions(+), 38 deletions(-)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index ca0be27..d3ef8ef 100644
+index 8182ad6..4c3d10a 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -709,13 +709,23 @@ config KVM_DEBUG_FS
+@@ -711,13 +711,23 @@ config KVM_DEBUG_FS
  	  may incur significant overhead.
  
  config VMWARE
@@ -371,10 +371,10 @@ index ca0be27..d3ef8ef 100644
  source "arch/x86/lguest/Kconfig"
  
 diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
-index d143bfa..ffcbd18 100644
+index c759b3c..5ee3378 100644
 --- a/arch/x86/include/asm/paravirt.h
 +++ b/arch/x86/include/asm/paravirt.h
-@@ -201,6 +201,11 @@ static inline u64 paravirt_steal_clock(int cpu)
+@@ -198,6 +198,11 @@ static inline u64 paravirt_steal_clock(int cpu)
  	return PVOP_CALL1(u64, pv_time_ops.steal_clock, cpu);
  }
  
@@ -387,7 +387,7 @@ index d143bfa..ffcbd18 100644
  {
  	return PVOP_CALL1(u64, pv_cpu_ops.read_pmc, counter);
 diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
-index a6b8f9f..7adcd55 100644
+index 3d44191..2e76e4a 100644
 --- a/arch/x86/include/asm/paravirt_types.h
 +++ b/arch/x86/include/asm/paravirt_types.h
 @@ -51,6 +51,10 @@ struct mm_struct;
@@ -401,10 +401,10 @@ index a6b8f9f..7adcd55 100644
  
  /*
   * Wrapper type for pointers to code which uses the non-standard
-@@ -98,6 +102,7 @@ struct pv_time_ops {
+@@ -102,6 +106,7 @@ struct pv_lazy_ops {
+ struct pv_time_ops {
  	unsigned long long (*sched_clock)(void);
  	unsigned long long (*steal_clock)(int cpu);
- 	unsigned long (*get_tsc_khz)(void);
 +	void (*read_boot_clock64)(struct timespec64 *ts);
  };
  
@@ -543,7 +543,7 @@ index 004825e..1bf1fe3 100644
 -	}
 -}
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index eccf2d7..1dfd805 100644
+index 0f54608..1bc0140 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
 @@ -65,7 +65,7 @@ startup_64:
@@ -555,7 +555,7 @@ index eccf2d7..1dfd805 100644
  	/*
  	 * Read a TSC value first
  	 */
-@@ -522,12 +522,6 @@ early_gdt_descr:
+@@ -530,12 +530,6 @@ early_gdt_descr:
  early_gdt_descr_base:
  	.quad	INIT_PER_CPU_VAR(gdt_page)
  
@@ -569,10 +569,10 @@ index eccf2d7..1dfd805 100644
  	/* This must match the first entry in level2_kernel_pgt */
  	.quad   0x0000000000000000
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index 58bcfb6..abf40ec 100644
+index c2130ae..0bb48cb 100644
 --- a/arch/x86/kernel/paravirt.c
 +++ b/arch/x86/kernel/paravirt.c
-@@ -210,6 +210,12 @@ static u64 native_steal_clock(int cpu)
+@@ -218,6 +218,12 @@ static u64 native_steal_clock(int cpu)
  	return 0;
  }
  
@@ -585,7 +585,7 @@ index 58bcfb6..abf40ec 100644
  /* These are in entry.S */
  extern void native_iret(void);
  extern void native_irq_enable_sysexit(void);
-@@ -320,6 +326,7 @@ struct pv_init_ops pv_init_ops = {
+@@ -328,6 +334,7 @@ struct pv_init_ops pv_init_ops = {
  struct pv_time_ops pv_time_ops = {
  	.sched_clock = native_sched_clock,
  	.steal_clock = native_steal_clock,
@@ -594,10 +594,10 @@ index 58bcfb6..abf40ec 100644
  
  __visible struct pv_irq_ops pv_irq_ops = {
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 80f874b..0d7022e 100644
+index d2bbe34..0003203 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -1289,3 +1289,12 @@ static int __init register_kernel_offset_dumper(void)
+@@ -1280,3 +1280,12 @@ static int __init register_kernel_offset_dumper(void)
  	return 0;
  }
  __initcall(register_kernel_offset_dumper);
@@ -611,7 +611,7 @@ index 80f874b..0d7022e 100644
 +}
 +#endif
 diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
-index 284a7ba..615aeb4 100644
+index 86d8a78..377ab5a 100644
 --- a/kernel/sched/clock.c
 +++ b/kernel/sched/clock.c
 @@ -385,7 +385,12 @@ u64 cpu_clock(int cpu)
@@ -632,10 +632,10 @@ index 284a7ba..615aeb4 100644
 1.9.1
 
 
-From aa93eaec3f709633007ab6ce3ddbb8aaa455b557 Mon Sep 17 00:00:00 2001
+From f832fc949c5e97799fc977a317025a721d87bb68 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 5 Nov 2015 21:02:52 +0000
-Subject: [PATCH 05/12] Fix clocksource_vmware issue in VM version <= 10
+Subject: [PATCH 05/13] Fix clocksource_vmware issue in VM version <= 10
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++++++++++++++++++++++++++++++++++++++---
@@ -730,10 +730,10 @@ index 1bf1fe3..0b89bb9 100644
 1.9.1
 
 
-From 245c6ff168fabde177b5b6023356b6005b0efbef Mon Sep 17 00:00:00 2001
+From 15e6d2cc5239e58ab805f882650ad7de9b163228 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 10 Nov 2015 11:46:57 +0000
-Subject: [PATCH 06/12] Get lapic timer frequency from HV, skip calibration
+Subject: [PATCH 06/13] Get lapic timer frequency from HV, skip calibration
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++---------------------------------------
@@ -820,10 +820,10 @@ index 0b89bb9..b16618b 100644
 1.9.1
 
 
-From 23055114ca27a04044ebbe38853834e0aa869da0 Mon Sep 17 00:00:00 2001
+From 10ebf94df7ed241429a04b2cc3c2d590dd97d7dd Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 15 Dec 2015 21:31:18 +0000
-Subject: [PATCH 07/12] Skip rdrand reseed
+Subject: [PATCH 07/13] Skip rdrand reseed
 
 ---
  arch/x86/kernel/cpu/common.c | 2 ++
@@ -831,10 +831,10 @@ Subject: [PATCH 07/12] Skip rdrand reseed
  2 files changed, 4 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index cb9e5df..5327c74 100644
+index c2b7522..45a37da 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -943,7 +943,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+@@ -944,7 +944,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
  #endif
  
  	init_hypervisor(c);
@@ -865,10 +865,10 @@ index 136ac74..0685891 100644
 1.9.1
 
 
-From bd806a16d202bf9dc41fbe3f8e39545e704adf9e Mon Sep 17 00:00:00 2001
+From 237e42455bd98cf6e0e0725d35bba1b6d0d04822 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 3 Dec 2015 00:46:46 +0000
-Subject: [PATCH 08/12] STA implementation. first version.
+Subject: [PATCH 08/13] STA implementation. first version.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 163 +++++++++++++++++++++++++++++++++++++++++++
@@ -1090,10 +1090,10 @@ index b16618b..cf1fb64 100644
 1.9.1
 
 
-From 8496145f4f5fcd430e5d8f493066a8e54aaaf96b Mon Sep 17 00:00:00 2001
+From 21249118757b7232948c8401ba5d0b039cd0fa35 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 13 Jan 2016 22:54:04 +0000
-Subject: [PATCH 09/12] STA. updated version
+Subject: [PATCH 09/13] STA. updated version
 
 ---
  arch/x86/kernel/cpu/vmware.c | 34 ++++++++++++++++++++++++----------
@@ -1179,10 +1179,10 @@ index cf1fb64..196703c 100644
 1.9.1
 
 
-From a8f165433de453994aef84a9d6bf1704a18b3a95 Mon Sep 17 00:00:00 2001
+From 7061430a3c8906e67978da76a73967b0b26aece7 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 15 Mar 2016 22:29:23 +0000
-Subject: [PATCH 10/12] STA: version with a single backdoor command.
+Subject: [PATCH 10/13] STA: version with a single backdoor command.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 35 +++++++++++++++--------------------
@@ -1270,20 +1270,20 @@ index 196703c..743b8ad 100644
 1.9.1
 
 
-From 27b9b08cf68f55fbfa297eb047f7d1309e0a60cf Mon Sep 17 00:00:00 2001
+From ee3ab56a4bdca7e514b4d07b6a70f724cde7f0f5 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 25 Mar 2016 01:14:17 +0000
-Subject: [PATCH 11/12] Remove delays for smpboot
+Subject: [PATCH 11/13] Remove delays for smpboot
 
 ---
- arch/x86/kernel/smpboot.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/kernel/smpboot.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index b1f3ed9..8f0be52 100644
+index fbabe4f..5a18dd6 100644
 --- a/arch/x86/kernel/smpboot.c
 +++ b/arch/x86/kernel/smpboot.c
-@@ -560,7 +560,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
+@@ -557,7 +557,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
  	/*
  	 * Give the other CPU some time to accept the IPI.
  	 */
@@ -1292,32 +1292,14 @@ index b1f3ed9..8f0be52 100644
  	if (APIC_INTEGRATED(apic_version[boot_cpu_physical_apicid])) {
  		maxlvt = lapic_get_maxlvt();
  		if (maxlvt > 3)			/* Due to the Pentium erratum 3AP.  */
-@@ -665,7 +665,7 @@ wakeup_secondary_cpu_via_init(int phys_apicid, unsigned long start_eip)
- 		/*
- 		 * Give the other CPU some time to accept the IPI.
- 		 */
--		udelay(300);
-+//		udelay(300);
- 
- 		pr_debug("Startup point 1\n");
- 
-@@ -675,7 +675,7 @@ wakeup_secondary_cpu_via_init(int phys_apicid, unsigned long start_eip)
- 		/*
- 		 * Give the other CPU some time to accept the IPI.
- 		 */
--		udelay(200);
-+//		udelay(200);
- 
- 		if (maxlvt > 3)		/* Due to the Pentium erratum 3AP.  */
- 			apic_write(APIC_ESR, 0);
 -- 
 1.9.1
 
 
-From 3fe2ad9c5031e059849ba0970ccee95ce07f8239 Mon Sep 17 00:00:00 2001
+From c6ade3b8c3db962d24e07ff9a483d26e46a41bb0 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Mar 2016 21:14:46 +0000
-Subject: [PATCH 12/12] kmsg_dumper to vmware.log
+Subject: [PATCH 12/13] kmsg_dumper to vmware.log
 
 ---
  arch/x86/kernel/cpu/vmware.c | 143 +++++++++++++++++++++++++++++++++++++++++--
@@ -1503,6 +1485,59 @@ index 743b8ad..e9f7d52 100644
 +			break;
 +	}
 +}
+-- 
+1.9.1
+
+
+From 9edf1bf3a56c8c8048d2958d13283df5a283acd1 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 9 May 2016 04:14:03 -0700
+Subject: [PATCH 13/13] __native_read_tsc() -> rdtsc()
+
+---
+ arch/x86/kernel/cpu/vmware.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index e9f7d52..57cef56 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -130,7 +130,7 @@ uint64_t __initdata vtsc_khz;
+ 
+ static cycle_t vmware_clock_get_cycles(struct clocksource *cs)
+ {
+-	return __native_read_tsc();
++	return rdtsc();
+ }
+ 
+ static struct clocksource clocksource_vmware = {
+@@ -154,7 +154,7 @@ static u64 vmware_sched_clock(void)
+ {
+ 	u64 ret;
+ 
+-	ret = __native_read_tsc() - vmware_cyc2ns.cyc2ns_offset;
++	ret = rdtsc() - vmware_cyc2ns.cyc2ns_offset;
+ 	ret = mul_u64_u32_shr(ret, vmware_cyc2ns.cyc2ns_mul, CYC2NS_SCALE_FACTOR);
+ 	return ret;
+ }
+@@ -169,7 +169,7 @@ static void vmware_read_boot_clock64(struct timespec64 *ts)
+ 	u32 rem;
+ 
+ 	read_persistent_clock64(&now);
+-	delta = __native_read_tsc() - vmware_cyc2ns.cyc2ns_offset;
++	delta = rdtsc() - vmware_cyc2ns.cyc2ns_offset;
+ 	delta_nsec = mul_u64_u32_shr(delta, vmware_cyc2ns.cyc2ns_mul,
+ 					CYC2NS_SCALE_FACTOR);
+ 	ts->tv_sec = now.tv_sec - div_s64_rem(delta_nsec, NSEC_PER_SEC, &rem);
+@@ -369,7 +369,7 @@ static void __init vmware_platform_setup(void)
+ static uint32_t __init vmware_platform(void)
+ {
+ #ifndef CONFIG_VMWARE_ONLY
+-	tsc_at_head = __native_read_tsc();
++	tsc_at_head = rdtsc();
+ #endif
+ 	if (cpu_has_hypervisor) {
+ 		unsigned int eax;
 -- 
 1.9.1
 
