@@ -1,4 +1,4 @@
-From 017e5bbfc985494ee7116e4c92005c53b1ce68ab Mon Sep 17 00:00:00 2001
+From a2d9f1f747247f31f769930a8198b12a0667d21f Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Sep 2015 15:55:49 -0700
 Subject: [PATCH] pci/probe.c: Hardcodded pci probe.
@@ -8,10 +8,10 @@ Subject: [PATCH] pci/probe.c: Hardcodded pci probe.
  1 file changed, 310 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index f6ae0d0..6ecda24 100644
+index edb1984..522bdaa 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -159,6 +159,281 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -162,6 +162,281 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
@@ -293,7 +293,7 @@ index f6ae0d0..6ecda24 100644
  /**
   * pci_read_base - read a PCI BAR
   * @dev: the PCI device
-@@ -178,6 +453,13 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -181,6 +456,13 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  
  	mask = type ? PCI_ROM_ADDRESS_MASK : ~0;
  
@@ -307,7 +307,7 @@ index f6ae0d0..6ecda24 100644
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -187,7 +469,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -190,7 +472,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		}
  	}
  
@@ -315,7 +315,7 @@ index f6ae0d0..6ecda24 100644
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -1108,6 +1389,28 @@ int pci_cfg_space_size(struct pci_dev *dev)
+@@ -1145,6 +1426,28 @@ int pci_cfg_space_size(struct pci_dev *dev)
  
  #define LEGACY_IO_RESOURCE	(IORESOURCE_IO | IORESOURCE_PCI_FIXED)
  
@@ -344,7 +344,7 @@ index f6ae0d0..6ecda24 100644
  void pci_msi_setup_pci_dev(struct pci_dev *dev)
  {
  	/*
-@@ -1142,6 +1445,7 @@ int pci_setup_device(struct pci_dev *dev)
+@@ -1178,6 +1481,7 @@ int pci_setup_device(struct pci_dev *dev)
  	int pos = 0;
  	struct pci_bus_region region;
  	struct resource *res;
@@ -352,7 +352,7 @@ index f6ae0d0..6ecda24 100644
  
  	if (pci_read_config_byte(dev, PCI_HEADER_TYPE, &hdr_type))
  		return -EIO;
-@@ -1191,7 +1495,11 @@ int pci_setup_device(struct pci_dev *dev)
+@@ -1224,7 +1528,11 @@ int pci_setup_device(struct pci_dev *dev)
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);
