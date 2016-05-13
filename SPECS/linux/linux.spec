@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.2.0
-Release:    	25%{?dist}
+Release:    	26%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -178,6 +178,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Apr 28 2016 Nick Shi <nshi@vmware.com> 4.2.0-26
+-   Compile cramfs.ko to allow mounting cramfs image
 *   Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-25
 -   Revert network interface renaming disable in kernel.
 *   Tue Mar 29 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-24
