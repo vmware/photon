@@ -1,53 +1,37 @@
-From f08c191ec706f9f381e992709262650dba07f0f3 Mon Sep 17 00:00:00 2001
+From 7f6aac4ffc7feb6ed143d936f0457edcfc078aa0 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Sep 2015 15:58:41 -0700
 Subject: [PATCH] clean linux patch set.
 
 ---
- arch/x86/kernel/cpu/perf_event_intel.c    |  2 +-
- arch/x86/kernel/cpu/perf_event_intel_pt.c |  4 ++++
- arch/x86/kernel/tsc.c                     |  3 +++
- drivers/tty/sysrq.c                       |  4 +++-
- drivers/video/console/fbcon.c             |  2 +-
- include/linux/blkdev.h                    |  2 +-
- init/do_mounts.c                          |  4 +++-
- kernel/fork.c                             | 39 ++++++++++++++++++-------------
- mm/vmstat.c                               |  2 +-
- 9 files changed, 40 insertions(+), 22 deletions(-)
+ arch/x86/kernel/cpu/perf_event_intel.c |  2 +-
+ arch/x86/kernel/tsc.c                  |  3 +++
+ drivers/tty/sysrq.c                    |  4 +++-
+ drivers/video/console/fbcon.c          |  2 +-
+ include/linux/blkdev.h                 |  2 +-
+ init/do_mounts.c                       |  4 +++-
+ kernel/fork.c                          | 39 ++++++++++++++++++++--------------
+ mm/vmstat.c                            |  2 +-
+ 8 files changed, 36 insertions(+), 22 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/perf_event_intel.c b/arch/x86/kernel/cpu/perf_event_intel.c
-index 6326ae2..136a14b 100644
+index e2a4300..1abd753 100644
 --- a/arch/x86/kernel/cpu/perf_event_intel.c
 +++ b/arch/x86/kernel/cpu/perf_event_intel.c
-@@ -3338,7 +3338,7 @@ __init int intel_pmu_init(void)
+@@ -3604,7 +3604,7 @@ __init int intel_pmu_init(void)
  	 */
  	if (x86_pmu.extra_regs) {
  		for (er = x86_pmu.extra_regs; er->msr; er++) {
--			er->extra_msr_access = check_msr(er->msr, 0x1ffUL);
+-			er->extra_msr_access = check_msr(er->msr, 0x11UL);
 +			er->extra_msr_access = false;
  			/* Disable LBR select mapping */
  			if ((er->idx == EXTRA_REG_LBR) && !er->extra_msr_access)
  				x86_pmu.lbr_sel_map = NULL;
-diff --git a/arch/x86/kernel/cpu/perf_event_intel_pt.c b/arch/x86/kernel/cpu/perf_event_intel_pt.c
-index 183de71..f205baf 100644
---- a/arch/x86/kernel/cpu/perf_event_intel_pt.c
-+++ b/arch/x86/kernel/cpu/perf_event_intel_pt.c
-@@ -1060,6 +1060,10 @@ static __init int pt_init(void)
- {
- 	int ret, cpu, prior_warn = 0;
- 
-+
-+	if (!test_cpu_cap(&boot_cpu_data, X86_FEATURE_INTEL_PT))
-+		return -ENODEV;
-+
- 	BUILD_BUG_ON(sizeof(struct topa) > PAGE_SIZE);
- 	get_online_cpus();
- 	for_each_online_cpu(cpu) {
 diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index 7437b41..c6f2c49 100644
+index c7c4d9c..8913f79 100644
 --- a/arch/x86/kernel/tsc.c
 +++ b/arch/x86/kernel/tsc.c
-@@ -1241,6 +1241,9 @@ unsigned long calibrate_delay_is_known(void)
+@@ -1253,6 +1253,9 @@ unsigned long calibrate_delay_is_known(void)
  	if (!tsc_disabled && !cpu_has(&cpu_data(cpu), X86_FEATURE_CONSTANT_TSC))
  		return 0;
  
@@ -58,10 +42,10 @@ index 7437b41..c6f2c49 100644
  		if (cpu_data(i).phys_proc_id == cpu_data(cpu).phys_proc_id)
  			return cpu_data(i).loops_per_jiffy;
 diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index b5b4278..ec1bb75 100644
+index 5381a72..6aa6e81 100644
 --- a/drivers/tty/sysrq.c
 +++ b/drivers/tty/sysrq.c
-@@ -1047,8 +1047,10 @@ static int __sysrq_swap_key_ops(int key, struct sysrq_key_op *insert_op_p,
+@@ -1058,8 +1058,10 @@ static int __sysrq_swap_key_ops(int key, struct sysrq_key_op *insert_op_p,
  	 * A concurrent __handle_sysrq either got the old op or the new op.
  	 * Wait for it to go away before returning, so the code for an old
  	 * op is not freed (eg. on module unload) while it is in use.
@@ -74,7 +58,7 @@ index b5b4278..ec1bb75 100644
  	return retval;
  }
 diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
-index 1aaf893..ac6c143 100644
+index 92f3949..4ff61d7 100644
 --- a/drivers/video/console/fbcon.c
 +++ b/drivers/video/console/fbcon.c
 @@ -146,7 +146,7 @@ static const struct consw fb_con;
@@ -87,11 +71,11 @@ index 1aaf893..ac6c143 100644
  #define divides(a, b)	((!(a) || (b)%(a)) ? 0 : 1)
  
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index d4068c1..1dfe7ef 100644
+index c70e358..72f56a8 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
-@@ -37,7 +37,7 @@ struct blkcg_gq;
- struct blk_flush_queue;
+@@ -38,7 +38,7 @@ struct blk_flush_queue;
+ struct pr_ops;
  
  #define BLKDEV_MIN_RQ	4
 -#define BLKDEV_MAX_RQ	128	/* Default maximum */
@@ -122,7 +106,7 @@ index dea5de9..da84094 100644
  	md_run_setup();
  
 diff --git a/kernel/fork.c b/kernel/fork.c
-index dbd9b8d..a84f4b5 100644
+index 1155eac..3a790cf 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -74,6 +74,7 @@
@@ -133,7 +117,7 @@ index dbd9b8d..a84f4b5 100644
  #include <linux/sysctl.h>
  
  #include <asm/pgtable.h>
-@@ -685,6 +686,26 @@ void __mmdrop(struct mm_struct *mm)
+@@ -689,6 +690,26 @@ void __mmdrop(struct mm_struct *mm)
  }
  EXPORT_SYMBOL_GPL(__mmdrop);
  
@@ -160,7 +144,7 @@ index dbd9b8d..a84f4b5 100644
  /*
   * Decrement the use count and release all resources for an mm.
   */
-@@ -692,22 +713,8 @@ void mmput(struct mm_struct *mm)
+@@ -696,22 +717,8 @@ void mmput(struct mm_struct *mm)
  {
  	might_sleep();
  
@@ -186,12 +170,12 @@ index dbd9b8d..a84f4b5 100644
  EXPORT_SYMBOL_GPL(mmput);
  
 diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 4f5cd97..c176f8b 100644
+index c54fd29..f0baa1a 100644
 --- a/mm/vmstat.c
 +++ b/mm/vmstat.c
-@@ -1358,7 +1358,7 @@ static const struct file_operations proc_vmstat_file_operations = {
- 
+@@ -1381,7 +1381,7 @@ static const struct file_operations proc_vmstat_file_operations = {
  #ifdef CONFIG_SMP
+ static struct workqueue_struct *vmstat_wq;
  static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
 -int sysctl_stat_interval __read_mostly = HZ;
 +int sysctl_stat_interval __read_mostly = 8 * HZ;
