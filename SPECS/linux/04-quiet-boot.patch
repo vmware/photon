@@ -1,4 +1,4 @@
-From 11a83da2120bf724d143df59c3ebce5fdec19a67 Mon Sep 17 00:00:00 2001
+From 721dc6e6bc3473ecdc96dede6d02d0520bb78d2b Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Sep 2015 16:02:20 -0700
 Subject: [PATCH] scsi/sd.c: Lower log level for "Assuming drive cache..."
@@ -9,10 +9,10 @@ Subject: [PATCH] scsi/sd.c: Lower log level for "Assuming drive cache..."
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index a20da8c..bbdc773 100644
+index 4e08d1c..2fe5106 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
-@@ -2483,7 +2483,7 @@ defaults:
+@@ -2590,7 +2590,7 @@ defaults:
  				"Assuming drive cache: write back\n");
  		sdkp->WCE = 1;
  	} else {
