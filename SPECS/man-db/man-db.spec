@@ -1,7 +1,7 @@
 Summary:	Programs for finding and viewing man pages
 Name:		man-db
 Version:	2.7.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.nongnu.org/man-db
 Group:		Applications/System
@@ -41,30 +41,17 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %pre
-if [$1 -eq 1]; then
-    # This is first installation
-    if ! getent group man >/dev/null; then
-        groupadd -r man
-    fi
-    if ! getent passwd apache >/dev/null; then
-        useradd -c "man" -d /var/cache/man -g man \
-            -s /bin/false -M -r man
-    fi
-fi
+
+getent group man >/dev/null || groupadd -r man
+getent passwd man >/dev/null || useradd -c "man" -d /var/cache/man -g man \
+        -s /bin/false -M -r man
 
 %post -p /sbin/ldconfig
 
 %postun
 /sbin/ldconfig
-if [$1 -eq 0];then
-    # This is delete operation
-    if getent passwd man >/dev/null; then
-        userdel man
-    fi
-    if getent group man >/dev/null; then
-        groupdel man
-    fi
-fi
+getent passwd man >/dev/null && userdel man
+getent group man >/dev/null && groupdel man
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -77,6 +64,8 @@ fi
 %{_mandir}/*/*
 %{_libdir}/tmpfiles.d/man-db.conf
 %changelog
+*   Mon May 16 2016 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-3
+-   Fix user man:man adding.
 *       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.7.5-2
 -       Adding support for upgrade in pre/post/un scripts.
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 2.7.5-1
