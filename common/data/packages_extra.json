@@ -120,6 +120,11 @@
         "traceroute",
         "bindutils",
         "libusb",
-        "usbutils"
+        "usbutils",
+        "dosfstools",
+        "efibootmgr",
+        "efivar",
+        "grub2-efi",
+        "pciutils"
             ]
 }
