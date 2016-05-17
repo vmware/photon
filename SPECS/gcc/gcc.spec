@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	5.3.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -10,9 +10,10 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
 %define sha1 gcc=0612270b103941da08376df4d0ef4e5662a2e9eb
-Requires:	libstdc++-devel
-Requires:	libgcc-devel
-Requires:	libgomp-devel
+Requires:	libstdc++-devel = %{version}-%{release}
+Requires:	libgcc-devel = %{version}-%{release}
+Requires:	libgomp-devel = %{version}-%{release}
+Requires:	libgcc-atomic = %{version}-%{release}
 Requires:	gmp
 %description
 The GCC package contains the GNU compiler collection,
@@ -209,6 +210,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Tue May 17 2016 Anish Swaminathan <anishs@vmware.com> 5.3.0-2
+-   Change package dependencies
 *   Mon Mar 28 2016 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-1
 -   Update version to 5.3
 *   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 4.8.2-6
