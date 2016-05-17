@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          18%{?dist}
+Release:          19%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -25,6 +25,7 @@ Patch9:           systemd-228-swap-disconnect-order-fix.patch
 Patch10:          systemd-228-duid-iaid-dhcp-preserve.patch
 Patch11:          systemd-228-timedatectl-PR2749.patch
 Patch12:          systemd-228-query-duid.patch
+Patch13:          systemd-228-pam-systemd-user.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -70,6 +71,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -138,8 +140,10 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
-*	 Mon May 12 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 228-18
--	 Updated the MaxTasks to infinity in system.conf file
+*    Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 228-19
+-    Updated systemd-user PAM configuration
+*    Mon May 12 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 228-18
+-    Updated the MaxTasks to infinity in system.conf file
 *    Thu Apr 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com>  228-17
 -    Set the default.target to the multi-user.target
 *    Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-16
