@@ -4,7 +4,7 @@
 Summary:	Kubernetes cluster management
 Name:		kubernetes
 Version:	1.1.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/GoogleCloudPlatform/kubernetes
 Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v%{version}/%{name}-v%{version}.tar.gz
@@ -65,7 +65,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 rm -rf %{buildroot}/*
 
 %pre
-if [$1 -eq 1]; then
+if [ $1 -eq 1 ]; then
     # Initial installation.
     getent group kube >/dev/null || groupadd -r kube
     getent passwd kube >/dev/null || useradd -r -g kube -d / -s /sbin/nologin \
@@ -73,7 +73,7 @@ if [$1 -eq 1]; then
 fi
 
 %postun
-if [$1 -eq 0]; then
+if [ $1 -eq 0 ]; then
     # Package deletion
     userdel kube
     groupdel kube 
@@ -99,6 +99,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*       Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-3
+-       Fix if syntax
 *       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.8-2
 -       Adding support to pre/post/un scripts for package upgrade.
 *       Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
