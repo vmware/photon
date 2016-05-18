@@ -1,7 +1,7 @@
 Summary:	Fast distributed version control system
 Name:		git
 Version:	2.8.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		http://git-scm.com/
 Group:		System Environment/Programming
@@ -59,7 +59,7 @@ make DESTDIR=%{buildroot} install
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post
-if [$1 -eq 1];then
+if [ $1 -eq 1 ];then
     # This is first installation.
     git config --system http.sslCAPath /etc/ssl/certs
     exit 0
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*       Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
+-       Fix if syntax
 *       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2
 -       Handling the upgrade scenario.
 *   	Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 2.8.1-1
