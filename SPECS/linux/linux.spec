@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -170,6 +170,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+* 	Wed May 18 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-2
+-	Enabled CONFIG_UPROBES in config as needed by ktap
 *   Wed May 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
 -   Update to linux-4.4.8
 -   Added net-Drivers-Vmxnet3-set-... patch
