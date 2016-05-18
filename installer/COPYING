@@ -134,6 +134,7 @@ SECTION 4: Apache License, V2.0
    >>> httpd-2.4.18
    >>> kubernetes-1.1.8
    >>> mesos-0.24.0
+   >>> netmgmt-1.0.0
    >>> openvswitch-2.4.0
    >>> pcstat-1
    >>> python-cryptography-1.2.3
