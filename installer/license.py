@@ -32,7 +32,7 @@ class License(object):
 
         title = 'VMWARE 1.0 LICENSE AGREEMENT'
         self.window.addstr(0, (self.win_width - len(title)) / 2, title)
-        self.text_pane = TextPane(self.text_starty, self.maxx, self.text_width, "COPYING", self.text_height, accept_decline_items)
+        self.text_pane = TextPane(self.text_starty, self.maxx, self.text_width, "EULA.txt", self.text_height, accept_decline_items)
 
         self.window.set_action_panel(self.text_pane)
 
