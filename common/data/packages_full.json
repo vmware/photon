@@ -260,6 +260,7 @@
         "c-ares",
         "c-ares-devel",
         "dnsmasq",
-        "ddclient"
+        "ddclient",
+        "netmgmt"
     ]
 }
