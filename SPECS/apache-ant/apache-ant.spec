@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.9.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -36,7 +36,7 @@ cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
 
 mkdir -p -m 700 $ANT_DIST_DIR
 
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.92-bin
 
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
@@ -66,6 +66,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_prefix}/maven-ant-tasks/*
 
 %changelog
+*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.9.6-2
+-   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
 -   Updated to version 1.9.6
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.9.4-4
