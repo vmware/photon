@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       2.9
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -47,6 +47,7 @@ Requires:      linux-dev
 Requires:      make
 Requires:	   elfutils 
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -96,6 +97,8 @@ SystemTap server is the server component of an instrumentation system for system
 
 %prep
 %setup -q
+sed -i "s#"kernel"#"linux"#g" stap-prep
+sed -i "s#"devel"#"dev"#g" stap-prep
 
 %build
 %configure \
@@ -326,6 +329,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*       Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar> 2.9-3
+-       Fix stap-prep script
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
 -   	Fix for upgrade issues
 * 	Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar> 2.9-1 
