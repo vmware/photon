@@ -123,6 +123,7 @@
         "efibootmgr",
         "efivar",
         "grub2-efi",
-        "pciutils"
+        "pciutils",
+        "nginx"
             ]
 }
