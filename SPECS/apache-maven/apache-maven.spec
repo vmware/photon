@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.9
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -28,7 +28,7 @@ find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 %build
 MAVEN_DIST_DIR=/var/opt/apache-maven-3.3.9
 
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.92-bin
 export ANT_HOME=/var/opt/apache-ant-1.9.6
 export PATH=$PATH:$ANT_HOME/bin
 
@@ -62,7 +62,9 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
-* 	Tue Mar 01 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.3-2
+*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.9-3
+-   Updated JAVA_HOME path to point to latest JDK.
+* 	Tue Mar 01 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-2
 -	Updated the apache-ant version to 1.9.6 
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 3.3.9-2
 -   Updated JAVA_HOME path to point to latest JDK.
