@@ -47,6 +47,7 @@ Requires:      linux-dev
 Requires:      make
 Requires:	   elfutils 
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -96,6 +97,8 @@ SystemTap server is the server component of an instrumentation system for system
 
 %prep
 %setup -q
+sed -i "s#"kernel"#"linux"#g" stap-prep
+sed -i "s#"devel"#"dev"#g" stap-prep
 
 %build
 %configure \
