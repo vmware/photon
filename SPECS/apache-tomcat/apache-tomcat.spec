@@ -1,6 +1,6 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
-Version:	8.0.33
+Version:	8.0.35
 Release:	1%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
@@ -8,8 +8,8 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
-Source0:	http://mirrors.gigenet.com/apache/tomcat/tomcat-8/v8.0.33/bin/%{name}-%{version}.tar.gz
-%define sha1 apache-tomcat=c44e6b6a58b514818e9c944d8f04ca5cc58d0777
+Source0:	http://mirrors.gigenet.com/apache/tomcat/tomcat-8/v8.0.35/bin/%{name}-%{version}.tar.gz	
+%define sha1 apache-tomcat=568d9be6a80304035b367fcfd932e0dbe9f2fd54
 Requires: openjre >= 1.8.0.45
 
 %define _prefix /var/opt/%{name}-%{version}
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*   	Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 8.0.35-1
+-	Upgraded to version 8.0.35
 *   	Tue May 03 2016 Anish Swaminathan <anishs@vmware.com> 8.0.33-1
 -   	Upgraded to version 8.0.33
 *   	Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.68-1
