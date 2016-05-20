@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -31,7 +31,7 @@ Sources for JNA
 %setup -q
 %build
 ANT_HOME=/var/opt/apache-ant-1.9.6
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.72-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.92-bin
 
 #disabling all tests
 $ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
@@ -65,6 +65,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+*   Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 4.2.1-3
+-   Updated JAVA_HOME path to point to latest JDK.
 * 	Thu Mar 03 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-2
     Updated the apache-ant version to 1.9.6
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
