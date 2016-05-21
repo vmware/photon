@@ -124,6 +124,7 @@
         "efivar",
         "grub2-efi",
         "pciutils",
-        "nginx"
+        "nginx",
+        "kaigen-gothic-cjk"
             ]
 }
