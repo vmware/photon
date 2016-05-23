@@ -1,0 +1,285 @@
+commit f5eee5c72b2ab56f3faf4f46729fe82805efde68
+Author: Joseph Myers <joseph@codesourcery.com>
+Date:   Mon Nov 23 08:50:53 2015 +0000
+
+    Fix strtol in Turkish locales (bug 19242).
+    
+    The implementations of strtol and related functions use
+    locale-specific conversions to upper case before determining whether a
+    character is a valid letter in the argument.  This means that in
+    Turkish locales such as tr_TR.UTF-8 and tr_TR.ISO-8859-9, "i" is
+    interpreted as not being a valid number, when if the base passed to
+    strtol is 19 or more it should be interpreted as the number 18.
+    
+    ISO C explicitly says "The letters from a (or A) through z (or Z) are
+    ascribed the values 10 through 35", so clearly intends the standard
+    ASCII letters (otherwise you wouldn't generally have exactly 26
+    letters to ascribe such values) (whereas white-space must be
+    identified according to the locale).  In particular, 'i' and 'I' must
+    be understood to be in that sequence.
+    
+    This patch makes the code do the case conversions and classification
+    in the C locale; the user's locale remains used for whitespace testing
+    (explicitly correct according to ISO C).  Note that the way the code
+    worked, the only non-ASCII letter that would previously have been
+    accepted would have been the Turkish 'ı' (dotless 'i'), because the
+    uppercase version of that in Turkish locales is 'I'.  This patch means
+    that will no longer be accepted, which seems appropriate.
+    
+    Tested for x86_64 and x86.
+    
+    	[BZ #19242]
+    	* stdlib/strtol_l.c (ISALPHA): Use _nl_C_locobj_ptr for locale.
+    	(TOUPPER): Likewise.
+    	* stdlib/tst-strtol-locale-main.c: New file.
+    	* stdlib/tst-strtol-locale.c: Likewise.
+    	* stdlib/Makefile (tests): Add tst-strtol-locale.
+    	[$(run-built-tests) = yes] (LOCALES): Add tr_TR.ISO-8859-9.
+    	[$(run-built-tests) = yes] ($(objpfx)tst-strtol-locale.out):
+    	Depend on $(gen-locales).
+    	* wcsmbs/tst-wcstol-locale.c: New file.
+    	* wcsmbs/Makefile (tests): Add tst-wcstol-locale.
+    	[$(run-built-tests) = yes] (LOCALES): Add tr_TR.UTF-8 and
+    	tr_TR.ISO-8859-9.
+    	[$(run-built-tests) = yes] ($(objpfx)tst-wcstol-locale.out):
+    	Depend on $(gen-locales).
+
+Index: b/stdlib/Makefile
+===================================================================
+--- a/stdlib/Makefile
++++ b/stdlib/Makefile
+@@ -74,7 +74,8 @@ tests		:= tst-strtol tst-strtod testmb t
+ 		   tst-makecontext3 bug-getcontext bug-fmtmsg1		    \
+ 		   tst-secure-getenv tst-strtod-overflow tst-strtod-round   \
+ 		   tst-tininess tst-strtod-underflow tst-tls-atexit	    \
+-		   tst-setcontext3 tst-tls-atexit-nodelete
++		   tst-setcontext3 tst-tls-atexit-nodelete		    \
++		   tst-strtol-locale
+ tests-static	:= tst-secure-getenv
+ 
+ modules-names	= tst-tls-atexit-lib
+@@ -122,7 +123,8 @@ endif
+ include ../Rules
+ 
+ ifeq ($(run-built-tests),yes)
+-LOCALES := cs_CZ.UTF-8 de_DE.UTF-8 en_US.ISO-8859-1 tr_TR.UTF-8
++LOCALES := cs_CZ.UTF-8 de_DE.UTF-8 en_US.ISO-8859-1 tr_TR.UTF-8 \
++	   tr_TR.ISO-8859-9
+ include ../gen-locales.mk
+ 
+ $(objpfx)bug-strtod2.out: $(gen-locales)
+@@ -131,6 +133,7 @@ $(objpfx)tst-strtod.out: $(gen-locales)
+ $(objpfx)tst-strtod3.out: $(gen-locales)
+ $(objpfx)tst-strtod4.out: $(gen-locales)
+ $(objpfx)tst-strtod5.out: $(gen-locales)
++$(objpfx)tst-strtol-locale.out: $(gen-locales)
+ endif
+ 
+ # Testdir has to be named stdlib and needs to be writable
+Index: b/stdlib/strtol_l.c
+===================================================================
+--- a/stdlib/strtol_l.c
++++ b/stdlib/strtol_l.c
+@@ -137,8 +137,8 @@
+ # define UCHAR_TYPE wint_t
+ # define STRING_TYPE wchar_t
+ # define ISSPACE(Ch) __iswspace_l ((Ch), loc)
+-# define ISALPHA(Ch) __iswalpha_l ((Ch), loc)
+-# define TOUPPER(Ch) __towupper_l ((Ch), loc)
++# define ISALPHA(Ch) __iswalpha_l ((Ch), _nl_C_locobj_ptr)
++# define TOUPPER(Ch) __towupper_l ((Ch), _nl_C_locobj_ptr)
+ #else
+ # if defined _LIBC \
+    || defined STDC_HEADERS || (!defined isascii && !defined HAVE_ISASCII)
+@@ -150,8 +150,8 @@
+ # define UCHAR_TYPE unsigned char
+ # define STRING_TYPE char
+ # define ISSPACE(Ch) __isspace_l ((Ch), loc)
+-# define ISALPHA(Ch) __isalpha_l ((Ch), loc)
+-# define TOUPPER(Ch) __toupper_l ((Ch), loc)
++# define ISALPHA(Ch) __isalpha_l ((Ch), _nl_C_locobj_ptr)
++# define TOUPPER(Ch) __toupper_l ((Ch), _nl_C_locobj_ptr)
+ #endif
+ 
+ #define INTERNAL(X) INTERNAL1(X)
+Index: b/stdlib/tst-strtol-locale-main.c
+===================================================================
+--- /dev/null
++++ b/stdlib/tst-strtol-locale-main.c
+@@ -0,0 +1,87 @@
++/* Test strtol functions work with all ASCII letters in Turkish
++   locales (bug 19242).
++   Copyright (C) 2015 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#include <locale.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <wchar.h>
++
++#define STR_(X) #X
++#define STR(X) STR_(X)
++#define FNPFXS STR (FNPFX)
++#define CONCAT_(X, Y) X ## Y
++#define CONCAT(X, Y) CONCAT_ (X, Y)
++#define FNX(FN) CONCAT (FNPFX, FN)
++
++#define TEST(LOC, STR, EXP_VAL, FN, TYPE, FMT)				\
++  do									\
++    {									\
++      CHAR *ep;								\
++      TYPE val = FNX (FN) (STR, &ep, 36);				\
++      printf ("%s: " FNPFXS #FN " (" SFMT ") == " FMT "\n", LOC, STR, val); \
++      if (val == (TYPE) (EXP_VAL) && *ep == 0)				\
++	printf ("PASS: %s: " FNPFXS #FN " (" SFMT ")\n", LOC, STR);	\
++      else								\
++	{								\
++	  printf ("FAIL: %s: " FNPFXS #FN " (" SFMT ")\n", LOC, STR);	\
++	  result = 1;							\
++	}								\
++    }									\
++  while (0)
++
++static int
++test_one_locale (const char *loc)
++{
++  if (setlocale (LC_ALL, loc) == NULL)
++    {
++      printf ("setlocale (LC_ALL, \"%s\") failed\n", loc);
++      return 1;
++    }
++  int result = 0;
++  for (int i = 10; i < 36; i++)
++    {
++      CHAR s[2];
++      s[0] = L_('A') + i - 10;
++      s[1] = 0;
++      TEST (loc, s, i, l, long int, "%ld");
++      TEST (loc, s, i, ul, unsigned long int, "%lu");
++      TEST (loc, s, i, ll, long long int, "%lld");
++      TEST (loc, s, i, ull, unsigned long long int, "%llu");
++      s[0] = L_('a') + i - 10;
++      s[1] = 0;
++      TEST (loc, s, i, l, long int, "%ld");
++      TEST (loc, s, i, ul, unsigned long int, "%lu");
++      TEST (loc, s, i, ll, long long int, "%lld");
++      TEST (loc, s, i, ull, unsigned long long int, "%llu");
++    }
++  return result;
++}
++
++static int
++do_test (void)
++{
++  int result = 0;
++  result |= test_one_locale ("C");
++  result |= test_one_locale ("tr_TR.UTF-8");
++  result |= test_one_locale ("tr_TR.ISO-8859-9");
++  return result;
++}
++
++#define TEST_FUNCTION do_test ()
++#include "../test-skeleton.c"
+Index: b/stdlib/tst-strtol-locale.c
+===================================================================
+--- /dev/null
++++ b/stdlib/tst-strtol-locale.c
+@@ -0,0 +1,25 @@
++/* Test strtol functions work with all ASCII letters in Turkish
++   locales (bug 19242).  Narrow string version.
++   Copyright (C) 2015 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#define CHAR char
++#define SFMT "\"%s\""
++#define FNPFX strto
++#define L_(C) C
++
++#include <tst-strtol-locale-main.c>
+Index: b/wcsmbs/Makefile
+===================================================================
+--- a/wcsmbs/Makefile
++++ b/wcsmbs/Makefile
+@@ -45,13 +45,14 @@ routines := wcscat wcschr wcscmp wcscpy
+ strop-tests :=  wcscmp wcsncmp wmemcmp wcslen wcschr wcsrchr wcscpy
+ tests := tst-wcstof wcsmbs-tst1 tst-wcsnlen tst-btowc tst-mbrtowc \
+ 	 tst-wcrtomb tst-wcpncpy tst-mbsrtowcs tst-wchar-h tst-mbrtowc2 \
+-	 tst-c16c32-1 wcsatcliff $(addprefix test-,$(strop-tests))
++	 tst-c16c32-1 wcsatcliff tst-wcstol-locale \
++	 $(addprefix test-,$(strop-tests))
+ 
+ include ../Rules
+ 
+ ifeq ($(run-built-tests),yes)
+ LOCALES := de_DE.ISO-8859-1 de_DE.UTF-8 en_US.ANSI_X3.4-1968 hr_HR.ISO-8859-2 \
+-	   ja_JP.EUC-JP zh_TW.EUC-TW
++	   ja_JP.EUC-JP zh_TW.EUC-TW tr_TR.UTF-8 tr_TR.ISO-8859-9
+ include ../gen-locales.mk
+ 
+ $(objpfx)tst-btowc.out: $(gen-locales)
+@@ -60,6 +61,7 @@ $(objpfx)tst-mbrtowc.out: $(gen-locales)
+ $(objpfx)tst-mbrtowc2.out: $(gen-locales)
+ $(objpfx)tst-wcrtomb.out: $(gen-locales)
+ $(objpfx)wcsmbs-tst1.out: $(gen-locales)
++$(objpfx)tst-wcstol-locale.out: $(gen-locales)
+ endif
+ 
+ CFLAGS-wcwidth.c = -I../wctype
+Index: b/wcsmbs/tst-wcstol-locale.c
+===================================================================
+--- /dev/null
++++ b/wcsmbs/tst-wcstol-locale.c
+@@ -0,0 +1,25 @@
++/* Test strtol functions work with all ASCII letters in Turkish
++   locales (bug 19242).  Wide string version.
++   Copyright (C) 2015 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#define CHAR wchar_t
++#define SFMT "L\"%ls\""
++#define FNPFX wcsto
++#define L_(C) L ## C
++
++#include "../stdlib/tst-strtol-locale-main.c"

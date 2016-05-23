@@ -1,0 +1,259 @@
+commit f881f6ff62bba53448c5d8997287ea2e628b3a65
+Author: Andreas Schwab <schwab@suse.de>
+Date:   Mon Oct 12 12:24:41 2015 +0200
+
+    Add dependencies on needed locales in each subdir tests (bug 18969)
+
+Index: b/debug/Makefile
+===================================================================
+--- a/debug/Makefile
++++ b/debug/Makefile
+@@ -162,6 +162,13 @@ generated += catchsegv xtrace
+ 
+ include ../Rules
+ 
++ifeq ($(run-built-tests),yes)
++LOCALES := de_DE.UTF-8
++include ../gen-locales.mk
++
++$(objpfx)tst-chk1.out: $(gen-locales)
++endif
++
+ sLIBdir := $(shell echo $(slibdir) | sed 's,lib\(\|64\)$$,\\\\$$LIB,')
+ 
+ $(objpfx)catchsegv: catchsegv.sh $(common-objpfx)soversions.mk \
+Index: b/iconvdata/Makefile
+===================================================================
+--- a/iconvdata/Makefile
++++ b/iconvdata/Makefile
+@@ -271,6 +271,14 @@ endif
+ 
+ include ../Rules
+ 
++ifeq ($(run-built-tests),yes)
++LOCALES := de_DE.UTF-8
++include ../gen-locales.mk
++
++$(objpfx)bug-iconv6.out: $(gen-locales)
++$(objpfx)tst-iconv7.out: $(gen-locales)
++endif
++
+ # Set libof-* for each routine.
+ cpp-srcs-left := $(modules) $(generated-modules) $(libJIS-routines) \
+ 		 $(libKSC-routines) $(libGB-routines) $(libCNS-routines) \
+Index: b/intl/Makefile
+===================================================================
+--- a/intl/Makefile
++++ b/intl/Makefile
+@@ -105,6 +105,19 @@ $(objpfx)tst-codeset.out: $(codeset_mo)
+ $(objpfx)tst-gettext3.out: $(codeset_mo)
+ $(objpfx)tst-gettext5.out: $(codeset_mo)
+ endif
++
++LOCALES := de_DE.ISO-8859-1 de_DE.UTF-8 en_US.ANSI_X3.4-1968 fr_FR.ISO-8859-1 \
++	   ja_JP.UTF-8
++include ../gen-locales.mk
++
++$(objpfx)tst-codeset.out: $(gen-locales)
++$(objpfx)tst-gettext.out: $(gen-locales)
++$(objpfx)tst-gettext2.out: $(gen-locales)
++$(objpfx)tst-gettext3.out: $(gen-locales)
++$(objpfx)tst-gettext4.out: $(gen-locales)
++$(objpfx)tst-gettext5.out: $(gen-locales)
++$(objpfx)tst-gettext6.out: $(gen-locales)
++$(objpfx)tst-translit.out: $(gen-locales)
+ endif
+ 
+ $(objpfx)msgs.h: po2test.awk ../po/de.po
+Index: b/libio/Makefile
+===================================================================
+--- a/libio/Makefile
++++ b/libio/Makefile
+@@ -174,6 +174,30 @@ endif
+ 
+ include ../Rules
+ 
++ifeq ($(run-built-tests),yes)
++LOCALES := de_DE.ISO-8859-1 de_DE.UTF-8 en_US.ISO-8859-1 en_US.UTF-8 \
++	   ja_JP.EUC-JP ja_JP.UTF-8
++include ../gen-locales.mk
++
++$(objpfx)bug-ftell.out: $(gen-locales)
++$(objpfx)bug-ungetwc1.out: $(gen-locales)
++$(objpfx)bug-ungetwc2.out: $(gen-locales)
++$(objpfx)tst-fgetwc.out: $(gen-locales)
++$(objpfx)tst-fgetws.out: $(gen-locales)
++$(objpfx)tst-fopenloc.out: $(gen-locales)
++$(objpfx)tst-fputws.out: $(gen-locales)
++$(objpfx)tst-fseek.out: $(gen-locales)
++$(objpfx)tst-ftell-active-handler.out: $(gen-locales)
++$(objpfx)tst-ftell-append.out: $(gen-locales)
++$(objpfx)tst-ftell-partial-wide.out: $(gen-locales)
++$(objpfx)tst-setvbuf1.out: $(gen-locales)
++$(objpfx)tst-swscanf.out: $(gen-locales)
++$(objpfx)tst-ungetwc1.out: $(gen-locales)
++$(objpfx)tst-ungetwc2.out: $(gen-locales)
++$(objpfx)tst-widetext.out: $(gen-locales)
++$(objpfx)tst_wprintf2.out: $(gen-locales)
++endif
++
+ $(objpfx)test-freopen.out: test-freopen.sh $(objpfx)test-freopen
+ 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)'	\
+ 	$(common-objpfx)libio/; \
+Index: b/libio/tst_wprintf2.c
+===================================================================
+--- a/libio/tst_wprintf2.c
++++ b/libio/tst_wprintf2.c
+@@ -26,7 +26,7 @@ main (int argc, char *argv[])
+ 
+   unlink (name);
+ 
+-  setlocale (LC_ALL, "");
++  setlocale (LC_ALL, "en_US.UTF-8");
+ 
+   fp = fdopen (dup (fd), "w");
+   if (fp == NULL)
+Index: b/posix/Makefile
+===================================================================
+--- a/posix/Makefile
++++ b/posix/Makefile
+@@ -148,6 +148,36 @@ $(objpfx)wordexp-tst.out: wordexp-tst.sh
+ 		 '$(run-program-env)' '$(test-program-prefix-after-env)'; \
+ 	$(evaluate-test)
+ endif
++
++LOCALES := cs_CZ.UTF-8 da_DK.ISO-8859-1 de_DE.ISO-8859-1 de_DE.UTF-8 \
++	   en_US.UTF-8 es_US.ISO-8859-1 es_US.UTF-8 ja_JP.EUC-JP tr_TR.UTF-8
++include ../gen-locales.mk
++
++$(objpfx)bug-regex1.out: $(gen-locales)
++$(objpfx)bug-regex4.out: $(gen-locales)
++$(objpfx)bug-regex5.out: $(gen-locales)
++$(objpfx)bug-regex6.out: $(gen-locales)
++$(objpfx)bug-regex17.out: $(gen-locales)
++$(objpfx)bug-regex18.out: $(gen-locales)
++$(objpfx)bug-regex19.out: $(gen-locales)
++$(objpfx)bug-regex20.out: $(gen-locales)
++$(objpfx)bug-regex22.out: $(gen-locales)
++$(objpfx)bug-regex23.out: $(gen-locales)
++$(objpfx)bug-regex25.out: $(gen-locales)
++$(objpfx)bug-regex26.out: $(gen-locales)
++$(objpfx)bug-regex30.out: $(gen-locales)
++$(objpfx)bug-regex32.out: $(gen-locales)
++$(objpfx)bug-regex33.out: $(gen-locales)
++$(objpfx)bug-regex34.out: $(gen-locales)
++$(objpfx)bug-regex35.out: $(gen-locales)
++$(objpfx)tst-fnmatch.out: $(gen-locales)
++$(objpfx)tst-fnmatch4.out: $(gen-locales)
++$(objpfx)tst-fnmatch5.out: $(gen-locales)
++$(objpfx)tst-regex.out: $(gen-locales)
++$(objpfx)tst-regex2.out: $(gen-locales)
++$(objpfx)tst-regexloc.out: $(gen-locales)
++$(objpfx)tst-rxspencer.out: $(gen-locales)
++$(objpfx)tst-rxspencer-no-utf8.out: $(gen-locales)
+ endif
+ 
+ # If we will use the generic uname implementation, we must figure out what
+Index: b/stdio-common/Makefile
+===================================================================
+--- a/stdio-common/Makefile
++++ b/stdio-common/Makefile
+@@ -69,6 +69,19 @@ endif
+ include ../Rules
+ 
+ ifeq ($(run-built-tests),yes)
++LOCALES := de_DE.ISO-8859-1 de_DE.UTF-8 en_US.ISO-8859-1 ja_JP.EUC-JP
++include ../gen-locales.mk
++
++$(objpfx)bug14.out: $(gen-locales)
++$(objpfx)scanf13.out: $(gen-locales)
++$(objpfx)test-vfprintf.out: $(gen-locales)
++$(objpfx)tst-grouping.out: $(gen-locales)
++$(objpfx)tst-sprintf.out: $(gen-locales)
++$(objpfx)tst-sscanf.out: $(gen-locales)
++$(objpfx)tst-swprintf.out: $(gen-locales)
++endif
++
++ifeq ($(run-built-tests),yes)
+ $(objpfx)tst-unbputc.out: tst-unbputc.sh $(objpfx)tst-unbputc
+ 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)'; \
+ 	$(evaluate-test)
+Index: b/stdlib/Makefile
+===================================================================
+--- a/stdlib/Makefile
++++ b/stdlib/Makefile
+@@ -121,6 +121,18 @@ endif
+ 
+ include ../Rules
+ 
++ifeq ($(run-built-tests),yes)
++LOCALES := cs_CZ.UTF-8 de_DE.UTF-8 en_US.ISO-8859-1 tr_TR.UTF-8
++include ../gen-locales.mk
++
++$(objpfx)bug-strtod2.out: $(gen-locales)
++$(objpfx)testmb2.out: $(gen-locales)
++$(objpfx)tst-strtod.out: $(gen-locales)
++$(objpfx)tst-strtod3.out: $(gen-locales)
++$(objpfx)tst-strtod4.out: $(gen-locales)
++$(objpfx)tst-strtod5.out: $(gen-locales)
++endif
++
+ # Testdir has to be named stdlib and needs to be writable
+ test-canon-ARGS = --test-dir=${common-objpfx}stdlib
+ 
+Index: b/time/Makefile
+===================================================================
+--- a/time/Makefile
++++ b/time/Makefile
+@@ -41,6 +41,14 @@ tests	:= test_time clocktest tst-posixtz
+ 
+ include ../Rules
+ 
++ifeq ($(run-built-tests),yes)
++LOCALES := de_DE.ISO-8859-1 en_US.ISO-8859-1 ja_JP.EUC-JP
++include ../gen-locales.mk
++
++$(objpfx)tst-ftime_l.out: $(gen-locales)
++$(objpfx)tst-strptime.out: $(gen-locales)
++endif
++
+ tz-cflags = -DTZDIR='"$(zonedir)"' \
+ 	    -DTZDEFAULT='"$(localtime-file)"' \
+ 	    -DTZDEFRULES='"$(posixrules-file)"'
+Index: b/wcsmbs/Makefile
+===================================================================
+--- a/wcsmbs/Makefile
++++ b/wcsmbs/Makefile
+@@ -49,6 +49,19 @@ tests := tst-wcstof wcsmbs-tst1 tst-wcsn
+ 
+ include ../Rules
+ 
++ifeq ($(run-built-tests),yes)
++LOCALES := de_DE.ISO-8859-1 de_DE.UTF-8 en_US.ANSI_X3.4-1968 hr_HR.ISO-8859-2 \
++	   ja_JP.EUC-JP zh_TW.EUC-TW
++include ../gen-locales.mk
++
++$(objpfx)tst-btowc.out: $(gen-locales)
++$(objpfx)tst-c16c32-1.out: $(gen-locales)
++$(objpfx)tst-mbrtowc.out: $(gen-locales)
++$(objpfx)tst-mbrtowc2.out: $(gen-locales)
++$(objpfx)tst-wcrtomb.out: $(gen-locales)
++$(objpfx)wcsmbs-tst1.out: $(gen-locales)
++endif
++
+ CFLAGS-wcwidth.c = -I../wctype
+ CFLAGS-wcswidth.c = -I../wctype
+ 
+Index: b/wcsmbs/wcsmbs-tst1.c
+===================================================================
+--- a/wcsmbs/wcsmbs-tst1.c
++++ b/wcsmbs/wcsmbs-tst1.c
+@@ -18,7 +18,7 @@ main (void)
+   char str[] = "Hello";
+   int result = 0;
+ 
+-  pchar = setlocale (LC_ALL, "");
++  pchar = setlocale (LC_ALL, "de_DE.UTF-8");
+   printf ("locale : %s\n",pchar);
+   printf ("MB_CUR_MAX %Zd\n", MB_CUR_MAX);
+ 
