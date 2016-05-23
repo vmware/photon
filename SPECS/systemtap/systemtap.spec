@@ -47,6 +47,7 @@ Requires:      linux-dev
 Requires:      make
 Requires:	   elfutils 
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -96,6 +97,8 @@ SystemTap server is the server component of an instrumentation system for system
 
 %prep
 %setup -q
+sed -i "s#"kernel"#"linux"#g" stap-prep
+sed -i "s#"devel"#"dev"#g" stap-prep
 
 %build
 %configure \
@@ -326,9 +329,11 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
-*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
--   	Fix for upgrade issues
-* 	Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar> 2.9-1 
+* 	Fri May 20 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-3 
+-	Fixed the stap-prep script to be compatible with Photon
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
+-   Fix for upgrade issues
+* 	Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-1 
 -	Updated version to 2.9
 *	Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
 -	Move dtrace to the main package.
