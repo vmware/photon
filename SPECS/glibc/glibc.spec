@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -21,6 +21,10 @@ Patch1:   	http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-
 Patch2:   	http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-fhs-1.patch
 Patch3:		glibc-2.22-bindrsvport-blacklist.patch
 Patch4:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.22-upstream_fixes-1.patch
+Patch5:		glibc-fix-CVE-2014-9761-1.patch
+Patch6:		glibc-fix-CVE-2014-9761-2.patch
+Patch7:		glibc-fix-CVE-2014-9761-3.patch
+Patch8:		glibc-fix-CVE-2014-9761-4.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -51,6 +55,10 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -181,6 +189,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*	Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-7
+-	Added patch for CVE-2014-9761
 * 	Mon Mar 21 2016 Alexey Makhalov <amakhalov@vmware.com>  2.22-6
 - 	Security hardening: nonow
 * 	Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  2.22-5

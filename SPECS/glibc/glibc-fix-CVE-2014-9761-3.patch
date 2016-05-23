@@ -1,0 +1,265 @@
+commit a7f0c5ae4184916f0e145de3aefc794bf2e280ad
+Author: Joseph Myers <joseph@codesourcery.com>
+Date:   Tue Nov 24 22:21:59 2015 +0000
+
+    Fix strtod ("NAN(I)") in Turkish locales (bug 19266).
+    
+    The implementations of strtod and related functions use
+    locale-specific conversions to lower case when parsing the contents of
+    a string NAN(n-char-sequence_opt).  This has the consequence that
+    NAN(I) is not treated as being of that form (only the initial NAN part
+    is accepted).  The syntax of n-char-sequence directly maps to the
+    ASCII letters, digits and underscore as in identifiers, so it is
+    unambiguous that all ASCII letters must be accepted in all locales.
+    
+    This patch, relative to a tree with
+    <https://sourceware.org/ml/libc-alpha/2015-11/msg00258.html> (pending
+    review) applied and depending on that patch, fixes this problem by
+    checking directly for ASCII letters.  This will have the side effect
+    of no longer accepting 'İ' (dotted 'I') inside NAN() in Turkish
+    locales, which seems appropriate (that letter wouldn't have been
+    interpreted as having any meaning in the NaN payload anyway, as not
+    acceptable to strtoull).
+    
+    Tested for x86_64 and x86.
+    
+    	[BZ #19266]
+    	* stdlib/strtod_l.c (____STRTOF_INTERNAL): Check directly for
+    	upper case and lower case letters inside NAN(), not using TOLOWER.
+    	* stdlib/tst-strtod-nan-locale-main.c: New file.
+    	* stdlib/tst-strtod-nan-locale.c: Likewise.
+    	* stdlib/Makefile (tests): Add tst-strtod-nan-locale.
+    	[$(run-built-tests) = yes] ($(objpfx)tst-strtod-nan-locale.out):
+    	Depend on $(gen-locales).
+    	($(objpfx)tst-strtod-nan-locale): Depend on $(libm).
+    	* wcsmbs/tst-wcstod-nan-locale.c: New file.
+    	* wcsmbs/Makefile (tests): Add tst-wcstod-nan-locale.
+    	[$(run-built-tests) = yes] ($(objpfx)tst-wcstod-nan-locale.out):
+    	Depend on $(gen-locales).
+    	($(objpfx)tst-wcstod-nan-locale): Depend on $(libm).
+
+Index: b/stdlib/Makefile
+===================================================================
+--- a/stdlib/Makefile
++++ b/stdlib/Makefile
+@@ -75,7 +75,7 @@ tests		:= tst-strtol tst-strtod testmb t
+ 		   tst-secure-getenv tst-strtod-overflow tst-strtod-round   \
+ 		   tst-tininess tst-strtod-underflow tst-tls-atexit	    \
+ 		   tst-setcontext3 tst-tls-atexit-nodelete		    \
+-		   tst-strtol-locale
++		   tst-strtol-locale tst-strtod-nan-locale
+ tests-static	:= tst-secure-getenv
+ 
+ modules-names	= tst-tls-atexit-lib
+@@ -134,6 +134,7 @@ $(objpfx)tst-strtod3.out: $(gen-locales)
+ $(objpfx)tst-strtod4.out: $(gen-locales)
+ $(objpfx)tst-strtod5.out: $(gen-locales)
+ $(objpfx)tst-strtol-locale.out: $(gen-locales)
++$(objpfx)tst-strtod-nan-locale.out: $(gen-locales)
+ endif
+ 
+ # Testdir has to be named stdlib and needs to be writable
+@@ -168,6 +169,7 @@ $(objpfx)tst-strtod-round: $(libm)
+ $(objpfx)tst-tininess: $(libm)
+ $(objpfx)tst-strtod-underflow: $(libm)
+ $(objpfx)tst-strtod6: $(libm)
++$(objpfx)tst-strtod-nan-locale: $(libm)
+ 
+ tst-tls-atexit-lib.so-no-z-defs = yes
+ 
+Index: b/stdlib/strtod_l.c
+===================================================================
+--- a/stdlib/strtod_l.c
++++ b/stdlib/strtod_l.c
+@@ -658,8 +658,8 @@ ____STRTOF_INTERNAL (nptr, endptr, group
+ 	      do
+ 		++cp;
+ 	      while ((*cp >= L_('0') && *cp <= L_('9'))
+-		     || ({ CHAR_TYPE lo = TOLOWER (*cp);
+-			   lo >= L_('a') && lo <= L_('z'); })
++		     || (*cp >= L_('A') && *cp <= L_('Z'))
++		     || (*cp >= L_('a') && *cp <= L_('z'))
+ 		     || *cp == L_('_'));
+ 
+ 	      if (*cp != L_(')'))
+Index: b/stdlib/tst-strtod-nan-locale-main.c
+===================================================================
+--- /dev/null
++++ b/stdlib/tst-strtod-nan-locale-main.c
+@@ -0,0 +1,89 @@
++/* Test strtod functions work with all ASCII letters in NAN(...) in
++   Turkish locales (bug 19266).
++   Copyright (C) 2015 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#include <locale.h>
++#include <math.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <wchar.h>
++
++#define STR_(X) #X
++#define STR(X) STR_(X)
++#define FNPFXS STR (FNPFX)
++#define CONCAT_(X, Y) X ## Y
++#define CONCAT(X, Y) CONCAT_ (X, Y)
++#define FNX(FN) CONCAT (FNPFX, FN)
++
++#define TEST(LOC, STR, FN, TYPE)					\
++  do									\
++    {									\
++      CHAR *ep;								\
++      TYPE val = FNX (FN) (STR, &ep);					\
++      if (isnan (val) && *ep == 0)					\
++	printf ("PASS: %s: " FNPFXS #FN " (" SFMT ")\n", LOC, STR);	\
++      else								\
++	{								\
++	  printf ("FAIL: %s: " FNPFXS #FN " (" SFMT ")\n", LOC, STR);	\
++	  result = 1;							\
++	}								\
++    }									\
++  while (0)
++
++static int
++test_one_locale (const char *loc)
++{
++  if (setlocale (LC_ALL, loc) == NULL)
++    {
++      printf ("setlocale (LC_ALL, \"%s\") failed\n", loc);
++      return 1;
++    }
++  int result = 0;
++  for (int i = 10; i < 36; i++)
++    {
++      CHAR s[7];
++      s[0] = L_('N');
++      s[1] = L_('A');
++      s[2] = L_('N');
++      s[3] = L_('(');
++      s[4] = L_('A') + i - 10;
++      s[5] = L_(')');
++      s[6] = 0;
++      TEST (loc, s, f, float);
++      TEST (loc, s, d, double);
++      TEST (loc, s, ld, long double);
++      s[4] = L_('a') + i - 10;
++      TEST (loc, s, f, float);
++      TEST (loc, s, d, double);
++      TEST (loc, s, ld, long double);
++    }
++  return result;
++}
++
++static int
++do_test (void)
++{
++  int result = 0;
++  result |= test_one_locale ("C");
++  result |= test_one_locale ("tr_TR.UTF-8");
++  result |= test_one_locale ("tr_TR.ISO-8859-9");
++  return result;
++}
++
++#define TEST_FUNCTION do_test ()
++#include "../test-skeleton.c"
+Index: b/stdlib/tst-strtod-nan-locale.c
+===================================================================
+--- /dev/null
++++ b/stdlib/tst-strtod-nan-locale.c
+@@ -0,0 +1,25 @@
++/* Test strtod functions work with all ASCII letters in NAN(...) in
++   Turkish locales (bug 19266).  Narrow string version.
++   Copyright (C) 2015 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#define CHAR char
++#define SFMT "\"%s\""
++#define FNPFX strto
++#define L_(C) C
++
++#include <tst-strtod-nan-locale-main.c>
+Index: b/wcsmbs/Makefile
+===================================================================
+--- a/wcsmbs/Makefile
++++ b/wcsmbs/Makefile
+@@ -45,7 +45,7 @@ routines := wcscat wcschr wcscmp wcscpy
+ strop-tests :=  wcscmp wcsncmp wmemcmp wcslen wcschr wcsrchr wcscpy
+ tests := tst-wcstof wcsmbs-tst1 tst-wcsnlen tst-btowc tst-mbrtowc \
+ 	 tst-wcrtomb tst-wcpncpy tst-mbsrtowcs tst-wchar-h tst-mbrtowc2 \
+-	 tst-c16c32-1 wcsatcliff tst-wcstol-locale \
++	 tst-c16c32-1 wcsatcliff tst-wcstol-locale tst-wcstod-nan-locale \
+ 	 $(addprefix test-,$(strop-tests))
+ 
+ include ../Rules
+@@ -62,6 +62,7 @@ $(objpfx)tst-mbrtowc2.out: $(gen-locales
+ $(objpfx)tst-wcrtomb.out: $(gen-locales)
+ $(objpfx)wcsmbs-tst1.out: $(gen-locales)
+ $(objpfx)tst-wcstol-locale.out: $(gen-locales)
++$(objpfx)tst-wcstod-nan-locale.out: $(gen-locales)
+ endif
+ 
+ CFLAGS-wcwidth.c = -I../wctype
+@@ -93,3 +94,5 @@ CPPFLAGS += $(libio-mtsafe)
+ 
+ # We need to find the default version of strtold_l in stdlib.
+ CPPFLAGS-wcstold_l.c = -I../stdlib
++
++$(objpfx)tst-wcstod-nan-locale: $(libm)
+Index: b/wcsmbs/tst-wcstod-nan-locale.c
+===================================================================
+--- /dev/null
++++ b/wcsmbs/tst-wcstod-nan-locale.c
+@@ -0,0 +1,25 @@
++/* Test strtod functions work with all ASCII letters in NAN(...) in
++   Turkish locales (bug 19266).  Wide string version.
++   Copyright (C) 2015 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#define CHAR wchar_t
++#define SFMT "L\"%ls\""
++#define FNPFX wcsto
++#define L_(C) L ## C
++
++#include "../stdlib/tst-strtod-nan-locale-main.c"
