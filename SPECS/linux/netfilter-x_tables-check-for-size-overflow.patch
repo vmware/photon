@@ -1,0 +1,31 @@
+Subject:    [PATCH nf] netfilter: x_tables: check for size overflow
+From:       Florian Westphal <fw () strlen ! de>
+Date:       2016-03-10 0:56:23
+
+Ben Hawkes says:
+ integer overflow in xt_alloc_table_info, which on 32-bit systems can
+ lead to small structure allocation and a copy_from_user based heap
+ corruption.
+
+Reported-by: Ben Hawkes <hawkes@google.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/netfilter/x_tables.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/netfilter/x_tables.c b/net/netfilter/x_tables.c
+index c8a0b7d..17a9a9f 100644
+--- a/net/netfilter/x_tables.c
++++ b/net/netfilter/x_tables.c
+@@ -659,6 +659,9 @@ struct xt_table_info *xt_alloc_table_info(unsigned int size)
+ 	struct xt_table_info *info = NULL;
+ 	size_t sz = sizeof(*info) + size;
+ 
++	if (sz < sizeof(*info))
++		return NULL;
++
+ 	/* Pedantry: prevent them from hitting BUG() in vmalloc.c --RR */
+ 	if ((SMP_ALIGN(size) >> PAGE_SHIFT) + 2 > totalram_pages)
+ 		return NULL;
+-- 
+2.4.10

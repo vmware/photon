@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -18,6 +18,10 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
 Patch6:         net-Driver-Vmxnet3-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+#fixes CVE-2016-3134
+Patch7:		netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
+#fixes CVE-2016-3135
+Patch8:		netfilter-x_tables-check-for-size-overflow.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -80,6 +84,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
+%patch8 -p1
 
 %build
 make mrproper
@@ -170,8 +176,10 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
-* 	Wed May 18 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-2
--	Enabled CONFIG_UPROBES in config as needed by ktap
+*   Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.4.8-3
+-   Added patches to fix CVE-2016-3134, CVE-2016-3135
+*   Wed May 18 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-2
+-   Enabled CONFIG_UPROBES in config as needed by ktap
 *   Wed May 04 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
 -   Update to linux-4.4.8
 -   Added net-Drivers-Vmxnet3-set-... patch
