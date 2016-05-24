@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       2.9
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -16,6 +16,7 @@ Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
 %define sha1 systemtap=37ecbc7445ff34db3c8204b1541f25524a0e8024
+Patch0:		   fix-kernel-4.4-build.patch
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -97,6 +98,7 @@ SystemTap server is the server component of an instrumentation system for system
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i "s#"kernel"#"linux"#g" stap-prep
 sed -i "s#"devel"#"dev"#g" stap-prep
 
@@ -329,11 +331,13 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
-*       Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar> 2.9-3
--       Fix stap-prep script
-*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
--   	Fix for upgrade issues
-* 	Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar> 2.9-1 
+*   Mon May 23 2016 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.9-4
+-	Added the patch to enable kernel building with Kernel 4.4
+* 	Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-3 
+-	Fixed the stap-prep script to be compatible with Photon
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
+-   Fix for upgrade issues
+* 	Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-1 
 -	Updated version to 2.9
 *	Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
 -	Move dtrace to the main package.
