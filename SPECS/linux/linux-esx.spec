@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.8
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -22,6 +22,10 @@ Patch7:        03-poweroff.patch
 Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
+#fixes CVE-2016-3134
+Patch11:         netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
+#fixes CVE-2016-3135
+Patch12:         netfilter-x_tables-check-for-size-overflow.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -67,6 +71,8 @@ The Linux package contains the Linux kernel doc files
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
+%patch12 -p1
 
 %build
 make mrproper
@@ -132,6 +138,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.4.8-2
+-   Added patches to fix CVE-2016-3134, CVE-2016-3135
 *   Fri May 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
 -   Update to linux-4.4.8
 -   Added net-Drivers-Vmxnet3-set-... patch
