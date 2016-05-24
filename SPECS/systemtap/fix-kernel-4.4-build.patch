@@ -1,0 +1,35 @@
+diff --git a/runtime/linux/runtime_defines.h b/runtime/linux/runtime_defines.h
+index e69de29..6b44e0d 100644
+--- a/runtime/linux/runtime_defines.h
++++ b/runtime/linux/runtime_defines.h
+@@ -0,0 +1,4 @@
++#include <linux/gfp.h>
++#ifndef __GFP_WAIT
++#define __GFP_WAIT __GFP_RECLAIM
++#endif
+diff --git a/runtime/stp_utrace.c b/runtime/stp_utrace.c
+index c69dec1..a8afc0d 100644
+--- a/runtime/stp_utrace.c
++++ b/runtime/stp_utrace.c
+@@ -511,7 +511,8 @@ static struct utrace *__task_utrace_struct(struct task_struct *task)
+  */
+ static bool utrace_task_alloc(struct task_struct *task)
+ {
+-	struct utrace *utrace = kmem_cache_zalloc(utrace_cachep, GFP_IOFS);
++	struct utrace *utrace = kmem_cache_zalloc(utrace_cachep,
++						  STP_ALLOC_FLAGS);
+ 	struct utrace *u;
+ 
+ 	if (unlikely(!utrace))
+@@ -782,7 +783,7 @@ static struct utrace_engine *utrace_attach_task(
+ 		utrace = task_utrace_struct(target);
+ 	}
+ 
+-	engine = kmem_cache_alloc(utrace_engine_cachep, GFP_IOFS);
++	engine = kmem_cache_alloc(utrace_engine_cachep, STP_ALLOC_FLAGS);
+ 	if (unlikely(!engine))
+ 		return ERR_PTR(-ENOMEM);
+ 
+-- 
+1.7.1
+

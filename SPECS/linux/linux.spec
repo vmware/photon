@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	3%{?dist}
+Release:    	4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -103,7 +103,8 @@ make INSTALL_MOD_PATH=%{buildroot} modules_install
 
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
 cp -v System.map        %{buildroot}/boot/system.map-%{version}
-cp -v .config            %{buildroot}/boot/config-%{version}
+cp -v .config           %{buildroot}/boot/config-%{version}
+cp -v vmlinux			%{buildroot}/lib/modules/%{version}/vmlinux-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
@@ -126,7 +127,7 @@ find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp 
 
 cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release} # copy .config manually to be where it's expected to be
 ln -sf "/usr/src/%{name}-headers-%{version}-%{release}" "%{buildroot}/lib/modules/%{version}/build"
-
+find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 %post
 /sbin/depmod -aq %{version}
 ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
@@ -140,6 +141,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 %post oprofile
 /sbin/depmod -aq %{version}
 
+%post debuginfo
+ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlinux-%{version}.debug
+
 %files
 %defattr(-,root,root)
 /boot/system.map-%{version}
@@ -147,11 +151,13 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /boot/vmlinuz-%{version}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 /lib/firmware/*
-/lib/modules/*
+%defattr(0644,root,root)
+/lib/modules/%{version}/*
 %exclude /lib/modules/%{version}/build
 %exclude /lib/modules/%{version}/kernel/drivers/gpu
 %exclude /lib/modules/%{version}/kernel/sound
 %exclude /lib/modules/%{version}/kernel/arch/x86/oprofile/
+%exclude /lib/modules/%{version}/vmlinux-%{version}
 
 %files docs
 %defattr(-,root,root)
@@ -176,6 +182,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*	Mon May 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-4
+-	Fixed generation of debug symbols for kernel modules & vmlinux.
 *   Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.4.8-3
 -   Added patches to fix CVE-2016-3134, CVE-2016-3135
 *   Wed May 18 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-2
@@ -185,7 +193,7 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 -   Added net-Drivers-Vmxnet3-set-... patch
 *   Tue May 03 2016 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-27
 -   Compile Intel GigE and VMXNET3 as part of kernel.
-*   Tue Apr 28 2016 Nick Shi <nshi@vmware.com> 4.2.0-26
+*   Thu Apr 28 2016 Nick Shi <nshi@vmware.com> 4.2.0-26
 -   Compile cramfs.ko to allow mounting cramfs image
 *   Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-25
 -   Revert network interface renaming disable in kernel.
