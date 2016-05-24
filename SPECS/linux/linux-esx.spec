@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.8
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -138,6 +138,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Mon May 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-3
+-   .config: added net_9p and 9p_fs
 *   Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.4.8-2
 -   Added patches to fix CVE-2016-3134, CVE-2016-3135
 *   Fri May 13 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
