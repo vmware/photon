@@ -2,7 +2,7 @@
 Summary:	Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6. 
 Name:		net-snmp   
 Version:	5.7.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD (like)  
 URL:		http://net-snmp.sourceforge.net/
 Group:		Productivity/Networking/Other
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_datadir}
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.7.3-3
+-	GA - Bump release of all rpms
 *	Wed May 04 2016 Nick Shi <nshi@vmware.com> 5.7.3-2
 -	Add snmpd and snmptrapd to systemd service.
 *	Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 5.7.3-1

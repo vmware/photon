@@ -1,7 +1,7 @@
 Summary:	gptfdisk-1.0.1
 Name:		gptfdisk
 Version:	1.0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/gptfdisk/
 Group:		System Environment/Filesystem and Disk management
@@ -40,6 +40,8 @@ rm -rf %{buildroot}/*
 /sbin/*
 %{_mandir}/man8/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-2
+-	GA - Bump release of all rpms
 *       Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.1-1
 -       Updated Version.
 *	Thu Oct 30 2014 Divya Thaluru <dthaluru@vmware.com> 0.8.10-1

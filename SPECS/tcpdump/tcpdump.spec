@@ -1,7 +1,7 @@
 Summary:	Packet Analyzer
 Name:		tcpdump
 Version:	4.7.4	
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
@@ -32,6 +32,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sbindir}/*
 %{_mandir}/man1/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.7.4-2
+-	GA - Bump release of all rpms
 *   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.7.4-1
 -   Upgrade version.
 *   Mon Apr 6  2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.7.3-1

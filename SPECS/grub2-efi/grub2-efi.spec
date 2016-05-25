@@ -3,7 +3,7 @@
 Summary:	GRand Unified Bootloader
 Name:		grub2-efi
 Version:	2.02
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grub
 Group:		Applications/System
@@ -84,5 +84,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/locale/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02-2
+-	GA - Bump release of all rpms
 *	Fri Jul 31 2015 Sharath George <sharathg@vmware.com> 2.02-1
 -	Adding EFI support.

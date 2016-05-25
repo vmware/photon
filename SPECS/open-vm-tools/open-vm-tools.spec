@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.0.5
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -97,6 +97,8 @@ fi
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 10.0.5-10
+-	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-9
 -	Edit scriptlets.
 *       Fri Apr 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-8

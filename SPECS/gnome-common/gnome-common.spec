@@ -1,7 +1,7 @@
 Summary:        Common development macros for GNOME
 Name:           gnome-common
 Version:        3.18.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            https://www.gnome.org/
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{version}/%{name}-%{version}.tar.xz
@@ -42,6 +42,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/aclocal/gnome-compiler-flags.m4
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.18.0-2
+-	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.18.0-1
 - 	Upgrade to 3.18.0
 *       Tue Aug 11 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.14.0-1

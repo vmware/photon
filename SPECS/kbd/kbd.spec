@@ -1,7 +1,7 @@
 Summary:	Key table files, console fonts, and keyboard utilities
 Name:		kbd
 Version:	2.0.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://ftp.altlinux.org/pub/people/legion/kbd
 Group:		Applications/System
@@ -44,6 +44,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/unimaps/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.3-2
+-	GA - Bump release of all rpms
 *   Wed Jan 13 2016 Xiaolin Li <xiaolinl@vmware.com> 2.0.3-1
 -	Updated to version 2.0.3
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.0.1-1

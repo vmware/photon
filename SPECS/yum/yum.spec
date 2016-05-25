@@ -1,7 +1,7 @@
 Summary:	RPM installer/updater
 Name:		yum
 Version:	3.4.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
@@ -195,6 +195,8 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %exclude %{_mandir}/man*/yum-updatesd*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-5
+-	GA - Bump release of all rpms
 *	Wed May 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-4
 -	Fix to read photon repo files, set distroverpkg to photon-release
 *	Thu Apr 28 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-3

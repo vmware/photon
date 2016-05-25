@@ -2,7 +2,7 @@
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
 Version:        2.88
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Config-IniFiles/
@@ -44,6 +44,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.88-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 2.88-1
 -   Updated to version 2.88
 *	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.83-2

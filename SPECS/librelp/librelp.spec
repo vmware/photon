@@ -1,7 +1,7 @@
 Summary:	RELP Library
 Name:		librelp
 Version:	1.2.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
@@ -49,6 +49,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.9-2
+-	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.2.9-1
 - 	Upgrade to 1.2.9
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 1.2.7-1

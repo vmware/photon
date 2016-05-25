@@ -1,7 +1,7 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
 Version:	1.6.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.gz
@@ -47,6 +47,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/*.h
 %{_libdir}/*.so
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.5-2
+-	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  1.6.5-1
 - 	Upgrade to 1.6.5
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.3-1

@@ -1,7 +1,7 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.24
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.21/%{name}-%{version}.tar.xz
@@ -38,6 +38,8 @@ make DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
 %{_bindir}/*
 /usr/share/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.24-3
+-	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.24-1
 - 	Upgrade to 1.24
 *   	Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.21.1-2

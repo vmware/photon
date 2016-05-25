@@ -2,7 +2,7 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.165
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:        	https://fedorahosted.org/elfutils/
@@ -188,6 +188,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.165-2
+-	GA - Bump release of all rpms
 *   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 0.165-1
 -   Updated to version 0.165
 * Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.158-4

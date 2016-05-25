@@ -1,7 +1,7 @@
 Summary:    	The Apache Subversion control system
 Name:       	subversion
 Version:    	1.9.3
-Release:    	5%{?dist}
+Release:    	6%{?dist}
 License:    	Apache License 2.0
 URL:        	http://subversion.apache.org/
 Group:      	Utilities/System
@@ -52,6 +52,8 @@ make -j1 DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.3-6
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.9.3-1
 -   Updated to version 1.9.3
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-5

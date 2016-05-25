@@ -1,7 +1,7 @@
 Summary:	The Kerberos newtork authentication system
 Name:		krb5
 Version:	1.14
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/man/man5/.k5login.5.gz
 %{_docdir}/%{name}-%{version}
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
+-	GA - Bump release of all rpms
 * 	Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
 - 	Add patch to never unload gssapi mechanisms
 * 	Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2

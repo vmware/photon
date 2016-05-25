@@ -1,7 +1,7 @@
 Summary:	Provide tools to manage multipath devices
 Name:		device-mapper-multipath
 Version:	0.5.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL+
 Group:		System Environment/Base
 URL:		http://christophe.varoqui.free.fr/
@@ -71,6 +71,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.0-2
+-	GA - Bump release of all rpms
 *	Mon Jun 22 2015 Divya Thaluru <dthaluru@vmware.com> 0.5.0-1
 -	Initial build. First version
 

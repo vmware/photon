@@ -1,7 +1,7 @@
 Summary:	Jax WS Reference Implementation
 Name:		jaxws-ri
 Version:	2.2.10
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	CDDL-1.0, GPLv2
 URL:		http://jax-ws.java.net/%{version}
 Group:		Applications/System
@@ -47,6 +47,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/plugins/*.jar
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.10-2
+-	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  2.2.10-1
 - 	Upgrade to 2.2.10
 *	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.2.5-2

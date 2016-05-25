@@ -1,7 +1,7 @@
 Summary:	A JSON implementation in C
 Name:		json-c
 Version:	0.12
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:        MIT
 URL:            https://github.com/json-c/json-c/wiki
 Source0:        https://s3.amazonaws.com/json-c_releases/releases/json-c-0.12.tar.gz
@@ -45,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libjson-c.so
 %{_libdir}/pkgconfig/json-c.pc
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.12-2
+-	GA - Bump release of all rpms
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 0.12-1
 -	Initial build. First version
 

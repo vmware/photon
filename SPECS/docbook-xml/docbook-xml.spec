@@ -1,7 +1,7 @@
 Summary:	Docbook-xml-4.5
 Name:		docbook-xml
 Version:	4.5
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	MIT
 URL:		http://www.docbook.org
 Source0:	http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
@@ -162,6 +162,8 @@ fi
 /usr/share/xml/docbook/%{name}-%{version}
 /etc/xml
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.5-6
+-	GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.5-5
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Mar 10 2016 XIaolin Li <xiaolinl@vmware.com> 4.5.1-4

@@ -1,7 +1,7 @@
 Summary:	Security client
 Name:		nss
 Version:	3.21
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
 Group:		Applications/System
@@ -71,6 +71,8 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2
+-	GA - Bump release of all rpms
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
 - 	Updated to version 3.21
 *       Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2

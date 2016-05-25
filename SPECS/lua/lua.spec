@@ -1,7 +1,7 @@
 Summary:	Programming language
 Name:		lua
 Version:	5.3.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://www.lua.org
 Group:		Development/Tools
@@ -76,6 +76,8 @@ rm -rf %{buildroot}
 %{_libdir}/liblua.so
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.2${R}-2
+-	GA - Bump release of all rpms
 *	Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 5.3.2-1
 -   Update to version 5.3.2.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2.3-1

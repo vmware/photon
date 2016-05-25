@@ -1,7 +1,7 @@
 Summary: A minimal getty program for virtual terminals
 Name: mingetty
 Version: 1.08
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2+
 Group: System Environment/Base
 URL: http://sourceforge.net/projects/mingetty/
@@ -32,5 +32,7 @@ install -m 0644 mingetty.8 %{buildroot}/%{_mandir}/man8/
 %{_mandir}/man8/mingetty.*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.08-2
+-	GA - Bump release of all rpms
 *	Mon Nov 30 2015 Anish Swaminathan <anishs@vmware.com> 1.08-1
 -	Initial build. First version
