@@ -34,4 +34,10 @@ rpm --import /etc/pki/rpm-gpg/*
 #TODO: This should be removed, systemd should be able to create this file
 /usr/bin/touch /var/run/utmp
 #/sbin/locale-gen.sh
+
+#locale-gen.sh needs /usr/share/locale/locale.alias which is shipped with
+#  glibc-lang rpm, in some photon installations glibc-lang rpm is not installed
+#  by default. Call localedef directly here to define locale environment.
+/usr/bin/localedef -c -i en_US -f UTF-8 en_US.UTF-8
+
 exit 0
