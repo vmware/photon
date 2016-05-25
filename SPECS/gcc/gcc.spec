@@ -28,6 +28,7 @@ The libgcc package contains GCC shared libraries for gcc .
 %package -n     libgcc-atomic
 Summary:        GNU C Library for atomic counter updates
 Group:          System Environment/Libraries
+Requires:       libgcc = %{version}-%{release}
 %description -n libgcc-atomic
 The libgcc package contains GCC shared libraries for atomic counter updates.
 
@@ -210,8 +211,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.0-3
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.0-3
+-   GA - Bump release of all rpms
 *   Tue May 17 2016 Anish Swaminathan <anishs@vmware.com> 5.3.0-2
 -   Change package dependencies
 *   Mon Mar 28 2016 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-1
