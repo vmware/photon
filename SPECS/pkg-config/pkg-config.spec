@@ -1,7 +1,7 @@
 Summary:	Build tool
 Name:		pkg-config
 Version:	0.28
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.freedesktop.org/wiki/Software/pkg-config
 Group:		Development/Tools
@@ -33,5 +33,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_docdir}/pkg-config-0.28/pkg-config-guide.html
 %{_mandir}/man1/pkg-config.1.gz
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.28-2
+-	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 0.28-1
 -	Initial build. First version

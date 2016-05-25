@@ -1,7 +1,7 @@
 Summary:	A utility for generating programs that recognize patterns in text
 Name:		flex
 Version:	2.5.39
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://flex.sourceforge.net
 Group:		Applications/System
@@ -66,6 +66,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5.39-2
+-	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5.39-1
 - 	Updated to version 2.5.39
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.5.38-3

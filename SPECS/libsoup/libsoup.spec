@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.53.90
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -84,6 +84,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %defattr(-,root,root)
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.53.90-2
+-	GA - Bump release of all rpms
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 2.53.90-1
 -   Updated version.
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-5

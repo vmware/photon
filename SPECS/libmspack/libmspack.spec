@@ -1,7 +1,7 @@
 Summary:	A library that provides compression and decompression of file formats used by Microsoft
 Name:		libmspack
 Version:	0.5alpha
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://www.cabextract.org.uk/libmspack/libmspack-0.5alpha.tar.gz
 Group:		Applications/System
@@ -29,6 +29,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5alpha-2
+-	GA - Bump release of all rpms
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 0.5-1
 -   Updated to version 0.5
 *	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 0.4-1

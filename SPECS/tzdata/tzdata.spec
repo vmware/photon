@@ -1,7 +1,7 @@
 Summary:	Time zone data
 Name:		tzdata
 Version:	2016a
-Release:	1%{?dist}
+Release:	2%{?dist}
 URL:		http://www.iana.org/time-zones
 License:	Public Domain
 Group:		Applications/System
@@ -39,6 +39,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_sysconfdir}/localtime
 %{_datadir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2016a-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2016a-1
 -   Upgraded to version 2016a
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2013i-1

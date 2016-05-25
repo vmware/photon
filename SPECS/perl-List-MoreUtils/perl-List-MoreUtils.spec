@@ -2,7 +2,7 @@
 Summary:	Provide the stuff missing in List::Util
 Name:		perl-List-MoreUtils
 Version:	0.413
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL+ or Artistic
 URL:		http://search.cpan.org/dist/List-MoreUtils/
 Source0:	http://search.cpan.org/CPAN/authors/id/R/RE/REHSACK/List-MoreUtils-%{version}.tar.gz
@@ -43,6 +43,8 @@ make test
 %{_mandir}/man3/List::MoreUtils::Contributing.3.gz
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.413-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 0.413-1
 -   Updated to version 0.413
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.410-1

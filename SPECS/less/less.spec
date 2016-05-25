@@ -1,7 +1,7 @@
 Summary:	Text file viewer
 Name:		less
 Version:	458
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.greenwoodsoftware.com/less
 Group:		Applications/File
@@ -27,5 +27,7 @@ make DESTDIR=%{buildroot} install
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 458-2
+-	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 458-1
 -	Initial build. First version

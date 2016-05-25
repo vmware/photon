@@ -1,7 +1,7 @@
 Summary:	The Automated Text and Program Generation Tool
 Name:		autogen
 Version:	5.18.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/autogen/
 Source0:        ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
@@ -79,6 +79,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.la
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.18.7-2
+-	GA - Bump release of all rpms
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 5.18.7-1
 -       Updated version tp 5.16.7.
 *       Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 5.18.6-1

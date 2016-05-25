@@ -1,7 +1,7 @@
 Summary:	Program for modifying or creating files
 Name:		patch
 Version:	2.7.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
@@ -28,6 +28,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.5-2
+-	GA - Bump release of all rpms
 *	Tue Aug 11 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.5-1
 -	Updating to 2.7.5 version
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.7.1-1

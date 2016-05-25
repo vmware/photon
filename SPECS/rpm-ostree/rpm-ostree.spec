@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2015.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 %define sha1 rpm-ostree=9a0fa260d8671d9998b5f5509de1bbadd42f7127
 Source1:        libglnx-58a9a5c.tar.gz
@@ -87,5 +87,7 @@ find %{buildroot} -name '*.la' -delete
 %{_datadir}/gir-1.0/*-1.0.gir
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.7-2
+-	GA - Bump release of all rpms
 *	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
 -	Added new version of rpm-ostree

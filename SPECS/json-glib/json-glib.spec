@@ -1,7 +1,7 @@
 Summary:    	Library providing serialization and deserialization support for the JSON format
 Name:       	json-glib
 Version:    	1.0.4
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	LGPLv2+
 Group:      	Development/Libraries
 Source0:    	http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.0/%{name}-%{version}.tar.xz
@@ -89,6 +89,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/girepository-1.0/Json-1.0.typelib
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.4-2
+-	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.0.4-1
 - 	Upgrade to 1.0.4
 *	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3

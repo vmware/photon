@@ -1,6 +1,6 @@
 Name:		btrfs-progs
 Version:	4.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:	Userspace programs for btrfs
 Group:		System Environment/Base
 License:	GPLv2+
@@ -68,6 +68,8 @@ rm -rf %{buildroot}
 %{_libdir}/libbtrfs.a
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4-2
+-	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.4-1
 - 	Upgrade to 4.4
 * 	Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1

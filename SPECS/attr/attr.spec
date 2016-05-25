@@ -1,7 +1,7 @@
 Summary:	Attr-2.4.47
 Name:		attr
 Version:	2.4.47
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	http://download.savannah.gnu.org/releases/attr/%{name}-%{version}.src.tar.gz
@@ -45,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/locale/*
 %{_docdir}/%{name}-%{version}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.47-3
+-	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  2.4.47-2
 - 	Remove man pages provided by man-pages
 *	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.47-1

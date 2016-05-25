@@ -1,7 +1,7 @@
 Summary:	Highly reliable distributed coordination
 Name:		zookeeper
 Version:	3.4.8
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		http://zookeeper.apache.org/
 License:	Apache License, Version 2.0
 Group:		Applications/System
@@ -104,6 +104,8 @@ fi
 %{_prefix}
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.8-4
+-	GA - Bump release of all rpms
 *   Mon May 2 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-3
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-2

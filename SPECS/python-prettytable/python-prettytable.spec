@@ -1,6 +1,6 @@
 Name:           python-prettytable
 Version:        0.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Library for displaying tabular data in a visually appealing ASCII format
 License:        BSD-2-Clause
 Group:          Development/Languages/Python
@@ -39,5 +39,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.2-2
+-	GA - Bump release of all rpms
 * Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Initial packaging for Photon

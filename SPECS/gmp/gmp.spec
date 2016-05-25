@@ -1,7 +1,7 @@
 Summary:         Math libraries
 Name:            gmp
 Version:         6.0.0a
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         LGPLv3+
 URL:             http://www.gnu.org/software/gmp
 Group:           Applications/System
@@ -63,6 +63,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libgmpxx.so
 %{_libdir}/libgmp.so
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0.0a-3
+-	GA - Bump release of all rpms
 *    Thu Apr 14 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 6.0.0a-2
 -    Disable assembly and use generic C code
 *    Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 6.0.0a-1

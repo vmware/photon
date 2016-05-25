@@ -1,7 +1,7 @@
 Summary:	Intltool 
 Name:		intltool
 Version:	0.51.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://freedesktop.org/wiki/Software/intltool/
 Source0:	https://launchpad.net/intltool/+download/%{name}-%{version}.tar.gz
@@ -31,6 +31,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/intltool/*
 %{_mandir}/man8/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.51.0-2
+-	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  0.51.0-1
 - 	Upgrade to 0.51.0
 *	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 0.50.2-1

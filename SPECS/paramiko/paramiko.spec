@@ -1,7 +1,7 @@
 Summary: Python SSH module
 Name: paramiko
 Version: 1.16.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: LGPL
 Group: System Environment/Security
 URL: http://www.paramiko.org/
@@ -45,5 +45,7 @@ easy_install ./
 %{python_sitelib}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.16.0-2
+-	GA - Bump release of all rpms
 *	Tue Jan 5 2016 Xiaolin Li <xiaolinl@vmware.com> 1.16.0-1
 -	Initial build.	First version

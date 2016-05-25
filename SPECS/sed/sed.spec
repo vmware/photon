@@ -1,7 +1,7 @@
 Summary:	Stream editor
 Name:		sed
 Version:	4.2.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/sed
 Group:		Applications/Editors
@@ -43,5 +43,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.2-2
+-	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.2-1
 -	Initial build. First version

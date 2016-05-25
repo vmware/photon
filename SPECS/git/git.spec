@@ -1,7 +1,7 @@
 Summary:	Fast distributed version control system
 Name:		git
 Version:	2.8.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 URL:		http://git-scm.com/
 Group:		System Environment/Programming
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
+-	GA - Bump release of all rpms
 *       Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
 -       Fix if syntax
 *       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2

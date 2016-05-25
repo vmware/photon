@@ -1,7 +1,7 @@
 Summary:	Compression and decompression routines
 Name:		zlib
 Version:	1.2.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://www.zlib.net/
 License:	zlib
 Group:		Applications/System
@@ -43,6 +43,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libz.a
 %{_libdir}/libz.so
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.8-3
+-	GA - Bump release of all rpms
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.2.8-2
 -   Update according to UsrMove.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.2.8-1

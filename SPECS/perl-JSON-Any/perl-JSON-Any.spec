@@ -1,7 +1,7 @@
 Summary:        Wrapper Class for the various JSON classes
 Name:           perl-JSON-Any
 Version:        1.39
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~ether/JSON-Any-1.39/lib/JSON/Any.pm
@@ -38,6 +38,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.39-2
+-	GA - Bump release of all rpms
 *    Mon Mar 28 2016 Mahmoud Bassiouny <mbassiounu@vmware.com> 1.39-1
 -    Initial version.
 

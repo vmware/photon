@@ -2,7 +2,7 @@
 
 Name:           pycurl
 Version:        7.21.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -59,6 +59,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.21.5-3
+-	GA - Bump release of all rpms
 *	Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 7.21.5-2
 -	Removing prebuilt binaries
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 7.21.5-1
