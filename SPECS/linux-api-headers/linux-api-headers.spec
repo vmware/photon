@@ -1,7 +1,7 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
 Version:	4.4.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
@@ -25,6 +25,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	4.4.8-2
+-	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
 -   Update to linux-4.4.8
 *   Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1

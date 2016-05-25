@@ -1,7 +1,7 @@
 Summary:	Git for operating system binaries
 Name:		ostree
 Version:	2015.7
-Release:	3%{?dist}
+Release:	4%{?dist}
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1 ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
 Source1:	91-ostree.preset
@@ -123,6 +123,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2015.7-4
+-	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 2015.7-3
 -	Remove commented steps.
 *       Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 2015.7-2

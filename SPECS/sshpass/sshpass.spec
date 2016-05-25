@@ -1,7 +1,7 @@
 Summary:	Noninteractive ssh password provider 
 Name:		sshpass
 Version:	1.05
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/sshpass/
 Source0:	http://downloads.sourceforge.net/project/sshpass/sshpass/1.05/sshpass-1.05.tar.gz
@@ -34,6 +34,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.05-3
+-	GA - Bump release of all rpms
 *	Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 1.05-2
 -	Add requires for openssh
 *	Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.05-1

@@ -1,7 +1,7 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
 Version:	2.27.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
@@ -68,6 +68,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.27.1-2
+-	GA - Bump release of all rpms
 *   	Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 2.27.1-1
 -   	Upgrade version.
 *   	Tue Oct 6 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24.1-3

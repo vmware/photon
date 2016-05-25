@@ -1,7 +1,7 @@
 Summary:	Contains a utility for determining file types
 Name:		file
 Version:	5.24
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://www.darwinsys.com/file
 Group:		Applications/File
@@ -35,6 +35,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 %{_datarootdir}/misc/magic.mgc
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	5.24-2
+-	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 5.24-1
 - 	Updated to version 5.24
 *	Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 5.22-1

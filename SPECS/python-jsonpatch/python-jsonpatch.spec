@@ -1,6 +1,6 @@
 Name:           python-jsonpatch
 Version:        1.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -35,5 +35,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/jsonpatch
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         1.9-2
+-	GA - Bump release of all rpms
 * Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Initial packaging for Photon

@@ -1,7 +1,7 @@
 Summary:	Syslog event logger library
 Name:		eventlog
 Version:	0.2.12
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL
 URL:		https://www.balabit.com
 Group:		System Environment/Daemons
@@ -56,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/eventlog.pc
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.2.12-2
+-	GA - Bump release of all rpms
 *	Fri Jun 5 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.2.12-1
 -	Add eventlog library for syslog-ng to photon
 

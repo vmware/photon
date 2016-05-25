@@ -1,7 +1,7 @@
 Summary:	DNS proxy with integrated DHCP server
 Name:		dnsmasq
 Version:	2.75
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2 or GPLv3
 Group:		System Environment/Daemons
 URL:		http://www.thekelleys.org.uk/dnsmasq/
@@ -71,5 +71,7 @@ rm -rf %{buildroot}
 %config  /usr/share/dnsmasq/trust-anchors.conf
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.75-2
+-	GA - Bump release of all rpms
 *       Mon Apr 18 2016 Xiaolin Li <xiaolinl@vmware.com> 2.75-1
 -       Initial version

@@ -1,7 +1,7 @@
 Summary:	Libcap-2.24
 Name:		libcap
 Version:	2.25
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
@@ -51,6 +51,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_lib64dir}/libcap.so
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.25-2
+-	GA - Bump release of all rpms
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 2.25-1
 -       Updating Version.
 *       Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24-2

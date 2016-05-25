@@ -6,7 +6,7 @@
 Summary:        Build and install Perl modules
 Name:           perl-Module-Build
 Version:        0.4216
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Build/
@@ -45,6 +45,8 @@ LANG=C TEST_SIGNATURE=1 MB_TEST_EXPERIMENTAL=1 ./Build test
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         0.4216-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.4216-1
 -   Upgraded to version 0.4216
 *	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 0.4214-1

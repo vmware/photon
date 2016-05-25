@@ -1,7 +1,7 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -104,6 +104,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.5.0-9
+-	GA - Bump release of all rpms
 *       Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-8
 -	Fixing spec file to handle rpm upgrade scenario correctly
 *   	Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-7

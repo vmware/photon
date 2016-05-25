@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          8%{?dist}
+Release:          9%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -197,6 +197,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>           4.11.2-9
+-	GA - Bump release of all rpms
 *    Thu May 05 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-8
 -    Update rpm version in lock-step with lua update to 5.3.2
 *    Fri Apr 08 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.11.2-7

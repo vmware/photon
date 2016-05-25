@@ -1,7 +1,7 @@
 Summary:	Logrotate
 Name:		logrotate
 Version:	3.9.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL+
 URL:		https://fedorahosted.org/logrotate
 Source0:	https://fedorahosted.org/releases/l/o/logrotate/%{name}-%{version}.tar.gz
@@ -40,6 +40,8 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 %{_mandir}/man8/logrotate.8.gz
 /var/lib/logrotate/logrotate.status
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.9.1-2
+-	GA - Bump release of all rpms
 *	Wed Jun 24 2015 Divya Thaluru <dthaluru@vmware.com> 3.9.1-1
 -	Initial build. First version
 

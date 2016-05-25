@@ -1,6 +1,6 @@
 Name:           ddclient
 Version:        3.8.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://sourceforge.net/p/ddclient/wiki/Home/
 Summary:        Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider
 License:        GPLv2
@@ -54,5 +54,7 @@ EOF
 %dir /var/cache/ddclient
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         3.8.3-2
+-	GA - Bump release of all rpms
 * Tue Mar 22 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.8.3-1
 - Initial packaging for Photon

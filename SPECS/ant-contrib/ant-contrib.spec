@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -38,6 +38,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wi
 %{_prefix}/lib/*.jar
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.0b3-7
+-	GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 1.0b3-6
 -   Updated JAVA_HOME path to point to latest.
 *   Wed Mar 02 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3.0-5

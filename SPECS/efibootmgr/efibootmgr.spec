@@ -1,7 +1,7 @@
 Summary:	Tools and libraries to manipulate EFI variables
 Name:		efibootmgr
 Version:	0.12
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		https://github.com/rhinstaller/efibootmgr/
 Group:		System Environment/System Utilities
@@ -34,5 +34,7 @@ rm -rf %{buildroot}/*
 %{_sbindir}/%{name}
 %{_mandir}/man8/%{name}.8.gz
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.12-2
+-	GA - Bump release of all rpms
 *	Mon Jul 6 2015 Sharath George <sharathg@vmware.com> 0.12-1
 -	Initial build.	First version. Install steps from spec file in source.

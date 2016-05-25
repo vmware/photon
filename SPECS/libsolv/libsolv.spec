@@ -1,7 +1,7 @@
 Summary:	Libsolv-0.6.19
 Name:		libsolv
 Version:	0.6.19
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://github.com/openSUSE/libsolv
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -38,6 +38,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/*
 %{_includedir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.6.19-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  0.6.19-1
 -   Upgrade to 0.6.19
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.17-1

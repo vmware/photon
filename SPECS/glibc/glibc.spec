@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -189,6 +189,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.22-8
+-	GA - Bump release of all rpms
 *	Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-7
 -	Added patch for CVE-2014-9761
 * 	Mon Mar 21 2016 Alexey Makhalov <amakhalov@vmware.com>  2.22-6

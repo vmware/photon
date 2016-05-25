@@ -1,7 +1,7 @@
 Summary:	cifs client utils
 Name:		cifs-utils
 Version:	6.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://wiki.samba.org/index.php/LinuxCIFS_utils
 Group:		Applications/Nfs-utils-client
@@ -43,5 +43,7 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/cifsidmap.h
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	6.4-2
+-	GA - Bump release of all rpms
 *	Mon Jan 25 2016 Divya Thaluru <dthaluru@vmware.com> 6.4-1
 -	Initial build.	First version

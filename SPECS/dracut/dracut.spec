@@ -5,7 +5,7 @@
 
 Name:		dracut
 Version:	044
-Release:	2%{?dist}
+Release:	3%{?dist}
 Group:		System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -145,6 +145,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	044-3
+-	GA - Bump release of all rpms
 *       Thu Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
 -       Fix incorrect systemd directory.
 *	Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1

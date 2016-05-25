@@ -1,7 +1,7 @@
 Summary:	A simplified, portable interface to several low-level networking routines
 Name:		libdnet
 Version:	1.11
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://prdownloads.sourceforge.net/libdnet/libdnet-1.11.tar.gz
 Group:		Applications/System
@@ -28,5 +28,7 @@ make DESTDIR=%{buildroot} install
 %{_sbindir}/*
 %{_prefix}/man/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.11-2
+-	GA - Bump release of all rpms
 *	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 1.11-1
 	Initial version

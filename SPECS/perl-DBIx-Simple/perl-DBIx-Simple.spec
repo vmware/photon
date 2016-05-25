@@ -2,7 +2,7 @@
 Summary:        Easy-to-use OO interface to DBI
 Name:           perl-DBIx-Simple
 Version:        1.35
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 Group:          Development/Libraries
 Source0:        http://search.cpan.org/CPAN/authors/id/J/JU/JUERD/DBIx-Simple-%{version}.tar.gz 
@@ -48,5 +48,7 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         1.35-2
+-	GA - Bump release of all rpms
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.35-1
 -	Initial version.

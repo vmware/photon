@@ -5,7 +5,7 @@
 Summary: Ruby interface to the VMware vSphere API.
 Name: rubygem-rbvmomi
 Version: 1.8.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Development/Languages
 License: MIT
 URL: https://github.com/vmware/rbvmomi
@@ -27,6 +27,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.8.2-2
+-	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.8.2-1
 - 	Upgrade to 1.8.2
 * 	Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-1

@@ -1,7 +1,7 @@
 Summary: Utility tools for control groups of Linux
 Name: cgroup-utils
 Version: 0.6
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 Group: Development/Libraries
 URL: https://pypi.python.org/pypi/cgroup-utils/0.6
@@ -34,5 +34,7 @@ python setup.py install --single-version-externally-managed -O1 --root=%{buildro
 %defattr(-,root,root)
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  0.6-2
+-	GA - Bump release of all rpms
 *	Wed Jan 6 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6-1
 -	Initial build.	First version

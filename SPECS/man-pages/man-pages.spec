@@ -1,7 +1,7 @@
 Summary:	Man pages
 Name:		man-pages
 Version:	4.04
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
 Group:		System Environment/Base
@@ -31,6 +31,8 @@ rm -vf %{buildroot}%{_mandir}/man5/passwd.5
 %{_mandir}/man7/*
 %{_mandir}/man8/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	4.04-2
+-	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.04-1
 - 	Upgrade to 4.04
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.59-1

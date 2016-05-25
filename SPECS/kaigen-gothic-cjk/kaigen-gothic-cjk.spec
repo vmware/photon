@@ -2,7 +2,7 @@
 Summary:	Kaigen-Gothic CJK Fonts
 Name:		kaigen-gothic-cjk
 Version:	1.002
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	OFL
 URL:		https://github.com/minjiex/kaigen-gothic
 Source:		%{name}-%{version}.tar.gz
@@ -29,5 +29,7 @@ install -m 0644 -p *.ttf %{buildroot}%{fontdir}/truetype
 /usr/share/fonts/truetype/*.ttf
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.002-2
+-	GA - Bump release of all rpms
 *  Fri May 20 2016 Anish Swaminathan <anishs@vmware.com> 1.002-1
 -  Initial version

@@ -5,7 +5,7 @@
 Summary:	"Common sense" Perl defaults 
 Name:		perl-common-sense
 Version:	3.74
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL+ or Artistic
 Group:		Development/Libraries
 URL:		http://search.cpan.org/dist/common-sense
@@ -68,6 +68,8 @@ rm -rf %{buildroot}
 %{_mandir}/man3/common::sense.3*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.74-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.74-1
 -   Upgraded to version 3.74
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 3.73-1

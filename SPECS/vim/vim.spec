@@ -3,7 +3,7 @@
 Summary:	Text editor
 Name:		vim
 Version:	7.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Charityware
 URL:		http://www.vim.org
 Group:		Applications/Editors
@@ -144,6 +144,8 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	7.4-5
+-	GA - Bump release of all rpms
 *   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
 -   Added profile related files in minimal vim package.
 *   Tue Jun 30 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3

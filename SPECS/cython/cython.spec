@@ -1,7 +1,7 @@
 Summary:        C extensions for Python
 Name:           cython
 Version:        0.23.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
@@ -41,5 +41,7 @@ rm -rf %{buildroot}
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         0.23.4-2
+-	GA - Bump release of all rpms
 * 	Wed Oct 28 2015 Divya Thaluru <dthaluru@vmware.com> 0.23.4-1
 - 	Initial build.

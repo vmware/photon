@@ -1,7 +1,7 @@
 Summary:	Programs for generating Makefiles
 Name:		automake
 Version:	1.15
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/automake/
 Group:		System Environment/Base
@@ -36,6 +36,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.15-2
+-	GA - Bump release of all rpms
 *	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.15-1
 -	Updated to version 1.15
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14.1-2

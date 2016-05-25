@@ -1,7 +1,7 @@
 Summary:	Data for network services and protocols
 Name:		iana-etc
 Version:	2.30
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	OSLv3
 URL:		http://freshmeat.net/projects/iana-etc
 Group:		System Environment/Base
@@ -23,5 +23,7 @@ make DESTDIR=%{buildroot} install
 %config %_sysconfdir/protocols
 %config %_sysconfdir/services
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.30-2
+-	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.30-1
 -	Initial build.	First version

@@ -1,7 +1,7 @@
 Name:           kexec-tools
 Summary:        The kexec kdump tools
 Version:        2.0.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/System
 Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
@@ -37,5 +37,7 @@ make install DESTDIR=%{buildroot}
 %doc TODO
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         2.0.11-2
+-	GA - Bump release of all rpms
 * 	Fri Feb 26 2016 Anish Swaminathan <anishs@vmware.com>  2.0.11-1
 - 	Initial version

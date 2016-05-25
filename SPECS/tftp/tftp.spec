@@ -1,7 +1,7 @@
 Summary:	The client for the Trivial File Transfer Protocol (TFTP)
 Name:		tftp
 Version:	5.2
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		http://www.kernel.org
 Group:		Applications/Internet
@@ -95,6 +95,8 @@ rm -rf %{buildroot}
 /lib/systemd/system/tftpd.socket
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	5.2-5
+-	GA - Bump release of all rpms
 *   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.2-4
 -   Fix for upgrade issues
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  5.2-3

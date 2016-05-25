@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -146,6 +146,8 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	6.0-2
+-	GA - Bump release of all rpms
 *	Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 6.0-1
 -   Update to version 6.0.
 *   Wed Nov 18 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 5.9-4

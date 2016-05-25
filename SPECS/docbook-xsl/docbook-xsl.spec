@@ -1,7 +1,7 @@
 Summary:	Docbook-xsl-1.79.1
 Name:		docbook-xsl
 Version:	1.79.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
@@ -77,6 +77,8 @@ fi
 %{_docdir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.79.1-3
+-	GA - Bump release of all rpms
 *       Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.79.1-2
 -	Fixing spec file to handle rpm upgrade scenario correctly
 *       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.79.1-1

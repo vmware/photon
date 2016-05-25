@@ -2,7 +2,7 @@
 
 Name:           pygobject
 Version:        3.10.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -46,5 +46,7 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         3.10.2-2
+-	GA - Bump release of all rpms
 *	Sat Jan 24 2015 Touseef Liaqat <tliaqat@vmware.com> 7.19.5.1
 -	Initial build.	First version

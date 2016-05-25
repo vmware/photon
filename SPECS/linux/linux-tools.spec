@@ -1,7 +1,7 @@
 Summary:      This package contains the 'perf' performance analysis tools for Linux kernel 
 Name:         linux-tools
 Version:      4.4.8
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      GPLv2
 URL:          http://www.kernel.org/
 Group:        System/Tools
@@ -36,6 +36,8 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 /etc/bash_completion.d/* 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>       4.4.8-2
+-	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
 -   Update to linux-4.4.8
 *   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 4.2.0-2

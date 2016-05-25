@@ -1,7 +1,7 @@
 Summary:	File System in Userspace (FUSE) utilities
 Name:           fuse
 Version:        2.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+
 Url:		http://fuse.sourceforge.net/
 Group:		System Environment/Base
@@ -51,6 +51,8 @@ install -v -m644    doc/{how-fuse-works,kernel.txt} \
 %{_prefix}/bin/fusermount
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         2.9.5-2
+-	GA - Bump release of all rpms
 *   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.5-1
 -   Updated to version 2.9.5
 *	Fri Aug 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.9.4-2

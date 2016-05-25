@@ -1,7 +1,7 @@
 Summary:	Netlink Protocol Library Suite
 Name:		libnl
 Version:	3.2.27
-Release:	1%{?dist}
+Release:	2%{?dist}
 License: 	LGPLv2+
 Group: 		System Environment/Libraries
 URL:		http://www.infradead.org/~tgr/libnl/
@@ -54,6 +54,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.2.27-2
+-	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 3.2.27-1
 - 	Updated to version 3.2.27
 *	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.25-2

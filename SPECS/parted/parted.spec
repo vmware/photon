@@ -1,7 +1,7 @@
 Summary:	My summary.
 Name:		parted
 Version:	3.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:		Applications/System
@@ -39,5 +39,7 @@ make DESTDIR=%{buildroot} install
 %{_infodir}/%{name}-%{version}/*
 %{_datadir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.2-2
+-	GA - Bump release of all rpms
 *	Thu Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.2-1
 	Initial version

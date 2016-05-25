@@ -1,7 +1,7 @@
 Summary: Network traffic statics utility for Solaris and Linux
 Name:    nicstat
 Version: 1.95
-Release: 1%{?dist}
+Release: 2%{?dist}
 License:	Artistic License 2.0
 URL:		http://sourceforge.net/projects/%{name}
 Source0:	http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
@@ -29,5 +29,7 @@ install -p -m644 -D  %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %{_mandir}/man1/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.95-2
+-	GA - Bump release of all rpms
 *	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.95-1
 -   Initial build.  First version

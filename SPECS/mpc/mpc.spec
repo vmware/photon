@@ -1,7 +1,7 @@
 Summary:	Library for the arithmetic of complex numbers
 Name:		mpc
 Version:	1.0.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv3+
 URL:		http://www.multiprecision.org
 Group:		Applications/System
@@ -36,6 +36,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/*.so.*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.0.3-2
+-	GA - Bump release of all rpms
 *       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  1.0.3-1
 -       Update version.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.0.2-1

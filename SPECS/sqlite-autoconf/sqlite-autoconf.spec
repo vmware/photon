@@ -2,7 +2,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		sqlite-autoconf
 Version:	3.11.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 %{_mandir}/man1/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.11.0-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.11.0-1
 -   Updated to version 3.11.0
 *	Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 3.8.3.1-2

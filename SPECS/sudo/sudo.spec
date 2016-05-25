@@ -1,7 +1,7 @@
 Summary:	Sudo
 Name:		sudo
 Version:	1.8.15
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
@@ -80,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.8.15-3
+-	GA - Bump release of all rpms
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-2
 -   	Fix for upgrade issues
 *	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-1

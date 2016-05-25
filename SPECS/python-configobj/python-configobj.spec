@@ -1,6 +1,6 @@
 Name:           python-configobj
 Version:        5.0.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Config file reading, writing and validation
 License:        BSD
 Group:          Development/Languages/Python
@@ -33,5 +33,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         5.0.6-2
+-	GA - Bump release of all rpms
 * Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Initial packaging for Photon

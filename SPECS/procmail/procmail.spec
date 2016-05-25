@@ -1,7 +1,7 @@
 Summary:	Autonomous Mail Processor
 Name:		procmail
 Version:	3.22
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.procmail.org
 Group:		Applications/Internet
@@ -33,6 +33,8 @@ make BASENAME=%{buildroot}%{_prefix} install-suid
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.22-3
+-	GA - Bump release of all rpms
 * 	Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  3.22-2
 - 	Add patch for CVE-2014-3618
 *	Mon Nov 02 2015 Divya Thaluru <dthaluru@vmware.com> 3.22-1

@@ -1,7 +1,7 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.6.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
@@ -85,6 +85,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.6.0-4
+-	GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.6.0-3
 -   Adding package support in pre/post/un scripts section.
 *   Thu Apr 21 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2

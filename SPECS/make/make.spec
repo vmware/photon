@@ -1,7 +1,7 @@
 Summary:	Program for compiling packages
 Name:		make
 Version:	4.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/make
 Group:		Development/Tools
@@ -32,6 +32,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/gnumake.h
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	4.1-3
+-	GA - Bump release of all rpms
 *       Tue May 10 2016 Kumar Kaushik <kaushikk@vmware.com>  4.1-2
 -       Fix for segfaults in chroot env.
 *       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  4.1-1

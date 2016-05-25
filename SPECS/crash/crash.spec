@@ -1,6 +1,6 @@
 Name:          crash
 Version:       7.1.4
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
@@ -62,6 +62,8 @@ cp -p defs.h %{buildroot}%{_includedir}/crash
 %{_includedir}/crash/*.h
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>        7.1.4-2
+-	GA - Bump release of all rpms
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1.4-1
 -   Updated to version 7.1.4
 *	Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 7.1.3-1

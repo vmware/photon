@@ -1,7 +1,7 @@
 Summary:	A garbage collector for C and C++
 Name:		gc
 Version:	7.4.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 Url:		http://www.hboehm.info/gc/
 Source0:	http://www.hboehm.info/gc/gc_source/%{name}-%{version}.tar.gz
@@ -52,6 +52,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	7.4.2-2
+-	GA - Bump release of all rpms
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 7.4.2-1
 -	Initial build. First version
 

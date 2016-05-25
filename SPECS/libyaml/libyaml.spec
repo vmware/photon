@@ -1,7 +1,7 @@
 Summary: Implementation of a YAML 1.1 parser and emitter
 Name: libyaml
 Version: 0.1.6
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT/X Consortium
 Group: Development/Libraries
 URL: http://pyyaml.org/wiki/LibYAML
@@ -55,6 +55,8 @@ you will need to install %{name}-devel.
 %exclude %{_libdir}/*.la
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  0.1.6-3
+-	GA - Bump release of all rpms
 * Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.6-2
 - Fix cve-2014-9130.
 * Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 0.1.6-1

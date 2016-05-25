@@ -1,7 +1,7 @@
 Summary:	Basic system utilities
 Name:		coreutils
 Version:	8.25
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base
@@ -63,6 +63,8 @@ make -k NON_ROOT_USERNAME=nobody check |& tee %{_specdir}/%{name}-check-log || %
 %defattr(-,root,root)
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	8.25-2
+-	GA - Bump release of all rpms
 *	Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 8.25-1
 - 	Updated to version 8.25
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 8.24-1

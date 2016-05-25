@@ -1,7 +1,7 @@
 Summary:        Command line utility for i-node notifications and management.
 Name:           inotify-tools
 Version:        3.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://sourceforge.net/projects/inotify-tools
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/Systems
@@ -59,6 +59,8 @@ make
 /%{_libdir}/libinotifytools.la
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         3.13-2
+-	GA - Bump release of all rpms
 *       Mon Dec 14 2015 Kumar Kaushik <kaushikk@vmware.com> 3.13-1
 -       Initial build.  First version
 

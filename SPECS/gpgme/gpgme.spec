@@ -1,7 +1,7 @@
 Summary:	High-Level Crypto API
 Name:		gpgme
 Version:	1.6.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:		System Environment/Security
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/%{_infodir}
 %{_datadir}/aclocal/*
 %{_datadir}/common-lisp/source/gpgme/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.6.0-2
+-	GA - Bump release of all rpms
 *   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.0-1
 -   Updated to version 1.6.0
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.3-2

@@ -1,7 +1,7 @@
 Summary:	Network Time Protocol reference implementation
 Name:		ntp
 Version:	4.2.8p6
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	NTP
 URL:		http://www.ntp.org/
 Group:		System Environment/NetworkingPrograms
@@ -136,6 +136,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	4.2.8p6-4
+-	GA - Bump release of all rpms
 *	Thu May 12 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.8p6-3
 -	Adding ntp sysconfig file
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-2

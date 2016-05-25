@@ -1,7 +1,7 @@
 Summary:	DB-6.1.26
 Name:		db
 Version:	6.1.26
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Sleepycat License
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/%{name}-%{version}.tar.gz
@@ -58,6 +58,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	6.1.26-2
+-	GA - Bump release of all rpms
 * 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 6.1.26-1
 - 	Updated to version 6.1.26
 * 	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 5.3.28-2

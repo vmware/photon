@@ -1,7 +1,7 @@
 Summary:	ASN.1 library
 Name:		libtasn1
 Version:	4.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+ and LGPLv2+
 URL:		http://www.gnu.org/software/libtasn1/
 Source0:	http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
@@ -49,6 +49,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	4.7-2
+-	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.7-1
 - 	Updated to version 4.7
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 4.5-3

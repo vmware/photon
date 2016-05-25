@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	4%{?dist}
+Release:    	5%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -182,6 +182,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>     	4.4.8-5
+-	GA - Bump release of all rpms
 *	Mon May 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-4
 -	Fixed generation of debug symbols for kernel modules & vmlinux.
 *   Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.4.8-3

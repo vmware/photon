@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.2.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -101,6 +101,8 @@ done
 %{_mandir}/*/*
 %{_sysconfdir}/pam.d/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	4.2.1-5
+-	GA - Bump release of all rpms
 *   Mon May 2 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-4
 -   Enabling pam_systemd module in a session.
 *       Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3

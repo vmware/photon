@@ -1,7 +1,7 @@
 Summary:  	xinetd -- A better inetd.
 Name:		xinetd
 Version:	2.3.15
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
@@ -66,6 +66,8 @@ fi
 /lib/systemd/system/xinetd.service
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.3.15-5
+-	GA - Bump release of all rpms
 *   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.15-4
 -   Fix upgrade issues
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.3.15-3

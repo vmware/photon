@@ -1,7 +1,7 @@
 Summary:	libnss-ato
 Name:		libnss-ato
 Version:	2.3.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU General Public License
 URL:		https://github.com/donapieppo/libnss-ato
 Source0:	%{name}-%{version}.tar.gz
@@ -30,5 +30,7 @@ make DESTDIR=%{buildroot} install
 %exclude %{_mandir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.3.6-2
+-	GA - Bump release of all rpms
 *	Wed Oct 28 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 -	Initial packaging. First version

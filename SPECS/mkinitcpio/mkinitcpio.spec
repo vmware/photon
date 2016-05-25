@@ -1,7 +1,7 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    19
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
@@ -46,6 +46,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>     19-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 19-1
 -   Updated to new version.
 *   Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 18-2

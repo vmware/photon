@@ -1,6 +1,6 @@
 Name:           python-six
 Version:        1.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
@@ -34,6 +34,8 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         1.10.0-2
+-	GA - Bump release of all rpms
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.10.0-1
 -	Upgrade version
 * 	Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>

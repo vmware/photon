@@ -1,7 +1,7 @@
 Summary:	Provides IPC between GnuPG Components
 Name:		libassuan
 Version:	2.4.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/related_software/libassuan/index.html
 Group:		Development/Libraries
@@ -31,6 +31,8 @@ rm -rf %{buildroot}/%{_infodir}
 %{_libdir}/*.so*
 %{_datadir}/aclocal/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.4.2-2
+-	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.2-1
 - 	Updated to version 2.4.2
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.2.0-2

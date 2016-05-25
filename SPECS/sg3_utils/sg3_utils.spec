@@ -1,7 +1,7 @@
 Summary:	Tools and Utilities for interaction with SCSI devices.
 Name:		sg3_utils
 Version:	1.42
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://sg.danny.cz/sg/sg3_utils.html
 Source0:	http://sg.danny.cz/sg/p/sg3_utils-1.42.tar.xz
@@ -51,5 +51,7 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}/%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.42-2
+-	GA - Bump release of all rpms
 *	Thu Apr 14 2016 Kumar Kaushik <kaushikk@vmware.com> 1.42-1
 -	Initial build. First version

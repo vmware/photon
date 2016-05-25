@@ -1,7 +1,7 @@
 Summary: 	Utilities for writing cds.
 Name: 		cdrkit
 Version: 	1.1.11
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 License: 	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.
@@ -34,6 +34,8 @@ ln -s  genisoimage  %{buildroot}%{_prefix}/bin/mkisofs
 %{_sbindir}/*
 %{_datadir}/man/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  	1.1.11-2
+-	GA - Bump release of all rpms
 * Sat Feb 14 2015 Sharath George <sharathg@vmware.com>
 - first packaging
 

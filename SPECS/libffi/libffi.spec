@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
 Version:	3.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/licenses/libffi/LICENSE
 %{_mandir}/man3/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.2.1-2
+-	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
 - 	Updated to version 3.2.1
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.1-1

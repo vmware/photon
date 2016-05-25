@@ -1,7 +1,7 @@
 Summary:       USB Utils
 Name:          usbutils
 Version:       008
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2+
 URL:           http://linux-usb.sourceforge.net
 Group:         Applications/System
@@ -45,6 +45,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/misc/
 %{_datadir}/misc/usb.ids
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>        008-3
+-	GA - Bump release of all rpms
 * Tue May 10 2016 Nick Shi <nshi@vmware.com> - 008-2
 - Update Source0 to the correct link
 * Fri May 06 2016 Nick Shi <nshi@vmware.com> - 008-1

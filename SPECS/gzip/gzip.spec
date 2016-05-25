@@ -1,7 +1,7 @@
 Summary:	Programs for compressing and decompressing files
 Name:		gzip
 Version:	1.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software
 Group:		Applications/File
@@ -35,5 +35,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.6-2
+-	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.6-1
 -	Initial build.	First version

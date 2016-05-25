@@ -1,7 +1,7 @@
 Summary:	Glib interfaces to D-Bus API 
 Name:		dbus-glib
 Version:	0.106
-Release:	3%{?dist}
+Release:	4%{?dist}
 License: 	AFL and GPLv2+
 Group: 		System Environment/Libraries
 Source0:	http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
@@ -59,6 +59,8 @@ make DESTDIR=%{buildroot} install
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.106-4
+-	GA - Bump release of all rpms
 *   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 0.106-1
 -   Updated to version 0.106
 *   	Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 0.104-3

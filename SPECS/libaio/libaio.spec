@@ -1,7 +1,7 @@
 Summary:	Linux-native asynchronous I/O access library
 Name:		libaio
 Version:	0.3.110
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
@@ -63,6 +63,8 @@ make destdir=%{buildroot} prefix=%{_prefix} libdir=/lib usrlibdir=%{_libdir} inc
 %attr(0755,root,root) %{_libdir}/libaio.a
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.3.110-2
+-	GA - Bump release of all rpms
 * Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.110-1
 - Initial version
 

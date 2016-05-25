@@ -1,7 +1,7 @@
 Summary:	NSS module to read passwd/group files from alternate locations
 Name:		nss-altfiles
 Version:	2.19.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPL 2.1
 URL:		https://github.com/aperezdc/nss-altfiles
 Group:		Applications/System
@@ -34,5 +34,7 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/*.so.*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.19.1-2
+-	GA - Bump release of all rpms
 *   Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19.1-2
 -   Initial version

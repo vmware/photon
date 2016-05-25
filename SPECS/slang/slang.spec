@@ -1,7 +1,7 @@
 Summary:	An interpreted language that may be embedded into an application to make the application extensible.
 Name:		slang
 Version:	2.3.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU General Public License
 URL:		http://www.jedsoft.org/slang/index.html
 Group:		Development/Languages
@@ -58,6 +58,8 @@ chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.3.0 \
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.3.0-2
+-	GA - Bump release of all rpms
 *   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 2.3.0-1
 -   	Upgrade version.
 *	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.2.4-1

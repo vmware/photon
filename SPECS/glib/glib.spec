@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.47.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.46/%{name}-%{version}.tar.xz
 Group:		Applications/System
@@ -86,6 +86,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.47.6-2
+-	GA - Bump release of all rpms
 *   Thu Apr 14 2016	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.6-1
     Updated to version 2.47.6
 * 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.46.2-1

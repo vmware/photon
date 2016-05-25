@@ -3,7 +3,7 @@
 %define gem_name terminal-table
 Name: rubygem-terminal-table
 Version: 1.5.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Simple, feature rich ascii table generation library
 Group: Applications/Programming
 License: BSD
@@ -23,6 +23,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.5.2-2
+-	GA - Bump release of all rpms
 * Wed Nov 11 2015 Alexey Makhalov <amakhalov@vmware.com> 1.5.2-1
 - Initial build
 

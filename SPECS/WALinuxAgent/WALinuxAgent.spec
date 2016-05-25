@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.0.18
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            http://go.microsoft.com/fwlink/?LinkId=250998
@@ -75,6 +75,8 @@ touch %{buildroot}/%{_localstatedir}/log/waagent.log
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         2.0.18-3
+-	GA - Bump release of all rpms
 * Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-2
 - Edit post scripts
 * Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-1

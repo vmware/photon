@@ -1,7 +1,7 @@
 Summary:	The GNU Database Manager
 Name:		gdbm
 Version:	1.11
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/gdbm
 Group:		Applications/Databases
@@ -40,5 +40,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.11-2
+-	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.11-1
 -	Initial build.	First version

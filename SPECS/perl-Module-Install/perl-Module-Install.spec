@@ -5,7 +5,7 @@
 Summary:        Standalone, extensible Perl module installer
 Name:           perl-Module-Install
 Version:        1.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
@@ -46,6 +46,8 @@ make test AUTOMATED_TESTING=1
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         1.16-2
+-	GA - Bump release of all rpms
 *	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com> 1.16-1
 -	Upgrade version to 1.16
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1

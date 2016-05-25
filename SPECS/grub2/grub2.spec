@@ -3,7 +3,7 @@
 Summary:	GRand Unified Bootloader
 Name:		grub2
 Version:	2.02
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grub
 Group:		Applications/System
@@ -80,6 +80,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/locale/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.02-4
+-	GA - Bump release of all rpms
 *	Fri Oct 02 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-3
 -	Adding patch to boot entries with out password.
 *	Wed Jul 22 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-2

@@ -1,7 +1,7 @@
 Summary:	Tool to analyze BIOS DMI data
 Name:		dmidecode
 Version:	3.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.nongnu.org/dmidecode/
 Group:		System Environment/Base
@@ -25,5 +25,7 @@ make DESTDIR=%{buildroot} prefix=%{_prefix} install
 %{_mandir}/man8/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.0-2
+-	GA - Bump release of all rpms
 *	Mon Nov 02 2015 Divya Thaluru <dthaluru@vmware.com> 3.0-1
 -	Initial build.	First version

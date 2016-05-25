@@ -1,7 +1,7 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
 Version:	2.25.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
 Group:		System Environment/Base
@@ -168,6 +168,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libopcodes.so
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.25.1-2
+-	GA - Bump release of all rpms
 *   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.25.1-1
 -   Updated to version 2.25.1
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.25-2

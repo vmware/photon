@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.1.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -54,6 +54,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>     3.1.2-6
+-	GA - Bump release of all rpms
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-5
 -   Moving static lib files to devel package.
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-4

@@ -1,7 +1,7 @@
 Summary:	Utilities for configuring and managing bridge devices
 Name:		bridge-utils
 Version:	1.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge
 Group:		System Environment/Base
@@ -28,5 +28,7 @@ make DESTDIR=%{buildroot} install
 %{_mandir}/man8/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.5-2
+-	GA - Bump release of all rpms
 *	Tue May 19 2015 Divya Thaluru <dthaluru@vmware.com> 1.5-1
 -	Initial build.	First version

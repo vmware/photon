@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.141
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -424,6 +424,8 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.02.141-5
+-	GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
 -   Adding upgrade support in pre/post/un scripts.
 *   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3 

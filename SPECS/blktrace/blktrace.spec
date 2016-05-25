@@ -1,7 +1,7 @@
 Summary:	Utilities for block layer IO tracing
 Name:		blktrace    
 Version:	1.1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2 
 URL:		http://git.kernel.org/cgit/linux/kernel/git/axboe/blktrace.git/tree/README
 Group:		Development/Tools/Other
@@ -34,6 +34,8 @@ rm -rf %{buildroot}/*
 %{_mandir}
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.1.0-2
+-	GA - Bump release of all rpms
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-1
 -   Updated to version 1.1.0
 *	Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.5-1

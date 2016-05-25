@@ -2,7 +2,7 @@
 Summary:      	libgpg-error
 Name:         	libgpg-error
 Version:      	1.21
-Release:      	1%{?dist}
+Release:      	2%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/
 Group:		Development/Libraries
@@ -50,6 +50,8 @@ echo %{_libdir}
 %{_datarootdir}/common-lisp/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>       	1.21-2
+-	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
 - 	Updated to version 1.21
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.17-2

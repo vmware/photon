@@ -2,7 +2,7 @@
 Summary:	OpenLdap-2.4.43
 Name:		openldap
 Version:	2.4.43
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -71,6 +71,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.4.43-2
+-	GA - Bump release of all rpms
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1
 - 	Updated to version 2.4.43
 *	Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2

@@ -1,7 +1,7 @@
 Summary:	C++ XML Signature and Encryption library.
 Name:		xml-security-c
 Version:	1.7.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache Software License
 URL:		http://santuario.apache.org/index.html
 Group:		Applications/System
@@ -40,6 +40,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.a
 %{_includedir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.7.3-2
+-	GA - Bump release of all rpms
 *   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 1.7.3-1
 -   	Upgrade version.
 *	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 1.5.1-1

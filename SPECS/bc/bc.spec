@@ -1,7 +1,7 @@
 Summary:	precision numeric processing language
 Name:		bc
 Version:	1.06.95
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://alpha.gnu.org/gnu/bc/
 Group:		System Environment/base
@@ -39,6 +39,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.06.95-3
+-	GA - Bump release of all rpms
 *       Tue Aug 4 2015 Kumar Kaushik <kaushikk@vmware.com> 1.06.95-2
 -       Adding the post uninstall section.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.06.95-1

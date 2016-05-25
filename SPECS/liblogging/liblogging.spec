@@ -1,7 +1,7 @@
 Summary:	Logging Libraries
 Name:		liblogging
 Version:	1.0.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License: 	BSD
 URL:     	http://www.liblogging.org/
 Source0: 	http://download.rsyslog.com/liblogging/liblogging-%{version}.tar.gz
@@ -53,6 +53,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/liblogging/*.h
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.0.5-2
+-	GA - Bump release of all rpms
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.5-1
 -	Initial build. First version
 

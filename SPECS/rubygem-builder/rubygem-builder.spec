@@ -5,7 +5,7 @@
 Summary: Builders for MarkUp
 Name: rubygem-builder
 Version: 3.2.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Development/Languages
 License: MIT
 URL: http://onestepback.org
@@ -28,5 +28,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  3.2.2-2
+-	GA - Bump release of all rpms
 * Wed Nov 11 2015 Xiaolin Li <amakhalov@vmware.com> 3.2.2-1
 - Initial build

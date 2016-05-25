@@ -1,7 +1,7 @@
 Summary:	A Distributed init System
 Name:		fleet
 Version:	0.11.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache 2.0
 URL:		https://coreos.com/using-coreos/clustering/
 Group:		OS/ClusterManagement
@@ -80,6 +80,8 @@ getent passwd fleet >/dev/null || /usr/sbin/useradd -c "fleet user" -s /sbin/nol
 /usr/share/polkit-1/rules.d/fleet.rules
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.11.5-3
+-	GA - Bump release of all rpms
 *       Mon May 09 2016 Nick Shi <nshi@vmware.com> 0.11.5-2
 -       Configure fleet and add fleet to systemd service.
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 0.11.5-1

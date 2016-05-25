@@ -1,7 +1,7 @@
 Summary:	Netcat is a featured networking utility which reads and writes data across network connections, using the TCP/IP protocol.
 Name:		netcat
 Version:	0.7.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2 
 URL:		http://netcat.sourceforge.net/
 Group:		Productivity/Networking/Other
@@ -34,5 +34,7 @@ rm -rf %{buildroot}
 %{_libdir}
 /usr/man
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.7.1-2
+-	GA - Bump release of all rpms
 *	Tue Dec 08 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.7.1-1
 -	Initial build.	First version

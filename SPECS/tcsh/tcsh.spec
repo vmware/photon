@@ -2,7 +2,7 @@
 Summary:	An enhanced version of csh, the C shell
 Name:		tcsh
 Version:	6.19.00
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 Group:		System Environment/Shells
 Source:		http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.gz
@@ -99,6 +99,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	6.19.00-3
+-	GA - Bump release of all rpms
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-2
 -   	Fix for upgrade issues
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-1

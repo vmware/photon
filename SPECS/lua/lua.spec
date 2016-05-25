@@ -1,7 +1,7 @@
 Summary:	Programming language
 Name:		lua
 Version:	5.3.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://www.lua.org
 Group:		Development/Tools

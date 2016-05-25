@@ -3,7 +3,7 @@
 Summary:        Interface to create per object accessors
 Name:           perl-Object-Accessor
 Version:        0.48
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Object-Accessor/
@@ -40,5 +40,7 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         0.48-2
+-	GA - Bump release of all rpms
 *	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 0.48-1
 -	Initial version.

@@ -1,7 +1,7 @@
 Summary:	Library for manipulating pipelines
 Name:		libpipeline
 Version:	1.4.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://libpipeline.nongnu.org
 Group:		Applications/System
@@ -36,6 +36,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/libpipeline.pc
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.4.1-2
+-	GA - Bump release of all rpms
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.1-1
 -       Initial build. First version
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.2.6-1

@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -213,6 +213,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.7.11-4
+-	GA - Bump release of all rpms
 *  	Tue Apr 26 2016 Nick Shi <nshi@vmware.com> 2.7.11-3
 -  	Adding readline module into python2-libs
 

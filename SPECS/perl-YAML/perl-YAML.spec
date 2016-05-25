@@ -2,7 +2,7 @@
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
 Version:        1.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
@@ -81,6 +81,8 @@ make test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         1.15-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.15-1
 -   Updated to version 1.15
 *	Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 1.14-2

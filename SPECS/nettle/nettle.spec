@@ -1,7 +1,7 @@
 Summary:	Low level cryptographic libraries
 Name:		nettle
 Version:	3.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv3+ or GPLv2+
 URL:            http://www.lysator.liu.se/~nisse/nettle/
 Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
@@ -56,6 +56,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	3.2-2
+-	GA - Bump release of all rpms
 *   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 3.2-1
 -   Updated to version 3.2
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.1-2

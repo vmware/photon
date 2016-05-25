@@ -1,7 +1,7 @@
 Summary:	Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity. 
 Name:		iotop  
 Version:	0.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2 
 URL:		http://guichaz.free.fr/iotop/
 Group:		System/Monitoring
@@ -40,5 +40,7 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.6-2
+-	GA - Bump release of all rpms
 *	Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.6-1
 -	Initial build.	First version

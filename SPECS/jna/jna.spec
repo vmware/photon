@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -65,6 +65,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	4.2.1-4
+-	GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 4.2.1-3
 -   Updated JAVA_HOME path to point to latest JDK.
 * 	Thu Mar 03 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-2

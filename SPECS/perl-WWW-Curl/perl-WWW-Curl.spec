@@ -7,7 +7,7 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
@@ -59,6 +59,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         4.17-2
+-	GA - Bump release of all rpms
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.17-1
 -	Initial version.
 

@@ -1,7 +1,7 @@
 Summary:	Displays information about running processes
 Name:		psmisc
 Version:	22.21
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://psmisc.sourceforge.net/
 Group:		Applications/System
@@ -38,6 +38,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	22.21-4
+-	GA - Bump release of all rpms
 *	Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 22.21-3
 -	Add patch for incorrect fclose in pstree
 *       Fri Mar 11 2016 Kumar Kaushik <kaushikk@vmware.com> 22.21-2

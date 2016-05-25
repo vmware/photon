@@ -2,7 +2,7 @@
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.50
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
@@ -45,6 +45,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         1.50-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.50-1
 -   Upgraded to version 1.50
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.48-1

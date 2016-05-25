@@ -1,7 +1,7 @@
 Summary:        Rocket
 Name:           rocket
 Version:        1.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://rocket.readthedocs.org/en/latest/
 Group:          Applications/File
@@ -47,6 +47,8 @@ rm -rf %{buildroot}/*
 /var/lib/rkt/containers
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         1.4.0-3
+-	GA - Bump release of all rpms
 *       Mon Apr 18 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.0-2
 -       Adding missing files.
 *       Fri Apr 15 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.0-1

@@ -1,7 +1,7 @@
 Summary:	Shared libraries, portable interface
 Name:		libtool
 Version:	2.4.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/libtool
 Group:		Development/Tools
@@ -73,6 +73,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libltdl.so.7.3.1
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.4.6-2
+-	GA - Bump release of all rpms
 *	Wed Jan 13 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.6-1
 -   Updated to version 2.4.6
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.2-1

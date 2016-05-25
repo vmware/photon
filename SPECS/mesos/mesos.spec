@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.24.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -85,6 +85,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	0.24.0-3
+-	GA - Bump release of all rpms
 *	Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2
 -	Add python-setuptools to build requires.
 *	Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1

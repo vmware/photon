@@ -1,7 +1,7 @@
 Summary:	List Open Files
 Name:		lsof
 Version:	4.89
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://people.freebsd.org/~abe/
 Group:		System Environment/Tools
@@ -32,5 +32,7 @@ install -v -m 0644 lsof.8 %{buildroot}%{_mandir}/man8
 %{_sbindir}/*
 %{_mandir}/man8/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	4.89-2
+-	GA - Bump release of all rpms
 *	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 4.89-1
 -	Initial build.

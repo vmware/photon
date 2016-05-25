@@ -1,7 +1,7 @@
 Summary: C/C++ configuration file library
 Name:    libconfig
 Version: 1.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: LGPLv2
 URL: http://www.hyperrealm.com/libconfig/
 Source: %{name}-%{version}.tar.gz
@@ -41,5 +41,7 @@ rm -rf %{buildroot}%{_infodir}/dir
 %{_infodir}/libconfig.info*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.5-2
+-	GA - Bump release of all rpms
 *	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.2-1
 -   Initial build.  First version

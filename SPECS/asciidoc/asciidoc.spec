@@ -1,7 +1,7 @@
 Summary:    AsciiDoc is a human readable text document format
 Name:       asciidoc
 Version:    8.6.9
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://asciidoc.org/
 Group:      System Environment/Development
@@ -36,5 +36,7 @@ make DESTDIR=%{buildroot} install
 /usr/share/man/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>     8.6.9-2
+-	GA - Bump release of all rpms
 *   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 8.6.9-1
 -   Initial build.  First version

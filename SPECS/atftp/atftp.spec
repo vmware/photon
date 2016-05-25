@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -125,6 +125,8 @@ fi
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         0.7.1-6
+-	GA - Bump release of all rpms
 *   Fri May 6 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-5
 -   Adding post-install run time dependencies
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-4

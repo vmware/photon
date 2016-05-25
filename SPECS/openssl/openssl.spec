@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2h
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -108,6 +108,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.0.2h-2
+-	GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.0.2h-1
 -   Upgrade to 1.0.2h
 *   Mon Mar 07 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2g-1

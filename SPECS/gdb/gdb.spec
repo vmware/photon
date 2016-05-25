@@ -1,7 +1,7 @@
 Summary:	C debugger
 Name:		gdb
 Version:	7.8.2	
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
@@ -59,6 +59,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	7.8.2	-3
+-	GA - Bump release of all rpms
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 7.8.2-2
 -	Handled locale files with macro find_lang
 *	Wed Apr 08 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-1

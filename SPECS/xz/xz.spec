@@ -1,7 +1,7 @@
 Summary:	Programs for compressing and decompressing files
 Name:		xz
 Version:	5.2.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 URL:		http://tukaani.org/xz
 License:	GPLv2+ and GPLv3+ and LGPLv2+
 Group:		Applications/File
@@ -72,6 +72,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/liblzma.a
 %{_libdir}/liblzma.so
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	5.2.2-2
+-	GA - Bump release of all rpms
 *   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 5.2.2-1
 -   Upgrade version.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 5.0.5-2

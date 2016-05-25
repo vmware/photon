@@ -1,7 +1,7 @@
 Summary:	Contains programs for compressing and decompressing files
 Name:		bzip2
 Version:	1.0.6
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		http://www.bzip.org/
 Group:		System Environment/Base
@@ -77,6 +77,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/bzlib.h
 %{_libdir}/libbz2.so
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.0.6-5
+-	GA - Bump release of all rpms
 *	Tue Nov 10 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0.6-4
 -	Providing libbz2.so.1, miror fix for devel provides.
 *	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.6-3

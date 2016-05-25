@@ -1,7 +1,7 @@
 Summary:        A library which allows userspace access to USB devices
 Name:           libusb
 Version:        1.0.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://sourceforge.net/projects/libusb/
 Group:          System Environment/Libraries
@@ -48,6 +48,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         1.0.20-2
+-	GA - Bump release of all rpms
 * Thu May 05 2016 Nick Shi <nshi@vmware.com> 1.0.20-1
 - Initial version
 

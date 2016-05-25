@@ -2,7 +2,7 @@
 
 Name:           python-iniparse
 Version:        0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 License:        MIT
@@ -50,6 +50,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         0.4-2
+-	GA - Bump release of all rpms
 * Sat Jun 12 2010 Paramjit Oberoi <param@cs.wisc.edu> - 0.4-1
 - Release 0.4
 * Sat Apr 17 2010 Paramjit Oberoi <param@cs.wisc.edu> - 0.3.2-1

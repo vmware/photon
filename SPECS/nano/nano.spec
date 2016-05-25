@@ -1,7 +1,7 @@
 Summary:	Text editor
 Name:		nano
 Version:	2.5.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.nano-editor.org/
 Group:		Applications/Editors
@@ -37,6 +37,8 @@ install -v -m644 %{_builddir}/%{name}-%{version}/doc/texinfo/nano.html %{_docdir
 %{_datadir}/doc/nano-2.5.2/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.5.2-2
+-	GA - Bump release of all rpms
 *       Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.2-1
 -       Updating to new version.
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.2.6-2

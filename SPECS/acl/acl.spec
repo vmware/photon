@@ -1,7 +1,7 @@
 Summary:	Access control list utilities
 Name:		acl
 Version:	2.2.52
-Release:	1%{?dist}
+Release:	2%{?dist}
 Source0:	http://download.savannah.gnu.org/releases-noredirect/acl/acl-%{version}.src.tar.gz
 %define sha1 acl=537dddc0ee7b6aa67960a3de2d36f1e2ff2059d9
 License:	GPLv2+
@@ -98,5 +98,7 @@ chmod 0755 %{buildroot}%{_libdir}/libacl.so.*.*.*
 %{_libdir}/libacl.so.*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.2.52-2
+-	GA - Bump release of all rpms
 * Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.2.52-1
 - Initial version

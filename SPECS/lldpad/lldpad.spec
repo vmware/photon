@@ -1,7 +1,7 @@
 Summary: Intel LLDP Agent
 Name:    lldpad
 Version: 1.0.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPLv2
 URL: http://open-lldp.org/
 Source: %{name}-%{version}.tar.gz
@@ -65,6 +65,8 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.0.1-4
+-	GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com>  1.0.1-3
 -   Adding support in pre/post/un scripts for upgrade.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.0.1-2

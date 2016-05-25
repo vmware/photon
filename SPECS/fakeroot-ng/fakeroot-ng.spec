@@ -1,7 +1,7 @@
 Summary:      Fools programs into thinking they are running with root permission
 Name:         fakeroot-ng
 Version:      0.18
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      GPLv2+
 URL:          http://fakeroot-ng.lingnu.com/
 Source0:      http://downloads.sourceforge.net/project/fakerootng/fakeroot-ng/%{version}/fakeroot-ng-%{version}.tar.gz
@@ -43,6 +43,8 @@ rm -rf %{buildroot}/*
 %doc %{_mandir}/man1/fakeroot-ng.1.gz
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>       0.18-2
+-	GA - Bump release of all rpms
 * Fri Jul 10 2015 Luis Zuniga <lzuniga@vmware.com> 0.17-0.1
 - Initial build for Photon
 

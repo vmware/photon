@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.9.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -66,6 +66,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_prefix}/maven-ant-tasks/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	1.9.6-3
+-	GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.9.6-2
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1

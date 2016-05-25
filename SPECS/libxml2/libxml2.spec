@@ -1,7 +1,7 @@
 Summary:	Libxml2-2.9.2
 Name:		libxml2
 Version:	2.9.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://xmlsoft.org/
 Group:		System Environment/General Libraries
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 	2.9.3-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9.3-1
 -   Upgraded to version 2.9.3
 *   Thu Jan 28 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.2-1

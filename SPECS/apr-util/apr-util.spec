@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.5.4
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -111,6 +111,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>     1.5.4-7
+-	GA - Bump release of all rpms
 *   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.4-6
 -   remove libexpat files
 *	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.4-5

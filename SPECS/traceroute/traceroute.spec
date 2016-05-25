@@ -1,7 +1,7 @@
 Name:           traceroute
 Summary:        Traces the route taken by packets over an IPv4/IPv6 network
 Version:        2.0.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Internet
 Url:            http://traceroute.sourceforge.net
@@ -49,5 +49,7 @@ popd
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>         2.0.22-2
+-	GA - Bump release of all rpms
 * 	Fri Feb 26 2016 Anish Swaminathan <anishs@vmware.com>  2.0.22-1
 - 	Initial version

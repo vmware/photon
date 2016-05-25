@@ -3,7 +3,7 @@
 %define gem_name highline
 Name: rubygem-highline
 Version: 1.7.8
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A high-level IO library that provides validation, type conversion, and more for command-line interfaces
 Group: Applications/Programming
 License: BSD
@@ -23,6 +23,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.7.8-2
+-	GA - Bump release of all rpms
 * Wed Nov 11 2015 Anish Swaminathan <anishs@vmware.com> 1.7.8-1
 - Initial build
 
