@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          9%{?dist}
+Release:          10%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -13,6 +13,7 @@ Source1:          http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:          rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
+Patch0:		  rpm-debuginfo-exclude.1.patch
 #Requires:        nspr
 Requires:         nss 
 Requires:         popt
@@ -56,6 +57,7 @@ Binaries, libraries and scripts to build rpms.
 %setup -q -T -D -a 1
 %setup -q -T -D -a 2
 mv db-5.3.28 db
+%patch0 -p1
 %build
 ./autogen.sh --noconfigure
 ./configure \
@@ -197,6 +199,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*    Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-10
+-    Exclude .build-id/.1 and .build-id/.1.debug from debuginfo pkg
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
 -	GA - Bump release of all rpms
 *    Thu May 05 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-8
