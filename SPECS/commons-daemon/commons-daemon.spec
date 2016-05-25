@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -58,6 +58,8 @@ chmod -R 755 $DIST_DIR
 %{_prefix}/*.jar
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-6
+-	GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 1.0.15-5
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.15-4

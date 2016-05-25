@@ -1,7 +1,7 @@
 Summary:	Basic and advanced IPV4-based networking
 Name:		iproute2
 Version:	4.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:		Applications/System
@@ -34,6 +34,8 @@ make	DESTDIR=%{buildroot} \
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.0-2
+-	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.0-1
 - 	Updated to version 4.2.0
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.12.0-1

@@ -2,7 +2,7 @@
 Summary:	Simple data types for common serialization formats
 Name:		perl-Types-Serialiser
 Version:	1.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL+ or Artistic
 Group:		Development/Libraries
 URL:		http://search.cpan.org/dist/Types-Serialiser/
@@ -53,5 +53,7 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-2
+-	GA - Bump release of all rpms
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.0-1
 -	Initial version.

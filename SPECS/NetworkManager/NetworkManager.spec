@@ -1,7 +1,7 @@
 Summary:	NetworkManager
 Name:		NetworkManager
 Version:	1.0.10
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		https://wiki.gnome.org/Projects/NetworkManager
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
@@ -96,6 +96,8 @@ EOF
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.10-2
+-	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  1.0.10-1
 - 	Upgrade to 1.0.10
 *	Mon Dec 14 2015	Anish Swaminathan<anishs@vmware.com> 1.0.2-4

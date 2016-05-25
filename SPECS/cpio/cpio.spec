@@ -1,7 +1,7 @@
 Summary:	cpio-2.12
 Name:		cpio
 Version:	2.12
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
@@ -39,6 +39,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/man1/*
 %{_docdir}/%{name}-%{version}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.12-2
+-	GA - Bump release of all rpms
 * 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.12-1
 - 	Updated to version 2.12
 *	Fri Aug 14 2015 Divya Thaluru <dthaluru@vmware.com> 2.11-2

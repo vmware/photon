@@ -1,7 +1,7 @@
 Summary:	Boost 
 Name:		boost
 Version:	1.60.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Boost Software License V1
 URL:		http://www.boost.org/
 Group:		System Environment/Security
@@ -47,6 +47,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60.0-2
+-	GA - Bump release of all rpms
 *	Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.60.0-1
 -   Update to version 1.60.0.
 *	Thu Oct 01 2015 Xiaolin Li <xiaolinl@vmware.com> 1.56.0-2

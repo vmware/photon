@@ -1,7 +1,7 @@
 Summary:	An URL retrieval utility and library
 Name:		curl
 Version:	7.47.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://curl.haxx.se
 Group:		System Environment/NetworkingLibraries
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_datadir}/zsh/site-functions/_curl
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.47.1-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 7.47.1-1
 -   Updated to version 7.47.1
 * 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 7.46.0-1

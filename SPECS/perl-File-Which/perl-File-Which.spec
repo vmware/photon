@@ -1,7 +1,7 @@
 Summary:        File-Which
 Name:           perl-File-Which
 Version:        1.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-Which/
@@ -52,6 +52,8 @@ make test
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
+-	GA - Bump release of all rpms
 *	Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
 -	Initial version.
 

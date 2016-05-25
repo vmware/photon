@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -535,6 +535,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-6
+-	GA - Bump release of all rpms
 *   Wed May 4 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-5
 -   Removing non-existent users from /etc/group file
 *   Fri Apr 29 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0-4

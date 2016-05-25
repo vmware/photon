@@ -5,7 +5,7 @@
 Summary:        iPXE open source boot firmware
 Name:           ipxe
 Version:        ed0d7c4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -68,5 +68,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> ed0d7c4-2
+-	GA - Bump release of all rpms
 *       Thu Nov 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> ed0d7c4-1
 -       Initial build. First version

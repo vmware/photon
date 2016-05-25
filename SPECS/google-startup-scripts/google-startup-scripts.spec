@@ -1,7 +1,7 @@
 Summary:	Google Startup Scripts
 Name:		google-startup-scripts
 Version:	1.3.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://github.com/GoogleCloudPlatform/compute-image-packages/
@@ -45,6 +45,8 @@ rm -rf $RPM_BUILD_ROOT
 %exclude /LICENSE
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.3-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-1
 -   Updated to version 1.3.3
 *   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 1.3.1-1

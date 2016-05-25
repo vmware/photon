@@ -1,7 +1,7 @@
 Summary:      Enhanced seccomp library
 Name:         libseccomp
 Version:      2.2.3
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      LGPLv2
 Group:        System Environment/Libraries
 Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -64,5 +64,7 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.3-2
+-	GA - Bump release of all rpms
 * Sat Jan 16 2016 Fabio Rapposelli <fabio@vmware.com> - 2.2.3-1
 - First release of the package

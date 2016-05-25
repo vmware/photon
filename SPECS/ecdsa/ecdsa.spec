@@ -1,7 +1,7 @@
 Summary: ECDSA cryptographic signature library (pure python)
 Name: ecdsa
 Version: 0.13
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Security
 URL: https://pypi.python.org/pypi/ecdsa
@@ -45,5 +45,7 @@ easy_install ./
 %{python_sitelib}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.13-2
+-	GA - Bump release of all rpms
 *	Tue Jan 5 2016 Xiaolin Li <xiaolinl@vmware.com> 0.13-1
 -	Initial build.	First version

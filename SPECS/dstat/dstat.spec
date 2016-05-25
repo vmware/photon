@@ -1,7 +1,7 @@
 Summary: Versatile resource statistics tool
 Name:    dstat
 Version: 0.7.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 URL: http://dag.wiee.rs/home-made/dstat/
 Source: %{name}-%{version}.tar.bz2
@@ -30,5 +30,7 @@ Dstat gives you detailed selective information in columns and clearly indicates 
 %{_datadir}/dstat/
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.2-2
+-	GA - Bump release of all rpms
 *	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.2-1
 -   Initial build.  First version

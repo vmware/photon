@@ -1,7 +1,7 @@
 Summary:	An Event notification library.
 Name:		libevent
 Version:	2.0.22
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://libevent.org
 Source0:        https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/%{name}-%{version}-stable.tar.gz
@@ -51,5 +51,7 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig/libevent_openssl.pc
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.22-2
+-	GA - Bump release of all rpms
 *       Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.22-1
 -       Initial Version.

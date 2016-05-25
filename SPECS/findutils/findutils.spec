@@ -1,7 +1,7 @@
 Summary:	This package contains programs to find files
 Name:		findutils
 Version:	4.6.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/findutils
 Group:		Applications/File
@@ -40,6 +40,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libexecdir}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.6.0-2
+-	GA - Bump release of all rpms
 *   	Tue Apr 26 2016 Anish Swaminathan <anishs@vmware.com> 4.6.0-1
 -   	Updated to version 4.6.0
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.4.2-1

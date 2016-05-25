@@ -1,7 +1,7 @@
 Summary: 	A library that performs asynchronous DNS operations
 Name: 		c-ares
 Version: 	1.10.0
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 License: 	MIT
 Group: 		System Environment/Libraries
 Vendor:		VMware, Inc.
@@ -68,5 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/ares_*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10.0-2
+-	GA - Bump release of all rpms
 * Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 1.10.0-1
 - Initial version

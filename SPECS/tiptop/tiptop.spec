@@ -1,7 +1,7 @@
 Summary: Display hardware performance counters for Linux tasks
 Name:    tiptop
 Version: 2.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 URL: http://tiptop.gforge.inria.fr/
 Source: %{name}-%{version}.tar.gz
@@ -28,5 +28,7 @@ install -D  src/ptiptop %{buildroot}%{_bindir}/ptiptop
 %{_bindir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3-2
+-	GA - Bump release of all rpms
 *	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 2.3-1
 -   Initial build.  First version
