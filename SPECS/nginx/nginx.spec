@@ -1,7 +1,7 @@
 Summary:	High-performance HTTP server and reverse proxy
 Name:		nginx
 Version:	1.10.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD-2-Clause
 URL:		http://nginx.org/download/nginx-1.10.0.tar.gz
 Group:		Applications/System
@@ -67,5 +67,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_var}/run/nginx
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10.0-2
+-	GA - Bump release of all rpms
 *   Mon May 16 2016 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-1
 -	Initial build. First version

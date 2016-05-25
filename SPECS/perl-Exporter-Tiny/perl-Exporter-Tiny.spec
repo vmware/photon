@@ -2,7 +2,7 @@
 Summary:	An exporter with the features of Sub::Exporter but only core dependencies
 Name:		perl-Exporter-Tiny
 Version:	0.042
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	(GPL+ or Artistic) and Public Domain and (GPL+ or Artistic or CC-BY-SA)
 Group:		Development/Libraries
 URL:		http://search.cpan.org/dist/Exporter-Tiny/
@@ -54,5 +54,7 @@ rm -rf %{buildroot}
 %{_mandir}/man3/Exporter::Shiny.3*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.042-2
+-	GA - Bump release of all rpms
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.042-1
 -	Initial version.

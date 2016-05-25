@@ -1,7 +1,7 @@
 Summary:	Networking Tools
 Name:		net-tools
 Version:	1.60
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		http://net-tools.sourceforge.net
 Group:		System Environment/Base
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60-7
+-	GA - Bump release of all rpms
 *	Thu Feb 4 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-6
 -	Apply all patches from 1.60-26ubuntu1.
 *	Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-5

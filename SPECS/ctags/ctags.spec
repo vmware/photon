@@ -1,7 +1,7 @@
 Summary:        Exuberant Ctags - a multi-language source code indexing tool
 Name:           ctags
 Version:        5.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://ctags.sourceforge.net
 Source:         http://prdownloads.sourceforge.net/ctags/ctags-%{version}.tar.gz
@@ -40,5 +40,7 @@ rm -rf %{buildroot}
 %{_mandir}/man1/ctags*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.8-2
+-	GA - Bump release of all rpms
 * Tue Jul 14 2015 Luis Zuniga <lzuniga@vmware.com> 5.8-1
 - Initial build for Photon

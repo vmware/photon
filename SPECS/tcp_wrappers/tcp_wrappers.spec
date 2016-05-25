@@ -1,7 +1,7 @@
 Summary:	TCP/IP daemon wrapper package
 Name:		tcp_wrappers
 Version:	7.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License: 	BSD
 Group: 		System Environment/Networking
 URL: 		ftp://ftp.porcupine.org/pub/security/index.html
@@ -52,6 +52,8 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*.h
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.6-2
+-	GA - Bump release of all rpms
 * Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 7.6-1
 - Initial version
 

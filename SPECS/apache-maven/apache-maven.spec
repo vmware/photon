@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.9
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -62,6 +62,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-4
+-	GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.9-3
 -   Updated JAVA_HOME path to point to latest JDK.
 * 	Tue Mar 01 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-2

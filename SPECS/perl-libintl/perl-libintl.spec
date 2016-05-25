@@ -2,7 +2,7 @@
 Summary:	Internationalization library for Perl, compatible with gettext
 Name:		perl-libintl
 Version:	1.24
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 Group: 		Development/Libraries
 URL: 		http://search.cpan.org/dist/libintl-perl/
@@ -45,6 +45,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.24-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.24-1
 -   Upgraded to version 1.24
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.23-1

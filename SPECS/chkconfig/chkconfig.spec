@@ -1,7 +1,7 @@
 Summary: A system tool for maintaining the /etc/rc*.d hierarchy
 Name: chkconfig
 Version: 1.5
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 Group: System Environment/Base
 URL: https://git.fedorahosted.org/git/chkconfig.git
@@ -91,6 +91,8 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5-5
+-	GA - Bump release of all rpms
 * Mon Dec 07 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Ability for chkconfig to ignore priorities.
 

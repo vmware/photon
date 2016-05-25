@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3.30
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -244,6 +244,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
+-	GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.3.30-3
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2

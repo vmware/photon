@@ -1,7 +1,7 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
 Version:	4.3.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/%{name}/%{version}/%{name}-%{version}-P1.tar.gz
@@ -147,6 +147,8 @@ install -v -dm 755 %{buildroot}/var/lib/dhclient
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.3-3
+-	GA - Bump release of all rpms
 * 	Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  4.3.3-2
 - 	Add patch for CVE-2016-2774
 *   	Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1

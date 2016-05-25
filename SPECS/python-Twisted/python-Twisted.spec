@@ -1,6 +1,6 @@
 Name:           python-Twisted
 Version:        15.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://twistedmatrix.com
 Summary:        An asynchronous networking framework written in Python
 License:        MIT
@@ -39,6 +39,8 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 15.5.0-2
+-	GA - Bump release of all rpms
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 15.5.0-1
 -	Upgrade version
 * 	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>

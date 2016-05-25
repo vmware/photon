@@ -1,7 +1,7 @@
 Summary:	Programs for finding and viewing man pages
 Name:		man-db
 Version:	2.7.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://www.nongnu.org/man-db
 Group:		Applications/System
@@ -66,6 +66,8 @@ fi
 %{_mandir}/*/*
 %{_libdir}/tmpfiles.d/man-db.conf
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.5-4
+-	GA - Bump release of all rpms
 *   Mon May 16 2016 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-3
 -   Fix user man:man adding.
 *       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.7.5-2

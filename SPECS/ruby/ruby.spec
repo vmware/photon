@@ -1,7 +1,7 @@
 Summary:	Ruby
 Name:		ruby
 Version:	2.3.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSDL
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.0-3
+-	GA - Bump release of all rpms
 *   Tue Mar 09 2016 Divya Thaluru <dthaluru@vmware.com> 2.3.0-2
 -   Adding readline support
 *   Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.0-1

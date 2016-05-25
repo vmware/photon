@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.0.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -57,5 +57,7 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-2
+-	GA - Bump release of all rpms
 *   Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-1
 -   Initial

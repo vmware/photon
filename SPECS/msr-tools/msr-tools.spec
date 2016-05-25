@@ -1,7 +1,7 @@
 Summary: Tools to read/write MSR (Model Specific Registers)
 Name:    msr-tools
 Version: 1.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
 URL: https://01.org/msr-tools/downloads
 Source: %{name}-%{version}.zip
@@ -35,5 +35,7 @@ install -D cpuid %{buildroot}%{_sbindir}/msr-cpuid
 %{_sbindir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3-2
+-	GA - Bump release of all rpms
 *	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 2.3-1
 -   Initial build.  First version

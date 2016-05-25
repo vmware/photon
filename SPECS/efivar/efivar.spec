@@ -1,7 +1,7 @@
 Summary:	Tools and libraries to manipulate EFI variables
 Name:		efivar
 Version:	0.20
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		https://github.com/rhinstaller/efivar/
 Group:		System Environment/System Utilities
@@ -35,6 +35,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_datadir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.20-3
+-	GA - Bump release of all rpms
 *	Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 0.20-2
 -	Fix build for linux 4.4.
 *	Mon Jul 6 2015 Sharath George <sharathg@vmware.com> 0.20-1

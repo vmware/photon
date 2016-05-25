@@ -1,7 +1,7 @@
 Summary:	Program shows full path of (shell) commands
 Name:		which
 Version:	2.21
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://savannah.gnu.org/projects/which
 Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
@@ -27,6 +27,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/info/*
 %{_mandir}/man1/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.21-2
+-	GA - Bump release of all rpms
 *	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-1
 -	Update to 2.21-1.
 *	Wed Oct 21 2014 Divya Thaluru <dthaluru@vmware.com> 2.20-1

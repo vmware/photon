@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -90,6 +90,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-9
+-	GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-8
 -   Clean up post, preun, postun sections in spec file.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>

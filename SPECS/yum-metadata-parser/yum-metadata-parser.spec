@@ -3,7 +3,7 @@
 Summary: 	A fast metadata parser for yum
 Name:       	yum-metadata-parser
 Version:   	1.1.4
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 Source0:    	%{name}-%{version}.tar.gz
 %define sha1 yum-metadata-parser=044e69a04ea5ac39d79020d9e1f1a35c9dc64d9b
 License:    	GPLv2+
@@ -44,3 +44,7 @@ Fast metadata parser for yum implemented in C.
 %{python_sitelib_platform}/sqlitecachec.pyc
 %{python_sitelib_platform}/sqlitecachec.pyo
 %{python_sitelib_platform}/*egg-info
+
+%changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.4-2
+-	GA - Bump release of all rpms

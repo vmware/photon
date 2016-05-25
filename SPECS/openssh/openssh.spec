@@ -1,7 +1,7 @@
 Summary:	Free version of the SSH connectivity tools
 Name:		openssh
 Version:	7.1p2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -137,6 +137,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1p2-3
+-	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 7.1p2-2
 -	Edit scriptlets.
 *   	Thu Mar 17 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1p2-1

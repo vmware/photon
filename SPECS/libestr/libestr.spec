@@ -1,7 +1,7 @@
 Summary:	String handling essentials library
 Name:		libestr
 Version:	0.1.10
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://libestr.adiscon.com/
 Source0:	http://libestr.adiscon.com/files/download/%{name}-%{version}.tar.gz
@@ -44,6 +44,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1.10-2
+-	GA - Bump release of all rpms
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 0.1.10-1
 -	Initial build. First version
 

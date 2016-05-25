@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          20%{?dist}
+Release:          21%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -142,6 +142,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-21
+-	GA - Bump release of all rpms
 *    Tue May 17 2016 Anish Swaminathan <anishs@vmware.com>  228-20
 -    Added patch for letting kernel handle ndisc
 *    Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 228-19
