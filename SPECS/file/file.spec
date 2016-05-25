@@ -1,6 +1,6 @@
 Summary:	Contains a utility for determining file types
 Name:		file
-Version:	5.24
+Version:	5.25
 Release:	1%{?dist}
 License:	BSD
 URL:		http://www.darwinsys.com/file
@@ -8,7 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
-%define sha1 file=152daac79ccb4560dc65d5aaf754196ec1536f1d
+%define sha1 file=fea78106dd0b7a09a61714cdbe545135563e84bd
 %description
 The package contains a utility for determining the type of a
 given file or files
@@ -35,6 +35,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 %{_datarootdir}/misc/magic.mgc
 %changelog
+*	Tue May 24 2016 Divya Thaluru <dthaluru@vmware.com> 5.25-1
+- 	Updated to version 5.25
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 5.24-1
 - 	Updated to version 5.24
 *	Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 5.22-1
