@@ -1,7 +1,7 @@
 Summary:	GNU Ubiquitous Intelligent Language for Extensions
 Name:		guile
 Version:	2.0.11
-Release:	1%{?dist}
+Release:	2%{?dist}
 License: 	LGPLv3+
 URL:		http://www.gnu.org/software/guile/
 Source0: 	ftp://ftp.gnu.org/pub/gnu/guile/%{name}-%{version}.tar.gz
@@ -65,6 +65,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.11-2
+-	GA - Bump release of all rpms
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.0.11-1
 -	Initial build. First version
 

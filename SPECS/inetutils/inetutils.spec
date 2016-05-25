@@ -1,7 +1,7 @@
 Summary:	Programs for basic networking
 Name:		inetutils
 Version:	1.9.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/inetutils
 Group:		Applications/Communications
@@ -37,6 +37,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man1/*
 %{_sbindir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.2-3
+-	GA - Bump release of all rpms
 *	Wed Aug 5 2015 Divya Thaluru <dthaluru@vmware.com> 1.9.2-2
 -	Packaging ifconfig in /usr/sbin directory instead of /usr/bin directory
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.9.2-1

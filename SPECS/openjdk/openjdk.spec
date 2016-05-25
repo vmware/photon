@@ -2,7 +2,7 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.92
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -136,6 +136,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.92-2
+-	GA - Bump release of all rpms
 *       Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-1
 -	Updated to version 1.8.0.92
 *       Mon May 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.72-3

@@ -1,7 +1,7 @@
 Summary:	C++ xml parser.
 Name:		xerces-c
 Version:	3.1.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 URL:		http://xerces.apache.org
 Group:		Applications/System
@@ -39,6 +39,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.la
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.3-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.1.3-1
 -   Updated to version 3.1.3
 *	Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 3.1.2-1

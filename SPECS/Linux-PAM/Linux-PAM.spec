@@ -1,7 +1,7 @@
 Summary:	Linux Pluggable Authentication Modules
 Name:		Linux-PAM
 Version:	1.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD and GPLv2+
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
+-	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
 - 	Updated to version 1.2.1
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2

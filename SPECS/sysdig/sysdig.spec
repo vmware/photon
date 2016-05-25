@@ -1,7 +1,7 @@
 Summary:	Sysdig is a universal system visibility tool with native support for containers.
 Name:		sysdig
 Version:	0.8.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2	  
 URL:		http://www.sysdig.org/
 Group:		Applications/System	
@@ -58,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_datadir}
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.8.0-4
+-	GA - Bump release of all rpms
 *       Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 0.8.0-3
 -	Removing usage of bundled packages to build sysdig package
 *       Wed Mar 16 2016 Anish Swaminathan <anishs@vmware.com> 0.8.0-2

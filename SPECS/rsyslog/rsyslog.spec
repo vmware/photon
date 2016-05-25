@@ -1,7 +1,7 @@
 Summary:	Rocket-fast system for log processing
 Name:		rsyslog
 Version:	8.15.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+ and ASL 2.0
 URL:		http://www.rsyslog.com/
 Source0:	http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -72,6 +72,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/systemd/system/rsyslog.service
 %{_sysconfdir}/systemd/journald.conf.d/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.0-4
+-	GA - Bump release of all rpms
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  8.15.0-3
 -   	Use systemd macros for post, preun and postun to respect upgrades
 *   	Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  8.15.0-2

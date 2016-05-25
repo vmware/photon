@@ -1,7 +1,7 @@
 Summary:	The GNU Database routines compatibility library
 Name:		compat-gdbm
 Version:	1.8.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/gdbm
 Group:		System Environment/Libraries
@@ -63,5 +63,7 @@ rm -rf %{buildroot}%{_infodir}
 %{_includedir}/*.h
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.3-2
+-	GA - Bump release of all rpms
 *	Fri Nov 13 2015 Anish Swaminathan <anishs@vmware.com> 1.8.3-1
 -	Initial build.	First version

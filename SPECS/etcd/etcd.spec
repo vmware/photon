@@ -1,7 +1,7 @@
 Summary:	Etcd-2.2.5
 Name:		etcd
 Version:	2.2.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 URL:		https://github.com/coreos/etcd
 Group:		System Environment/Security
@@ -53,6 +53,8 @@ rm -rf %{buildroot}/*
 %dir /var/lib/etcd
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.5-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.2.5-1
 -   Upgraded to version 2.2.5
 *	Tue Jul 28 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.1-2

@@ -1,7 +1,7 @@
 Summary:	Unzip-6.0
 Name:		unzip
 Version:	6.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -50,6 +50,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-5
+-	GA - Bump release of all rpms
 *	Tue May 10 2016 Nick Shi <nshi@vmware.com> 6.0-4
 -	Added unzipsfx, zipgrep and zipinfo to unzip rpm
 *	Sat Aug 15 2015 Sharath George <sharathg@vmware.com> 6.0-3

@@ -1,7 +1,7 @@
 Summary:	RPC program number mapper
 Name:		rpcbind
 Version:	0.2.3
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		http://nfsv4.bullopensource.org
 Group:	    Applications/Daemons
@@ -82,6 +82,8 @@ fi
 %clean
 rm -rf %{buildroot}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-6
+-	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-5
 -	Edit scriptlets.
 *	Fri Feb 05 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-4

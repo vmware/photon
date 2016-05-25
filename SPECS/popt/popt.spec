@@ -1,7 +1,7 @@
 Summary:	Programs to parse command-line options
 Name:		popt
 Version:	1.16
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://rpm5.org/files/popt
 Group:		Applications/System
@@ -49,5 +49,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libpopt.so
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.16-2
+-	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.16-1
 -	Initial build.	First version	

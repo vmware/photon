@@ -1,7 +1,7 @@
 Summary:	POSIX capability Library
 Name:		libcap-ng
 Version:	0.7.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 License: 	LGPLv2+
 Group: 		System Environment/Libraries
 URL: 		http://people.redhat.com/sgrubb/libcap-ng
@@ -55,6 +55,8 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*.h
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.7-2
+-	GA - Bump release of all rpms
 * 	Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 0.7.7-1
 - 	Initial version
 

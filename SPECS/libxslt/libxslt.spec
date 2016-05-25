@@ -1,7 +1,7 @@
 Summary:	Libxslt-1.1.28
 Name:		libxslt
 Version:	1.1.28
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MIT
 URL:		http:/http://xmlsoft.org/libxslt/
 Group:		System Environment/General Libraries
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.28-3
+-	GA - Bump release of all rpms
 *   Tue Jan 19 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.28-2
 -   Add a dev subpackage.
 *	Mon Oct 13 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.28-1

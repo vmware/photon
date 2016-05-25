@@ -1,7 +1,7 @@
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
 Version:        1.72
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~mikem/Net-SSLeay-1.72/lib/Net/SSLeay.pod
@@ -44,6 +44,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.72-2
+-	GA - Bump release of all rpms
 *    Mon Mar 28 2016 Mahmoud Bassiouny <mbassiounu@vmware.com> 1.72-1
 -    Initial version.
 

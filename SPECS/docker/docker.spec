@@ -1,7 +1,7 @@
 Summary:    	Docker
 Name:       	docker
 Version:    	1.11.0
-Release:    	4%{?dist}
+Release:    	5%{?dist}
 License:    	ASL 2.0
 URL:        	http://docs.docker.com
 Group:      	Applications/File
@@ -48,6 +48,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker-containerd.service
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-5
+-	GA - Bump release of all rpms
 *   Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-4
 -   Remove commented post actions
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-3

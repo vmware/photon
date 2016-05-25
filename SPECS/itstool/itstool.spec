@@ -1,7 +1,7 @@
 Summary:	Itstool-2.0.2
 Name:		itstool
 Version:	2.0.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://itstool.org
 Source0:	http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
@@ -32,6 +32,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/%{name}/*
 %{_mandir}/man1/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-3
+-	GA - Bump release of all rpms
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.0.2-2
 -   Updated group.
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.0.2-1

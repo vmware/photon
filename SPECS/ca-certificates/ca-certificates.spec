@@ -1,7 +1,7 @@
 Summary:	Certificate Authority certificates 
 Name:		ca-certificates
 Version:	20160109
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Custom
 URL:		http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
 Group:		System Environment/Security
@@ -232,6 +232,8 @@ exit 0
 /bin/remove-expired-certs.sh
 /bin/make-cert.pl
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 20160109-5
+-	GA - Bump release of all rpms
 *	Wed Feb 10 2016 Anish Swaminathan <anishs@vmware.com> 20160109-4
 -	Add Provides field
 *	Mon Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 20160109-3

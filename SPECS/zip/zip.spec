@@ -1,7 +1,7 @@
 Summary:	zip-3.0
 Name:		zip
 Version:	3.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://downloads.sourceforge.net/infozip
 Source0:	http://downloads.sourceforge.net/infozip/zip30.tar.gz
@@ -23,5 +23,7 @@ make prefix=%{buildroot}/%{_prefix} MANDIR=%{buildroot}/usr/share/man/man1 -f un
 %{_bindir}/*
 %{_mandir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-2
+-	GA - Bump release of all rpms
 *	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
 -	Initial build. First version

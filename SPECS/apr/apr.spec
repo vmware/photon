@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime
 Name:       apr
 Version:    1.5.2
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -53,6 +53,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-6
+-	GA - Bump release of all rpms
 *	Mon Sep 21 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 1.5.2-5
 -	Repacked to move the include files in devel package. 
 *   Wed Jul 15 2015 Sarah Choi <sarahc@vmware.com> 1.5.2-4

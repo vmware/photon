@@ -1,7 +1,7 @@
 Summary:	Reading, writing, and converting info pages
 Name:		texinfo
 Version:	6.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/texinfo/texinfo-6.1.tar.xz
 Group:		Applications/System
@@ -36,6 +36,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/texmf/*
 %{_libdir}/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.1-2
+-	GA - Bump release of all rpms
 *   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 6.1-1
 -   Updated to version 6.1
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-3

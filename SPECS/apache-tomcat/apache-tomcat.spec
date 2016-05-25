@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.0.35
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.0.35-2
+-	GA - Bump release of all rpms
 *   	Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 8.0.35-1
 -	Upgraded to version 8.0.35
 *   	Tue May 03 2016 Anish Swaminathan <anishs@vmware.com> 8.0.33-1

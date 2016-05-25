@@ -1,7 +1,7 @@
 Summary:	Check-0.10.0
 Name:		check
 Version:	0.10.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://check.sourceforge.net/
 Source0:	http://sourceforge.net/projects/check/files/latest/download/%{name}-%{version}.tar.gz
@@ -36,6 +36,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/doc/%{name}/*
 /usr/share/aclocal/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.0-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 0.10.0-1
 -   Updated to version 0.10.0
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 0.9.14-2

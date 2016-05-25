@@ -10,7 +10,7 @@
 Summary:	Go 
 Name:		go
 Version:	1.4.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		https://golang/org
 Group:		System Environment/Security
@@ -115,6 +115,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-4
+-	GA - Bump release of all rpms
 *       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.2-3
 -       Handling upgrade scenario pre/post/un scripts.
 *	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.4.2-2

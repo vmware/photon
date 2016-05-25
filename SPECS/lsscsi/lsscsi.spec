@@ -1,7 +1,7 @@
 Summary:	List SCSI devices information.
 Name:		lsscsi
 Version:	0.28
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://sg.danny.cz/scsi/lsscsi.html
 Source0:	http://sg.danny.cz/scsi/%{name}-%{version}.tar.xz
@@ -28,5 +28,7 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_mandir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.28-2
+-	GA - Bump release of all rpms
 *	Fri Apr 08 2016 Kumar Kaushik <kaushikk@vmware.com> 0.28-1
 -	Initial build. First version

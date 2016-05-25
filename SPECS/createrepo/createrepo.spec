@@ -3,7 +3,7 @@
 Summary: 	Creates a common metadata repository
 Name: 		createrepo
 Version: 	0.10.4
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 License:	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.
@@ -49,6 +49,8 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{python_sitelib}/createrepo
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.4-2
+-	GA - Bump release of all rpms
 * Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.10.4
 - Updating to new version.
 * Thu Dec 20 2007 Seth Vidal <skvidal at fedoraproject.org>

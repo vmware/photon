@@ -1,7 +1,7 @@
 Summary:	SELinux binary policy manipulation library 
 Name:		libsepol
 Version:	2.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}-rc1.tar.gz
@@ -85,6 +85,8 @@ exit 0
 %{_lib}/libsepol.so.1
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
+-	GA - Bump release of all rpms
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
 -   Updated to version 2.5
 *	Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
