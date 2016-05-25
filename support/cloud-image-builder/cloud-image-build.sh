@@ -99,6 +99,7 @@ cat << EOF >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/var/lib/cloud/seed/nocl
 runcmd:
   - (echo -ne 'photon-';cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 9)|xargs hostnamectl set-hostname
   - hostname | xargs -I '{}' sed -i 's/photon-.*$/{}/g' /etc/hosts
+  - systemctl status systemd-resolved >/dev/null || systemctl restart systemd-resolved
 EOF
 
 mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
