@@ -1,0 +1,23 @@
+From 05e7406049bd2686dee0ee8d819dcd38eb131f6f Mon Sep 17 00:00:00 2001
+From: christos <christos>
+Date: Tue, 7 Jul 2015 12:24:54 +0000
+Subject: [PATCH] make k volatile to prevent gcc-5 memset() optimization
+ (Fridolin Pokorny)
+
+---
+ tc.alloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tc.alloc.c b/tc.alloc.c
+index c1cb330..f68a8c5 100644
+--- a/tc.alloc.c
++++ b/tc.alloc.c
+@@ -348,7 +348,7 @@ calloc(size_t i, size_t j)
+ {
+ #ifndef lint
+     char *cp;
+-    size_t k;
++    volatile size_t k;
+ 
+     i *= j;
+     cp = xmalloc(i);
