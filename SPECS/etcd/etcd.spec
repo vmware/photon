@@ -1,7 +1,7 @@
 Summary:	Etcd-2.2.5
 Name:		etcd
 Version:	2.2.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 URL:		https://github.com/coreos/etcd
 Group:		System Environment/Security
@@ -53,8 +53,10 @@ rm -rf %{buildroot}/*
 %dir /var/lib/etcd
 
 %changelog
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.2.5-1
--   Upgraded to version 2.2.5
+*	Wed May 25 2016 Nick Shi <nshi@vmware.com> 2.2.5-2
+-	Changing etcd service type from simple to notify
+*	Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.2.5-1
+-	Upgraded to version 2.2.5
 *	Tue Jul 28 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.1-2
 -	Adding etcd service file
 *	Tue Jul 21 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.1.1-1
