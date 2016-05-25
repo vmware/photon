@@ -1,7 +1,7 @@
 Summary:	Dos Filesystem tools
 Name:		dosfstools
 Version:	3.0.26
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://daniel-baumann.ch/software/dosfstools/
 Group:		Filesystem Tools
@@ -29,5 +29,7 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/de/*
 %exclude %{_libdir}/debug/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.26-2
+-	GA - Bump release of all rpms
 *	Wed Jul 1 2014 Sharath George <sharathg@vmware.com> 3.0.26-1
 -	Initial build.	First version

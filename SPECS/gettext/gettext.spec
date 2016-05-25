@@ -1,7 +1,7 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
 Version:	0.19.5.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
@@ -45,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.19.5.1-2
+-	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 0.19.5.1-1
 - 	Updated to version 0.19.5.1
 *	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.18.3.2-2

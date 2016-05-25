@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.5.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -186,6 +186,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
+-	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4
 -	Edit scriptlets.
 *   	Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3

@@ -1,7 +1,7 @@
 Summary:	GNU Unicode string library
 Name:		libunistring
 Version:	0.9.6
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 License:	LGPLv3+
 Url:		http://www.gnu.org/software/libunistring/
 Source0:	http://ftp.gnu.org/gnu/libunistring/%{name}-%{version}.tar.xz
@@ -45,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/unistring/*.h
 %{_libdir}/*.so
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.9.6-2
+-	GA - Bump release of all rpms
 *   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 0.9.6-1
 -   Updated to version 0.9.6
 *	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 0.9.5-1

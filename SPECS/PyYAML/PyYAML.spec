@@ -1,6 +1,6 @@
 Name:           PyYAML
 Version:        3.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -52,5 +52,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11-2
+-	GA - Bump release of all rpms
 * Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Initial packaging for Photon

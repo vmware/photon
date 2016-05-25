@@ -1,7 +1,7 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
 Version:	6.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
@@ -93,6 +93,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/libhistory.so
 %{_libdir}/libreadline.so
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.3-4
+-	GA - Bump release of all rpms
 *	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 6.3-3
 -	Adding ncurses to run time require package
 *   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 6.3-2

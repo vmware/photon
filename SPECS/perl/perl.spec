@@ -9,7 +9,7 @@
 Summary:	Practical Extraction and Report Language
 Name:		perl
 Version:	5.22.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv1+
 URL:		http://www.perl.org/
 Group:		Development/Languages
@@ -62,6 +62,8 @@ unset BUILD_ZLIB BUILD_BZIP2
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.22.1-3
+-	GA - Bump release of all rpms
 *	Thu Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
 -	Enable threads
 *	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-1

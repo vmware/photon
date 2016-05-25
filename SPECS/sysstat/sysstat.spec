@@ -1,7 +1,7 @@
 Summary:	The Sysstat package contains utilities to monitor system performance and usage activity
 Name:		sysstat 
 Version:	11.2.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2 
 URL:		http://sebastien.godard.pagesperso-orange.fr/
 Group:		Development/Debuggers
@@ -40,6 +40,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 11.2.0-3
+-	GA - Bump release of all rpms
 *	Wed May 4 2016 Divya Thaluru <dthaluru@vmware.com> 11.2.0-2
 -	Adding systemd service file
 *	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 11.2.0-1

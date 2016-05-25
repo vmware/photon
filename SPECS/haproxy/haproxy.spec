@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        1.6.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -58,6 +58,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.3-3
+-	GA - Bump release of all rpms
 *   Fri May 20 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.3-2
 -   Add haproxy-systemd-wrapper to package, add a default configuration file.
 *   Mon Feb 22 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.3-1

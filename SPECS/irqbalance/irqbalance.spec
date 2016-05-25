@@ -1,7 +1,7 @@
 Summary:	Irqbalance daemon
 Name:		irqbalance
 Version:	1.1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		https://github.com/Irqbalance/irqbalance
 Group:		System Environment/Services
@@ -46,6 +46,8 @@ install -D -m 0644 misc/irqbalance.service %{buildroot}%{_prefix}/lib/systemd/sy
 %{_datadir}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-3
+-	GA - Bump release of all rpms
 *  Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.0-2
 -  Adding package upgrade support.
 *  Fri Jan 15 2016 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-1

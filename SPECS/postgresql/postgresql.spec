@@ -1,7 +1,7 @@
 Summary:	PostgreSQL database engine
 Name:		postgresql
 Version:	9.5.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	PostgreSQL
 URL:		www.postgresql.org
 Group:		Applications/Databases
@@ -156,6 +156,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
+-	GA - Bump release of all rpms
 *	Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
 -	Updated to version 9.5.3
 *       Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1

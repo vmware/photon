@@ -2,7 +2,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 Source:		photon-release-1.0.2.tar.gz
@@ -42,6 +42,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-no-kmods 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-3
+-	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-2
 -   Update to linux-4.4.8
 *   Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-1

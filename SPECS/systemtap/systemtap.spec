@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       2.9
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -331,6 +331,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-5
+-	GA - Bump release of all rpms
 *   Mon May 23 2016 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.9-4
 -	Added the patch to enable kernel building with Kernel 4.4
 * 	Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-3 

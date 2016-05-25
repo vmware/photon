@@ -1,7 +1,7 @@
 Summary:	Domain Name System software
 Name:		bindutils
 Version:	9.10.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	ISC
 URL:		http://www.isc.org/downloads/bind/
 Source0:	ftp://ftp.isc.org/isc/bind9/bind-9-10-3-p2/bind-%{version}-P2.tar.gz
@@ -69,6 +69,8 @@ fi
 
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.10.3-3
+-	GA - Bump release of all rpms
 *   Fri Apr 29 2016 Xiaolin Li <xiaolinl@vmware.com> 9.10.3-2
 -   Add group named and user named
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.10.3-1

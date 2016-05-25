@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20151218
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          GPLv2+
 URL:              http://www.gnu.org/software/inetutils
 Group:            Applications/Communications
@@ -72,6 +72,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 20151218-3
+-	GA - Bump release of all rpms
 *   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 20151218-2
 -   Fixing permissions for binaries
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 20151218-1

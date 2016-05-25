@@ -1,6 +1,6 @@
 Name:           python-zope.interface
 Version:        4.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
@@ -36,5 +36,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1.3-2
+-	GA - Bump release of all rpms
 * Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Initial packaging for Photon

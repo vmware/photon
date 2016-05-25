@@ -1,7 +1,7 @@
 Summary:	Cmake-3.4.3
 Name:		cmake
 Version:	3.4.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.4/%{name}-%{version}.tar.gz
@@ -31,6 +31,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-2
+-	GA - Bump release of all rpms
 *       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 3.4.3-1
 -       Updated version.
 *       Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 3.2.1.2

@@ -1,7 +1,7 @@
 Summary:	NFS client utils
 Name:		nfs-utils
 Version:	1.3.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/nfs
 Group:		Applications/Nfs-utils-client
@@ -66,6 +66,8 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.3-3
+-	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-2
 -   Add nfs-server.service to rpm.
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-1

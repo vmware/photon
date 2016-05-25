@@ -1,7 +1,7 @@
 Summary: Download, build, install, upgrade, and uninstall Python packages
 Name: python-setuptools
 Version: 21.0.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Python or ZPLv2.0
 Group: Development/Languages
 URL: https://pypi.python.org/pypi/setuptools
@@ -46,6 +46,8 @@ chmod +x %{buildroot}%{python_sitelib}/setuptools/command/easy_install.py
 %{python_sitelib}/*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 21.0.0-2
+-	GA - Bump release of all rpms
 *	Wed May 4 2016 Xiaolin Li <xiaolinl@vmware.com> 21.0.0-1
 -	Update setuptools to version 21.0.0
 * Wed Feb 11 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>

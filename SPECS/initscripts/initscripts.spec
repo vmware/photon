@@ -3,7 +3,7 @@ Name:		initscripts
 Version:	9.65
 License:	GPLv2
 Group:		System Environment/Base
-Release:	1%{?dist}
+Release:	2%{?dist}
 URL:		http://fedorahosted.org/releases/i/n/initscripts/
 Source0:	https://fedorahosted.org/releases/i/n/initscripts/initscripts-9.65.tar.bz2
 %define sha1 initscripts=0a231ab94ce7ef050a7c2c35a5183450abe58a39
@@ -160,6 +160,8 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
+-	GA - Bump release of all rpms
 * Fri Feb 12 2016 Divya Thaluru <dthaluru@vmware.com> 9.65-2
 - Fixing service script to start services using systemctl by default
 *   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.65-1
@@ -362,6 +364,8 @@ ng
 - sync FSF address with GPL 2 text.
 - fix rpmlint's spaces vs tabs warning.
 - fix bogus %changelog dates.
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
+-	GA - Bump release of all rpms
 - build with $RPM_LD_FLAGS.
 - use -sf, not -s. (#901827)
 - add /usr/libexec/initscripts to file list (#894475)

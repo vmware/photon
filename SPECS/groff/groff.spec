@@ -1,7 +1,7 @@
 Summary:	Programs for processing and formatting text
 Name:		groff
 Version:	1.22.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/groff
 Group:		Applications/Text
@@ -42,6 +42,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.22.3-2
+-	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.22.3-1
 -   Updated to version 1.22.3
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.22.2-1

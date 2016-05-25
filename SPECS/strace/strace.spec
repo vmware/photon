@@ -1,7 +1,7 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
 Version:	4.11
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://sourceforge.net/p/strace/code/ci/master/tree/
 Group:		Development/Debuggers
@@ -39,6 +39,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11-2
+-	GA - Bump release of all rpms
 *   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.11-1
 -   	Upgrade version.
 *	Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 4.10-1
