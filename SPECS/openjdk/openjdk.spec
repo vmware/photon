@@ -2,16 +2,16 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.92
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-AutoReqProv: 	no
 Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJDK-%{version}-x86_64-bin.tar.xz
 %define sha1 OpenJDK=b6bfff08514bdb0fb5b46acd66b8ca884283cecb
-Requires:       openjre
+Requires:       openjre = %{version}-%{release}
+AutoReqProv: 	no
 %description
 The OpenJDK package installs java class library and javac java compiler. 
 
@@ -28,7 +28,7 @@ Summary:		Sample java applications.
 Group:          Development/Languages/Java
 %description	sample
 It contains the Sample java applications.
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %package		doc
 Summary:		Documentation and demo applications for openjdk
@@ -42,7 +42,7 @@ Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 %description	src
 This package provides the runtime library class sources. 
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %prep -p exit
 %setup -qn OpenJDK-%{version}-x86_64-bin
@@ -136,6 +136,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-3
+-	Added version constraint to runtime dependencies
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.92-2
 -	GA - Bump release of all rpms
 *       Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-1
