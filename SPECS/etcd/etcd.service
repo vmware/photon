@@ -3,7 +3,7 @@ Description=Etcd Server
 After=network.target
 
 [Service]
-Type=simple
+Type=notify
 WorkingDirectory=/var/lib/etcd/
 ExecStart=/bin/bash -c "/usr/bin/etcd"
 Restart=on-failure
