@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -153,6 +153,7 @@ if [ $1 -eq 0 ] ; then
 
   rm -rf /etc/mail
 fi
+%systemd_postun_with_restart sendmail.service
 
 %files
 %{_sysconfdir}/*
@@ -167,6 +168,8 @@ fi
 
 
 %changelog
+*       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 8.15.2-6
+-       Fixed logic to restart the active services after upgrade 
 *       Wed May 25 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-5
 -       Adding dependencies and fixing post section installation bug.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-4

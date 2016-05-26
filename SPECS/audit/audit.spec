@@ -1,7 +1,7 @@
 Summary:	Kernel Audit Tool
 Name:		audit
 Version:	2.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1 audit=b684a8dca31776a4184044733cd5fd4b1b652298
 License:	GPLv2+
@@ -72,7 +72,7 @@ make install DESTDIR=%{buildroot}
 
 %postun
 /sbin/ldconfig
-%systemd_postun auditd.service
+%systemd_postun_with_restart auditd.service
 
 %preun
 %systemd_preun auditd.service
@@ -118,6 +118,8 @@ make install DESTDIR=%{buildroot}
 %{_includedir}/*.h
 
 %changelog
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-4
+-   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-3
 -	GA - Bump release of all rpms
 * Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-2
