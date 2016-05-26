@@ -1,7 +1,7 @@
 Summary:	PostgreSQL database engine
 Name:		postgresql
 Version:	9.5.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	PostgreSQL
 URL:		www.postgresql.org
 Group:		Applications/Databases
@@ -20,12 +20,14 @@ BuildRequires:	perl
 BuildRequires:	readline-devel
 BuildRequires:	openssl-devel
 BuildRequires:	zlib-devel
+BuildRequires:	tzdata
 Requires:		krb5
 Requires:		libxml2
 Requires:		openldap
 Requires:		openssl
 Requires:		readline
 Requires:		zlib
+Requires:       tzdata
 
 Requires:   %{name}-libs = %{version}-%{release}
 
@@ -156,6 +158,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
+*   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
+-   Add tzdata to buildrequires and requires.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
 -	GA - Bump release of all rpms
 *	Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
