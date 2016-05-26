@@ -364,8 +364,6 @@ ng
 - sync FSF address with GPL 2 text.
 - fix rpmlint's spaces vs tabs warning.
 - fix bogus %changelog dates.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
--	GA - Bump release of all rpms
 - build with $RPM_LD_FLAGS.
 - use -sf, not -s. (#901827)
 - add /usr/libexec/initscripts to file list (#894475)
