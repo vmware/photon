@@ -8,7 +8,7 @@
                 "sed", "grep", "cpio", "gzip", "vim", "db", "tdnf",
                 "open-vm-tools",
                 "docker","bridge-utils",
-                "cloud-init",
+                "cloud-init", "tzdata",
                 "krb5", "which", "initramfs"]
 }
 
