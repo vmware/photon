@@ -2,7 +2,7 @@
 Summary:	Dynamic Kernel Module Support
 Name:		dkms
 Version:	2.2.0.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://linux.dell.com/dkms/
 Group:		System Environment/Base
@@ -39,7 +39,7 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 %systemd_preun dkms.service
 
 %postun
-%systemd_postun dkms.service
+%systemd_postun_with_restart dkms.service
 
 %files
 %defattr(-,root,root)
@@ -57,6 +57,8 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 %{_localstatedir}/lib/dkms/dkms_dbversion
 
 %changelog
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.2.0.3-4
+-   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.0.3-3
 -	GA - Bump release of all rpms
 *	Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 2.2.0.3-2

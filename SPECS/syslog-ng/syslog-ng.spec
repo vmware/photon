@@ -1,7 +1,7 @@
 Summary:	Next generation system logger facilty
 Name:		syslog-ng
 Version:	3.6.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPL + LGPL
 URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-system
 Group:		System Environment/Daemons
@@ -83,6 +83,9 @@ fi
 %preun
 %systemd_preun syslog-ng.service
 
+%postun
+%systemd_postun_with_restart syslog-ng.service
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -117,6 +120,8 @@ rm -rf %{buildroot}/*
 /usr/lib/pkgconfig/syslog-ng.pc
 
 %changelog
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  3.6.4-5
+-   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.4-4
 -	GA - Bump release of all rpms
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  3.6.4-3

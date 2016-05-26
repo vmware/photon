@@ -1,7 +1,7 @@
 Summary:  	xinetd -- A better inetd.
 Name:		xinetd
 Version:	2.3.15
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
@@ -56,6 +56,9 @@ fi
 %preun
 %systemd_preun xinetd.service
 
+%postun
+%systemd_postun_with_restart xinetd.service
+
 %files
 %defattr(-, root, root)
 %doc CHANGELOG COPYRIGHT README xinetd/sample.conf contrib/empty.conf 
@@ -66,6 +69,8 @@ fi
 /lib/systemd/system/xinetd.service
 
 %changelog
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.3.15-6
+-   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.15-5
 -	GA - Bump release of all rpms
 *   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.15-4
