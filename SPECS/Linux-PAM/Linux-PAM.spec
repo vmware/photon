@@ -1,7 +1,7 @@
 Summary:	Linux Pluggable Authentication Modules
 Name:		Linux-PAM
 Version:	1.2.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD and GPLv2+
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
@@ -9,6 +9,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://linux-pam.org/library/%{name}-%{version}.tar.bz2
 %define sha1 Linux-PAM=3620ab5f5e02272825c426622761a19a1a2facca
+BuildRequires:	cracklib-devel
+Requires:	cracklib
 %description
 The Linux PAM package contains Pluggable Authentication Modules used to 
 enable the local system administrator to choose how applications authenticate users.
@@ -65,6 +67,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*	Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
+-	Packaging pam cracklib module
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
 -	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
