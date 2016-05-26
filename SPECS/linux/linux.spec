@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	5%{?dist}
+Release:    	6%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -22,6 +22,7 @@ Patch6:         net-Driver-Vmxnet3-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.pat
 Patch7:		netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 #fixes CVE-2016-3135
 Patch8:		netfilter-x_tables-check-for-size-overflow.patch
+Patch9:		REVERT-sched-fair-Beef-up-wake_wide.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -86,6 +87,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 make mrproper
@@ -182,10 +184,12 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-5
--	GA - Bump release of all rpms
-*	Mon May 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-4
--	Fixed generation of debug symbols for kernel modules & vmlinux.
+*   Thu May 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-6
+-   patch: REVERT-sched-fair-Beef-up-wake_wide.patch
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-5
+-   GA - Bump release of all rpms
+*   Mon May 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-4
+-   Fixed generation of debug symbols for kernel modules & vmlinux.
 *   Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.4.8-3
 -   Added patches to fix CVE-2016-3134, CVE-2016-3135
 *   Wed May 18 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-2
