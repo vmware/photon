@@ -1,7 +1,7 @@
 Summary:	Fast distributed version control system
 Name:		git
 Version:	2.8.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2
 URL:		http://git-scm.com/
 Group:		System Environment/Programming
@@ -82,11 +82,14 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/man3/*:SVN:*
 %exclude %{perl_sitelib}/Git/SVN
 %exclude %{perl_sitelib}/Git/SVN.pm
+%exclude /usr/lib/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
+-	Excluded the perllocal.pod log. 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
 -	GA - Bump release of all rpms
 *       Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
