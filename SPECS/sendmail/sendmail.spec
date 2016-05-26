@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -14,6 +14,8 @@ BuildRequires:  openssl-devel
 BuildRequires:  db-devel
 BuildRequires:  shadow
 Requires:       systemd
+Requires:       m4
+Requires:       openldap
 
 %define sha1 sendmail=5801d4b06f4e38ef228a5954a44d17636eaa5a16
 
@@ -124,12 +126,11 @@ install -v -m700 -d /var/spool/mqueue
 
 %post
 if [ $1 -eq 1 ] ; then
-  echo $(hostname) > /etc/mail/local-host-names
+  echo $(hostname -f) > /etc/mail/local-host-names
   cat > /etc/mail/aliases << "EOF"
-  postmaster: root
-  MAILER-DAEMON: root
-
-  EOF
+postmaster: root
+MAILER-DAEMON: root
+EOF
   /bin/newaliases
 
   cd /etc/mail
@@ -166,6 +167,8 @@ fi
 
 
 %changelog
+*       Wed May 25 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-5
+-       Adding dependencies and fixing post section installation bug.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-4
 -	GA - Bump release of all rpms
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-3
