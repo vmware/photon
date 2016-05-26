@@ -36,7 +36,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post
 /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+%systemd_postun_with_restart docker-containerd.service
+%systemd_postun_with_restart docker.service
 
 
 %clean
@@ -48,8 +51,10 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker-containerd.service
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-5
--	GA - Bump release of all rpms
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-6
+-   Fixed logic to restart the active services after upgrade 
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-5
+-   GA - Bump release of all rpms
 *   Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-4
 -   Remove commented post actions
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-3

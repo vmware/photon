@@ -73,7 +73,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %postun
 /sbin/ldconfig
-%systemd_postun crond.service
+%systemd_postun_with_restart crond.service
 
 %preun
 %systemd_preun crond.service

@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -104,6 +104,8 @@ if [ $1 -eq 0 ] ; then
         groupdel tftp
     fi
 fi
+%systemd_postun_with_restart atftpd.socket
+
 %clean
 [ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != '/' ] && rm -rf $RPM_BUILD_ROOT
 
@@ -117,14 +119,14 @@ fi
 /lib/systemd/system/atftpd.socket
 %{_sysconfdir}/sysconfig/atftpd
 
-
-
 %files client
 %{_mandir}/man1/atftp.1.gz
 %{_bindir}/atftp
 
 
 %changelog
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-7
+-   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-6
 -	GA - Bump release of all rpms
 *   Fri May 6 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-5

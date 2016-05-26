@@ -87,7 +87,7 @@ fi
 %systemd_preun zookeeper.service
 
 %postun
-%systemd_postun zookeeper.service
+%systemd_postun_with_restart zookeeper.service
 if [ $1 -eq 0 ] ; then
     /usr/sbin/userdel zookeeper
     /usr/sbin/groupdel hadoop

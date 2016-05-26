@@ -1,7 +1,7 @@
 Summary:	The client for the Trivial File Transfer Protocol (TFTP)
 Name:		tftp
 Version:	5.2
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		http://www.kernel.org
 Group:		Applications/Internet
@@ -75,7 +75,10 @@ EOF
 %systemd_preun tftpd.socket
 
 %post
-%systemd_preun tftpd.socket
+%systemd_post tftpd.socket
+
+%postun
+%systemd_postun_with_restart tftpd.socket
 
 %clean
 rm -rf %{buildroot}
@@ -95,6 +98,8 @@ rm -rf %{buildroot}
 /lib/systemd/system/tftpd.socket
 
 %changelog
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  5.2-6
+-   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.2-5
 -	GA - Bump release of all rpms
 *   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.2-4
