@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -73,10 +73,10 @@ rm -rf $RPM_BUILD_ROOT
 %systemd_preun cloud-init-local.service
 
 %postun
-%systemd_postun cloud-config.service
-%systemd_postun cloud-final.service
-%systemd_postun cloud-init.service
-%systemd_postun cloud-init-local.service
+%systemd_postun_with_restart cloud-config.service
+%systemd_postun_with_restart cloud-final.service
+%systemd_postun_with_restart cloud-init.service
+%systemd_postun_with_restart cloud-init-local.service
 
 %files
 %license LICENSE
@@ -90,6 +90,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-10
+-   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-9
 -	GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-8

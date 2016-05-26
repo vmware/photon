@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -106,7 +106,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %postun
 /sbin/ldconfig
-%systemd_postun saslauthd.service
+%systemd_postun_with_restart saslauthd.service
 
 %preun
 %systemd_preun saslauthd.service
@@ -126,6 +126,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man8/saslauthd.8.gz
 %changelog
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-8
+-   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.26-7
 -	GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-6
