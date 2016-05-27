@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -74,7 +74,7 @@ systemd-journal-upload:x:75:75:systemd Journal Upload:/:/bin/false
 systemd-network:x:76:76:systemd Network Management:/:/bin/false
 systemd-resolve:x:77:77:systemd Resolver:/:/bin/false
 systemd-timesync:x:78:78:systemd Time Synchronization:/:/bin/false
-nobody:x:99:99:Unprivileged User:/dev/null:/bin/false
+nobody:x:65534:65533:Unprivileged User:/dev/null:/bin/false
 EOF
 cat > %{buildroot}/etc/group <<- "EOF"
 root:x:0:
@@ -107,7 +107,7 @@ systemd-journal-upload:x:75:
 systemd-network:x:76:
 systemd-resolve:x:77:
 systemd-timesync:x:78:
-nogroup:x:99:
+nogroup:x:65533:
 users:x:100:
 sudo:x:27:
 wheel:x:28:
@@ -535,6 +535,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-7
+-   Fixed nobody user uid and group gid
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-6
 -	GA - Bump release of all rpms
 *   Wed May 4 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-5
