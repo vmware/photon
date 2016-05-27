@@ -1,7 +1,7 @@
 Summary: Intel LLDP Agent
 Name:    lldpad
 Version: 1.0.1
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2
 URL: http://open-lldp.org/
 Source: %{name}-%{version}.tar.gz
@@ -36,6 +36,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install 
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 mkdir -p %{buildroot}/lib/systemd/system
+mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
 mv %{buildroot}/%{_libdir}/systemd/system/lldpad.service \
    	%{buildroot}/lib/systemd/system/lldpad.service
 mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
@@ -55,6 +56,7 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 %{_sbindir}/*
 %{_libdir}/liblldp_clif.so.*
 /etc/bash_completion.d/*
+%dir %{_sharedstatedir}/%{name}
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %{_includedir}/*
@@ -65,8 +67,10 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-4
--	GA - Bump release of all rpms
+*   Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 1.0.1-5
+-   Add required folder for service to start
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-4
+-   GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com>  1.0.1-3
 -   Adding support in pre/post/un scripts for upgrade.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.0.1-2
