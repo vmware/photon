@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2h
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -58,6 +58,7 @@ export CFLAGS="%{optflags}"
 	--openssldir=/%{_sysconfdir}/ssl \
 	shared \
 	zlib-dynamic \
+	no-ssl3 \
         %{?_with_fips} \
 	-Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
@@ -108,6 +109,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Fri May 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.2h-3
+-   Disable sslv3.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2h-2
 -	GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.0.2h-1
