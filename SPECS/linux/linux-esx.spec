@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.8
-Release:       4%{?dist}
+Release:       5%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -23,9 +23,10 @@ Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
 #fixes CVE-2016-3134
-Patch11:         netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
+Patch11:       netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 #fixes CVE-2016-3135
-Patch12:         netfilter-x_tables-check-for-size-overflow.patch
+Patch12:       netfilter-x_tables-check-for-size-overflow.patch
+Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -73,6 +74,7 @@ The Linux package contains the Linux kernel doc files
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 
 %build
 make mrproper
@@ -138,6 +140,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Fri May 27 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-5
+-   patch: REVERT-sched-fair-Beef-up-wake_wide.patch
 *   Wed May 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-4
 -   .config: added net_9p and 9p_fs
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-3
