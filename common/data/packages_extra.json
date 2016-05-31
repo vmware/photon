@@ -128,6 +128,7 @@
         "pciutils",
 	"tmux",
         "nginx",
-        "kaigen-gothic-cjk"
+        "kaigen-gothic-cjk",
+        "dialog"
             ]
 }
