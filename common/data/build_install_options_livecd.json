@@ -5,6 +5,6 @@
         "visible" : false,
         "include" : [],
         "live-cd" : true,
-        "additional-files" : ["COPYING"]
+        "additional-files" : ["COPYING","NOTICE"]
     }
 }
