@@ -10,7 +10,7 @@
 Summary:	Go 
 Name:		go
 Version:	1.4.2
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		https://golang/org
 Group:		System Environment/Security
@@ -88,7 +88,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %postun
 /sbin/ldconfig
-if[ $1 -eq 0 ]; then
+if [ $1 -eq 0 ]; then
   #This is uninstall
   rm /etc/profile.d/go-exports.sh
   rm -rf /opt/%{name}
@@ -115,6 +115,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*	Thu Jun 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-5
+-	Fix script syntax 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-4
 -	GA - Bump release of all rpms
 *       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.2-3
