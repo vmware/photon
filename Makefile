@@ -326,6 +326,8 @@ $(PHOTON_STAGE):
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
 	@echo "Creating COPYING file..."
 	install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
+	@echo "Creating NOTICE file..."
+	install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
 
 
 generate-dep-lists:
