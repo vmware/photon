@@ -171,6 +171,21 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
+custom-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+	@echo "Building Photon custom ISO..."
+	@cd $(PHOTON_INSTALLER_DIR) && \
+        sudo $(PHOTON_INSTALLER) \
+                -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER)-custom.iso \
+                -w $(PHOTON_STAGE)/photon_iso \
+                -l $(PHOTON_STAGE)/LOGS \
+                -r $(PHOTON_STAGE)/RPMS \
+                -x $(PHOTON_STAGE)/SRPMS \
+                -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_custom.json \
+                -o $(PHOTON_STAGE)/common/data \
+                -s $(PHOTON_DATA_DIR) \
+                -f > \
+                $(PHOTON_LOGS_DIR)/installer.log 2>&1
+
 src-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon Full Source ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
