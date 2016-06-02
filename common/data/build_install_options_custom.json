@@ -4,7 +4,7 @@
         "file" : "packages_iso.json",
         "visible" : false,
         "include" : [],
-        "additional-files" : ["COPYING"]
+        "additional-files" : ["COPYING","NOTICE"]
     },
     "minimal" : {
         "title" : "1. Photon Minimal",
