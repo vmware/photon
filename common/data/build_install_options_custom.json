@@ -1,0 +1,33 @@
+{
+    "iso" : {
+        "title" : "ISO Packages",
+        "file" : "packages_iso.json",
+        "visible" : false,
+        "include" : [],
+        "additional-files" : ["COPYING"]
+    },
+    "minimal" : {
+        "title" : "1. Photon Minimal",
+        "file" : "packages_minimal.json",
+        "visible" : true,
+        "include" : []
+    },
+    "full" : {
+        "title" : "2. Photon Full",
+        "file" : "packages_full.json",
+        "visible" : true,
+        "include" : ["minimal"]
+    },
+    "extra" : {
+        "title" : "Extra packages not installed but packed in ISO.",
+        "file" : "packages_extra.json",
+        "visible" : false,
+        "include" : []
+    },
+    "appliance" : {
+        "title" : "Minimal packages to support appliances.",
+        "file" : "packages_appliance.json",
+        "visible" : false,
+        "include" : []
+    }
+}
