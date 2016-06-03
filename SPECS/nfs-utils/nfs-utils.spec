@@ -1,7 +1,7 @@
 Summary:	NFS client utils
 Name:		nfs-utils
 Version:	1.3.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/nfs
 Group:		Applications/Nfs-utils-client
@@ -66,10 +66,12 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*	Fri Jun 03 2016 Nick Shi <nshi@vmware.com> 1.3.3-4
+-	Requires rpcbind.socket upon starting rpc-statd service (bug 1668405)
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.3-3
 -	GA - Bump release of all rpms
-*   Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-2
--   Add nfs-server.service to rpm.
+*	Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-2
+-	Add nfs-server.service to rpm.
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-1
 - 	Updated to version 1.3.3
 *	Tue Dec 8 2015 Divya Thaluru <dthaluru@vmware.com> 1.3.2-2
