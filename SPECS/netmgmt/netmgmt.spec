@@ -1,13 +1,14 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.0.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
 URL:           http://www.vmware.com
 Source0:       %{name}-%{version}.tar.gz
 Patch0:        netmgmt-cmdline-err-code-fix.patch
+Patch1:        netmgmt-file-perm-and-retval-fix.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: glib-devel
@@ -28,6 +29,7 @@ header files and libraries for netmgmt
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 autoreconf -mif
@@ -59,6 +61,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*	Fri  Jun 03 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-4
+-	Set correct file permissions for config files.
 *	Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-3
 -	Do not fail if valid commands are executed
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-2
