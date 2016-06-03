@@ -1,0 +1,55 @@
+diff -uNr nm1/src/iniparser.c nm2/src/iniparser.c
+--- nm1/src/iniparser.c	2016-06-03 17:04:12.640363643 +0000
++++ nm2/src/iniparser.c	2016-06-03 17:03:42.345225428 +0000
+@@ -600,7 +600,7 @@
+ 
+     sprintf(pszTmpPath, "%s%s", pszPath, pszSuffix);
+ 
+-    fp = fopen(pszTmpPath, "w");
++    fp = fopen(pszTmpPath, "w+");
+     if (!fp)
+     {
+         err = errno;
+@@ -630,6 +630,11 @@
+     fclose(fp);
+     fp = NULL;
+ 
++    if (chmod(pszTmpPath, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH) != 0)
++    {
++        bail_on_error(errno);
++    }
++
+     if (rename(pszTmpPath, pszPath) < 0)
+     {
+         err = errno;
+diff -uNr nm1/src/netmgr.c nm2/src/netmgr.c
+--- nm1/src/netmgr.c	2016-06-03 17:04:12.640363643 +0000
++++ nm2/src/netmgr.c	2016-06-03 17:03:42.345225428 +0000
+@@ -241,11 +241,13 @@
+ 
+     if (strlen(pszDuid) == 0)
+     {
+-        err = set_key_value(cfgFileName, szSectionName, szKey, NULL, 0);
++        err = set_key_value(cfgFileName, szSectionName, szKey, NULL,
++                            F_CREATE_CFG_FILE);
+     }
+     else
+     {
+-        err = set_key_value(cfgFileName, szSectionName, szKey, pszDuid, 0);
++        err = set_key_value(cfgFileName, szSectionName, szKey, pszDuid,
++                            F_CREATE_CFG_FILE);
+     }
+     bail_on_error(err);
+ 
+diff -uNr nm1/tools/netmgr/main.c nm2/tools/netmgr/main.c
+--- nm1/tools/netmgr/main.c	2016-06-03 17:04:12.640363643 +0000
++++ nm2/tools/netmgr/main.c	2016-06-03 17:03:42.345225428 +0000
+@@ -102,7 +102,7 @@
+             {
+                 err = arCmdMap[nCommandCount].pFnCmd(pCmdArgs);
+                 bail_on_error(err);
+-                nFound = 0;
++                nFound = 1;
+                 break;
+             }
+         }
