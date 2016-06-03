@@ -46,5 +46,7 @@ class OstreeServerInstaller(Installer):
         self.run("cp ./ostree-server-greeting.txt {}/etc/issue".format(self.photon_root))
         self.run("ln -s /usr/lib/systemd/system/httpd.service {}/usr/lib/systemd/system/multi-user.target.wants/httpd.service".format(self.photon_root))
         self.run("tar -xf /mnt/cdrom/ostree-repo.tar.gz -C {}/srv/rpm-ostree/repo".format(self.photon_root))
+        self.run("sed -i \"\\$i iptables -A INPUT -m state --state NEW,ESTABLISHED -p tcp --dport 80 -j ACCEPT\" {}/etc/systemd/scripts/iptables".format(self.photon_root))
+        self.run("sed -i \"\\$i iptables -A INPUT -m state --state NEW,ESTABLISHED -p tcp --dport 443 -j ACCEPT\" {}/etc/systemd/scripts/iptables".format(self.photon_root))
 
 
