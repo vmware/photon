@@ -1,10 +1,12 @@
 Summary:	RPM installer/updater
 Name:		yum
 Version:	3.4.3
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 Group:		System Environment/Base
 Source0:	%{name}-%{version}.tar.gz
+Patch0:		yumconf.patch
+Patch1:		parser.patch
 %define sha1 yum=8ec5d339e4518a7908fd4db0721740288a3d8b6c
 URL:		http://yum.baseurl.org/
 Vendor:		VMware, Inc.
@@ -73,6 +75,8 @@ automatically, prompting the user for permission as necessary.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
 make
@@ -195,6 +199,8 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %exclude %{_mandir}/man*/yum-updatesd*
 
 %changelog
+*	Mon Jun 06 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-6
+-	Engage missing patches for yum config and parser
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-5
 -	GA - Bump release of all rpms
 *	Wed May 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-4
