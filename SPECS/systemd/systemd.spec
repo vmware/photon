@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          21%{?dist}
+Release:          22%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -111,6 +111,7 @@ ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
 sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/lib/systemd/network/99-default.link
+sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
 
@@ -142,8 +143,10 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-21
--	GA - Bump release of all rpms
+*    Mon Jun 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-22
+-    systemd-resolved: disable LLMNR
+*    Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-21
+-    GA - Bump release of all rpms
 *    Tue May 17 2016 Anish Swaminathan <anishs@vmware.com>  228-20
 -    Added patch for letting kernel handle ndisc
 *    Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 228-19
