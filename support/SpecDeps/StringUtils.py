@@ -14,8 +14,8 @@ class StringUtils(object):
         return inputstring[index+1:]
         
     def getSpecNameFromPackageName(self, pkgName):
-    	id = pkgName.rfind("-")
-    	if (id != -1):
-    		return pkgName[0:id];
-    	else:
-    		return pkgName;
+        id = pkgName.rfind("-")
+        if (id != -1):
+            return pkgName[0:id];
+        else:
+            return pkgName;
