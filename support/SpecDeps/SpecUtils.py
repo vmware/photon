@@ -138,17 +138,17 @@ class Specutils(object):
                 for dpkg in pkg.requires:
                     dependentPackages.append(dpkg.package)
         #if (pkgName == "mono-extras"):
-	#    print "4given packages:", self.spec.packages
+    #    print "4given packages:", self.spec.packages
         #    print "4given dep packages: ", dependentPackages
         return dependentPackages
     
     def getBuildRequiresAllPackages(self):
-	
+    
         depedentPackages=[]
         for key in self.spec.packages.keys():
             pkg = self.spec.packages.get(key)
             #if(pkg.name == "mono"):
-            	#print "build dendent packages len 4 mono-devel:", len(pkg.buildrequires)
+                #print "build dendent packages len 4 mono-devel:", len(pkg.buildrequires)
             for dpkg in pkg.buildrequires:
                 depedentPackages.append(dpkg.package)
         depedentPackages=list(set(depedentPackages))
@@ -166,8 +166,8 @@ class Specutils(object):
         for key in self.spec.packages.keys():
             pkg = self.spec.packages.get(key)
             if pkg.name == pkgName:
-            	#if( pkgName == "mono-devel"):
-            	    #print "dendent packages len 4 mono-devel:", len(pkg.requires), pkg.requires[0].package
+                #if( pkgName == "mono-devel"):
+                    #print "dendent packages len 4 mono-devel:", len(pkg.requires), pkg.requires[0].package
                 for dpkg in pkg.requires:
                     dependentPackages.append(dpkg.package)
         return dependentPackages
@@ -177,8 +177,8 @@ class Specutils(object):
         for key in self.spec.packages.keys():
             pkg = self.spec.packages.get(key)
             if pkg.name == pkgName:
-            	#if( pkgName == "mono-devel"):
-            	    #print "build dendent packages len 4 mono-devel:", len(pkg.buildrequires), pkg.buildrequires[0].package
+                #if( pkgName == "mono-devel"):
+                    #print "build dendent packages len 4 mono-devel:", len(pkg.buildrequires), pkg.buildrequires[0].package
                 for dpkg in pkg.buildrequires:
                     dependentPackages.append(dpkg.package)
         return dependentPackages
