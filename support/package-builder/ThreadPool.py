@@ -30,13 +30,13 @@ class ThreadPool(object):
     @staticmethod
     def addWorkerThread(workerThreadName):
         workerThread = WorkerThread.WorkerThread(
-				ThreadPool.statusEvent,
-				workerThreadName,
-				ThreadPool.mapPackageToCycle,
-				ThreadPool.listAvailableCyclicPackages,
-				ThreadPool.logger,
-				ThreadPool.listBuildOptionPackages,
-				ThreadPool.pkgBuildOptionFile)
+                ThreadPool.statusEvent,
+                workerThreadName,
+                ThreadPool.mapPackageToCycle,
+                ThreadPool.listAvailableCyclicPackages,
+                ThreadPool.logger,
+                ThreadPool.listBuildOptionPackages,
+                ThreadPool.pkgBuildOptionFile)
         ThreadPool.mapWorkerThreads[workerThreadName]=workerThread
    
     @staticmethod

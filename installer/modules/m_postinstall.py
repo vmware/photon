@@ -10,7 +10,7 @@ def execute(name, ks_config, config, root):
     if ks_config and 'postinstall' in ks_config:
         config['postinstall'] = ks_config['postinstall']
     if 'postinstall' not in config:
-    	return
+        return
     # run the script in the chroot environment
     script = config['postinstall']
 
