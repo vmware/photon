@@ -155,6 +155,7 @@ rm -rf ${BUILDROOT}/LOGS
 if [ "$LIVE_CD" = false ] ; then
     # Cleaning up
     #Remove our rpm database as it fills up the ramdisk
+    find ${BUILDROOT}/usr | xargs strip
     rm -rf ${BUILDROOT}/home/*
     rm -rf ${BUILDROOT}/var/lib/rpm
 
@@ -176,20 +177,62 @@ if [ "$LIVE_CD" = false ] ; then
     rm ${BUILDROOT}/usr/bin/grub2-fstest
     rm ${BUILDROOT}/usr/bin/grub2-syslinux2cfg
     rm ${BUILDROOT}/usr/bin/grub2-mkstandalone
+    rm ${BUILDROOT}/usr/bin/grub2-render-label
+    rm ${BUILDROOT}/usr/bin/grub2-mkimage
+    rm ${BUILDROOT}/usr/bin/grub2-file
+    rm ${BUILDROOT}/usr/bin/grub2-mkrelpath
+    rm ${BUILDROOT}/usr/bin/grub2-glue-efi
+    rm ${BUILDROOT}/usr/bin/grub2-editenv
+    rm ${BUILDROOT}/usr/bin/grub2-mklayout
+    rm ${BUILDROOT}/usr/bin/grub2-mkpasswd-pbkdf2lsls
+    rm ${BUILDROOT}/usr/bin/grub2-script-check
+    rm ${BUILDROOT}/usr/bin/grub2-mknetdir
+    rm ${BUILDROOT}/usr/bin/oldfind
+
 
     rm ${BUILDROOT}/usr/bin/localedef
     rm ${BUILDROOT}/usr/bin/systemd-nspawn
     rm ${BUILDROOT}/usr/bin/systemd-analyze
     rm -rf ${BUILDROOT}/usr/lib64/gconv
+    rm ${BUILDROOT}/usr/bin/sqlite3
+
+    rm ${BUILDROOT}/usr/bin/bsdcpio
+    rm ${BUILDROOT}/usr/bin/bsdtar
+    rm ${BUILDROOT}/usr/bin/networkctl
+    rm ${BUILDROOT}/usr/bin/machinectl
+    rm ${BUILDROOT}/usr/bin/pkg-config
+    rm ${BUILDROOT}/usr/bin/openssl
+    rm ${BUILDROOT}/usr/bin/timedatectl
+    rm ${BUILDROOT}/usr/bin/localectl
+    rm ${BUILDROOT}/usr/bin/systemd-cgls
+    rm ${BUILDROOT}/usr/bin/systemd-inhibit
+    rm ${BUILDROOT}/usr/bin/systemd-studio-bridge
+    rm ${BUILDROOT}/usr/bin/iconv
 
     rm -rf ${BUILDROOT}/usr/lib/python2.7/lib2to3
     rm -rf ${BUILDROOT}/usr/lib/python2.7/lib-tk
     rm -rf ${BUILDROOT}/usr/lib/python2.7/ensurepip
-    rm -rf ${BUILDROOT}/usr/lib/python2.7/encoding
     rm -rf ${BUILDROOT}/usr/lib/python2.7/distutils
     rm -rf ${BUILDROOT}/usr/lib/python2.7/pydoc_data
     rm -rf ${BUILDROOT}/usr/lib/python2.7/idlelib
     rm -rf ${BUILDROOT}/usr/lib/python2.7/unittest 
+    
+    rm ${BUILDROOT}/usr/lib/librpmbuild.so*
+    rm ${BUILDROOT}/usr/lib/libdb_cxx*
+    rm ${BUILDROOT}/usr/lib/libnss_compat*
+
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/mpi.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/net.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/regexp.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/grub-bios-setup
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/file.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/bsd.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/efiemu.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/functional_test.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/gcry_*.module
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/xnu.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/zfs.*
+
 
     # TODO: mbassiouny, Find a clean way to do that
     for i in `ls ${BUILDROOT}/usr/share/`; do
