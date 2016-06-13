@@ -97,27 +97,32 @@ class Scheduler(object):
         
         if len(Scheduler.listOfPackagesNextToBuild) > 0:
             ThreadPool.ThreadPool.activateWorkerThreads(len(Scheduler.listOfPackagesNextToBuild))
-        Scheduler.logger.info("Released scheduler lock")
-        Scheduler.lock.release()
         Scheduler.listOfPackagesCurrentlyBuilding.append(package)
         Scheduler.listOfPackagesToBuild.remove(package)
+        Scheduler.logger.info("Released scheduler lock")
+        Scheduler.lock.release()
         return package
     
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildCompleted(package):
+        Scheduler.logger.info("Waiting to acquire scheduler lock")
+        Scheduler.lock.acquire()
         if package in Scheduler.listOfPackagesCurrentlyBuilding:
             Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
             Scheduler.listOfAlreadyBuiltPackages.append(package)
-    
-        
+        Scheduler.logger.info("Released scheduler lock")
+        Scheduler.lock.release()
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildFailed(package):
+        Scheduler.logger.info("Waiting to acquire scheduler lock")
+        Scheduler.lock.acquire()
         if package in Scheduler.listOfPackagesCurrentlyBuilding:
             Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
             Scheduler.listOfFailedPackages.append(package)
-                
+        Scheduler.logger.info("Released scheduler lock")
+        Scheduler.lock.release()
     @staticmethod
     def isAllPackagesBuilt():
         if len(Scheduler.listOfPackagesToBuild) == 0 :

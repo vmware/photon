@@ -26,16 +26,10 @@ class WorkerThread(threading.Thread):
                 break
             self.logger.info("Thread "+self.name+" is building package:"+ pkg)
             pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
-            t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))
-            t.start()
-            t.join()
-            if outputMap.has_key(pkg):
-                if outputMap[pkg] == False:
-                    buildThreadFailed = True
-                    Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
-                    self.logger.info("Thread "+self.name +" stopped building the "+pkg +" package")
-                    break
-            else:
+            try:
+                pkgBuilder.buildPackage(pkg)
+
+            except Exception as e:
                 buildThreadFailed = True
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
                 self.logger.info("Thread "+self.name +" stopped building the "+pkg +" package")
@@ -48,9 +42,3 @@ class WorkerThread(threading.Thread):
         
         ThreadPool.ThreadPool.makeWorkerThreadInActive(self.name)
         self.logger.info("Thread "+self.name +" is going to rest")
-        
-
-
-                    
-                
-        
