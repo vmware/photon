@@ -1,18 +1,19 @@
-#Kickstart Support
+# Kickstart Support in Photon OS
 
-Photon supports kickstart for unattended installations, the kickstart config file can reside in either the CD attached to the host or served through an http server.
+Photon OS works with kickstart for unattended, automated installations. The kickstart configuration file can either reside in the CD-ROM attached to the host or be served through an HTTP server.
 
-##Kickstart capabilities
+## Kickstart Capabilities
 
-Photon supports the following configurations:
-* Setting hostname
-* Setting password
-* Setting disk to install
-* Choose Photon flavor to install (minimal or full)
-* Apply post installation script
-* Add public keys, this will allow root ssh login.
+Photon OS supports the following configurations with kickstart:
 
-Here is a sample configuration file:
+* Setting the hostname
+* Setting the password
+* Setting the disk to install
+* Selecting whether to install the full or the minimal version of Photon OS 
+* Applying a post-installation script
+* Adding public keys to allow the root account to log in through SSH
+
+Here is a sample kickstart configuration file:
 
 ```
 {
@@ -20,7 +21,7 @@ Here is a sample configuration file:
     "password": 
         {
             "crypted": <true|false>,
-            "text": "<password whether it's plain text or encrypted>"
+            "text": "<password, either plain text or encrypted>"
         },
     "disk": "/dev/sda",
     "type": "minimal",
@@ -32,40 +33,60 @@ Here is a sample configuration file:
 }
 ```
 
-##Unattended installation though kickstart
-To have unattended installation, you have to pass `ks=<config_file>` parameter to the kernel command. The config file should be either:
-* on the iso `ks=cdrom:\<config_file_path>`,
-* or served over http server `ks=http://<server>/<config_file_path>`
+## Unattended Installation Through Kickstart
 
-##Building an iso with your kickstart config file
-Given a recent build photon.iso
-```
-# mount the photon.iso
-mkdir /tmp/photon-iso
-sudo mount photon.iso /tmp/photon-iso
+For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are two options: by providing it on the ISO or by serving it from an HTTP server. 
 
-#copy the content of the iso to a writable folder
-mkdir /tmp/photon-ks-iso
-cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
+The syntax to pass the config-file to the kernel through the ISO takes the following form: 
 
-pushd /tmp/photon-ks-iso/
+    ks=cdrom:/<config_file_path>
 
-# write your ks config file
-cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
-vim isolinux/my_ks.cfg
+Here is an example: 
 
-# add new item in the installation menu by modyfing isolinux/menu.cfg
-cat >> isolinux/menu.cfg << EOF
-label my_unattended
-	menu label ^My Unattended Install
-	kernel vmlinuz
-	append initrd=initrd.img root=/dev/ram0 ks=cdrom:/isolinux/my_ks.cfg loglevel=3
-EOF
+    ks=cdrom:/isolinux/my_ks.cfg
 
-# rebuild the iso
-mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
-		-no-emul-boot -boot-load-size 4 -boot-info-table -V "PHOTON_$(date +%Y%m%d)" \
-		. > <new_iso_path>.iso
+The syntax to serve the config-file to the kernel from an HTTP server takes the following form: 
 
-popd
-```
+    ks=http://<server>/<config_file_path>
+
+## Building an ISO with a Kickstart Config File
+
+Here's an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from Bintray at the following URL: 
+
+[https://bintray.com/vmware/photon](https://bintray.com/vmware/photon)
+
+Once you have the ISO, mount it. 
+
+    mkdir /tmp/photon-iso
+    sudo mount photon.iso /tmp/photon-iso
+
+Then copy the content of the ISO to a writable directory and push it into the directory stack: 
+
+    mkdir /tmp/photon-ks-iso
+    cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
+    pushd /tmp/photon-ks-iso/
+
+Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the `isolinux` directory and is named `sample_ks.cfg.` The name of the directory and the name of the file might be in all uppercase letters. 
+
+    cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
+    nano isolinux/my_ks.cfg
+
+With a copy of the sample kickstart config file open in nano, make the changes that you want. 
+
+Now add a new item to the installation menu by modifying `isolinux/menu.cfg`:
+
+    cat >> isolinux/menu.cfg << EOF
+    label my_unattended
+    	menu label ^My Unattended Install
+    	kernel vmlinuz
+    	append initrd=initrd.img root=/dev/ram0 ks=cdrom:/isolinux/my_ks.cfg loglevel=3
+    EOF
+
+Finally, rebuild the ISO so that it includes your kickstart config file: 
+
+    mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
+    		-no-emul-boot -boot-load-size 4 -boot-info-table -V "PHOTON_$(date +%Y%m%d)" \
+    		. > <new_iso_path>.iso
+
+    popd
+
