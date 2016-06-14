@@ -1,0 +1,69 @@
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts-modified/imc-shell/imgcust-scripts/CustomizationUtils.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2016-04-29 15:41:27.000000000 -0700
++++ gosc-scripts-modified/imc-shell/imgcust-scripts/CustomizationUtils.sh	2016-06-13 19:18:42.207194320 -0700
+@@ -931,8 +931,9 @@
+   local i=
+   for i in $(seq 1 $nicsCnt); do
+     local nic=$(ConfigFile_GetNicByIndex $i)
+-    local bootProto=$(ConfigFile_GetBootProto $nic)
+     local mac=$(ConfigFile_GetMacAddress $nic)
++    local ipv4Addr=$(ConfigFile_GetFirstIpV4Addr $nic)
++    local ipv6Cnt=$(ConfigFile_GetIpV6Cnt $nic)
+ 
+     local ifCfg=
+     ${addrShowVar} ${mac} "" ifCfg
+@@ -951,32 +952,31 @@
+         [Network]
+ EOF
+ )
+-
+-    if [[ $bootProto == "dhcp" ]]; then
++    if [ -z "$ipv4Addr" ] && [ "$ipv6Cnt" -eq 0 ]; then
+       export formatResult=$formatResult$(${CAT} <<EOF
+ 
+         DHCP=yes
+ EOF
+ )
+     else # static
+-      ipv4Addr=$(ConfigFile_GetFirstIpV4Addr $nic)
+-      ipv4Mask=$(ConfigFile_GetFirstIpV4Mask $nic)
+-      ipv4Gw=$(ConfigFile_GetFirstIpV4Gw $nic)
+-      local gatewayStr="Gateway=$ipv4Gw"
+-      if [ "$ipv4Gw" = "0.0.0.0" ]
+-      then
+-         Debug "Found an empty gateway"
+-         gatewayStr=""
+-      fi
+-      ipv4AddrPrefix=$(MaskStrToBits "$ipv4Addr $ipv4Mask")
++      if [ -n "$ipv4Addr" ]; then
++          ipv4Mask=$(ConfigFile_GetFirstIpV4Mask $nic)
++          ipv4Gw=$(ConfigFile_GetFirstIpV4Gw $nic)
++          local gatewayStr="Gateway=$ipv4Gw"
++          if [ "$ipv4Gw" = "0.0.0.0" ]
++          then
++             Debug "Found an empty gateway"
++             gatewayStr=""
++          fi
++          ipv4AddrPrefix=$(MaskStrToBits "$ipv4Addr $ipv4Mask")
+ 
+-      export formatResult=$formatResult$(${CAT} <<EOF
++          export formatResult=$formatResult$(${CAT} <<EOF
+ 
+         Address=$ipv4AddrPrefix
+         $gatewayStr
+ EOF
+ )
+-      ipv6Cnt=$(ConfigFile_GetIpV6Cnt $nic)
++      fi
+       local j=
+       for j in $(seq 1 $ipv6Cnt); do
+         ipv6Addr=$(ConfigFile_GetIpV6AddrByInd $nic $j)
+@@ -1000,7 +1000,7 @@
+ EOF
+ )
+       done
+-    fi # boot proto
++    fi # static or dhcp
+ 
+     local dnsCnt=$(ConfigFile_GetNameServersCnt)
+     for j in $(seq 1 $dnsCnt); do
