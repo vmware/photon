@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.0.5
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -15,6 +15,7 @@ Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 Patch0:         open-vm-tools-service-link.patch
 Patch1:         GOSC-libDeploy.patch
+Patch2:         IPv6Support.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -40,6 +41,7 @@ VmWare virtualization user mode tools
 %setup -a 1
 %patch0 -p1
 %patch1 -p1
+%patch2 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -97,6 +99,8 @@ fi
 
 
 %changelog
+*       Mon Jun 13 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-11
+-       Adding IPv6 Support for VCHA in customization.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 10.0.5-10
 -	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-9
