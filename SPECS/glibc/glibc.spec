@@ -1,12 +1,10 @@
-%define debug_package %{nil}
-%define __os_install_post %{nil}
 %global security_hardening nonow
 %define glibc_target_cpu %{_build}
 
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -189,6 +187,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*	Tue Jun 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-9
+-       Enabling rpm debug package and stripping the libraries
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-8
 -	GA - Bump release of all rpms
 *	Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-7
