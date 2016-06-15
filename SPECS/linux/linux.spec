@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	6%{?dist}
+Release:    	7%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -104,7 +104,7 @@ install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
-cp -v System.map        %{buildroot}/boot/system.map-%{version}
+cp -v System.map        %{buildroot}/boot/System.map-%{version}
 cp -v .config           %{buildroot}/boot/config-%{version}
 cp -v vmlinux			%{buildroot}/lib/modules/%{version}/vmlinux-%{version}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
@@ -115,8 +115,8 @@ photon_linux=vmlinuz-%{version}
 photon_initrd=initrd.img-no-kmods
 EOF
 
-# Restrict the permission on system.map-X file
-chmod -v 400 %{buildroot}/boot/system.map-%{version}
+# Restrict the permission on System.map-X file
+chmod -v 400 %{buildroot}/boot/System.map-%{version}
 
 #    Cleanup dangling symlinks
 rm -rf %{buildroot}/lib/modules/%{version}/source
@@ -148,7 +148,7 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 
 %files
 %defattr(-,root,root)
-/boot/system.map-%{version}
+/boot/System.map-%{version}
 /boot/config-%{version}
 /boot/vmlinuz-%{version}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
@@ -184,6 +184,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*	Wed Jun 15 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-7
+-	fixed the capitalization for - System.map 
 *   Thu May 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-6
 -   patch: REVERT-sched-fair-Beef-up-wake_wide.patch
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-5
