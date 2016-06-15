@@ -95,7 +95,7 @@ cd %{_builddir}/%{name}-build
 	--enable-kernel=2.6.32 \
 	--enable-obsolete-rpc \
 	--disable-silent-rules
-make %{?_smp_mflags}
+make
 %check
 cd %{_builddir}/glibc-build
 make -k check > %{_topdir}/LOGS/%{name}-check.log 2>&1 || true
