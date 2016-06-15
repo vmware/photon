@@ -1,4 +1,4 @@
-# Photon Administration Guide
+# Photon OS Administration Guide
 
 -   [Introduction](#introduction)
     -   [Examining the Packages in the SPECS Directory on
@@ -80,9 +80,11 @@
 
 ## Introduction
 
-This guide covers managing packages, controlling services with systemd, setting up networking, initializing Photon OS with cloud-init, running Docker containers, and working with other technologies, such as Kubernetes. 
+This guide describes the fundamentals of administering Photon OS, the free, open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud. 
 
-Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. Photon OS is lightweight and extensible. It supports the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf and optionally works with RPM-OSTree for image-based system versioning. 
+The guide covers the basics of managing packages, controlling services with systemd, setting up networking, initializing Photon OS with cloud-init, running Docker containers, and working with other technologies, such as Kubernetes. The guide also includes a section to get you started using Photon OS quickly and easily. 
+
+Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf and optionally works with RPM-OSTree for image-based system versioning. 
 
 When used with development tools and environments such as VMware Fusion, VMware Workstation, HashiCorp (Vagrant and Atlas), and production runtime environments (vSphere, vCloud Air), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud  applications.  
 
@@ -138,13 +140,13 @@ It contains the libraries files for Java runtime environment
 
 ### Looking at the Differences Between the Minimal and the Full Version
 
-The minimal version of Photon OS contains about 50 packages. The full version of Photon OS adds several hundred packages to those in the minimal version to create a more fully featured operating system. 
+The minimal version of Photon OS contains about 50 packages. As it is installed, the number of packages increases to nearly 100 to fulfill dependencies. The full version of Photon OS adds several hundred packages to those in the minimal version to deliver a more fully featured operating system. 
 
 You can view a list of the packages that appear in the minimal version by examining the following file: 
 
 [https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json)
 
-You can view a list of the packages that appear in the minimal version by examining the following file: 
+You can view a list of the packages that appear in the full version by examining the following file: 
 
 [https://github.com/vmware/photon/blob/master/common/data/packages_full.json](https://github.com/vmware/photon/blob/master/common/data/packages_full.json)
 
@@ -159,7 +161,7 @@ One notable difference between the two versions of Photon OS pertains to OpenJDK
 
 A later section covers tdnf. 
 
-### The Root Account and the sudo and su Commands
+### The Root Account and the `sudo` and `su` Commands
 
 This guide assumes that you are logged in to Photon OS with the root account and running commands as root. The sudo program comes with the full version of Photon OS. On the minimal version, you must install sudo with tdnf if you want to use it. As an alternative to installing sudo on the minimal version, you can switch users as needed with the `su` command to run commands that require root privileges. 
 
@@ -212,13 +214,13 @@ You can also build an ISO containing Photon OS from its source code on GitHub by
 
 ### Installing the OVA for the Minimal Version in vSphere
 
-You can download the OVA for the minimal version of Photon OS from Bintray and deploy it in vSphere in a matter of seconds. 
+You can download the OVA for the minimal version of Photon OS from Bintray and deploy it in vSphere in a matter of seconds. Here's how: 
 
 Download the OVA for the minimal version of Photon OS from the following URL: 
 
 	https://bintray.com/vmware/photon/ova
 
-To install the OVA in vSphere, on the File menu, click Deploy OVF Template, and then click Browse to locate the image that you downloaded. Move through the Deploy OVF Template dialog boxes by clicking Next to accept the default settings, and then click Finish. 
+To install the OVA in vSphere, on the `File` menu, click `Deploy OVF Template`, and then click `Browse` to locate the image that you downloaded. Move through the `Deploy OVF Template` dialog boxes by clicking `Next` to accept the default settings, and then click `Finish`. 
 
 In vSphere Client, turn on the power of the Photon OS virtual machine and open a console to it.
 
@@ -288,7 +290,7 @@ AppCatalyst is optimized for cloud-native application workloads. A common use ca
 
 By bundling Photon OS with AppCatalyst, VMware streamlines the workflow of getting a Docker engine running on a Linux machine inside a hypervisor on a Mac. 
 
-Here's how to install AppCatalyst, create a VM running Photon OS, and run a Docker container---all in a matter of minutes. The technology preview version of AppCatalyst requires Mac OS X 10.9 or later.
+Here's how to install AppCatalyst, create a VM running Photon OS, and run a Docker container--all in a matter of minutes. The technology preview version of AppCatalyst requires Mac OS X 10.9 or later.
 
 First, turn off Fusion if you are running it on your Mac. 
 
@@ -708,7 +710,7 @@ After establishing a new repository, you must run the following command to updat
 
 ## Managing Services with systemd
 
-Photon OS manages services with systemd. By using systemd, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services---an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server. 
+Photon OS manages services with systemd. By using systemd, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services--an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server. 
 
 A traditional Linux system contains an initialization system called SysVinit. With SLES 11, for instance, SysVinit-style init programs control how the system starts up and shuts down. Init implements system runlevels. A SysVinit runlevel defines a state in which a  process or service runs. 
 
@@ -1000,7 +1002,7 @@ To add a DNS server to your static network configuration file, insert a DNS key 
 	Gateway=192.168.0.1
 	DNS=192.168.0.1
 
-Another way of adding a DNS server is to modify /etc/systemd/resolved.conf --- a method that can be particularly useful when your machine is working with DHCP. For more information, see https://www.freedesktop.org/software/systemd/man/resolved.conf.html.
+Another way of adding a DNS server is to modify /etc/systemd/resolved.conf--a method that can be particularly useful when your machine is working with DHCP. For more information, see https://www.freedesktop.org/software/systemd/man/resolved.conf.html.
 
 You can optionally activate the local DNS stub resolver of systemd-resolved by adding `dns` and `resolve` to /etc/nsswitch.conf. To do so, make a backup copy of /etc/nsswitch.conf and then execute the following command as root:
 
@@ -1374,7 +1376,7 @@ You can also add a cloud-init user-data file to an existing instance of a Photon
 
 ## Docker Containers
 
-Photon OS includes the open source version of Docker. With Docker, Photon OS becomes a Linux run-time host for containers---that is, a Linux cloud container. A container is a process that runs on the Photon OS host with its own isolated application, file system, and networking.
+Photon OS includes the open source version of Docker. With Docker, Photon OS becomes a Linux run-time host for containers--that is, a Linux cloud container. A container is a process that runs on the Photon OS host with its own isolated application, file system, and networking.
 
 On Photon OS, the Docker daemon is enabled by default. To view the status of the daemon, run this command: 
 
@@ -1468,7 +1470,7 @@ To build a package from its source RPM, or SRPM, Photon OS requires the followin
 * gcc. This package is also installed by default on the full version of Photon OS, so you should not have to install it. 
 * make, Cmake, automake, or another make package, depending on the package you are trying to install and build from its source RPM. Cmake is installed by default on Photon OS. You can install other make packages if need be by using tdnf or yum.  
 
-Another requirement is a local unprivileged user account other than the root account. You should build RPMs as an unprivileged user. Do not build a package as root---building an RPM with the root account might damage your system. 
+Another requirement is a local unprivileged user account other than the root account. You should build RPMs as an unprivileged user. Do not build a package as root--building an RPM with the root account might damage your system. 
 
 If you are building a package on a virtual machine running Photon OS in VMware vSphere, VMware Workstation, or VMware Fusion, take a snapshot of your virtual machine before building the package. 
 
