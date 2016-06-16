@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.141
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -212,12 +212,16 @@ make install_systemd_generators DESTDIR=%{buildroot}
 make install_tmpfiles_configuration DESTDIR=%{buildroot}
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 
-%preun
-%systemd_preun lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
-
 %post
 /sbin/ldconfig
-%systemd_post lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
+%systemd_post lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
+# lvm2-lvmetad.socket is always enabled and started and ready to serve if lvmetad is used
+# replace direct systemctl calls with systemd rpm macro once this is provided in the macro:
+# http://cgit.freedesktop.org/systemd/systemd/commit/?id=57ab2eabb8f92fad5239c7d4492e9c6e23ee0678
+systemctl start lvm2-lvmetad.socket
+
+%preun
+%systemd_preun lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
 
 %postun
 /sbin/ldconfig
@@ -424,20 +428,22 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
+*	Thu Jun 16 2016 Nick Shi <nshi@vmware.com> 2.02.141-6
+-	Start lvm2-lvmetad.socket during post
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-5
 -	GA - Bump release of all rpms
-*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
--   Adding upgrade support in pre/post/un scripts.
-*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3 
--   Fix post scripts for lvm
-*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2 
--   Adding device mapper event to Requires
-*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
--   Change config file attributes.
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
--   Add systemd to Requires and BuildRequires
-*   Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
--   Packaging systemd service and configuration files
-*   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
--   Initial version
+*	Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
+-	Adding upgrade support in pre/post/un scripts.
+*	Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3
+-	Fix post scripts for lvm
+*	Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2
+-	Adding device mapper event to Requires
+*	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
+-	Change config file attributes.
+*	Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
+-	Add systemd to Requires and BuildRequires
+*	Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
+-	Packaging systemd service and configuration files
+*	Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
+-	Initial version
 
