@@ -1,7 +1,7 @@
 Summary:	Basic and advanced IPV4-based networking
 Name:		iproute2
 Version:	4.2.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:		Applications/System
@@ -9,6 +9,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
 %define sha1 iproute2=2585177e94fddb59418db149692d0726cde30774
+Patch0: 	replace_killall_by_pkill.patch
+
 %description
 The IPRoute2 package contains programs for basic and advanced
 IPV4-based networking.
@@ -17,6 +19,8 @@ IPV4-based networking.
 sed -i '/^TARGETS/s@arpd@@g' misc/Makefile
 sed -i /ARPD/d Makefile
 sed -i 's/arpd.8//' man/man8/Makefile
+%patch0 -p1
+
 %build
 make VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
 %install
@@ -34,6 +38,8 @@ make	DESTDIR=%{buildroot} \
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Thu Jun 16 2016 Nick Shi <nshi@vmware.com> 4.2.0-3
+-	Replace killall by pkill in ifcfg
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.0-2
 -	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.0-1
