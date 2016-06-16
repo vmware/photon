@@ -54,19 +54,19 @@
     </header>
     <section class='hero'>
       <div class='container'>
-
         <div class="hero-image">
           <a href="https://github.com/vmware/photon"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" /></a>
           <img src="assets/img/photon-dfad9617.png" />
         </div>
-
         <h2 id="vmware-photon">VMware Photon OS™</h2>
-
         <p>Minimal Linux Container Host</p>
         <a class="button button-primary button-large" href="https://github.com/vmware/photon"><i class='ion-social-github'></i>
         Fork
         Photon™
         <i class='ion-ios-arrow-right'></i>
+		<p>Track our progress in earning the Linux Foundation's Core Infrastructure Initiative's Best Practices Badge!
+		<a href="https://bestpractices.coreinfrastructure.org/projects/212"><img src="https://bestpractices.coreinfrastructure.org/projects/212/badge"></a>
+		</p>
         </a>
       </div>
     </section>
@@ -76,10 +76,10 @@
           <div class='content'>
             <h2 id="what-is-photon">What is Photon OS™</h2>
 
-            <p>Photon OS™ is a minimal Linux container host, optimized to run on VMware platforms. With the Release Candidate release, we have greatly expanded the library of packages that are in our repository, making Photon OS™ more broadly applicable to a range of use-cases. We invite partners, customers and interested community members to collaborate around running containerized applications in a virtualized environment.</p>
+            <p>Photon OS™ is a minimal Linux container host, optimized to run on VMware platforms. With the 1.0 release, we have greatly expanded the library of packages that are in our repository, making Photon OS™ more broadly applicable to a range of use-cases. We invite partners, customers and interested community members to collaborate on both running containerized applications in a virtualized environment and the potential of an operating system tightly coupled to underlying virtual infrastructure.</p>
             <ul>
-              <li><strong>Optimized for vSphere</strong> - Validated on and tuned for VMware product and provider platforms.</li>
-              <li><strong>Container support</strong> - Compatible with Docker, rkt, and the Pivotal Garden container specifications.</li>
+              <li><strong>Optimized for vSphere</strong> - Leveraging more than a decade of experience validating guest operating systems, Photon OS is thoroughly validated on vSphere; and, because VMware is focused on the vSphere platform, we're able to highly tune the Photon OS kernel for VMware product and provider platforms.</li>
+              <li><strong>Container support</strong> - Compatible with container runtimes, like Docker, and container scheduling frameworks, like Kubernetes.</li>
               <li><strong>Efficient lifecycle management</strong> - Contains a new, open-source, yum-compatible package manager - tdnf - that makes the system as small as possible, but preserves robust yum package management capabilities.</li>
             </ul>
             <p>See the <a href="/photon/assets/files/photon_faqs.pdf">FAQ</a> for more information.</p>
@@ -93,17 +93,15 @@
           <div class='content'>
             <h2 id="getting-photon">Getting Photon OS™</h2>
 
-            <p>The latest binary version is our 1.0 Release Candidate (RC). This release represents a significant step forward for Photon OS™ with a greatly expanded package library and full guest OS validation on VMware platforms. For this RC release, we're offering pre-built ISO and OVA images:</p>
+            <p>The latest binary version is 1.0. This release represents a significant step forward for Photon OS™ with a greatly expanded package library and full guest OS validation on VMware platforms. For the 1.0 release, we're offering pre-built ISO, OVA (for both virtual hardware v10 and virtual hardware v11), Amazon AMI and Google GCE-compatible images:</p>
             <ul>
-              <li><a href="https://bintray.com/artifact/download/vmware/photon/photon-1.0-a6f0f63.iso" target="_blank">Photon OS 1.0, Release Candidate &mdash; Full ISO</a> - Contains everything you could need to install Photon OS and more, with the full library of packages on the ISO.</li>
-              <li><a href="https://bintray.com/artifact/download/vmware/photon/photon-custom-1.0-a6f0f63-RC.ova" target="_blank">Photon OS 1.0, Release Candidate &mdash; OVA</a> - A pre-installed and vSphere-optimized Photon OS minimal instance.</li>
+              <li><a href="https://bintray.com/artifact/download/vmware/photon/photon-1.0-13c08b6.iso" target="_blank">Photon OS, Version 1.0 &mdash; Full ISO</a> - Contains everything you could need to install Photon OS and more, with the full library of packages on the ISO.</li>
+              <li><a href="https://bintray.com/artifact/download/vmware/photon/photon-custom-hw10-1.0-13c08b6-GA.ova" target="_blank">Photon OS, Version 1.0 &mdash; OVA with virtual hardware v10</a> - A pre-installed and vSphere-optimized Photon OS minimal instance configured with virtual hardware version 10.</li>
+			  <li><a href="https://bintray.com/artifact/download/vmware/photon/photon-custom-hw11-1.0-13c08b6-GA.ova" target="_blank">Photon OS, Version 1.0 &mdash; OVA with virtual hardware v11</a> - A pre-installed and vSphere-optimized Photon OS minimal instance configured with virtual hardware version 11.</li>
+			  <li><a href="https://bintray.com/artifact/download/vmware/photon/photon-ami-1.0-13c08b6.tar.gz" target="_blank">Photon OS, Version 1.0 &mdash; AMI for Amazon AWS</a> - A pre-installed Photon OS minimal instance, configured for Amazon AWS.</li>
+			  <li><a href="https://bintray.com/artifact/download/vmware/photon/photon-gce-1.0-13c08b6.tar.gz" target="_blank">Photon OS, Version 1.0 &mdash; GCE Image for Google Compute Engine</a> - A pre-installed Photon OS minimal instance, configured for Google GCE.</li>
             </ul>
-
-            <p>In our Tech Preview 2 release, we published images specifically for VMware platforms and 3rd party cloud providers. When we achieve our General Availability milestone, shortly, we'll make these customized images available. For now, the ISO can be installed on any platform. 
-			
-            <p>The images are distributed under the <a href="https://vmware.github.io/photon/assets/files/photon_tech_preview_license_agreement.pdf" target="_blank">VMware Technology Preview License Agreement</a>. Open source license information may be found in Photon OS™ <a href="https://raw.githubusercontent.com/vmware/photon/master/COPYING" target="_blank">Open Source License</a> file.</p>
-            <p>Photon OS™ source code is available on the VMware <a href="https://github.com/vmware/photon">Photon™ GitHub source repository</a>. You can build your own Photon OS™ ISO image by cloning the repo and following the instructions in <a href="https://github.com/vmware/photon/blob/master/README.md" target="_blank">README.md</a>.</p>
-
+            <p>For the complete catalog of binaries available for download, along with checksums, please see <a href="https://github.com/vmware/photon/wiki/Downloading-Photon-OS" target="_blank">Downloading Photon OS</a>.
           </div>
         </div>
       </div>
@@ -112,7 +110,7 @@
       <div class='container'>
         <div class='row'>
           <h2 id='getting-started'>Getting Started</h2>
-          <p>We've provided a few guides to help get you started over on our <a href="https://github.com/vmware/photon/wiki">Photon OS GitHub Wiki</a></p>
+          <p>We've provided a few guides to help get you started over on our <a href="https://github.com/vmware/photon/wiki">Photon OS™ GitHub Wiki</a></p>
         </div>
       </div>
     </section>
@@ -122,11 +120,7 @@
           <div class='content'>
             <h2 id="support">Support</h2>
 
-            <p>Photon OS™ is released as open source software and comes with no commercial support.</p>
-            <p>But, since we want to ensure success and recognize that Photon OS™ consumers might fall into a range of roles - from developers that are steeped in the conventions of open-source to customers that are more accustomed to VMware commercial offerings, we offer several methods of engaging with the Photon OS™ team and community.</p>
-            <p>For our developer community, feel free to reach out using either<a href="https://github.com/vmware/photon/issues"> GitHub issues for Photon OS</a> or join our Google groups at <a href="https://groups.google.com/forum/#%21forum/vmware-photon-dev" target="_blank">vmware-photon-os-dev</a></p>
-            <p>For more general user questions, visit the Photon OS™ user forum in our <a href="http://communities.vmware.com/community/vmtn/devops/project-photon" target="_blank">Photon OS™ VMware Community</a>.</p>
-
+            <p>Photon OS™ is released as open source software and, presently, provides community support through our GitHub project page.If you encounter an issue or have a question, feel free to reach out via<a href="https://github.com/vmware/photon/issues"> GitHub issues for Photon OS™</a>.
           </div>
         </div>
       </div>
@@ -144,8 +138,6 @@
               <a title="Sharath George" href="https://github.com/sharathjg"><img alt="Sharath George" src="https://avatars.githubusercontent.com/u/11167586?v=3" />
               </a>
               <a title="Priyesh Padmavilasom" href="https://github.com/ppadmavilasom"><img alt="Priyesh Padmavilasom" src="https://avatars.githubusercontent.com/u/11167452?v=3" />
-              </a>
-              <a title="Mahmoud Bassiouny" href="https://github.com/mbassiouny"><img alt="Mahmoud Bassiouny" src="https://avatars.githubusercontent.com/u/11181222?v=3" />
               </a>
               <a title="Divya Thaluru" href="https://github.com/dthaluru"><img alt="Divya Thaluru" src="https://avatars.githubusercontent.com/u/11169145?v=3" />
               </a>
@@ -171,7 +163,7 @@
         <div class='row'>
           <div class='content'>
             <h2 id="contributing">Contributing</h2>
-            <p>The Photon project team welcomes contributions from the community. If you wish to contribute code and you have not signed our contributor license agreement (CLA), our bot will update the issue when you open a <a href="https://help.github.com/articles/creating-a-pull-request">Pull Request</a>. For any questions about the CLA process, please refer to our <a href="https://cla.vmware.com/faq">FAQ</a>. </p>  
+            <p>The Photon project team welcomes contributions from the community. If you wish to contribute code and you have not signed our Contributor License Agreement (CLA), our CLA-bot will walk you through the process and update the issue when you open a <a href="https://help.github.com/articles/creating-a-pull-request">Pull Request</a>. For any questions about the CLA process, please refer to our <a href="https://cla.vmware.com/faq">FAQ</a> or contact us through the GitHub issue tracker. </p>  
         </div>
         </div>
       </div>
@@ -181,10 +173,7 @@
         <div class='row'>
           <div class='content'>
             <h2 id="license">License</h2>
-
-            <p>Photon™ is comprised of many open source software components, each of which has its own license that is located in the source code of the respective component as well as documented in the <a href="https://raw.githubusercontent.com/vmware/photon/master/COPYING">open source license file</a> accompanying the Photon™ distribution.</p>
-
-            <p>The Photon™ pre-built ISO images are distributed under the <a href="/photon/assets/files/photon_tech_preview_license_agreement.pdf">Photon™ Technology Preview License Agreement</a>.</p>
+            <p>The ISO and OVA images are distributed under the <a href="https://github.com/gregmmurray/GS_vSphere/files/317294/PhotonOS.GA.EULA_2016May19FINAL.txt" target="_blank">VMware Photon OS™ EULA</a>. Open source license information may be found in Photon OS™ <a href="https://raw.githubusercontent.com/vmware/photon/master/COPYING" target="_blank">Open Source License</a> file.</p>
           </div>
           <div class='image'></div>
         </div>
@@ -198,12 +187,12 @@
           </p>
           <p>
             &copy;
-            2015
+            2016
             VMware, Inc. All Rights Reserved.
           </p>
         </div>
       </div>
     </footer>
-  </body>
+</body>
   <script src="//use.typekit.net/lqm4sxw.js" type="text/javascript"></script><script src="assets/js/all-86b9d6be.js" type="text/javascript"></script>
 </html>
