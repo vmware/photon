@@ -1,0 +1,56 @@
+diff -uNr nm1/src/iniparser.c nm2/src/iniparser.c
+--- nm1/src/iniparser.c	2016-06-15 06:17:55.454354915 +0000
++++ nm2/src/iniparser.c	2016-06-16 01:34:40.587238993 +0000
+@@ -537,7 +537,8 @@
+     )
+ {
+     uint32_t err = 0;
+-    PKEYVALUE_INI pCursor = NULL;
++    PKEYVALUE_INI *pCursor = NULL;
++    PKEYVALUE_INI pCandidate = NULL;
+ 
+     if (!pSection || !pszKey || !*pszKey)
+     {
+@@ -545,29 +546,22 @@
+         bail_on_error(err);
+     }
+ 
+-    pCursor = pSection->pKeyValue;
+-    while (pCursor)
++    pCursor = &pSection->pKeyValue;
++    while (*pCursor)
+     {
+-        PKEYVALUE_INI pCandidate = NULL;
+-
+-        if (!strcmp(pCursor->pszKey, pszKey))
++        if (!strcmp((*pCursor)->pszKey, pszKey))
+         {
+-            pCandidate = pCursor;
+-
+-            if (pCursor == pSection->pKeyValue)
+-            {
+-                pSection->pKeyValue = pCursor->pNext;
+-            }
++            pCandidate = *pCursor;
++            *pCursor = pCandidate->pNext;
++            break;
+         }
++        pCursor = &(*pCursor)->pNext;
++    }
+ 
+-        pCursor = pCursor->pNext;
+-
+-        if (pCandidate)
+-        {
+-            pCandidate->pNext = NULL;
+-
+-            ini_cfg_free_keyvalue(pCandidate);
+-        }
++    if (pCandidate)
++    {
++        pCandidate->pNext = NULL;
++        ini_cfg_free_keyvalue(pCandidate);
+     }
+ 
+ error:
+
