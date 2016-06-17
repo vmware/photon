@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.8
-Release:       5%{?dist}
+Release:       6%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -27,6 +27,7 @@ Patch11:       netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 #fixes CVE-2016-3135
 Patch12:       netfilter-x_tables-check-for-size-overflow.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
+Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -75,6 +76,7 @@ The Linux package contains the Linux kernel doc files
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
 
 %build
 make mrproper
@@ -140,6 +142,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Fri Jun 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-6
+-   patch: e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
+-   .config: disable rt group scheduling - not supported by systemd
 *   Fri May 27 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-5
 -   patch: REVERT-sched-fair-Beef-up-wake_wide.patch
 *   Wed May 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-4
