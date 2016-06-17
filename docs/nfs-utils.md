@@ -1,69 +1,47 @@
-# Photon NFS utils
+# Photon NFS Utilities for Mounting Remote File Systems
 
-To mount network file system in Photon
+This document describes how to mount a remote file system on Photon OS by using nfs-utils, a commonly used package that contains tools to work with the Network File System protocol (NFS).
 
-
-## Check a remote nfs server
+## Check a Remote Server
 
 ```
 showmount  -e nfs-servername or ip
 ```
 
-for example : 
+Example:  
 
 ```
-showmount -e discus-filer.eng.vmware.com
-showmount -e 10.118.100.122
+showmount -e eastern-filer.eng.vmware.com
+showmount -e 10.109.87.129
 ```
 
-## Mount the nfs in Photon full
-nfs-utils is installed by default in Photon full, just use it.
+## Mount a Remote File System in Photon Full
+
+The nfs-utils package is installed by default in the full version of Photon OS. Here is how to mount a directory through NFS on Photon OS:  
 
 ```
 mount -t nfs nfs-ServernameOrIp:/exportfolder /mnt/folder
 ```
 
-for example : 
+Example:  
 
 ```
-mount -t nfs discus-filer.eng.vmware.com:/export/filer /mnt/filer
-mount -t nfs 10.118.100.122:/export /mnt/export
+mount -t nfs eastern-filer.eng.vmware.com:/export/filer /mnt/filer
+mount -t nfs 10.109.87.129:/export /mnt/export
 ```
 
-## Mount the nfs in Photon minimal
-Nfs-utils is not installed in Photon minimal. So it should be installed by tdnf first.
+## Mount a Remote File System in Photon Minimal
 
-* tdnf Required repositories
+The nfs-utils package is not installed in the minimal version of Photon OS. You install it by running the following command: 
 
-Create photon-extras.repo as follows (in /etc/yum.repos.d) - this is for likewise-open and dependencies.
-```
-root@photon-machine [ /etc/yum.repos.d ]# cat photon-extras.repo 
-[photon-extras]
-name=VMware Photon Extras
-baseurl=https://dl.bintray.com/vmware/photon_extras
-gpgkey=file:///etc/pki/rpm-gpg/PHOTON-RPM-GPG-KEY
-gpgcheck=0
-enabled=1
-skip_if_unavailable=True
-```
-Create photon-demo.repo as follows (in /etc/yum.repos.d) - this is for tdnfd and tdnfd-cli
-```
-root@photon-machine [ /etc/yum.repos.d ]# cat photon-demo.repo 
-[photon-demo]
-name=VMware Photon Demo
-baseurl=http://discus-repo-mirror.eng.vmware.com/discus/releases/demo
-gpgkey=file:///etc/pki/rpm-gpg/PHOTON-RPM-GPG-KEY
-gpgcheck=0
-enabled=1
-skip_if_unavailable=True
-```
+	tdnf install nfs-utils
 
+For more information on installing packages with the tdnf command, see the [Photon OS Administration Guide](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md).
 
-* install nfs-utils by tdnf
+Once nfs-utils is installed, you can mount a file system by running the following commands, replacing the placeholders with the path of the directory that you want to mount: 
+
 ```
-root@photon94 [ ~ ]# tdnf install nfs-utils
-```
-* mount nfs
+mount nfs
 ```
 mount -t nfs nfs-ServernameOrIp:/exportfolder /mnt/folder
 ```
