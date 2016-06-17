@@ -29,7 +29,7 @@ develop applications that use libusb.
 
 %build
 %configure --disable-static
-make %{?_smp_mflags}
+make
 
 %install
 make DESTDIR=%{buildroot} install
