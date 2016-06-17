@@ -7,6 +7,18 @@ if [ $# -eq 1 -a "x$1" = "xnone" ]; then
     exit 0
 fi
 
+if [ $# -eq 1 -a "x$1" = "xnostack-protector-strong" ]; then
+cat <<EOF > `dirname $(gcc --print-libgcc-file-name)`/../specs
+# add sec hardening flags for cc1.
+*cc1:
++ %{!fno-stack-protector:-fstack-protector} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
+
+# add sec hardening flags for cc1.
+*cc1plus:
++ %{!fno-stack-protector:-fstack-protector} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
+
+EOF
+else
 cat <<EOF > `dirname $(gcc --print-libgcc-file-name)`/../specs
 # add sec hardening flags for cc1.
 *cc1:
@@ -16,6 +28,10 @@ cat <<EOF > `dirname $(gcc --print-libgcc-file-name)`/../specs
 *cc1plus:
 + %{!fno-stack-protector-strong:-fstack-protector-strong} %{fno-pie|fno-PIE|fpic|fPIC|shared:;:-fPIE -fpie}
 
+EOF
+fi
+
+cat <<EOF >> `dirname $(gcc --print-libgcc-file-name)`/../specs
 # add -D_FORTIFY_SOURCE=2 for preprocessor.
 *cpp:
 + %{O1|O2|O3|Os|Ofast:-D_FORTIFY_SOURCE=2}

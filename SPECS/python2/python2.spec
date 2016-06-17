@@ -1,7 +1,8 @@
+%global security_hardening nostack-protector-strong
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -213,6 +214,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Thu Jun 16 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-5
+-	Disable building with gcc fstack-protector-strong flag
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-4
 -	GA - Bump release of all rpms
 *  	Tue Apr 26 2016 Nick Shi <nshi@vmware.com> 2.7.11-3

@@ -318,7 +318,7 @@ class SpecParser(object):
         if (nrWords != 3):
             print "Error: Unable to parse line: "+line
             return False
-        if (words[2] != "none" and words[2] != "nonow") :
+        if (words[2] != "none" and words[2] != "nonow" and words[2] != "nostack-protector-strong") :
             print "Error: Invalid security_hardening value: " + words[2]
             return False
         self.globalSecurityHardening = words[2]
