@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          22%{?dist}
+Release:          23%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -27,6 +27,7 @@ Patch11:          systemd-228-timedatectl-PR2749.patch
 Patch12:          systemd-228-query-duid.patch
 Patch13:          systemd-228-pam-systemd-user.patch
 Patch14:          systemd-228-ipv6-disabled-fix.patch
+Patch15:          systemd-228-default-dns-from-env.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -74,6 +75,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -143,6 +145,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*    Fri Jun 17 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-23
+-    systemd-resolved: Configure initial DNS servers from environment var.
 *    Mon Jun 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-22
 -    systemd-resolved: disable LLMNR
 *    Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-21
