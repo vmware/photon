@@ -1,13 +1,14 @@
 Summary:      This package contains the 'perf' performance analysis tools for Linux kernel 
 Name:         linux-tools
 Version:      4.4.8
-Release:      2%{?dist}
+Release:      3%{?dist}
 License:      GPLv2
 URL:          http://www.kernel.org/
 Group:        System/Tools
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.8.tar.xz
+Patch0:		  perf-top-sigsegv-fix.patch
 %define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
 Requires:         filesystem kmod coreutils binutils
 
@@ -16,6 +17,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %prep
 %setup -q -n linux-4.4.8
+%patch0 -p1
 
 %build
 cd tools/perf
@@ -36,6 +38,8 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 /etc/bash_completion.d/* 
 
 %changelog
+*	Mon Jun 20 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-3
+-	Added patch to fix perf top segmentation fault. 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-2
 -	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
