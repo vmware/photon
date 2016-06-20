@@ -1,0 +1,11 @@
+--- a/tools/perf/builtin-top.c	2016-04-19 23:44:02.000000000 -0700
++++ b/tools/perf/builtin-top.c	2016-06-20 15:08:44.397210036 -0700
+@@ -766,7 +766,7 @@
+ 		 */
+ 		if (!top->kptr_restrict_warned && !top->vmlinux_warned &&
+ 		    al.map == machine->vmlinux_maps[MAP__FUNCTION] &&
+-		    RB_EMPTY_ROOT(&al.map->dso->symbols[MAP__FUNCTION])) {
++		    (al.map != NULL && RB_EMPTY_ROOT(&al.map->dso->symbols[MAP__FUNCTION]))) {
+ 			if (symbol_conf.vmlinux_name) {
+ 				char serr[256];
+ 				dso__strerror_load(al.map->dso, serr, sizeof(serr));
