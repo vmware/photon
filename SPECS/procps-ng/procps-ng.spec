@@ -1,7 +1,7 @@
 Summary:	Programs for monitoring processes
 Name:		procps-ng
 Version:	3.3.11
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		http://procps.sourceforge.net/
 Group:		Applications/System
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
 %define sha1 procps-ng=1bdca65547df9ed019bd83649b0f8b8eaa017e25
+Patch0:		Fixto-interpret-ascii-sequence.patch
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description
@@ -20,6 +21,7 @@ Requires:	%{name} = %{version}
 It contains the libraries and header files to create applications 
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -96,6 +98,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %changelog
+*	Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
+-	Added patch to interpret ASCII sequence correctly
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
 -	GA - Bump release of all rpms
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
