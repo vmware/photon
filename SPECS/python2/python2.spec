@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -9,7 +9,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.python.org/ftp/python/2.7.11/Python-%{version}.tar.xz
 %define sha1 Python=c3b8bbe3f084c4d4ea13ffb03d75a5e22f9756ff
-Patch: cgi.patch
+Patch0: cgi.patch
+Patch1: added-compiler-flags-for-curses-module.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel
 BuildRequires:  openssl-devel
@@ -96,7 +97,8 @@ to build python programs.
 
 %prep
 %setup -q -n Python-%{version}
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 %build
 export OPT="${CFLAGS}"
 ./configure \
@@ -213,6 +215,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*	Mon Jun 20 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-5
+-   	Added stack-protector flag for ncurses module
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-4
 -	GA - Bump release of all rpms
 *  	Tue Apr 26 2016 Nick Shi <nshi@vmware.com> 2.7.11-3
