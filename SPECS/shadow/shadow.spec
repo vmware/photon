@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.2.1
-Release:	7%{?dist}
+Release:	8%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -99,8 +99,10 @@ done
 %{_bindir}/*
 %{_sbindir}/*
 %{_mandir}/*/*
-%{_sysconfdir}/pam.d/*
+%config(noreplace) %{_sysconfdir}/pam.d/*
 %changelog
+*       Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
+-	Added logic to not replace pam.d conf files in upgrade scenario
 *       Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-7
 -	Adding pam_cracklib module as requisite to pam password configuration
 *       Wed May 25 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-6
