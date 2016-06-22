@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          23%{?dist}
+Release:          24%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -133,7 +133,42 @@ ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
+%dir %{_sysconfdir}/systemd
+%dir %{_sysconfdir}/systemd/system
+%dir %{_sysconfdir}/systemd/user
+%dir %{_sysconfdir}/systemd/network
+%dir %{_sysconfdir}/tmpfiles.d
+%dir %{_sysconfdir}/sysctl.d
+%dir %{_sysconfdir}/modules-load.d
+%dir %{_sysconfdir}/binfmt.d
+%{_sysconfdir}/X11/xinit/xinitrc.d/50-systemd-user.sh
+%{_sysconfdir}/sysctl.d/50-security-hardening.conf
+%{_sysconfdir}/xdg/systemd
+%{_sysconfdir}/rc.d/init.d/README
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.systemd1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.hostname1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.login1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.locale1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.timedate1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.resolve1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.network1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
+%config(noreplace) %{_sysconfdir}/systemd/system.conf
+%config(noreplace) %{_sysconfdir}/systemd/user.conf
+%config(noreplace) %{_sysconfdir}/systemd/logind.conf
+%config(noreplace) %{_sysconfdir}/systemd/journald.conf
+%config(noreplace) %{_sysconfdir}/systemd/resolved.conf
+%config(noreplace) %{_sysconfdir}/systemd/coredump.conf
+%config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
+%config(noreplace) %{_sysconfdir}/systemd/bootchart.conf
+%config(noreplace) %{_sysconfdir}/pam.d/systemd-user
+
+%dir %{_sysconfdir}/udev
+%dir %{_sysconfdir}/udev/rules.d
+%dir %{_sysconfdir}/udev/hwdb.d
+%{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
+%config(noreplace) %{_sysconfdir}/udev/udev.conf
+%{_sysconfdir}/systemd/system/*
 /lib/*
 %exclude %{_libdir}/debug/*
 %{_libdir}/*
@@ -145,6 +180,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*    Tue Jun 21 2016 Anish Swaminathan <anishs@vmware.com>  228-24
+-    Change config file properties
 *    Fri Jun 17 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-23
 -    systemd-resolved: Configure initial DNS servers from environment var.
 *    Mon Jun 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-22
