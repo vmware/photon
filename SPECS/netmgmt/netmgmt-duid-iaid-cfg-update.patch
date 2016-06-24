@@ -1,0 +1,197 @@
+diff -uNr nm1/include/constants.h nm2/include/constants.h
+--- nm1/include/constants.h	2016-06-24 22:48:51.718384029 +0000
++++ nm2/include/constants.h	2016-06-24 22:57:18.218371419 +0000
+@@ -3,6 +3,21 @@
+ 
+ #define MAX_DUID_SIZE                  128
+ 
++typedef enum DUIDType {
++    _DUID_TYPE_MIN      = 0,
++    DUID_TYPE_LLT       = 1,
++    DUID_TYPE_EN        = 2,
++    DUID_TYPE_LL        = 3,
++    DUID_TYPE_UUID      = 4,
++    _DUID_TYPE_MAX,
++} DUIDType;
++
++static const char* const duid_type_table[_DUID_TYPE_MAX] = {
++    [DUID_TYPE_LLT]  = "link-layer-time",
++    [DUID_TYPE_EN]   = "vendor",
++    [DUID_TYPE_LL]   = "link-layer",
++    [DUID_TYPE_UUID] = "uuid",
++};
+ 
+ #endif /* __CONSTANTS_H__ */
+ 
+diff -uNr nm1/src/defines.h nm2/src/defines.h
+--- nm1/src/defines.h	2016-06-24 22:48:51.718384029 +0000
++++ nm2/src/defines.h	2016-06-24 22:57:18.218371419 +0000
+@@ -23,6 +23,11 @@
+ #define SYSTEMD_PATH                   "/etc/systemd/"
+ #define SYSTEMD_NET_PATH               "/etc/systemd/network/"
+ 
++#define SECTION_DHCP                   "DHCP"
++#define KEY_IAID                       "IAID"
++#define KEY_DUID_TYPE                  "DUIDType"
++#define KEY_DUID_RAWDATA               "DUIDRawData"
++
+ 
+ #define bail_on_error(errcode) \
+     if (errcode) { \
+diff -uNr nm1/src/netmgr.c nm2/src/netmgr.c
+--- nm1/src/netmgr.c	2016-06-24 22:48:51.718384029 +0000
++++ nm2/src/netmgr.c	2016-06-24 22:57:18.218371419 +0000
+@@ -156,8 +156,6 @@
+ {
+     uint32_t err = 0;
+     char cfgFileName[MAX_LINE];
+-    const char szSectionName[] = "Link";
+-    const char szKey[] = "IAID";
+     char szValue[MAX_LINE] = "";
+ 
+     if (!pszInterfaceName)
+@@ -171,11 +169,11 @@
+ 
+     if (iaid > 0)
+     {
+-        err = set_key_value(cfgFileName, szSectionName, szKey, szValue, 0);
++        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_IAID, szValue, 0);
+     }
+     else
+     {
+-        err = set_key_value(cfgFileName, szSectionName, szKey, NULL, 0);
++        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_IAID, NULL, 0);
+     }
+ 
+     bail_on_error(err);
+@@ -192,8 +190,6 @@
+ {
+     uint32_t err = 0;
+     char cfgFileName[MAX_LINE];
+-    const char szSectionName[] = "Link";
+-    const char szKey[] = "IAID";
+     char szIaid[MAX_LINE];
+ 
+     if (!pszInterfaceName)
+@@ -204,7 +200,7 @@
+ 
+     sprintf(cfgFileName, "%s10-%s.network", SYSTEMD_NET_PATH, pszInterfaceName);
+ 
+-    err = get_key_value(cfgFileName, szSectionName, szKey, szIaid);
++    err = get_key_value(cfgFileName, SECTION_DHCP, KEY_IAID, szIaid);
+     bail_on_error(err);
+ 
+     sscanf(szIaid, "%u", iaid);
+@@ -213,6 +209,28 @@
+     return err;
+ }
+ 
++static const char * duid_strtype_from_type(uint16_t type)
++{
++    if ((type > _DUID_TYPE_MIN) && (type < _DUID_TYPE_MAX))
++    {
++        return duid_type_table[type];
++    }
++    return NULL;
++}
++
++static uint16_t duid_type_from_strtype(const char *strtype)
++{
++    DUIDType dt;
++    for (dt = _DUID_TYPE_MIN+1; dt < _DUID_TYPE_MAX; dt++)
++    {
++        if (!strncmp(strtype, duid_type_table[dt], strlen(duid_type_table[dt])))
++        {
++            return (uint16_t)dt;
++        }
++    }
++    return 0;
++}
++
+ int
+ set_duid(
+     const char *pszInterfaceName,
+@@ -221,8 +239,9 @@
+ {
+     uint32_t err = 0;
+     char cfgFileName[MAX_LINE];
+-    const char szSectionName[] = "DUID";
+-    const char szKey[] = "RawData";
++    const char *duidType;
++    uint16_t n1, n2;
++    char szDuid[MAX_DUID_SIZE];
+ 
+     if (pszInterfaceName != NULL)
+     {
+@@ -237,12 +256,34 @@
+ 
+     if (strlen(pszDuid) == 0)
+     {
+-        err = set_key_value(cfgFileName, szSectionName, szKey, NULL,
++        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_TYPE, NULL,
++                            F_CREATE_CFG_FILE);
++        bail_on_error(err);
++
++        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA, NULL,
+                             F_CREATE_CFG_FILE);
+     }
+     else
+     {
+-        err = set_key_value(cfgFileName, szSectionName, szKey, pszDuid,
++        if (sscanf(pszDuid, "%hx:%hx:%s", &n1, &n2, szDuid) != 3)
++        {
++            err = EINVAL;
++            bail_on_error(err);
++        }
++
++        duidType = duid_strtype_from_type((n1 << 8) | n2);
++        if (duidType == NULL)
++        {
++            err = EINVAL;
++            bail_on_error(err);
++        }
++        /* TODO: Validate DUID length and DUID bytes */
++
++        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_TYPE, duidType,
++                            F_CREATE_CFG_FILE);
++        bail_on_error(err);
++
++        err = set_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA, szDuid,
+                             F_CREATE_CFG_FILE);
+     }
+     bail_on_error(err);
+@@ -257,11 +298,10 @@
+     char *pszDuid
+ )
+ {
+-
+     uint32_t err = 0;
+     char cfgFileName[MAX_LINE];
+-    const char szSectionName[] = "DUID";
+-    const char szKey[] = "RawData";
++    uint16_t duidType;
++    char szDuidType[MAX_LINE];
+ 
+     if (pszInterfaceName != NULL)
+     {
+@@ -274,7 +314,19 @@
+         sprintf(cfgFileName, "%snetworkd.conf", SYSTEMD_PATH);
+     }
+ 
+-    err = get_key_value(cfgFileName, szSectionName, szKey, pszDuid);
++    err = get_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_TYPE, szDuidType);
++    bail_on_error(err);
++
++    duidType = duid_type_from_strtype(szDuidType);
++    if (duidType == 0)
++    {
++        err = EINVAL;
++        bail_on_error(err);
++    }
++    sprintf(pszDuid, "00:%02hu:", duidType);
++
++    err = get_key_value(cfgFileName, SECTION_DHCP, KEY_DUID_RAWDATA,
++                        &pszDuid[6]);
+     bail_on_error(err);
+ 
+ error:
