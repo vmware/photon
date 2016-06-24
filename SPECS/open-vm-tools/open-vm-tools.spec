@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.0.5
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -16,6 +16,7 @@ Source3:        vgauthd.service
 Patch0:         open-vm-tools-service-link.patch
 Patch1:         GOSC-libDeploy.patch
 Patch2:         IPv6Support.patch
+Patch3:         hostnameReCustomizationFix.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -42,6 +43,7 @@ VmWare virtualization user mode tools
 %patch0 -p1
 %patch1 -p1
 %patch2 -p0
+%patch3 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -99,6 +101,8 @@ fi
 
 
 %changelog
+*       Thu Jun 23 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-12
+-       Avoiding recustomization of hostname, bug#1678537.
 *       Mon Jun 13 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-11
 -       Adding IPv6 Support for VCHA in customization.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 10.0.5-10
