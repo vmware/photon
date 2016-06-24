@@ -1,14 +1,14 @@
 Summary:	Mesos
 Name:		mesos
-Version:	0.24.0
-Release:	3%{?dist}
+Version:	0.28.2
+Release:	1%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 mesos=8d9f09ca34478e0f021437d480f8ad5e0d426eba
+%define sha1 mesos=a8675ef59b4c34d4337553215a5295eebf2e4265
 BuildRequires:	openjre >= 1.8.0.45
 BuildRequires:  openjdk >= 1.8.0.45
 BuildRequires:	curl
@@ -64,7 +64,7 @@ make check
 
 %install
 make DESTDIR=%{buildroot} install
-
+find %{buildroot}%{_libdir} -name '*.la' -delete
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 
 %files
@@ -75,6 +75,16 @@ make DESTDIR=%{buildroot} install
 %{_libexecdir}/mesos/mesos-*
 %{_prefix}/etc/mesos/*
 %{_prefix}/share/mesos/*
+%{_libdir}/libload_qos_controller-0.28.2.so
+%{_libdir}/libload_qos_controller.so
+%{_libdir}/liblogrotate_container_logger-0.28.2.so
+%{_libdir}/liblogrotate_container_logger.so
+%{_libdir}/mesos/modules/libfixed_resource_estimator-0.28.2.so
+%{_libdir}/mesos/modules/libfixed_resource_estimator.so
+%{_libdir}/mesos/modules/libload_qos_controller-0.28.2.so
+%{_libdir}/mesos/modules/libload_qos_controller.so
+%{_libdir}/mesos/modules/liblogrotate_container_logger-0.28.2.so
+%{_libdir}/mesos/modules/liblogrotate_container_logger.so
 
 %files devel
 %{_includedir}/*
@@ -85,6 +95,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 0.28.2-1
+-   Upgraded to version 0.28.2
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.24.0-3
 -	GA - Bump release of all rpms
 *	Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2
