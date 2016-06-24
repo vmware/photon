@@ -1,14 +1,14 @@
-Summary:	Etcd-2.2.5
+Summary:	Etcd-2.3.7
 Name:		etcd
-Version:	2.2.5
-Release:	3%{?dist}
+Version:	2.3.7
+Release:	1%{?dist}
 License:	Apache License
 URL:		https://github.com/coreos/etcd
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://github.com/coreos/etcd/releases/download/v%{version}/%{name}-v%{version}-linux-amd64.tar.gz
-%define sha1 etcd=fcd0899d9f4413a7a0bc373b4ff2cba5ec66868d
+%define sha1 etcd=32429b4d225caf6bb1bc283daea0047a4f475dff
 Source1:	etcd.service
 Requires:	shadow
 
@@ -53,6 +53,8 @@ rm -rf %{buildroot}/*
 %dir /var/lib/etcd
 
 %changelog
+*	Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 2.3.7-1
+-   Upgraded to version 2.3.7
 *	Wed May 25 2016 Nick Shi <nshi@vmware.com> 2.2.5-3
 -	Changing etcd service type from simple to notify
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.5-2
