@@ -3,12 +3,12 @@
 
 Summary:	Kubernetes cluster management
 Name:		kubernetes
-Version:	1.1.8
-Release:	4%{?dist}
+Version:	1.2.4
+Release:	1%{?dist}
 License:	ASL 2.0
-URL:		https://github.com/GoogleCloudPlatform/kubernetes
+URL:		https://github.com/kubernetes/kubernetes/releases/download/v%{version}
 Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v%{version}/%{name}-v%{version}.tar.gz
-%define sha1 kubernetes-v%{version}.tar.gz=496e4e214804df9271c1065150a9e553b518dd42
+%define sha1 kubernetes-v%{version}.tar.gz=f3aea83f8f0e16b2b41998a2edc09eb42fd8d945
 Source1:	https://github.com/GoogleCloudPlatform/kubernetes/archive/%{commit}/kubernetes-e310e61.tar.gz
 %define sha1 kubernetes-e310e61=a77e22b1677450c94f7b5eaf50586bb6adcf7e6d
 Group:		Development/Tools
@@ -99,6 +99,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*	Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.4-1
+-   Upgraded to version 1.2.4
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-4
 -	GA - Bump release of all rpms
 *       Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-3
