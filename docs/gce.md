@@ -1,18 +1,18 @@
-#Photon on GCE
+#Photon OS on GCE
 ## Google Compute Engine (GCE) Image background
-GCE is a service that lets user run virtual machines on Google's infrastructure. User can customize the virtual machine as much as they want, even can install their custom OS imsage apart from the publicly provided [images](https://cloud.google.com/compute/docs/operating-systems/). For any OS to be useable on GCE, it must match the Google's infrastructure needs. 
-Following are Google provided tools used for VM instances to behave properly.
+GCE is a service that lets you run virtual machines on Google's infrastructure. You can customize the virtual machine as much as you want, and you can even install your own custom operating system image. Or, you can adopt one of the public [images](https://cloud.google.com/compute/docs/operating-systems/) provided by Google. For any operating system to work with GCE, it must match the Google's infrastructure needs. 
+Google provides tools that VM instances require to work correctly on GCE:
 
  *   __[Google startup scripts](https://cloud.google.com/compute/docs/startupscript)__: User can provide some startup script to configure their instances at startup.
  *   __[Google Daemon](https://cloud.google.com/compute/docs/metadata)__: Google Daemon creates new accounts and configures ssh to accept public keys using the metadata server.
  *   __[Google Cloud SDK](https://cloud.google.com/sdk/)__: Command line tools to manage your images, instances and other objects on GCE.
 
-Following is the list (extracted from [this link](https://cloud.google.com/compute/docs/tutorials/building-images )) of items must be done to make Photon work on GCE.
+Following is the list (extracted from [this link](https://cloud.google.com/compute/docs/tutorials/building-images)) of items that must be done to make Photon OS work on GCE:
 
- *   Install Google Compute Engine Image Packages
+ *   Install Google Compute Engine Image packages
  *   Install Google Cloud SDK
  *   Change GPT partition table to MBR 
- *   Update Grub config for new MBR and serial console output
+ *   Update the Grub config for new MBR and serial console output
  *   Update ssh configuration
  *   Delete ssh host keys
  *   Set the time zone to UTC
@@ -21,6 +21,10 @@ Following is the list (extracted from [this link](https://cloud.google.com/compu
  *   Add Google hosts /etc/hosts
  *   Set MTU to 1460. SSH will not work without it.
  *   Create /etc/ssh/sshd_not_to_be_run with just the contents “GOOGLE\n”.
+
+## The GCE-Ready Image of Photon OS 
+
+The latest version of Photon OS does all of this for you. It bundles the Google startup scripts, daemon, and cloud SDK into a GCE-ready image that has been modified to meet the configuration requirements of GCE. To download the GCE-ready image of Photon OS for free, go to [Bintray](https://bintray.com/vmware/photon/). To use Photon OS with GCE, you do not need to perform the following steps unless you want to go through the exercise of customizing Photon OS to work with GCE. The Photon OS team has already done it for you. For more information, see [Running Photon OS on Google Compute Engine](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Google-Compute-Engine). 
 
 ## Creating Photon image for GCE
 ##### 1. Prepare Photon Disk
