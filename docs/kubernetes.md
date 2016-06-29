@@ -1,7 +1,5 @@
-Running Kubernetes on Photon
+Running Kubernetes on Photon OS
 -----------------------------------------------------
-
-(Note: Modified Getting started Kubernetes docs accordingly to run Kubernetes on Photon)
 
 **Table of Contents**
 
@@ -10,15 +8,15 @@ Running Kubernetes on Photon
 
 ## Prerequisites
 
-1. You need 2 or more machines with Photon installed.
+* You need 2 or more machines with Photon installed.
 
 ## Instructions
 
-This is a getting started guide for Photon.  It is a manual configuration so you understand all the underlying packages / services / ports, etc...
+This document gets you started using Kubernetes with Photon OS. The instructions present a manual configuration that gets one worker node running to help you understand  the underlying packages, services, ports, and so forth. 
 
-This guide will only get ONE node (previously minion) working.  
+The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy.  These services are managed by systemd. Their configuration resides in a central location: /etc/kubernetes.  
 
-The Kubernetes package provides a few services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy.  These services are managed by systemd and the configuration resides in a central location: /etc/kubernetes.  We will break the services up between the hosts.  The first host, photon-master, will be the Kubernetes master.  This host will run the kube-apiserver, kube-controller-manager, and kube-scheduler.  In addition, the master will also run _etcd_ (not needed if _etcd_ runs on a different host but this guide assumes that _etcd_ and Kubernetes master run on the same host).  The remaining host, photon-node will be the node and run kubelet, proxy and docker.
+The following instructions break the services up between the hosts.  The first host, photon-master, will be the Kubernetes master.  This host will run the kube-apiserver, kube-controller-manager, and kube-scheduler.  In addition, the master will also run _etcd_ (not needed if _etcd_ runs on a different host but this guide assumes that _etcd_ and Kubernetes master run on the same host).  The remaining host, photon-node will be the node and run kubelet, proxy and docker.
 
 **System Information:**
 
@@ -62,7 +60,7 @@ echo "192.168.121.9	photon-master
 # Comma separated list of nodes in the etcd cluster
 KUBE_MASTER="--master=http://photon-master:8080"
 
-# logging to stderr means we get it in the systemd journal
+# logging to stderr routes it to the systemd journal
 KUBE_LOGTOSTDERR="--logtostderr=true"
 
 # journal message level, 0 is debug
@@ -86,7 +84,7 @@ KUBE_ETCD_SERVERS="--etcd_servers=http://127.0.0.1:4001"
 # Address range to use for services
 KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range=10.254.0.0/16"
 
-# Add your own!
+# Add your own
 KUBE_API_ARGS=""
 ```
 
@@ -153,7 +151,7 @@ KUBELET_HOSTNAME="--hostname_override=photon-node"
 # location of the api-server
 KUBELET_API_SERVER="--api_servers=http://photon-master:8080"
 
-# Add your own!
+# Add your own
 #KUBELET_ARGS=""
 ```
 
@@ -183,9 +181,10 @@ To delete _photon-node_ from your Kubernetes cluster, one should run the followi
 kubectl delete -f ./node.json
 ```
 
-*You should be finished!*
+*You should be finished.*
 
-**The cluster should be running! Launch a test pod.**
+**The cluster should be running. Launch a test pod.**
 
-You should have a functional cluster, check out [101](https://github.com/GoogleCloudPlatform/kubernetes/blob/master/docs/user-guide/walkthrough/README.md)!
+You should have a functional cluster. Check out [101](https://github.com/GoogleCloudPlatform/kubernetes/blob/master/docs/user-guide/walkthrough/README.md).
+
 

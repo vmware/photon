@@ -1,6 +1,6 @@
 #Photon OS on GCE
 ## Google Compute Engine (GCE) Image background
-GCE is a service that lets you run virtual machines on Google's infrastructure. You can customize the virtual machine as much as you want, and you can even install your own custom operating system image. Or, you can adopt one of the public [images](https://cloud.google.com/compute/docs/operating-systems/) provided by Google. For any operating system to work with GCE, it must match the Google's infrastructure needs. 
+GCE is a service that lets you run virtual machines on Google's infrastructure. You can customize the virtual machine as much as you want, and you can even install your own custom operating system image. Or, you can adopt one of the public [images](https://cloud.google.com/compute/docs/operating-systems/) provided by Google. For any operating system to work with GCE, it must match Google's infrastructure needs. 
 Google provides tools that VM instances require to work correctly on GCE:
 
  *   __[Google startup scripts](https://cloud.google.com/compute/docs/startupscript)__: User can provide some startup script to configure their instances at startup.
