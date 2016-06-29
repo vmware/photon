@@ -1,23 +1,24 @@
-Running Rocket containers on Photon
-===================================
+Running Rocket Containers on Photon OS
+======================================
 
-Rocket is a new container runtime, created by [CoreOS](http://coreos.com) and designed for composability, security, and speed. 
+Rocket is a container runtime created by [CoreOS](http://coreos.com). It is designed for composability, security, and speed. 
 
-rkt (pronounced _"rock-it"_) is a CLI for running app containers, and an implementation of the [App Container Spec](https://github.com/coreos/rkt/blob/master/Documentation/app-container.md).
+A command-line interface for running application containers, rkt (pronounced _"rock-it"_) implements the [App Container Spec](https://github.com/coreos/rkt/blob/master/Documentation/app-container.md).
 
-rkt is available as an optional package in Photon, to install it:
+The rkt package is installed by default in the full version of Photon OS. In the minimal version, rkt is an optional package. You can install it by running the following commands as root:
 
 ```
-mount /dev/cdrom /media/cdrom
-
 tdnf install rocket
 ```
 
-### Running an App Container Image (ACI)
+For more information about the tdnf command, see the [Photon OS Administration Guide](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md).
 
-rkt uses content addressable storage (CAS) for storing an ACI on disk. In this example, the image is downloaded and added to the CAS.
 
-Since rkt verifies signatures by default, you will need to first [trust](https://github.com/coreos/rkt/blob/master/Documentation/signing-and-verification-guide.md#establishing-trust) the [CoreOS public key](https://coreos.com/dist/pubkeys/aci-pubkeys.gpg) used to sign the image:
+### Running an App Container Image
+
+rkt uses content addressable storage (CAS) for storing an app container image (ACI) on disk. In the following example, the image is downloaded and added to the CAS.
+
+Since rkt verifies signatures by default, you need to first [trust](https://github.com/coreos/rkt/blob/master/Documentation/signing-and-verification-guide.md#establishing-trust) the [CoreOS public key](https://coreos.com/dist/pubkeys/aci-pubkeys.gpg) used to sign the image:
 
 ```
 $ sudo rkt trust --prefix coreos.com/etcd
@@ -30,7 +31,7 @@ Trusting "https://coreos.com/dist/pubkeys/aci-pubkeys.gpg" for prefix "coreos.co
 Added key for prefix "coreos.com/etcd" at "/etc/rkt/trustedkeys/prefix.d/coreos.com/etcd/8b86de38890ddb7291867b025210bd8888182190"
 ```
 
-Now that we've trusted the CoreOS public key, we can bring up a simple etcd instance using the ACI format:
+Now that you have trusted the CoreOS public key, you can bring up a simple etcd instance using the ACI format:
 
 ```
 $ privateIp=$(ip -4 -o addr show eth0 | cut -d' ' -f7 | cut -d'/' -f1)
@@ -74,4 +75,5 @@ Timezone UTC does not exist in container, not updating container timezone.
 2015/04/02 13:18:41 etcdserver: published {Name:vmware-cna ClientURLs:[http://192.168.35.246:2379]} to cluster 75c533bd1f49730b
 ```
 
-At any time you can press ^] three times to kill container.
+When you are done, press the `^]` key three times to kill the container. To generate `^]` on a U.S. keyboard, type Ctrl+] (hold down the Ctrl key and then press the `]` key). The key combination to generate the `^]` escape character might differ on keyboard layouts other than the U.S. keyboard. 
+
