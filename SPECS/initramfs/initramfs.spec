@@ -2,11 +2,9 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache License
 Group:		System Environment/Base
-Source:		photon-release-1.0.2.tar.gz
-%define sha1 photon-release=4c03ec658315e25873e5e5f3e77c0006ddfeecc6
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	initramfs
@@ -19,12 +17,19 @@ Requires:	     linux = %{LINUX_VERSION}
 Photon release files such as yum configs and other /etc/ release related files
 
 %prep
-%setup -q -n photon-release-1.0.2
+umask 022
+cd /usr/src/photon/BUILD
+cd /usr/src/photon/BUILD
+rm -rf initramfs
+mkdir initramfs
+cd initramfs
+/bin/chmod -Rf a+rX,u+w,g-w,o-w .
 echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_ballon hv_utils hv_vmbus cn"' >> /etc/dracut.conf
 
 echo 'add_dracutmodules+=" ostree systemd "' > /etc/dracut.conf.d/ostree.conf
 
 %build
+echo $RPM_BUILD_SOURCE
 dracut --force --kver %{LINUX_VERSION} initrd.img-no-kmods
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -42,6 +47,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-no-kmods 
 
 %changelog
+*   Thu Jun 30 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-4
+-   Exapand setup macro and remove the source file.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-3
 -	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-2
