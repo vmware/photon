@@ -16,9 +16,9 @@ This document gets you started using Kubernetes with Photon OS. The instructions
 
 The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy.  These services are managed by systemd. Their configuration resides in a central location: /etc/kubernetes.  
 
-The following instructions break the services up between the hosts.  The first host, photon-master, will be the Kubernetes master.  This host will run the kube-apiserver, kube-controller-manager, and kube-scheduler.  In addition, the master will also run _etcd_ (not needed if _etcd_ runs on a different host but this guide assumes that _etcd_ and Kubernetes master run on the same host).  The remaining host, photon-node will be the node and run kubelet, proxy and docker.
+The following instructions break the services up between the hosts.  The first host, `photon-master`, will be the Kubernetes master.  This host will run the kube-apiserver, kube-controller-manager, and kube-scheduler.  In addition, the master will also run `etcd`. Although `etcd` is not needed on the master if `etcd` runs on a different host, this guide assumes that `etcd` and the Kubernetes master run on the same host.  The remaining host, `photon-node`, will be the node; it will run kubelet, proxy and docker.
 
-**System Information:**
+**System Information**
 
 Hosts:
 
@@ -27,13 +27,15 @@ photon-master = 192.168.121.9
 photon-node = 192.168.121.65
 ```
 
-**Prepare the hosts:**
+**Prepare the hosts**
+
+The following packages should already be installed on the full version of Photon OS, but you might have to install them on the minimal version of Photon OS. If the `tdnf` command returns "Nothing to do," the package is already installed.
     
-* Install Kubernetes on all hosts - photon-{master,node}.
+* Install Kubernetes on all hosts--both `photon-master` and `photon-node`.
 
 ```sh
 tdnf install kubernetes
-```
+``` 
 
 * Install etcd and iptables on photon-master
 
@@ -47,14 +49,14 @@ tdnf install etcd iptables
 tdnf install docker
 ```
 
-* Add master and node to /etc/hosts on all machines (not needed if hostnames already in DNS). Make sure that communication works between photon-master and photon-node by using a utility such as ping.
+* Add master and node to /etc/hosts on all machines (not needed if the hostnames are already in DNS). Make sure that communication works between photon-master and photon-node by using a utility such as ping.
 
 ```sh
 echo "192.168.121.9	photon-master
 192.168.121.65	photon-node" >> /etc/hosts
 ```
 
-* Edit /etc/kubernetes/config which will be the same on all hosts (master and node) to contain:
+* Edit /etc/kubernetes/config, which will be the same on all the hosts (master and node), so that it contains the following lines:
 
 ```sh
 # Comma separated list of nodes in the etcd cluster
@@ -70,7 +72,7 @@ KUBE_LOG_LEVEL="--v=0"
 KUBE_ALLOW_PRIV="--allow_privileged=false"
 ```
 
-**Configure the Kubernetes services on the master.**
+**Configure the Kubernetes services on the master**
 
 * Edit /etc/kubernetes/apiserver to appear as such.  The service_cluster_ip_range IP addresses must be an unused block of addresses, not used anywhere else.  They do not need to be routed or assigned to anything.
 
@@ -98,9 +100,7 @@ for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
 done
 ```
 
-* Addition of nodes:
-
-* Create following node.json file on Kubernetes master node:
+* To add the other node, create the following node.json file on the Kubernetes master node:
 
 ```json
 {
@@ -116,7 +116,7 @@ done
 }
 ```
 
-Now create a node object internally in your Kubernetes cluster by running:
+Now create a node object internally in your Kubernetes cluster by running the following command:
 
 ```console
 $ kubectl create -f ./node.json
@@ -126,17 +126,17 @@ NAME                LABELS              STATUS
 photon-node         name=photon-node-label     Unknown
 ```
 
-Please note that in the above, it only creates a representation for the node
+Please note that in the above example, it only creates a representation for the node
 _photon-node_ internally. It does not provision the actual _photon-node_. Also, it
 is assumed that _photon-node_ (as specified in `name`) can be resolved and is
-reachable from Kubernetes master node. This guide will discuss how to provision
-a Kubernetes node (photon-node) below.
+reachable from the Kubernetes master node. How to provision
+a Kubernetes node (photon-node) is shown in a later section.
 
-**Configure the Kubernetes services on the node.**
+**Configure the Kubernetes services on the node**
 
 ***We need to configure the kubelet on the node.***
 
-* Edit /etc/kubernetes/kubelet to appear as such:
+* Edit /etc/kubernetes/kubelet to appear like this:
 
 ```sh
 ###
@@ -155,7 +155,7 @@ KUBELET_API_SERVER="--api_servers=http://photon-master:8080"
 #KUBELET_ARGS=""
 ```
 
-* Start the appropriate services on the node (photon-node).
+* Start the appropriate services on the node (photon-node):
 
 ```sh
 for SERVICES in kube-proxy kubelet docker; do 
@@ -165,7 +165,7 @@ for SERVICES in kube-proxy kubelet docker; do
 done
 ```
 
-* Check to make sure now the cluster can see the photon-node on photon-master, and its status changes to _Ready_.
+* Check to make sure that the cluster can now see the photon-node on photon-master and that its status changes to _Ready_.
 
 ```console
 kubectl get nodes
@@ -173,9 +173,7 @@ NAME                LABELS              STATUS
 photon-node          name=photon-node-label     Ready
 ```
 
-* Deletion of nodes:
-
-To delete _photon-node_ from your Kubernetes cluster, one should run the following on photon-master (Please do not do it, it is just for information):
+* Deletion of nodes: To delete _photon-node_ from your Kubernetes cluster, one should run the following on photon-master (please do not do it, it is just for information):
 
 ```sh
 kubectl delete -f ./node.json
@@ -185,6 +183,6 @@ kubectl delete -f ./node.json
 
 **The cluster should be running. Launch a test pod.**
 
-You should have a functional cluster. Check out [101](https://github.com/GoogleCloudPlatform/kubernetes/blob/master/docs/user-guide/walkthrough/README.md).
+You should have a functional cluster. Check out [Kubernetes 101](http://kubernetes.io/docs/user-guide/walkthrough/) for an introduction to working with Kubernetes. 
 
 
