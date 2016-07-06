@@ -1,20 +1,20 @@
 Summary:	Security client
 Name:		nss
-Version:	3.21
-Release:	2%{?dist}
+Version:	3.25
+Release:	1%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 nss=d4bbbd72b967443e8b65f504cdd157e3df93a84a
-Patch:		nss-3.21-standalone-1.patch
+%define sha1 nss=ffa55041a7904bb43afbc6821f479819d9802abf
+Patch:		nss-3.25-standalone-1.patch
 Requires:	nspr
 Requires:	sqlite-autoconf
 BuildRequires:	nspr
 BuildRequires:	sqlite-autoconf
-#BuildRequires:	readline-devel
+
 %description
  The Network Security Services (NSS) package is a set of libraries
  designed to support cross-platform development of security-enabled
@@ -71,6 +71,8 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 
 
 %changelog
+*       Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
+-       Upgrade to 3.25
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2
 -	GA - Bump release of all rpms
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
