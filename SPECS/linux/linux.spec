@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	8%{?dist}
+Release:    	9%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -186,6 +186,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Jul 07 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-9
+-   .config: pmem + fs_dax support
 *   Fri Jun 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-8
 -   patch: e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 -   .config: disable rt group scheduling - not supported by systemd
