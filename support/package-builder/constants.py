@@ -166,7 +166,8 @@ class constants(object):
         "groff",
         "man-pages",
         "elfutils",
-        "cpio"]
+        "cpio",
+		"go"]
 
     listToolChainRPMPkgsToBuild=[
         "linux-api-headers",
