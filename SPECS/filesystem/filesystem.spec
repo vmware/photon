@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -161,9 +161,9 @@ EOF
 cat > %{buildroot}/etc/hosts <<- "EOF"
 # Begin /etc/hosts (network card version)
 
-::1         localhost ipv6-localhost ipv6-loopback
-127.0.0.1   localhost.localdomain
 127.0.0.1   localhost
+127.0.0.1   localhost.localdomain
+::1         localhost ipv6-localhost ipv6-loopback
 
 # End /etc/hosts (network card version)
 EOF
@@ -535,6 +535,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Fri Jul 8 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-8
+-   Changing the order of entries in /etc/hosts file
 *   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-7
 -   Fixed nobody user uid and group gid
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-6
