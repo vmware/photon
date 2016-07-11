@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.8
-Release:       6%{?dist}
+Release:       7%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -142,6 +142,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Mon Jul 11 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-7
+-   .config: added ip multible tables support
 *   Fri Jun 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-6
 -   patch: e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 -   .config: disable rt group scheduling - not supported by systemd
