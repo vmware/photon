@@ -65,7 +65,7 @@ class PackageManager(object):
         self.logger.info("List of Already built packages")
         self.logger.info(listAvailablePackages)
         return listAvailablePackages
-    
+
     def calculateParams(self,listPackages):
         self.listThreads.clear()
         self.mapOutputThread.clear()
@@ -75,8 +75,18 @@ class PackageManager(object):
         self.mapPackageToCycle.clear()
         self.sortedPackageList=[]
         
-        self.listOfPackagesAlreadyBuilt = self.readAlreadyAvailablePackages()
-        
+        listOfPackagesAlreadyBuilt = []
+        listOfPackagesAlreadyBuilt = self.readAlreadyAvailablePackages()
+        self.listOfPackagesAlreadyBuilt = listOfPackagesAlreadyBuilt[:]
+        for pkg in listOfPackagesAlreadyBuilt:
+            listDependentRpmPackages = constants.specData.getRequiresAllForPackage(pkg)
+            needToRebuild = False
+            for dependentPkg in listDependentRpmPackages:
+                if dependentPkg not in self.listOfPackagesAlreadyBuilt:
+                    needToRebuild = True
+            if needToRebuild:
+                self.listOfPackagesAlreadyBuilt.remove(pkg)
+ 
         listPackagesToBuild=listPackages[:]
         for pkg in listPackages:
             if pkg in self.listOfPackagesAlreadyBuilt:
