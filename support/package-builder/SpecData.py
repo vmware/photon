@@ -6,6 +6,7 @@ from distutils.version import StrictVersion
 class SerializableSpecObject(object):
     def __init__(self):
         self.listPackages=[]
+        self.listRPMPackages=[]
         self.name=""
         self.version=""
         self.release=""
@@ -52,6 +53,8 @@ class SerializableSpecObjectsUtils(object):
 			break;			
             	specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
             	self.mapPackageToSpec[specPkg]=specName
+                if spec.getIsRPMPackage(specPkg):
+                    specObj.listRPMPackages.append(specPkg)
 	    if skipUpdating == False:
                 self.mapSerializableSpecObjects[specName]=specObj
     
@@ -104,6 +107,10 @@ class SerializableSpecObjectsUtils(object):
     def getPackages(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listPackages
+
+    def getRPMPackages(self, package):
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].listRPMPackages
 
     def getReleaseNum(self, releaseVal):
 	id = releaseVal.find(".")
