@@ -48,5 +48,6 @@ class OstreeServerInstaller(Installer):
         self.run("tar -xf /mnt/cdrom/ostree-repo.tar.gz -C {}/srv/rpm-ostree/repo".format(self.photon_root))
         self.run("sed -i \"\\$i iptables -A INPUT -m state --state NEW,ESTABLISHED -p tcp --dport 80 -j ACCEPT\" {}/etc/systemd/scripts/iptables".format(self.photon_root))
         self.run("sed -i \"\\$i iptables -A INPUT -m state --state NEW,ESTABLISHED -p tcp --dport 443 -j ACCEPT\" {}/etc/systemd/scripts/iptables".format(self.photon_root))
+        self.run("umask 022")
 
 
