@@ -19,18 +19,20 @@ class SpecParser(object):
         data=" ".join(data.split())
         pkgHeaderName=data.split(" ")
         lenpkgHeaderName = len(pkgHeaderName)
-        
-        if (lenpkgHeaderName >= 3 and pkgHeaderName[1] != "-n"):
-            lenpkgHeaderName = 1
-        if (lenpkgHeaderName == 2 or lenpkgHeaderName == 1 ) and basePkgName is None :
-            print "Invalid basePkgName"
-            return False,None
-        if lenpkgHeaderName == 3 :
-            return True,pkgHeaderName[2]
-        if lenpkgHeaderName == 2 :
-            return True,basePkgName + "-"+pkgHeaderName[1]
-        if lenpkgHeaderName == 1:
+        i=1;
+        pkgName = None
+        while i<lenpkgHeaderName:
+            if pkgHeaderName[i] == "-n" and i+1 < lenpkgHeaderName:
+                pkgName = pkgHeaderName[i+1]
+                break
+            if pkgHeaderName[i].startswith('-'):
+                i = i + 2
+            else:
+                pkgName = basePkgName+"-"+pkgHeaderName[i]
+                break
+        if pkgName is None:
             return True, basePkgName
+        return True, pkgName
     
     def parseSpecFile(self,specfile):
         self.createDefaultPackage()
@@ -58,9 +60,10 @@ class SpecParser(object):
                 else:
                     if defaultpkg.name == packageName :
                         packageName = 'default'
-                    if not self.packages.has_key(packageName):
-                        return False
                     macro,i=self.readMacroFromFile(i, lines)
+                    if not self.packages.has_key(packageName):
+                        i=i+1
+                        continue
                     self.packages[packageName].updatePackageMacro(macro)
             elif self.isPackageHeaders(line):
                 self.readPackageHeaders(line, self.packages[currentPkg])
