@@ -63,6 +63,16 @@ class Specutils(object):
             packageNames.append(pkg.name)
         return packageNames
     
+    def getIsRPMPackage(self,pkgName):
+        defaultPkgName=self.spec.packages['default'].name
+        if pkgName == defaultPkgName:
+            pkgName = "default"
+        if pkgName in self.spec.packages.keys():
+            pkg = self.spec.packages.get(pkgName)
+            if pkg.filesMacro is not None:
+                return True
+        return False
+
     def getRPMNames(self):
         rpmNames=[]
         for key in self.spec.packages.keys():
