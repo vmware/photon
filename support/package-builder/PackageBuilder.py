@@ -73,8 +73,29 @@ class PackageBuilder(object):
         except Exception as e:
             self.logger.error(e)
             outputMap[threadName]=False
-        
+
+    def checkIfPackageIsAlreadyBuilt(self, package):
+        basePkg=constants.specData.getSpecName(package)
+        listPackages=constants.specData.getPackages(basePkg)
+        packageIsAlreadyBuilt=True
+        pkgUtils = PackageUtils(self.logName,self.logPath)
+        for pkg in listPackages:
+            #TODO: DHCP package does not generate dhcp rpm.
+            #Specparser should support api which returns list of 
+            #rpmpackages for a package
+            if pkg == "dhcp":
+                continue
+            if pkgUtils.findRPMFileForGivenPackage(pkg) is None:
+                packageIsAlreadyBuilt=False
+                break
+        return packageIsAlreadyBuilt
+
     def buildPackage(self,package):
+        #do not build if RPM is already built
+        if self.checkIfPackageIsAlreadyBuilt(package):
+            self.logger.info("Skipping building the package:"+package)
+            return
+
         #should initialize a logger based on package name
         chrUtils = ChrootUtils(self.logName,self.logPath)
         chrootName="build-"+package
