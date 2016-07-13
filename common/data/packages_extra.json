@@ -118,6 +118,7 @@
         "traceroute",
         "bindutils",
         "libusb",
+        "mc",
         "usbutils",
         "dosfstools",
         "efibootmgr",
