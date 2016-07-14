@@ -1,0 +1,23 @@
+diff -uNr systemd-228/src/resolve/resolved-link.c systemd-228-domains/src/resolve/resolved-link.c
+--- systemd-228/src/resolve/resolved-link.c	2016-07-11 20:14:21.561902895 +0000
++++ systemd-228-domains/src/resolve/resolved-link.c	2016-07-14 08:54:42.500318017 +0000
+@@ -91,14 +91,11 @@
+ 
+         assert(l);
+ 
+-        if (l->dns_servers) {
+-                if (!l->unicast_scope) {
+-                        r = dns_scope_new(l->manager, &l->unicast_scope, l, DNS_PROTOCOL_DNS, AF_UNSPEC);
+-                        if (r < 0)
+-                                log_warning_errno(r, "Failed to allocate DNS scope: %m");
+-                }
+-        } else
+-                l->unicast_scope = dns_scope_free(l->unicast_scope);
++        if (!l->unicast_scope) {
++                r = dns_scope_new(l->manager, &l->unicast_scope, l, DNS_PROTOCOL_DNS, AF_UNSPEC);
++                if (r < 0)
++                        log_warning_errno(r, "Failed to allocate DNS scope: %m");
++        }
+ 
+         if (link_relevant(l, AF_INET) &&
+             l->llmnr_support != SUPPORT_NO &&
