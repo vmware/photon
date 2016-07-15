@@ -1,3 +1,4 @@
+%global security_hardening none
 Summary:	Sysdig is a universal system visibility tool with native support for containers.
 Name:		sysdig
 Version:	0.10.1
@@ -28,18 +29,19 @@ Requires:	curl
 %build
 mkdir build
 cd build
+
 cmake \
 	-DCMAKE_INSTALL_PREFIX=%{_prefix} \
-	-DBUILD_DRIVER=OFF \
 	-DUSE_BUNDLED_OPENSSL=OFF \
 	-DUSE_BUNDLED_CURL=OFF \
 	-DUSE_BUNDLED_ZLIB=OFF \
 	-DUSE_BUNDLED_NCURSES=OFF ..
-make 
+
+make KERNELDIR="/lib/modules/4.4.8/build" 
 
 %install
 cd build
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/4.4.8/build"
 mv %{buildroot}/usr/src/sysdig* %{buildroot}/usr/src/sysdig-%{version}
 mkdir -p %{buildroot}/etc/
 mv %{buildroot}/usr/etc/bash_completion.d %{buildroot}/etc/
@@ -56,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_datadir}
 
 %changelog
+*		Thu Jul 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.1.101-1
+-		Updated sysdig to build the kernel module 
 *       Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 0.10.1-1
 -       Upgrade sysdig to 0.10.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.8.0-4
