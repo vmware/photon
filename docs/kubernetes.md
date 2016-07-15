@@ -8,7 +8,7 @@ Running Kubernetes on Photon OS
 
 ## Prerequisites
 
-* You need 2 or more machines with Photon installed.
+* You need two or more machines with the 1.0 general availability or later version of Photon OS installed.
 
 ## Instructions
 
@@ -16,7 +16,7 @@ This document gets you started using Kubernetes with Photon OS. The instructions
 
 The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy.  These services are managed by systemd. Their configuration resides in a central location: /etc/kubernetes.  
 
-The following instructions break the services up between the hosts.  The first host, `photon-master`, will be the Kubernetes master.  This host will run the kube-apiserver, kube-controller-manager, and kube-scheduler.  In addition, the master will also run `etcd`. Although `etcd` is not needed on the master if `etcd` runs on a different host, this guide assumes that `etcd` and the Kubernetes master run on the same host.  The remaining host, `photon-node`, will be the node; it will run kubelet, proxy and docker.
+The following instructions break the services up between the hosts.  The first host, `photon-master`, will be the Kubernetes master.  This host will run the kube-apiserver, kube-controller-manager, and kube-scheduler.  In addition, the master will also run `etcd`. Although `etcd` is not needed on the master if `etcd` runs on a different host, this guide assumes that `etcd` and the Kubernetes master run on the same host.  The remaining host, `photon-node`, will be the node; it will run kubelet, proxy, and docker.
 
 **System Information**
 
@@ -37,13 +37,13 @@ The following packages should already be installed on the full version of Photon
 tdnf install kubernetes
 ``` 
 
-* Install etcd and iptables on photon-master
+* Install iptables on photon-master:
 
 ```sh
-tdnf install etcd iptables
+tdnf install iptables
 ```
 
-* Install docker on photon-node
+* Install Docker on photon-node:
 
 ```sh
 tdnf install docker
@@ -134,7 +134,7 @@ a Kubernetes node (photon-node) is shown in a later section.
 
 **Configure the Kubernetes services on the node**
 
-***We need to configure the kubelet on the node.***
+You configure the kubelet on the node as follows. 
 
 * Edit /etc/kubernetes/kubelet to appear like this:
 
@@ -173,16 +173,15 @@ NAME                LABELS              STATUS
 photon-node          name=photon-node-label     Ready
 ```
 
+If the node status is `NotReady`, verify that the firewall rules are permissive for Kubernetes.  
+
 * Deletion of nodes: To delete _photon-node_ from your Kubernetes cluster, one should run the following on photon-master (please do not do it, it is just for information):
 
 ```sh
 kubectl delete -f ./node.json
 ```
 
-*You should be finished.*
+That's it. You should have a functional cluster. You can now launch a test pod. Check out [Kubernetes 101](http://kubernetes.io/docs/user-guide/walkthrough/) for an introduction to working with Kubernetes. 
 
-**The cluster should be running. Launch a test pod.**
-
-You should have a functional cluster. Check out [Kubernetes 101](http://kubernetes.io/docs/user-guide/walkthrough/) for an introduction to working with Kubernetes. 
 
 
