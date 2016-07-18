@@ -1,8 +1,8 @@
-#Network PXE Boot
+# Network PXE Boot
 
 Photon OS supports the Preboot Execution Environment, or PXE, over a network connection. This document describes how to set up a PXE boot server to install Photon OS.
 
-#Server Setup
+# Server Setup
 
 To set up a PXE server, you will need to have the following:
 
@@ -12,8 +12,8 @@ To set up a PXE server, you will need to have the following:
 
 The instructions to set up the servers assume you have an Ubuntu 14.04 machine with a static IP address of `172.16.78.134`.
 
-##DHCP Setup
-* Intall the DHCP server:
+## DHCP Setup
+* Install the DHCP server:
 ```
   sudo apt-get install isc-dhcp-server
 ```
@@ -35,7 +35,7 @@ The instructions to set up the servers assume you have an Ubuntu 14.04 machine w
   sudo service isc-dhcp-server restart
 ```
 
-##TFTP Setup
+## TFTP Setup
 * Install the TFTP server:
 ```
   sudo apt-get install tftpd-hpa
@@ -46,9 +46,9 @@ The instructions to set up the servers assume you have an Ubuntu 14.04 machine w
   sudo service tftpd-hpa restart
 ```
 
-##Optional: HTTP server setup
+## Optional: HTTP server setup
 
-This step is only needed if you are planning to serve the ks config file through this server; refer to [Kickstart support](kickstart.md) for details.
+This step is only needed if you are planning to serve the ks (kickstart) config file through this server; refer to [Kickstart support](kickstart.md) for details.
 * Serving your local yum repo.
 You can install apache http web server
 ```
@@ -68,7 +68,7 @@ To support ks, you can copy the sample config file from the iso and edit it; ref
 cp /mnt/photon-iso/isolinux/sample_ks.cfg /var/www/html/my_ks.cfg
 ```
 
-##PXE boot files setup
+## PXE boot files setup
 * Mount photon.iso to get Linux and initrd images:
 ```
 mkdir /mnt/photon-iso
