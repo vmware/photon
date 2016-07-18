@@ -9,18 +9,18 @@
 
 Summary:	Go 
 Name:		go
-Version:	1.4.2
-Release:	5%{?dist}
+Version:	1.6.2
+Release:	1%{?dist}
 License:	BSD
 URL:		https://golang/org
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
-%define sha1 go=460caac03379f746c473814a65223397e9c9a2f6
+%define sha1 go=09232ac0e76635cc9e0a1f33a81bf03ae9cb9db5
+Patch0:     go_imports_fix.patch
 BuildRequires:	mercurial
 Requires:	mercurial
-# We strip meta dependency, but go requires glibc.
 Requires:	glibc
 
 %description
@@ -28,11 +28,17 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %setup -qn %{name}
+%patch0 -p1
 
 %build
-export GOROOT_FINAL=%{goroot}
 export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
+export GOROOT_BOOTSTRAP=%{goroot}
+
+export GOROOT="`pwd`"
+export GOPATH=%{gopath}
+export GOROOT_FINAL=%{_bindir}/go
+rm -f  %{gopath}/src/runtime/*.c 
 pushd src
 ./make.bash --no-clean
 popd
@@ -43,8 +49,7 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{goroot}
 
-cp -apv api bin doc favicon.ico include lib pkg robots.txt src misc VERSION \
-   %{buildroot}%{goroot}
+cp -R api bin doc favicon.ico lib pkg robots.txt src misc VERSION %{buildroot}%{goroot}
 
 # remove the unnecessary zoneinfo file (Go will always use the system one first)
 rm -rfv %{buildroot}%{goroot}/lib/time
@@ -104,17 +109,14 @@ rm -rf %{buildroot}/*
 %exclude %{goroot}/include/plan9
 /etc/profile.d/go-exports.sh
 %{goroot}/*
-%dir %{gopath}
-%dir %{gopath}/src
-%dir %{gopath}/src/github.com/
-%dir %{gopath}/src/bitbucket.org/
-%dir %{gopath}/src/code.google.com/
-%dir %{gopath}/src/code.google.com/p/
+%{gopath}/src
 %exclude %{goroot}/src/pkg/debug/dwarf/testdata
 %exclude %{goroot}/src/pkg/debug/elf/testdata
 %{_bindir}/*
 
 %changelog
+*	Fri Jul 8 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.2-1
+-	Updated the Golang to version 1.6.2
 *	Thu Jun 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-5
 -	Fix script syntax 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-4
