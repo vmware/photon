@@ -126,6 +126,7 @@
         "grub2-efi",
         "pciutils",
         "nginx",
-        "kaigen-gothic-cjk"
+        "kaigen-gothic-cjk",
+	"falco"
             ]
 }
