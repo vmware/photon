@@ -7,16 +7,15 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       2.9
-Release:       5%{?dist}
+Version:       3.0
+Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=37ecbc7445ff34db3c8204b1541f25524a0e8024
-Patch0:		   fix-kernel-4.4-build.patch
+%define sha1 systemtap=5ef3a2d9945b0f6bae0061e33811e25e5138f5b7
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -98,7 +97,6 @@ SystemTap server is the server component of an instrumentation system for system
 
 %prep
 %setup -q
-%patch0 -p1
 sed -i "s#"kernel"#"linux"#g" stap-prep
 sed -i "s#"devel"#"dev"#g" stap-prep
 
@@ -331,6 +329,9 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+* 	Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1 
+-	Updated version to 3.0
+-	Removing patch to enable kernel (fix is present in upstream)
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-5
 -	GA - Bump release of all rpms
 *   Mon May 23 2016 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.9-4
