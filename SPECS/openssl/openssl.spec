@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2h
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -10,7 +10,9 @@ Distribution:	Photon
 Source0:	http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha1 openssl=577585f5f5d299c44dd3c993d3c0ac7a219e4949
 Patch0:		c_rehash.patch
-Patch1:     openssl-1.0.2f-ipv6apps.patch
+Patch1:         openssl-1.0.2f-ipv6apps.patch
+Patch2:         openssl-init-conslidate.patch
+Patch3:         openssl-use-fips-drbg-by-default.patch
 Requires:	bash glibc libgcc 
 
 %description
@@ -49,6 +51,8 @@ Perl scripts that convert certificates and keys to various formats.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -108,8 +112,10 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2h-2
--	GA - Bump release of all rpms
+*   Fri Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
+-   Add patches for using openssl_init under all initialization and changing default RAND
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2h-2
+-   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.0.2h-1
 -   Upgrade to 1.0.2h
 *   Mon Mar 07 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2g-1
