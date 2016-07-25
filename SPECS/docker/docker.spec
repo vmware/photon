@@ -1,16 +1,18 @@
 Summary:    	Docker
 Name:       	docker
 Version:    	1.11.2
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	ASL 2.0
 URL:        	http://docs.docker.com
 Group:      	Applications/File
 Vendor:     	VMware, Inc.
 Distribution:   Photon
-Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz 
+Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz
 %define sha1 docker=1bfd065784e0f422c000d86da4feda87cd63ced8
 Source1: 	docker.service
 Source2: 	docker-containerd.service
+Source3:  docker.socket
+Source4:  docker.default
 BuildRequires:  systemd
 Requires:       systemd
 
@@ -21,10 +23,13 @@ Docker is a platform for developers and sysadmins to develop, ship and run appli
 %build
 %install
 install -vdm755 %{buildroot}/usr/bin
+install -vdm755 %{buildroot}/etc/default
 mv -v %{_builddir}/%{name}/* %{buildroot}/usr/bin/
-install -vd %{buildroot}/lib/systemd/system
-cp %{SOURCE1} %{buildroot}/lib/systemd/system/docker.service
-cp %{SOURCE2} %{buildroot}/lib/systemd/system/docker-containerd.service
+install -vd %{buildroot}/usr/lib/systemd/system
+cp %{SOURCE1} %{buildroot}/usr/lib/systemd/system/%{name}.service
+cp %{SOURCE2} %{buildroot}/usr/lib/systemd/system/%{name}-containerd.service
+cp %{SOURCE3} %{buildroot}/usr/lib/systemd/system/%{name}.socket
+cp %{SOURCE4} %{buildroot}/etc/default/%{name}
 
 %{_fixperms} %{buildroot}/*
 %check
@@ -35,6 +40,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post
 /sbin/ldconfig
+%systemd_post docker.service
+%systemd_post docker-containerd.service
 
 %postun
 /sbin/ldconfig
@@ -47,14 +54,18 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}
-/lib/systemd/system/docker.service
-/lib/systemd/system/docker-containerd.service
+/usr/lib/systemd/system/%{name}.service
+/usr/lib/systemd/system/%{name}.socket
+/usr/lib/systemd/system/%{name}-containerd.service
+/etc/default/%{name}
 
 %changelog
+*   Sun Jul 24 2016 Ivan Porto Carrero <icarrero@vmware.com> 1.11.2-2
+-   Add socket activation back
 *   Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 1.11.2-1
 -   Upgraded to version 1.11.2
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-6
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-5
 -   GA - Bump release of all rpms
 *   Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-4
@@ -80,5 +91,5 @@ rm -rf %{buildroot}/*
 -   Update according to UsrMove.
 *   Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
 -   Updated to version 1.6
-*   Mon Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
+*   Mon Mar 2 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
 -   Initial build. First version

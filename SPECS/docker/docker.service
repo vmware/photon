@@ -2,8 +2,8 @@
 Description=Docker Daemon
 Documentation=http://docs.docker.com
 Wants=network-online.target
-After=network-online.target docker-containerd.service
-Requires=docker-containerd.service
+After=network-online.target docker-containerd.service docker.socket
+Requires=docker-containerd.service docker.socket
 
 [Service]
 Type=notify
@@ -13,9 +13,13 @@ ExecStart=/usr/bin/docker daemon $DOCKER_OPTS \
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-abnormal
-LimitNOFILE=1048576
-LimitNPROC=1048576
+# set delegate yes so that systemd does not reset the cgroups of docker containers
+Delegate=yes
+LimitNOFILE=infinity
+LimitNPROC=infinity
 LimitCORE=infinity
+TasksMax=infinity
+TimeoutStartSec=0
 
 [Install]
 WantedBy=multi-user.target
