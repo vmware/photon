@@ -1,0 +1,17 @@
+[Unit]
+Description=vault Agent
+Documentation=https://www.vaultproject.io/docs/index.html
+Wants=basic.target
+After=basic.target network.target consul.service
+
+[Service]
+ExecStart=/usr/bin/vault server -config /etc/vault.d/vault.hcl
+ExecReload=/bin/kill -HUP $MAINPID
+User=root
+Group=root
+KillSignal=SIGINT
+Restart=on-failure
+LimitNOFILE=131072
+
+[Install]
+WantedBy=multi-user.target
