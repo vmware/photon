@@ -111,6 +111,7 @@
         "libseccomp",
 	"sysdig",
 	"falco",
+        "zsh",
 	"iotop",
         "rsync",
         "paramiko",

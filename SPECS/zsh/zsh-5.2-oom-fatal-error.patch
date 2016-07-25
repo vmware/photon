@@ -1,0 +1,90 @@
+From 3925a4fbed618504f49e2a8a5551cc5800d9353b Mon Sep 17 00:00:00 2001
+From: Peter Stephenson <pws@zsh.org>
+Date: Mon, 25 Jan 2016 15:43:06 +0000
+Subject: [PATCH 1/2] 37776: Set errflag before calls to zwarning().
+
+This avoids an attempt to call zerr() or zerrnam() recusrively.
+
+Upstream-commit: be32864e6ff6a872d63314b4baedbfbf2eed54bd
+Signed-off-by: Kamil Dudka <kdudka@redhat.com>
+---
+ Src/utils.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Src/utils.c b/Src/utils.c
+index 4640970..9ce3ee9 100644
+--- a/Src/utils.c
++++ b/Src/utils.c
+@@ -169,12 +169,12 @@ VA_DCL
+ 	    errflag |= ERRFLAG_ERROR;
+ 	return;
+     }
++    errflag |= ERRFLAG_ERROR;
+
+     VA_START(ap, fmt);
+     VA_GET_ARG(ap, fmt, const char *);
+     zwarning(NULL, fmt, ap);
+     va_end(ap);
+-    errflag |= ERRFLAG_ERROR;
+ }
+
+ /**/
+@@ -188,13 +188,13 @@ VA_DCL
+
+     if (errflag || noerrs)
+ 	return;
++    errflag |= ERRFLAG_ERROR;
+
+     VA_START(ap, fmt);
+     VA_GET_ARG(ap, cmd, const char *);
+     VA_GET_ARG(ap, fmt, const char *);
+     zwarning(cmd, fmt, ap);
+     va_end(ap);
+-    errflag |= ERRFLAG_ERROR;
+ }
+
+ /**/
+--
+2.5.0
+
+
+From 7a028030cfdcd85b61950e4a530442ebff359f4c Mon Sep 17 00:00:00 2001
+From: Kamil Dudka <kdudka@redhat.com>
+Date: Mon, 25 Jan 2016 18:01:07 +0100
+Subject: [PATCH 2/2] 37780: Care printing error if nothing to print.
+
+Upstream-commit: 69c86cd2c3f1533d9b4b345f98d3922418bc6dac
+Signed-off-by: Kamil Dudka <kdudka@redhat.com>
+---
+ Src/utils.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Src/utils.c b/Src/utils.c
+index 9ce3ee9..bb3c241 100644
+--- a/Src/utils.c
++++ b/Src/utils.c
+@@ -133,9 +133,11 @@ zwarning(const char *cmd, const char *fmt, va_list ap)
+     if (isatty(2))
+ 	zleentry(ZLE_CMD_TRASH);
+
++    char *prefix = scriptname ? scriptname : (argzero ? argzero : "");
++
+     if (cmd) {
+ 	if (unset(SHINSTDIN) || locallevel) {
+-	    nicezputs(scriptname ? scriptname : argzero, stderr);
++	    nicezputs(prefix, stderr);
+ 	    fputc((unsigned char)':', stderr);
+ 	}
+ 	nicezputs(cmd, stderr);
+@@ -147,8 +149,7 @@ zwarning(const char *cmd, const char *fmt, va_list ap)
+ 	 * program/script is running.  It's also set in shell functions,
+ 	 * so test locallevel, too.
+ 	 */
+-	nicezputs((isset(SHINSTDIN) && !locallevel) ? "zsh" :
+-		  scriptname ? scriptname : argzero, stderr);
++	nicezputs((isset(SHINSTDIN) && !locallevel) ? "zsh" : prefix, stderr);
+ 	fputc((unsigned char)':', stderr);
+     }
+
+--
+2.5.0

@@ -1,0 +1,57 @@
+From 17f17599d33e334d3ec78ab94956f440f18aaf04 Mon Sep 17 00:00:00 2001
+From: Peter Stephenson <pws@zsh.org>
+Date: Tue, 8 Dec 2015 12:59:48 +0000
+Subject: [PATCH 1/2] 37347: Remove incorrect local for msgs in VCS info
+
+Upstream-commit: 4105f79a3a9b5a85c4ce167865e5ac661be160dc
+Signed-off-by: Kamil Dudka <kdudka@redhat.com>
+---
+ Functions/VCS_Info/VCS_INFO_nvcsformats | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Functions/VCS_Info/VCS_INFO_nvcsformats b/Functions/VCS_Info/VCS_INFO_nvcsformats
+index 203a86d..581aa5a 100644
+--- a/Functions/VCS_Info/VCS_INFO_nvcsformats
++++ b/Functions/VCS_Info/VCS_INFO_nvcsformats
+@@ -4,7 +4,6 @@
+
+ setopt localoptions noksharrays NO_shwordsplit
+ local c v rr
+-local -a msgs
+
+ if [[ $1 == '-preinit-' ]] ; then
+     c='default'
+--
+2.5.0
+
+
+From b5cea7b0719e7d1d97dc76ed3df91c865596644a Mon Sep 17 00:00:00 2001
+From: Frank Terbeck <ft@bewatermyfriend.org>
+Date: Wed, 30 Dec 2015 14:58:32 +0100
+Subject: [PATCH 2/2] 37451: vcs_info: Declare "msgs" in early context
+
+The parameter *is* being declared with the redefinition of the
+function, but not in its initial form, which gets you a warning
+about the parameter being defined globally. This fixes it.
+
+Upstream-commit: dab6e7c2319c0aadb39eb9cce677e0a35da8314d
+Signed-off-by: Kamil Dudka <kdudka@redhat.com>
+---
+ Functions/VCS_Info/vcs_info | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Functions/VCS_Info/vcs_info b/Functions/VCS_Info/vcs_info
+index 628dde9..f13f6b5 100644
+--- a/Functions/VCS_Info/vcs_info
++++ b/Functions/VCS_Info/vcs_info
+@@ -10,7 +10,7 @@
+
+ setopt localoptions noksharrays extendedglob NO_shwordsplit
+ local file func sys
+-local -a static_functions
++local -a static_functions msgs
+ local -i maxexports
+
+ static_functions=(
+--
+2.5.0
