@@ -1,0 +1,17 @@
+[Unit]
+Description=Consul Agent
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+EnvironmentFile=-/etc/default/consul
+ExecStart=/usr/bin/consul agent $OPTIONS -config-dir /etc/consul.d
+ExecReload=/bin/kill -HUP $MAINPID
+User=consul
+Group=consul
+KillSignal=SIGINT
+Restart=on-failure
+LimitNOFILE=131072
+
+[Install]
+WantedBy=multi-user.target
