@@ -110,6 +110,7 @@
 	"pcstat",
         "libseccomp",
 	"sysdig",
+	"falco",
 	"iotop",
         "rsync",
         "paramiko",
