@@ -1,7 +1,7 @@
 Summary: LTTng is an open source tracing framework for Linux.
 Name:    lttng-tools
 Version: 2.7.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2 and LGPLv2
 URL: https://lttng.org/download/
 Source: %{name}-%{version}.tar.bz2
@@ -15,7 +15,7 @@ BuildRequires: nss-devel
 BuildRequires: m4
 BuildRequires: elfutils-devel
 BuildRequires: popt-devel
-BuildRequires: userspace-rcu
+BuildRequires: userspace-rcu-devel
 Requires:      userspace-rcu
 Requires:      elfutils
 Requires:      nss
@@ -45,6 +45,8 @@ find %{buildroot} -name '*.la' -delete
 %exclude %{_libdir}/debug
 
 %changelog
+*	Tue Jul 26 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.1-3
+-	Added userspace-rcu-devel as build time dependent package
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.1-2
 -	GA - Bump release of all rpms
 *   Thu Jan 28 2016 Xiaolin Li <xiaolinl@vmware.com> 2.7.1-1

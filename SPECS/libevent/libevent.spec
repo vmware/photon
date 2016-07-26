@@ -1,7 +1,7 @@
 Summary:	An Event notification library.
 Name:		libevent
 Version:	2.0.22
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		http://libevent.org
 Source0:        https://github.com/libevent/libevent/releases/download/release-2.0.22-stable/%{name}-%{version}-stable.tar.gz
@@ -35,12 +35,13 @@ make %{?_smp_mflags}
 
 %install
 %makeinstall
+find %{buildroot} -name '*.la' -delete
 
 %post -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
-%{_libdir}/*
+%{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -52,6 +53,8 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig/libevent_openssl.pc
 
 %changelog
+*	Tue Jul 26 2016 Divya Thaluru <dthaluru@vmware.com> 2.0.22-4
+-	Removed packaging of debug files
 *	Wed Jul 13 2016 Alexey Makhalov <amakhalov@vmware.com> 2.0.22-3
 -	Added openssl runtime requirement
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.22-2
