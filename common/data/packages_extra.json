@@ -112,6 +112,7 @@
 	"sysdig",
 	"iotop",
         "rsync",
+		"falco",
         "paramiko",
         "ecdsa",
         "kexec-tools",
@@ -126,6 +127,6 @@
         "grub2-efi",
         "pciutils",
         "nginx",
-        "kaigen-gothic-cjk"
+        "kaigen-gothic-cjk",
             ]
 }
