@@ -9,7 +9,7 @@
 
 Summary:	Go 
 Name:		go
-Version:	1.6.2
+Version:	1.6.3
 Release:	1%{?dist}
 License:	BSD
 URL:		https://golang/org
@@ -17,7 +17,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
-%define sha1 go=09232ac0e76635cc9e0a1f33a81bf03ae9cb9db5
+%define sha1 go=b487b9127afba37e6c62305165bf840758d6adaf
 Patch0:     go_imports_fix.patch
 BuildRequires:	mercurial
 Requires:	mercurial
@@ -115,6 +115,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*	Wed Jul 27 2016 Anish Swaminathan <anishs@vmware.com> 1.6.3-1
+-	Update Golang to version 1.6.3
 *	Fri Jul 8 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.2-1
 -	Updated the Golang to version 1.6.2
 *	Thu Jun 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-5
