@@ -136,6 +136,11 @@
         "tmux",
         "nginx",
         "kaigen-gothic-cjk",
-        "dialog"
+        "dialog",
+	"libwebp",
+	"libtiff",
+	"libpng",
+	"libjpeg-turbo",
+	"nasm"
             ]
 }
