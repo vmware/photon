@@ -48,6 +48,8 @@
         "jna",
         "gnome-common",
         "libgudev",
+        "geoip-api-c",
+        "geoip-api-c-devel",
         "dhcp-client",
         "dhcp-server",
         "dhcp-libs",
