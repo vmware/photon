@@ -126,7 +126,9 @@
         "efivar",
         "grub2-efi",
         "pciutils",
-	"tmux",
+        "libatomic_ops",
+        "libatomic_ops-devel",
+        "tmux",
         "nginx",
         "kaigen-gothic-cjk",
         "dialog"
