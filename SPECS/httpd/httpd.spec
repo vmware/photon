@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.18
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -10,6 +10,7 @@ Distribution: Photon
 Source0:        http://archive.apache.org/dist/httpd/%{name}-%{version}.tar.bz2
 %define sha1 httpd=271a129f2f04e3aa694e5c2091df9b707bf8ef80
 Patch0: http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.18-blfs_layout-1.patch
+Patch1: httpd-2.4.18-CVE-2016-5387.patch 
 BuildRequires: openssl
 BuildRequires: openssl-devel
 BuildRequires: pcre-devel
@@ -50,6 +51,7 @@ The httpd-tools of httpd.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 ./configure --prefix=%{_sysconfdir}/httpd \
             --exec-prefix=%{_prefix} \
@@ -164,8 +166,10 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.18-4
--	GA - Bump release of all rpms
+*   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-5
+-   Added patch for CVE-2016-5387
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.18-4
+-   GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.4.18-3
 -   Adding upgrade support in pre/post/un script.
 *   Mon Mar 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.4.18-2
