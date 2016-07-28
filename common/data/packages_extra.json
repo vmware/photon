@@ -135,6 +135,9 @@
         "libatomic_ops-devel",
         "tmux",
         "nginx",
+        "pth",
+        "libksba",
+        "gnupg",
         "kaigen-gothic-cjk",
         "dialog"
             ]
