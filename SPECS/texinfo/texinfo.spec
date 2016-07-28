@@ -1,7 +1,7 @@
 Summary:	Reading, writing, and converting info pages
 Name:		texinfo
 Version:	6.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/texinfo/texinfo-6.1.tar.xz
 Group:		Applications/System
@@ -19,13 +19,23 @@ and converting info pages.
 	--prefix=%{_prefix} \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 make DESTDIR=%{buildroot} TEXMF=%{_datarootdir}/texmf install-tex
 rm -rf %{buildroot}%{_infodir}
+
 %find_lang %{name} --all-name
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
@@ -34,8 +44,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/texinfo/*
 %dir %{_datarootdir}/texmf
 %{_datarootdir}/texmf/*
-%{_libdir}/*
+%{_libdir}/texinfo/*
+
 %changelog
+*	Wed Jun 27 2016 Divya Thaluru <dthaluru@vmware.com> 6.1-3
+-	Removed packaging of debug files
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.1-2
 -	GA - Bump release of all rpms
 *   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 6.1-1
