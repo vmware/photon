@@ -1,19 +1,18 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
-Version:       1.0.3
-Release:       2%{?dist}
+Version:       1.0.4
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
 URL:           http://www.vmware.com
 Source0:       %{name}-%{version}.tar.gz
-Patch0:        netmgmt-v103-iniparser-allow-empty-keyvalue.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: glib-devel
 Requires:      glib
 Requires:      systemd >= 228
-%define sha1 netmgmt=c81f2226cac089a1d79d118ecca7f0a2ef873140
+%define sha1 netmgmt=3e10acb9ce7d7697e571f999a75036eee5e156ea
 
 %description
 Network management utilities for PhotonOS
@@ -28,7 +27,6 @@ header files and libraries for netmgmt
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 autoreconf -mif
@@ -60,6 +58,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*	Thu  Jul 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-1
+-	Update DNS servers CLI and API.
 *	Wed  Jul 20 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.3-2
 -	Allow ini-parser to read and carry keys with empty values.
 *	Fri  Jul 08 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.3-1
