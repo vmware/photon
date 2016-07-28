@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -31,17 +31,25 @@ install -vdm 755 %{buildroot}/usr/{,local/}share/{misc,terminfo,zoneinfo}
 install -vdm 755 %{buildroot}/usr/libexec
 install -vdm 755 %{buildroot}/usr/{,local/}share/man/man{1..8}
 install -vdm 755 %{buildroot}/etc/profile.d
+install -vdm 755 %{buildroot}/usr/lib/debug/{lib,bin,sbin,usr}
 
 ln -svfn usr/lib %{buildroot}/lib
 ln -svfn usr/bin %{buildroot}/bin
 ln -svfn usr/sbin %{buildroot}/sbin
 ln -svfn run/media %{buildroot}/media
 
+ln -svfn ../bin %{buildroot}/usr/lib/debug/usr/bin
+ln -svfn ../sbin %{buildroot}/usr/lib/debug/usr/sbin
+ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib
+
 #	Symlinks for AMD64
 %ifarch x86_64
 	ln -svfn usr/lib %{buildroot}/lib64
 	ln -svfn lib %{buildroot}/usr/lib64
 	ln -svfn ../lib %{buildroot}/usr/local/lib64
+        ln -svfn lib %{buildroot}/usr/lib/debug/lib64
+        ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib64
+
 %endif
 install -vdm 755 %{buildroot}/var/{log,mail,spool,mnt,srv}
 
@@ -464,6 +472,13 @@ EOF
 %dir /usr/bin
 %dir /usr/include
 %dir /usr/lib
+%dir /usr/lib/debug
+%dir /usr/lib/debug/bin
+%dir /usr/lib/debug/lib
+%dir /usr/lib/debug/sbin
+/usr/lib/debug/usr/bin
+/usr/lib/debug/usr/lib
+/usr/lib/debug/usr/sbin
 %dir /usr/libexec
 %dir /usr/local
 %dir /usr/local/bin
@@ -533,8 +548,12 @@ EOF
 /lib64
 /usr/lib64
 /usr/local/lib64
+/usr/lib/debug/lib64
+/usr/lib/debug/usr/lib64
 %endif
 %changelog
+*   Tue Jul 12 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-9
+-   Added filesystem for debug libraries and binaries
 *   Fri Jul 8 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-8
 -   Removing multiple entries of localhost in /etc/hosts file
 *   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-7

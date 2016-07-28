@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.18
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -145,7 +145,7 @@ fi
 
 %files
 %defattr(-,root,root)
-%{_libdir}/*
+%{_libdir}/httpd/*
 %{_bindir}/*
 %exclude %{_bindir}/apxs
 %exclude %{_bindir}/dbmmanage
@@ -159,6 +159,7 @@ fi
 %{_sysconfdir}/httpd/icons/*
 %{_sysconfdir}/httpd/httpd.conf
 %dir %{_sysconfdir}/httpd/logs
+%{_libdir}/systemd/system/httpd.service
 
 %files tools
 %defattr(-,root,root)
@@ -166,6 +167,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Jul 28 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-6
+-   Removed packaging of debug files
 *   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-5
 -   Added patch for CVE-2016-5387
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.18-4

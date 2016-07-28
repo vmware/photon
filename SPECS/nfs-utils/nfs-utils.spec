@@ -1,7 +1,7 @@
 Summary:	NFS client utils
 Name:		nfs-utils
 Version:	1.3.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/nfs
 Group:		Applications/Nfs-utils-client
@@ -56,7 +56,6 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 
 %files
 %defattr(-,root,root)
-%{_libdir}/*
 %{_datadir}/*
 /sbin/*
 %{_sbindir}/*
@@ -66,6 +65,8 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*	Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.3.3-4
+-	Removed packaging of debug files
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.3-3
 -	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-2
