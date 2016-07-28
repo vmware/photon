@@ -1,7 +1,7 @@
 Summary:	High-performance HTTP server and reverse proxy
 Name:		nginx
 Version:	1.10.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD-2-Clause
 URL:		http://nginx.org/download/nginx-1.10.0.tar.gz
 Group:		Applications/System
@@ -44,10 +44,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %{_sysconfdir}/*
 %{_sbindir}/*
-%{_libdir}/*
+%{_libdir}/systemd/system/nginx.service
 %dir %{_var}/log/nginx
 
 %changelog
+*   Wed Jul 27 2016 Divya Thaluru<dthaluru@vmware.com> 1.10.0-4
+-   Removed packaging of debug files
 *   Fri Jul 8 2016 Divya Thaluru<dthaluru@vmware.com> 1.10.0-3
 -   Modified default pid filepath and fixed nginx systemd service
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10.0-2

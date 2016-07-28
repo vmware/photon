@@ -2,7 +2,7 @@
 Summary:	The Behavioral Activity Monitor With Container Support
 Name:		falco
 Version:	0.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2	  
 URL:		http://www.sysdig.org/falco/
 Group:		Applications/System	
@@ -59,12 +59,13 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 #/etc/bash_completion.d/* 
-%{_libdir}
-%{_bindir}
-%{_usrsrc} 
+%{_bindir}/*
+%{_usrsrc}/*
 /etc/*
-%{_datadir}
+%{_datadir}/*
 
 %changelog
+*	Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 0.2.0-2
+-	Removed packaging of debug files
 *	Tue Jun 28 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.2.0-1
 -	Initial build.	First version
