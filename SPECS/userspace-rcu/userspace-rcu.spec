@@ -1,7 +1,7 @@
 Summary: user space RCU (read-copy-update)
 Name:    userspace-rcu
 Version: 0.9.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: LGPLv2+
 URL: http://liburcu.org
 Source: %{name}-%{version}.tar.bz2
@@ -19,6 +19,13 @@ BuildRequires: popt-devel
 %description
 This data synchronization library provides read-side access which scales linearly with the number of cores.
 
+%package devel
+Summary: Development Libraries for openssl
+Group: Development/Libraries
+Requires: userspace-rcu = %{version}-%{release}
+%description devel
+Library files for doing development with userspace-rcu.
+
 %prep
 %setup -q
 
@@ -32,13 +39,23 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 
+find %{buildroot} -name '*.la' -delete
+
 %files
-%{_lib}/*
+%{_lib}/*.so.*
 %{_includedir}/*
 %{_datadir}/*
 
+%files devel
+%defattr(-,root,root)
+%{_libdir}/pkgconfig/*
+%{_libdir}/*.so
+%{_includedir}/*
+
 
 %changelog
+*       Mon Jul 25 2016 Divya Thaluru <dthaluru@vmware.com> 0.9.1-3
+-       Added devel package and removed packaging of debug files
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.9.1-2
 -	GA - Bump release of all rpms
 *	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-1
