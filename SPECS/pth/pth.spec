@@ -37,6 +37,7 @@ make
 
 %install
 make DESTDIR=%{buildroot} install
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %post -p /sbin/ldconfig
 
@@ -50,7 +51,7 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_bindir}/*
 %{_includedir}/*
-%{_libdir}/*
+%{_libdir}/*.so
 %{_mandir}/*/*
 %{_datadir}/aclocal/*
 

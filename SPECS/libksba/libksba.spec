@@ -26,6 +26,7 @@ make
 
 %install
 make DESTDIR=%{buildroot} install
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %post -p /sbin/ldconfig
 
@@ -34,7 +35,7 @@ make DESTDIR=%{buildroot} install
 %files
 %defattr(-,root,root)
 %{_bindir}/ksba-config
-%{_libdir}/*
+%{_libdir}/*.so*
 %{_includedir}/*
 %{_datadir}/aclocal/ksba.m4
 %{_datadir}/info/ksba.info.gz
