@@ -122,6 +122,7 @@
 	"falco",
         "zsh",
 	"iotop",
+	"libgd",
         "rsync",
         "paramiko",
         "ecdsa",
