@@ -116,7 +116,7 @@ rm -rf %{buildroot}/*
 
 %changelog
 *	Wed Jul 27 2016 Anish Swaminathan <anishs@vmware.com> 1.6.3-1
--	Update Golang to version 1.6.3
+-	Update Golang to version 1.6.3 - fixes CVE 2016-5386
 *	Fri Jul 8 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.2-1
 -	Updated the Golang to version 1.6.2
 *	Thu Jun 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.2-5
