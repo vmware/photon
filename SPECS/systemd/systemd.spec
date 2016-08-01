@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          26%{?dist}
+Release:          27%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -127,12 +127,45 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 rm %{buildroot}/lib/systemd/system/default.target
+rm -r %{buildroot}/etc/systemd/system/*.target.wants
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 
 %post
 /sbin/ldconfig
+if [ $1 -eq 1 ] ; then 
+        # Initial installation 
+	systemctl --no-reload preset getty@tty1.service >/dev/null 2>&1 || :
+	systemctl --no-reload preset remote-fs.target >/dev/null 2>&1 || :
+	systemctl --no-reload preset systemd-networkd.service >/dev/null 2>&1 || :
+	systemctl --no-reload preset systemd-resolved.service >/dev/null 2>&1 || :
+	systemctl --no-reload preset systemd-networkd-wait-online.service >/dev/null 2>&1 || :
+	systemctl --no-reload preset systemd-networkd.socket >/dev/null 2>&1 || :
+	systemctl --no-reload preset systemd-timesyncd.service >/dev/null 2>&1 || :
+fi
 %postun
 /sbin/ldconfig
+if [ $1 -ge 1 ] ; then 
+        # Package upgrade, not uninstall 
+	systemctl try-restart getty@tty1.service >/dev/null 2>&1 || :
+	systemctl try-restart remote-fs.target >/dev/null 2>&1 || :
+	systemctl try-restart systemd-networkd.service >/dev/null 2>&1 || :
+	systemctl try-restart systemd-resolved.service >/dev/null 2>&1 || :
+	systemctl try-restart systemd-networkd-wait-online.service >/dev/null 2>&1 || :
+	systemctl try-restart systemd-networkd.socket >/dev/null 2>&1 || :
+	systemctl try-restart systemd-timesyncd.service >/dev/null 2>&1 || :
+fi
+
+%preun
+if [ $1 -eq 0 ] ; then 
+        # Package removal, not upgrade 
+	systemctl --no-reload disable --now getty@tty1.service >/dev/null 2>&1 || :
+	systemctl --no-reload disable --now remote-fs.target >/dev/null 2>&1 || :
+	systemctl --no-reload disable --now systemd-networkd.service >/dev/null 2>&1 || :
+	systemctl --no-reload disable --now systemd-resolved.service >/dev/null 2>&1 || :
+	systemctl --no-reload disable --now systemd-networkd-wait-online.service >/dev/null 2>&1 || :
+	systemctl --no-reload disable --now systemd-networkd.socket >/dev/null 2>&1 || :
+	systemctl --no-reload disable --now systemd-timesyncd.service >/dev/null 2>&1 || :
+fi
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -172,7 +205,6 @@ rm -rf %{buildroot}/*
 %dir %{_sysconfdir}/udev/hwdb.d
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %config(noreplace) %{_sysconfdir}/udev/udev.conf
-%{_sysconfdir}/systemd/system/*
 /lib/*
 %exclude %{_libdir}/debug/*
 %{_libdir}/*
@@ -184,6 +216,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*    Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 228-27
+-    Removed packaging of symlinks and will be created during installation
 *    Tue Jul 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-26
 -    systemd-resolved: Fix DNS domains resolv.conf search issue for static DNS.
 *    Mon Jul 11 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-25
