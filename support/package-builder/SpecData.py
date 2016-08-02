@@ -25,6 +25,7 @@ class SerializableSpecObjectsUtils(object):
         self.mapSerializableSpecObjects={}
         self.mapPackageToSpec={}
         self.logger=Logger.getLogger("Serializable Spec objects", logPath )
+        self.userDefinedMacros={}
     
     def readSpecsAndConvertToSerializableObjects(self,specFilesPath):
         listSpecFiles=[]
@@ -79,10 +80,35 @@ class SerializableSpecObjectsUtils(object):
         if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
             return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
         return None
-    
+
+    def addMacro(self, macroName, macroValue):
+        if macroName == "":
+            self.logger.error("Given invalid macro: name:"+macroName+" value:"+macroValue)
+            return
+        self.userDefinedMacros[macroName]=macroValue
+
+    def getRPMMacros(self):
+        return self.userDefinedMacros
+
+    def processData(self, data):
+        for macroName in self.userDefinedMacros.keys():
+            value = self.userDefinedMacros[macroName]
+            macro="%{?"+macroName+"}"
+            if data.find(macro) != -1:
+                data = data.replace(macro,value)
+                continue
+            macro="%{"+macroName+"}"
+            if data.find(macro) != -1:
+                data = data.replace(macro,value)
+                continue
+            macro="%"+macroName
+            if data.find(macro) != -1:
+                data = data.replace(macro,value)
+        return data
+
     def getRelease(self, package):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].release
+        return self.processData(self.mapSerializableSpecObjects[specName].release)
         
     def getVersion(self, package):
         specName=self.getSpecName(package)
