@@ -1,5 +1,3 @@
-import constants
-
 class rpmMacro(object):
 
     def __init__(self):
@@ -75,12 +73,6 @@ class Package(object):
         
         if content.find("%{version}") != -1:
             content = content.replace('%{version}',self.version)
-        
-        if content.find("%{?dist}") != -1:
-            content = content.replace('%{?dist}',constants.constants.dist)
-
-        if content.find("%{dist}") != -1:
-            content = content.replace('%{dist}',constants.constants.dist)
         
         return content
     

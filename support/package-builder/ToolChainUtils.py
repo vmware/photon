@@ -46,7 +46,7 @@ class ToolChainUtils(object):
         rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
         if rpmFile is None:
             specFile=constants.specData.getSpecFile(package)
-            cmd=self.rpmbuildCommand+" -ba --nocheck --define \'_topdir "+chrootID+constants.topDirPath+"\' --define \'_dbpath "+chrootID+"/var/lib/rpm\' --define \'dist "+constants.dist+"\' --define \'photon_build_number "+constants.buildNumber+"\' --define \'photon_release_version "+constants.releaseVersion+"\' "+specFile
+            cmd=self.rpmbuildCommand+" -ba --nocheck --define \'_topdir "+chrootID+constants.topDirPath+"\' --define \'_dbpath "+chrootID+"/var/lib/rpm\' --define \'dist "+constants.dist+"\' "+specFile
             self.logger.info(cmd)
             cmdUtils.runCommandInShell(cmd,self.logPath+"/filesystem.log")
             filesystemrpmFile = cmdUtils.findFile(package+"-[0-9]*.rpm", chrootID+constants.topDirPath+"/RPMS")

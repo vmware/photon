@@ -270,8 +270,33 @@ class constants(object):
         constants.pullsourcesConfig = options.pullsourcesConfig
         constants.inputRPMSPath=options.inputRPMSPath
         constants.rpmCheck = options.rpmCheck
+        constants.updateRPMMacros()
         
+    @staticmethod
+    def updateRPMMacros():
+        #adding distribution rpm macro
+        constants.specData.addMacro("dist",constants.dist)
 
+        #adding buildnumber rpm macro
+        constants.specData.addMacro("photon_build_number",constants.buildNumber)
+
+        #adding releasenumber rpm macro
+        constants.specData.addMacro("photon_release_version",constants.releaseVersion)
+
+        #adding kernelversion rpm macro
+        kernelversion = constants.specData.getVersion("linux")
+        constants.specData.addMacro("KERNEL_VERSION",kernelversion)
+
+        #adding kernelrelease rpm macro
+        kernelrelease = constants.specData.getRelease("linux")
+        constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
         
-        
-    
+        #adding kernelsubrelease rpm macro
+        kernelversion = kernelversion.replace(".","")
+        if kernelversion.isdigit():
+            kernelversion = int(kernelversion) << 8
+        kernelsubrelease = str(kernelversion)+kernelrelease
+        kernelsubrelease = kernelsubrelease.replace(constants.dist,"")
+        if kernelsubrelease:
+            kernelsubrelease = "."+kernelsubrelease
+            constants.specData.addMacro("kernelsubrelease",kernelsubrelease) 
