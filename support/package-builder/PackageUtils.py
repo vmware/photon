@@ -27,8 +27,6 @@ class PackageUtils(object):
         
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOption = "-ba --clean"
-        self.rpmbuildBuildNum = '--define \\\"photon_build_number %s\\\"' % constants.buildNumber
-        self.rpmbuildReleaseVer = '--define \\\"photon_release_version %s\\\"' % constants.releaseVersion
         self.rpmbuildNocheckOption = "--nocheck"
         self.rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
         self.queryRpmPackageOptions = "-qa"
@@ -185,6 +183,11 @@ class PackageUtils(object):
             
             self.copyAdditionalBuildFiles(listAdditionalFiles,chrootID)
 
+        #Adding rpm macros
+        listRPMMacros = constants.specData.getRPMMacros()
+        for macroName in listRPMMacros.keys():
+            macros.append(macroName+" "+listRPMMacros[macroName])
+
         listRPMFiles=[]
         listSRPMFiles=[]
         try:
@@ -215,7 +218,6 @@ class PackageUtils(object):
             rpmBuildcmd+=" "+self.rpmbuildNocheckOption
         for macro in macros:
             rpmBuildcmd+=' --define \\\"%s\\\"' % macro
-        rpmBuildcmd+=" "+self.rpmbuildBuildNum+" "+self.rpmbuildReleaseVer
         rpmBuildcmd+=" "+specFile
         
         cmdUtils = CommandUtils()
