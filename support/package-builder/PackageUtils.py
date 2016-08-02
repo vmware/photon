@@ -185,6 +185,11 @@ class PackageUtils(object):
             
             self.copyAdditionalBuildFiles(listAdditionalFiles,chrootID)
 
+        #Adding rpm macros
+        listRPMMacros = constants.specData.getRPMMacros()
+        for macroName in listRPMMacros.keys():
+            macros.append(macroName+" "+listRPMMacros[macroName])
+
         listRPMFiles=[]
         listSRPMFiles=[]
         try:
