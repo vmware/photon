@@ -1,9 +1,8 @@
 %global security_hardening none
-%define LINUX_VERSION 4.4.8
 Summary:	Sysdig is a universal system visibility tool with native support for containers.
 Name:		sysdig
 Version:	0.10.1
-Release:	2%{?dist}
+Release:	2%{?kernelsubrelease}{?dist}
 License:	GPLv2	  
 URL:		http://www.sysdig.org/
 Group:		Applications/System	
@@ -12,11 +11,12 @@ Distribution:	Photon
 Source0:	https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
 %define sha1 sysdig=272b95ad02be4d194bba66d360ff935084d9c842
 BuildRequires:	cmake 
-BuildRequires:  linux-dev = %{LINUX_VERSION}
+BuildRequires:  linux-dev = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:	openssl-devel
 BuildRequires:	curl
 BuildRequires:	zlib-devel
 BuildRequires:	ncurses-devel
+Requires:   linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:	zlib
 Requires:	ncurses
 Requires:	openssl
@@ -39,17 +39,17 @@ cmake \
 	-DUSE_BUNDLED_ZLIB=OFF \
 	-DUSE_BUNDLED_NCURSES=OFF ..
 
-make KERNELDIR="/lib/modules/%{LINUX_VERSION}/build" 
+make KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build" 
 
 %install
 cd build
-make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{LINUX_VERSION}/build"
+make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build"
 mv %{buildroot}/usr/src/sysdig* %{buildroot}/usr/src/sysdig-%{version}
 mkdir -p %{buildroot}/etc/
 mv %{buildroot}/usr/etc/bash_completion.d %{buildroot}/etc/
 rm -rf %{buildroot}/usr/share/zsh/
-mkdir -p %{buildroot}/lib/modules/%{LINUX_VERSION}/extra
-mv driver/sysdig-probe.ko %{buildroot}/lib/modules/%{LINUX_VERSION}/extra
+mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}/extra
+mv driver/sysdig-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}/extra
 
 %clean
 rm -rf %{buildroot}/*
@@ -66,9 +66,11 @@ rm -rf %{buildroot}/*
 %{_bindir}
 /usr/src 
 %{_datadir}
-/lib/modules/%{LINUX_VERSION}/extra/sysdig-probe.ko
+/lib/modules/%{KERNEL_VERSION}/extra/sysdig-probe.ko
 
 %changelog
+*   Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 0.10.1-2
+-   Added kernel macros
 *	Thu Jul 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.10.1-2
 -	Updated sysdig to build the kernel module 
 *       Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 0.10.1-1
