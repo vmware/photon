@@ -147,6 +147,7 @@
 	"libtiff",
 	"libpng",
 	"libjpeg-turbo",
-	"nasm"
+	"nasm",
+    "micro-config-data"
             ]
 }
