@@ -1657,7 +1657,7 @@ For information about the vulnerabilities in TLS 1.0, see [Guidelines for the Se
 
 ## Working with Repositories and Packages
 
-The design of Photon OS simplifies life-cycle management and improves the security of packages. Photon OS seeks to reduce the burden and complexity of managing clusters of Linux machines by providing curated package repositories and by securing packages with PGP signatures. 
+The design of Photon OS simplifies life-cycle management and improves the security of packages. Photon OS seeks to reduce the burden and complexity of managing clusters of Linux machines by providing curated package repositories and by securing packages with GPG signatures. 
 
 ### Photon OS Package Repositories
 
@@ -1670,7 +1670,7 @@ The default installation of Photon OS includes four yum-compatible repositories 
     photon-updates.repo
     photon.repo 
 
-The Photon ISO repository (`photon-iso.repo`) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself, the packages correspond only to your build, which will typically be the latest packages if you built it from the source code. In contrast, the ISO that you obtain from the Bintray web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on Bintray, which are updated regularly.  
+The Photon ISO repository (`photon-iso.repo`) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself from the source code, the packages correspond only to your build, though they will typically be the latest. In contrast, the ISO that you obtain from the Bintray web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on Bintray, which are updated regularly.  
 
 The main Photon OS repository (`photon.repo`) contains all the packages that are built from the ISO or from another source. This repository points to a static batch of packages and spec files at the point of a release. 
 
@@ -1847,6 +1847,7 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
 * RPM OSTree Documentation
+
 
 
 
