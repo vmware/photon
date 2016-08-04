@@ -1,11 +1,9 @@
-# Photon OS Administration Guide
-
 -   [Introduction](#introduction)
     -   [Examining the Packages in the SPECS Directory on
         Github](#examining-the-packages-in-the-specs-directory-on-github)
     -   [Looking at the Differences Between the Minimal and the Full
         Version](#looking-at-the-differences-between-the-minimal-and-the-full-version)
-    -   [The Root Account and the sudo and su
+    -   [The Root Account and the `sudo` and `su`
         Commands](#the-root-account-and-the-sudo-and-su-commands)
 -   [Quick Start](#quick-start)
     -   [Obtaining the ISO from Bintray and Creating a Photon OS VM in
@@ -30,6 +28,9 @@
     -   [Options for Commands](#options-for-commands)
     -   [Commands](#commands)
     -   [Adding a New Repository](#adding-a-new-repository)
+    -   [Adding the Dev Repository to Get New Packages from the GitHub
+        Dev
+        Branch](#adding-the-dev-repository-to-get-new-packages-from-the-github-dev-branch)
 -   [Managing Services with systemd](#managing-services-with-systemd)
     -   [Viewing Services](#viewing-services)
     -   [Controlling Services](#controlling-services)
@@ -54,6 +55,8 @@
         NICs](#setting-up-networking-for-multiple-nics)
     -   [Combining DHCP and Static IP Addresses with IPv4 and
         IPv6](#combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6)
+    -   [Using Predictable Network Interface
+        Names](#using-predictable-network-interface-names)
     -   [Inspecting the Status of Network Links with
         `networkctl`](#inspecting-the-status-of-network-links-with-networkctl)
     -   [Turning on Network Debugging](#turning-on-network-debugging)
@@ -71,20 +74,31 @@
 -   [Docker Containers](#docker-containers)
 -   [Kubernetes](#kubernetes)
 -   [RPM-OSTree](#rpm-ostree)
+-   [Installing Sendmail](#installing-sendmail)
+    -   [Fixing Sendmail If Installed Before an FQDN Was
+        Set](#fixing-sendmail-if-installed-before-an-fqdn-was-set)
+-   [Changing the Locale](#changing-the-locale)
 -   [Disabling TLS 1.0 to Improve Transport Layer
-    Security](#disabling-tls-1.0-to-improve-transport-layer-security)
--   [Building a Package from a Source
-    RPM](#building-a-package-from-a-source-rpm)
+    Security](#disabling-tls-10-to-improve-transport-layer-security)
+-   [Working with Repositories and
+    Packages](#working-with-repositories-and-packages)
+    -   [Photon OS Package
+        Repositories](#photon-os-package-repositories)
+    -   [Examining Signed Packages](#examining-signed-packages)
+    -   [Building a Package from a Source
+        RPM](#building-a-package-from-a-source-rpm)
+    -   [Compiling C++ Code on the Minimal Version of Photon
+        OS](#compiling-c-code-on-the-minimal-version-of-photon-os)
 -   [References](#references)
 
 
 ## Introduction
 
-This guide describes the fundamentals of administering Photon OS, the free, open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud. 
+This guide describes the fundamentals of administering Photon OS, the open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud. 
 
 The guide covers the basics of managing packages, controlling services with systemd, setting up networking, initializing Photon OS with cloud-init, running Docker containers, and working with other technologies, such as Kubernetes. The guide also includes a section to get you started using Photon OS quickly and easily. 
 
-Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf and optionally works with RPM-OSTree for image-based system versioning. 
+Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf. Photon OS optionally works with RPM-OSTree for image-based system versioning.
 
 When used with development tools and environments such as VMware Fusion, VMware Workstation, HashiCorp (Vagrant and Atlas), and production runtime environments (vSphere, vCloud Air), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud  applications.  
 
@@ -357,7 +371,7 @@ The build number in the results maps to the commit number on the VMware Photon O
 
 ## Tiny DNF for Package Management
 
-On Photon OS, Tiny DNF is the default package manager for installing new packages. Tdnf is a C implementation of DNF package manager. The standard syntax for tdnf commands is the same as that for DNF: 
+On Photon OS, Tiny DNF, for [Tiny Dandified Yum](https://github.com/vmware/tdnf), is the default package manager for installing new packages. It is a C implementation of DNF package manager. The standard syntax for `tdnf` commands is the same as that for DNF: 
 
 	tdnf [options] <command> [<arguments>...]
 
@@ -434,7 +448,7 @@ The command purges the repository data from the cache:
 
 ### Options for Commands
 
-You can add the following options to tdnf commands. If the option to override a configuration is unavailable in a command, consider adding it to the configuration file, /etc/tdnf/tdnf.conf.
+You can add the following options to `tdnf` commands. If the option to override a configuration is unavailable in a command, consider adding it to the configuration file, /etc/tdnf/tdnf.conf.
 
 	OPTION 					DESCRIPTION
 	--allowerasing 			Allow erasing of installed packages to resolve dependencies
@@ -644,7 +658,7 @@ You can also run the `upgrade` command with the `refresh` option to update the c
 
 	tdnf upgrade-to ruby2.3
 
-The commands and options of tdnf are, at present, a subset of those of dnf. For more help with tdnf commands, see the [DNF documentation](https://media.readthedocs.org/pdf/dnf/latest/dnf.pdf).
+The commands and options of tdnf are, at present, a subset of those of dnf. For more help with `tdnf` commands, see the [DNF documentation](https://media.readthedocs.org/pdf/dnf/latest/dnf.pdf).
 
 ### Adding a New Repository
 
@@ -707,6 +721,26 @@ After establishing a new repository, you must run the following command to updat
 	Refreshing metadata for: 'Local In-House Applications(x86_64)'
 	Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
 	Metadata cache created.
+
+### Adding the Dev Repository to Get New Packages from the GitHub Dev Branch
+
+If you want to try out new packages or the latest versions of existing packages as they are merged into the dev branch of the Photon OS GitHub site, you can add the dev repository to your repository list. Here's how: 
+
+On your Photon OS machine, run the following command as root to create a repository configuration file named `photon-dev.repo`, place it in /etc/yum.repos.d, and concatenate the repository's information into the file: 
+
+    cat > /etc/yum.repos.d/photon-dev.repo << "EOF" 
+    [photon-dev]
+    name=VMware Photon Linux Dev(x86_64)
+    baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
+    gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+    gpgcheck=1
+    enabled=1
+    skip_if_unavailable=True
+    EOF
+
+After establishing a new repository, you must run the following command to update the cached binary metadata for the repositories that tdnf polls:
+
+    tdnf makecache
 
 ## Managing Services with systemd
 
@@ -838,7 +872,7 @@ This command reveals the messages for only the systemd service unit specified by
 
 	journalctl -u auditd
 
-For more information, see the journalctl man page: `man journalctl`
+For more information, see the journalctl man page by running this command on Photon OS: `man journalctl`
 
 ### Migrating Scripts to systemd
 
@@ -922,7 +956,13 @@ As you can see, the /usr/lib/systemd/network directory contains several network 
 
 Each .network file contains a matching rule and a configuration that Photon OS applies when a device matches the rule. You set the matching rule and the configuration as sections containing vertical sets of key-value pairs according to the information at https://www.freedesktop.org/software/systemd/man/systemd.network.html. 
 
-To configure Photon OS to handle a networking use case, such as setting a static IP address or adding a name server, you create a configuration file with a `.network` extension and place it in the /etc/systemd/network directory. For Photon OS to apply the new configuration, you must restart the `systemd-networkd` service by running the following command: 
+To configure Photon OS to handle a networking use case, such as setting a static IP address or adding a name server, you create a configuration file with a `.network` extension and place it in the /etc/systemd/network directory.
+
+After you create a network configuration file with a `.network` extension, you must run the `chmod` command to set the new file's mode bits to `644`. Example: 
+
+    chmod 644 10-static-en.network
+
+For Photon OS to apply the new configuration, you must restart the `systemd-networkd` service by running the following command: 
 
 	systemctl restart systemd-networkd
 
@@ -952,6 +992,10 @@ To create a network configuration file that systemd-networkd uses to establish a
 	Address=192.168.0.2/24
 	Gateway=192.168.0.1
 	EOF
+
+Change the new file's mode bits by running the `chmod` command:
+
+    chmod 644 10-static-en.network
 
 Apply the configuration by running the following command:
 
@@ -1085,6 +1129,62 @@ Here's how to use static IP addresses for both IPv4 and IPv6:
 	Gateway=10.10.10.253
 	Address=fd00::1/48
 	Gateway=fd00::252
+
+### Using Predictable Network Interface Names
+
+On a virtual machine running Photon OS, just as on a bare-metal machine, the Ethernet network interface name might shift from one device to another if you add or removed a card and reboot the machine. A device named `eth2`, for example, might become `eth1` after a NIC is removed and the machine is restarted.
+
+You can prevent interface names from reordering by turning on [predictable network interface names](https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/). The naming schemes that Photon OS uses can then assign fixed, predictable names to network interfaces even after cards or other firmware are added or removed and the system is restarted. With predictable network interface names enabled, you can select among several options to assign persistent names to network interfaces:
+
+* Apply the `slot` name policy to set the name of networking devices in the `ens` format with a statically assigned PCI slot number.
+* Apply the `mac` name policy to set the name of networking devices in the `enx` format a unique MAC address. 
+* Apply the `path` name policy to set the name of networking devices in the `enpXsY` format derived from a device connector's physical location.
+
+(Although Photon OS also supports the `onboard` name policy to set in the `eno` format the name of networking devices from index numbers given by the firmware, the `onboard` policy might result in nonpersistent names.) 
+
+The option that you choose depends on your use case and your unique networking requirements. If, for instance, you clone clones virtual machines in a use case that requires the MAC addresses to be different from one another but the interface name to be the same, you should consider using `ens` to keep the slot the same after reboots. 
+
+Alternatively, if the cloning function supports it and it works for your use case, you can use `enx` to set a MAC address, which also persists after reboots. 
+
+Here's how to turn on predictable network interface names.
+
+First, make a backup copy of the following file in case you need to restore it later: 
+
+    cp /boot/grub/grub.cfg /boot/grub/grub.cfg.original
+
+Second, to turn on predictable network interface names, edit `/boot/grub/grub.cfg` to remove the following string: 
+
+    net.ifnames=0
+
+The string appears near the bottom of the file in the `menuentry` section:
+
+    menuentry "Photon" {
+        linux "/boot/"$photon_linux root=$rootpartition net.ifnames=0 $photon_cmdline
+        if [ "$photon_initrd" ]; then
+            initrd "/boot/"$photon_initrd
+        fi
+    }
+    # End /boot/grub2/grub.cfg
+
+Edit out `net.ifnames=0`, but make no other changes to the file, and then save it. 
+
+Third, specify the types of policies that you want to use for predictable interface names by modifying the `NamePolicy` option in `/lib/systemd/network/99-default.link`. Here's what the file looks like: 
+
+    cat /lib/systemd/network/99-default.link
+    [Link]
+    NamePolicy=kernel database
+    MACAddressPolicy=persistent
+
+To use the `ens` or `enx` option, the `slot` policy or the `mac` policy can be added to the space-separated list of policies that follow the `NamePolicy` option in the default link file, `/lib/systemd/network/99-default.link`. The order of the policies matters: Photon OS applies the policy listed first before proceeding to the next policy if the first one fails. Example: 
+
+    /lib/systemd/network/99-default.link
+    [Link]
+    NamePolicy=slot mac kernel database
+    MACAddressPolicy=persistent
+
+With the name policy specified in the above example, it's possible that you could still end up with an Ethernet-style interface name if the two previous policies, `slot` and `mac`, fail. 
+
+For information on setting name policies, see [systemd.link--network device configuration](https://www.freedesktop.org/software/systemd/man/systemd.link.html). 
 
 ### Inspecting the Status of Network Links with `networkctl`
 
@@ -1283,7 +1383,9 @@ The cloud-init service is commonly used on EC2 to configure the cloud instance o
 
 Working with EC2 requires Amazon accounts for both AWS and EC2 with valid payment information. If you execute the following examples, you will be charged by Amazon. You will need to replace the placeholders for access keys and other account information in the examples with your account information. 
 
-The following code assumes you have installed and set up the Amazon AWS CLI and the EC2 CLI tools. See [Installing the AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) and [Setting Up the Amazon EC2 Command Line Interface Tools on Linux](http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html).  
+The following code assumes you have installed and set up the Amazon AWS CLI and the EC2 CLI tools. See [Installing the AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) and [Setting Up the Amazon EC2 Command Line Interface Tools on Linux](http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html).
+
+Here's a code example that shows how to upload the Photon OS `.ami` image to the Amazon cloud and configure it with cloud-init:   
 
 	$ mkdir bundled
 	$ tar -zxvf ./photon-ami.tar.gz 
@@ -1337,7 +1439,7 @@ Now check the cloud-init output log file on EC2 at `/var/log/cloud-init-output.l
 
 For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
 
-With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers; for more information, see [Compatible Cloud Images](https://github.com/vmware/photon/blob/master/docs/cloud-images.md).
+With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers; see [Compatible Cloud Images](https://github.com/vmware/photon/blob/master/docs/cloud-images.md).
 
 ### Running a Photon OS Machine on GCE
 
@@ -1414,6 +1516,101 @@ The OSTree Server installation option creates an instance of a server that manag
 
 For more information, see the extensive sections on RPM-OSTree in the [Photon OS wiki](https://github.com/vmware/photon/wiki).
 
+## Installing Sendmail
+
+Before you install Sendmail, you should set the fully qualified domain name (FQDN) of your Photon OS machine.
+
+Neither the full nor the minimal version of Photon OS installs Sendmail by default. When you install Sendmail, it provides Photon OS with a systemd service file that typically enables Sendmail. If, however, the service is not enabled after installation, you must enable it. 
+
+Sendmail resides in the Photon extras repository. You can install it with `tdnf` after setting the machine's FQDN. Here's how: 
+
+First, check whether the machine's FQDN is set by running the `hostnamectl status` command:  
+
+         hostnamectl status
+       Static hostname: photon-d9ee400e194e
+             Icon name: computer-vm
+               Chassis: vm
+            Machine ID: a53b414142f944319bd0c8df6d811f36
+               Boot ID: 1f75baca8cc249f79c3794978bd82977
+        Virtualization: vmware
+      Operating System: VMware Photon/Linux
+                Kernel: Linux 4.4.8
+          Architecture: x86-64
+
+In the results above, the FQDN is not set; the Photon OS machine has only a short name. If the FQDN were set, the hostname would be in its full form, typically with a domain name. 
+
+If the machine does not have an FQDN, set one by running `hostnamectl set-hostname new-name`, replacing `new-name` with the FQDN that you want. Example:  
+
+     hostnamectl set-hostname photon-d9ee400e194e.corp.example.com
+
+The `hostnamectl status` command now shows that the machine has an FQDN: 
+
+    root@photon-d9ee400e194e [ ~ ]# hostnamectl status
+       Static hostname: photon-d9ee400e194e.corp.example.com
+             Icon name: computer-vm
+               Chassis: vm
+            Machine ID: a53b414142f944319bd0c8df6d811f36
+               Boot ID: 1f75baca8cc249f79c3794978bd82977
+        Virtualization: vmware
+      Operating System: VMware Photon/Linux
+                Kernel: Linux 4.4.8
+          Architecture: x86-64
+
+Next, install Sendmail: 
+
+    tdnf install sendmail
+
+Make sure it is enabled: 
+
+    systemctl status sendmail
+
+Enable Sendmail if it's disabled and then start it: 
+
+    systemctl enable sendmail
+    systemctl start sendmail
+
+### Fixing Sendmail If Installed Before an FQDN Was Set
+
+If Sendmail is behaving improperly or if it hangs during installation, it is likely that an FQDN is not set. Take the following corrective action. 
+
+First, set an FQDN for your Photon OS machine. 
+
+Then, run the following commands in the order below: 
+
+    echo $(hostname -f) > /etc/mail/local-host-names
+    
+    cat > /etc/mail/aliases << "EOF"
+        postmaster: root
+        MAILER-DAEMON: root
+        EOF
+
+    /bin/newaliases
+
+    cd /etc/mail
+
+    m4 m4/cf.m4 sendmail.mc > sendmail.cf
+
+    chmod 700 /var/spool/clientmqueue
+
+    chown smmsp:smmsp /var/spool/clientmqueue
+
+## Changing the Locale 
+
+You can change the locale if the default locale, shown below by running the `localectl` command, fails to fulfill your requirements: 
+
+    localectl
+    System Locale: LANG=en_US.UTF-8
+       VC Keymap: n/a
+      X11 Layout: n/a
+
+To change the locale, choose the languages that you want from `/usr/share/locale/locale.alias`, add them to `/etc/locale-gen.conf`, and then regenerate the locale list by running the following command as root: 
+
+    locale-gen.sh
+
+Finally, run the following command to set the new locale, replacing the example (`en_US.UTF-8`) with the locale that you want: 
+
+    localectl set-locale LANG="en_US.UTF-8" LC_CTYPE="en_US.UTF-8"
+
 ## Disabling TLS 1.0 to Improve Transport Layer Security
 
 Photon OS includes GnuTLS to help secure the transport layer. [GnuTLS](http://www.gnutls.org/) is a library that implements the SSL and TLS protocols to secure communications. 
@@ -1458,7 +1655,91 @@ For information about the vulnerability in SSL 3.0, see [SSL 3.0 Protocol Vulner
 
 For information about the vulnerabilities in TLS 1.0, see [Guidelines for the Selection, Configuration, and Use of Transport Layer Security (TLS) Implementations](http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r1.pdf).
 
-## Building a Package from a Source RPM
+## Working with Repositories and Packages
+
+The design of Photon OS simplifies life-cycle management and improves the security of packages. Photon OS seeks to reduce the burden and complexity of managing clusters of Linux machines by providing curated package repositories and by securing packages with PGP signatures. 
+
+### Photon OS Package Repositories
+
+The default installation of Photon OS includes four yum-compatible repositories plus the repository on the Photon OS ISO when it's available in a CD-ROM drive:  
+
+    ls /etc/yum.repos.d/
+    lightwave.repo
+    photon-extras.repo
+    photon-iso.repo
+    photon-updates.repo
+    photon.repo 
+
+The Photon ISO repository (`photon-iso.repo`) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself, the packages correspond only to your build, which will typically be the latest packages if you built it from the source code. In contrast, the ISO that you obtain from the Bintray web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on Bintray, which are updated regularly.  
+
+The main Photon OS repository (`photon.repo`) contains all the packages that are built from the ISO or from another source. This repository points to a static batch of packages and spec files at the point of a release. 
+
+The updates repository (`photon-updates.repo`) is irrelevant to a major release until after the release is installed. Thereafter, the updates repository holds the updated packages for that release. The repository, that is, points to updates for the installed version, such as a version of Kubernetes that supersedes the version installed during the major release. 
+
+The Photon extras repository (`photon-extras.repo`) holds Likewise Open, an open source authentication engine, and other VMware software that you can add to Photon OS for free. Photon OS supports but does not build the packages in the extras repository.  
+
+Similarly, the Lightwave repository (`lightwave.repo`) contains the packages that make up the VMware Lightwave security suite for cloud applications, including tools for identity management, access control, and certificate management.
+
+### Examining Signed Packages
+
+Photon OS signs its packages and repositories with GPG signatures to bolster security. The GPG signature uses keyed-hash authentication method codes, typically the SHA1 algorithm and an MD5 checksum, to simultaneously verify the integrity and authentication of a package. A keyed-hash message authentication code combines a cryptographic hash function with a secret cryptographic key.
+
+In Photon OS, GPG signature verification automatically takes place when you install or update a package with the default package manager, tdnf. The default setting in the tdnf configuration file for checking the GPG is set to `1`, for true:  
+
+    cat /etc/tdnf/tdnf.conf
+    [main]
+    gpgcheck=1
+    installonly_limit=3
+    clean_requirements_on_remove=true
+    repodir=/etc/yum.repos.d
+    cachedir=/var/cache/tdnf
+
+On Photon OS, you can view the key with which VMware signs packages by running the following command:  
+
+    rpm -qa gpg-pubkey*
+
+The command returns the GPG public key:
+
+    gpg-pubkey-66fd4949-4803fe57
+
+Once you have the name of the key, you can view information about the key with the `rpm -qi` command, as the following abridged output demonstrates: 
+
+    rpm -qi gpg-pubkey-66fd4949-4803fe57
+    Name        : gpg-pubkey
+    Version     : 66fd4949
+    Release     : 4803fe57
+    Architecture: (none)
+    Install Date: Thu Jun 16 11:51:39 2016
+    Group       : Public Keys
+    Size        : 0
+    License     : pubkey
+    Signature   : (none)
+    Source RPM  : (none)
+    Build Date  : Tue Apr 15 01:01:11 2008
+    Build Host  : localhost
+    Relocations : (not relocatable)
+    Packager    : VMware, Inc. -- Linux Packaging Key -- <linux-packages@vmware.com>
+    Summary     : gpg(VMware, Inc. -- Linux Packaging Key -- <linux-packages@vmware.                        com>)
+    Description :
+    -----BEGIN PGP PUBLIC KEY BLOCK-----
+    Version: rpm-4.11.2 (NSS-3)
+    mI0ESAP+VwEEAMZylR8dOijUPNn3He3GdgM/kOXEhn3uQl+sRMNJUDm1qebi2D5b ...
+
+If you have one of the RPMs from Photon OS on another Linux system, such as Ubuntu, you can check the status of the SHA and MD5 for the package to verify that it has not been tampered with:
+
+    rpm -K /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm
+    /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm: sha1 md5 OK
+
+And then you can view the SHA1 digest and the MD5 digest by running the following command: 
+
+    rpm -Kv /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm
+    /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm:
+    Header SHA1 digest: OK (89b55443d4c9f67a61ae0c1ec9bf4ece2d6aa32b)
+            MD5 digest: OK (51eee659a8730e25fd2a52aff9a6c2c2)
+
+The above examples show that the Kubernetes package has not been tampered with.
+
+### Building a Package from a Source RPM
 
 This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. You obtain the source RPMs that Photon OS uses from Bintray: 
 
@@ -1523,6 +1804,35 @@ To install the RPM, run the following command with your unprivileged user accoun
 
 	rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
 
+### Compiling C++ Code on the Minimal Version of Photon OS
+
+As a minimalist Linux run-time environment, the minimal version of Photon OS lacks the packages that you need to compile the code for a C++ program. For example, without the requisite packages, trying to compile the file containing the following code with the `gcc` command will generate errors: 
+
+    #include <stdio.h>
+    int main()
+    {
+    return 0;
+    }
+
+The errors look something like this: 
+
+    gcc test.c
+    -bash: gcc: command not found
+    tdnf install gcc -y
+    gcc test.c
+    test.c:1:19: fatal error: stdio.h: No such file or directory
+    compilation terminated.
+
+To enable the minimal version of Photon OS to preprocess, compile, assemble, and link C++ code, you must install the following packages as root with tdnf:
+
+* gcc
+* glibc-devel
+* binutils
+
+Here's the `tdnf` command to install these packages: 
+
+    tdnf install gcc glibc-devel binutils
+
 ## References
 
 The following technical articles and guides appear in the [Photon OS wiki](https://github.com/vmware/photon/wiki): 
@@ -1537,6 +1847,7 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
 * RPM OSTree Documentation
+
 
 
 
