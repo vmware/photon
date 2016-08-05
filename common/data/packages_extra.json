@@ -148,6 +148,6 @@
 	"libpng",
 	"libjpeg-turbo",
 	"nasm",
-        "build-c-essentials"
+        "build-essential"
             ]
 }
