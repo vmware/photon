@@ -1,7 +1,7 @@
 Summary:	Cron Daemon
 Name:		cronie
 Version:	1.5.0
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	GPLv2+ and MIT and BSD and ISC
 URL:		https://fedorahosted.org/cronie
 Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -81,7 +81,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
 %defattr(-,root,root)
 %{_lib}/systemd/system/cron.service
-%{_sysconfdir}/pam.d/*
+%config(noreplace) %{_sysconfdir}/pam.d/*
 %{_bindir}/*
 %{_sbindir}/*
 %{_mandir}/man1/*
@@ -94,16 +94,18 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %dir %{_sysconfdir}/cron.daily
 %dir %{_sysconfdir}/cron.weekly
 %dir %{_sysconfdir}/cron.monthly
-%{_sysconfdir}/anacrontab
-%{_sysconfdir}/cron.d/*
-%{_sysconfdir}/cron.deny
-%{_sysconfdir}/cron.hourly/0anacron
-%{_sysconfdir}/sysconfig/crond
+%config(noreplace) %{_sysconfdir}/anacrontab
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/cron.d/*
+%config(noreplace) %{_sysconfdir}/cron.deny
+%config(noreplace) %{_sysconfdir}/cron.hourly/0anacron
+%config(noreplace) %{_sysconfdir}/sysconfig/crond
 %{_libdir}/systemd/system/crond.service
 /var/spool/anacron/cron.daily
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*   Thu Aug 4 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-10
+-   Added logic to not replace conf files in upgrade scenario
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.0-9
 -	GA - Bump release of all rpms
 *       Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-8
