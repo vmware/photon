@@ -1,36 +1,34 @@
-# What is OSTree and RPM-OSTree
+# What is OSTree and RPM-OSTree?
 OSTree is a tool for managing bootable, immutable, versioned filesystem trees.
 
 ## Photon RPM-OSTree Server
-During installation from Photon ISO you can select "Photon RPM-OSTree Server" option that will install Photon with RPM-OSTree components and a minimal repo from which RPM-OSTree Hosts could be created.
+During installation from the Photon OS ISO, you can select the `Photon RPM-OSTree Server` option to install Photon OS with the RPM-OSTree components and a minimal repository from which RPM-OSTree Hosts can be created.
 
-On RPM-OSTree Server the repo is created at following location.
+On RPM-OSTree Server the repo is created at the following location: 
 ```
 /srv/rpm-ostree/repo
 ```
-Following is the base configuration file used to create the repo.
+Here is the base configuration file that creates the repo:
 ```
 /srv/rpm-ostree/photon-base.json
 ```
-### Updating RPM-OSTree repo image
+### Updating RPM-OSTree Repo Image
 
-You can add/remove package from photon-base.json file and then run following command to update the repo with new commit.
+You can add or remove packages from the `photon-base.json` file and then run following commands to update the repo with a new commit:
 ```
 cd /srv/rpm-ostree
 rpm-ostree compose tree --repo=/srv/rpm-ostree/repo photon-base.json
 ```
-
-Above command will create a new commit that will have your package related changes in it.
+The command above creates a new commit that contains your package-related changes.
 
 ## RPM-OSTree Host
 
-OSTree host is the installation of Photon that retrieves the images from RPM-OSTree server during installation. It can get atomic updates from the same server in its life time.
+OSTree host is an installation of Photon OS that retrieves the images from RPM-OSTree server during installation. It can get atomic updates from the same server during its lifecycle.
 
-## Upgrading the Host installations
+## Upgrading the Host Installations
 
-Host machines created from RPM-OSTree server can run following commands to upgrade their Host machine to the latest version from RPM-OSTree server.
+Host machines created from RPM-OSTree server can run the following commands to upgrade their host machine to the latest version from the RPM-OSTree server:
 
-```
-> rpm-ostree upgrade
-> systemctl reboot
-```
+	rpm-ostree upgrade
+	systemctl reboot
+
