@@ -1,6 +1,6 @@
 Name:	metapackage
 Summary:	This package contains the container bootstrap files. 
-Version:	0.1-1
+Version:	0.1
 Release:	1%{?dist}
 License:	GPLv2
 Requires:	gcc, binutils, make, glibc-devel, linux-api-headers
