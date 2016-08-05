@@ -1,6 +1,6 @@
 Name:	metapackage
 Summary:	This package contains the container bootstrap files. 
-Version:	0.1
+Version:	0.1-1
 Release:	1%{?dist}
 License:	GPLv2
 Requires:	gcc, binutils, make, glibc-devel, linux-api-headers
@@ -16,5 +16,5 @@ This package is to meant install the necessary packages to a minimal photon iso
 %defattr(-,root,root,0755)
 
 %changelog
-*   Fri Aug 5 2016 Dheeraj Shetty <dheerajs@vmware.com> 0.1
+*   Fri Aug 5 2016 Dheeraj Shetty <dheerajs@vmware.com> 0.1-1
 -   Initial
