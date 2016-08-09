@@ -4,7 +4,7 @@ Documentation=https://containerd.tools/
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/docker-containerd --listen /run/containerd.sock --runtime /usr/bin/docker-runc
+ExecStart=/usr/bin/docker-containerd --listen unix:///run/containerd.sock --runtime /usr/bin/docker-runc --shim /usr/bin/docker-containerd-shim
 LimitNOFILE=1048576
 LimitNPROC=1048576
 LimitCORE=infinity

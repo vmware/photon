@@ -1,6 +1,6 @@
 Summary:    	Docker
 Name:       	docker
-Version:    	1.11.2
+Version:    	1.12.0
 Release:    	1%{?dist}
 License:    	ASL 2.0
 URL:        	http://docs.docker.com
@@ -8,7 +8,7 @@ Group:      	Applications/File
 Vendor:     	VMware, Inc.
 Distribution:   Photon
 Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz 
-%define sha1 docker=1bfd065784e0f422c000d86da4feda87cd63ced8
+%define sha1 docker=92839410a37ed1940b7a93dcd21fd9aa85d673a1
 Source1: 	docker.service
 Source2: 	docker-containerd.service
 BuildRequires:  systemd
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/docker-containerd.service
 
 %changelog
+*   Tue Aug 09 2016 Anish Swaminathan <anishs@vmware.com> 1.12.0-1
+-   Upgraded to version 1.12.0
 *   Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 1.11.2-1
 -   Upgraded to version 1.11.2
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-6
