@@ -167,8 +167,9 @@ class SerializedSpecObjects(object):
             d['packages'] = sortedList
             outFilePath = self.jsonFilesOutPath + inputValue
             with open(outFilePath, 'wb') as outfile:
-                json.dump(d, outfile)       
-    
+                json.dump(d, outfile)
+	return sortedList
+
     def getListSpecFiles(self,listSpecFiles,path):
         for dirEntry in os.listdir(path):
             dirEntryPath = os.path.join(path, dirEntry)
@@ -176,7 +177,7 @@ class SerializedSpecObjects(object):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles,dirEntryPath)
-    
+
     def getBuildRequiresForPackage(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].buildRequirePackages
