@@ -21,21 +21,21 @@ class SerializableSpecObject(object):
         self.securityHardening=""
 
 class SerializedSpecObjects(object):
-    
+
     def __init__(self, inputDataDir, stageDir):
         self.mapSerializableSpecObjects={}
         self.mapPackageToSpec={}
         self.jsonFilesOutPath = stageDir + "/common/data/"
         self.inputDataDir = inputDataDir
-    
+
     def findTotalRequires(self, allDeps, depQue, parent, displayOption):
         while not depQue.empty():
             specPkg = depQue.get()
             specName = self.getSpecName(specPkg)
             specObj = self.mapSerializableSpecObjects[specName]
             for depPkg in specObj.installRequiresPackages[specPkg]:
-                if True == allDeps.has_key(depPkg): 
-                    if(allDeps[depPkg] < allDeps[specPkg] + 1): 
+                if True == allDeps.has_key(depPkg):
+                    if(allDeps[depPkg] < allDeps[specPkg] + 1):
                         allDeps[depPkg] = allDeps[specPkg] + 1
                         parent[depPkg] = specPkg
                         self.updateLevels(allDeps, depPkg, parent, allDeps[depPkg])
@@ -43,13 +43,13 @@ class SerializedSpecObjects(object):
                     allDeps[depPkg] = allDeps[specPkg] + 1
                     parent[depPkg] = specPkg
                     depQue.put(depPkg)
-    
-    def printTree(self, allDeps, children, curParent , depth):    
+
+    def printTree(self, allDeps, children, curParent , depth):
         if (children.has_key(curParent)):
             for child in children[curParent]:
                 print "\t" * depth, child
                 self.printTree(allDeps, children, child, depth+1)
-    
+
     def get_all_package_names(self, jsonFilePath):
         base_path = os.path.dirname(jsonFilePath)
         jsonData = open(jsonFilePath)
@@ -59,14 +59,14 @@ class SerializedSpecObjects(object):
         return packages
 
     def updateLevels(self, allDeps, inPkg, parent, level):
-        specName = self.getSpecName(inPkg) 
-        specObj  = self.mapSerializableSpecObjects[specName]
+        specName = self.getSpecName(inPkg)
+        specObj = self.mapSerializableSpecObjects[specName]
         for depPkg in specObj.installRequiresPackages[inPkg]:
-            if (allDeps.has_key(depPkg) and allDeps[depPkg] < level + 1): 
+            if (allDeps.has_key(depPkg) and allDeps[depPkg] < level + 1):
                 allDeps[depPkg] = level + 1
                 parent[depPkg] = inPkg
                 self.updateLevels(allDeps, depPkg, parent, allDeps[depPkg])
-                             
+
     def readSpecsAndConvertToSerializableObjects(self, specFilesPath, inputType, inputValue, displayOption):
         children = {}
         listSpecFiles=[]
@@ -93,7 +93,7 @@ class SerializedSpecObjects(object):
             specObj.securityHardening=spec.getSecurityHardeningOption()
             for specPkg in specObj.listPackages:
                 specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
-                if (inputType == "pkg" and inputValue == specPkg): # all the first level dependencies to a dictionary and queue 
+                if (inputType == "pkg" and inputValue == specPkg): # all the first level dependencies to a dictionary and queue
                     packageFound = True
                     for depPkg in specObj.installRequiresPackages[specPkg]:
                         if False == allDeps.has_key(depPkg):
@@ -103,8 +103,8 @@ class SerializedSpecObjects(object):
                 if (inputType == "who-needs" and (inputValue in specObj.installRequiresPackages[specPkg])):
                     whoNeedsList.append(specPkg)
                 self.mapPackageToSpec[specPkg]=specName
-            self.mapSerializableSpecObjects[specName]=specObj       
-        
+            self.mapSerializableSpecObjects[specName]=specObj
+
         # Generate dependencies for individual packages
         if (inputType == "pkg"):
             if (packageFound == True):
@@ -120,13 +120,13 @@ class SerializedSpecObjects(object):
             for pkg in data:
                 if False == allDeps.has_key(pkg):
                     spName = self.getSpecName(pkg)
-                    if(spName != None):         
-                        allDeps[pkg] = 0 
+                    if(spName != None):
+                        allDeps[pkg] = 0
                         parent[pkg] = ""
                         depQue.put(pkg)
                         self.findTotalRequires(allDeps, depQue, parent, displayOption)
                     else:
-                        independentRPMS.append(pkg); 
+                        independentRPMS.append(pkg);
 
         #Generating the list of packages that requires the given input package at install time
         elif (inputType == "who-needs"):
@@ -145,7 +145,7 @@ class SerializedSpecObjects(object):
                 children.setdefault(v, []).append(k)
             if(inputType == "json"):
                 print "Dependency Mappings for", inputValue, ":", "\n----------------------------------------------------",children
-                print "----------------------------------------------------"                
+                print "----------------------------------------------------"
             if (children.has_key("")):
                 for child in children[""]:
                     print child
@@ -155,7 +155,7 @@ class SerializedSpecObjects(object):
                 print "******************",len(sortedList), "packages in total ******************"
             else:
                 if (inputType == "pkg" and len(children) > 0):
-                    print "cyclic dependency detected, mappings: \n",children 
+                    print "cyclic dependency detected, mappings: \n",children
 
         # To display a flat list of all packages
         elif(displayOption == "list"):
@@ -167,8 +167,9 @@ class SerializedSpecObjects(object):
             d['packages'] = sortedList
             outFilePath = self.jsonFilesOutPath + inputValue
             with open(outFilePath, 'wb') as outfile:
-                json.dump(d, outfile)       
-    
+                json.dump(d, outfile)
+        return sortedList
+
     def getListSpecFiles(self,listSpecFiles,path):
         for dirEntry in os.listdir(path):
             dirEntryPath = os.path.join(path, dirEntry)
@@ -176,41 +177,41 @@ class SerializedSpecObjects(object):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles,dirEntryPath)
-    
+
     def getBuildRequiresForPackage(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].buildRequirePackages
-        
+
     def getRequiresForPackage(self, package):
         specName=self.getSpecName(package)
         if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
             return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
         return None
-    
+
     def getRelease(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].release
-        
+
     def getVersion(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].version
-        
+
     def getSpecFile(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].specFile
-        
+
     def getPatches(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listPatches
-        
+
     def getSources(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listSources
-        
+
     def getPackages(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listPackages
-        
+
     def getSpecName(self,package):
         if self.mapPackageToSpec.has_key(package):
             specName=self.mapPackageToSpec[package]
@@ -220,19 +221,19 @@ class SerializedSpecObjects(object):
                 print "SpecDeps: Could not able to find " + package + " package from specs"
                 raise Exception("Invalid package:" + package)
         else:
-            return None         
-    
+            return None
+
     def isRPMPackage(self,package):
         if self.mapPackageToSpec.has_key(package):
             specName=self.mapPackageToSpec[package]
-            if self.mapSerializableSpecObjects.has_key(specName):
-                return True
+        if self.mapSerializableSpecObjects.has_key(specName):
+            return True
         return False
-    
+
     def getSecurityHardeningOption(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].securityHardening
-        
+
     def getSpecDetails(self, name):
-        print self.mapSerializableSpecObjects[name].installRequiresAllPackages 
+        print self.mapSerializableSpecObjects[name].installRequiresAllPackages
 
