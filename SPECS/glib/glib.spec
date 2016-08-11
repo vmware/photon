@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.47.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.46/%{name}-%{version}.tar.xz
 Group:		Applications/System
@@ -28,7 +28,7 @@ The GLib package contains a low-level libraries useful for providing data struct
 %package devel
 Summary:	Header files for the glib library
 Group:		Development/Libraries
-Requires:	glib
+Requires:	glib = %{version}-%{release}
 Provides:	glib-devel
 Provides:	glib-devel(x86-64)
 BuildRequires:	python2 >= 2.7
@@ -86,6 +86,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*	Thu Aug 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-3
+-	Update glib require for devel to use the same version and release
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-2
 -	GA - Bump release of all rpms
 *   Thu Apr 14 2016	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.6-1
