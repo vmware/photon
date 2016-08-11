@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.8
-Release:       8%{?dist}
+Release:       9%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -28,6 +28,7 @@ Patch11:       netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 Patch12:       netfilter-x_tables-check-for-size-overflow.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
+Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
 BuildRequires: bc 
 BuildRequires: kbd
 BuildRequires: kmod
@@ -77,6 +78,7 @@ The Linux package contains the Linux kernel doc files
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
 
 %build
 make mrproper
@@ -142,6 +144,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Wed Aug 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-9
+-   Added VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
 *   Wed Jul 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-8
 -   .config: added cgroups for pids,mem and blkio
 *   Mon Jul 11 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-7
