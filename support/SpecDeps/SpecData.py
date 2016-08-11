@@ -167,7 +167,8 @@ class SerializedSpecObjects(object):
             d['packages'] = sortedList
             outFilePath = self.jsonFilesOutPath + inputValue
             with open(outFilePath, 'wb') as outfile:
-                json.dump(d, outfile)       
+                json.dump(d, outfile)     
+	return sortedList  
     
     def getListSpecFiles(self,listSpecFiles,path):
         for dirEntry in os.listdir(path):
