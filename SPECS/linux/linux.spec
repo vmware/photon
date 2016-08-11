@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	9%{?dist}
+Release:    	10%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -24,6 +24,7 @@ Patch7:		netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 Patch8:		netfilter-x_tables-check-for-size-overflow.patch
 Patch9:		REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:	e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
+Patch11:	VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -90,6 +91,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 
 %build
 make mrproper
@@ -186,6 +188,10 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed Aug 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-10
+-   Added VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+-   .config: pmem hotplug + ACPI NFIT support
+-   .config: enable EXPERT mode, disable UID16 syscalls
 *   Thu Jul 07 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-9
 -   .config: pmem + fs_dax support
 *   Fri Jun 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-8
