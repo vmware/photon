@@ -7,6 +7,6 @@
 		},
 	"type": "minimal",
     "size": {"root": "5", "swap": "3"},
-    "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDLT+3MMoNmB9KUlthmE0oAV1UyMHljlnXRoTi7MX06SRCTh4ubASf2a2x4mVbyb8lZvhCE1aCYTiujlexjXCQSDvp8+2tTiVzMLN/TZtMQtTbg3p1phCpk/+1BPRuHB0oqJQL2SR1lV5xzwzBSfcpoUC5F8zHbt38nnIvwL6P9dPXxn7u4jloDPIVNONwF3o5L2SGtGeZQFOrPB6G20MqdUv0XlqE1g/7BhhOT5Tb5hBSoOtoMYA0vgEr8oud4bmMJFGdw+lkNG40BwlUCsRhlDfexv52QJFTg1/SodSzPMdY8N8xEOmeDaRrXM7eIzlXqvkYF+YG/3O1WOjAqJZQR mbassiouny@vmware.com"
+    "public_key": "<ssh-key-here>"
 }
 
