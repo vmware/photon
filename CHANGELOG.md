@@ -1,8 +1,36 @@
-- [v1.0](#v1)
+- [Updated OVAs for CVE-2016-5333](#updated-ovas-for-CVE20165333)
+
+- [v1.0](#v1.0)
   - [Downloads](#downloads)
   - [Highlights](#highlights)
   - [Known Issues](#known-issues)
   
+## Updated OVAs for CVE-2016-5333
+
+A public ssh key used in the Photon OS build environment was inadvertently left in the original Photon OS 1.0 OVAs. 
+This issue would have allowed the corresponding private key to access any Photon OS system built from the original 1.0 OVAs.
+
+The issue was discovered internally and the original OVAs have been replaced by updated OVAs. All instances of this private key have been deleted within VMware. 
+ 
+Customers that have downloaded the PhotonOS 1.0 OVAs before August 14, 2016 should take either of the following procedures to ensure the security of their systems:
+
+- Remove the left-over public key from all Photon OS 1.0 systems built from the original PhotonOS 1.0 OVAs by executing the following command:
+  - On a freshly installed Photon OS system: 
+  
+    ```rm –f /root/.ssh/authorized_keys```
+  - On a Photon OS system which contains user-installed ssh keys: 
+  
+    ```sed –i '/photon-jenkins/d' /root/.ssh/authorized_keys```
+- Alternatively, download the new OVA and replace all existing instances with new instances built from the updated Photon OS 1.0 OVAs.
+ 
+To confirm that the left-over public key is not present and that the issue is resolved, the following command should not produce any output:
+
+  ```cat /root/.ssh/authorized_keys | grep photon-jenkins```
+
+This issue is only present in the original Photon OS 1.0 OVAs and is not present in other Photon OS deliverables.
+
+The Common Vulnerabilities and Exposures project (cve.mitre.org) has assigned the identifier CVE-2016-5333 to this issue.
+
 # v 1.0
 
 ## Downloads
