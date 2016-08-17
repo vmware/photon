@@ -2,7 +2,7 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.92
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -16,7 +16,7 @@ AutoReqProv: 	no
 The OpenJDK package installs java class library and javac java compiler. 
 
 %package	-n openjre
-Summary:	Jave runtime environtment
+Summary:	Java runtime environment
 AutoReqProv: 	no
 %description	-n openjre
 It contains the libraries files for Java runtime environment
@@ -136,6 +136,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*       Wed Aug 17 2016 Mike Stunes <mstunes@vmware.com> 1.8.0.92-4
+-       Fixed typo in description
 *       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-3
 -	Added version constraint to runtime dependencies
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.92-2
