@@ -1,0 +1,17 @@
+diff -uNr systemd-228/src/resolve/resolved-dns-transaction.c systemd-228-dnsfix/src/resolve/resolved-dns-transaction.c
+--- systemd-228/src/resolve/resolved-dns-transaction.c	2016-08-17 02:58:53.854296643 +0000
++++ systemd-228-dnsfix/src/resolve/resolved-dns-transaction.c	2016-08-17 03:04:05.393604993 +0000
+@@ -342,10 +342,12 @@
+ 
+         assert(t);
+         assert(p);
+-        assert(t->state == DNS_TRANSACTION_PENDING);
+         assert(t->scope);
+         assert(t->scope->manager);
+ 
++        if (t->state != DNS_TRANSACTION_PENDING)
++                return;
++
+         /* Note that this call might invalidate the query. Callers
+          * should hence not attempt to access the query or transaction
+          * after calling this function. */
