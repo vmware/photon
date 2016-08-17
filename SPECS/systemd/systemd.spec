@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          27%{?dist}
+Release:          28%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -30,6 +30,7 @@ Patch14:          systemd-228-ipv6-disabled-fix.patch
 Patch15:          systemd-228-default-dns-from-env.patch
 Patch16:          systemd-228-dhcp-duid-api-update.patch
 Patch17:          systemd-228-domains-search-fix.patch
+Patch18:          systemd-228-dns-transaction-pending-fix.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -80,6 +81,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
+%patch18 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -216,6 +218,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*    Tue Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-28
+-    systemd-resolved: Fix DNS_TRANSACTION_PENDING assert.
 *    Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 228-27
 -    Removed packaging of symlinks and will be created during installation
 *    Tue Jul 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-26
