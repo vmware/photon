@@ -1,12 +1,13 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.0.4
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
 URL:           http://www.vmware.com
 Source0:       %{name}-%{version}.tar.gz
+Patch0:        netmgmt-v104-dns-buffer-overrun-fix.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: glib-devel
@@ -27,6 +28,7 @@ header files and libraries for netmgmt
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 autoreconf -mif
@@ -58,6 +60,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*	Tue  Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-2
+-	Fix DNS servers CLI bug.
 *	Thu  Jul 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-1
 -	Update DNS servers CLI and API.
 *	Wed  Jul 20 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.3-2
