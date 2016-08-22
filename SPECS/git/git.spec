@@ -1,7 +1,7 @@
 Summary:	Fast distributed version control system
 Name:		git
 Version:	2.8.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2
 URL:		http://git-scm.com/
 Group:		System Environment/Programming
@@ -53,6 +53,8 @@ make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
+install -vdm 755 %{buildroot}/usr/share/bash-completion/completions
+install -m 0644 contrib/completion/git-completion.bash %{buildroot}/usr/share/bash-completion/completions/git
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
 %check
@@ -77,6 +79,7 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/git-gui/*
 %{_datarootdir}/gitk/*
 %{_datarootdir}/gitweb/*
+%{_datarootdir}/bash-completion/
 #excluding git svn files
 %exclude %{_libexecdir}/git-core/*svn*
 %exclude %{_mandir}/man3/*:SVN:*
@@ -88,19 +91,21 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 2.8.1-6
+-   Add bash completion file
 *   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
--	Excluded the perllocal.pod log. 
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
--	GA - Bump release of all rpms
-*       Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
--       Fix if syntax
-*       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2
--       Handling the upgrade scenario.
-*   	Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 2.8.1-1
--   	Updated to version 2.8.1 
-*   	Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.7.1-1
--   	Updated to version 2.7.1
-*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.1.2-2
--	Add requires for perl-CGI.
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
--	Initial build.	First version
+-   Excluded the perllocal.pod log.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
+-   GA - Bump release of all rpms
+*   Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
+-   Fix if syntax
+*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2
+-   Handling the upgrade scenario.
+*   Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 2.8.1-1
+-   Updated to version 2.8.1
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.7.1-1
+-   Updated to version 2.7.1
+*   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.1.2-2
+-   Add requires for perl-CGI.
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
+-   Initial build. First version
