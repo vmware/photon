@@ -1,7 +1,7 @@
 Summary:    	Docker
 Name:       	docker
 Version:    	1.12.0
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	ASL 2.0
 URL:        	http://docs.docker.com
 Group:      	Applications/File
@@ -11,6 +11,7 @@ Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz
 %define sha1 docker=92839410a37ed1940b7a93dcd21fd9aa85d673a1
 Source1: 	docker.service
 Source2: 	docker-containerd.service
+Source3: 	docker-completion.bash
 BuildRequires:  systemd
 Requires:       systemd
 
@@ -25,6 +26,8 @@ mv -v %{_builddir}/%{name}/* %{buildroot}/usr/bin/
 install -vd %{buildroot}/lib/systemd/system
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/docker.service
 cp %{SOURCE2} %{buildroot}/lib/systemd/system/docker-containerd.service
+install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
+install -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/bash-completion/completions/docker
 
 %{_fixperms} %{buildroot}/*
 %check
@@ -49,8 +52,11 @@ rm -rf %{buildroot}/*
 %{_bindir}
 /lib/systemd/system/docker.service
 /lib/systemd/system/docker-containerd.service
+%{_datadir}/bash-completion/completions/docker
 
 %changelog
+*   Mon Aug 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.12.0-2
+-   Added bash completion file
 *   Tue Aug 09 2016 Anish Swaminathan <anishs@vmware.com> 1.12.0-1
 -   Upgraded to version 1.12.0
 *   Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 1.11.2-1
