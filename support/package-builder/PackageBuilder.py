@@ -6,6 +6,8 @@ from CommandUtils import CommandUtils
 import os.path
 from constants import constants
 import shutil
+from TestUtils import TestUtils
+
 
 class PackageBuilder(object):
     
@@ -87,8 +89,11 @@ class PackageBuilder(object):
 
     def buildPackage(self,package):
         #do not build if RPM is already built
-        if self.checkIfPackageIsAlreadyBuilt(package):
+        if self.checkIfPackageIsAlreadyBuilt(package) and not constants.rpmCheck:
             self.logger.info("Skipping building the package:"+package)
+            return
+        elif constants.rpmCheck and package not in constants.listPacakgesToBuild:
+            self.logger.info("Skipping testing the package:"+package)
             return
 
         #should initialize a logger based on package name
@@ -117,6 +122,11 @@ class PackageBuilder(object):
                     self.installPackage(pkgUtils, pkg,chrootID,destLogPath,listInstalledPackages)
                 pkgUtils.installRPMSInAOneShot(chrootID,destLogPath)
                 self.logger.info("Finished installing the build time dependent packages......")
+
+            if constants.rpmCheck:
+                mcUtils=TestUtils(self.logName,self.logPath)
+                mcUtils.installTestRPMS(package, chrootID)
+
             pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
             pkgUtils.buildRPMSForGivenPackage(package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,destLogPath)
             self.logger.info("Successfully built the package:"+package)
@@ -162,3 +172,4 @@ class PackageBuilder(object):
                 if pkg in listInstalledPackages:
                     continue
                 self.installPackage(pkgUtils,pkg,chrootID,destLogPath,listInstalledPackages)
+
