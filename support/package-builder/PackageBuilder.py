@@ -6,6 +6,8 @@ from CommandUtils import CommandUtils
 import os.path
 from constants import constants
 import shutil
+from TestUtils import TestUtils
+
 
 class PackageBuilder(object):
     
@@ -117,6 +119,11 @@ class PackageBuilder(object):
                     self.installPackage(pkgUtils, pkg,chrootID,destLogPath,listInstalledPackages)
                 pkgUtils.installRPMSInAOneShot(chrootID,destLogPath)
                 self.logger.info("Finished installing the build time dependent packages......")
+
+            if constants.rpmCheck:
+                mcUtils=TestUtils(self.logName,self.logPath)
+                mcUtils.installTestRPMS(package, chrootID)
+
             pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
             pkgUtils.buildRPMSForGivenPackage(package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,destLogPath)
             self.logger.info("Successfully built the package:"+package)
@@ -162,3 +169,4 @@ class PackageBuilder(object):
                 if pkg in listInstalledPackages:
                     continue
                 self.installPackage(pkgUtils,pkg,chrootID,destLogPath,listInstalledPackages)
+

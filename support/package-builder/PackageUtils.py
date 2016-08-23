@@ -214,8 +214,16 @@ class PackageUtils(object):
     def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
         
         rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
+
         if not constants.rpmCheck:
             rpmBuildcmd+=" "+self.rpmbuildNocheckOption
+        else:
+            if package not in constants.listMakeCheckPackages:
+                self.logger.info("####### MakeCheck is not available. Skipping MakeCheck TEST for "+package+ " #######")
+                rpmBuildcmd+=" "+self.rpmbuildNocheckOption
+            else:
+                self.logger.info("####### MakeCheck is available. Running MakeCheck TEST for "+package+ " #######")
+
         for macro in macros:
             rpmBuildcmd+=' --define \\\"%s\\\"' % macro
         rpmBuildcmd+=" "+specFile
