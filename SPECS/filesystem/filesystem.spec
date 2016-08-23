@@ -384,8 +384,10 @@ set bell-style none
 # for linux console
 "\e[1~": beginning-of-line
 "\e[4~": end-of-line
-"\e[5~": beginning-of-history
-"\e[6~": end-of-history
+# page up - history search backward
+"\e[5~": history-search-backward
+# page down - history search forward
+"\e[6~": history-search-forward
 "\e[3~": delete-char
 "\e[2~": quoted-insert
 
