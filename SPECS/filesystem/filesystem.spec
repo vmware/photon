@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -384,8 +384,10 @@ set bell-style none
 # for linux console
 "\e[1~": beginning-of-line
 "\e[4~": end-of-line
-"\e[5~": beginning-of-history
-"\e[6~": end-of-history
+# page up - history search backward
+"\e[5~": history-search-backward
+# page down - history search forward
+"\e[6~": history-search-forward
 "\e[3~": delete-char
 "\e[2~": quoted-insert
 
@@ -552,14 +554,16 @@ EOF
 /usr/lib/debug/usr/lib64
 %endif
 %changelog
+*   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-10
+-   /etc/inputrc PgUp/PgDown for history search
 *   Tue Jul 12 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-9
 -   Added filesystem for debug libraries and binaries
 *   Fri Jul 8 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-8
 -   Removing multiple entries of localhost in /etc/hosts file
 *   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-7
 -   Fixed nobody user uid and group gid
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-6
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-6
+-   GA - Bump release of all rpms
 *   Wed May 4 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-5
 -   Removing non-existent users from /etc/group file
 *   Fri Apr 29 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0-4
