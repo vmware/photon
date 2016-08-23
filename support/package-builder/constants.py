@@ -251,6 +251,41 @@ class constants(object):
         "man-pages",
         "cpio"]
 
+    listMakeCheckRPMPkgtoInstall=[
+        "python-setuptools",
+        "which",
+        "go",
+        "e2fsprogs",
+        "shadow",
+        "check",
+        "libacl-devel",
+        "device-mapper",
+        "wget",
+        "tar",
+        "pkg-config",
+        "git"]
+
+    listMakeCheckPackages=[
+       "apr-util","apr","asciidoc","atftp","attr","audit","autoconf","autogen","automake","bash","bc","binutils","bison",
+       "btrfs-progs","bzip2","c-ares","cgroup-utils","check","cifs-utils","coreutils","cpio","cracklib","createrepo",
+       "cronie","curl","cve-check-tool","cyrus-sasl","cython","db","dbus-glib","dbus","dhcp","diffutils","e2fsprogs",
+       "ecdsa","elfutils","ethtool","eventlog","expat","fakeroot-ng","file","findutils","flannel","flex","gawk","gc",
+       "gdbm","gettext","git","gmp","gnome-common","gnutls","gperf","gpgme","gptfdisk","gtk-doc","gzip","haveged","iana-etc",
+       "inotify-tools","intltool","iperf","json-c","kbd","kubernetes","libaio","libarchive","libassuan","libcap-ng",
+       "libconfig","libgcrypt","libgpg-error","libgsystem","liblogging","libmspack","libnl","libnss-ato","libpipeline",
+       "libsigc++","libsolv","libsoup","libtasn1","libtool","libunistring","libxml2","libxslt","libyaml","Linux-PAM",
+       "ltrace","lzo","make","man-db","mpc","mpfr","msr-tools","nano","ncurses","net-snmp","nettle","newt","nicstat",
+       "nspr","nss-altfiles","nss","openjdk","openldap","openssh","openssl","pcre","pcstat","perl-CGI","perl-common-sense",
+       "perl-Config-IniFiles","perl-DBD-SQLite","perl-DBI","perl-DBIx-Simple","perl-Exporter-Tiny","perl-JSON-XS",
+       "perl-libintl","perl-List-MoreUtils","perl-Module-Build","perl-Module-Install","perl-Module-ScanDeps",
+       "perl-Object-Accessor","perl-Types-Serialiser","perl-WWW-Curl","perl-YAML-Tiny","perl-YAML","photon-release",
+       "pkg-config","popt","postgresql","procmail","procps-ng","psmisc","pycrypto","python-cffi","python-configobj",
+       "python-cryptography","python-ipaddr","python-jsonpatch","python-jsonpointer","python-lxml","python-prettytable",
+       "python-pyasn1","python-pycparser","python-requests","python-zope.inetrface","PyYAML","readline","rocket",
+       "rpcbind","rpm-ostree","rpm","rsync","rsyslog","rubygem-builder","rubygem-rbvmomi","rubygem-zip","runit",
+       "sed","shadow","slang","sqlite-autoconf","sudo","swig","syslog-ng","systemtap","tcpdump","texinfo","unzip",
+       "userspace-rcu","vim","WALinuxAgent","xerces-c","XML-Parser","xz","zlib"]
+
 
     @staticmethod
     def initialize(options):
