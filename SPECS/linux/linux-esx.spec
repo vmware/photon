@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.8
-Release:       9%{?dist}
+Release:       10%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -144,6 +144,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-10
+-   .config: added NVME blk dev support
 *   Wed Aug 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-9
 -   Added VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
 *   Wed Jul 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-8
