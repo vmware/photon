@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          28%{?dist}
+Release:          29%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -207,7 +207,12 @@ rm -rf %{buildroot}/*
 %dir %{_sysconfdir}/udev/hwdb.d
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %config(noreplace) %{_sysconfdir}/udev/udev.conf
-/lib/*
+/lib/udev/*
+/lib/systemd/systemd*
+/lib/systemd/system-*
+/lib/systemd/system/*
+/lib/systemd/network/80-container*
+%config(noreplace) /lib/systemd/network/99-default.link
 %exclude %{_libdir}/debug/*
 %{_libdir}/*
 %{_bindir}/*
@@ -218,6 +223,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*    Fri Aug 26 2016 Anish Swaminathan <anishs@vmware.com>  228-29
+-    Change config file properties for 99-default.link
 *    Tue Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-28
 -    systemd-resolved: Fix DNS_TRANSACTION_PENDING assert.
 *    Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 228-27
