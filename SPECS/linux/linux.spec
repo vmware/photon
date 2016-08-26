@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	10%{?dist}
+Release:    	11%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -17,7 +17,7 @@ Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
-Patch6:         net-Driver-Vmxnet3-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
 #fixes CVE-2016-3134
 Patch7:		netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 #fixes CVE-2016-3135
@@ -25,6 +25,10 @@ Patch8:		netfilter-x_tables-check-for-size-overflow.patch
 Patch9:		REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:	e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 Patch11:	VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+Patch12:	vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
+Patch13:	vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
+Patch14:	vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch15:	vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -92,6 +96,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
 
 %build
 make mrproper
@@ -188,6 +196,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Aug 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-11
+-   vmxnet3 patches to bumpup a version to 1.4.8.0
 *   Wed Aug 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-10
 -   Added VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
 -   .config: pmem hotplug + ACPI NFIT support
