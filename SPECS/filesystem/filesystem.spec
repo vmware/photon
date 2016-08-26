@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -31,25 +31,18 @@ install -vdm 755 %{buildroot}/usr/{,local/}share/{misc,terminfo,zoneinfo}
 install -vdm 755 %{buildroot}/usr/libexec
 install -vdm 755 %{buildroot}/usr/{,local/}share/man/man{1..8}
 install -vdm 755 %{buildroot}/etc/profile.d
-install -vdm 755 %{buildroot}/usr/lib/debug/{lib,bin,sbin,usr}
+install -vdm 755 %{buildroot}/usr/lib/debug
 
 ln -svfn usr/lib %{buildroot}/lib
 ln -svfn usr/bin %{buildroot}/bin
 ln -svfn usr/sbin %{buildroot}/sbin
 ln -svfn run/media %{buildroot}/media
 
-ln -svfn ../bin %{buildroot}/usr/lib/debug/usr/bin
-ln -svfn ../sbin %{buildroot}/usr/lib/debug/usr/sbin
-ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib
-
 #	Symlinks for AMD64
 %ifarch x86_64
 	ln -svfn usr/lib %{buildroot}/lib64
 	ln -svfn lib %{buildroot}/usr/lib64
 	ln -svfn ../lib %{buildroot}/usr/local/lib64
-        ln -svfn lib %{buildroot}/usr/lib/debug/lib64
-        ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib64
-
 %endif
 install -vdm 755 %{buildroot}/var/{log,mail,spool,mnt,srv}
 
@@ -421,7 +414,24 @@ EOF
 #
 #		chapter 9.1. The End
 #
-
+%post
+DBG=/usr/lib/debug
+declare -A link
+link[bin]=usr/bin
+link[lib]=usr/lib
+link[lib64]=usr/lib
+link[sbin]=usr/sbin
+for s in "${!link[@]}"
+do
+	d=${link[$s]}
+	[ "$(readlink -- $DBG/$s)" = $DBG/$d ] && continue
+	mkdir -p $DBG/$d
+	if [ -d $DBG/$s -a ! -L $DBG/$s ] ; then
+		mv $DBG/$s/* $DBG/$d/
+	fi
+	rm -f $DBG/$s
+	ln -s $d $DBG/$s
+done
 
 %files
 %defattr(-,root,root)
@@ -475,12 +485,6 @@ EOF
 %dir /usr/include
 %dir /usr/lib
 %dir /usr/lib/debug
-%dir /usr/lib/debug/bin
-%dir /usr/lib/debug/lib
-%dir /usr/lib/debug/sbin
-/usr/lib/debug/usr/bin
-/usr/lib/debug/usr/lib
-/usr/lib/debug/usr/sbin
 %dir /usr/libexec
 %dir /usr/local
 %dir /usr/local/bin
@@ -550,10 +554,10 @@ EOF
 /lib64
 /usr/lib64
 /usr/local/lib64
-/usr/lib/debug/lib64
-/usr/lib/debug/usr/lib64
 %endif
 %changelog
+*   Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-11
+-   Added post action for /usr/lib/debug/... symlinks
 *   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-10
 -   /etc/inputrc PgUp/PgDown for history search
 *   Tue Jul 12 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-9
