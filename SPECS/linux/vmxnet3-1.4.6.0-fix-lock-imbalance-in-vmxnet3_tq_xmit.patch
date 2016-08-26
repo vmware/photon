@@ -1,0 +1,55 @@
+From efc21d95067f658a20e51e24c4c86d68f23b7f7f Mon Sep 17 00:00:00 2001
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Mon, 14 Mar 2016 15:53:57 +0100
+Subject: [PATCH] vmxnet3: fix lock imbalance in vmxnet3_tq_xmit()
+
+A recent bug fix rearranged the code in vmxnet3_tq_xmit() in a
+way that left the error handling for oversized headers unlock
+a lock that had not been taken yet. Gcc warns about the incorrect
+use of the 'flags' variable because of that:
+
+drivers/net/vmxnet3/vmxnet3_drv.c: In function 'vmxnet3_tq_xmit.constprop':
+include/linux/spinlock.h:246:3: error: 'flags' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+
+This changes the error handling path to 'goto' the end of the function
+beyond the lock/unlock pair.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Fixes: cec05562fb1d ("vmxnet3: avoid calling pskb_may_pull with interrupts disabled")
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index fc895d0..b2348f6 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1022,14 +1022,16 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 		if (ctx.mss) {
+ 			if (unlikely(ctx.eth_ip_hdr_size + ctx.l4_hdr_size >
+ 				     VMXNET3_MAX_TX_BUF_SIZE)) {
+-				goto hdr_too_big;
++				tq->stats.drop_oversized_hdr++;
++				goto drop_pkt;
+ 			}
+ 		} else {
+ 			if (skb->ip_summed == CHECKSUM_PARTIAL) {
+ 				if (unlikely(ctx.eth_ip_hdr_size +
+ 					     skb->csum_offset >
+ 					     VMXNET3_MAX_CSUM_OFFSET)) {
+-					goto hdr_too_big;
++					tq->stats.drop_oversized_hdr++;
++					goto drop_pkt;
+ 				}
+ 			}
+ 		}
+@@ -1123,8 +1125,6 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 
+ 	return NETDEV_TX_OK;
+ 
+-hdr_too_big:
+-	tq->stats.drop_oversized_hdr++;
+ unlock_drop_pkt:
+ 	spin_unlock_irqrestore(&tq->tx_lock, flags);
+ drop_pkt:
