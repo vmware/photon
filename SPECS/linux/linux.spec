@@ -42,7 +42,7 @@ Requires:       filesystem kmod coreutils
 The Linux package contains the Linux kernel. 
 
 
-%package dev
+EAFWEFAWEFRWE%package dev
 Summary:    Kernel Dev
 Group:        System Environment/Kernel
 Requires:    python2
