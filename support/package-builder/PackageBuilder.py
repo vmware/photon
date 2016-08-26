@@ -124,7 +124,7 @@ class PackageBuilder(object):
             self.logger.error("Failed while building package:" + package)
             self.logger.debug("Chroot with ID: " + chrootID + " not deleted for debugging.")
             logFileName = os.path.join(destLogPath, package + ".log")
-            fileLog = os.popen('tail -n 20 ' + logFileName).read()
+            fileLog = os.popen('tail -n 100 ' + logFileName).read()
             self.logger.debug(fileLog)
             raise e
         if chrootID is not None:
