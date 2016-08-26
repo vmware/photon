@@ -31,7 +31,7 @@ searching directories, opening and closing files, reading and
 writing files, string handling, pattern matching, arithmetic,
 and so on.
 
-%package devel
+%$@#@#%package devel
 Summary: Header files for glibc
 Group: Applications/System
 Requires: glibc >= 2.22
