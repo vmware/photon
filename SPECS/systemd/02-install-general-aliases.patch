@@ -1,0 +1,28 @@
+diff -Naur a/Makefile.am b/Makefile.am
+--- a/Makefile.am	2016-08-29 12:55:38.000000000 -0700
++++ b/Makefile.am	2016-08-29 13:42:31.472636829 -0700
+@@ -309,7 +309,7 @@
+ 	set -- $(USER_UNIT_ALIASES) && \
+ 		dir=$(userunitdir) && $(install-relative-aliases)
+ 	set -- $(GENERAL_ALIASES) && \
+-		dir= && $(install-relative-aliases)
++		dir= && $(install-general-aliases)
+ 
+ define install-aliases
+ 	while [ -n "$$1" ]; do \
+@@ -328,6 +328,15 @@
+ 		shift 2 || exit $$?; \
+ 	done
+ endef
++
++define install-general-aliases
++	while [ -n "$$1" ]; do \
++		$(MKDIR_P) `dirname $(DESTDIR)$$dir/$$2` && \
++		rm -f $(DESTDIR)$$dir/$$2 && \
++		$(LN_S) /usr$$1 $(DESTDIR)$$dir/$$2 && \
++		shift 2 || exit $$?; \
++	done
++endef
+ 
+ install-touch-usr-hook:
+ 	touch -c $(DESTDIR)/$(prefix)
