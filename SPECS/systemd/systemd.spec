@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          29%{?dist}
+Release:          30%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -31,6 +31,7 @@ Patch15:          systemd-228-default-dns-from-env.patch
 Patch16:          systemd-228-dhcp-duid-api-update.patch
 Patch17:          systemd-228-domains-search-fix.patch
 Patch18:          systemd-228-dns-transaction-pending-fix.patch
+Patch19:          02-install-general-aliases.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -82,6 +83,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -129,45 +131,12 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 rm %{buildroot}/lib/systemd/system/default.target
-rm -r %{buildroot}/etc/systemd/system/*.target.wants
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 
 %post
 /sbin/ldconfig
-if [ $1 -eq 1 ] ; then 
-        # Initial installation 
-	systemctl --no-reload preset getty@tty1.service >/dev/null 2>&1 || :
-	systemctl --no-reload preset remote-fs.target >/dev/null 2>&1 || :
-	systemctl --no-reload preset systemd-networkd.service >/dev/null 2>&1 || :
-	systemctl --no-reload preset systemd-resolved.service >/dev/null 2>&1 || :
-	systemctl --no-reload preset systemd-networkd-wait-online.service >/dev/null 2>&1 || :
-	systemctl --no-reload preset systemd-networkd.socket >/dev/null 2>&1 || :
-	systemctl --no-reload preset systemd-timesyncd.service >/dev/null 2>&1 || :
-fi
 %postun
 /sbin/ldconfig
-if [ $1 -ge 1 ] ; then 
-        # Package upgrade, not uninstall 
-	systemctl try-restart getty@tty1.service >/dev/null 2>&1 || :
-	systemctl try-restart remote-fs.target >/dev/null 2>&1 || :
-	systemctl try-restart systemd-networkd.service >/dev/null 2>&1 || :
-	systemctl try-restart systemd-resolved.service >/dev/null 2>&1 || :
-	systemctl try-restart systemd-networkd-wait-online.service >/dev/null 2>&1 || :
-	systemctl try-restart systemd-networkd.socket >/dev/null 2>&1 || :
-	systemctl try-restart systemd-timesyncd.service >/dev/null 2>&1 || :
-fi
-
-%preun
-if [ $1 -eq 0 ] ; then 
-        # Package removal, not upgrade 
-	systemctl --no-reload disable --now getty@tty1.service >/dev/null 2>&1 || :
-	systemctl --no-reload disable --now remote-fs.target >/dev/null 2>&1 || :
-	systemctl --no-reload disable --now systemd-networkd.service >/dev/null 2>&1 || :
-	systemctl --no-reload disable --now systemd-resolved.service >/dev/null 2>&1 || :
-	systemctl --no-reload disable --now systemd-networkd-wait-online.service >/dev/null 2>&1 || :
-	systemctl --no-reload disable --now systemd-networkd.socket >/dev/null 2>&1 || :
-	systemctl --no-reload disable --now systemd-timesyncd.service >/dev/null 2>&1 || :
-fi
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -207,6 +176,7 @@ rm -rf %{buildroot}/*
 %dir %{_sysconfdir}/udev/hwdb.d
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %config(noreplace) %{_sysconfdir}/udev/udev.conf
+%{_sysconfdir}/systemd/system/*
 /lib/udev/*
 /lib/systemd/systemd*
 /lib/systemd/system-*
@@ -223,6 +193,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*    Mon Aug 29 2016 Alexey Makhalov <amakhalov@vmware.com>  228-30
+-    02-install-general-aliases.patch to create absolute symlinks
 *    Fri Aug 26 2016 Anish Swaminathan <anishs@vmware.com>  228-29
 -    Change config file properties for 99-default.link
 *    Tue Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-28
