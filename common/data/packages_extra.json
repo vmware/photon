@@ -150,6 +150,7 @@
         "libjpeg-turbo",
         "nasm",
         "libmnl",
-        "ipset"
+        "ipset",
+        "micro-config-drive"
             ]
 }
