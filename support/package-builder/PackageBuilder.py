@@ -34,9 +34,6 @@ class PackageBuilder(object):
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
-#            if isToolChainPackage:
-#                tUtils.installCoreToolChainPackages(chrootID)
-#            else:
             tUtils.installToolChain(chrootID)
         except Exception as e:
             if chrootID is not None:
@@ -96,6 +93,7 @@ class PackageBuilder(object):
             self.logger.info("Skipping testing the package:"+package)
             return
 
+        self.logger.info(constants.listPacakgesToBuild)
         #should initialize a logger based on package name
         chrUtils = ChrootUtils(self.logName,self.logPath)
         chrootName="build-"+package

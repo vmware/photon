@@ -1,7 +1,7 @@
 From f0d437809d23999cb25207cfbe80c61e5703fdc1 Mon Sep 17 00:00:00 2001
 From: Shrikrishna Khare <skhare@vmware.com>
 Date: Wed, 20 Apr 2016 18:12:29 -0700
-Subject: Driver: Vmxnet3: set CHECKSUM_UNNECESSARY for IPv6 packets
+Subject: [PATCH] Driver: Vmxnet3: set CHECKSUM_UNNECESSARY for IPv6 packets
 
 For IPv6, if the device indicates that the checksum is correct, set
 CHECKSUM_UNNECESSARY.
@@ -16,7 +16,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
  2 files changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index fc895d0..4a67e4f 100644
+index b2348f6..db8022a 100644
 --- a/drivers/net/vmxnet3/vmxnet3_drv.c
 +++ b/drivers/net/vmxnet3/vmxnet3_drv.c
 @@ -1152,12 +1152,16 @@ vmxnet3_rx_csum(struct vmxnet3_adapter *adapter,
@@ -40,3 +40,20 @@ index fc895d0..4a67e4f 100644
  			BUG_ON(gdesc->rcd.frg);
  		} else {
  			if (gdesc->rcd.csum) {
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 729c344..c482539 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -69,10 +69,10 @@
+ /*
+  * Version numbers
+  */
+-#define VMXNET3_DRIVER_VERSION_STRING   "1.4.6.0-k"
++#define VMXNET3_DRIVER_VERSION_STRING   "1.4.7.0-k"
+ 
+ /* a 32-bit int, each byte encode a verion number in VMXNET3_DRIVER_VERSION */
+-#define VMXNET3_DRIVER_VERSION_NUM      0x01040600
++#define VMXNET3_DRIVER_VERSION_NUM      0x01040700
+ 
+ #if defined(CONFIG_PCI_MSI)
+ 	/* RSS only makes sense if MSI-X is supported. */

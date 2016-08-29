@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3.30
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha1 bash=33b1bcc5dca1b72f28b2baeca6efa0d422097964
+Source1:	bash_completion
 Patch0:   http://www.linuxfromscratch.org/patches/downloads/bash/bash-4.3.30-upstream_fixes-2.patch
 Patch1:   fix-save_bash_input-segfault.patch
 Patch2:   bash-4.3.patch
@@ -43,6 +44,8 @@ ln -s bash %{buildroot}/bin/sh
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/etc/profile.d
 install -vdm 755 %{buildroot}/etc/skel
+install -vdm 755 %{buildroot}/usr/share/bash-completion
+install -m 0644 %{SOURCE1} %{buildroot}/usr/share/bash-completion
 
 # Create dircolors
 cat > %{buildroot}/etc/profile.d/dircolors.sh << "EOF"
@@ -114,6 +117,16 @@ export LANG="${LANG:-C}"
 [ -n "$LC_IDENTIFICATION" ] && export LC_IDENTIFICATION
 
 # End /etc/profile.d/i18n.sh
+EOF
+
+# bash completion
+cat > %{buildroot}/etc/profile.d/bash_completion.sh << "EOF"
+# enable bash completion in interactive shells
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  fi
+fi
 EOF
 
 cat > %{buildroot}/etc/bash.bashrc << "EOF"
@@ -235,17 +248,20 @@ fi
 %files
 %defattr(-,root,root)
 /bin/*
-%{_sysconfdir}
+%{_sysconfdir}/
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_defaultdocdir}/%{name}/*
 %{_mandir}/*/*
+/usr/share/bash-completion/
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
--	GA - Bump release of all rpms
+*   Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-5
+-   Enable bash completion support
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
+-   GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.3.30-3
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
@@ -255,10 +271,10 @@ fi
 -   Updated to version 4.3.30
 *   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
 -   Adding post unstall section.
-*	Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
--	Fix segfault in save_bash_input.
-*	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
--	/etc/profile.d permission fix. Pack /etc files into rpm
-*	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
--	Initial version
+*   Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
+-   Fix segfault in save_bash_input.
+*   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
+-   /etc/profile.d permission fix. Pack /etc files into rpm
+*   Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
+-   Initial version
 

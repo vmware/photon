@@ -207,12 +207,12 @@ This section demonstrates how to create a virtual machine running Photon OS in V
 1. Select `Installer disk image file (iso)`, click `Browse` to locate the Photon OS ISO that you downloaded from Bintray, and then click `Next`.
 
 1. For the guest operating system, select `Linux`. From the `Version` drop-down menu, select `VMware Photon 64-bit`. If you have an older version of VMware Workstation and Photon does not appear in the list, select `Other Linux 3.x kernel 64-bit`.
-![Alt text](images/ws-new-vm.png)
+![VMware Photon](images/ws-new-vm.png)
 
 1. Click `Next` through the remaining dialog boxes of the wizard,  either accepting the default settings, which is recommended, or making the changes that you want, and then click `Finish`.
 
 1. Power on the virtual machine and, in the Workstation window containing Photon, press Enter to start the installation.
-![installer](images/photon-installer-sm.png)
+![Installer](images/photon-installer-sm.png)
 
 1. During disk setup, the installer might ask you to confirm that this will erase the disk. If so, accept the default value of `yes` by hitting your Enter key.
 
@@ -254,11 +254,11 @@ In Firefox, download the OVA for the minimal version of Photon OS from this URL:
 
 In the download dialog box, select `Open with VMware Workstation (default)`, like this:
 
-![Alt text](images/ova-firefox.png)
+![Firefox Dialogue Box](images/ova-firefox.png)
 
 In the Workstation Import dialog box, click Import.
 
-![Alt text](images/ova-import.png)
+![Import virtual machine](images/ova-import.png)
 
 Workstation creates a virtual machine from the Photon OS OVA template in a few seconds. In Workstation, power on the virtual machine and log in as root with the initial password of `changeme`.
 
@@ -1377,59 +1377,67 @@ Finally, attach the ISO to the Photon OS virtual machine as a CD-ROM and reboot 
 
 ### Customizing a Photon OS Machine on EC2
 
-This section shows you how to upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud, or EC2, and customize the Photon OS machine by using cloud-init with an EC2 data source. The ami version of Photon OS is available as a free download on Bintray:
+This section illustrates how to upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using cloud-init with an EC2 data source. The ami version of Photon OS is available as a free download on Bintray:
 
 	https://bintray.com/vmware/photon/
 
-The cloud-init service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, for example, cloud-init typically sets the `.ssh/authorized_keys` file to let you log in with a private key. The cloud-config user-data file that appears in the following example contains abridged SSH authorized keys to show you how to set them for an instance of Photon OS in the Amazon cloud. 
+The cloud-init service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, for example, cloud-init typically sets the `.ssh/authorized_keys` file to let you log in with a private key from another computer--that is, a computer besides the workstation that you are already using to connect with the Amazon cloud. The cloud-config user-data file that appears in the following example contains abridged SSH authorized keys to show you how to set them. 
 
-Working with EC2 requires Amazon accounts for both AWS and EC2 with valid payment information. If you execute the following examples, you will be charged by Amazon. You will need to replace the placeholders for access keys and other account information in the examples with your account information. 
+Working with EC2 requires Amazon accounts for both AWS and EC2 with valid payment information. If you execute the following examples, you will be charged by Amazon. You will need to replace the `<placeholders>` for access keys and other account information in the examples with your account information. 
 
-The following code assumes you have installed and set up the Amazon AWS CLI and the EC2 CLI tools. See [Installing the AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) and [Setting Up the Amazon EC2 Command Line Interface Tools on Linux](http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html).
+The following code assumes you have installed and set up the Amazon AWS CLI and the EC2 CLI tools, including `ec2-ami-tools`. See [Installing the AWS Command Line Interface](http://docs.aws.amazon.com/cli/latest/userguide/installing.html) and [Setting Up the Amazon EC2 Command Line Interface Tools on Linux](http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html). Also see [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html). 
 
-Here's a code example that shows how to upload the Photon OS `.ami` image to the Amazon cloud and configure it with cloud-init:   
+EC2 requires an SSH key and an RSA certificate. The code in the examples  assumes that you have created SSH keys as well as an RSA user signing certificate and its corresponding private RSA key file.  
+
+Here's a code example that shows how to upload the Photon OS `.ami` image to the Amazon cloud and configure it with cloud-init. The correct virtualization type for Photon OS is `hvm`.   
 
 	$ mkdir bundled
 	$ tar -zxvf ./photon-ami.tar.gz 
-	$ ec2-bundle-image -c ec2-cert.pem -k ec2-pk.pem -u <EC2 account id>  --arch x86_64 --image photon-ami.raw --destination ./bundled/
+	$ ec2-bundle-image -c ec2-certificate.pem -k ec2-privatekey.pem -u <EC2 account id>  --arch x86_64 --image photon-ami.raw --destination ./bundled/
 	$ aws s3 mb s3://<bucket-name>
 	$ ec2-upload-bundle --manifest ./bundled/photon-ami.manifest.xml --bucket <bucket-name> --access-key <Account Access Key> --secret-key <Account Secret key>
 	$ ec2-register <bucket-name>/photon-ami.manifest.xml --name photon-ami --architecture x86_64 --virtualization-type hvm
 
-In the following command, the `--user-data-file` option instructs cloud-init to import the cloud-config data in `user-data.txt`. The next command assumes you have created the keypair aws.pem and the group ami-validation as well as uploaded the user-data.txt file to the right place in the Amazon cloud; see the EC2 documentation.
+In the following command, the `--user-data-file` option instructs cloud-init to import the cloud-config data in `user-data.txt`. The next command assumes you have created the keypair called `mykeypair` and the security group photon-sg as well as uploaded the user-data.txt file; see the EC2 documentation.
 
-	$ ec2-run-instances $AMI_ID -t m3.medium -k aws -g ami-validation --user-data-file user-data.txt
+    $ ec2-run-instances <ami-ID> --instance-type m3.medium -g photon-sg --key mykeypair --user-data-file user-data.txt
+
+You can now describe the instance to see its ID: 
+
 	$ ec2-describe-instances
-	$ aws ec2 describe-instances --instance-ids "+instance_id+" --query \"Reservations[*].Instances[*].PublicIpAddress\" --output=text
+
+And you can run the following command to obtain its public IP address, which you can use to connect to the instance with SSH:
+
+	$ aws ec2 describe-instances --instance-ids <instance-id> --query 'Reservations[*].Instances[*].PublicIpAddress' --output=text
 	$ ec2-describe-images
 
-**Important**: When you are done, run the following commands to terminate the machine. Because Amazon charges you while the host is running, make sure to shut it down, replacing the example instance ID in the second command with the ID of your instance:  
+**Important**: When you are done, run the following commands to terminate the machine. Because Amazon charges you while the host is running, make sure to shut it down:  
 
-	$ ec2-deregister ami-18956278
-	$ ec2-terminate-instances i-0920384095842eccf
+	$ ec2-deregister <ami-image-identifier>
+	$ ec2-terminate-instances <instance-id>
 
-Here is the contents of the user-data.txt file that cloud-init applies to the machine the first time that it boots up in the cloud: 
+Here are the contents of the user-data.txt file that cloud-init applies to the machine the first time that it boots up in the cloud: 
 
-	/#cloud-config
-	hostname: photon-on-01
-	groups:
-	 - cloud-admins
-	 - cloud-users
-	users:
-	 - default
-	 - name: photonadmin
-	   gecos: photon test admin user 
-	   primary-group: cloud-admins
-	   groups: cloud-users
-	   lock-passwd: false
-	   passwd: vmware 
-	 - name: photonuser
-	   gecos: photon test user
-	   primary-group: cloud-users
-	   groups: users
-	   passwd: vmware
-	packages:
-	 - vim
+    #cloud-config
+    hostname: photon-on-01
+    groups:
+    - cloud-admins
+    - cloud-users
+    users:
+    - default
+    - name: photonadmin
+       gecos: photon test admin user
+       primary-group: cloud-admins
+       groups: cloud-users
+       lock-passwd: false
+       passwd: vmware
+    - name: photonuser
+       gecos: photon test user
+       primary-group: cloud-users
+       groups: users
+       passwd: vmware
+    packages:
+    - vim
 	ssh_authorized_keys:
 	 - ssh-rsa MIIEogIBAAKCAQEAuvHKAjBhpwuomcUTpIzJWRJAe71JyBgAWrwqyN1Mk5N+c9X5
 	Ru2fazFA7WxQSD1KyTEvcuf8JzdBfrEJ0v3/nT2x63pvJ8fCl6HRkZtHo8zRu8vY
@@ -1849,6 +1857,9 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
 * RPM OSTree Documentation
+
+
+
 
 
 

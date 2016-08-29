@@ -38,6 +38,9 @@ class TestUtils(object):
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+                self.logger.info("#"*100)
+                self.logger.info(rpmFile) 
+                self.logger.info("#"*100)
                 if rpmFile is None:
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise Exception("Input Error")
@@ -53,10 +56,10 @@ class TestUtils(object):
             self.logger.error("Installing Test RPMS  failed")
             raise Exception("Test RPM installation failed")
         self.logger.info("Successfully installed all Test RPMS in Chroot:"+chrootID)
-
+     
     def findRPMFileInGivenLocation(self, package, rpmdirPath, depth=1):
         if depth < 0:
-            self.logger.error("Can not download "+package+" rpm from "+self.URL+" or "+self.URL)
+            self.logger.error("Can not download "+package+" rpm from "+self.URL)
             return None
         cmdUtils = CommandUtils()
         listFoundRPMFiles = cmdUtils.findFile(package+"-*.rpm",rpmdirPath)
@@ -77,13 +80,14 @@ class TestUtils(object):
             return None
 
     def copyRPMfromURL(self, package, rpmdirPath):
-        pattern=re.compile(">"+package+".*.rpm</a>")
+        pattern=re.compile(">"+package+"-\d.*.rpm</a>")
         for tail in ["/x86_64/","/noarch/"]:
             page = requests.get(self.URL+tail).content
             contents=re.findall(pattern, page)
-            for rpms in contents:
-                rpmName=rpms[1:-4]
-                self.logger.info("Downloading PUBLISHEDRPM "+rpmName)
-                urllib.urlretrieve(self.URL+tail+rpmName, rpmName)
-                shutil.move(rpmName, rpmdirPath+tail)
+            contents.sort(reverse=True)
+            rpm=contents[0]
+            rpmName=rpm[1:-4]
+            self.logger.info("Downloading PUBLISHEDRPM "+rpmName)
+            urllib.urlretrieve(self.URL+tail+rpmName, rpmName)
+            shutil.move(rpmName, rpmdirPath+tail)
 
