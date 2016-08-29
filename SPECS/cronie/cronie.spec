@@ -1,21 +1,22 @@
-Summary:	Cron Daemon
-Name:		cronie
-Version:	1.5.0
-Release:	10%{?dist}
-License:	GPLv2+ and MIT and BSD and ISC
-URL:		https://fedorahosted.org/cronie
-Source0:	https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
+Summary:        Cron Daemon
+Name:           cronie
+Version:        1.5.0
+Release:        11%{?dist}
+License:        GPLv2+ and MIT and BSD and ISC
+URL:            https://fedorahosted.org/cronie
+Source0:        https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
 %define sha1 cronie=bbf154a6db7c9802664d1f0397b5e7ae9a9618e4
-Source1: run-parts.sh
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	libselinux-devel
-BuildRequires:	Linux-PAM
+Source1:        run-parts.sh
+Patch0:         cronie_fix_pam_configuration.patch
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  libselinux-devel
+BuildRequires:  Linux-PAM
 BuildRequires:  systemd
 Requires:       systemd
-Requires:	libselinux
-Requires:	Linux-PAM
+Requires:       libselinux
+Requires:       Linux-PAM
 %description
 Cronie contains the standard UNIX daemon crond that runs specified programs at
 scheduled times and related tools. It is based on the original cron and
@@ -24,6 +25,7 @@ SELinux.
 %prep
 %setup -q
 sed -i "s/\/usr\/sbin\/anacron -s/\/usr\/sbin\/anacron -s -S \/var\/spool\/anacron/" contrib/0anacron
+%patch0 -p1
 %build
 autoreconf
 ./configure \
@@ -104,26 +106,28 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*   Mon Aug 29 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-11
+-   Fixed pam configuration for crond
 *   Thu Aug 4 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-10
 -   Added logic to not replace conf files in upgrade scenario
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.0-9
--	GA - Bump release of all rpms
-*       Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-8
--	Fixing spec file to handle rpm upgrade scenario correctly
-*   	Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-7
--   	Add run-parts command.
-*   	Fri Mar 04 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-6
--   	Add folders to sysconfdir.
-*   	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-5
--   	Change default sysconfdir.
-*   	Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-4
--   	Add systemd to Requires and BuildRequires.
--   	Use systemctl to enable/disable service.
-*	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-3
--	Symlink cron.service to crond.service. 
--   	And move the /usr/etc/pam.d/crond to /etc/pam.d/crond
-*	Thu Nov 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-2
--	Add crond to systemd service.
-*	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
--	Initial build. First version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.0-9
+-   GA - Bump release of all rpms
+*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-8
+-   Fixing spec file to handle rpm upgrade scenario correctly
+*   Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-7
+-   Add run-parts command.
+*   Fri Mar 04 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-6
+-   Add folders to sysconfdir.
+*   Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.5.0-5
+-   Change default sysconfdir.
+*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.5.0-4
+-   Add systemd to Requires and BuildRequires.
+-   Use systemctl to enable/disable service.
+*   Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-3
+-   Symlink cron.service to crond.service. 
+-   And move the /usr/etc/pam.d/crond to /etc/pam.d/crond
+*   Thu Nov 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-2
+-   Add crond to systemd service.
+*   Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
+-   Initial build. First version
 
