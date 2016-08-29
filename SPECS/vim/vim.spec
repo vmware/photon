@@ -3,7 +3,7 @@
 Summary:	Text editor
 Name:		vim
 Version:	7.4
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Charityware
 URL:		http://www.vim.org
 Group:		Applications/Editors
@@ -45,10 +45,18 @@ set nocompatible
 set backspace=2
 set ruler
 syntax on
+set tags=./tags;/
 color desert
 if (&term == "iterm") || (&term == "putty")
   set background=dark
 endif
+" Binds
+nmap <F2> :w<CR>
+imap <F2> <Esc>:w<CR>
+nmap <F10> :q!<CR>
+nmap <Esc><Esc> :q<CR>
+" Use 4 space characters instead of tab for python files
+au BufEnter,BufNew *.py set tabstop=4 shiftwidth=4 expandtab
 
 " End /etc/vimrc
 EOF
@@ -144,13 +152,15 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5
--	GA - Bump release of all rpms
+*   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.4-6
+-   vimrc: Added tags search, tab->spaces and some bindings
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5
+-   GA - Bump release of all rpms
 *   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
 -   Added profile related files in minimal vim package.
 *   Tue Jun 30 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
 -   Pack extra files separately, to make vim package small.
-*	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2
--	Disable debug package. Use 'desert' colorscheme.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
--	Initial build.	First version
+*   Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2
+-   Disable debug package. Use 'desert' colorscheme.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
+-   Initial build. First version
