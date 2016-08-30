@@ -29,7 +29,7 @@ class Scheduler(object):
         Scheduler.sortedList=sortedList
         Scheduler.listOfAlreadyBuiltPackages=listOfAlreadyBuiltPackages
         for x in Scheduler.sortedList:
-            if x not in Scheduler.listOfAlreadyBuiltPackages or constants.rpmCheck:
+            if x not in Scheduler.listOfAlreadyBuiltPackages:
                 Scheduler.listOfPackagesToBuild.append(x)
         Scheduler.listOfPackagesCurrentlyBuilding=[]
         Scheduler.listOfPackagesNextToBuild=[]
@@ -42,7 +42,6 @@ class Scheduler(object):
         listRequiredRPMPackages.extend(constants.specData.getRequiresAllForPackage(package))
         
         listRequiredPackages=[]
-
         for pkg in listRequiredRPMPackages:
             basePkg=constants.specData.getSpecName(pkg)
             if basePkg not in listRequiredPackages:
