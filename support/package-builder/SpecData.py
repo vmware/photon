@@ -46,7 +46,6 @@ class SerializableSpecObjectsUtils(object):
             specObj.checksums=spec.getChecksums()
             specObj.listPatches=spec.getPatchNames()
             specObj.securityHardening=spec.getSecurityHardeningOption()
-            specObj.isCheckAvailable=spec.isCheckAvailable()
             for specPkg in specObj.listPackages:
 	    	if specPkg in self.mapPackageToSpec:
 		    existingObj = self.mapSerializableSpecObjects[self.mapPackageToSpec[specPkg]]
@@ -164,21 +163,17 @@ class SerializableSpecObjectsUtils(object):
                 return specName
         self.logger.error("Could not able to find "+package+" package from specs")
         raise Exception("Invalid package:"+package)
-
+    
     def isRPMPackage(self,package):
         if self.mapPackageToSpec.has_key(package):
             specName=self.mapPackageToSpec[package]
             if self.mapSerializableSpecObjects.has_key(specName):
                 return True
         return False
-
+    
     def getSecurityHardeningOption(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].securityHardening
-
-    def isCheckAvailable(self, package):
-        specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].isCheckAvailable
 
     def printAllObjects(self):
         listSpecs=self.mapSerializableSpecObjects.keys()

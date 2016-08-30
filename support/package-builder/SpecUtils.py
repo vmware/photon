@@ -210,12 +210,6 @@ class Specutils(object):
     def getSecurityHardeningOption(self):
         return self.spec.globalSecurityHardening
 
-    def isCheckAvailable(self):
-        check=False
-        if self.spec.checkMacro is not None:
-            check=True
-        return check
-
 def main():
     spec = Specutils("/workspace1/myrepos/photon/SPECS/docker/docker.spec")
     print "packages",spec.getPackageNames()
