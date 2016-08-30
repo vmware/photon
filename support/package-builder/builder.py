@@ -281,7 +281,6 @@ def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThr
     listPackages=[]
     listPackages.append(package)
     pkgManager = PackageManager()
-    constants.setListPackages(listPackages[:])
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
 
 def buildPackagesFromGivenJSONFile(inputJSONFile, buildOption, listBuildOptionPackages, pkgBuildOptionFile, logger, buildThreads):
@@ -294,7 +293,6 @@ def buildPackagesFromGivenJSONFile(inputJSONFile, buildOption, listBuildOptionPa
     logger.info("List of packages to build:")
     logger.info(listPackagesToBuild)
     pkgManager = PackageManager()
-    constants.setListPackages(listPackagesToBuild[:])
     pkgManager.buildPackages(listPackagesToBuild, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
 
 def get_packages_with_build_options(pkg_build_options_file):
