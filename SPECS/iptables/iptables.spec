@@ -1,7 +1,7 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.6.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
@@ -72,7 +72,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
-/etc/systemd/scripts/iptables
+%config(noreplace) /etc/systemd/scripts/iptables
 /lib/systemd/system/iptables.service
 /sbin/*
 %{_bindir}/*
@@ -85,8 +85,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-4
--	GA - Bump release of all rpms
+*   Tue Aug 30 2016 Anish Swaminathan <anishs@vmware.com> 1.6.0-5
+-   Change config file properties for iptables script
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-4
+-   GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.6.0-3
 -   Adding package support in pre/post/un scripts section.
 *   Thu Apr 21 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
@@ -98,5 +100,5 @@ rm -rf %{buildroot}/*
 -   Use systemctl to enable/disable service.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.4.21-2
 -   Updated group.
-*	Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.21-1
--	Initial build.	First version
+*   Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.21-1
+-   Initial build.	First version
