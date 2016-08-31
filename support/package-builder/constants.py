@@ -1,4 +1,5 @@
 from SpecData import SerializableSpecObjectsUtils
+from Logger import Logger
 
 class constants(object):
     specPath=""
@@ -251,6 +252,43 @@ class constants(object):
         "man-pages",
         "cpio"]
 
+    listMakeCheckRPMPkgtoInstall=[
+        "python2",
+        "python2-libs",
+        "python2-tools",
+        "libffi",
+        "python-setuptools",
+        "ca-certificates",
+        "linux",
+        "createrepo",
+        "sudo",
+        "ruby",
+        "curl",
+        "pcre-devel",
+        "boost-devel",
+        "which",
+        "go",
+        "e2fsprogs",
+        "shadow",
+        "check",
+        "libacl-devel",
+        "device-mapper",
+        "wget",
+        "tar",
+        "pkg-config",
+        "git",
+        "openssl",
+        "net-tools",
+        "less",
+        "yum-metadata-parser",
+        "yum",
+        "rpm-devel",
+        "rpm",
+        "libxml2",
+        "python-xml",
+        "libacl",
+        "tzdata",
+        "Linux-PAM"]
 
     @staticmethod
     def initialize(options):
@@ -271,7 +309,13 @@ class constants(object):
         constants.inputRPMSPath=options.inputRPMSPath
         constants.rpmCheck = options.rpmCheck
         constants.updateRPMMacros()
-        
+        constants.testForceRPMS=[]
+        constants.keepRpmCheck = options.keepRpmCheck
+        if constants.keepRpmCheck:
+            constants.rpmCheck = True
+        if constants.rpmCheck:
+            constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
+
     @staticmethod
     def updateRPMMacros():
         #adding distribution rpm macro
@@ -299,4 +343,8 @@ class constants(object):
         kernelsubrelease = kernelsubrelease.replace(constants.dist,"")
         if kernelsubrelease:
             kernelsubrelease = "."+kernelsubrelease
-            constants.specData.addMacro("kernelsubrelease",kernelsubrelease) 
+            constants.specData.addMacro("kernelsubrelease",kernelsubrelease)
+
+    @staticmethod
+    def setTestForceRPMS(listsPackages):
+         constants.testForceRPMS=listsPackages
