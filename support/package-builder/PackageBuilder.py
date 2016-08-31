@@ -32,9 +32,6 @@ class PackageBuilder(object):
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
-#            if isToolChainPackage:
-#                tUtils.installCoreToolChainPackages(chrootID)
-#            else:
             tUtils.installToolChain(chrootID)
         except Exception as e:
             if chrootID is not None:
@@ -87,9 +84,15 @@ class PackageBuilder(object):
 
     def buildPackage(self,package):
         #do not build if RPM is already built
+        #test only if the package is in the testForceRPMS with rpmCheck
+        #build only if the package is not in the testForceRPMS with rpmCheck
         if self.checkIfPackageIsAlreadyBuilt(package):
-            self.logger.info("Skipping building the package:"+package)
-            return
+            if not constants.rpmCheck:
+                self.logger.info("Skipping building the package:"+package)
+                return
+            elif constants.rpmCheck and package not in constants.testForceRPMS:
+                self.logger.info("Skipping testing the package:"+package)
+                return
 
         #should initialize a logger based on package name
         chrUtils = ChrootUtils(self.logName,self.logPath)
@@ -104,12 +107,13 @@ class PackageBuilder(object):
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()
                 cmdUtils.runCommandInShell("mkdir -p "+destLogPath)
-            
+
             listInstalledPackages=self.findInstalledPackages(chrootID)
-            self.logger.info("List of installed packages")
-            self.logger.info(listInstalledPackages)
             listDependentPackages=self.findBuildTimeRequiredPackages(package)
-            
+            if constants.rpmCheck and package in constants.testForceRPMS:
+                testPackages=set(constants.listMakeCheckRPMPkgtoInstall)-set(listInstalledPackages)-set([package])
+                listDependentPackages.extend(testPackages)
+
             pkgUtils = PackageUtils(self.logName,self.logPath)
             if len(listDependentPackages) != 0:
                 self.logger.info("Installing the build time dependent packages......")
@@ -117,6 +121,7 @@ class PackageBuilder(object):
                     self.installPackage(pkgUtils, pkg,chrootID,destLogPath,listInstalledPackages)
                 pkgUtils.installRPMSInAOneShot(chrootID,destLogPath)
                 self.logger.info("Finished installing the build time dependent packages......")
+
             pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
             pkgUtils.buildRPMSForGivenPackage(package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,destLogPath)
             self.logger.info("Successfully built the package:"+package)
@@ -162,3 +167,4 @@ class PackageBuilder(object):
                 if pkg in listInstalledPackages:
                     continue
                 self.installPackage(pkgUtils,pkg,chrootID,destLogPath,listInstalledPackages)
+
