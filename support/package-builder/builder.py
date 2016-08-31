@@ -38,6 +38,7 @@ def main():
     parser.add_option("-a",  "--source-rpm-path",  dest="sourceRpmPath",  default="../../stage/SRPMS")
     parser.add_option("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../common/data/pkg_info.json")
     parser.add_option("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
+    parser.add_option("-q",  "--rpmcheck-stop-on-error", dest="rpmCheckStopOnError",  default=False, action ="store_true")
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -103,6 +104,7 @@ def main():
     logger.info("Log Path :" + options.logPath)
     logger.info("Top Dir Path :" + options.topDirPath)
     logger.info("Publish RPMS Path :" + options.publishRPMSPath)
+
     if not options.installPackage:
         logger.info("JSON File :" + options.inputJSONFile)
     else:
@@ -281,6 +283,8 @@ def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThr
     listPackages=[]
     listPackages.append(package)
     pkgManager = PackageManager()
+    if constants.rpmCheck:
+        constants.setTestForceRPMS(listPackages[:])
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
 
 def buildPackagesFromGivenJSONFile(inputJSONFile, buildOption, listBuildOptionPackages, pkgBuildOptionFile, logger, buildThreads):
@@ -292,6 +296,8 @@ def buildPackagesFromGivenJSONFile(inputJSONFile, buildOption, listBuildOptionPa
         listPackagesToBuild.append(str(p))
     logger.info("List of packages to build:")
     logger.info(listPackagesToBuild)
+    if constants.rpmCheck:
+        constants.setTestForceRPMS(listPackagesToBuild[:])
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackagesToBuild, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
 
