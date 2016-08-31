@@ -41,18 +41,22 @@ else
 PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
-ifdef PHOTON_ENABLE_RPMCHECK
+ifeq ($(RPMCHECK),enable)
+PHOTON_KEEP_RPMCHECK_OPTION := -q
+else ifeq ($(RPMCHECK),stop_on_error)
 PHOTON_RPMCHECK_OPTION := -u
 else
-PHOTON_RPMCHECK_OPTION := 
+PHOTON_RPMCHECK_OPTION :=
+PHOTON_KEEP_RPMCHECK_OPTION :=
 endif
+
 
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
-check check-docker check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
-clean-install clean-chroot build-updated-packages
+check-tools check-docker check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
+clean-install clean-chroot build-updated-packages check
 
 THREADS?=1
 
@@ -61,7 +65,7 @@ all: iso minimal-iso docker-image ostree-host-iso live-iso cloud-image-all src-i
 micro: micro-iso
 	@:
 
-micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
+micro-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
 	@echo "Building Photon Micro ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
@@ -75,7 +79,7 @@ micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages-micro: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
+packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all Micro RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -96,7 +100,7 @@ packages-micro: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) g
 minimal: minimal-iso
 	@:
 
-minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+minimal-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 	@echo "Building Photon Minimal ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
@@ -110,7 +114,7 @@ minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
+ostree-host-iso: check-tools $(PHOTON_STAGE) ostree-repo
 	@echo "Building Photon OSTree Host ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
@@ -124,7 +128,7 @@ ostree-host-iso: check $(PHOTON_STAGE) ostree-repo
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
+live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
 	@echo "Building Photon Minimal LIVE ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
@@ -138,7 +142,7 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-packages-minimal: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
+packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -156,7 +160,7 @@ packages-minimal: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
+iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 	@echo "Building Photon Full ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
@@ -171,7 +175,7 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-custom-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+custom-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon custom ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
@@ -186,7 +190,7 @@ custom-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-src-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+src-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon Full Source ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
@@ -215,7 +219,7 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg) 
 
-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -236,7 +240,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
                 $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
-updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -255,7 +259,7 @@ updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
-tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -275,7 +279,7 @@ tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES
                 $(PHOTON_RPMCHECK_OPTION) \
                 -m stage1
 
-tool-chain-stage2: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -o full \
@@ -453,7 +457,7 @@ cloud-image-all: $(PHOTON_STAGE) iso
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso $(ADDITIONAL_RPMS_PATH)
 
 
-check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity check-docker
+check-tools: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity check-docker
 
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
@@ -491,7 +495,34 @@ endif
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
 
-%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
+check: packages
+ifeq ($(RPMCHECK),stop_on_error) 
+	$(eval PHOTON_KEEP_RPMCHECK_OPTION = )
+else
+	$(eval PHOTON_KEEP_RPMCHECK_OPTION = -q) 
+endif
+	@echo "Testing all RPMS ..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -o full \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -a $(PHOTON_SRPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
+                -c $(PHOTON_BINTRAY_CONFIG) \
+                -d $(PHOTON_DIST_TAG) \
+                -n $(PHOTON_BUILD_NUMBER) \
+                -v $(PHOTON_RELEASE_VERSION) \
+                -w $(PHOTON_DATA_DIR)/pkg_info.json \
+                -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                -u \
+                $(PHOTON_KEEP_RPMCHECK_OPTION) \
+                -t ${THREADS}
+
+%: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -508,6 +539,7 @@ check-packer-ovf-plugin:
                               -v $(PHOTON_RELEASE_VERSION) \
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_OPTION) \
+                              $(PHOTON_KEEP_RPMCHECK_OPTION) \
                               -l $(PHOTON_LOGS_DIR)
 
 $(TOOLS_BIN):
