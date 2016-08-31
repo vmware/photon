@@ -86,12 +86,12 @@ class PackageManager(object):
                     needToRebuild = True
             if needToRebuild:
                 self.listOfPackagesAlreadyBuilt.remove(pkg)
- 
+
         listPackagesToBuild=listPackages[:]
         for pkg in listPackages:
-            if pkg in self.listOfPackagesAlreadyBuilt:
+            if pkg in self.listOfPackagesAlreadyBuilt and not constants.rpmCheck:
                 listPackagesToBuild.remove(pkg)
-        
+
         if not self.readPackageBuildData(listPackagesToBuild):
             return False
         return True
@@ -112,7 +112,8 @@ class PackageManager(object):
     def buildPackages(self,listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
         self.listBuildOptionPackages = listBuildOptionPackages
         self.pkgBuildOptionFile = pkgBuildOptionFile
-        self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+        if not constants.rpmCheck:
+            self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
         self.buildGivenPackages(listPackages, buildThreads)
     
     def initializeThreadPool(self,statusEvent):
@@ -135,34 +136,34 @@ class PackageManager(object):
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
             raise Exception("Unable to set paramaters")
-        
+
         statusEvent=threading.Event()
         self.initializeScheduler(statusEvent)
         self.initializeThreadPool(statusEvent)
-        
+
         i=0
         while i < buildThreads:
             workerName="WorkerThread"+str(i)
             ThreadPool.addWorkerThread(workerName)
             ThreadPool.startWorkerThread(workerName)
             i = i + 1
-        
+
         statusEvent.wait()
         Scheduler.stopScheduling=True
         self.logger.info("Waiting for all remaining worker threads")
         listWorkerObjs=ThreadPool.getAllWorkerObjects()
         for w in listWorkerObjs:
             w.join()
-            
+
         setFailFlag=False
         allPackagesBuilt=False
-        
+
         if Scheduler.isAnyPackagesFailedToBuild():
             setFailFlag=True
-        
+
         if Scheduler.isAllPackagesBuilt():
             allPackagesBuilt=True
-        
+
         if setFailFlag:
             self.logger.error("Some of the packages failed:")
             self.logger.error(Scheduler.listOfFailedPackages)
@@ -174,6 +175,6 @@ class PackageManager(object):
             else:
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
                 raise Exception("Unknown error")
-        
+
         self.logger.info("Terminated")
 
