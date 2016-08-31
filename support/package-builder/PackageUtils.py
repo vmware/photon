@@ -28,6 +28,7 @@ class PackageUtils(object):
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOption = "-ba --clean"
         self.rpmbuildNocheckOption = "--nocheck"
+        self.rpmbuildCheckOption ="-bi --clean"
         self.rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
         self.queryRpmPackageOptions = "-qa"
         self.forceRpmPackageOptions = "--force"
@@ -68,7 +69,7 @@ class PackageUtils(object):
         rpmfile=self.findRPMFileForGivenPackage(package)
         if rpmfile is None:
             self.logger.error("No rpm file found for package:"+package)
-            raise Exception("Missing rpm file")
+            raise Exception("Missing rpm file: "+package)
 
         rpmDestFile = self.copyRPM(rpmfile, chrootID+constants.topDirPath+"/RPMS")
         rpmFile=rpmDestFile.replace(chrootID,"")
@@ -199,8 +200,7 @@ class PackageUtils(object):
             if destLogPath is not None:
                 shutil.copy2(chrootLogsFilePath, destLogPath)
         self.logger.info("RPM build is successful")
-        arch = self.getRPMArch(listRPMFiles[0])
-       
+
         for rpmFile in listRPMFiles:
             self.copyRPM(chrootID+"/"+rpmFile, constants.rpmPath)
         
@@ -208,14 +208,24 @@ class PackageUtils(object):
             self.copyRPM(chrootID+"/"+srpmFile, constants.sourceRpmPath)
             srpmName = os.path.basename(srpmFile)
             package,version,release = self.findPackageInfoFromSourceRPMFile(srpmFile)
+            arch = self.getRPMArch(listRPMFiles[0])
             SourcePackageInfo.addSRPMData(package,version,release,arch,srpmName)
 
     
     def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
         
-        rpmBuildcmd= self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
-        if not constants.rpmCheck:
-            rpmBuildcmd+=" "+self.rpmbuildNocheckOption
+        rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
+
+        if constants.rpmCheck and package in constants.testForceRPMS:
+            self.logger.info("#"*(68+2*len(package)))
+            if not constants.specData.isCheckAvailable(package):
+                self.logger.info("####### "+package+" MakeCheck is not available. Skipping MakeCheck TEST for "+package+ " #######")
+                rpmBuildcmd=self.rpmbuildBinary+" --clean"
+            else:
+                self.logger.info("####### "+package+" MakeCheck is available. Running MakeCheck TEST for "+package+ " #######")
+                rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildCheckOption
+            self.logger.info("#"*(68+2*len(package)))
+
         for macro in macros:
             rpmBuildcmd+=' --define \\\"%s\\\"' % macro
         rpmBuildcmd+=" "+specFile
@@ -227,7 +237,7 @@ class PackageUtils(object):
         if not returnVal:
             self.logger.error("Building rpm is failed "+specFile)
             raise Exception("RPM Build failed")
-        
+
         #Extracting rpms created from log file
         logfile=open(logFile,'r')
         fileContents=logfile.readlines()
