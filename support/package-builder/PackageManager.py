@@ -86,16 +86,16 @@ class PackageManager(object):
                     needToRebuild = True
             if needToRebuild:
                 self.listOfPackagesAlreadyBuilt.remove(pkg)
- 
+
         listPackagesToBuild=listPackages[:]
         for pkg in listPackages:
-            if pkg in self.listOfPackagesAlreadyBuilt:
+            if pkg in self.listOfPackagesAlreadyBuilt and not constants.rpmCheck:
                 listPackagesToBuild.remove(pkg)
-        
+
         if not self.readPackageBuildData(listPackagesToBuild):
             return False
         return True
-    
+
     def buildToolChain(self):
         try:
             tUtils=ToolChainUtils()
@@ -104,17 +104,28 @@ class PackageManager(object):
             self.logger.error("Unable to build tool chain")
             self.logger.error(e)
             raise e
-    
+
     def buildToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
         self.buildToolChain()
         self.buildGivenPackages(constants.listToolChainPackages, buildThreads)
-        
+
+    def buildTestPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
+        self.buildToolChain()
+        self.buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
+
     def buildPackages(self,listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
         self.listBuildOptionPackages = listBuildOptionPackages
         self.pkgBuildOptionFile = pkgBuildOptionFile
-        self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
-        self.buildGivenPackages(listPackages, buildThreads)
-    
+        if constants.rpmCheck:
+            constants.rpmCheck=False
+            self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+            self.buildTestPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+            constants.rpmCheck=True
+            self.buildGivenPackages(listPackages, buildThreads)
+        else:
+            self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+            self.buildGivenPackages(listPackages, buildThreads)
+
     def initializeThreadPool(self,statusEvent):
         ThreadPool.clear()
         ThreadPool.mapPackageToCycle=self.mapPackageToCycle
@@ -123,46 +134,49 @@ class PackageManager(object):
         ThreadPool.pkgBuildOptionFile=self.pkgBuildOptionFile
         ThreadPool.logger=self.logger
         ThreadPool.statusEvent=statusEvent
-        
+
     def initializeScheduler(self,statusEvent):
         Scheduler.setLog(self.logName, self.logPath)
         Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling=False
-    
+
     def buildGivenPackages (self, listPackages, buildThreads):
+        if constants.rpmCheck:
+            alreadyBuiltRPMS=self.readAlreadyAvailablePackages()
+            listPackages=list(set(listPackages)|(set(constants.listMakeCheckRPMPkgtoInstall)-set(alreadyBuiltRPMS)))
+
         returnVal=self.calculateParams(listPackages)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
             raise Exception("Unable to set paramaters")
-        
+
         statusEvent=threading.Event()
         self.initializeScheduler(statusEvent)
         self.initializeThreadPool(statusEvent)
-        
+
         i=0
         while i < buildThreads:
             workerName="WorkerThread"+str(i)
             ThreadPool.addWorkerThread(workerName)
             ThreadPool.startWorkerThread(workerName)
             i = i + 1
-        
+
         statusEvent.wait()
         Scheduler.stopScheduling=True
         self.logger.info("Waiting for all remaining worker threads")
         listWorkerObjs=ThreadPool.getAllWorkerObjects()
         for w in listWorkerObjs:
             w.join()
-            
+
         setFailFlag=False
         allPackagesBuilt=False
-        
         if Scheduler.isAnyPackagesFailedToBuild():
             setFailFlag=True
-        
+
         if Scheduler.isAllPackagesBuilt():
             allPackagesBuilt=True
-        
+
         if setFailFlag:
             self.logger.error("Some of the packages failed:")
             self.logger.error(Scheduler.listOfFailedPackages)
@@ -174,6 +188,6 @@ class PackageManager(object):
             else:
                 self.logger.error("Build stopped unexpectedly.Unknown error.")
                 raise Exception("Unknown error")
-        
+
         self.logger.info("Terminated")
 
