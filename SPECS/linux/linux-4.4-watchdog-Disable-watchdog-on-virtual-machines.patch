@@ -31,7 +31,7 @@ index a6ffa43f2993..b378b762844a 100644
  
  #include <asm/irq_regs.h>
  #include <linux/kvm_para.h>
-@@ -155,6 +156,32 @@ static int __init softlockup_all_cpu_backtrace_setup(char *str)
+@@ -185,6 +186,32 @@ static int __init softlockup_all_cpu_backtrace_setup(char *str)
  __setup("hardlockup_all_cpu_backtrace=", hardlockup_all_cpu_backtrace_setup);
  #endif
  
@@ -64,7 +64,7 @@ index a6ffa43f2993..b378b762844a 100644
  /*
   * Hard-lockup warnings should be triggered after just a few seconds. Soft-
   * lockups can have false positives under extreme conditions. So we generally
-@@ -928,6 +955,8 @@ int proc_watchdog_cpumask(struct ctl_table *table, int write,
+@@ -1037,6 +1064,8 @@ int proc_watchdog_cpumask(struct ctl_table *table, int write,
  
  void __init lockup_detector_init(void)
  {

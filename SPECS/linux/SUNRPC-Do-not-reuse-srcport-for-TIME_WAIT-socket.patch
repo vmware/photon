@@ -1,8 +1,7 @@
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index c350385..a71233f 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -2243,6 +2243,7 @@ static void xs_tcp_setup_socket(struct work_struct *work)
+diff -Naur a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+--- a/net/sunrpc/xprtsock.c	2016-08-20 09:09:38.000000000 -0700
++++ b/net/sunrpc/xprtsock.c	2016-09-01 15:06:02.939461738 -0700
+@@ -2333,6 +2333,7 @@
  		/* We're probably in TIME_WAIT. Get rid of existing socket,
  		 * and retry
  		 */
