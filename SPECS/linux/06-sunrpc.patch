@@ -1,17 +1,7 @@
-From 5ff0b9e728e23e54001c2bb6df29d85ac2c5e08f Mon Sep 17 00:00:00 2001
-From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Fri, 25 Mar 2016 21:51:12 +0000
-Subject: [PATCH] sunrpc: xs_bind uses ip_local_reserved_ports
-
----
- net/sunrpc/xprtsock.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
-index 2ffaf6a..90543d6 100644
---- a/net/sunrpc/xprtsock.c
-+++ b/net/sunrpc/xprtsock.c
-@@ -1798,9 +1798,11 @@ static unsigned short xs_next_srcport(struct sock_xprt *transport, unsigned shor
+diff -Naur a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+--- a/net/sunrpc/xprtsock.c	2016-09-01 15:08:53.327462189 -0700
++++ b/net/sunrpc/xprtsock.c	2016-09-01 15:08:07.579462068 -0700
+@@ -1791,9 +1791,11 @@
  static int xs_bind(struct sock_xprt *transport, struct socket *sock)
  {
  	struct sockaddr_storage myaddr;
@@ -24,7 +14,7 @@ index 2ffaf6a..90543d6 100644
  
  	/*
  	 * If we are asking for any ephemeral port (i.e. port == 0 &&
-@@ -1822,6 +1824,8 @@ static int xs_bind(struct sock_xprt *transport, struct socket *sock)
+@@ -1815,6 +1817,8 @@
  
  	memcpy(&myaddr, &transport->srcaddr, transport->xprt.addrlen);
  	do {
@@ -33,7 +23,7 @@ index 2ffaf6a..90543d6 100644
  		rpc_set_port((struct sockaddr *)&myaddr, port);
  		err = kernel_bind(sock, (struct sockaddr *)&myaddr,
  				transport->xprt.addrlen);
-@@ -1829,6 +1833,7 @@ static int xs_bind(struct sock_xprt *transport, struct socket *sock)
+@@ -1822,6 +1826,7 @@
  			transport->srcport = port;
  			break;
  		}
@@ -41,6 +31,3 @@ index 2ffaf6a..90543d6 100644
  		last = port;
  		port = xs_next_srcport(transport, port);
  		if (port > last)
--- 
-1.9.1
-
