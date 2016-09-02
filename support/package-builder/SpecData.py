@@ -139,7 +139,7 @@ class SerializableSpecObjectsUtils(object):
         return self.mapSerializableSpecObjects[specName].listRPMPackages
 
     def getReleaseNum(self, releaseVal):
-	id = releaseVal.find(".")
+	id = releaseVal.find("%")
 	if (id != -1):
 	    return releaseVal[0:id]
 	else:
