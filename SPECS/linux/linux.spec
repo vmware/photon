@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.8
-Release:    	11%{?dist}
+Version:    	4.4.19
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
+%define sha1 linux=2d8e828e2780867ed9753bd93b498daa4cfda01f
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -18,17 +18,19 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
 Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
-#fixes CVE-2016-3134
-Patch7:		netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
+Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
 #fixes CVE-2016-3135
-Patch8:		netfilter-x_tables-check-for-size-overflow.patch
-Patch9:		REVERT-sched-fair-Beef-up-wake_wide.patch
-Patch10:	e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-Patch11:	VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
-Patch12:	vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-Patch13:	vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
-Patch14:	vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
-Patch15:	vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
+Patch8:         netfilter-x_tables-check-for-size-overflow.patch
+Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
+Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
+Patch11:        VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+Patch12:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
+Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
+#fixes CVE-2016-6187
+Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
+#fixes CVE-2016-0758
+Patch16:        keys-fix-asn.1-indefinite-length-object-parsing.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -100,6 +102,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 %build
 make mrproper
@@ -196,6 +199,10 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Sep  1 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.19-1
+-   Update to linux-4.4.19
+-   apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch 
+-   keys-fix-asn.1-indefinite-length-object-parsing.patch
 *   Thu Aug 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-11
 -   vmxnet3 patches to bumpup a version to 1.4.8.0
 *   Wed Aug 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-10
