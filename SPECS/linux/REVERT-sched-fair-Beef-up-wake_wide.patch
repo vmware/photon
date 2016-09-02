@@ -35,7 +35,7 @@ diff --git b/include/linux/sched.h a/include/linux/sched.h
 index 65a8a86..7412070 100644
 --- b/include/linux/sched.h
 +++ a/include/linux/sched.h
-@@ -1359,9 +1359,9 @@ struct task_struct {
+@@ -1387,9 +1387,9 @@ struct task_struct {
  #ifdef CONFIG_SMP
  	struct llist_node wake_entry;
  	int on_cpu;
@@ -51,7 +51,7 @@ diff --git b/kernel/sched/fair.c a/kernel/sched/fair.c
 index ea23f9f..8b384b8d 100644
 --- b/kernel/sched/fair.c
 +++ a/kernel/sched/fair.c
-@@ -4726,29 +4726,26 @@ static long effective_load(struct task_group *tg, int cpu, long wl, long wg)
+@@ -4659,29 +4659,26 @@ static long effective_load(struct task_group *tg, int cpu, long wl, long wg)
  
  #endif
  
@@ -97,7 +97,7 @@ index ea23f9f..8b384b8d 100644
  }
  
  static int wake_affine(struct sched_domain *sd, struct task_struct *p, int sync)
-@@ -4760,6 +4757,13 @@ static int wake_affine(struct sched_domain *sd, struct task_struct *p, int sync)
+@@ -4693,6 +4690,13 @@ static int wake_affine(struct sched_domain *sd, struct task_struct *p, int sync)
  	unsigned long weight;
  	int balanced;
  
@@ -111,7 +111,7 @@ index ea23f9f..8b384b8d 100644
  	idx	  = sd->wake_idx;
  	this_cpu  = smp_processor_id();
  	prev_cpu  = task_cpu(p);
-@@ -5013,17 +5017,17 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -4953,17 +4957,17 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  {
  	struct sched_domain *tmp, *affine_sd = NULL, *sd = NULL;
  	int cpu = smp_processor_id();
@@ -132,7 +132,7 @@ index ea23f9f..8b384b8d 100644
  
  		/*
  		 * If both cpu and prev_cpu are part of this domain,
-@@ -5037,21 +5041,17 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -4977,21 +4981,17 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  
  		if (tmp->flags & sd_flag)
  			sd = tmp;
@@ -161,7 +161,7 @@ index ea23f9f..8b384b8d 100644
  		struct sched_group *group;
  		int weight;
  
-@@ -5085,6 +5085,7 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
+@@ -5025,6 +5025,7 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  		}
  		/* while loop will break here if sd == NULL */
  	}
