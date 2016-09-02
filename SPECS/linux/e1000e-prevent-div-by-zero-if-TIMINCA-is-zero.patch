@@ -28,7 +28,7 @@ diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/i
 index 269087c..0626935 100644
 --- a/drivers/net/ethernet/intel/e1000e/netdev.c
 +++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -4315,7 +4315,8 @@ static cycle_t e1000e_cyclecounter_read(const struct cyclecounter *cc)
+@@ -4320,7 +4320,8 @@ static cycle_t e1000e_cyclecounter_read(const struct cyclecounter *cc)
  
  			time_delta = systim_next - systim;
  			temp = time_delta;
