@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.8
-Release:       11%{?dist}
+Version:       4.4.20
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
+Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=67f6d0f7d8c90d7f9fe7c3e1ee4d82b008b77767
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -22,17 +22,17 @@ Patch7:        03-poweroff.patch
 Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
-#fixes CVE-2016-3134
-Patch11:       netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
+Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
 #fixes CVE-2016-3135
 Patch12:       netfilter-x_tables-check-for-size-overflow.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
-Patch16:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-Patch17:       vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
-Patch18:       vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
-Patch19:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
+Patch16:       vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
+Patch17:       vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
+#fixes CVE-2016-0758
+Patch19:       keys-fix-asn.1-indefinite-length-object-parsing.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -152,6 +152,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Wed Sep  7 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-1
+-   Update to linux-4.4.20
+-   keys-fix-asn.1-indefinite-length-object-parsing.patch
 *   Thu Aug 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-11
 -   vmxnet3 patches to bumpup a version to 1.4.8.0
 *   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-10
