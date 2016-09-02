@@ -1,19 +1,19 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.4.8
-Release:	2%{?dist}
+Version:	4.4.20
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.4.8.tar.xz
-%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
+Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=67f6d0f7d8c90d7f9fe7c3e1ee4d82b008b77767
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
-%setup -q -n linux-4.4.8
+%setup -q -n linux-%{version}
 %build
 make mrproper
 make headers_check
@@ -25,8 +25,10 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-2
--	GA - Bump release of all rpms
+*   Wed Sep  7 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-1
+-   Update kernel version to 4.4.20
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-2
+-   GA - Bump release of all rpms
 *   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-1
 -   Update to linux-4.4.8
 *   Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1
