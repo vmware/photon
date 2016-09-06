@@ -151,6 +151,8 @@
         "nasm",
         "libmnl",
         "ipset",
-        "build-essential"
+        "build-essential",
+        "python-pip",
+        "python-sqlalchemy"
             ]
 }
