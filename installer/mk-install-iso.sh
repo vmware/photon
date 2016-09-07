@@ -200,6 +200,9 @@ if [ "$LIVE_CD" = false ] ; then
 
 fi
 
+# Set password max days to 99999 (disable aging)
+chage -R ${BUILDROOT} -M 99999 root
+
 # Generate the intird
 pushd $BUILDROOT
 (find . | cpio -o -H newc --quiet | gzip -9 ) > ${WORKINGDIR}/isolinux/initrd.img
