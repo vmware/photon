@@ -1,14 +1,14 @@
 Summary:	C++ interface to the glib
 Name:		glibmm
-Version:	2.47.3.1
-Release:	2%{?dist}
+Version:	2.48.1
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.46/glibmm-2.46.3.tar.xz
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.46/%{name}-%{version}.tar.xz
-%define sha1 glibmm=ddcde060ebfdce9cb8582fc865a2fffb2b173198
+%define sha1 glibmm=41e4d148da88e458889044421e31b1eaa35d8b0b
 BuildRequires:	python2 >= 2.7
 BuildRequires:	libsigc++
 BuildRequires:	glib-devel glib-schemas
@@ -55,6 +55,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/*
 
 %changelog
+*   Tue Sep 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.48.1-1
+-   Updated to version 2.48.1-1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.3.1-2
 -	GA - Bump release of all rpms
 *   Thu Apr 14 2016	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.3.1-1
