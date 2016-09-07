@@ -1,7 +1,7 @@
 Summary:       Set of scripts and tools to get compatbility with other distributions.
 Name:          distrib-compat
 Version:       0.1
-Release:       9%{?dist}
+Release:       10%{?dist}
 License:       GPLv2
 URL:           http://photon.org
 Group:         System Environment/Base
@@ -35,6 +35,8 @@ ln -s sysctl.d/99-compat.conf %{buildroot}/%{_sysconfdir}/sysctl.conf
 %{_sysconfdir}/*
 /sbin/*
 %changelog
+*    Wed Sep 7 2016 Divya Thaluru <dthaluru@vmware.com> 0.1-10
+-    Clean up
 *    Thu Aug 11 2016 Onkar Deshpande <deshpandeo@vmware.com> 0.1-9
 -    Clean up
 *    Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1-8
