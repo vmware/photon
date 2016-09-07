@@ -34,15 +34,15 @@ hasip=$?
 
 [ $isupret -eq 0 -a $hasip -eq 0 ] && success "The interface is already up and assigned an IP"
 
-print_message "$interface is DOWN or not assigned an IP. Bringing $interface up..."
+print_message "$interface is DOWN or not assigned an IP. Bringnig $interface up..."
 
-manualfilename=${SYSTEMD_NETWORK_CONF_DIR}/*$interface*.network.manual
-if [ -f  $manualfilename ] ; then
-    filename=$manualfilename
-else
+manualfilename=`ls ${SYSTEMD_NETWORK_CONF_DIR}/*$interface*.network.manual 2>/dev/null`
+if [[ -z  $manualfilename ]] ; then
     print_message "Can not find the manual filename, let us search for the auto filename"
-    filename=${SYSTEMD_NETWORK_CONF_DIR}/*$interface*.network
-    [ -f  $filename ] && fail "Can not find network interface file"
+    filename=`ls ${SYSTEMD_NETWORK_CONF_DIR}/*$interface*.network 2>/dev/null`
+    [[ -z  $filename ]] && fail "Can not find network interface file"
+else
+    filename=$manualfilename
 fi
 
 # Trying to parse the address from the file
