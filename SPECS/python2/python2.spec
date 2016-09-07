@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -11,6 +11,7 @@ Source0:	http://www.python.org/ftp/python/2.7.11/Python-%{version}.tar.xz
 %define sha1 Python=c3b8bbe3f084c4d4ea13ffb03d75a5e22f9756ff
 Patch0: cgi.patch
 Patch1: added-compiler-flags-for-curses-module.patch
+Patch2: added-pyopenssl-ipaddress-certificate-validation.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel
 BuildRequires:  openssl-devel
@@ -99,6 +100,7 @@ to build python programs.
 %setup -q -n Python-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 export OPT="${CFLAGS}"
 ./configure \
@@ -215,30 +217,32 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
-*	Mon Jun 20 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-5
--   	Added stack-protector flag for ncurses module
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-4
--	GA - Bump release of all rpms
-*  	Tue Apr 26 2016 Nick Shi <nshi@vmware.com> 2.7.11-3
--  	Adding readline module into python2-libs
+*   Wed Sep 7 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-6
+-   Added patch to python openssl to validate certificates by ipaddress 
+*   Mon Jun 20 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-5
+-   Added stack-protector flag for ncurses module
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-4
+-   GA - Bump release of all rpms
+*   Tue Apr 26 2016 Nick Shi <nshi@vmware.com> 2.7.11-3
+-   Adding readline module into python2-libs
 
-*   	Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-2
--   	update python to require python-libs
+*   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.11-2
+-   update python to require python-libs
 
-*   	Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.7.11-1
--   	Upgrade version
+*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.7.11-1
+-   Upgrade version
 
-*	Fri Jan 22 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.9-5
--	Seperate python-curses package from python-libs package
+*   Fri Jan 22 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.9-5
+-   Seperate python-curses package from python-libs package
 
-*	Thu Oct 29 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.7.9-4
--	Seperate python-xml package from python-libs package
+*   Thu Oct 29 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.7.9-4
+-   Seperate python-xml package from python-libs package
 
-*	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 2.7.9-3
--	Provide /bin/python
+*   Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 2.7.9-3
+-   Provide /bin/python
 
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-2
--	Adding coreutils package to run time required package
+*   Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-2
+-   Adding coreutils package to run time required package
 
-*	Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-1
--	Initial build.	First version
+*   Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-1
+-   Initial build.	First version
