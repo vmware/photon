@@ -134,6 +134,9 @@ if [ $IMG_NAME != "ova" ] && [ $IMG_NAME != "ova_uefi" ] && [ $IMG_NAME != "ova_
         echo "chrooting and running patch inside the chroot"
         chroot $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME} /bin/bash -c "/$IMG_NAME-patch.sh"
         rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/$IMG_NAME-patch.sh
+        # Change the max password days to 99999
+        chroot $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME} /bin/bash -c "cat /etc/shadow | cut -d: -f1 | xargs -I {} chage -I -1 -m 0 -M 99999 -E -1 -W 7 {}"
+        sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS   99999/' $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/login.defs
     fi
 fi
 umount $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/sys
