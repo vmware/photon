@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	5.3.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -87,6 +87,8 @@ SED=sed \
 	--enable-languages=c,c++ \
 	--disable-multilib \
 	--disable-bootstrap \
+	--enable-linker-build-id \
+	--enable-plugin \
 	--with-system-zlib
 #	--disable-silent-rules
 #sed -i '/-D_FORTIFY_SOURCE=2 for preprocessor/,+2d' `dirname $(gcc --print-libgcc-file-name)`/../specs
@@ -211,6 +213,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Thu Sep  8 2016 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-4
+-   Enable plugins and linker build id.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.0-3
 -   GA - Bump release of all rpms
 *   Tue May 17 2016 Anish Swaminathan <anishs@vmware.com> 5.3.0-2
