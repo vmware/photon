@@ -1,7 +1,7 @@
 Summary:	contains libraries for reading and writing PNG files.
 Name:		libpng
 Version:	1.6.23
-Release:	1
+Release:	2%{?dist}
 License:	libpng
 URL:		http://www.libpng.org/
 Group:		System Environment/Libraries
@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/libpng/%{name}-%{version}.tar.xz
 %define sha1 libpng=4857fb8dbd5ca7ddacc40c183e340b9ffa34a097
 Provides:	pkgconfig(libpng)
+Provides:	pkgconfig(libpng16)
 %description
 The libpng package contains libraries used by other programs for reading and writing PNG files. The PNG format was designed as a replacement for GIF and, to a lesser extent, TIFF, with many improvements and extensions and lack of patent problems.
 
@@ -50,5 +51,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Mon Sep 12 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.23-2
+-       Included the libpng16 pkgconfig 
 *       Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.23-1
 -       Initial version
