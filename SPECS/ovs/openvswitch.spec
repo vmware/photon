@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.4.0
-Release:        3%{?dist}
+Version:        2.4.1
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=d091902579cf5101df851d2ec69c75a6bcbd49fc
+%define sha1 openvswitch=d950bd7eaf3a3ee71df1bf28a8f2791c343406c9
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -127,6 +127,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/man/man8/vtep-ctl.8.gz
 
 %changelog
+*	Fri Sep 09 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
+-	Update to openvswitch 2.4.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
 -	GA - Bump release of all rpms
 *       Sat Oct 31 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-2
