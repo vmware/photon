@@ -1,0 +1,29 @@
+diff -aur chkconfig-1.5/leveldb.c chkconfig-1.5-new/leveldb.c
+--- chkconfig-1.5/leveldb.c	2015-06-01 05:07:44.000000000 -0700
++++ chkconfig-1.5-new/leveldb.c	2016-09-12 22:17:35.241508327 -0700
+@@ -674,23 +674,8 @@
+ 
+ /* returns -1 on error */
+ int currentRunlevel(void) {
+-    FILE * p;
+-    char response[50];
+-
+-    p = popen("/sbin/runlevel", "r");
+-    if (!p) return -1;
+-
+-    if (!fgets(response, sizeof(response), p)) {
+-	pclose(p);
+-	return -1;
+-    }
+-
+-    pclose(p);
+-
+-    if (response[1] != ' ' || !isdigit(response[2]) || response[3] != '\n')
+-	return -1;
+-
+-    return response[2] - '0';
++    // Photon OS only supports running chkconfig from runlevel 3
++    return 3;
+ }
+ 
+ int findServiceEntries(char * name, int level, glob_t * globresptr) {
