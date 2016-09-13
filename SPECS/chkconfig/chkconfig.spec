@@ -1,7 +1,7 @@
 Summary: A system tool for maintaining the /etc/rc*.d hierarchy
 Name: chkconfig
 Version: 1.5
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: GPLv2
 Group: System Environment/Base
 URL: https://git.fedorahosted.org/git/chkconfig.git
@@ -9,6 +9,7 @@ Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.bz
 Patch0:chkconfig-shortopt.patch
 Patch1:print-service-on-off.patch
 Patch2:ignore-priorities.patch
+Patch3:chkconfig-runlevel.patch
 %define sha1 chkconfig=19a15a6690788686cc173b0d0626eaae01bec0c1
 Requires: libselinux
 Requires: libsepol
@@ -44,6 +45,7 @@ page), ntsysv configures the current runlevel (5 if you're using X).
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %build
 
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS" %{?_smp_mflags}
@@ -91,8 +93,10 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5-5
--	GA - Bump release of all rpms
+* Tue Sep 13 2016 Anish Swaminathan <anishs@vmware.com> 1.5-6
+- Chkconfig patch to return runlevel 3 on Photon OS
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5-5
+- GA - Bump release of all rpms
 * Mon Dec 07 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
 - Ability for chkconfig to ignore priorities.
 
