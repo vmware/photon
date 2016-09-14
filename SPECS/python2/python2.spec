@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -217,6 +217,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Wed Sep 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-7
+-   Improvised pyopenssl patch
 *   Wed Sep 7 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-6
 -   Added patch to python openssl to validate certificates by ipaddress 
 *   Mon Jun 20 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-5
