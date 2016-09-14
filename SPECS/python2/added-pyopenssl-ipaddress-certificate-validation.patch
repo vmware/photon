@@ -43,8 +43,7 @@
      san = cert.get('subjectAltName', ())
      for key, value in san:
          if key == 'DNS':
--            if _dnsname_match(value, hostname):
-+            if host_ip is None and _dnsname_match(value, hostname):
+             if _dnsname_match(value, hostname):
                  return
              dnsnames.append(value)
 +        elif key == 'IP Address':
