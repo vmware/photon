@@ -152,6 +152,7 @@
         "libmnl",
         "ipset",
         "build-essential",
-        "micro-config-drive"
+        "micro-config-drive",
+        "ndsend"
             ]
 }
