@@ -94,9 +94,11 @@ cd %{_builddir}/%{name}-build
 	--enable-obsolete-rpc \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
 %check
 cd %{_builddir}/glibc-build
-make -k check > %{_topdir}/LOGS/%{name}-check.log 2>&1 || true
+make %{?_smp_mflags} check
+
 %install
 #	Do not remove static libs
 pushd %{_builddir}/glibc-build

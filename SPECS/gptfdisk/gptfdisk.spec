@@ -29,8 +29,10 @@ make %{?_smp_mflags} POPT=1
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install POPT=1
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} test
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean

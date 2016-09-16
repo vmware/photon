@@ -26,8 +26,10 @@ pushd  %{buildroot}/usr/share/info &&
     install-info $FILENAME %{name}-%{version} 2>/dev/null
   done &&
 popd
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %{_docdir}/%{name}-%{version}/*

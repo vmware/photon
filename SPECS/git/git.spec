@@ -55,8 +55,9 @@ make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 make DESTDIR=%{buildroot} install
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} test
 
 %post
 if [ $1 -eq 1 ];then
