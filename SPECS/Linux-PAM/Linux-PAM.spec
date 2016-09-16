@@ -45,8 +45,17 @@ find %{buildroot}/usr/lib/ -name '*.la' -delete
 %{find_lang} Linux-PAM
 
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+install -v -m755 -d /etc/pam.d
+cat > /etc/pam.d/other << "EOF"
+auth     required       pam_deny.so
+account  required       pam_deny.so
+password required       pam_deny.so
+session  required       pam_deny.so
+EOF
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean

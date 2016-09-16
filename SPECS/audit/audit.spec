@@ -67,6 +67,9 @@ mkdir -p %{buildroot}/%{_var}/log/audit
 mkdir -p %{buildroot}/%{_var}/spool/audit
 make install DESTDIR=%{buildroot}
 
+%check
+make %{?_smp_mflags} check
+
 %post
 /sbin/ldconfig
 %systemd_post  auditd.service
