@@ -35,6 +35,10 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install 
 
+%check
+chown -Rv nobody .
+sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 

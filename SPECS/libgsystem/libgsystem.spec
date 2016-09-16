@@ -46,6 +46,9 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot} INSTALL="install -p -c"
 find %{buildroot} -name '*.la' -delete
 
+%check
+make %{?_smp_mflags} check
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
