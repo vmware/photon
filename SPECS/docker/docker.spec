@@ -27,8 +27,7 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/docker.service
 cp %{SOURCE2} %{buildroot}/lib/systemd/system/docker-containerd.service
 
 %{_fixperms} %{buildroot}/*
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %preun
 %systemd_preun docker.service
 %systemd_preun docker-containerd.service

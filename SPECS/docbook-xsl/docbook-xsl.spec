@@ -37,7 +37,8 @@ install -v -m644 -D README \
 install -v -m644    RELEASE-NOTES* NEWS* \
                     %{buildroot}%{_docdir}/%{name}-%{version}
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+chmod 777 tests -R  
+make %{?_smp_mflags} check 
 
 %post
 if [ ! -d /etc/xml ]; then install -v -m755 -d /etc/xml; fi &&

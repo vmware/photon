@@ -41,7 +41,7 @@ make %{?_smp_mflags}
 %makeinstall
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*
