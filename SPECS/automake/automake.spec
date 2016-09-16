@@ -21,12 +21,15 @@ sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
 	--disable-silent-rules
 make %{?_smp_mflags}
-%check
-sed -i "s:./configure:LEXLIB=/usr/lib/libfl.a &:" t/lex-{clean,depend}-cxx.sh
-make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %install
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
+
+%check
+sed -i "s:./configure:LEXLIB=/usr/lib/libfl.a &:" t/lex-{clean,depend}-cxx.sh
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

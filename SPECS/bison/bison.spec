@@ -25,8 +25,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check 
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
