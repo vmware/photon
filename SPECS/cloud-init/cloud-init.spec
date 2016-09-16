@@ -18,6 +18,7 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  systemd
+BuildRequires:  dbus, python-ipaddr, iproute2, automake
 Requires:       systemd
 Requires:       python2
 Requires:       python2-libs
@@ -56,6 +57,44 @@ mkdir -p $RPM_BUILD_ROOT/var/lib/cloud
 
 # We supply our own config file since our software differs from Ubuntu's.
 cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
+
+%check
+openssl req \
+    -new \
+    -newkey rsa:4096 \
+    -days 365 \
+    -nodes \
+    -x509 \
+    -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=photon.com" \
+    -keyout photon.key \
+    -out photon.cert
+     openssl rsa -in photon.key -out photon.pem
+mv photon.pem /etc/ssl/certs   
+
+easy_install pip
+easy_install -U setuptools
+easy_install HTTPretty 
+easy_install mocker
+easy_install mock
+easy_install nose
+easy_install pep8
+easy_install pyflakes
+easy_install pyyaml
+easy_install pyserial
+easy_install oauth2
+easy_install oauth
+easy_install cheetah
+easy_install jinja2
+easy_install PrettyTable
+easy_install argparse
+easy_install requests
+easy_install jsonpatch
+easy_install configobj
+
+sed -i '38,43d' tests/unittests/test_handler/test_handler_set_hostname.py
+mkdir -p /etc/sysconfig
+echo "HOSTNAME=test.com" >/etc/sysconfig/network
+make test
 
 %clean
 rm -rf $RPM_BUILD_ROOT

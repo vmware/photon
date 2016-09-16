@@ -24,14 +24,16 @@ make %{?_smp_mflags}
 makeinfo --html            -o doc/html      doc/cpio.texi
 makeinfo --html --no-split -o doc/cpio.html doc/cpio.texi
 makeinfo --plaintext       -o doc/cpio.txt  doc/cpio.texi
-%check
-make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %install
 make DESTDIR=%{buildroot} install
 install -v -m755 -d %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/html/* %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/cpio.{html,txt} %{buildroot}/%{_docdir}/%{name}-%{version}
 rm -rf %{buildroot}%{_infodir}
+
+%check
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

@@ -22,8 +22,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 rm %{buildroot}%{_infodir}/dir
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

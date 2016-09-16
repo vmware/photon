@@ -19,6 +19,7 @@ Requires: deltarpm
 BuildRequires: bash
 BuildRequires: deltarpm
 BuildRequires: yum-metadata-parser, yum, rpm-devel, rpm, libxml2, python2, python2-libs
+
 %description
 This utility will generate a common metadata repository from a directory of
 rpm packages
@@ -29,6 +30,15 @@ rpm packages
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
+
+%check
+wget https://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz  --no-check-certificate
+tar xvf pychecker-0.8.19.tar.gz
+pushd pychecker-0.8.19
+python setup.py install
+popd
+
+make %{?_smp_mflags} check 
 
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT

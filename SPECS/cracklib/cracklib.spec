@@ -110,6 +110,12 @@ ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
 ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
 ln -sf %{_datadir}/cracklib/pw_dict.pwd $RPM_BUILD_ROOT/usr/lib/cracklib_dict.pwd
 
+%check
+mkdir -p /usr/share/cracklib
+gzip -c $RPM_BUILD_ROOT%{_datadir}/cracklib/pw_dict.pwd > /usr/share/cracklib/pw_dict.pwd.gz
+cp $RPM_BUILD_ROOT%{_datadir}/cracklib/* /usr/share/cracklib/
+make %{?_smp_mflags} test
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 

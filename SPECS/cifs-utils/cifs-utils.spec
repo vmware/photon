@@ -33,6 +33,9 @@ make
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 /sbin/mount.cifs
