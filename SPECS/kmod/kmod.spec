@@ -35,8 +35,10 @@ for target in depmod insmod lsmod modinfo modprobe rmmod; do
 	ln -sv /bin/kmod %{buildroot}/sbin/$target
 done
 find %{buildroot} -name '*.la' -delete
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files

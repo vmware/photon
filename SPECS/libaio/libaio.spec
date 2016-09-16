@@ -49,6 +49,9 @@ install -D -m 755 src/libaio.so.1.0.0 %{buildroot}/%{_libdir}/libaio.so.1.0.0
 cd ..
 make destdir=%{buildroot} prefix=%{_prefix} libdir=/lib usrlibdir=%{_libdir} includedir=%{_includedir} install
 
+%check
+make %{?_smp_mflags} -k check
+
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
