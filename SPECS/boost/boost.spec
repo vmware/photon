@@ -31,8 +31,7 @@ for developing applications that use boost.
 ./b2 %{?_smp_mflags} stage threading=multi link=shared
 %install
 ./b2 install threading=multi link=shared
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean

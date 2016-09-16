@@ -25,8 +25,9 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%{_mandir}
 rm -rf %{buildroot}%{_infodir}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags}  timetest
 
 %post
 /sbin/ldconfig
