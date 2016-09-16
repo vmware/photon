@@ -26,6 +26,9 @@ make DESTDIR=%{buildroot} \
     PREFIX=%{_prefix} \
     install 
 
+%check
+make %{?_smp_mflags} test
+
 %clean
 rm -rf %{buildroot}/*
 %files 

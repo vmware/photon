@@ -37,6 +37,9 @@ easy_install ./
     --root "%{buildroot}" \
     --single-version-externally-managed
 
+%check
+python setup.py test
+
 %clean
 %{__rm} -rf %{buildroot}
 

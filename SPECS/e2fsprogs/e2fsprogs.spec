@@ -47,7 +47,8 @@ popd
 
 %check
 cd build
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post
 /sbin/ldconfig
 %postun

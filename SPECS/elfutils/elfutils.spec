@@ -126,7 +126,7 @@ chmod +x ${RPM_BUILD_ROOT}/usr/lib/elfutils/lib*.so*
 %find_lang %{name}
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
