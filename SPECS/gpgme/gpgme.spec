@@ -35,6 +35,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 rm %{buildroot}/%{_libdir}/*.la
 rm -rf %{buildroot}/%{_infodir}
+
+%check
+cd tests && make check-TESTS
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files 

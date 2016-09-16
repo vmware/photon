@@ -57,8 +57,9 @@ install -vdm 755 %{buildroot}/usr/share/bash-completion/completions
 install -m 0644 contrib/completion/git-completion.bash %{buildroot}/usr/share/bash-completion/completions/git
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} test
 
 %post
 if [ $1 -eq 1 ];then

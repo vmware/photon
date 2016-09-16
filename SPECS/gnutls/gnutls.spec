@@ -50,7 +50,7 @@ rm %{buildroot}%{_infodir}/*
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %post 
 /sbin/ldconfig
