@@ -47,9 +47,6 @@ mkdir -p %{buildroot}/usr/share/ipxe
 install -vDm 644 src/bin/ipxe.{dsk,iso,lkrn,usb} %{buildroot}/usr/share/ipxe/
 install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %files
 %defattr(-,root,root)
 /usr/share/ipxe/ipxe.dsk

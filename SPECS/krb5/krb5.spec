@@ -68,8 +68,11 @@ install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 
 unset LIBRARY
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+cd src
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
