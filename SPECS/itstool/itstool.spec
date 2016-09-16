@@ -24,8 +24,7 @@ to translate and how to chunk it into messages using the W3C Internationalizatio
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

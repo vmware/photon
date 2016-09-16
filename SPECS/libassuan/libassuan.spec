@@ -22,6 +22,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 rm %{buildroot}/%{_libdir}/*.la
 rm -rf %{buildroot}/%{_infodir}
+
+%check
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files 
