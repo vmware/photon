@@ -32,8 +32,7 @@ install -v -d -m755 %{buildroot}/usr/share/xml/docbook/%{name}-%{version}
 install -v -d -m755 %{buildroot}/etc/xml
 chown -R root:root .
 cp -v -af docbook.cat *.dtd ent/ *.mod %{buildroot}/usr/share/xml/docbook/%{name}-%{version}
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post
 if [ ! -e /etc/xml/docbook ]; then
     xmlcatalog --noout --create /etc/xml/docbook

@@ -36,9 +36,6 @@ mv %{_builddir}/%{name}-v%{version}-linux-amd64/README-etcdctl.md %{buildroot}/%
 cp %{SOURCE1} %{buildroot}/lib/systemd/system
 install -vdm755 %{buildroot}/var/lib/etcd
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %post	-p /sbin/ldconfig
 
 %postun	-p /sbin/ldconfig
