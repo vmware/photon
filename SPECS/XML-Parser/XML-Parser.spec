@@ -24,8 +24,10 @@ if [ -e %{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod ]; then
 cat %{buildroot}/%{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod >> %{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
 fi
 rm %{buildroot}/%{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} test
+
 %files
 %defattr(-,root,root)
 %{_libdir}/perl5/*

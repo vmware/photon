@@ -42,6 +42,9 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{_bindir}
 %{__python} setup.py install --skip-build --root $RPM_BUILD_ROOT
 
+%check
+python setup.py test
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
