@@ -38,8 +38,6 @@ zone "." in {
 };
 EOF
 echo "d /run/named 0755 named named - -" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/named.conf
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %pre
 if ! getent group named >/dev/null; then

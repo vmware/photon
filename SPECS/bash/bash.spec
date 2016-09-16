@@ -216,9 +216,13 @@ cat > %{buildroot}/etc/skel/.bash_logout << "EOF"
 EOF
 
 dircolors -p > %{buildroot}/etc/dircolors
-
 %find_lang %{name}
 rm -rf %{buildroot}/%{_infodir}
+
+%check
+make  NON_ROOT_USERNAME=nobody %{?_smp_mflags} check
+
+
 
 %post
 if [ $1 -eq 1 ] ; then

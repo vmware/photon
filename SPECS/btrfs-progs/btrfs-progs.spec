@@ -41,6 +41,15 @@ make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 #disabled the documentation
 make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir}/btrfs install DESTDIR=%{buildroot}
 
+%check
+export PATH=$PATH:/usr/src/photon/BUILD/%{name}-v%{version}
+pushd tests
+./misc-tests.sh
+./fuzz-tests.sh
+./convert-tests.sh
+./clean-tests.sh
+popd 
+
 %clean
 rm -rf %{buildroot}
 

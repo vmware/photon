@@ -25,6 +25,10 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
+
+%check
+make -k check %{?_smp_mflags}  TESTSUITEFLAGS="1-500"
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
