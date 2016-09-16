@@ -33,6 +33,9 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
 
+%check
+make %{?_smp_mflags} check
+
 %post 
 /sbin/ldconfig
 

@@ -18,6 +18,11 @@ A library that provides compression and decompression of file formats used by Mi
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+
+%check
+cd test
+./cabd_test
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files 

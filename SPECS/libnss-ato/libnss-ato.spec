@@ -24,6 +24,10 @@ The libnss_ato module is a set of C library extensions which allows to map every
 make
 %install
 make DESTDIR=%{buildroot} install
+
+%check
+./libnss_ato_test root
+
 %files
 %defattr(-,root,root)
 /lib/libnss_ato*
