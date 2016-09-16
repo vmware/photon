@@ -1,7 +1,7 @@
 Summary:	Free version of the SSH connectivity tools
 Name:		openssh
 Version:	7.1p2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -12,6 +12,7 @@ Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Patch1:		blfs_systemd_fixes.patch
+Patch2:         openssh-7.1p2-skip-long-passwords.patch
 BuildRequires:  openssl-devel
 BuildRequires:	Linux-PAM
 BuildRequires:  krb5
@@ -30,6 +31,7 @@ and rcp respectively.
 %setup -q
 tar xf %{SOURCE1}
 %patch1 -p0
+%patch2 -p1
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -137,6 +139,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*	Thu Sep 15 2016 Anish Swaminathan <anishs@vmware.com> 7.1p2-4
+-	Add patch to fix CVE-2016-6515
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1p2-3
 -	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 7.1p2-2
