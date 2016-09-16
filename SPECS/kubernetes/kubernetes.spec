@@ -59,7 +59,10 @@ install -p -m 644 kubernetes-%{commit}/docs/man/man1/* %{buildroot}%{_mandir}/ma
 install -d %{buildroot}/var/lib/kubelet
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+export GOPATH=%{_builddir}
+go get golang.org/x/tools/cmd/cover
+cd kubernetes-e310e619fc1ac4f3238bf5ebe9e7033bf5d47ee2
+make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*

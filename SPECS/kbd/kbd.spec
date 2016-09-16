@@ -30,8 +30,10 @@ make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cp -R -v docs/doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %find_lang %{name}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files -f %{name}.lang
