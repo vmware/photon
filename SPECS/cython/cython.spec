@@ -27,9 +27,11 @@ Cython is an optimising static compiler for both the Python programming language
 %install
 %{__python} setup.py install --skip-build --root %{buildroot}
 
+%check
+make %{?_smp_mflags} test
+
 %clean
 rm -rf %{buildroot}
-
 
 %files
 %defattr(-,root,root,-)

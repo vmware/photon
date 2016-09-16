@@ -13,6 +13,7 @@ Distribution:	Photon
 BuildRequires:	libselinux-devel
 BuildRequires:	Linux-PAM
 BuildRequires:  systemd
+BuildRequires:  yum-metadata-parser, yum, rpm-devel, rpm, libxml2, python2,  python-xml, wget, tar
 Requires:       systemd
 Requires:	libselinux
 Requires:	Linux-PAM
@@ -65,7 +66,7 @@ install -c -m755  %{SOURCE1} %{buildroot}/%{_bindir}/run-parts
 ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %post
 /sbin/ldconfig

@@ -40,6 +40,10 @@ install -vdm755 %{buildroot}%{_lib}
 ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libdbus-1.so) %{buildroot}%{_libdir}/libdbus-1.so
 rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 #ln -sv %{buildroot}%{_sysconfdir}/machine-id %{buildroot}%{_sharedstatedir}/dbus
+
+%check
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 /etc/*

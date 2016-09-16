@@ -40,6 +40,22 @@ pushd build_unix
 make DESTDIR=%{buildroot} docdir=%{_docdir}/%{name}-%{version} install
 popd
 find %{buildroot} -name '*.la' -delete
+
+%check
+wget http://prdownloads.sourceforge.net/tcl/tcl8.6.5-src.tar.gz --no-check-certificate
+tar xvf tcl8.6.5-src.tar.gz
+pushd tcl8.6.5/unix
+./configure --enable-threads --prefix=%{_prefix}
+make
+make install
+popd
+
+cd build_unix
+make cutest 
+./cutest -s  TestCallbackSetterAndGetter -s TestDbTuner -s TestEnvMethod -s TestPartial -s TestPartial  \
+-s TestQueue -s TestChannel -s  TestEncryption -s TestKeyExistErrorReturn -s TestPartition -s TestDbHotBackup \
+-s TestEnvConfig -s TestPreOpenSetterAndGetter
+
 %clean
 rm -rf %{buildroot}
 

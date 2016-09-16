@@ -61,8 +61,7 @@ CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
     	--with-cli6-pid-file=%{_localstatedir}/run/dhclient6.pid \
     	--with-relay-pid-file=%{_localstatedir}/run/dhcrelay.pid \
     	--enable-log-pid \
-	--enable-paranoia --enable-early-chroot
-
+	--enable-paranoia --enable-early-chroot 
 make 
 %install
 make DESTDIR=%{buildroot} install
@@ -103,6 +102,39 @@ WantedBy=multi-user.target
 EOF
 
 install -v -dm 755 %{buildroot}/var/lib/dhclient
+
+%check
+pushd %{_builddir}/%{name}-%{version}-P1/bind
+tar xvf bind.tar.gz
+popd
+pushd %{_builddir}/%{name}-%{version}-P1/bind/bind-9.9.7-P3/unit/atf-src/
+./configure --prefix=%{_prefix} --enable-tools --disable-shared
+make
+make install
+popd
+
+CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
+        -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
+        -D_PATH_DHCLIENT_CONF='\"/etc/dhcp/dhclient.conf\"'"        \
+./configure \
+ --prefix=%{_prefix} \
+ --sysconfdir=/etc/dhcp                                  \
+        --localstatedir=/var                                    \
+        --with-srv-lease-file=/var/lib/dhcpd/dhcpd.leases       \
+        --with-srv6-lease-file=/var/lib/dhcpd/dhcpd6.leases     \
+        --with-cli-lease-file=/var/lib/dhclient/dhclient.leases \
+        --with-cli6-lease-file=/var/lib/dhclient/dhclient6.leases \
+ --with-srv-pid-file=%{_localstatedir}/run/dhcpd.pid \
+ --with-srv6-pid-file=%{_localstatedir}/run/dhcpd6.pid \
+     --with-cli-pid-file=%{_localstatedir}/run/dhclient.pid \
+     --with-cli6-pid-file=%{_localstatedir}/run/dhclient6.pid \
+     --with-relay-pid-file=%{_localstatedir}/run/dhcrelay.pid \
+     --enable-log-pid \
+ --enable-paranoia --enable-early-chroot \
+        --with-atf=%{_prefix}
+make 
+
+make %{?_smp_mflags} check
 
 %post	libs -p /sbin/ldconfig
 %postun	libs -p /sbin/ldconfig

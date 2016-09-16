@@ -99,7 +99,8 @@ WantedBy=multi-user.target
 EOF
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post
 %{_sbindir}/ldconfig 
 %systemd_post saslauthd.service
