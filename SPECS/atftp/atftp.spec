@@ -84,6 +84,10 @@ ATFTPD_DIRECTORY=/var/lib/tftpboot
 ATFTPD_BIND_ADDRESSES=
 EOF
 
+%check
+sed -i 's/^start_server$/chown -R nobody $DIRECTORY\nstart_server/g' test/test.sh || true
+make %{?_smp_mflags} check
+
 %pre
 if [ $1 -eq 1 ] ; then
     getent group  tftp  >/dev/null || groupadd -r tftp

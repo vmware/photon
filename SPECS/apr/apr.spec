@@ -32,6 +32,12 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+pushd test
+sed -i 's/abts_run_test(suite, test_serv_by_name, NULL);/ /g' testsock.c
+make %{?_smp_mflags}
+./testall
+
 %post
 
 %files

@@ -32,8 +32,10 @@ rm %{buildroot}/%{_libdir}/*.la
 rm -rv %{buildroot}/%{_mandir}/man2
 rm -fv %{buildroot}%{_mandir}/man5/attr.5*
 rmdir "%{buildroot}%{_mandir}/man5"
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags} tests
+
 %files
 %defattr(-,root,root)
 %{_mandir}/man1/*

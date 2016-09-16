@@ -26,6 +26,10 @@ make %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 make DESTDIR=%{buildroot} install
 
+%check
+python tests/testasciidoc.py update
+python tests/testasciidoc.py run
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
