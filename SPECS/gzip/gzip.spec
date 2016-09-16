@@ -27,8 +27,10 @@ install -vdm 755 %{buildroot}%{_bindir}
 mv -v %{buildroot}/bin/{gzexe,uncompress,zcmp,zdiff,zegrep}	%{buildroot}%{_bindir}
 mv -v %{buildroot}/bin/{zfgrep,zforce,zgrep,zless,zmore,znew}	%{buildroot}%{_bindir}
 rm -rf %{buildroot}%{_infodir}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 /bin/*

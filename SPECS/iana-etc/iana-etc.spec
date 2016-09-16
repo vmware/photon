@@ -18,6 +18,10 @@ The Iana-Etc package provides data for network services and protocols.
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+
+%check
+make %{?_smp_mflags} test
+
 %files
 %defattr(-,root,root)
 %config %_sysconfdir/protocols

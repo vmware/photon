@@ -21,8 +21,10 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -v -Dm644 doc/I18N-HOWTO %{buildroot}/%{_docdir}/%{name}-%{version}/I18N-HOWTO
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %{_docdir}/%{name}-%{version}/I18N-HOWTO

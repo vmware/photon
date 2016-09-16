@@ -33,6 +33,10 @@ specially formatted comments from the code to create API documentation.
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
+
+%check
+cd tests && make check-TESTS
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
