@@ -45,7 +45,33 @@ rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
 %find_lang %{name} --all-name
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+wget http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz --no-check-certificate
+tar xvf tcl8.5.14-src.tar.gz
+pushd tcl8.5.14/unix
+./configure --enable-threads --prefix=/usr
+make
+make install
+popd
+
+wget http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz --no-check-certificate
+tar xvf expect5.45.tar.gz
+pushd expect5.45
+./configure --prefix=/usr
+make
+make install
+ln -svf expect5.45/libexpect5.45.so /usr/lib
+popd
+
+wget https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz --no-check-certificate
+tar xvf dejagnu-1.5.3.tar.gz
+pushd dejagnu-1.5.3
+./configure --prefix=/usr
+make
+make install 
+popd
+
+make %{?_smp_mflags} check
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_includedir}/*.h

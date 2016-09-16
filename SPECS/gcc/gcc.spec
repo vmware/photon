@@ -112,7 +112,8 @@ popd
 %check
 cd ../gcc-build
 ulimit -s 32768
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 

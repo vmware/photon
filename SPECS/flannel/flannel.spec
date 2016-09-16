@@ -31,7 +31,10 @@ install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ bin/flanneld
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+export GOPATH=%{_builddir}
+go get golang.org/x/tools/cmd/cover
+sed -e 's:^func TestRemote:func _TestRemote:' -i remote/remote_test.go || die
+./test
 
 %post
 
