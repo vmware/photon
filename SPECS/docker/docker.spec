@@ -30,8 +30,7 @@ install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
 install -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/bash-completion/completions/docker
 
 %{_fixperms} %{buildroot}/*
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %preun
 %systemd_preun docker.service
 %systemd_preun docker-containerd.service
