@@ -29,8 +29,10 @@ mv -v %{buildroot}%{_bindir}/find %{buildroot}/bin
 sed -i 's/find:=${BINDIR}/find:=\/bin/' %{buildroot}%{_bindir}/updatedb
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files -f %{name}.lang

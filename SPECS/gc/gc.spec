@@ -35,8 +35,10 @@ ln -sfv libatomic_ops-7.4.2 libatomic_ops
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files

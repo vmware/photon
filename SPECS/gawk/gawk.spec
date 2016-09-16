@@ -29,8 +29,11 @@ cp -v doc/{awkforai.txt,*.{eps,pdf,jpg}} %{buildroot}%{_defaultdocdir}/%{name}-%
 rm -rf %{buildroot}%{_infodir}
 find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+sed -i 's/ pty1 / /' test/Makefile
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files -f %{name}.lang
