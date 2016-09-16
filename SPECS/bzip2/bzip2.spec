@@ -42,7 +42,7 @@ ln -sv bzip2 %{buildroot}/usr/bin/bunzip2
 ln -sv bzip2 %{buildroot}/usr/bin/bzcat
 find %{buildroot} -name '*.a'  -delete
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files

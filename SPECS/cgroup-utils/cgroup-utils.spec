@@ -27,6 +27,9 @@ python setup.py build
 %install
 python setup.py install --single-version-externally-managed -O1 --root=%{buildroot} --record=INSTALLED_FILES
 
+%check
+python test_all.py
+
 %clean
 %{__rm} -rf %{buildroot}
 

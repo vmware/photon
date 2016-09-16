@@ -45,6 +45,9 @@ rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 rm -f $RPM_BUILD_ROOT/%{_libdir}/libcares.la
 
+%check
+make %{?_smp_mflags} check
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
