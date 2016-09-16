@@ -54,8 +54,6 @@ chmod 755 %{buildroot}/etc/systemd/scripts/iptables
 find %{buildroot} -name '*.a'  -delete
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %preun
 %systemd_preun iptables.service

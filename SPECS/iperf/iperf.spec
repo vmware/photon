@@ -52,6 +52,9 @@ make %{?_smp_mflags}
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 
+%check
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/iperf3

@@ -29,8 +29,7 @@ make SUIDMODE="-o root -m 755" DESTDIR=%{buildroot} install
 install -vd %{buildroot}%{_sbindir}
 mv -v %{buildroot}%{_bindir}/ifconfig %{buildroot}%{_sbindir}/ifconfig
 rm -rf %{buildroot}%{_infodir}
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

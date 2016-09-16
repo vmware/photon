@@ -53,9 +53,6 @@ iconv -f ISO88591 -t UTF8 RELNOTES -o RELNOTES.tmp
 touch -r RELNOTES RELNOTES.tmp
 mv -f RELNOTES.tmp RELNOTES
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %files
 %defattr(-,root,root)
 %doc RELNOTES

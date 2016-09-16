@@ -56,7 +56,7 @@ Headers and shared object symbolic links for the HAVEGE algorithm
 make
 
 %check
-make check
+make %{?_smp_mflags} check
 
 
 %install
