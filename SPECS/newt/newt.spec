@@ -37,6 +37,9 @@ make
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+make %{?_smp_mflags} test
+
 %files
 %defattr(-,root,root)
 %{_libdir}/libnewt.so.0*

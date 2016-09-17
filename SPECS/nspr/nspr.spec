@@ -30,6 +30,7 @@ make %{?_smp_mflags}
 %install
 cd nspr
 make DESTDIR=%{buildroot} install
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files

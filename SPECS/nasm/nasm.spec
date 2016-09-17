@@ -18,6 +18,7 @@ NASM (Netwide Assembler) is an 80x86 assembler designed for portability and modu
 make %{?_smp_mflags}
 %install
 make INSTALLROOT=%{buildroot} install
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
