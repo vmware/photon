@@ -42,6 +42,9 @@ make DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}%{_libdir}/ccache
 ln -fs ../../bin/ccache-swig %{buildroot}%{_libdir}/ccache/swig
 
+%check
+make %{?_smp_mflags} check
+
 %files
 %{_bindir}/*
 %{_datadir}/swig

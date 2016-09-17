@@ -72,7 +72,7 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 %{_fixperms} %{buildroot}/*
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %post
 if [ $1 -eq 1 ] ; then

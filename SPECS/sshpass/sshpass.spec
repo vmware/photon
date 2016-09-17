@@ -21,9 +21,6 @@ make %{?_smp_mflags}
 rm -rf %{buildroot}
 make prefix=%{_prefix}	DESTDIR=%{buildroot} install
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %clean 
 rm -rf %{buildroot}/*
 

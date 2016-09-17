@@ -55,8 +55,10 @@ EOF
 
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post
 /sbin/ldconfig
 if [ $1 -eq 1 ] ; then

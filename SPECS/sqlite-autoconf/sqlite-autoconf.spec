@@ -37,8 +37,10 @@ install -D -m644 sqlite3.1 %{buildroot}/%{_mandir}/man1/sqlite3.1
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
