@@ -58,6 +58,15 @@ rm -f %{buildroot}%{_bindir}/genpolusers
 rm -f %{buildroot}%{_bindir}/chkcon
 rm -rf %{buildroot}%{_mandir}/man8
 
+%check
+wget https://sourceforge.net/projects/cunit/files/CUnit-2.1-2-src.tar.bz2 --no-check-certificate
+tar xjf CUnit-2.1-2-src.tar.bz2
+pushd CUnit-2.1-2/
+./configure --prefix=/usr
+make
+make install
+popd
+
 %clean
 rm -rf %{buildroot}
 

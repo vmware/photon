@@ -63,6 +63,9 @@ make DESTDIR=%{buildroot} install
 %find_lang %{name}
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
+%check
+make %{?_smp_mflags} check
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
