@@ -1,7 +1,7 @@
 Summary: The Python Cryptography Toolkit.
 Name:    pycrypto
 Version: 2.7a1
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: UNKNOWN
 URL: https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-2.7a1.tar.gz
 Source: %{name}-%{version}.tar.gz
@@ -24,11 +24,16 @@ python setup.py build
 %install
 python setup.py install -O1 --root=%{buildroot} --prefix=/usr
 
+%check
+python setup.py test
+
 %files
 %defattr(-,root,root)
 %{_libdir}/python2.7/*
 
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 2.7a1-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7a1-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 2.7a1-1

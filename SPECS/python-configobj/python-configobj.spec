@@ -1,6 +1,6 @@
 Name:           python-configobj
 Version:        5.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Config file reading, writing and validation
 License:        BSD
 Group:          Development/Languages/Python
@@ -28,11 +28,16 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python validate.py
+
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/*
 
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 5.0.6-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.0.6-2
 -	GA - Bump release of all rpms
 * Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
