@@ -28,7 +28,7 @@ rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %post
 /sbin/ldconfig

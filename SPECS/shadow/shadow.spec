@@ -85,6 +85,10 @@ do
     sed -i "s/chage/$PROGRAM/" %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
 done
 %find_lang %{name}
+
+%check
+make %{?_smp_mflags} check
+
 %post
 %{_sbindir}/pwconv
 %{_sbindir}/grpconv

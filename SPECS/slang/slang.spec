@@ -42,6 +42,9 @@ make DESTDIR=%{buildroot} install_doc_dir=%{_docdir}/slang-2.3.0   \
 chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.3.0 \
              %{buildroot}%{_libdir}/slang/v2/modules/*.so
 
+%check
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*

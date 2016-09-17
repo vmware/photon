@@ -172,6 +172,9 @@ install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logro
 
 %find_lang %{name}
 
+%check
+make %{?_smp_mflags} check
+
 %clean
 [ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
 
