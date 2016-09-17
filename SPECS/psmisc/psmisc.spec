@@ -1,7 +1,7 @@
 Summary:	Displays information about running processes
 Name:		psmisc
 Version:	22.21
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://psmisc.sourceforge.net/
 Group:		Applications/System
@@ -30,14 +30,18 @@ install -vdm 755 %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/fuser   %{buildroot}/bin
 mv -v %{buildroot}%{_bindir}/killall %{buildroot}/bin
 %find_lang %{name}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 /bin/*
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 22.21-5
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 22.21-4
 -	GA - Bump release of all rpms
 *	Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 22.21-3
