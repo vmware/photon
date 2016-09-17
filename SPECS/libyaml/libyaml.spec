@@ -36,6 +36,9 @@ you will need to install %{name}-devel.
 %{__rm} -rf %{buildroot}
 %{__make} install DESTDIR=%{buildroot}
 
+%check
+make %{?_smp_mflags} check
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
