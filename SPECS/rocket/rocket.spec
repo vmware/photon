@@ -30,8 +30,7 @@ install -vdm755 %{buildroot}/var/lib/rkt/tmp
 install -vdm755 %{buildroot}/var/lib/rkt/containers
 
 %{_fixperms} %{buildroot}/*
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %clean
