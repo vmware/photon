@@ -1,7 +1,7 @@
 Summary:	Functions for multiple precision math
 Name:		mpfr
 Version:	3.1.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.mpfr.org
 Group:		Applications/System
@@ -30,8 +30,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}%{_infodir}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
@@ -56,6 +58,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libmpfr.a
 %{_libdir}/libmpfr.so
 %changelog
+*       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 3.1.3.-3
+-       Modified check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.3-2
 -	GA - Bump release of all rpms
 *       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.1.3-1
