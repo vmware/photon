@@ -1,7 +1,7 @@
 Summary:	Programs for finding and viewing man pages
 Name:		man-db
 Version:	2.7.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://www.nongnu.org/man-db
 Group:		Applications/System
@@ -37,8 +37,9 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name} --all-name
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %pre
 
@@ -66,10 +67,12 @@ fi
 %{_mandir}/*/*
 %{_libdir}/tmpfiles.d/man-db.conf
 %changelog
+*       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 2.7.5-5
+-       Modified check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.5-4
 -	GA - Bump release of all rpms
-*   Mon May 16 2016 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-3
--   Fix user man:man adding.
+*       Mon May 16 2016 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-3
+-       Fix user man:man adding.
 *       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.7.5-2
 -       Adding support for upgrade in pre/post/un scripts.
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 2.7.5-1

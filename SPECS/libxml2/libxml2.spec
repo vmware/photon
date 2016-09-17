@@ -1,7 +1,7 @@
 Summary:	Libxml2
 Name:		libxml2
 Version:	2.9.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://xmlsoft.org/
 Group:		System Environment/General Libraries
@@ -55,8 +55,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -84,6 +86,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*       Mon Oct 03 2016 Chang Lee <changlee@vmware.com> 2.9.4-2
+-       Modified check
 *       Wed Jun 01 2016 Anish Swaminathan <anishs@vmware.com> 2.9.4-1
 -       Upgrade to 2.9.4
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.3-2

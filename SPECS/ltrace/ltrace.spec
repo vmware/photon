@@ -1,7 +1,7 @@
 Summary:	ltrace intercepts and records dynamic library calls.
 Name:		ltrace
 Version:	0.7.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.ltrace.org/
 Group:		Development/Debuggers
@@ -27,7 +27,7 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 
 %check
-make -k check 
+make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*
@@ -38,6 +38,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_datadir}
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 0.7.3-3
+-       Modified check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.3-2
 -	GA - Bump release of all rpms
 *	Wed Nov 25 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.7.3-1
