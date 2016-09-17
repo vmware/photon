@@ -1,7 +1,7 @@
 Summary:	Security client
 Name:		nss
 Version:	3.25
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
 Group:		Applications/System
@@ -56,6 +56,12 @@ chmod 644 %{buildroot}%{_includedir}/nss/*
 install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
+
+%check
+cd nss/tests
+HOST=localhost DOMSUF=localdomain
+./all.sh
+
 %post	-p /sbin/ldconfig
 
 %files
@@ -71,6 +77,8 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
+-       Modified %check
 *       Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
 -       Upgrade to 3.25
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2

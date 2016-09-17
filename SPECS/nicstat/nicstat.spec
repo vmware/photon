@@ -22,8 +22,8 @@ gcc  -o3 -m64 %{name}.c -o %{name}
 %install
 install -p -m755 -D  %{name} %{buildroot}%{_bindir}/%{name}
 install -p -m644 -D  %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
-    
 
+    
 %files
 %{_bindir}/*
 %{_mandir}/man1/*
