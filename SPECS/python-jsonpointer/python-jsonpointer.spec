@@ -1,6 +1,6 @@
 Name:           python-jsonpointer
 Version:        1.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -26,6 +26,9 @@ Library to apply JSON Patches according to RFC 6902.
 %build
 python setup.py build
 
+%check
+python tests.py
+
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
@@ -35,9 +38,11 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/jsonpointer
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 1.10-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10-2
 -	GA - Bump release of all rpms
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10-1
--   Updated to version 1.10
-*   Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
--   Initial packaging for Photon
+*       Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10-1
+-       Updated to version 1.10
+*       Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+-       Initial packaging for Photon

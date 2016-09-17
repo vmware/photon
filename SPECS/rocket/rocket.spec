@@ -1,7 +1,7 @@
 Summary:        Rocket
 Name:           rocket
 Version:        1.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://rocket.readthedocs.org/en/latest/
 Group:          Applications/File
@@ -30,8 +30,7 @@ install -vdm755 %{buildroot}/var/lib/rkt/tmp
 install -vdm755 %{buildroot}/var/lib/rkt/containers
 
 %{_fixperms} %{buildroot}/*
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %clean
@@ -47,6 +46,8 @@ rm -rf %{buildroot}/*
 /var/lib/rkt/containers
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 1.4.0-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.0-3
 -	GA - Bump release of all rpms
 *       Mon Apr 18 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.0-2

@@ -1,7 +1,7 @@
 Summary:        XML and HTML with Python
 Name:           python-lxml
 Version:        3.5.0b1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
@@ -31,6 +31,9 @@ The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxs
 %install
 %{__python} setup.py install --skip-build --root %{buildroot}
 
+%check
+make test
+
 %clean
 rm -rf %{buildroot}
 
@@ -42,6 +45,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.5.0b1-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.0b1-2
 -	GA - Bump release of all rpms
 * 	Wed Oct 28 2015 Divya Thaluru <dthaluru@vmware.com> 3.5.0b1-1
