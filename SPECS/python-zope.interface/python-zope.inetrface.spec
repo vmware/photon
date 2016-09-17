@@ -8,7 +8,7 @@ Group:          Development/Languages/Python
 Source0:        https://pypi.python.org/packages/source/z/zope.interface/zope.interface-%{version}.tar.gz
 %define sha1 zope.interface=207161e27880d07679aff6d712ed12f55e3d91b6
 
-BuildRequires: python2
+BuildRequires: python2-devel
 BuildRequires: python2-libs
 BuildRequires: python-setuptools
 
@@ -30,6 +30,9 @@ python setup.py build
 
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+
+%check
+python setup.py test
 
 %files
 %defattr(-,root,root)
