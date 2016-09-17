@@ -11,7 +11,7 @@ Source0:	http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1 libxslt=4df177de629b2653db322bfb891afa3c0d1fa221
 Requires:	libxml2-devel
 BuildRequires:	libxml2-devel
-BuildRequires:	python2
+BuildRequires:	python2, libgcrypt-devel
 %description
 The libxslt package contains XSLT libraries used for extending libxml2 libraries to support XSLT files. 
 
@@ -37,8 +37,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
