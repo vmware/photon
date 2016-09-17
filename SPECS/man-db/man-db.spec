@@ -37,8 +37,9 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name} --all-name
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %pre
 
