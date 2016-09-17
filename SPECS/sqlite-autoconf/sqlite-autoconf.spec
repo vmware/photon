@@ -2,7 +2,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		sqlite-autoconf
 Version:	3.11.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries
@@ -37,8 +37,10 @@ install -D -m644 sqlite3.1 %{buildroot}/%{_mandir}/man1/sqlite3.1
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -51,6 +53,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 %{_mandir}/man1/*
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.11.0-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11.0-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.11.0-1

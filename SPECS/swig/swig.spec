@@ -1,7 +1,7 @@
 Summary:	Connects C/C++/Objective C to some high-level programming languages
 Name:		swig
 Version:	3.0.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+ and BSD
 URL:		http://swig.sourceforge.net/
 Source0:	http://downloads.sourceforge.net/project/swig/swig/swig-%{version}/swig-%{version}.tar.gz
@@ -42,12 +42,17 @@ make DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}%{_libdir}/ccache
 ln -fs ../../bin/ccache-swig %{buildroot}%{_libdir}/ccache/swig
 
+%check
+make %{?_smp_mflags} check
+
 %files
 %{_bindir}/*
 %{_datadir}/swig
 %{_libdir}/ccache
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.0.8-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.8-2
 -	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.0.8-1
