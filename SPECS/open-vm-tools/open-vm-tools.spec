@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.0.5
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -67,6 +67,9 @@ chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 # Move vm-support to /usr/bin
 mv %{buildroot}%{_sysconfdir}/vmware-tools/vm-support %{buildroot}%{_bindir}
 
+%check
+make %{?_smp_mflags} check
+
 %post
 /sbin/ldconfig
 %systemd_post vgauthd.service vmtoolsd.service
@@ -101,6 +104,8 @@ fi
 
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 10.0.6-13
+-       Modified %check
 *       Thu Jun 23 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-12
 -       Avoiding recustomization of hostname, bug#1678537.
 *       Mon Jun 13 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-11
