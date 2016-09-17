@@ -1,7 +1,7 @@
 Summary:	Platform-neutral API
 Name:		nspr
 Version:	4.12
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org
 Group:		Applications/System
@@ -30,6 +30,7 @@ make %{?_smp_mflags}
 %install
 cd nspr
 make DESTDIR=%{buildroot} install
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
@@ -40,6 +41,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 %{_datarootdir}/aclocal/*
 %changelog
+*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 4.12-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.12-2
 -	GA - Bump release of all rpms
 *       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 4.12-1

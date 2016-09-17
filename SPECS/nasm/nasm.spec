@@ -1,7 +1,7 @@
 Summary:	Netwide Assembler.
 Name:		nasm
 Version:	2.12.02
-Release:	1
+Release:	2
 License:	BSD
 URL:		http://www.nasm.us
 Group:		System Environment/Libraries
@@ -18,10 +18,13 @@ NASM (Netwide Assembler) is an 80x86 assembler designed for portability and modu
 make %{?_smp_mflags}
 %install
 make INSTALLROOT=%{buildroot} install
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_datadir}/*
 %changelog
+*       Tue Oct 04 2016 Chang Lee <changlee@vmware.com> 2.12.02-2
+-       Modified %check
 *	Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 2.12.02-1
 -	Initial version
