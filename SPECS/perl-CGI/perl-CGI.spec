@@ -54,6 +54,12 @@ find %{buildroot} -type f -name .packlist -delete
 %{_fixperms} %{buildroot}/*
 
 %check
+export PERL_MM_USE_DEFAULT=1
+cpan local::lib
+cpan Test::Deep 
+cpan HTML::Entities
+cpan Test::Warn
+cpan Test::NoWarnings
 make test
 
 %files

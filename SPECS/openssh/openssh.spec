@@ -88,8 +88,14 @@ WantedBy=multi-user.target
 EOF
 
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+useradd sshd
+if [ ! -d /var/lib/sshd ]; then
+   mkdir /var/lib/sshd
+   chmod 0755 /var/lib/sshd
+fi
+make %{?_smp_mflags} tests
 
 %pre
 getent group sshd >/dev/null || groupadd -g 50 sshd

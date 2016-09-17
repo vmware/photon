@@ -54,7 +54,8 @@ make install DESTDIR=%{buildroot}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make test
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean

@@ -39,7 +39,9 @@ make install DESTDIR=%{buildroot}
 find %{buildroot} -name 'perllocal.pod' -delete
 
 %check
-make test
+export PERL_MM_USE_DEFAULT=1
+cpan Test::YAML
+make %{?_smp_mflags} test
 
 %files
 %dir %{perl_vendorlib}/YAML/

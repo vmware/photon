@@ -24,8 +24,10 @@ to build tools during the configure and make file execution.
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/pkg-config

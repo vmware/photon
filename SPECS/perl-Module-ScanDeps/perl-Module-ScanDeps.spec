@@ -32,6 +32,9 @@ find %{buildroot} -type f -name .packlist -exec rm -f {} +
 %{_fixperms} %{buildroot}
 
 %check
+export PERL_MM_USE_DEFAULT=1
+cpan local::lib
+cpan Test::Requires 
 make test
 
 %files

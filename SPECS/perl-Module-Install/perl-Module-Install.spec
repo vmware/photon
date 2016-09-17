@@ -39,6 +39,9 @@ rm -rf %{buildroot}/blib/lib/auto/share/dist/Module-Install/dist_file.txt
 %{_fixperms} %{buildroot}/*
 
 %check
+export PERL_MM_USE_DEFAULT=1
+cpan local::lib
+cpan File::Remove 
 make test AUTOMATED_TESTING=1
 
 %files
