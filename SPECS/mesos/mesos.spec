@@ -60,7 +60,7 @@ sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libproc
 make
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %install
 make DESTDIR=%{buildroot} install

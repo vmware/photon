@@ -27,7 +27,7 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 
 %check
-make -k check 
+make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*
