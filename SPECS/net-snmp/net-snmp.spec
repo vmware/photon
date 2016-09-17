@@ -2,7 +2,7 @@
 Summary:	Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6. 
 Name:		net-snmp   
 Version:	5.7.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD (like)  
 URL:		http://net-snmp.sourceforge.net/
 Group:		Productivity/Networking/Other
@@ -76,6 +76,9 @@ ExecReload=/bin/kill -HUP $MAINPID
 WantedBy=multi-user.target
 EOF
 
+%check
+make %{?_smp_mflags} test
+
 %post
 /sbin/ldconfig
 %systemd_post snmpd.service
@@ -112,7 +115,9 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
 
 %changelog
-*   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 5.7.3-4
+*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 5.7.3-5
+-       Modified %check
+*       Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 5.7.3-4
 -	Excluded the perllocal.pod log.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.7.3-3
 -	GA - Bump release of all rpms
