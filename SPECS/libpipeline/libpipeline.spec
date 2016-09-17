@@ -24,8 +24,10 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -C tests check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
