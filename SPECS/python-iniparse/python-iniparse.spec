@@ -37,6 +37,16 @@ rm -rf $RPM_BUILD_ROOT
 chmod 644 $RPM_BUILD_ROOT//usr/share/doc/iniparse-%{version}/index.html
 mv $RPM_BUILD_ROOT/usr/share/doc/iniparse-%{version} $RPM_BUILD_ROOT/usr/share/doc/python-iniparse-%{version}
 
+%check
+cp -r iniparse/ tests/
+cd tests
+python test_misc.py
+python test_tidy.py
+python test_fuzz.py
+python test_ini.py
+python test_multiprocessing.py
+python test_unicode.py
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 

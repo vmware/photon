@@ -28,6 +28,9 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python validate.py
+
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/*

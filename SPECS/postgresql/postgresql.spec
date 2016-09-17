@@ -68,7 +68,11 @@ make install DESTDIR=%{buildroot}
 cd contrib && make install DESTDIR=%{buildroot}
 
 %{_fixperms} %{buildroot}/*
+
 %check
+chown -Rv nobody .
+sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean

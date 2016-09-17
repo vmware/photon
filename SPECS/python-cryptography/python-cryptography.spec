@@ -32,6 +32,20 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+openssl req \
+    -new \
+    -newkey rsa:4096 \
+    -days 365 \
+    -nodes \
+    -x509 \
+    -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=photon.com" \
+    -keyout photon.key \
+    -out photon.cert
+openssl rsa -in photon.key -out photon.pem
+mv photon.pem /etc/ssl/certs
+python setup.py test
+
 %files
 %defattr(-,root,root)
 %{python_sitelib}/*

@@ -24,6 +24,9 @@ python setup.py build
 %install
 python setup.py install -O1 --root=%{buildroot} --prefix=/usr
 
+%check
+python setup.py test
+
 %files
 %defattr(-,root,root)
 %{_libdir}/python2.7/*
