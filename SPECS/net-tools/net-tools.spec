@@ -90,8 +90,7 @@ sed -i -e 's|# HAVE_IP_TOOLS=0|HAVE_IP_TOOLS=1|g' \
 make
 %install
 make BASEDIR=%{buildroot} BINDIR=%{_bindir} SBINDIR=%{_sbindir} install
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean

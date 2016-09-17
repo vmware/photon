@@ -80,6 +80,10 @@ ln -sv %{_lib}/libncursesw.so.6.0 %{buildroot}%{_libdir}/libncurses.so.6
 cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 
+%check
+false
+#cd tests && ./configure && make   
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %post compat -p /sbin/ldconfig

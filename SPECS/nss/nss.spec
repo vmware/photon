@@ -56,6 +56,12 @@ chmod 644 %{buildroot}%{_includedir}/nss/*
 install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
+
+%check 
+cd nss/tests
+HOST=localhost DOMSUF=localdomain
+./all.sh
+
 %post	-p /sbin/ldconfig
 
 %files

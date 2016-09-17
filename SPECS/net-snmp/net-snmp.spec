@@ -76,6 +76,9 @@ ExecReload=/bin/kill -HUP $MAINPID
 WantedBy=multi-user.target
 EOF
 
+%check
+make %{?_smp_mflags} test
+
 %post
 /sbin/ldconfig
 %systemd_post snmpd.service

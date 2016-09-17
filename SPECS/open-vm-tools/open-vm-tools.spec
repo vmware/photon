@@ -67,6 +67,9 @@ chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 # Move vm-support to /usr/bin
 mv %{buildroot}%{_sysconfdir}/vmware-tools/vm-support %{buildroot}%{_bindir}
 
+%check
+make %{?_smp_mflags} check
+
 %post
 /sbin/ldconfig
 %systemd_post vgauthd.service vmtoolsd.service
