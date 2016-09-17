@@ -1,7 +1,7 @@
 Summary:	A library for text mode user interfaces
 Name:		newt
 Version:	0.52.18
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU Library General Public License
 URL:		https://admin.fedoraproject.org/pkgdb/package/newt/
 Group:		Development/Languages
@@ -37,6 +37,9 @@ make
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+make %{?_smp_mflags} test
+
 %files
 %defattr(-,root,root)
 %{_libdir}/libnewt.so.0*
@@ -51,6 +54,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 0.52.18-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.18-2
 -	GA - Bump release of all rpms
 *	Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
