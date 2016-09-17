@@ -1,6 +1,6 @@
 Name:           python-ipaddr
 Version:        2.1.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/google/ipaddr-py
 Summary:        Google's Python IP address manipulation library
 License:        Apache2
@@ -29,11 +29,16 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python ipaddr_test.py
+
 %files
 %defattr(-,root,root)
 %{python_sitelib}/*
 
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 2.1.11-3
+-       Modified %checka
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.11-2
 -	GA - Bump release of all rpms
 * Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>

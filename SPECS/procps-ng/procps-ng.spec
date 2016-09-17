@@ -1,7 +1,7 @@
 Summary:	Programs for monitoring processes
 Name:		procps-ng
 Version:	3.3.11
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 URL:		http://procps.sourceforge.net/
 Group:		Applications/System
@@ -40,6 +40,10 @@ ln -sfv ../..%{_lib}/$(readlink %{buildroot}/%{_libdir}/libprocps.so) %{buildroo
 install -vdm 755 %{buildroot}/%{_sbindir}
 ln -s %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
 find %{buildroot} -name '*.la' -delete
+
+%check
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
@@ -98,6 +102,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.3.11-4
+-       Modified %check
 *	Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
 -	Added patch to interpret ASCII sequence correctly
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2

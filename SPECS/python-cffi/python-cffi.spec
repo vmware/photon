@@ -1,7 +1,7 @@
 Summary:        Interface for Python to call C code
 Name:           python-cffi
 Version:        1.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -30,11 +30,16 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python setup.py test
+
 %files
 %defattr(-,root,root)
 %{python_sitelib}/*
 
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 1.5.2-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.2-1
