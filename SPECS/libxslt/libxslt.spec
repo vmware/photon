@@ -37,8 +37,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
