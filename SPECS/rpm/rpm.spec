@@ -94,6 +94,10 @@ install -vm644 macros %{buildroot}%{_sysconfdir}/rpm/
 install -vm755 brp-strip-debug-symbols %{buildroot}%{_libdir}/rpm/
 install -vm755 brp-strip-unneeded %{buildroot}%{_libdir}/rpm/
 popd
+
+%check
+make %{?_smp_mflags} check
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %clean

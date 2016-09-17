@@ -40,6 +40,9 @@ install -m644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE2} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
 
+%check
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %config(noreplace) /etc/sysconfig/rpcbind
@@ -47,9 +50,6 @@ install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
 %{_mandir}/man8/*
 %dir %{_localstatedir}/lib/rpcbind
 %{_unitdir}/*
-
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %pre
 rpcid=`getent passwd rpc | cut -d: -f 3`

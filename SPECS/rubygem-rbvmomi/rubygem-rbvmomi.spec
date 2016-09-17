@@ -22,6 +22,15 @@ RbVmomi is a Ruby interface to the vSphere API. Like the Perl and Java SDKs, you
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+
+%check
+pushd /usr/src/photon/BUILDROOT/rubygem-rbvmomi-%{version}-%{release}.x86_64/usr/lib/ruby/gems/2.3.0/gems/rbvmomi-%{version}/
+gem install yard
+gem install jeweler
+gem install rake
+rake test
+popd
+
 %files
 %defattr(-,root,root,-)
 %{gemdir}

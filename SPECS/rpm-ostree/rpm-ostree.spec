@@ -70,6 +70,9 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot} INSTALL="install -p -c"
 find %{buildroot} -name '*.la' -delete
 
+%check
+make %{?_smp_mflags}  check
+
 %files
 %{_bindir}/rpm-ostree
 %{_bindir}/atomic

@@ -38,6 +38,8 @@ install -d -m 0755 %{buildroot}/etc/service
 install -D -m 0750 etc/2 %{buildroot}%{_sbindir}/runsvdir-start
 install -D -m 0755 %{SOURCE1} %{buildroot}/lib/systemd/system/runit.service
 
+%check
+sh package/check
 
 %clean
 rm -rf %{buildroot}

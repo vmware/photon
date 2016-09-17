@@ -19,6 +19,13 @@ Ruby library for reading and writing Zip files
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+
+%check
+pushd /usr/src/photon/BUILDROOT/rubygem-zip-%{version}-%{release}.x86_64/usr/lib/ruby/gems/2.3.0/gems/zip-%{version}/
+gem install jeweler
+rake test
+popd
+
 %files
 %defattr(-,root,root,-)
 %{gemdir}

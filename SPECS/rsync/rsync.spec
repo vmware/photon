@@ -38,6 +38,9 @@ ExecStart=/usr/bin/rsync --daemon --no-detach
 WantedBy=multi-user.target
 EOF
 
+%check
+make %{?_smp_mflags}  check
+
 %post
 /sbin/ldconfig
 %postun	-p /sbin/ldconfig
