@@ -11,7 +11,7 @@ Source0:        jsonpatch-%{version}.tar.gz
 BuildRequires: python2
 BuildRequires: python2-libs
 BuildRequires: python-setuptools
-
+BuildRequires: python-jsonpointer
 Requires: python-jsonpointer
 
 BuildArch:      noarch
@@ -27,6 +27,9 @@ python setup.py build
 
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+
+%check
+python ext_tests.py && python tests.py
 
 %files
 %defattr(-,root,root,-)

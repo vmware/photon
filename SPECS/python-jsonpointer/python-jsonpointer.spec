@@ -26,6 +26,9 @@ Library to apply JSON Patches according to RFC 6902.
 %build
 python setup.py build
 
+%check
+python tests.py
+
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
