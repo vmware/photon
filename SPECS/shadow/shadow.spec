@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.2.1
-Release:	8%{?dist}
+Release:	9%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -85,6 +85,10 @@ do
     sed -i "s/chage/$PROGRAM/" %{buildroot}%{_sysconfdir}/pam.d/${PROGRAM}
 done
 %find_lang %{name}
+
+%check
+make %{?_smp_mflags} check
+
 %post
 %{_sbindir}/pwconv
 %{_sbindir}/grpconv
@@ -101,6 +105,8 @@ done
 %{_mandir}/*/*
 %config(noreplace) %{_sysconfdir}/pam.d/*
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
+-       Modified %check
 *       Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
 -	Added logic to not replace pam.d conf files in upgrade scenario
 *       Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-7

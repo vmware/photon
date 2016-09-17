@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       3.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -172,6 +172,9 @@ install -m 644 initscript/logrotate.stap-server %{buildroot}%{_sysconfdir}/logro
 
 %find_lang %{name}
 
+%check
+make %{?_smp_mflags} check
+
 %clean
 [ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
 
@@ -329,17 +332,19 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.0-2
+-       Modified %check
 * 	Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1 
 -	Updated version to 3.0
 -	Removing patch to enable kernel (fix is present in upstream)
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-5
 -	GA - Bump release of all rpms
-*   Mon May 23 2016 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.9-4
+*       Mon May 23 2016 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.9-4
 -	Added the patch to enable kernel building with Kernel 4.4
 * 	Fri May 20 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-3 
 -	Fixed the stap-prep script to be compatible with Photon
-*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
--   Fix for upgrade issues
+*       Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-2
+-       Fix for upgrade issues
 * 	Wed Dec 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9-1 
 -	Updated version to 2.9
 *	Fri Dec 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7-2
