@@ -1,7 +1,7 @@
 Summary:	Libxslt-1.1.28
 Name:		libxslt
 Version:	1.1.28
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:		http:/http://xmlsoft.org/libxslt/
 Group:		System Environment/General Libraries
@@ -37,8 +37,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -61,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+*       Mon Oct 03 2016 Chang Lee <changlee@vmware.com> 1.1.28-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.28-3
 -	GA - Bump release of all rpms
 *   Tue Jan 19 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.28-2

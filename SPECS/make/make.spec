@@ -1,7 +1,7 @@
 Summary:	Program for compiling packages
 Name:		make
 Version:	4.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/make
 Group:		Development/Tools
@@ -24,14 +24,18 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
 %{_includedir}/gnumake.h
 %{_mandir}/*/*
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 2.0.22-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1-3
 -	GA - Bump release of all rpms
 *       Tue May 10 2016 Kumar Kaushik <kaushikk@vmware.com>  4.1-2
