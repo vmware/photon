@@ -22,7 +22,6 @@ gcc  -o3 -m64 %{name}.c -o %{name}
 %install
 install -p -m755 -D  %{name} %{buildroot}%{_bindir}/%{name}
 install -p -m644 -D  %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
-    
 
 %files
 %{_bindir}/*
@@ -32,4 +31,4 @@ install -p -m644 -D  %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.95-2
 -	GA - Bump release of all rpms
 *	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.95-1
--   Initial build.  First version
+-       Initial build.  First version
