@@ -153,6 +153,12 @@
         "ipset",
         "build-essential",
         "micro-config-drive",
-        "ndsend"
+        "ndsend",
+        "openscap",
+        "openscap-devel",
+        "openscap-python",
+        "openscap-perl",
+        "XML-XPath",
+        "GConf2"
             ]
 }
