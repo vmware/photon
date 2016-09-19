@@ -1,21 +1,18 @@
-%global commit		e310e619fc1ac4f3238bf5ebe9e7033bf5d47ee2
-%global shortcommit	%(c=%{commit}; echo ${c:0:7})
-
-Summary:	Kubernetes cluster management
-Name:		kubernetes
-Version:	1.2.4
-Release:	1%{?dist}
-License:	ASL 2.0
-URL:		https://github.com/kubernetes/kubernetes/releases/download/v%{version}
-Source0:	https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v%{version}/%{name}-v%{version}.tar.gz
-%define sha1 kubernetes-v%{version}.tar.gz=f3aea83f8f0e16b2b41998a2edc09eb42fd8d945
-Source1:	https://github.com/GoogleCloudPlatform/kubernetes/archive/%{commit}/kubernetes-e310e61.tar.gz
-%define sha1 kubernetes-e310e61=a77e22b1677450c94f7b5eaf50586bb6adcf7e6d
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Requires:	etcd >= 2.0.0
-Requires:	shadow
+Summary:        Kubernetes cluster management
+Name:           kubernetes
+Version:        1.3.6
+Release:        1%{?dist}
+License:        ASL 2.0
+URL:            https://github.com/kubernetes/kubernetes/releases/download/v%{version}
+Source0:        https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v%{version}/%{name}-v%{version}.tar.gz
+%define sha1    kubernetes-v%{version}.tar.gz=505327e1c5f04292d2025d3ac1640fdf47421447
+Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
+%define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Requires:       etcd >= 3.0.4
+Requires:       shadow
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -39,21 +36,13 @@ for bin in "${binaries[@]}"; do
   install -p -m 755 -t %{buildroot}%{_bindir} tmp/kubernetes/server/bin/${bin}
 done
 
-# install the bash completion
-install -d -m 0755 %{buildroot}%{_datadir}/bash-completion/completions/
-install -t %{buildroot}%{_datadir}/bash-completion/completions/ kubernetes-%{commit}/contrib/completions/bash/kubectl
-
 # install config files
 install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
-install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} kubernetes-%{commit}/contrib/init/systemd/environ/*
+install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} contrib-0.7.0/init/systemd/environ/*
 
 # install service files
 install -d -m 0755 %{buildroot}/usr/lib/systemd/system
-install -m 0644 -t %{buildroot}/usr/lib/systemd/system kubernetes-%{commit}/contrib/init/systemd/*.service
-
-# install manpages
-install -d %{buildroot}%{_mandir}/man1
-install -p -m 644 kubernetes-%{commit}/docs/man/man1/* %{buildroot}%{_mandir}/man1
+install -m 0644 -t %{buildroot}/usr/lib/systemd/system contrib-0.7.0/init/systemd/*.service
 
 # install the place the kubelet defaults to put volumes
 install -d %{buildroot}/var/lib/kubelet
@@ -82,14 +71,13 @@ fi
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_mandir}/man1/*
+#%{_mandir}/man1/*
 /usr/lib/systemd/system/kube-apiserver.service
 /usr/lib/systemd/system/kubelet.service
 /usr/lib/systemd/system/kube-scheduler.service
 /usr/lib/systemd/system/kube-controller-manager.service
 /usr/lib/systemd/system/kube-proxy.service
 %dir %{_sysconfdir}/%{name}
-%{_datadir}/bash-completion/completions/kubectl
 %dir /var/lib/kubelet
 %config(noreplace) %{_sysconfdir}/%{name}/config
 %config(noreplace) %{_sysconfdir}/%{name}/apiserver
@@ -99,19 +87,21 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
-*	Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.4-1
+*   Fri Sep 2 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.6-1
+-   Upgraded to version 1.3.6
+*   Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.4-1
 -   Upgraded to version 1.2.4
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-4
--	GA - Bump release of all rpms
-*       Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-3
--       Fix if syntax
-*       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.8-2
--       Adding support to pre/post/un scripts for package upgrade.
-*       Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
--       Upgraded to version 1.1.8
-*	Mon Aug 3 2015 Tom Scanlan <tscanlan@vmware.com> 1.0.2-1
--	bump up to latest release
-*	Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
--	Upgrade to kubernetes v1.0.1
-*	Tue Mar 10 2015 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
--	Initial build. First version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-4
+-   GA - Bump release of all rpms
+*   Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-3
+-   Fix if syntax
+*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.8-2
+-   Adding support to pre/post/un scripts for package upgrade.
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
+-   Upgraded to version 1.1.8
+*   Mon Aug 3 2015 Tom Scanlan <tscanlan@vmware.com> 1.0.2-1
+-   bump up to latest release
+*   Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
+-   Upgrade to kubernetes v1.0.1
+*   Tue Mar 10 2015 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
+-   Initial build. First version
