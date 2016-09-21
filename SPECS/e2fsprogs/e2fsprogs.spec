@@ -1,7 +1,7 @@
 Summary:	Contains the utilities for the ext2 file system
 Name:		e2fsprogs
 Version:	1.42.13
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://e2fsprogs.sourceforge.net
 Group:		System Environment/Base
@@ -34,7 +34,8 @@ PKG_CONFIG_PATH=/tools/lib/pkgconfig \
 	--disable-libuuid \
 	--disable-uuidd \
 	--disable-fsck \
-	--disable-silent-rules
+	--disable-silent-rules \
+	--enable-symlink-install
 make %{?_smp_mflags}
 %install
 pushd build
@@ -129,16 +130,18 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libext2fs.a
 %{_libdir}/libss.so
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42.13-2
--	GA - Bump release of all rpms
-* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-1
-- 	Updated to version 1.42.13
-*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
--	Edit post script.
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
--	Handled locale files with macro find_lang
+*   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-3
+-   Use symlinks - save a diskspace
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42.13-2
+-   GA - Bump release of all rpms
+*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-1
+-   Updated to version 1.42.13
+*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
+-   Edit post script.
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
+-   Handled locale files with macro find_lang
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
 -   Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
--	Initial build. First version
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
+-   Initial build. First version
 
