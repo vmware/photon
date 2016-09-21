@@ -231,7 +231,6 @@ class Installer(object):
             fsck = 2
 
             if 'mountpoint' in partition and partition['mountpoint'] == '/':
-                options = options + ',barrier,noatime,noacl,data=ordered'
                 fsck = 1
             
             if partition['filesystem'] == 'swap':

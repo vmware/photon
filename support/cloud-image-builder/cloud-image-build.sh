@@ -86,7 +86,7 @@ rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/shadow-
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/machine-id
 touch $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/machine-id
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
-echo "UUID=$UUID_VALUE    /    ext4    defaults,barrier,noatime,noacl,data=ordered 1 1" >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
+echo "UUID=$UUID_VALUE    /    ext4    defaults 1 1" >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
 
 mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
 mount -o bind /dev $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
