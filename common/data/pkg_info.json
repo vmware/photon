@@ -1,0 +1,23 @@
+{
+    "curl": {
+        "release": "1.ph1", 
+        "version": "7.50.3", 
+        "arch": "x86_64", 
+        "name": "curl", 
+        "sourcerpm": "curl-7.50.3-1.ph1.src.rpm"
+    }, 
+    "unzip": {
+        "release": "6.ph1", 
+        "version": "6.0", 
+        "arch": "x86_64", 
+        "name": "unzip", 
+        "sourcerpm": "unzip-6.0-6.ph1.src.rpm"
+    }, 
+    "dialog": {
+        "release": "1.20160209.ph1", 
+        "version": "1.3", 
+        "arch": "x86_64", 
+        "name": "dialog", 
+        "sourcerpm": "dialog-1.3-1.20160209.ph1.src.rpm"
+    }
+}
