@@ -132,6 +132,8 @@
         "bindutils",
         "libusb",
         "mc",
+        "python-pip",
+        "python-sqlalchemy",
         "usbutils",
         "dosfstools",
         "efibootmgr",
