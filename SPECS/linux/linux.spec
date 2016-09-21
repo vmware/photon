@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.20
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -48,11 +48,11 @@ Requires:       filesystem kmod coreutils
 The Linux package contains the Linux kernel. 
 
 
-%package dev
+%package devel
 Summary:    Kernel Dev
 Group:        System Environment/Kernel
 Requires:    python2
-%description dev
+%description devel
 The Linux package contains the Linux kernel dev files
 
 %package drivers-gpu
@@ -118,20 +118,20 @@ install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
-cp -v System.map        %{buildroot}/boot/System.map-%{version}
-cp -v .config           %{buildroot}/boot/config-%{version}
-cp -v vmlinux			%{buildroot}/lib/modules/%{version}/vmlinux-%{version}
+cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}-%{release}
+cp -v System.map        %{buildroot}/boot/System.map-%{version}-%{release}
+cp -v .config           %{buildroot}/boot/config-%{version}-%{release}
+cp -v vmlinux			%{buildroot}/lib/modules/%{version}/vmlinux-%{version}-%{release}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
-photon_linux=vmlinuz-%{version}
-photon_initrd=initrd.img-no-kmods
+photon_linux=vmlinuz-%{version}-%{release}
+photon_initrd=initrd.img-%{version}-%{release}
 EOF
 
 # Restrict the permission on System.map-X file
-chmod -v 400 %{buildroot}/boot/System.map-%{version}
+chmod -v 400 %{buildroot}/boot/System.map-%{version}-%{release}
 
 #    Cleanup dangling symlinks
 rm -rf %{buildroot}/lib/modules/%{version}/source
@@ -159,13 +159,13 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /sbin/depmod -aq %{version}
 
 %post debuginfo
-ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlinux-%{version}.debug
+ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug /boot/vmlinux-%{version}-%{release}.debug
 
 %files
 %defattr(-,root,root)
-/boot/System.map-%{version}
-/boot/config-%{version}
-/boot/vmlinuz-%{version}
+/boot/System.map-%{version}-%{release}
+/boot/config-%{version}-%{release}
+/boot/vmlinuz-%{version}-%{release}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 /lib/firmware/*
 %defattr(0644,root,root)
@@ -174,13 +174,13 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 %exclude /lib/modules/%{version}/kernel/drivers/gpu
 %exclude /lib/modules/%{version}/kernel/sound
 %exclude /lib/modules/%{version}/kernel/arch/x86/oprofile/
-%exclude /lib/modules/%{version}/vmlinux-%{version}
+%exclude /lib/modules/%{version}/vmlinux-%{version}-%{release}
 
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/%{name}-%{version}/*
 
-%files dev
+%files devel
 %defattr(-,root,root)
 /lib/modules/%{version}/build
 /usr/src/%{name}-headers-%{version}-%{release}
@@ -199,6 +199,10 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-2
+-   Add -release number for /boot/* files
+-   Use initrd.img with version and release number
+-   Rename -dev subpackage to -devel
 *   Wed Sep  7 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-1
 -   Update to linux-4.4.20
 -   apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch 

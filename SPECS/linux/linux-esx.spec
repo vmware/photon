@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.20
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -101,16 +101,17 @@ install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}
-cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}
-cp -v .config            %{buildroot}/boot/config-esx-%{version}
+cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}-%{release}
+cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}-%{release}
+cp -v .config            %{buildroot}/boot/config-esx-%{version}-%{release}
+cp -v vmlinux			%{buildroot}/lib/modules/%{version}-esx/vmlinux-esx-%{version}-%{release}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
-photon_linux=vmlinuz-esx-%{version}
+photon_linux=vmlinuz-esx-%{version}-%{release}
 EOF
 
 # cleanup dangling symlinks
@@ -127,6 +128,7 @@ find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp 
 cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 # symling to the build folder
 ln -sf /usr/src/%{name}-headers-%{version}-%{release} %{buildroot}/lib/modules/%{version}-esx/build
+find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %post
 /sbin/depmod -aq %{version}-esx
@@ -134,12 +136,13 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 
 %files
 %defattr(-,root,root)
-/boot/system.map-esx-%{version}
-/boot/config-esx-%{version}
-/boot/vmlinuz-esx-%{version}
+/boot/system.map-esx-%{version}-%{release}
+/boot/config-esx-%{version}-%{release}
+/boot/vmlinuz-esx-%{version}-%{release}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 /lib/modules/*
 %exclude /lib/modules/%{version}-esx/build
+%exclude /lib/modules/%{version}-esx/vmlinux-%{version}-%{release}
 %exclude /usr/src
 
 %files docs
@@ -152,6 +155,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-2
+-   Add -release number for /boot/* files
+-   Fixed generation of debug symbols for kernel modules & vmlinux
 *   Wed Sep  7 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-1
 -   Update to linux-4.4.20
 -   keys-fix-asn.1-indefinite-length-object-parsing.patch
