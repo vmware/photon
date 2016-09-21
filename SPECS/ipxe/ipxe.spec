@@ -23,7 +23,7 @@ BuildRequires:  libgcc
 BuildRequires:  libgcc-devel
 BuildRequires:  make
 BuildRequires:  linux
-BuildRequires:  linux-dev
+BuildRequires:  linux-devel
 BuildRequires:  perl
 BuildRequires:  xz
 BuildRequires:  xz-devel

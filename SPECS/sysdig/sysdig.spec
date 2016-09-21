@@ -11,7 +11,7 @@ Distribution:	Photon
 Source0:	https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
 %define sha1 sysdig=272b95ad02be4d194bba66d360ff935084d9c842
 BuildRequires:	cmake 
-BuildRequires:  linux-dev = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:	openssl-devel
 BuildRequires:	curl
 BuildRequires:	zlib-devel

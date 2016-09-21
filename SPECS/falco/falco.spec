@@ -18,7 +18,7 @@ BuildRequires:	curl
 BuildRequires:	zlib-devel
 BuildRequires:	ncurses-devel
 BuildRequires:  automake
-BuildRequires:	linux-dev = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+BuildRequires:	linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  autoconf 
 BuildRequires:  libgcrypt 
 BuildRequires:  sysdig

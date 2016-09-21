@@ -11,7 +11,7 @@ Vendor:     VMware, Inc.
 Patch0:        linux-4.4-support.patch
 Distribution:  Photon
 BuildRequires: elfutils-devel
-BuildRequires: linux-dev = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+BuildRequires: linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires: linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires: unzip
 Requires: kmod
