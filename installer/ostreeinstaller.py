@@ -155,7 +155,7 @@ class OstreeInstaller(Installer):
 
 
         deployment_fstab = os.path.join(deployment, "etc/fstab")
-        self.run("echo \"/dev/sda3    /        ext4   defaults,barrier,noatime,noacl,data=ordered 1 1  \" >> {} ".format(deployment_fstab), "Adding / mount point in fstab")
+        self.run("echo \"/dev/sda3    /        ext4   defaults   1 1  \" >> {} ".format(deployment_fstab), "Adding / mount point in fstab")
         self.run("echo \"/dev/sda2    /boot    ext4   defaults   1 2  \" >> {} ".format(deployment_fstab), "Adding /boot mount point in fstab")
         self.run("mount --bind {} {}".format(deployment, self.photon_root))
         self.progress_bar.update_loading_message("Starting post install modules")
