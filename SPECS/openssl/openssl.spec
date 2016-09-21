@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2h
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -13,6 +13,7 @@ Patch0:		c_rehash.patch
 Patch1:         openssl-1.0.2f-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-use-fips-drbg-by-default.patch
+Patch4:         openssl-CVE-2016-6303.patch
 Requires:	bash glibc libgcc 
 
 %description
@@ -53,6 +54,7 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -112,6 +114,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Wed Sep 21 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-4
+-   Add patch for CVE-2016-6303
 *   Fri Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
 -   Add patches for using openssl_init under all initialization and changing default RAND
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2h-2
@@ -134,5 +138,5 @@ rm -rf %{buildroot}/*
 -   Split perl scripts to a different package.
 *   Fri Jul 24 2015 Chang Lee <changlee@vmware.com> 1.0.2d-1
 -   Update new version.
-*	Wed Mar 25 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2a-1
--	Initial build.	First version
+*   Wed Mar 25 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2a-1
+-   Initial build. First version
