@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.20
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -155,6 +155,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Wed Sep 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-3
+-   Add PCIE hotplug support
+-   Switch processor type to generic
 *   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-2
 -   Add -release number for /boot/* files
 -   Fixed generation of debug symbols for kernel modules & vmlinux
