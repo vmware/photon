@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2h
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -14,6 +14,7 @@ Patch1:         openssl-1.0.2f-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-use-fips-drbg-by-default.patch
 Patch4:         CVE-2016-6303.patch
+Patch5:         openssl-CVE-2016-2177.patch
 Requires:	bash glibc libgcc 
 
 %description
@@ -55,6 +56,7 @@ Perl scripts that convert certificates and keys to various formats.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -114,6 +116,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Tue Sep 20 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-5
+-   Add patch for CVE-2016-2177.
 *   Tue Sep 20 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.2h-4
 -   Security bug fix, CVE-2016-6303.
 *   Fri Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
