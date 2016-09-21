@@ -1,17 +1,17 @@
-Summary:    	Docker
-Name:       	docker
-Version:    	1.12.0
-Release:    	2%{?dist}
-License:    	ASL 2.0
-URL:        	http://docs.docker.com
-Group:      	Applications/File
-Vendor:     	VMware, Inc.
+Summary:        Docker
+Name:           docker
+Version:        1.12.1
+Release:        1%{?dist}
+License:        ASL 2.0
+URL:            http://docs.docker.com
+Group:          Applications/File
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:	https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz 
-%define sha1 docker=92839410a37ed1940b7a93dcd21fd9aa85d673a1
-Source1: 	docker.service
-Source2: 	docker-containerd.service
-Source3: 	docker-completion.bash
+Source0:        https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz 
+%define sha1 docker=9e51f3432a8ab68784ba92c4b6fbe58f59b0fb70
+Source1:        docker.service
+Source2:        docker-containerd.service
+Source3:        docker-completion.bash
 BuildRequires:  systemd
 Requires:       systemd
 
@@ -55,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/bash-completion/completions/docker
 
 %changelog
+*   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-1
+-   Upgraded to version 1.12.1
 *   Mon Aug 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.12.0-2
 -   Added bash completion file
 *   Tue Aug 09 2016 Anish Swaminathan <anishs@vmware.com> 1.12.0-1
