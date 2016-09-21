@@ -4,6 +4,7 @@
         "google-startup-scripts",
         "autogen",
         "cronie",
+        "ansible",
         "gc",
         "gnutls",
         "guile",
