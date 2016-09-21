@@ -85,7 +85,7 @@
         "util-linux-lang",
         "util-linux-devel",
         "db-docs",
-        "linux-dev",
+        "linux-devel",
         "linux-docs",
         "mpc",
         "json-glib",
