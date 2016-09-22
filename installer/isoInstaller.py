@@ -197,7 +197,6 @@ class IsoInstaller(object):
 
         self.maxy,  self.maxx = self.screen.getmaxyx()
         self.screen.addstr(self.maxy - 1, 0, '<Tab> moves; <Space> selects; <Enter> forward')
-
         curses.curs_set(0)
 
         self.cd_path = None;
@@ -313,6 +312,8 @@ class IsoInstaller(object):
             if result.success:
                 index += 1
                 params = result.result
+                if index == len(items) - 1:
+                    self.screen.clear()
                 if index == len(items):
                     break
             else:
