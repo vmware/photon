@@ -182,6 +182,11 @@ class Menu(Action):
                 self.refresh(False)
                 return ActionResult(False, None)
             
+            elif key == ord('\t'):
+                if self.position == len(self.items) - 1:
+                    self.position = 0
+                else:
+                    self.navigate(1)
             elif key == curses.KEY_UP or key == curses.KEY_LEFT:
                 self.navigate(-1)
 

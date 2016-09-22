@@ -50,7 +50,7 @@ class TextPane(Action):
         with open(text_file_path, "r") as f:
             for line in f:
                 # remove the trailing line feeds
-                while line.endswith('\r') or line.endswith('\n'):
+                while line.endswith('\r') or line.endswith('\n'):   
                     line = line[:-1]
                 # Adjust the words on the lines
                 while len(line) > line_width:
@@ -178,4 +178,10 @@ class TextPane(Action):
 
             elif key == curses.KEY_HOME:
                 self.head_position = 0
+            elif key == ord('\t'):
+                if self.menu_position == len(self.menu_items) - 1:
+                    self.menu_position = 0
+                else:
+                    self.navigate_menu(1)
+
 
