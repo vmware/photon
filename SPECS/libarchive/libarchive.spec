@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.1.2
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -11,6 +11,7 @@ Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 %define sha1 libarchive=6a991777ecb0f890be931cec4aec856d1a195489
 Patch0: libarchive-CVE-2013-0211.patch
 Patch1:	0001-Add-ARCHIVE_EXTRACT_SECURE_NOABSOLUTEPATHS-option.patch
+Patch2: libarchive-CVE-2016-6250.patch
 
 %description
 Multi-format archive and compression library
@@ -25,6 +26,7 @@ It contains the libraries and header files to create applications
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -54,8 +56,10 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-6
--	GA - Bump release of all rpms
+*   Thu Sep 22 2016 Anish Swaminathan <anishs@vmware.com> 3.1.2-7
+-   Adding patch for security fix CVE-2016-6250
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-6
+-   GA - Bump release of all rpms
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-5
 -   Moving static lib files to devel package.
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-4
