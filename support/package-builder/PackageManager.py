@@ -78,14 +78,20 @@ class PackageManager(object):
         listOfPackagesAlreadyBuilt = []
         listOfPackagesAlreadyBuilt = self.readAlreadyAvailablePackages()
         self.listOfPackagesAlreadyBuilt = listOfPackagesAlreadyBuilt[:]
-        for pkg in listOfPackagesAlreadyBuilt:
-            listDependentRpmPackages = constants.specData.getRequiresAllForPackage(pkg)
-            needToRebuild = False
-            for dependentPkg in listDependentRpmPackages:
-                if dependentPkg not in self.listOfPackagesAlreadyBuilt:
-                    needToRebuild = True
-            if needToRebuild:
-                self.listOfPackagesAlreadyBuilt.remove(pkg)
+
+        updateBuiltRPMSList = False
+        while !updateBuiltRPMSList:
+            updateBuiltRPMSList = True
+            listOfPackagesAlreadyBuilt = self.listOfPackagesAlreadyBuilt[:]
+            for pkg in listOfPackagesAlreadyBuilt:
+                listDependentRpmPackages = constants.specData.getRequiresAllForPackage(pkg)
+                needToRebuild = False
+                for dependentPkg in listDependentRpmPackages:
+                    if dependentPkg not in self.listOfPackagesAlreadyBuilt:
+                        needToRebuild = True
+                        updateBuiltRPMSList = False
+                if needToRebuild:
+                    self.listOfPackagesAlreadyBuilt.remove(pkg)
 
         listPackagesToBuild=listPackages[:]
         for pkg in listPackages:
