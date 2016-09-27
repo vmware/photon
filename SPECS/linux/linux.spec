@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.20
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -199,6 +199,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Sep 27 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-3
+-   .config: CONFIG_IP_SET_HASH_{IPMARK,MAC}=m
 *   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-2
 -   Add -release number for /boot/* files
 -   Use initrd.img with version and release number
