@@ -49,6 +49,7 @@
         "jna",
         "gnome-common",
         "libgudev",
+        "inetutils-telnet",
         "geoip-api-c",
         "geoip-api-c-devel",
         "dhcp-client",
