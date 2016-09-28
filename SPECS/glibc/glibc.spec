@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -23,6 +23,7 @@ Patch5:		glibc-fix-CVE-2014-9761-1.patch
 Patch6:		glibc-fix-CVE-2014-9761-2.patch
 Patch7:		glibc-fix-CVE-2014-9761-3.patch
 Patch8:		glibc-fix-CVE-2014-9761-4.patch
+Patch9:		pthread_create-fix-use-after-free.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -57,6 +58,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -189,6 +191,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*	Wed Sep 28 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-10
+	Added pthread_create-fix-use-after-free.patch
 *	Tue Jun 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-9
 -       Enabling rpm debug package and stripping the libraries
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-8
