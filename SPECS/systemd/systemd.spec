@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          30%{?dist}
+Release:          31%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -32,6 +32,7 @@ Patch16:          systemd-228-dhcp-duid-api-update.patch
 Patch17:          systemd-228-domains-search-fix.patch
 Patch18:          systemd-228-dns-transaction-pending-fix.patch
 Patch19:          02-install-general-aliases.patch
+Patch20:          systemd-228-CVE-notify-socket-DOS-fix.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -84,6 +85,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -193,6 +195,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*    Thu Sep 29 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-31
+-    Fix a CVE in systemd-notify socket.
 *    Mon Aug 29 2016 Alexey Makhalov <amakhalov@vmware.com>  228-30
 -    02-install-general-aliases.patch to create absolute symlinks
 *    Fri Aug 26 2016 Anish Swaminathan <anishs@vmware.com>  228-29
