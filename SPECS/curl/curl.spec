@@ -1,20 +1,20 @@
-Summary:    An URL retrieval utility and library
-Name:       curl
-Version:    7.47.1
-Release:    3%{?dist}
-License:    MIT
-URL:        http://curl.haxx.se
-Group:      System Environment/NetworkingLibraries
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
-%define sha1 curl=07d8f7a4c7c9ad3293ee3d87f5c2683dd6cc1ca4
-Requires:   ca-certificates
+Summary:        An URL retrieval utility and library
+Name:           curl
+Version:        7.50.3
+Release:        1%{?dist}
+License:        MIT
+URL:            http://curl.haxx.se
+Group:          System Environment/NetworkingLibraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
+%define sha1 curl=8280372593be1b6452599cbbc58bd3eac23cdf9c
+Requires:       ca-certificates
 BuildRequires:  ca-certificates
-Requires:   openssl
-Requires:   krb5
+Requires:       openssl
+Requires:       krb5
 BuildRequires:  openssl-devel
-BuildRequires: krb5
+BuildRequires:  krb5
 %description
 The cURL package contains an utility and a library used for 
 transferring files with URL syntax to any of the following 
@@ -61,8 +61,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
-%{_datadir}/zsh/site-functions/_curl
+
 %changelog
+*   Thu Sep 15 2016 Xiaolin Li <xiaolinl@vmware.com> 7.50.3-1
+-   Update curl to version 7.50.3.
 *   Tue Aug 23 2016 Xiaolin Li <xiaolinl@vmware.com> 7.47.1-3
 -   Enable gssapi in curl.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.47.1-2
