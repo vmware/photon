@@ -1,13 +1,13 @@
 Name:          crash
-Version:       7.1.4
-Release:       2%{?dist}
+Version:       7.1.5
+Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
 Source:        http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha1 crash=91049f65bc243bde6ddb31803e7ba2677cc2aa51
+%define sha1 crash=dd6b6f9e6aed648bdac4550d9d81442896dc98fd
 License:       GPL
 BuildRequires: binutils
 BuildRequires: glibc-devel
@@ -23,7 +23,6 @@ The core analysis suite is a self-contained tool that can be used to investigate
 Group:         Development/Libraries
 Summary:       Libraries and headers for %{name}
 Requires:      %{name} = %{?epoch:%epoch:}%{version}-%{release}
-Requires:      zlib-devel
 
 %description devel
 The core analysis suite is a self-contained tool that can be used to investigate either live systems, kernel core dumps created from the netdump, diskdump and kdump packages from Red Hat Linux, the mcore kernel patch offered by Mission Critical Linux, or the LKCD kernel patch.
@@ -39,8 +38,7 @@ make RPMPKG=%{version}-%{release}
 %install
 [ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
 mkdir -p %{buildroot}%{_bindir}
-%makeinstall
-install -pm 644 crash %{buildroot}%{_bindir}
+%make_install
 mkdir -p %{buildroot}%{_mandir}/man8
 install -pm 644 crash.8 %{buildroot}%{_mandir}/man8/crash.8
 mkdir -p %{buildroot}%{_includedir}/crash
@@ -62,9 +60,12 @@ cp -p defs.h %{buildroot}%{_includedir}/crash
 %{_includedir}/crash/*.h
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1.4-2
--	GA - Bump release of all rpms
+*   Fri Sep 30 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-1
+-   Update version to 7.1.5 (it supports linux-4.4)
+-   Remove zlib-devel requirement from -devel subpackage
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1.4-2
+-   GA - Bump release of all rpms
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1.4-1
 -   Updated to version 7.1.4
-*	Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 7.1.3-1
--	Initial build. First version
+*   Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 7.1.3-1
+-   Initial build. First version
