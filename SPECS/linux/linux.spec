@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.20
-Release:    	3%{?dist}
+Release:    	4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -121,8 +121,10 @@ make INSTALL_MOD_PATH=%{buildroot} modules_install
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}-%{release}
 cp -v System.map        %{buildroot}/boot/System.map-%{version}-%{release}
 cp -v .config           %{buildroot}/boot/config-%{version}-%{release}
-cp -v vmlinux			%{buildroot}/lib/modules/%{version}/vmlinux-%{version}-%{release}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{version}
+cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}
+
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
@@ -174,7 +176,6 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 %exclude /lib/modules/%{version}/kernel/drivers/gpu
 %exclude /lib/modules/%{version}/kernel/sound
 %exclude /lib/modules/%{version}/kernel/arch/x86/oprofile/
-%exclude /lib/modules/%{version}/vmlinux-%{version}-%{release}
 
 %files docs
 %defattr(-,root,root)
@@ -199,6 +200,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Mon Oct  3 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-4
+-   Package vmlinux with PROGBITS sections in -debuginfo subpackage
 *   Tue Sep 27 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-3
 -   .config: CONFIG_IP_SET_HASH_{IPMARK,MAC}=m
 *   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-2

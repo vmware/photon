@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.20
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -104,8 +104,9 @@ make INSTALL_MOD_PATH=%{buildroot} modules_install
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}-%{release}
 cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}-%{release}
 cp -v .config            %{buildroot}/boot/config-esx-%{version}-%{release}
-cp -v vmlinux			%{buildroot}/lib/modules/%{version}-esx/vmlinux-esx-%{version}-%{release}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
+install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{version}-esx
+cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{version}-esx/vmlinux-esx-%{version}-%{release}
 
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
@@ -142,7 +143,6 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 /lib/modules/*
 %exclude /lib/modules/%{version}-esx/build
-%exclude /lib/modules/%{version}-esx/vmlinux-%{version}-%{release}
 %exclude /usr/src
 
 %files docs
@@ -155,6 +155,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Mon Oct  3 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-4
+-   Package vmlinux with PROGBITS sections in -debuginfo subpackage
 *   Wed Sep 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-3
 -   Add PCIE hotplug support
 -   Switch processor type to generic
