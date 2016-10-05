@@ -1,4 +1,4 @@
-# Photon OS Linux Troublshooting Guide
+# Photon OS Linux Troubleshooting Guide
 
 -   [Introduction](#introduction)
     -   [Systemd and TDNF](#systemd-and-tdnf)
