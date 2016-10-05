@@ -1,14 +1,15 @@
-Summary: 	A library that performs asynchronous DNS operations
-Name: 		c-ares
-Version: 	1.10.0
-Release: 	2%{?dist}
-License: 	MIT
-Group: 		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-URL: 		http://c-ares.haxx.se/
-Source0: 	http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1 c-ares=e44e6575d5af99cb3a38461486e1ee8b49810eb5
+Summary:        A library that performs asynchronous DNS operations
+Name:           c-ares
+Version:        1.10.0
+Release:        3%{?dist}
+License:        MIT
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+URL:            http://c-ares.haxx.se/
+Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
+%define sha1    c-ares=e44e6575d5af99cb3a38461486e1ee8b49810eb5
+Patch0:         CVE-2016-5180.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -31,6 +32,7 @@ compile applications or shared objects that use c-ares.
 
 %prep
 %setup -q
+%patch0 -p1
 
 f=CHANGES ; iconv -f iso-8859-1 -t utf-8 $f -o $f.utf8 ; mv $f.utf8 $f
 
@@ -71,7 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/ares_*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10.0-2
--	GA - Bump release of all rpms
-* Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 1.10.0-1
-- Initial version
+*   Wed Oct 05 2016 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-3
+-   Apply patch for CVE-2016-5180.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10.0-2
+-   GA - Bump release of all rpms
+*   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 1.10.0-1
+-   Initial version
