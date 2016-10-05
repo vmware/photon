@@ -1,7 +1,7 @@
 Summary:	Rocket-fast system for log processing
 Name:		rsyslog
 Version:	8.15.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+ and ASL 2.0
 URL:		http://www.rsyslog.com/
 Source0:	http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -50,8 +50,10 @@ rm -f %{buildroot}/lib/systemd/system/rsyslog.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 find %{buildroot} -name '*.la' -delete
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post
 /sbin/ldconfig
 %systemd_post rsyslog.service
@@ -72,8 +74,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/systemd/system/rsyslog.service
 %{_sysconfdir}/systemd/journald.conf.d/*
 %changelog
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  8.15.0-5
--   Fixed logic to restart the active services after upgrade 
+*       Wed Oct 0 2016 ChangLee <changlee@vmware.com> 8.15.0-6
+-       Modified %check
+*       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  8.15.0-5
+-       Fixed logic to restart the active services after upgrade
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.0-4
 -	GA - Bump release of all rpms
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  8.15.0-3

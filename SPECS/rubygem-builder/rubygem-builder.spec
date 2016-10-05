@@ -5,7 +5,7 @@
 Summary: Builders for MarkUp
 Name: rubygem-builder
 Version: 3.2.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Development/Languages
 License: MIT
 URL: http://onestepback.org
@@ -23,11 +23,21 @@ data simple to do. Currently the following builder objects are supported:
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+
+%check
+pushd /usr/src/photon/BUILDROOT/rubygem-builder-%{version}-%{release}.x86_64/usr/lib/ruby/gems/2.3.0/gems/builder-%{version}/
+curl -sSL https://get.rvm.io | bash -s stable --without-gems="rvm rubygems-bundler"
+export PATH=$PATH:/usr/local/rvm/bin
+rake test
+popd
+
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*       Wed Oct 0 2016 ChangLee <changlee@vmware.com> 3.2.2-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.2-2
 -	GA - Bump release of all rpms
 * Wed Nov 11 2015 Xiaolin Li <amakhalov@vmware.com> 3.2.2-1

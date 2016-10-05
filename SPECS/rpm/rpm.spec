@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          11%{?dist}
+Release:          12%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -92,6 +92,10 @@ install -dm 755 %{buildroot}%{_sysconfdir}/rpm
 install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/
 install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
 install -vm755 %{SOURCE4} %{buildroot}%{_libdir}/rpm/
+
+%check
+make %{?_smp_mflags} check
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %clean
@@ -197,6 +201,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*    Wed Oct 0 2016 ChangLee <changlee@vmware.com> 4.11.2-12
+-    Modified %check
 *    Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-11
 -    find-debuginfo...patch: exclude non existing .build-id from packaging
 -    Move all files from rpm-system-configuring-scripts tarball to here 

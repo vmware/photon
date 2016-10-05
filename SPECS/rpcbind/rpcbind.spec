@@ -1,7 +1,7 @@
 Summary:	RPC program number mapper
 Name:		rpcbind
 Version:	0.2.3
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD
 URL:		http://nfsv4.bullopensource.org
 Group:	    Applications/Daemons
@@ -40,6 +40,9 @@ install -m644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE2} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
 
+%check
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 %config(noreplace) /etc/sysconfig/rpcbind
@@ -47,9 +50,6 @@ install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
 %{_mandir}/man8/*
 %dir %{_localstatedir}/lib/rpcbind
 %{_unitdir}/*
-
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %pre
 rpcid=`getent passwd rpc | cut -d: -f 3`
@@ -82,6 +82,8 @@ fi
 %clean
 rm -rf %{buildroot}/*
 %changelog
+*       Wed Oct 0 2016 ChangLee <changlee@vmware.com> 0.2.3-7
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-6
 -	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-5

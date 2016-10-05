@@ -1,7 +1,7 @@
 Summary:	Fast incremental file transfer. 
 Name:		rsync
 Version:	3.1.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		https://rsync.samba.org/
 Source0:	https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
@@ -38,6 +38,9 @@ ExecStart=/usr/bin/rsync --daemon --no-detach
 WantedBy=multi-user.target
 EOF
 
+%check
+make %{?_smp_mflags} check
+
 %post
 /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -51,6 +54,8 @@ EOF
 %{_libdir}/systemd/system/rsyncd.service
 %{_sysconfdir}/rsyncd.conf
 %changelog
+*       Wed Oct 0 2016 ChangLee <changlee@vmware.com> 3.1.2-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
 -	GA - Bump release of all rpms
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-1

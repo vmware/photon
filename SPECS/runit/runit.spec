@@ -2,7 +2,7 @@
 Summary:        A UNIX init scheme with service supervision
 Name:           runit
 Version:        2.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -38,6 +38,8 @@ install -d -m 0755 %{buildroot}/etc/service
 install -D -m 0750 etc/2 %{buildroot}%{_sbindir}/runsvdir-start
 install -D -m 0755 %{SOURCE1} %{buildroot}/lib/systemd/system/runit.service
 
+%check
+sh package/check
 
 %clean
 rm -rf %{buildroot}
@@ -50,6 +52,8 @@ rm -rf %{buildroot}
 %dir /etc/service
 
 %changelog
+*       Wed Oct 0 2016 ChangLee <changlee@vmware.com> 2.1.2-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-2
 -	GA - Bump release of all rpms
 *	Tue Aug 4 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
