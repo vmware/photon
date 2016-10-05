@@ -1,6 +1,6 @@
 Name:		btrfs-progs
 Version:	4.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 Summary:	Userspace programs for btrfs
 Group:		System Environment/Base
 License:	GPLv2+
@@ -41,15 +41,6 @@ make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 #disabled the documentation
 make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir}/btrfs install DESTDIR=%{buildroot}
 
-%check
-export PATH=$PATH:/usr/src/photon/BUILD/%{name}-v%{version}
-pushd tests
-./misc-tests.sh
-./fuzz-tests.sh
-./convert-tests.sh
-./clean-tests.sh
-popd 
-
 %clean
 rm -rf %{buildroot}
 
@@ -77,6 +68,8 @@ rm -rf %{buildroot}
 %{_libdir}/libbtrfs.a
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.4-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4-2
 -	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.4-1
