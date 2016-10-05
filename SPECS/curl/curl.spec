@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.50.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -45,8 +45,10 @@ make DESTDIR=%{buildroot} install
 install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %clean
@@ -63,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 
 %changelog
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.50.3-2
+-   Modified %check
 *   Thu Sep 15 2016 Xiaolin Li <xiaolinl@vmware.com> 7.50.3-1
 -   Update curl to version 7.50.3.
 *   Tue Aug 23 2016 Xiaolin Li <xiaolinl@vmware.com> 7.47.1-3
