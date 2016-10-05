@@ -3,7 +3,7 @@
 Summary:        Handle Common Gateway Interface requests and responses
 Name:           perl-CGI
 Version:        4.26
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 Source0:        http://search.cpan.org/CPAN/authors/id/L/LE/LEEJO/CGI-%{version}.tar.gz
@@ -54,7 +54,13 @@ find %{buildroot} -type f -name .packlist -delete
 %{_fixperms} %{buildroot}/*
 
 %check
-make test
+export PERL_MM_USE_DEFAULT=1
+cpan local::lib
+cpan Test::Deep
+cpan HTML::Entities
+cpan Test::Warn
+cpan Test::NoWarnings
+make %{?_smp_mflags} test
 
 %files
 %license LICENSE
@@ -63,6 +69,8 @@ make test
 %{_mandir}/man3/*.3*
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.26-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.26-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.26-1
