@@ -1,7 +1,7 @@
 Summary:	gptfdisk-1.0.1
 Name:		gptfdisk
 Version:	1.0.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/gptfdisk/
 Group:		System Environment/Filesystem and Disk management
@@ -29,8 +29,6 @@ make %{?_smp_mflags} POPT=1
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install POPT=1
 %{_fixperms} %{buildroot}/*
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -40,6 +38,8 @@ rm -rf %{buildroot}/*
 /sbin/*
 %{_mandir}/man8/*
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.0.1-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-2
 -	GA - Bump release of all rpms
 *       Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.1-1
