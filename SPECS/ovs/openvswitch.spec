@@ -1,6 +1,6 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.4.1
+Version:        2.5.0
 Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
@@ -9,10 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=d950bd7eaf3a3ee71df1bf28a8f2791c343406c9
+%define sha1 openvswitch=9de4b3ce8c60ad65466add0c88c17209ca946992
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
+BuildRequires:  libcap-ng-devel
 BuildRequires:  make
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
@@ -102,6 +103,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %{_bindir}/ovs-*
 %{_bindir}/ovsdb-*
+%{_bindir}/ovn-*
 %{_bindir}/vtep-ctl
 %{_sbindir}/ovs-*
 %{_sbindir}/ovsdb-server
@@ -111,6 +113,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/openvswitch/bugtool-plugins/*
 /usr/share/openvswitch/python/*
 /usr/share/openvswitch/scripts/ovs-*
+/usr/share/openvswitch/scripts/ovn-ctl
 
 %files devel
 %{_includedir}/openflow/*.h
@@ -122,11 +125,16 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/man/man1/ovs-*.1.gz
 /usr/share/man/man1/ovsdb-*.1.gz
 /usr/share/man/man5/ovs-vswitchd.conf.db.5.gz
+/usr/share/man/man5/ovn-*.5.gz
 /usr/share/man/man5/vtep.5.gz
+/usr/share/man/man7/ovn-architecture.7.gz
 /usr/share/man/man8/ovs-*.8.gz
+/usr/share/man/man8/ovn-*.8.gz
 /usr/share/man/man8/vtep-ctl.8.gz
 
 %changelog
+*	Sat Sep 24 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.5.0-1
+-	Update to openvswitch 2.5.0
 *	Fri Sep 09 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
 -	Update to openvswitch 2.4.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
