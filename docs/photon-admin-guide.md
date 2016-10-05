@@ -8,12 +8,13 @@
     -   [The Root Account and the `sudo` and `su`
         Commands](#the-root-account-and-the-sudo-and-su-commands)
 -   [Quick Start](#quick-start)
-    -   [Obtaining the ISO from Bintray and Creating a Photon OS VM in
-        VMware
+    -   [Obtaining the ISO from Bintray and Creating a Photon OS VM
+        in VMware
         Workstation](#obtaining-the-iso-from-bintray-and-creating-a-photon-os-vm-in-vmware-workstation)
     -   [Installing the OVA for the Minimal Version in
         vSphere](#installing-the-ova-for-the-minimal-version-in-vsphere)
-    -   [Rapidly Deploying the Photon OS OVA in VMware Workstation 12
+    -   [Rapidly Deploying the Photon OS OVA in VMware Workstation
+        12
         Pro](#rapidly-deploying-the-photon-os-ova-in-vmware-workstation-12-pro)
     -   [Root Password Rules](#root-password-rules)
     -   [Permitting Root Login with
@@ -24,16 +25,18 @@
     -   [Kickstart](#kickstart)
     -   [Checking the Version and Build
         Number](#checking-the-version-and-build-number)
--   [Tiny DNF for Package Management](#tiny-dnf-for-package-management)
+-   [Tiny DNF for Package
+    Management](#tiny-dnf-for-package-management)
     -   [Configuration Files and
         Repositories](#configuration-files-and-repositories)
     -   [Options for Commands](#options-for-commands)
     -   [Commands](#commands)
     -   [Adding a New Repository](#adding-a-new-repository)
-    -   [Adding the Dev Repository to Get New Packages from the GitHub
-        Dev
+    -   [Adding the Dev Repository to Get New Packages from the
+        GitHub Dev
         Branch](#adding-the-dev-repository-to-get-new-packages-from-the-github-dev-branch)
--   [Managing Services with systemd](#managing-services-with-systemd)
+-   [Managing Services with
+    systemd](#managing-services-with-systemd)
     -   [Viewing Services](#viewing-services)
     -   [Controlling Services](#controlling-services)
     -   [Creating a Startup Service](#creating-a-startup-service)
@@ -43,7 +46,8 @@
         auditd](#auditing-system-events-with-auditd)
     -   [Analyzing systemd Logs with
         journalctl](#analyzing-systemd-logs-with-journalctl)
-    -   [Migrating Scripts to systemd](#migrating-scripts-to-systemd)
+    -   [Migrating Scripts to
+        systemd](#migrating-scripts-to-systemd)
 -   [Managing the Network
     Configuration](#managing-the-network-configuration)
     -   [Use `ip` and `ss` Commands Instead of `ifconfig` and
@@ -61,7 +65,8 @@
         Names](#using-predictable-network-interface-names)
     -   [Inspecting the Status of Network Links with
         `networkctl`](#inspecting-the-status-of-network-links-with-networkctl)
-    -   [Turning on Network Debugging](#turning-on-network-debugging)
+    -   [Turning on Network
+        Debugging](#turning-on-network-debugging)
     -   [Mounting a Network File
         System](#mounting-a-network-file-system)
     -   [Installing the Packages for tcpdump and netcat with
@@ -80,8 +85,13 @@
     -   [Fixing Sendmail If Installed Before an FQDN Was
         Set](#fixing-sendmail-if-installed-before-an-fqdn-was-set)
 -   [Changing the Locale](#changing-the-locale)
+-   [The Default Security Policy of Photon
+    OS](#the-default-security-policy-of-photon-os)
+    -   [Default Firewall Settings](#default-firewall-settings)
+    -   [Default Permissions and
+        umask](#default-permissions-and-umask)
 -   [Disabling TLS 1.0 to Improve Transport Layer
-    Security](#disabling-tls-10-to-improve-transport-layer-security)
+    Security](#disabling-tls-1.0-to-improve-transport-layer-security)
 -   [Working with Repositories and
     Packages](#working-with-repositories-and-packages)
     -   [Photon OS Package
@@ -294,7 +304,7 @@ Save your changes in vim and then restart the sshd daemon:
 
 You can then connect to the Photon OS machine with the root account over SSH:
 
-	steve@ubuntu:~$ ssh root@192.168.137.131
+	steve@ubuntu:~$ ssh root@198.51.100.131
 
 ### Deploying Photon OS on a Mac with AppCatalyst
 
@@ -334,7 +344,7 @@ Obtain the IP address of the VM so you can establish an SSH connection to it:
 
 You can then connect to the VM with the SSH keys included with AppCatalyst by running the following command and replacing the example IP address with the IP address of your VM: 
 
-	ssh -i /opt/vmware/appcatalyst/etc/appcatalyst_insecure_ssh_key photon@192.168.137.131
+	ssh -i /opt/vmware/appcatalyst/etc/appcatalyst_insecure_ssh_key photon@198.51.100.131
 
 Photon OS includes Docker. From your SSH terminal connection to the Photon OS virtual machine, you can launch a Docker container that, for example, downloads Ubuntu from the Docker repository and runs it in the Photon OS VM in AppCatalyst on your Mac: 
 
@@ -409,7 +419,7 @@ The repositories appear in /etc/yum.repos.d/ with `.repo` file extensions:
 	photon-updates.repo
 	photon.repo 
 
-You can list the the repositories by using the tdnf repolist command. Tdnf filters the results with `enabled`, `disabled`, and `all`. Running the command without specifying an argument returns the enabled repositories:  
+You can list the the repositories by using the `tdnf repolist` command. Tdnf filters the results with `enabled`, `disabled`, and `all`. Running the command without specifying an argument returns the enabled repositories:  
 
 	tdnf repolist
 	repo id             repo name                               status
@@ -917,14 +927,14 @@ For example, instead of running `netstat` to display a list of network interface
 Using the `ip route` version of a command instead of the net-tools version often provides more complete, accurate information on Photon OS, as the following example demonstrates: 
 
 	ip neigh
-	192.168.137.2 dev eth0 lladdr 00:50:56:e2:02:0f STALE
-	192.168.137.254 dev eth0 lladdr 00:50:56:e7:13:d9 STALE
-	192.168.137.1 dev eth0 lladdr 00:50:56:c0:00:08 DELAY
+	198.51.100.2 dev eth0 lladdr 00:50:56:e2:02:0f STALE
+	198.51.100.254 dev eth0 lladdr 00:50:56:e7:13:d9 STALE
+	198.51.100.1 dev eth0 lladdr 00:50:56:c0:00:08 DELAY
 
 	arp -a
-	? (192.168.137.2) at 00:50:56:e2:02:0f [ether] on eth0
-	? (192.168.137.254) at 00:50:56:e7:13:d9 [ether] on eth0
-	? (192.168.137.1) at 00:50:56:c0:00:08 [ether] on eth0
+	? (198.51.100.2) at 00:50:56:e2:02:0f [ether] on eth0
+	? (198.51.100.254) at 00:50:56:e7:13:d9 [ether] on eth0
+	? (198.51.100.1) at 00:50:56:c0:00:08 [ether] on eth0
 
 ### Configuring Network Interfaces
 
@@ -991,8 +1001,8 @@ To create a network configuration file that systemd-networkd uses to establish a
 	Name=eth0
 
 	[Network]
-	Address=192.168.0.2/24
-	Gateway=192.168.0.1
+	Address=198.51.0.2/24
+	Gateway=198.51.0.1
 	EOF
 
 Change the new file's mode bits by running the `chmod` command:
@@ -1036,7 +1046,7 @@ If you open the default /etc/resolv.conf file after you deploy Photon OS, it loo
 	# resolv.conf(5) in a different way, replace the symlink by a
 	# static file or a different symlink.
 
-	nameserver 192.168.137.2
+	nameserver 198.51.100.2
 
 To add a DNS server to your static network configuration file, insert a DNS key into the Network section of, in this example, /etc/systemd/network/10-eth0-static.network and set it to the IP address of your DNS server: 
 
@@ -1044,9 +1054,9 @@ To add a DNS server to your static network configuration file, insert a DNS key 
 	Name=e*
 
 	[Network]
-	Address=192.168.0.2/24
-	Gateway=192.168.0.1
-	DNS=192.168.0.1
+	Address=198.51.0.2/24
+	Gateway=198.51.0.1
+	DNS=198.51.0.1
 
 Another way of adding a DNS server is to modify /etc/systemd/resolved.conf--a method that can be particularly useful when your machine is working with DHCP. For more information, see https://www.freedesktop.org/software/systemd/man/resolved.conf.html.
 
@@ -1206,13 +1216,13 @@ Running `networkctl` with the status command displays information that looks lik
 
 	root@photon-rc [ ~ ]# networkctl status
 	*      State: routable
-	     Address: 192.168.137.131 on eth0
+	     Address: 198.51.100.131 on eth0
 	              172.17.0.1 on docker0
 	              fe80::20c:29ff:fe55:3ca6 on eth0
 	              fe80::42:f0ff:fef7:bd81 on docker0
 	              fe80::4c84:caff:fe76:a23f on vethb0aa7a6
-	     Gateway: 192.168.137.2 on eth0
-	         DNS: 192.168.137.2
+	     Gateway: 198.51.100.2 on eth0
+	         DNS: 198.51.100.2
 
 You can then add a network link, such as the Ethernet connection, as the argument of the status command to show specific information about the link: 
 
@@ -1226,10 +1236,10 @@ You can then add a network link, such as the Ethernet connection, as the argumen
 	          Driver: e1000
 	      HW Address: 00:0c:29:55:3c:a6 (VMware, Inc.)
 	             MTU: 1500
-	         Address: 192.168.137.131
+	         Address: 198.51.100.131
 	                  fe80::20c:29ff:fe55:3ca6
-	         Gateway: 192.168.137.2
-	             DNS: 192.168.137.2
+	         Gateway: 198.51.100.2
+	             DNS: 198.51.100.2
 	        CLIENTID: ffb6220feb00020000ab116724f520a0a77337
 
 And you can do the same thing with the Docker container: 
@@ -1377,7 +1387,7 @@ Finally, attach the ISO to the Photon OS virtual machine as a CD-ROM and reboot 
 
 ### Customizing a Photon OS Machine on EC2
 
-This section illustrates how to upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using cloud-init with an EC2 data source. The ami version of Photon OS is available as a free download on Bintray:
+This section illustrates how to upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using cloud-init with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download on Bintray:
 
 	https://bintray.com/vmware/photon/
 
@@ -1448,6 +1458,8 @@ Here are the contents of the user-data.txt file that cloud-init applies to the m
 Now check the cloud-init output log file on EC2 at `/var/log/cloud-init-output.log`. 
 
 For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
+
+An article on the Photon OS GitHub wiki demonstrates how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine. See [Running Photon OS on Amazon Elastic Cloud Compute](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute).
 
 With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers; see [Compatible Cloud Images](https://github.com/vmware/photon/blob/master/docs/cloud-images.md).
 
@@ -1621,6 +1633,69 @@ Finally, run the following command to set the new locale, replacing the example 
 
     localectl set-locale LANG="en_US.UTF-8" LC_CTYPE="en_US.UTF-8"
 
+## The Default Security Policy of Photon OS
+
+### Default Firewall Settings
+
+The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and  applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. In other words, you must configure the firewall for your applications and requirements. 
+
+The default iptables settings on the full version look like this:
+
+    iptables --list
+    Chain INPUT (policy DROP)
+    target     prot opt source               destination
+    ACCEPT     all  --  anywhere             anywhere
+    ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
+    ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+
+    Chain FORWARD (policy DROP)
+    target     prot opt source               destination
+
+    Chain OUTPUT (policy DROP)
+    target     prot opt source               destination
+    ACCEPT     all  --  anywhere             anywhere
+
+
+To find out how to adjust the settings, see the man page for iptables. 
+
+Although the default iptables policy accepts SSH connections, the `sshd` configuration file on the full version of Photon OS  is set to reject SSH connections. See [Permitting Root Login with SSH](#permitting-root-login-with-ssh).
+
+If you are unable to ping a Photon OS machine, one of the first things you should do is check the firewall rules. Do they allow connectivity for the port and protocol in question? You can supplement the `iptables` commands by using `lsof` to, for instance, see the processes listening on ports: 
+
+    lsof -i -P -n
+
+### Default Permissions and umask
+
+The umask on Photon OS is set to `0027`.
+
+When you create a new file with the `touch` command as root, the default on Photon OS is to set the permissions to `0640`--read-write for user, read for group, and no access for others. Here's an example: 
+
+    touch newfile.md
+    stat newfile.md
+      File: 'newfile.md'
+      Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+    Device: 801h/2049d      Inode: 316454      Links: 1
+    Access: (0640/-rw-r-----)  Uid: (    0/    root)   Gid: (    0/    root)
+
+When you create a directory as root, Photon OS sets the permissions to `0750`:
+
+    mkdir newdir
+    stat newdir
+      File: 'newdir'
+      Size: 4096            Blocks: 8          IO Block: 4096   directory
+    Device: 801h/2049d      Inode: 316455      Links: 2
+    Access: (0750/drwxr-x---)  Uid: (    0/    root)   Gid: (    0/    root)
+
+Because the `mkdir` command uses the umask to modify the permissions placed on newly created files or directories, you can see `umask` at work in the permissions of the new directory: Its default permissions are set at 0750 after the umask subtracts 0027 from the full set of open permissions, 0777.
+
+Similarly, a new file begins as 0666, which you could see if you were to set umask to 0000. But because umask is set by default to 0027, a new file's permissions are set to 0640. 
+
+So be aware of the default permissions on the directories and files that you create. Some system services and applications might require permissions other than the default. The systemd network service, for example, requires user-defined configuration files to be set to 644, not the default of 640. Thus, after you create a network configuration file with a `.network` extension, you must run the `chmod` command to set the new file's mode bits to `644`. Example: 
+
+    chmod 644 10-static-en.network 
+
+For more information on permissions, see the man pages for `stat`, `umask`, and `acl`.
+
 ## Disabling TLS 1.0 to Improve Transport Layer Security
 
 Photon OS includes GnuTLS to help secure the transport layer. [GnuTLS](http://www.gnutls.org/) is a library that implements the SSL and TLS protocols to secure communications. 
@@ -1687,7 +1762,6 @@ The main Photon OS repository (`photon.repo`) contains all the packages that are
 The updates repository (`photon-updates.repo`) is irrelevant to a major release until after the release is installed. Thereafter, the updates repository holds the updated packages for that release. The repository, that is, points to updates for the installed version, such as a version of Kubernetes that supersedes the version installed during the major release. 
 
 The Photon extras repository (`photon-extras.repo`) holds Likewise Open, an open source authentication engine, and other VMware software that you can add to Photon OS for free. Photon OS supports but does not build the packages in the extras repository.  
-
 Similarly, the Lightwave repository (`lightwave.repo`) contains the packages that make up the VMware Lightwave security suite for cloud applications, including tools for identity management, access control, and certificate management.
 
 ### Examining Signed Packages
@@ -1857,6 +1931,9 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
 * RPM OSTree Documentation
+
+
+
 
 
 
