@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.0.5
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -17,6 +17,7 @@ Patch0:         open-vm-tools-service-link.patch
 Patch1:         GOSC-libDeploy.patch
 Patch2:         IPv6Support.patch
 Patch3:         hostnameReCustomizationFix.patch
+Patch4:         PureIPv6-hosts.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -44,6 +45,7 @@ VmWare virtualization user mode tools
 %patch1 -p1
 %patch2 -p0
 %patch3 -p0
+%patch4 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -104,6 +106,8 @@ fi
 
 
 %changelog
+*       Wed Oct 05 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-14
+-       Adding proper entry to /etc/hosts for IPv6.
 *       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 10.0.5-13
 -       Modified %check
 *       Thu Jun 23 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-12
