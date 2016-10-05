@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -10,7 +10,7 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}-src.tar.gz
 %define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
-Requires: openjre >= 1.8.0.45, apache-ant >= 1.9.6
+Requires: openjre >= 1.8.0.102, apache-ant >= 1.9.6
 BuildRequires: openjre >= 1.8.0.45, apache-ant >= 1.9.6
 BuildRequires: openjdk >= 1.8.0.45
 %define _prefix /var/opt/ant-contrib
@@ -23,7 +23,7 @@ The Ant Contrib project is a collection of tasks for Apache Ant.
 %setup -n %{name}
 %build
 ANT_HOME=/var/opt/apache-ant-1.9.6
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.92-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.102-bin
 mkdir -p -m 700 %{_prefix}
 $ANT_HOME/bin/ant -Ddist.dir="%{_prefix}" -Dproject.version="1.0b3" dist
 %install
@@ -38,6 +38,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wi
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0b3-8
+-   Updated JAVA_HOME path to point to latest.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0b3-7
 -	GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 1.0b3-6
