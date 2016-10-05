@@ -1,7 +1,7 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.39
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-8.39.tar.bz2
 Group:          Applications/System
@@ -43,6 +43,10 @@ make DESTDIR=%{buildroot} install
 mv -v %{buildroot}/usr/lib/libpcre.so.* %{buildroot}/lib &&
 ln -sfv ../../lib/$(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/lib/libpcre.so
 ln -sfv $(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/lib/libpcre.so.0
+
+%check
+make %{?_smp_mflags} check
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %files 
@@ -65,6 +69,8 @@ ln -sfv $(readlink %{buildroot}/usr/lib/libpcre.so) %{buildroot}/usr/lib/libpcre
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %changelog
+*   Wed Oct 0 2016 ChangLee <changlee@vmware.com> 8.39-2
+-   Modified %check
 *   Fri Sep 9 2016 Xiaolin Li <xiaolinl@vmware.com> 8.39-1
 -   Update to version 8.39
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.38-3

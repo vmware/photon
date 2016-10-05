@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2j
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -73,7 +73,8 @@ ln -sf %{_libdir}/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
 ln -sf %{_libdir}/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} tests
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -112,6 +113,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Wed Oct 0 2016 ChangLee <changlee@vmware.com> 1.0.2j-2
+-   Modified %check
 *   Mon Sep 26 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2j-1
 -   Update to 1.0.2.j
 *   Wed Sep 21 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.2h-5

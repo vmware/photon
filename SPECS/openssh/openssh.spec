@@ -1,7 +1,7 @@
 Summary:	Free version of the SSH connectivity tools
 Name:		openssh
 Version:	7.1p2
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -90,8 +90,14 @@ WantedBy=multi-user.target
 EOF
 
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+useradd sshd
+if [ ! -d /var/lib/sshd ]; then
+   mkdir /var/lib/sshd
+   chmod 0755 /var/lib/sshd
+fi
+make %{?_smp_mflags} tests
 
 %pre
 getent group sshd >/dev/null || groupadd -g 50 sshd
@@ -139,6 +145,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*       Wed Oct 0 2016 ChangLee <changlee@vmware.com> 7.1p2-5
+-       Modified %check
 *	Thu Sep 15 2016 Anish Swaminathan <anishs@vmware.com> 7.1p2-4
 -	Add patch to fix CVE-2016-6515
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1p2-3
