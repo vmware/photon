@@ -1,7 +1,7 @@
 Summary:	Programs for compressing and decompressing files
 Name:		xz
 Version:	5.2.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://tukaani.org/xz
 License:	GPLv2+ and GPLv3+ and LGPLv2+
 Group:		Applications/File
@@ -33,7 +33,8 @@ ln -svf "../..%{_lib}/$(readlink %{buildroot}%{_libdir}/liblzma.so)" %{buildroot
 find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name}
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags}  check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files -f %{name}.lang
@@ -72,6 +73,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/liblzma.a
 %{_libdir}/liblzma.so
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 5.2.2-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.2.2-2
 -	GA - Bump release of all rpms
 *   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 5.2.2-1
