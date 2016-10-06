@@ -1,7 +1,7 @@
 Summary:	C++ interface to the glib
 Name:		glibmm
 Version:	2.48.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.46/glibmm-2.46.3.tar.xz
 Group:		Applications/System
@@ -38,6 +38,10 @@ These are the header files of glibmm.
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+
+%check
+make  %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files 
@@ -55,10 +59,12 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/*
 
 %changelog
+*   Thu Oct 06 ChangLee <changlee@vmware.com> 2.48.1-2
+-   Modified %check
 *   Tue Sep 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.48.1-1
 -   Updated to version 2.48.1-1
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.3.1-2
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.3.1-2
+-   GA - Bump release of all rpms
 *   Thu Apr 14 2016	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.3.1-1
     Updated to version 2.47.3.1
 *   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 2.46.3-1
