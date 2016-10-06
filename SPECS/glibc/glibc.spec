@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -191,6 +191,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.22-11
+-       Modified %check
 *	Wed Sep 28 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-10
 	Added pthread_create-fix-use-after-free.patch
 *	Tue Jun 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-9
