@@ -1,7 +1,7 @@
 Summary:	A macro processor
 Name:		m4
 Version:	1.4.17
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/m4
 Group:		Development/Tools
@@ -23,12 +23,14 @@ make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
 %check
 sed -i -e '41s/ENOENT/& || errno == EINVAL/' tests/test-readlink.h
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags}  check 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*       Thu Oct 06 ChangLee <changlee@vmware.com> 1.4.17-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.17-2
 -	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.17-1
