@@ -3,7 +3,7 @@
 Summary:	Text editor
 Name:		vim
 Version:	7.4
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Charityware
 URL:		http://www.vim.org
 Group:		Applications/Editors
@@ -60,6 +60,9 @@ au BufEnter,BufNew *.py set tabstop=4 shiftwidth=4 expandtab
 
 " End /etc/vimrc
 EOF
+
+%check
+make %{?_smp_mflags}  test
 
 %files extra
 %defattr(-,root,root)
@@ -152,6 +155,8 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.4-7
+-       Modified %check
 *   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.4-6
 -   vimrc: Added tags search, tab->spaces and some bindings
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5

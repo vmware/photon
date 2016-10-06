@@ -1,7 +1,7 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
 Version:	2.27.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
@@ -44,6 +44,11 @@ make DESTDIR=%{buildroot} install
 chmod 644 $RPM_BUILD_ROOT/usr/share/doc/util-linux/getopt/getopt*.tcsh
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
+
+%check
+chown -Rv nobody .
+sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
@@ -68,6 +73,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/*
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.17.1-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.27.1-2
 -	GA - Bump release of all rpms
 *   	Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 2.27.1-1

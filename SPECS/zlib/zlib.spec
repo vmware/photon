@@ -1,7 +1,7 @@
 Summary:	Compression and decompression routines
 Name:		zlib
 Version:	1.2.8
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		http://www.zlib.net/
 License:	zlib
 Group:		Applications/System
@@ -27,8 +27,10 @@ make V=1 %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libz.so) %{buildroot}%{_libdir}/libz.so
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
@@ -43,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libz.a
 %{_libdir}/libz.so
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.2.8-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.8-3
 -	GA - Bump release of all rpms
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.2.8-2
