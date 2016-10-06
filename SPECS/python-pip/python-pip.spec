@@ -1,6 +1,6 @@
 Name:           python-pip
 Version:        8.1.2
-Release:        1
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
