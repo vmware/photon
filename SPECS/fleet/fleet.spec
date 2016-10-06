@@ -1,7 +1,7 @@
 Summary:	A Distributed init System
 Name:		fleet
 Version:	0.11.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache 2.0
 URL:		https://coreos.com/using-coreos/clustering/
 Group:		OS/ClusterManagement
@@ -55,6 +55,11 @@ EOF
 mkdir -p %{buildroot}/usr/share/polkit-1/rules.d/
 install -p -m 0644 %{SOURCE2} %{buildroot}/usr/share/polkit-1/rules.d/
 
+%check
+export GOPATH=%{_builddir}
+go get golang.org/x/tools/cmd/cover
+./test
+
 %pre
 getent group fleet >/dev/null || /usr/sbin/groupadd fleet
 getent passwd fleet >/dev/null || /usr/sbin/useradd -c "fleet user" -s /sbin/nologin -g fleet -d /run/fleet fleet
@@ -80,6 +85,8 @@ getent passwd fleet >/dev/null || /usr/sbin/useradd -c "fleet user" -s /sbin/nol
 /usr/share/polkit-1/rules.d/fleet.rules
 
 %changelog
+*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.11.5-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.11.5-3
 -	GA - Bump release of all rpms
 *       Mon May 09 2016 Nick Shi <nshi@vmware.com> 0.11.5-2
