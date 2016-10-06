@@ -10,7 +10,7 @@
 Summary:	Go 
 Name:		go
 Version:	1.6.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://golang/org
 Group:		System Environment/Security
@@ -86,9 +86,6 @@ chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
 
 %{_fixperms} %{buildroot}/*
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %post -p /sbin/ldconfig
 
 %postun
@@ -115,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.6.3-2
+-       Modified %check
 *	Wed Jul 27 2016 Anish Swaminathan <anishs@vmware.com> 1.6.3-1
 -	Update Golang to version 1.6.3 - fixes CVE 2016-5386
 *	Fri Jul 8 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.2-1
