@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
 Version:	3.2.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
@@ -42,7 +42,33 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+wget https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz --no-check-certificate
+wget http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz --no-check-certificate
+wget http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz --no-check-certificate
+
+tar xvf dejagnu-1.5.3.tar.gz
+tar xvf expect5.45.tar.gz
+tar xvf tcl8.5.14-src.tar.gz
+
+pushd tcl8.5.14/unix
+./configure --enable-threads --prefix=/usr
+make install
+popd
+
+pushd expect5.45
+./configure --prefix=/usr
+make
+make install
+ln -svf expect5.45/libexpect5.45.so /usr/lib
+popd
+
+pushd dejagnu-1.5.3
+./configure --prefix=/usr
+make install
+popd
+
+make %{?_smp_mflags} check
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -59,6 +85,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/licenses/libffi/LICENSE
 %{_mandir}/man3/*
 %changelog
+*       Thu Oct 06 ChangLee <changlee@vmware.com> 3.2.1-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.1-2
 -	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1

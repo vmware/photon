@@ -1,7 +1,7 @@
 Summary:	Libcap-2.24
 Name:		libcap
 Version:	2.25
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:	https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
@@ -34,7 +34,8 @@ make %{?_smp_mflags}
 make prefix=%{_prefix}	SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} install
 chmod -v 755 %{buildroot}/usr/lib64/libcap.so
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+cd progs
+./quicktest.sh
 %files
 %defattr(-,root,root)
 %{_lib64dir}/libcap.so.*
@@ -51,6 +52,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_lib64dir}/libcap.so
 
 %changelog
+*       Thu Oct 06 ChangLee <changlee@vmware.com> 2.25-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25-2
 -	GA - Bump release of all rpms
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 2.25-1
