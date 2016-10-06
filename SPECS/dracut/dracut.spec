@@ -5,7 +5,7 @@
 
 Name:		dracut
 Version:	044
-Release:	3%{?dist}
+Release:	4%{?dist}
 Group:		System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -86,6 +86,16 @@ rm -f $RPM_BUILD_ROOT%{_mandir}/man?/*suse*
 mkdir -p $RPM_BUILD_ROOT%{_sbindir}
 ln -sr $RPM_BUILD_ROOT%{_bindir}/dracut $RPM_BUILD_ROOT%{_sbindir}/dracut
 
+%check
+wget https://sourceforge.net/projects/asciidoc/files/asciidoc/8.6.9/asciidoc-8.6.9.tar.gz --no-check-certificate
+tar xvf asciidoc-8.6.9.tar.gz
+pushd asciidoc-8.6.9
+autoconf
+./configure
+make
+make install
+popd
+
 %clean
 rm -rf -- $RPM_BUILD_ROOT
 
@@ -145,6 +155,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 044-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
 -	GA - Bump release of all rpms
 *       Thu Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
