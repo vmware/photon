@@ -1,7 +1,7 @@
 Summary:	Library to encode and decode webP format images
 Name:		libwebp
 Version:	0.5.1
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://webmproject.org/
 Group:		System Environment/Libraries
