@@ -1,7 +1,7 @@
 Summary:	Netwide Assembler.
 Name:		nasm
 Version:	2.12.02
-Release:	1
+Release:	1%{?dist}
 License:	BSD
 URL:		http://www.nasm.us
 Group:		System Environment/Libraries

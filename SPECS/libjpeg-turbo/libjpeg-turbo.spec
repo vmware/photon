@@ -1,7 +1,7 @@
 Summary:	fork of the original IJG libjpeg which uses SIMD.
 Name:		libjpeg-turbo
 Version:	1.5.0
-Release:	1
+Release:	1%{?dist}
 License:	IJG
 URL:		http://sourceforge.net/projects/libjpeg-turbo
 Group:		System Environment/Libraries
