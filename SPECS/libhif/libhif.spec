@@ -4,7 +4,7 @@
 Summary:   	Simple package manager built on top of hawkey and librepo
 Name:		libhif
 Version:   	0.2.2
-Release:   	2%{?dist}
+Release:   	3%{?dist}
 License:   	LGPLv2+
 URL:       	https://github.com/hughsie/libhif
 Source0:   	http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -64,6 +64,9 @@ make %{?_smp_mflags}
 make install DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_libdir}/libhif*.la
 
+%check
+make  %{?_smp_mflags} check
+
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
@@ -82,6 +85,8 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libhif*.la
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.2.2-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.2-2
 -	GA - Bump release of all rpms
 *       Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.2.2-1
