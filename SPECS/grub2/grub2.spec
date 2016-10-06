@@ -3,7 +3,7 @@
 Summary:	GRand Unified Bootloader
 Name:		grub2
 Version:	2.02
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grub
 Group:		Applications/System
@@ -52,8 +52,6 @@ ln -sf %{_sysconfdir}/default/grub %{buildroot}%{_sysconfdir}/sysconfig/grub
 mkdir -p %{buildroot}/boot/%{name}
 touch %{buildroot}/boot/%{name}/grub.cfg
 rm -rf %{buildroot}%{_infodir}
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
@@ -80,6 +78,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/locale/*
 
 %changelog
+*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.02-5
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02-4
 -	GA - Bump release of all rpms
 *	Fri Oct 02 2015 Divya Thaluru <dthaluru@vmware.com> 2.02-3
