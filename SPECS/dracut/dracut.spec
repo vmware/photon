@@ -86,6 +86,16 @@ rm -f $RPM_BUILD_ROOT%{_mandir}/man?/*suse*
 mkdir -p $RPM_BUILD_ROOT%{_sbindir}
 ln -sr $RPM_BUILD_ROOT%{_bindir}/dracut $RPM_BUILD_ROOT%{_sbindir}/dracut
 
+%check
+wget https://sourceforge.net/projects/asciidoc/files/asciidoc/8.6.9/asciidoc-8.6.9.tar.gz --no-check-certificate
+tar xvf asciidoc-8.6.9.tar.gz
+pushd asciidoc-8.6.9
+autoconf
+./configure
+make
+make install
+popd
+
 %clean
 rm -rf -- $RPM_BUILD_ROOT
 

@@ -3,7 +3,7 @@
 Name:       	gobject-introspection
 Summary:    	Introspection system for GObject-based libraries
 Version:    	1.46.0
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 Group:      	Development/Libraries
 License:    	GPLv2+, LGPLv2+, MIT
 URL:        	http://live.gnome.org/GObjectIntrospection
@@ -70,6 +70,9 @@ mv $RPM_BUILD_ROOT/%{_libdir}/gobject-introspection/giscanner $RPM_BUILD_ROOT/%{
 rm -rf $RPM_BUILD_ROOT/%{_datarootdir}/gtk-doc/html
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
+%check
+make  %{?_smp_mflags} check
+
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
@@ -99,6 +102,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*       Thu Oct 06 ChangLee <changlee@vmware.com> 1.46.0-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.46.0-2
 -	GA - Bump release of all rpms
 *       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.46.0-1
