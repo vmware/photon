@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.20
-Release:       4%{?dist}
+Release:       5%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -33,6 +33,8 @@ Patch17:       vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-0758
 Patch19:       keys-fix-asn.1-indefinite-length-object-parsing.patch
+Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
+Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -87,8 +89,13 @@ The Linux package contains the Linux kernel doc files
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
+%patch21 -p1
 
 %build
+# patch vmw_balloon driver
+sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
+
 make mrproper
 cp %{SOURCE1} .config
 make LC_ALL= oldconfig
@@ -155,6 +162,12 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Thu Oct  6 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-5
+-   .config: added ADM PCnet32 support
+-   vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
+-   vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
+-   late_initcall for vmw_balloon driver
+-   Minor fixed in pv-ops patchset
 *   Mon Oct  3 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-4
 -   Package vmlinux with PROGBITS sections in -debuginfo subpackage
 *   Wed Sep 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-3
@@ -198,7 +211,7 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 -   Apply photon8 config (+stack protector regular)
 -   pv-ops patch: added STA support
 -   Added patches from generic kernel
-*   Tue Mar 09 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-17
+*   Wed Mar 09 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-17
 -   Enable ACPI hotplug support in kernel config
 *   Sun Feb 14 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-16
 -   veth patch: don’t modify ip_summed
