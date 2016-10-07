@@ -1,7 +1,7 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
-Version:        3.1.2
-Release:        2%{?dist}
+Version:        3.1.3
+Release:        1%{?dist}
 License:        GPL
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
@@ -10,7 +10,7 @@ Distribution:   Photon
 #Source download URL: https://github.com/esnet/iperf/archive/3.1.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
 Patch1:         disablepg.patch
-%define sha1 iperf=c4441383ef8658206e768410785232d429ad16d6
+%define sha1 iperf=b5b1f06428b179cc8769a4deaed38056ad304158
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -64,6 +64,8 @@ make DESTDIR=%{buildroot} install
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+*       Thu Oct 6 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.3-1
+-       Upgraded to version 3.1.3
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
 -	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
