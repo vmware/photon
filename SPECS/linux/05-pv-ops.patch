@@ -1,7 +1,7 @@
 From 6021a95a6b7ffb8df8823337d4ca05807c2eb6e5 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 30 Sep 2015 23:00:00 +0000
-Subject: [PATCH 01/13] Measure correct boot time.
+Subject: [PATCH 01/14] Measure correct boot time.
 
 ---
  arch/x86/Kconfig          |  8 ++++++++
@@ -98,7 +98,7 @@ index 9e64d70..ccc9a22 100644
 From 1dc2e9f9a9d8d8065fa096b5551ca646086a72ed Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 2 Oct 2015 20:00:06 +0000
-Subject: [PATCH 02/13] PV io_delay for VMware guest.
+Subject: [PATCH 02/14] PV io_delay for VMware guest.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 13 +++++++++++++
@@ -149,7 +149,7 @@ index 628a059..8fdd031 100644
 From faf39d20732abb865f003b46a567ea42d0841e92 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 7 Oct 2015 22:53:18 +0000
-Subject: [PATCH 03/13] Improved tsc based sched_clock & clocksource.
+Subject: [PATCH 03/14] Improved tsc based sched_clock & clocksource.
 
 ---
  arch/x86/Kconfig             |  1 +
@@ -327,7 +327,7 @@ index caf4041..86d8a78 100644
 From 543bcc0aa46846859c92be5effde0d900a456c2a Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 12 Oct 2015 22:43:38 +0000
-Subject: [PATCH 04/13] Move read_boot_clock64 into pv_time_ops.
+Subject: [PATCH 04/14] Move read_boot_clock64 into pv_time_ops.
 
 ---
  arch/x86/Kconfig                      | 14 ++++++--
@@ -635,7 +635,7 @@ index 86d8a78..377ab5a 100644
 From f832fc949c5e97799fc977a317025a721d87bb68 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 5 Nov 2015 21:02:52 +0000
-Subject: [PATCH 05/13] Fix clocksource_vmware issue in VM version <= 10
+Subject: [PATCH 05/14] Fix clocksource_vmware issue in VM version <= 10
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++++++++++++++++++++++++++++++++++++++---
@@ -733,7 +733,7 @@ index 1bf1fe3..0b89bb9 100644
 From 15e6d2cc5239e58ab805f882650ad7de9b163228 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 10 Nov 2015 11:46:57 +0000
-Subject: [PATCH 06/13] Get lapic timer frequency from HV, skip calibration
+Subject: [PATCH 06/14] Get lapic timer frequency from HV, skip calibration
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++---------------------------------------
@@ -823,7 +823,7 @@ index 0b89bb9..b16618b 100644
 From 10ebf94df7ed241429a04b2cc3c2d590dd97d7dd Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 15 Dec 2015 21:31:18 +0000
-Subject: [PATCH 07/13] Skip rdrand reseed
+Subject: [PATCH 07/14] Skip rdrand reseed
 
 ---
  arch/x86/kernel/cpu/common.c | 2 ++
@@ -868,7 +868,7 @@ index 136ac74..0685891 100644
 From 237e42455bd98cf6e0e0725d35bba1b6d0d04822 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 3 Dec 2015 00:46:46 +0000
-Subject: [PATCH 08/13] STA implementation. first version.
+Subject: [PATCH 08/14] STA implementation. first version.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 163 +++++++++++++++++++++++++++++++++++++++++++
@@ -1093,7 +1093,7 @@ index b16618b..cf1fb64 100644
 From 21249118757b7232948c8401ba5d0b039cd0fa35 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 13 Jan 2016 22:54:04 +0000
-Subject: [PATCH 09/13] STA. updated version
+Subject: [PATCH 09/14] STA. updated version
 
 ---
  arch/x86/kernel/cpu/vmware.c | 34 ++++++++++++++++++++++++----------
@@ -1182,7 +1182,7 @@ index cf1fb64..196703c 100644
 From 7061430a3c8906e67978da76a73967b0b26aece7 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 15 Mar 2016 22:29:23 +0000
-Subject: [PATCH 10/13] STA: version with a single backdoor command.
+Subject: [PATCH 10/14] STA: version with a single backdoor command.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 35 +++++++++++++++--------------------
@@ -1273,7 +1273,7 @@ index 196703c..743b8ad 100644
 From ee3ab56a4bdca7e514b4d07b6a70f724cde7f0f5 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 25 Mar 2016 01:14:17 +0000
-Subject: [PATCH 11/13] Remove delays for smpboot
+Subject: [PATCH 11/14] Remove delays for smpboot
 
 ---
  arch/x86/kernel/smpboot.c | 2 +-
@@ -1299,7 +1299,7 @@ index fbabe4f..5a18dd6 100644
 From c6ade3b8c3db962d24e07ff9a483d26e46a41bb0 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Mar 2016 21:14:46 +0000
-Subject: [PATCH 12/13] kmsg_dumper to vmware.log
+Subject: [PATCH 12/14] kmsg_dumper to vmware.log
 
 ---
  arch/x86/kernel/cpu/vmware.c | 143 +++++++++++++++++++++++++++++++++++++++++--
@@ -1492,7 +1492,7 @@ index 743b8ad..e9f7d52 100644
 From 9edf1bf3a56c8c8048d2958d13283df5a283acd1 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 9 May 2016 04:14:03 -0700
-Subject: [PATCH 13/13] __native_read_tsc() -> rdtsc()
+Subject: [PATCH 13/14] __native_read_tsc() -> rdtsc()
 
 ---
  arch/x86/kernel/cpu/vmware.c | 8 ++++----
@@ -1538,6 +1538,60 @@ index e9f7d52..57cef56 100644
  #endif
  	if (cpu_has_hypervisor) {
  		unsigned int eax;
+-- 
+1.9.1
+
+
+From 42ac37f4ec59aee6b37b7beed93c7e1055d14522 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 6 Oct 2016 11:24:55 -0700
+Subject: [PATCH 14/14] Fix lapic_timer_frequency
+
+---
+ arch/x86/kernel/cpu/vmware.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 57cef56..63fe6c8 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -291,7 +291,7 @@ arch_initcall(activate_jump_labels);
+ static void __init paravirt_ops_setup(void)
+ {
+ 	pv_info.name = "VMware";
+-	pv_cpu_ops.io_delay = paravirt_nop,
++	pv_cpu_ops.io_delay = paravirt_nop;
+ 	pv_time_ops.sched_clock = vmware_sched_clock;
+ 	pv_time_ops.read_boot_clock64 = vmware_read_boot_clock64;
+ 
+@@ -319,8 +319,15 @@ static void __init vmware_platform_setup(void)
+ 
+ 	VMWARE_PORT(GETHZ, eax, ebx, ecx, edx);
+ 
+-	if (ebx != UINT_MAX)
++	if (ebx != UINT_MAX) {
+ 		x86_platform.calibrate_tsc = vmware_get_tsc_khz;
++#ifdef CONFIG_X86_LOCAL_APIC
++		/* Skip lapic calibration since we know the bus frequency. */
++		lapic_timer_frequency = ecx / HZ;
++		pr_info("Host bus clock speed read from hypervisor : %u Hz\n",
++			ecx);
++#endif
++	}
+ 	else
+ 		printk(KERN_WARNING
+ 		       "Failed to get TSC freq from the hypervisor\n");
+@@ -330,10 +337,6 @@ static void __init vmware_platform_setup(void)
+ 	printk(KERN_INFO "Pre Kernel boot time: %dms\n",
+ 		(unsigned int) (tsc_at_head / vtsc_khz));
+ 
+-#ifdef CONFIG_X86_LOCAL_APIC
+-	/* Skip lapic calibration since we know bus frequency. */
+-	lapic_timer_frequency = ecx;
+-#endif
+ 	vmware_cyc2ns.cyc2ns_mul =
+ 		DIV_ROUND_CLOSEST(NSEC_PER_MSEC << CYC2NS_SCALE_FACTOR,
+ 				  vtsc_khz);
 -- 
 1.9.1
 
