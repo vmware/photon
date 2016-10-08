@@ -1,6 +1,6 @@
 Name:          crash
 Version:       7.1.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
@@ -12,6 +12,7 @@ Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
 Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-1.3.1.tar.gz
 %define sha1 crash-gcore=9f1a889ad7b3f01c88866dac44cabddd7d35f99c
 License:       GPL
+Patch0:        gcore-support-linux-4.4.patch
 BuildRequires: binutils
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
@@ -35,6 +36,8 @@ This package contains libraries and header files need for development.
 %prep
 %setup -q -n %{name}-%{version}
 %setup -a 1
+cd crash-gcore-command-%{CRASH_GCORE_VERSION}
+%patch0 -p1
 
 %build
 make RPMPKG=%{version}-%{release}
@@ -69,6 +72,8 @@ install -pm 755 crash-gcore-command-%{CRASH_GCORE_VERSION}/gcore.so %{buildroot}
 %{_includedir}/crash/*.h
 
 %changelog
+*   Fri Oct 07 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-2
+-   gcore-support-linux-4.4.patch
 *   Fri Sep 30 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-1
 -   Update version to 7.1.5 (it supports linux-4.4)
 -   Added gcore plugin
