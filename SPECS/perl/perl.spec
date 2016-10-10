@@ -9,7 +9,7 @@
 Summary:	Practical Extraction and Report Language
 Name:		perl
 Version:	5.22.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv1+
 URL:		http://www.perl.org/
 Group:		Development/Languages
@@ -52,6 +52,8 @@ make VERBOSE=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 unset BUILD_ZLIB BUILD_BZIP2
+%check
+make  %{?_smp_mflags} check
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
@@ -62,6 +64,8 @@ unset BUILD_ZLIB BUILD_BZIP2
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 5.22.1-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.22.1-3
 -	GA - Bump release of all rpms
 *	Thu Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
