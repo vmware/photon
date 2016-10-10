@@ -1,7 +1,7 @@
 Summary:	A network utility to retrieve files from the Web
 Name:		wget
 Version:	1.17.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/wget/wget.html
 Group:		System Environment/NetworkingPrograms
@@ -40,7 +40,7 @@ rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags} check
 %clean
 rm -rf %{buildroot}/*
 %files -f %{name}.lang
@@ -49,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 1.17.1-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.17.1-2
 -	GA - Bump release of all rpms
 *	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.17.1-1
