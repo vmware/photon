@@ -1,7 +1,7 @@
 Summary:	My summary.
 Name:		parted
 Version:	3.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:		Applications/System
@@ -25,6 +25,8 @@ My lib
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+%check
+make  %{?_smp_mflags} check
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files 
@@ -39,6 +41,8 @@ make DESTDIR=%{buildroot} install
 %{_infodir}/%{name}-%{version}/*
 %{_datadir}/*
 %changelog
+*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 3.2-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-2
 -	GA - Bump release of all rpms
 *	Thu Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.2-1

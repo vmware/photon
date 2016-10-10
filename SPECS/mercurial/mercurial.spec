@@ -1,7 +1,7 @@
 Summary:	Mercurial-3.1.2
 Name:		mercurial
 Version:	3.7.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -43,7 +43,8 @@ EOF
 %{_fixperms} %{buildroot}/*
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+cd  %{buildroot}/var/opt/%{name}-%{version}
+make tests
 
 %post -p /sbin/ldconfig
 
@@ -62,6 +63,8 @@ rm -rf %{buildroot}/*
 %exclude /var/opt/%{name}-%{version}/contrib/plan9
 %exclude /var/opt/%{name}-%{version}/build/temp.*
 %changelog
+*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 3.7.1-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.7.1-3
 -	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.7.1-2
