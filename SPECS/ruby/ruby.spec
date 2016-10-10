@@ -1,7 +1,7 @@
 Summary:	Ruby
 Name:		ruby
 Version:	2.3.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSDL
 URL:		https://www.ruby-lang.org/en/
 Group:		System Environment/Security
@@ -32,7 +32,7 @@ make %{?_smp_mflags}
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags} check
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2.3.0-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.0-3
 -	GA - Bump release of all rpms
 *   Tue Mar 09 2016 Divya Thaluru <dthaluru@vmware.com> 2.3.0-2
