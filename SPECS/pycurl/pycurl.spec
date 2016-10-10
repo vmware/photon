@@ -2,7 +2,7 @@
 
 Name:           pycurl
 Version:        7.21.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -48,6 +48,13 @@ python setup.py install -O1 --skip-build --root %{buildroot}
 rm -rf %{buildroot}%{_datadir}/doc/pycurl
 chmod 755 %{buildroot}%{python_sitelib}/pycurl.so
 
+%check
+easy_install nose
+easy_install bottle
+easy_install flakey
+sed -i 's/--with-flaky//g' tests/run.sh
+make  %{?_smp_mflags} test
+
 %clean
 rm -rf %{buildroot}
 
@@ -59,6 +66,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 7.21.5-4
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.21.5-3
 -	GA - Bump release of all rpms
 *	Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 7.21.5-2
