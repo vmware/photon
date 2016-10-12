@@ -183,7 +183,7 @@ def buildPackagesList(specPath, csvFilename):
                     csvFile.write(name+","+version+","+license+","+url+","+sources+","+patches+"\n")
     csvFile.close()
 
-def buildSourcesList(specPath,sourcePath, yamlDir, logger, singleFile=False):
+def buildSourcesList(specPath,sourcePath, yamlDir, logger, singleFile=True):
     strUtils = StringUtils()
     if singleFile:
         yamlFile = open(yamlDir+"sources_list.yaml", "w")
@@ -235,7 +235,7 @@ def buildSourcesList(specPath,sourcePath, yamlDir, logger, singleFile=False):
         yamlFile.close()
     logger.info("Generated source yaml files for all packages")
 
-def buildSRPMList(specPath,srpmPath, yamlDir, logger, singleFile=False):
+def buildSRPMList(specPath,srpmPath, yamlDir, logger, singleFile=True):
     strUtils = StringUtils()
     if singleFile:
         yamlFile = open(yamlDir+"srpm_list.yaml", "w")
@@ -271,7 +271,7 @@ def buildSRPMList(specPath,srpmPath, yamlDir, logger, singleFile=False):
                     yamlFile.write("  version: '"+ossversion+"-"+ossrelease+"'\n")
                     yamlFile.write("  baseos-style: rpm\n")
                     yamlFile.write("  baseos-source: '"+str(srpmName)+"'\n")
-                    yamlFile.write("  baseos-osname: 'Photon OS'\n")
+                    yamlFile.write("  baseos-osname: 'photon'\n")
                     yamlFile.write("\n")
                     if not singleFile:
                         yamlFile.close()
