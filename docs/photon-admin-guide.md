@@ -1655,12 +1655,11 @@ The default iptables settings on the full version look like this:
     target     prot opt source               destination
     ACCEPT     all  --  anywhere             anywhere
 
-
 To find out how to adjust the settings, see the man page for iptables. 
 
-Although the default iptables policy accepts SSH connections, the `sshd` configuration file on the full version of Photon OS  is set to reject SSH connections. See [Permitting Root Login with SSH](#permitting-root-login-with-ssh).
+Although the default iptables policy accepts SSH connections, the `sshd` configuration file on the full version of Photon OS is set to reject SSH connections. See [Permitting Root Login with SSH](#permitting-root-login-with-ssh).
 
-If you are unable to ping a Photon OS machine, one of the first things you should do is check the firewall rules. Do they allow connectivity for the port and protocol in question? You can supplement the `iptables` commands by using `lsof` to, for instance, see the processes listening on ports: 
+If you are unable to ping a Photon OS machine, one of the first things you should do is check the firewall rules. Do they allow connectivity for the port and protocol in question? You can supplement the `iptables` commands by using `lsof` commands to, for instance, see the processes listening on ports: 
 
     lsof -i -P -n
 
@@ -1668,7 +1667,7 @@ If you are unable to ping a Photon OS machine, one of the first things you shoul
 
 The umask on Photon OS is set to `0027`.
 
-When you create a new file with the `touch` command as root, the default on Photon OS is to set the permissions to `0640`--read-write for user, read for group, and no access for others. Here's an example: 
+When you create a new file with the `touch` command as root, the default on Photon OS is to set the permissions to `0640`--which translates to read-write for user, read for group, and no access for others. Here's an example: 
 
     touch newfile.md
     stat newfile.md
@@ -1931,6 +1930,7 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
 * RPM OSTree Documentation
+
 
 
 
