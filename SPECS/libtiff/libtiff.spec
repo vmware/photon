@@ -1,7 +1,7 @@
 Summary:	TIFF libraries and associated utilities.
 Name:		libtiff
 Version:	4.0.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	libtiff
 URL:		http://www.remotesensing.org/libtiff
 Group:		System Environment/Libraries
@@ -14,6 +14,9 @@ Patch1:		libtiff-4.0.6-CVE-2015-7554.patch
 Patch2:		libtiff-4.0.6-CVE-2015-8683+CVE-2015-8665.patch
 Patch3:     	libtiff-4.0.6-CVE-2016-3186.patch
 Patch4:     	libtiff-4.0.6-CVE-2015-1547.patch
+Patch5:     	libtiff-4.0.6-CVE-2016-3945.patch
+Patch6:     	libtiff-4.0.6-CVE-2016-3990.patch
+Patch7:     	libtiff-4.0.6-CVE-2016-3991.patch
 BuildRequires:	libjpeg-turbo-devel
 Requires:	libjpeg-turbo
 %description
@@ -32,6 +35,9 @@ It contains the libraries and header files to create applications
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p2
+%patch6 -p2
+%patch7 -p2
 
 %build
 ./configure \
@@ -62,6 +68,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Wed Oct 12 2016 Dheeraj Shetty <dheerajs@vmware.com> 4.0.6-3
+-       Fixed security issues : CVE-2016-3945, CVE-2016-3990, CVE-2016-3991
 *       Thu Sep 22 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.6-2
 -       Fixed security issues : CVE-2015-8668, CVE-2015-7554, CVE-2015-8683+CVE-2015-8665,CVE-2016-3186
         CVE-2015-1547
