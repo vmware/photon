@@ -72,8 +72,8 @@
     -   [Fixing File System Errors When fsck
         Fails](#fixing-file-system-errors-when-fsck-fails)
 -   [Packages](#packages)
--   [Troubleshooting Kernel Problems, Boot Problems, and Login
-    Problems](#troubleshooting-kernel-problems-boot-problems-and-login-problems)
+-   [Kernel Problems and Boot and Login
+    Problems](#kernel-problems-and-boot-and-login-problems)
     -   [Kernel Overview](#kernel-overview)
     -   [Boot Process Overview](#boot-process-overview)
     -   [Blank Screen on Reboot](#blank-screen-on-reboot)
@@ -83,8 +83,8 @@
         On](#investigating-the-guest-kernel-when-you-cannot-log-on)
     -   [Kernel Log Replication with
         VProbes](#kernel-log-replication-with-vprobes)
--   [Troubleshooting Performance
-    Issues](#troubleshooting-performance-issues)
+-   [Performance Issues](#performance-issues)
+
 
 
 ## Introduction 
@@ -93,7 +93,7 @@ This guide describes the fundamentals of troubleshooting problems on Photon OS. 
 
 This guide covers the basics of troubleshooting systemd, packages, network interfaces, services such as SSH and Sendmail, the file system, and the Linux kernel. The guide includes a quick tour of the tools that you can use for troubleshooting and provides examples along the way. The guide also demonstrates how to access the system's log files. 
 
-For information on how to set up and manage Photon OS, see the [Photon OS Administration Guide](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md).
+For information on how to install and manage Photon OS, see the [Photon OS Administration Guide](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md).
 
 ### Systemd and TDNF
 
@@ -101,7 +101,7 @@ Two characteristics of Photon OS stand out: It manages services with systemd, an
 
 By using systemd, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services--an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server 11.
 
-[[Image:photon-logo.png|right]]
+<!-- [[Image:photon-logo.png|right]] --> 
 
 A traditional Linux system contains an initialization system called SysVinit. With SLES 11, for instance, SysVinit-style init programs control how the system starts up and shuts down. Init implements system runlevels. A SysVinit runlevel defines a state in which a process or service runs. In contrast to a SysVinit system, systemd defines no such runlevels. Instead, systemd uses a dependency tree of _targets_ to determine which services to start when.
 
@@ -1248,7 +1248,7 @@ If you find a package that is installed but is not working, try re-installing it
 	Reinstalling:
 	shadow 	x86_64 	4.2.1-7.ph1   3.85 M
 
-## Kernel Problems, Boot Problems, and Login Problems
+## Kernel Problems and Boot and Login Problems
 
 ### Kernel Overview
 
@@ -1573,9 +1573,26 @@ Finally, run the following command to print all the kernel messages from Photon 
 You can use a directory other than `tmp` if you want.
 
 <!--
-## Deep Kernel Analysis with the Crash Utility
+### Deep Kernel Analysis with the Crash Utility
 
 -->
+
+<!-- 
+
+### Go to the Debug Shell
+
+‘ panic=1 init=/bin/bash’
+mount –o rw,remount /
+cd /lib/systemd/system/multi-user.target.wants
+ln –s ../debug-shell.service
+umount /
+sync
+exit
+
+After reboot debug-shell will be available on tty9. No password required.
+
+-->
+
 
 ## Performance Issues
 
@@ -1600,15 +1617,5 @@ Another option is to use the `dstat` utility. It shows a live, running list of s
 In addition, `systemd-analyze`, which reveals performance statistics for boot times, can help troubleshoot slow system boots and incorrect unit files.
 
 The additional tools that you select depend on the clues that your initial investigation reveals. The following tools can also help troubleshoot performance: `sysstat`, `sar`, `systemtap`, and `crash`. 
-
-
-
-
-
-
-
-
-
-
 
 
