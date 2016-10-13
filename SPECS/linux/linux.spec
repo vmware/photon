@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.8
-Release:    	8%{?dist}
+Version:    	4.4.20
+Release:    	4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
+%define sha1 linux=67f6d0f7d8c90d7f9fe7c3e1ee4d82b008b77767
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -17,13 +17,20 @@ Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
-Patch6:         net-Driver-Vmxnet3-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
-#fixes CVE-2016-3134
-Patch7:		netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
+Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
+Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
 #fixes CVE-2016-3135
-Patch8:		netfilter-x_tables-check-for-size-overflow.patch
-Patch9:		REVERT-sched-fair-Beef-up-wake_wide.patch
-Patch10:	e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
+Patch8:         netfilter-x_tables-check-for-size-overflow.patch
+Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
+Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
+Patch11:        VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+Patch12:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
+Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
+#fixes CVE-2016-6187
+Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
+#fixes CVE-2016-0758
+Patch16:        keys-fix-asn.1-indefinite-length-object-parsing.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -90,6 +97,12 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
 
 %build
 make mrproper
@@ -105,20 +118,22 @@ install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}
-cp -v System.map        %{buildroot}/boot/System.map-%{version}
-cp -v .config           %{buildroot}/boot/config-%{version}
-cp -v vmlinux			%{buildroot}/lib/modules/%{version}/vmlinux-%{version}
+cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}-%{release}
+cp -v System.map        %{buildroot}/boot/System.map-%{version}-%{release}
+cp -v .config           %{buildroot}/boot/config-%{version}-%{release}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{version}
+cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}
+
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
-photon_linux=vmlinuz-%{version}
-photon_initrd=initrd.img-no-kmods
+photon_linux=vmlinuz-%{version}-%{release}
+photon_initrd=initrd.img-%{version}-%{release}
 EOF
 
 # Restrict the permission on System.map-X file
-chmod -v 400 %{buildroot}/boot/System.map-%{version}
+chmod -v 400 %{buildroot}/boot/System.map-%{version}-%{release}
 
 #    Cleanup dangling symlinks
 rm -rf %{buildroot}/lib/modules/%{version}/source
@@ -146,13 +161,13 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /sbin/depmod -aq %{version}
 
 %post debuginfo
-ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlinux-%{version}.debug
+ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug /boot/vmlinux-%{version}-%{release}.debug
 
 %files
 %defattr(-,root,root)
-/boot/System.map-%{version}
-/boot/config-%{version}
-/boot/vmlinuz-%{version}
+/boot/System.map-%{version}-%{release}
+/boot/config-%{version}-%{release}
+/boot/vmlinuz-%{version}-%{release}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 /lib/firmware/*
 %defattr(0644,root,root)
@@ -161,7 +176,6 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 %exclude /lib/modules/%{version}/kernel/drivers/gpu
 %exclude /lib/modules/%{version}/kernel/sound
 %exclude /lib/modules/%{version}/kernel/arch/x86/oprofile/
-%exclude /lib/modules/%{version}/vmlinux-%{version}
 
 %files docs
 %defattr(-,root,root)
@@ -186,6 +200,25 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Mon Oct  3 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-4
+-   Package vmlinux with PROGBITS sections in -debuginfo subpackage
+*   Tue Sep 27 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-3
+-   .config: CONFIG_IP_SET_HASH_{IPMARK,MAC}=m
+*   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-2
+-   Add -release number for /boot/* files
+-   Use initrd.img with version and release number
+*   Wed Sep  7 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-1
+-   Update to linux-4.4.20
+-   apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
+-   keys-fix-asn.1-indefinite-length-object-parsing.patch
+*   Thu Aug 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-11
+-   vmxnet3 patches to bumpup a version to 1.4.8.0
+*   Wed Aug 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-10
+-   Added VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+-   .config: pmem hotplug + ACPI NFIT support
+-   .config: enable EXPERT mode, disable UID16 syscalls
+*   Thu Jul 07 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-9
+-   .config: pmem + fs_dax support
 *   Fri Jun 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-8
 -   patch: e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 -   .config: disable rt group scheduling - not supported by systemd

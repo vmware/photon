@@ -17,7 +17,7 @@ diff --git a/net/netfilter/x_tables.c b/net/netfilter/x_tables.c
 index c8a0b7d..17a9a9f 100644
 --- a/net/netfilter/x_tables.c
 +++ b/net/netfilter/x_tables.c
-@@ -659,6 +659,9 @@ struct xt_table_info *xt_alloc_table_info(unsigned int size)
+@@ -897,6 +897,9 @@ struct xt_table_info *xt_alloc_table_info(unsigned int size)
  	struct xt_table_info *info = NULL;
  	size_t sz = sizeof(*info) + size;
  
