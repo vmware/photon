@@ -1,34 +1,41 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.8
-Release:       6%{?dist}
+Version:       4.4.20
+Release:       5%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=78df847edacc6c01cb4dcc89a2b96822d7e8d1e1
+Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=67f6d0f7d8c90d7f9fe7c3e1ee4d82b008b77767
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:        linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch3:        SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:        net-Driver-Vmxnet3-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch4:        vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
 Patch5:        01-clear-linux.patch
 Patch6:        02-pci-probe.patch
 Patch7:        03-poweroff.patch
 Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
-#fixes CVE-2016-3134
-Patch11:       netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
+Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
 #fixes CVE-2016-3135
 Patch12:       netfilter-x_tables-check-for-size-overflow.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-BuildRequires: bc 
+Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+Patch16:       vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
+Patch17:       vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
+Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
+#fixes CVE-2016-0758
+Patch19:       keys-fix-asn.1-indefinite-length-object-parsing.patch
+Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
+Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
+BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
 BuildRequires: glib-devel
@@ -77,8 +84,18 @@ The Linux package contains the Linux kernel doc files
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
 
 %build
+# patch vmw_balloon driver
+sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
+
 make mrproper
 cp %{SOURCE1} .config
 make LC_ALL= oldconfig
@@ -91,16 +108,18 @@ install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
 install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}
-cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}
-cp -v .config            %{buildroot}/boot/config-esx-%{version}
+cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}-%{release}
+cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}-%{release}
+cp -v .config            %{buildroot}/boot/config-esx-%{version}-%{release}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
+install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{version}-esx
+cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{version}-esx/vmlinux-esx-%{version}-%{release}
 
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
-photon_linux=vmlinuz-esx-%{version}
+photon_linux=vmlinuz-esx-%{version}-%{release}
 EOF
 
 # cleanup dangling symlinks
@@ -117,6 +136,7 @@ find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp 
 cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
 # symling to the build folder
 ln -sf /usr/src/%{name}-headers-%{version}-%{release} %{buildroot}/lib/modules/%{version}-esx/build
+find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %post
 /sbin/depmod -aq %{version}-esx
@@ -124,9 +144,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 
 %files
 %defattr(-,root,root)
-/boot/system.map-esx-%{version}
-/boot/config-esx-%{version}
-/boot/vmlinuz-esx-%{version}
+/boot/system.map-esx-%{version}-%{release}
+/boot/config-esx-%{version}-%{release}
+/boot/vmlinuz-esx-%{version}-%{release}
 %config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
 /lib/modules/*
 %exclude /lib/modules/%{version}-esx/build
@@ -142,6 +162,33 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Thu Oct  6 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-5
+-   .config: added ADM PCnet32 support
+-   vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
+-   vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
+-   late_initcall for vmw_balloon driver
+-   Minor fixed in pv-ops patchset
+*   Mon Oct  3 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-4
+-   Package vmlinux with PROGBITS sections in -debuginfo subpackage
+*   Wed Sep 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-3
+-   Add PCIE hotplug support
+-   Switch processor type to generic
+*   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-2
+-   Add -release number for /boot/* files
+-   Fixed generation of debug symbols for kernel modules & vmlinux
+*   Wed Sep  7 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-1
+-   Update to linux-4.4.20
+-   keys-fix-asn.1-indefinite-length-object-parsing.patch
+*   Thu Aug 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-11
+-   vmxnet3 patches to bumpup a version to 1.4.8.0
+*   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-10
+-   .config: added NVME blk dev support
+*   Wed Aug 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-9
+-   Added VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+*   Wed Jul 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-8
+-   .config: added cgroups for pids,mem and blkio
+*   Mon Jul 11 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-7
+-   .config: added ip multible tables support
 *   Fri Jun 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-6
 -   patch: e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 -   .config: disable rt group scheduling - not supported by systemd
@@ -164,7 +211,7 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 -   Apply photon8 config (+stack protector regular)
 -   pv-ops patch: added STA support
 -   Added patches from generic kernel
-*   Tue Mar 09 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-17
+*   Wed Mar 09 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-17
 -   Enable ACPI hotplug support in kernel config
 *   Sun Feb 14 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.0-16
 -   veth patch: don’t modify ip_summed
