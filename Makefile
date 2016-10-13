@@ -49,6 +49,7 @@ endif
 
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
+VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
 check check-docker check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
@@ -430,13 +431,13 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso ... aborting build"; \
 	fi
 
-cloud-image: $(PHOTON_STAGE) iso
+cloud-image: $(PHOTON_STAGE) $(VIXDISKUTIL) iso
 	@echo "Building cloud image $(IMG_NAME)..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso $(ADDITIONAL_RPMS_PATH)
 
 
-cloud-image-all: $(PHOTON_STAGE) iso
+cloud-image-all: $(PHOTON_STAGE) $(VIXDISKUTIL) iso
 	@echo "Building cloud images - gce, ami, azure and ova..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso $(ADDITIONAL_RPMS_PATH)
@@ -508,4 +509,8 @@ $(TOOLS_BIN):
 $(CONTAIN): $(TOOLS_BIN)
 	gcc -O2 -std=gnu99 -Wall -Wextra $(SRCROOT)/tools/src/contain/*.c -o $@_unpriv
 	sudo install -o root -g root -m 4755 $@_unpriv $@
+
+$(VIXDISKUTIL): $(TOOLS_BIN)
+	@cd $(SRCROOT)/tools/src/vixDiskUtil && \
+	make
 
