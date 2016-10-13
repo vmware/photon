@@ -1,7 +1,7 @@
 Summary:	A utility for generating programs that recognize patterns in text
 Name:		flex
 Version:	2.5.39
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://flex.sourceforge.net
 Group:		Applications/System
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://prdownloads.sourceforge.net/flex/%{name}-%{version}.tar.xz
 %define sha1 flex=415e82bb0dc9b1713fc4802a9db2274cd8d2909a
+Patch0:         CVE-2016-6354.patch
 BuildRequires:	m4
 Requires:	m4
 %description
@@ -26,6 +27,7 @@ flex.
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i -e '/test-bison/d' tests/Makefile.in
 %build
 ./configure \
@@ -66,12 +68,14 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/*
 
 %changelog
+*       Thu Oct 13 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.39-3
+-       Fixing Security bug CVE-2016-6354.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5.39-2
 -	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5.39-1
 - 	Updated to version 2.5.39
-*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.5.38-3
--   Moving static lib files to devel package.
+*       Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.5.38-3
+-       Moving static lib files to devel package.
 *	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 2.5.38-2
 -	Adding m4 package to build and run time required package 
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.5.38-1
