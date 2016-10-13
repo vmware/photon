@@ -64,7 +64,7 @@ fi
 #
 #	Install grub2.
 #
-UUID=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
+PARTUUID=$(blkid -s PARTUUID -o value $ROOT_PARTITION_PATH)
 BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
 
 
@@ -112,13 +112,13 @@ set theme=/boot/grub2/themes/photon/theme.txt
 menuentry "Photon" {
 	insmod ext2
     insmod part_gpt
-	linux /boot/vmlinuz-4.4.8 init=/lib/systemd/systemd root=UUID=UUID_PLACEHOLDER loglevel=3 ro
+	linux /boot/vmlinuz-4.4.8 init=/lib/systemd/systemd root=PARTUUID=UUID_PLACEHOLDER loglevel=3 ro
 	initrd /boot/initrd.img-no-kmods
 }
 # End /boot/grub2/grub.cfg
 EOF
 
-sed -i "s/UUID_PLACEHOLDER/$UUID/" "$BUILDROOT"/boot/grub2/grub.cfg > ${LOGFILE}	
+sed -i "s/UUID_PLACEHOLDER/$PARTUUID/" "$BUILDROOT"/boot/grub2/grub.cfg > ${LOGFILE}
 
 #Cleanup the workspace directory
 rm -rf "$BUILDROOT"/tools
