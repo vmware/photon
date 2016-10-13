@@ -62,7 +62,7 @@ cd $BUILD_SCRIPTS_PATH
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-${IMG_NAME}.raw`
 
 echo "Mapping device partition to loop device"
-kpartx -av $DISK_DEVICE
+kpartx -avs $DISK_DEVICE
 
 DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
 
@@ -73,6 +73,10 @@ rm -rf $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 
 UUID_VALUE=$(blkid -s UUID -o value /dev/mapper/${DEVICE_NAME}p2)
+PARTUUID_VALUE=$(blkid -s PARTUUID -o value /dev/mapper/${DEVICE_NAME}p2)
+if [ -z "$PARTUUID" ] ; then
+  PARTUUID_VALUE=$(sgdisk -i 2 $DISK_DEVICE | grep "Partition unique GUID" | cut -d ' ' -f 4)
+fi
 
 mkdir -p $ISO_MOUNT_FOLDER
 mount -o loop $PHOTON_ISO_PATH $ISO_MOUNT_FOLDER
@@ -87,6 +91,7 @@ rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/machine-id
 touch $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/machine-id
 rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
 echo "UUID=$UUID_VALUE    /    ext4    defaults 1 1" >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
+sed -i "s/rootpartition=PARTUUID=$/rootpartition=PARTUUID=$PARTUUID_VALUE/" $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/boot/grub/grub.cfg
 
 mkdir -p $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/var/lib/cloud/seed/nocloud
 cat << EOF >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/var/lib/cloud/seed/nocloud/meta-data

@@ -7,11 +7,6 @@ rm -f $PHOTON_IMG_OUTPUT_PATH/*.vmdk
 rm -f $PHOTON_IMG_OUTPUT_PATH/*.ova
 sed "s|VMDK_IMAGE|$PHOTON_IMG_OUTPUT_PATH/photon-ova-uefi.vmdk|" vmx-uefi-template > /tmp/vmx-temp-uefi.vmx
 
-cd $SRC_ROOT/tools/src/vixDiskUtil
-mkdir -p $SRC_ROOT/tools/bin
-make clean
-make
-
 cd $PHOTON_IMG_OUTPUT_PATH
 
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-ova_uefi.raw`

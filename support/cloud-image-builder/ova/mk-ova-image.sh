@@ -13,10 +13,6 @@ sed "s|VMDK_IMAGE|$PHOTON_IMG_OUTPUT_PATH/photon-custom.vmdk|" vmx-template > /t
 
 cp ../update_custom_password.py $PHOTON_IMG_OUTPUT_PATH/
 
-cd $SRC_ROOT/tools/src/vixDiskUtil
-mkdir -p $SRC_ROOT/tools/bin
-make clean
-make
 $SRC_ROOT/tools/bin/vixdiskutil -convert $PHOTON_IMG_OUTPUT_PATH/photon-ova.raw -cap 16000 $PHOTON_IMG_OUTPUT_PATH/photon-ova.vmdk
 $SRC_ROOT/tools/bin/vixdiskutil -wmeta toolsVersion 2147483647 $PHOTON_IMG_OUTPUT_PATH/photon-ova.vmdk
 
