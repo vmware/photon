@@ -1,6 +1,6 @@
-diff -Naur linux-4.2/include/linux/sched/sysctl.h linux-4.2_/include/linux/sched/sysctl.h
---- linux-4.2/include/linux/sched/sysctl.h	2015-08-30 11:34:09.000000000 -0700
-+++ linux-4.2_/include/linux/sched/sysctl.h	2016-02-22 12:33:07.000000000 -0800
+diff -Naur a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
+--- a/include/linux/sched/sysctl.h	2016-08-20 09:09:38.000000000 -0700
++++ b/include/linux/sched/sysctl.h	2016-09-01 14:52:39.335459615 -0700
 @@ -39,6 +39,7 @@
  extern unsigned int sysctl_sched_min_granularity;
  extern unsigned int sysctl_sched_wakeup_granularity;
@@ -9,9 +9,9 @@ diff -Naur linux-4.2/include/linux/sched/sysctl.h linux-4.2_/include/linux/sched
  
  enum sched_tunable_scaling {
  	SCHED_TUNABLESCALING_NONE,
-diff -Naur linux-4.2/kernel/sched/fair.c linux-4.2_/kernel/sched/fair.c
---- linux-4.2/kernel/sched/fair.c	2015-08-30 11:34:09.000000000 -0700
-+++ linux-4.2_/kernel/sched/fair.c	2016-02-22 16:03:25.443801709 -0800
+diff -Naur a/kernel/sched/fair.c b/kernel/sched/fair.c
+--- a/kernel/sched/fair.c	2016-08-20 09:09:38.000000000 -0700
++++ b/kernel/sched/fair.c	2016-09-01 14:52:39.339459615 -0700
 @@ -35,6 +35,10 @@
  
  #include "sched.h"
@@ -23,7 +23,7 @@ diff -Naur linux-4.2/kernel/sched/fair.c linux-4.2_/kernel/sched/fair.c
  /*
   * Targeted preemption latency for CPU-bound tasks:
   * (default: 6ms * (1 + ilog(ncpus)), units: nanoseconds)
-@@ -4517,7 +4521,9 @@
+@@ -4360,7 +4364,9 @@
  /* Used instead of source_load when we know the type == 0 */
  static unsigned long weighted_cpuload(const int cpu)
  {
@@ -34,10 +34,10 @@ diff -Naur linux-4.2/kernel/sched/fair.c linux-4.2_/kernel/sched/fair.c
  }
  
  #ifdef CONFIG_NO_HZ_COMMON
-diff -Naur linux-4.2/kernel/sysctl.c linux-4.2_/kernel/sysctl.c
---- linux-4.2/kernel/sysctl.c	2015-08-30 11:34:09.000000000 -0700
-+++ linux-4.2_/kernel/sysctl.c	2016-02-22 12:33:17.000000000 -0800
-@@ -349,6 +349,13 @@
+diff -Naur a/kernel/sysctl.c b/kernel/sysctl.c
+--- a/kernel/sysctl.c	2016-08-20 09:09:38.000000000 -0700
++++ b/kernel/sysctl.c	2016-09-01 14:52:39.339459615 -0700
+@@ -350,6 +350,13 @@
  		.mode		= 0644,
  		.proc_handler	= proc_dointvec,
  	},
