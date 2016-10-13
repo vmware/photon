@@ -9,11 +9,6 @@ sed "s|VMDK_IMAGE|$PHOTON_IMG_OUTPUT_PATH/photon-ova-ovs.vmdk|" vmx-ovs-template
 
 cp ../update_custom_password.py $PHOTON_IMG_OUTPUT_PATH/
 
-cd $SRC_ROOT/tools/src/vixDiskUtil
-mkdir -p $SRC_ROOT/tools/bin
-make clean
-make
-
 cd $PHOTON_IMG_OUTPUT_PATH
 
 DISK_DEVICE=`losetup --show -f ${PHOTON_IMG_OUTPUT_PATH}/photon-ova_ovs.raw`
