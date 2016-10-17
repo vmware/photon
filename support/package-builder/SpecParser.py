@@ -13,8 +13,8 @@ class SpecParser(object):
         self.packages={}
         self.specAdditionalContent=""
         self.globalSecurityHardening=""
-        
-    
+
+
     def readPkgNameFromPackageMacro(self,data,basePkgName=None):
         data=" ".join(data.split())
         pkgHeaderName=data.split(" ")
@@ -33,7 +33,7 @@ class SpecParser(object):
         if pkgName is None:
             return True, basePkgName
         return True, pkgName
-    
+
     def parseSpecFile(self,specfile):
         self.createDefaultPackage()
         currentPkg="default"
@@ -75,11 +75,11 @@ class SpecParser(object):
                 self.specAdditionalContent+=line+"\n"
             i=i+1
         specFile.close()
-    
+
     def createDefaultPackage(self):
         pkg = Package()
         self.packages["default"]=pkg
-    
+
     def readMacroFromFile(self,currentPos,lines):
         macro = rpmMacro()
         line = lines[currentPos]
@@ -96,7 +96,7 @@ class SpecParser(object):
 
         if currentPos+1 < len(lines) and self.isMacro(lines[currentPos+1]):
             return macro,currentPos
-            
+
         for j in range(currentPos+1,endPos):
             content = lines[j]
             if j+1 < endPos and self.isMacro(lines[j+1]):
@@ -104,7 +104,7 @@ class SpecParser(object):
             macro.content += content +'\n'
             macro.endposition=j
         return macro,endPos
-        
+
 
     def updateMacro(self,macro):
         if macro.macroName == "%clean":
@@ -126,15 +126,15 @@ class SpecParser(object):
             self.checkMacro=macro
             return True
         return False
-            
+
     def isMacro(self,line):
         return self.isPackageMacro(line) or self.isSpecMacro(line)
-    
+
     def isSpecMacro(self,line):
         if re.search('^'+'%clean',line) :
             return True
         elif re.search('^'+'%prep',line) :
-            return True            
+            return True
         elif re.search('^'+'%build',line) :
             return True
         elif re.search('^'+'%install',line) :
@@ -144,7 +144,7 @@ class SpecParser(object):
         elif re.search('^'+'%check',line) :
             return True
         return False
-    
+
     def isPackageMacro(self,line):
         line=line.strip()
 
@@ -159,7 +159,7 @@ class SpecParser(object):
         elif re.search('^'+'%package',line) :
             return True
         return False
-    
+
     def isPackageHeaders(self,line):
         if re.search('^'+'summary:',line,flags=re.IGNORECASE) :
             return True
@@ -243,7 +243,7 @@ class SpecParser(object):
                         compare="gt"
                     elif listContents[i+1] == "=":
                         compare="eq"
-                    
+
                 if compare is not None:
                     dpkg.package=listContents[i]
                     dpkg.compare=compare
@@ -310,7 +310,7 @@ class SpecParser(object):
                 pkg.buildrequires.extend(dpkg)
             if headerName == 'buildprovides':
                 pkg.buildprovides.extend(dpkg)
-                    
+
             return True
         return False
 
