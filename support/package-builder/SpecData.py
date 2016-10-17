@@ -18,6 +18,9 @@ class SerializableSpecObject(object):
         self.checksums={}
         self.listPatches=[]
         self.securityHardening=""
+        self.url=""
+        self.sourceurl=""
+        self.license=""
 
 class SerializableSpecObjectsUtils(object):
     
@@ -47,6 +50,9 @@ class SerializableSpecObjectsUtils(object):
             specObj.listPatches=spec.getPatchNames()
             specObj.securityHardening=spec.getSecurityHardeningOption()
             specObj.isCheckAvailable=spec.isCheckAvailable()
+            specObj.license=spec.getLicense()
+            specObj.url=spec.getURL()
+            specObj.sourceurl=spec.getSourceURL()
             for specPkg in specObj.listPackages:
 	    	if specPkg in self.mapPackageToSpec:
 		    existingObj = self.mapSerializableSpecObjects[self.mapPackageToSpec[specPkg]]
@@ -179,6 +185,30 @@ class SerializableSpecObjectsUtils(object):
     def isCheckAvailable(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].isCheckAvailable
+
+    def getListSpecs(self):
+        return self.mapSerializableSpecObjects.keys()
+    
+    def getURL(self, package):
+        specName=self.getSpecName(package)
+        url = self.mapSerializableSpecObjects[specName].url
+        if url is None:
+            return None
+        return self.processData(url)
+
+    def getSourceURL(self, package):
+        specName=self.getSpecName(package)
+        sourceurl = self.mapSerializableSpecObjects[specName].sourceurl
+        if sourceurl is None:
+            return None
+        return self.processData(sourceurl)
+    
+    def getLicense(self, package):
+        specName=self.getSpecName(package)
+        license = self.mapSerializableSpecObjects[specName].license
+        if license is None:
+            return None
+        return self.processData(license)
 
     def printAllObjects(self):
         listSpecs=self.mapSerializableSpecObjects.keys()
