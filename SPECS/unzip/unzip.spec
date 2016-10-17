@@ -1,7 +1,7 @@
 Summary:	Unzip-6.0
 Name:		unzip
 Version:	6.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -45,13 +45,15 @@ cp %{_builddir}/unzip60/unix/zipgrep %{buildroot}%{_bindir}
 ln -sf unzip %{buildroot}%{_bindir}/zipinfo
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags}  check
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 6.0-7
+-       Modified %check
 *       Tue Sep 20 2016 Kumar Kaushik <kaushikk@vmware.com> 6.0-6
 -       Added patch for CVE-2015-1315
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-5

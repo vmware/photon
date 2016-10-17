@@ -1,6 +1,6 @@
 Name:           python-pyasn1
 Version:        0.1.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
@@ -29,11 +29,16 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python setup.py test
+
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/*
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 0.1.9-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1.9-2
 -	GA - Bump release of all rpms
 * Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.1.9-1

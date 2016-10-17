@@ -1,7 +1,7 @@
 Summary:        Python C parser
 Name:           python-pycparser
 Version:        2.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pycparser
 License:        BSD
 Group:          Development/Languages/Python
@@ -29,12 +29,18 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+cd tests
+python all_tests.py
+
 %files
 %defattr(-,root,root)
 %{python_sitelib}/*
 
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 2.14-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.14-2
 -	GA - Bump release of all rpms
 * Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.14-1

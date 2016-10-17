@@ -2,7 +2,7 @@
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
 Version:        1.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
@@ -39,7 +39,9 @@ make install DESTDIR=%{buildroot}
 find %{buildroot} -name 'perllocal.pod' -delete
 
 %check
-make test
+export PERL_MM_USE_DEFAULT=1
+cpan Test::YAML
+make %{?_smp_mflags} test
 
 %files
 %dir %{perl_vendorlib}/YAML/
@@ -81,6 +83,8 @@ make test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.15-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.15-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.15-1

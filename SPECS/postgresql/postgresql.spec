@@ -1,7 +1,7 @@
 Summary:	PostgreSQL database engine
 Name:		postgresql
 Version:	9.5.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	PostgreSQL
 URL:		www.postgresql.org
 Group:		Applications/Databases
@@ -68,7 +68,11 @@ make install DESTDIR=%{buildroot}
 cd contrib && make install DESTDIR=%{buildroot}
 
 %{_fixperms} %{buildroot}/*
+
 %check
+chown -Rv nobody .
+sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -158,8 +162,10 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
-*   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
--   Add tzdata to buildrequires and requires.
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4 
+-       Modified %check
+*       Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
+-       Add tzdata to buildrequires and requires.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
 -	GA - Bump release of all rpms
 *	Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1

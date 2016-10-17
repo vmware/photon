@@ -1,7 +1,7 @@
 Summary:	Archiving program
 Name:		tar
 Version:	1.28
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
@@ -27,7 +27,7 @@ install -vdm 755 %{buildroot}/usr/share/man/man1
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags} check
 %files -f %{name}.lang
 %defattr(-,root,root)
 /bin/tar
@@ -35,6 +35,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 1.28-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.28-2
 -	GA - Bump release of all rpms
 *	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.28-1

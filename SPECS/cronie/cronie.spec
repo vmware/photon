@@ -1,7 +1,7 @@
 Summary:        Cron Daemon
 Name:           cronie
 Version:        1.5.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
 URL:            https://fedorahosted.org/cronie
 Source0:        https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -67,7 +67,7 @@ install -c -m755  %{SOURCE1} %{buildroot}/%{_bindir}/run-parts
 ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %post
 /sbin/ldconfig
@@ -106,6 +106,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.5.0-12
+-   Modified %check
 *   Mon Aug 29 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-11
 -   Fixed pam configuration for crond
 *   Thu Aug 4 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-10

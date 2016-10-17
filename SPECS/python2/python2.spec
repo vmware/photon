@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -135,7 +135,7 @@ find %{buildroot}%{_libdir} -name '*.pyc' -delete
 find %{buildroot}%{_libdir} -name '*.pyo' -delete
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags}  test
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -217,6 +217,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2.7.11-8
+-   Modified %check
 *   Wed Sep 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-7
 -   Improvised pyopenssl patch
 *   Wed Sep 7 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-6

@@ -1,7 +1,7 @@
 Summary: A New Scripting Dynamic Tracing Tool For Linux
 Name:    ktap
 Version: 0.4
-Release: 3%{?kernelsubrelease}%{?dist}
+Release: 4%{?kernelsubrelease}%{?dist}
 License: GPLv2
 URL: https://github.com/ktap/ktap
 Source: %{name}-master.zip
@@ -35,6 +35,11 @@ make KVERSION=%{KERNEL_VERSION} mod
 mkdir -p %{buildroot}%{_bindir}
 make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}
 
+%check
+export PERL_MM_USE_DEFAULT=1
+cpan Test::Base
+make  %{?_smp_mflags} test
+
 %post
 /sbin/depmod -a
 
@@ -48,8 +53,10 @@ make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}
 /lib/modules/%{KERNEL_VERSION}/extra/ktapvm.ko
 
 %changelog
-*   Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 0.4-3
--   Added kernel macros
+*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.4-4
+-       Modified %check
+*       Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 0.4-3
+-       Added kernel macros
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.4-3
 -	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 0.4-2

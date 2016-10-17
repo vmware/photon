@@ -2,7 +2,7 @@
 Summary:	OpenLdap-2.4.43
 Name:		openldap
 Version:	2.4.43
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -53,8 +53,10 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} test
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
@@ -71,6 +73,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
 -	GA - Bump release of all rpms
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1

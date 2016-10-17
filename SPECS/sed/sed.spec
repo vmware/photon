@@ -1,7 +1,7 @@
 Summary:	Stream editor
 Name:		sed
 Version:	4.2.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/sed
 Group:		Applications/Editors
@@ -32,8 +32,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
+
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
+
 %files
 %defattr(-,root,root)
 /bin/*
@@ -43,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.2.2-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.2-2
 -	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.2-1

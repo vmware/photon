@@ -1,7 +1,7 @@
 Summary:	DB-6.1.26
 Name:		db
 Version:	6.1.26
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Sleepycat License
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/%{name}-%{version}.tar.gz
@@ -40,6 +40,22 @@ pushd build_unix
 make DESTDIR=%{buildroot} docdir=%{_docdir}/%{name}-%{version} install
 popd
 find %{buildroot} -name '*.la' -delete
+
+%check
+wget http://prdownloads.sourceforge.net/tcl/tcl8.6.5-src.tar.gz --no-check-certificate
+tar xvf tcl8.6.5-src.tar.gz
+pushd tcl8.6.5/unix
+./configure --enable-threads --prefix=%{_prefix}
+make
+make install
+popd
+
+cd build_unix
+make cutest
+./cutest -s  TestCallbackSetterAndGetter -s TestDbTuner -s TestEnvMethod -s TestPartial -s TestPartial  \
+-s TestQueue -s TestChannel -s  TestEncryption -s TestKeyExistErrorReturn -s TestPartition -s TestDbHotBackup \
+-s TestEnvConfig -s TestPreOpenSetterAndGetter
+
 %clean
 rm -rf %{buildroot}
 
@@ -58,6 +74,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 6.1.26-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.1.26-2
 -	GA - Bump release of all rpms
 * 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 6.1.26-1

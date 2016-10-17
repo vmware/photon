@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.5.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -112,7 +112,7 @@ find %{buildroot}%{_libdir} -name '*.o' -delete
 rm %{buildroot}%{_bindir}/2to3
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags} test
 
 %post
 /sbin/ldconfig
@@ -186,6 +186,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 3.5.1-6
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
 -	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4

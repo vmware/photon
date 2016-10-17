@@ -1,6 +1,6 @@
 Name:           python-zope.interface
 Version:        4.1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
@@ -8,7 +8,7 @@ Group:          Development/Languages/Python
 Source0:        https://pypi.python.org/packages/source/z/zope.interface/zope.interface-%{version}.tar.gz
 %define sha1 zope.interface=207161e27880d07679aff6d712ed12f55e3d91b6
 
-BuildRequires: python2
+BuildRequires: python2-devel
 BuildRequires: python2-libs
 BuildRequires: python-setuptools
 
@@ -31,11 +31,16 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+python setup.py test
+
 %files
 %defattr(-,root,root)
 %{python_sitelib}/*
 
 %changelog
+*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 4.1.3-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1.3-2
 -	GA - Bump release of all rpms
 * Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>

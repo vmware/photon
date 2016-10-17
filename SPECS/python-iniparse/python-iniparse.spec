@@ -2,7 +2,7 @@
 
 Name:           python-iniparse
 Version:        0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 License:        MIT
@@ -37,6 +37,16 @@ rm -rf $RPM_BUILD_ROOT
 chmod 644 $RPM_BUILD_ROOT//usr/share/doc/iniparse-%{version}/index.html
 mv $RPM_BUILD_ROOT/usr/share/doc/iniparse-%{version} $RPM_BUILD_ROOT/usr/share/doc/python-iniparse-%{version}
 
+%check
+cp -r iniparse/ tests/
+cd tests
+python test_misc.py
+python test_tidy.py
+python test_fuzz.py
+python test_ini.py
+python test_multiprocessing.py
+python test_unicode.py
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -50,6 +60,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 0.4-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.4-2
 -	GA - Bump release of all rpms
 * Sat Jun 12 2010 Paramjit Oberoi <param@cs.wisc.edu> - 0.4-1
