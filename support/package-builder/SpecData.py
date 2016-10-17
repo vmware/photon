@@ -18,15 +18,18 @@ class SerializableSpecObject(object):
         self.checksums={}
         self.listPatches=[]
         self.securityHardening=""
+        self.url=""
+        self.sourceurl=""
+        self.license=""
 
 class SerializableSpecObjectsUtils(object):
-    
+
     def __init__(self,logPath):
         self.mapSerializableSpecObjects={}
         self.mapPackageToSpec={}
         self.logger=Logger.getLogger("Serializable Spec objects", logPath )
         self.userDefinedMacros={}
-    
+
     def readSpecsAndConvertToSerializableObjects(self,specFilesPath):
         listSpecFiles=[]
         self.getListSpecFiles(listSpecFiles,specFilesPath)
@@ -46,19 +49,22 @@ class SerializableSpecObjectsUtils(object):
             specObj.checksums=spec.getChecksums()
             specObj.listPatches=spec.getPatchNames()
             specObj.securityHardening=spec.getSecurityHardeningOption()
+            specObj.license=spec.getLicense()
+            specObj.url=spec.getURL()
+            specObj.sourceurl=spec.getSourceURL()
             for specPkg in specObj.listPackages:
 	    	if specPkg in self.mapPackageToSpec:
 		    existingObj = self.mapSerializableSpecObjects[self.mapPackageToSpec[specPkg]]
 		    if self.compareVersions(existingObj,specObj) == 1:
 			skipUpdating = True
-			break;			
+			break;
             	specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
             	self.mapPackageToSpec[specPkg]=specName
                 if spec.getIsRPMPackage(specPkg):
                     specObj.listRPMPackages.append(specPkg)
 	    if skipUpdating == False:
                 self.mapSerializableSpecObjects[specName]=specObj
-    
+
     def getListSpecFiles(self,listSpecFiles,path):
         for dirEntry in os.listdir(path):
             dirEntryPath = os.path.join(path, dirEntry)
@@ -66,15 +72,15 @@ class SerializableSpecObjectsUtils(object):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles,dirEntryPath)
-    
+
     def getBuildRequiresForPackage(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].buildRequirePackages
-        
+
     def getRequiresAllForPackage(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].installRequiresAllPackages
-        
+
     def getRequiresForPackage(self, package):
         specName=self.getSpecName(package)
         if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
@@ -109,15 +115,15 @@ class SerializableSpecObjectsUtils(object):
     def getRelease(self, package):
         specName=self.getSpecName(package)
         return self.processData(self.mapSerializableSpecObjects[specName].release)
-        
+
     def getVersion(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].version
-        
+
     def getSpecFile(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].specFile
-        
+
     def getPatches(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listPatches
@@ -125,7 +131,7 @@ class SerializableSpecObjectsUtils(object):
     def getSources(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listSources
-        
+
     def getSHA1(self, package, source):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].checksums.get(source)
@@ -153,7 +159,7 @@ class SerializableSpecObjectsUtils(object):
 	else:
 	    if int(self.getReleaseNum(existingObj.release)) > int(self.getReleaseNum(newObject.release)):
 		return 1;
-	    else: 
+	    else:
 	     	return -1;
 
     def getSpecName(self,package):
@@ -174,6 +180,30 @@ class SerializableSpecObjectsUtils(object):
     def getSecurityHardeningOption(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].securityHardening
+
+    def getListSpecs(self):
+        return self.mapSerializableSpecObjects.keys()
+
+    def getURL(self, package):
+        specName=self.getSpecName(package)
+        url = self.mapSerializableSpecObjects[specName].url
+        if url is None:
+            return None
+        return self.processData(url)
+
+    def getSourceURL(self, package):
+        specName=self.getSpecName(package)
+        sourceurl = self.mapSerializableSpecObjects[specName].sourceurl
+        if sourceurl is None:
+            return None
+        return self.processData(sourceurl)
+
+    def getLicense(self, package):
+        specName=self.getSpecName(package)
+        license = self.mapSerializableSpecObjects[specName].license
+        if license is None:
+            return None
+        return self.processData(license)
 
     def printAllObjects(self):
         listSpecs=self.mapSerializableSpecObjects.keys()
