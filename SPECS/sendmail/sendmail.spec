@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -116,6 +116,9 @@ WantedBy=multi-user.target
 
 EOF
 
+%check
+make -C test check
+
 %pre
 groupadd -g 26 smmsp                               &&
 useradd -c "Sendmail Daemon" -g smmsp -d /dev/null \
@@ -168,6 +171,8 @@ fi
 
 
 %changelog
+*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 8.15.2-7
+-       Modified %check
 *       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 8.15.2-6
 -       Fixed logic to restart the active services after upgrade 
 *       Wed May 25 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-5

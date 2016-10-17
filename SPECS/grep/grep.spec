@@ -1,7 +1,7 @@
 Summary:	Programs for searching through files
 Name:		grep
 Version:	2.21
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grep
 Group:		Applications/File
@@ -26,12 +26,14 @@ make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make  %{?_smp_mflags} check
 %files -f %{name}.lang
 %defattr(-,root,root)
 /bin/*
 %{_mandir}/*/*
 %changelog
+*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.21-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.21-2
 -	GA - Bump release of all rpms
 *   Mon Apr 6 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.21-1

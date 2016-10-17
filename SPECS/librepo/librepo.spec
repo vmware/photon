@@ -5,7 +5,7 @@
 Summary:       	Repodata downloading library
 Name:          	librepo
 Version:       	1.7.17
-Release:       	2%{?dist}
+Release:       	3%{?dist}
 License:       	LGPLv2+
 URL:           	https://github.com/Tojaj/librepo/
 Group:         	System Environment/Libraries
@@ -59,6 +59,16 @@ cp %{_builddir}/%{librepo_name}-%{version}/build/librepo/librepo.so* %{buildroot
 cp %{_builddir}/%{librepo_name}-%{version}/build/librepo.pc %{buildroot}%{_libdir}/pkgconfig
 cp %{_builddir}/%{librepo_name}-%{version}/librepo/*.h %{buildroot}%{_includedir}/librepo
 
+%check
+easy_install nose flask pyxattr
+wget https://launchpad.net/pygpgme/trunk/0.3/+download/pygpgme-0.3.tar.gz
+tar xvf pygpgme-0.3.tar.gz
+pushd pygpgme-0.3
+python setup.py install
+popd
+
+PYTHONPATH=`readlink -f ./librepo/python/python2/` nosetests -s -v tests/python/tests/
+
 %post 
 /sbin/ldconfig
 
@@ -74,6 +84,8 @@ cp %{_builddir}/%{librepo_name}-%{version}/librepo/*.h %{buildroot}%{_includedir
 %{_includedir}/librepo/*.h
 
 %changelog
+*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.7.1-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.17-2
 -	GA - Bump release of all rpms
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.17-1

@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.28.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -60,7 +60,7 @@ sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libproc
 make
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %install
 make DESTDIR=%{buildroot} install
@@ -95,8 +95,10 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 0.28.2-2
+-       Modified check
 *	Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 0.28.2-1
--   Upgraded to version 0.28.2
+-       Upgraded to version 0.28.2
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.24.0-3
 -	GA - Bump release of all rpms
 *	Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2

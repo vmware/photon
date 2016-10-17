@@ -1,7 +1,7 @@
 Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        1.2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://cryptography.io
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -32,11 +32,27 @@ python setup.py build
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+%check
+openssl req \
+    -new \
+    -newkey rsa:4096 \
+    -days 365 \
+    -nodes \
+    -x509 \
+    -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=photon.com" \
+    -keyout photon.key \
+    -out photon.cert
+openssl rsa -in photon.key -out photon.pem
+mv photon.pem /etc/ssl/certs
+python setup.py test
+
 %files
 %defattr(-,root,root)
 %{python_sitelib}/*
 
 %changelog
+*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 1.2.3-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.3-2
 -	GA - Bump release of all rpms
 *	Mon Mar 07 2016 Anish Swaminathan <anishs@vmware.com> 1.2.3-1

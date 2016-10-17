@@ -279,6 +279,7 @@ class constants(object):
         "pkg-config",
         "git",
         "openssl",
+        "openssl-devel",
         "net-tools",
         "less",
         "yum-metadata-parser",
@@ -289,6 +290,7 @@ class constants(object):
         "python-xml",
         "libacl",
         "tzdata",
+        "libgcrypt-devel",
         "Linux-PAM"]
 
     @staticmethod

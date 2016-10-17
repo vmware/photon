@@ -1,7 +1,7 @@
 Summary:    Glib networking modules
 Name:       glib-networking
 Version:    2.46.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/glib-networking
 Group:      System Environment/Development
@@ -51,6 +51,9 @@ rm -rf %{buildroot}%{_infodir}
 make DESTDIR=%{buildroot} install
 %find_lang %{name}
 
+%check
+make %{?_smp_mflags} check
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -63,6 +66,8 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 
 %changelog
+*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.46.1-3
+-       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.46.1-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 2.46.1-1
