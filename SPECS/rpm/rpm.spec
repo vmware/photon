@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          12%{?dist}
+Release:          13%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -15,6 +15,7 @@ Source2:          macros
 Source3:          brp-strip-debug-symbols
 Source4:          brp-strip-unneeded
 Patch0:		  find-debuginfo-do-not-generate-non-existing-build-id.patch
+Patch1:		  rpm-4.11.2-cve-2014-8118.patch
 #Requires:        nspr
 Requires:         nss 
 Requires:         popt
@@ -56,6 +57,7 @@ Binaries, libraries and scripts to build rpms.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %setup -q -T -D -a 1
 mv db-5.3.28 db
 %build
@@ -201,6 +203,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*    Tue Oct 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-13
+-    Apply patch for CVE-2014-8118
 *    Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.11.2-12
 -    Modified %check
 *    Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-11
