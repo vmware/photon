@@ -13,6 +13,7 @@ class SpecParser(object):
         self.packages={}
         self.specAdditionalContent=""
         self.globalSecurityHardening=""
+        self.defs={}
 
 
     def readPkgNameFromPackageMacro(self,data,basePkgName=None):
@@ -71,6 +72,8 @@ class SpecParser(object):
                 self.readSecurityHardening(line)
             elif self.isChecksum(line):
                 self.readChecksum(line, self.packages[currentPkg])
+            elif self.isDefinition(line):
+                self.readDefinition(line)
             else:
                 self.specAdditionalContent+=line+"\n"
             i=i+1
@@ -205,6 +208,20 @@ class SpecParser(object):
     def isChecksum(self,line):
         if re.search('^%define *sha1',line,flags=re.IGNORECASE) :
             return True
+        return False
+
+    def isDefinition(self,line):
+        if re.search('^'+'%define',line) :
+            return True
+        if re.search('^'+'%global',line) :
+            return True
+        return False
+
+    def readDefinition(self,line):
+        listDefines=line.split()
+        if len(listDefines) == 3:
+           self.defs[listDefines[1]] = listDefines[2]
+           return True
         return False
 
     def readHeader(self,line):

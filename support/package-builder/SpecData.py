@@ -21,6 +21,7 @@ class SerializableSpecObject(object):
         self.url=""
         self.sourceurl=""
         self.license=""
+        self.specDefs={}
 
 class SerializableSpecObjectsUtils(object):
 
@@ -47,6 +48,7 @@ class SerializableSpecObjectsUtils(object):
             specObj.release=spec.getRelease()
             specObj.listSources=spec.getSourceNames()
             specObj.checksums=spec.getChecksums()
+            specObj.specDefs=spec.getDefinitions()
             specObj.listPatches=spec.getPatchNames()
             specObj.securityHardening=spec.getSecurityHardeningOption()
             specObj.isCheckAvailable=spec.isCheckAvailable()
@@ -97,9 +99,26 @@ class SerializableSpecObjectsUtils(object):
     def getRPMMacros(self):
         return self.userDefinedMacros
 
-    def processData(self, data):
+    def processData(self, package, data):
+        #User macros
         for macroName in self.userDefinedMacros.keys():
             value = self.userDefinedMacros[macroName]
+            macro="%{?"+macroName+"}"
+            if data.find(macro) != -1:
+                data = data.replace(macro,value)
+                continue
+            macro="%{"+macroName+"}"
+            if data.find(macro) != -1:
+                data = data.replace(macro,value)
+                continue
+            macro="%"+macroName
+            if data.find(macro) != -1:
+                data = data.replace(macro,value)
+        #Spec definitions
+        specName=self.getSpecName(package)
+        specDefs =  self.mapSerializableSpecObjects[specName].specDefs
+        for macroName in specDefs.keys():
+            value = specDefs[macroName]
             macro="%{?"+macroName+"}"
             if data.find(macro) != -1:
                 data = data.replace(macro,value)
@@ -115,7 +134,7 @@ class SerializableSpecObjectsUtils(object):
 
     def getRelease(self, package):
         specName=self.getSpecName(package)
-        return self.processData(self.mapSerializableSpecObjects[specName].release)
+        return self.processData(package, self.mapSerializableSpecObjects[specName].release)
 
     def getVersion(self, package):
         specName=self.getSpecName(package)
@@ -194,21 +213,21 @@ class SerializableSpecObjectsUtils(object):
         url = self.mapSerializableSpecObjects[specName].url
         if url is None:
             return None
-        return self.processData(url)
+        return self.processData(package, url)
 
     def getSourceURL(self, package):
         specName=self.getSpecName(package)
         sourceurl = self.mapSerializableSpecObjects[specName].sourceurl
         if sourceurl is None:
             return None
-        return self.processData(sourceurl)
+        return self.processData(package, sourceurl)
 
     def getLicense(self, package):
         specName=self.getSpecName(package)
         license = self.mapSerializableSpecObjects[specName].license
         if license is None:
             return None
-        return self.processData(license)
+        return self.processData(package, license)
 
     def printAllObjects(self):
         listSpecs=self.mapSerializableSpecObjects.keys()
