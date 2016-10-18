@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.20
-Release:       5%{?dist}
+Release:       6%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -35,6 +35,10 @@ Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 Patch19:       keys-fix-asn.1-indefinite-length-object-parsing.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
+#fixes CVE-2016-8666
+Patch22:       ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
+#fixes CVE-2016-8666
+Patch23:       tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -91,6 +95,8 @@ The Linux package contains the Linux kernel doc files
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
+%patch22 -p1
+%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -162,6 +168,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-6
+-   ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
+-   tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
 *   Thu Oct  6 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-5
 -   .config: added ADM PCnet32 support
 -   vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
