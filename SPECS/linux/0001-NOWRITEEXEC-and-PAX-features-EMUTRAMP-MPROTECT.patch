@@ -1,0 +1,661 @@
+From 9d635c04ddbc8415bcb060017ac34e23a17b8136 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 4 Oct 2016 21:07:14 +0000
+Subject: [PATCH 1/2] NOWRITEEXEC and PAX features: EMUTRAMP, MPROTECT
+
+---
+ arch/x86/mm/fault.c      | 218 +++++++++++++++++++++++++++++++++++++++++++++++
+ fs/binfmt_elf.c          |  70 +++++++++++++++
+ fs/exec.c                |   5 ++
+ include/linux/binfmts.h  |   3 +
+ include/linux/elf.h      |   2 +
+ include/linux/mm_types.h |   3 +
+ include/linux/sched.h    |   2 +
+ include/uapi/linux/elf.h |   3 +
+ ipc/shm.c                |   3 +
+ mm/mmap.c                |  25 ++++++
+ mm/mprotect.c            |  12 +++
+ security/Kconfig         |  78 +++++++++++++++++
+ 12 files changed, 424 insertions(+)
+
+diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
+index dc80230..9de4144 100644
+--- a/arch/x86/mm/fault.c
++++ b/arch/x86/mm/fault.c
+@@ -244,6 +244,11 @@ force_sig_info_fault(int si_signo, int si_code, unsigned long address,
+ 	force_sig_info(si_signo, &info, tsk);
+ }
+ 
++#ifdef CONFIG_PAX_EMUTRAMP
++static bool pax_is_fetch_fault(struct pt_regs *regs, unsigned long error_code, unsigned long address);
++static int pax_handle_fetch_fault(struct pt_regs *regs);
++#endif
++
+ DEFINE_SPINLOCK(pgd_lock);
+ LIST_HEAD(pgd_list);
+ 
+@@ -854,6 +859,13 @@ __bad_area_nosemaphore(struct pt_regs *regs, unsigned long error_code,
+ 				return;
+ 		}
+ #endif
++#ifdef CONFIG_PAX_EMUTRAMP
++		if (pax_is_fetch_fault(regs, error_code, address)) {
++			if (pax_handle_fetch_fault(regs) == 2)
++				return;
++			do_group_exit(SIGKILL);
++		}
++#endif
+ 
+ 		/*
+ 		 * To avoid leaking information about the kernel page table
+@@ -1451,3 +1463,209 @@ trace_do_page_fault(struct pt_regs *regs, unsigned long error_code)
+ }
+ NOKPROBE_SYMBOL(trace_do_page_fault);
+ #endif /* CONFIG_TRACING */
++
++#ifdef CONFIG_PAX_EMUTRAMP
++static bool pax_is_fetch_fault(struct pt_regs *regs, unsigned long error_code, unsigned long address)
++{
++	unsigned long ip = regs->ip;
++
++	if (v8086_mode(regs))
++		ip = ((regs->cs & 0xffff) << 4) + (ip & 0xffff);
++
++	if ((__supported_pte_mask & _PAGE_NX) && (error_code & PF_INSTR))
++		return true;
++	if (!(error_code & (PF_PROT | PF_WRITE)) && ip == address)
++		return true;
++	return false;
++}
++
++static int pax_handle_fetch_fault_32(struct pt_regs *regs)
++{
++	int err;
++
++	do { /* PaX: libffi trampoline emulation */
++		unsigned char mov, jmp;
++		unsigned int addr1, addr2;
++
++#ifdef CONFIG_X86_64
++		if ((regs->ip + 9) >> 32)
++			break;
++#endif
++
++		err = get_user(mov, (unsigned char __user *)regs->ip);
++		err |= get_user(addr1, (unsigned int __user *)(regs->ip + 1));
++		err |= get_user(jmp, (unsigned char __user *)(regs->ip + 5));
++		err |= get_user(addr2, (unsigned int __user *)(regs->ip + 6));
++
++		if (err)
++			break;
++
++		if (mov == 0xB8 && jmp == 0xE9) {
++			regs->ax = addr1;
++			regs->ip = (unsigned int)(regs->ip + addr2 + 10);
++			return 2;
++		}
++	} while (0);
++
++	do { /* PaX: gcc trampoline emulation #1 */
++		unsigned char mov1, mov2;
++		unsigned short jmp;
++		unsigned int addr1, addr2;
++
++#ifdef CONFIG_X86_64
++		if ((regs->ip + 11) >> 32)
++			break;
++#endif
++
++		err = get_user(mov1, (unsigned char __user *)regs->ip);
++		err |= get_user(addr1, (unsigned int __user *)(regs->ip + 1));
++		err |= get_user(mov2, (unsigned char __user *)(regs->ip + 5));
++		err |= get_user(addr2, (unsigned int __user *)(regs->ip + 6));
++		err |= get_user(jmp, (unsigned short __user *)(regs->ip + 10));
++
++		if (err)
++			break;
++
++		if (mov1 == 0xB9 && mov2 == 0xB8 && jmp == 0xE0FF) {
++			regs->cx = addr1;
++			regs->ax = addr2;
++			regs->ip = addr2;
++			return 2;
++		}
++	} while (0);
++
++	do { /* PaX: gcc trampoline emulation #2 */
++		unsigned char mov, jmp;
++		unsigned int addr1, addr2;
++
++#ifdef CONFIG_X86_64
++		if ((regs->ip + 9) >> 32)
++			break;
++#endif
++
++		err = get_user(mov, (unsigned char __user *)regs->ip);
++		err |= get_user(addr1, (unsigned int __user *)(regs->ip + 1));
++		err |= get_user(jmp, (unsigned char __user *)(regs->ip + 5));
++		err |= get_user(addr2, (unsigned int __user *)(regs->ip + 6));
++
++		if (err)
++			break;
++
++		if (mov == 0xB9 && jmp == 0xE9) {
++			regs->cx = addr1;
++			regs->ip = (unsigned int)(regs->ip + addr2 + 10);
++			return 2;
++		}
++	} while (0);
++
++	return 1; /* PaX in action */
++}
++
++#ifdef CONFIG_X86_64
++static int pax_handle_fetch_fault_64(struct pt_regs *regs)
++{
++	int err;
++
++	do { /* PaX: libffi trampoline emulation */
++		unsigned short mov1, mov2, jmp1;
++		unsigned char stcclc, jmp2;
++		unsigned long addr1, addr2;
++
++		err = get_user(mov1, (unsigned short __user *)regs->ip);
++		err |= get_user(addr1, (unsigned long __user *)(regs->ip + 2));
++		err |= get_user(mov2, (unsigned short __user *)(regs->ip + 10));
++		err |= get_user(addr2, (unsigned long __user *)(regs->ip + 12));
++		err |= get_user(stcclc, (unsigned char __user *)(regs->ip + 20));
++		err |= get_user(jmp1, (unsigned short __user *)(regs->ip + 21));
++		err |= get_user(jmp2, (unsigned char __user *)(regs->ip + 23));
++
++		if (err)
++			break;
++
++		if (mov1 == 0xBB49 && mov2 == 0xBA49 && (stcclc == 0xF8 || stcclc == 0xF9) && jmp1 == 0xFF49 && jmp2 == 0xE3) {
++			regs->r11 = addr1;
++			regs->r10 = addr2;
++			if (stcclc == 0xF8)
++				regs->flags &= ~X86_EFLAGS_CF;
++			else
++				regs->flags |= X86_EFLAGS_CF;
++			regs->ip = addr1;
++			return 2;
++		}
++	} while (0);
++
++	do { /* PaX: gcc trampoline emulation #1 */
++		unsigned short mov1, mov2, jmp1;
++		unsigned char jmp2;
++		unsigned int addr1;
++		unsigned long addr2;
++
++		err = get_user(mov1, (unsigned short __user *)regs->ip);
++		err |= get_user(addr1, (unsigned int __user *)(regs->ip + 2));
++		err |= get_user(mov2, (unsigned short __user *)(regs->ip + 6));
++		err |= get_user(addr2, (unsigned long __user *)(regs->ip + 8));
++		err |= get_user(jmp1, (unsigned short __user *)(regs->ip + 16));
++		err |= get_user(jmp2, (unsigned char __user *)(regs->ip + 18));
++
++		if (err)
++			break;
++
++		if (mov1 == 0xBB41 && mov2 == 0xBA49 && jmp1 == 0xFF49 && jmp2 == 0xE3) {
++			regs->r11 = addr1;
++			regs->r10 = addr2;
++			regs->ip = addr1;
++			return 2;
++		}
++	} while (0);
++
++	do { /* PaX: gcc trampoline emulation #2 */
++		unsigned short mov1, mov2, jmp1;
++		unsigned char jmp2;
++		unsigned long addr1, addr2;
++
++		err = get_user(mov1, (unsigned short __user *)regs->ip);
++		err |= get_user(addr1, (unsigned long __user *)(regs->ip + 2));
++		err |= get_user(mov2, (unsigned short __user *)(regs->ip + 10));
++		err |= get_user(addr2, (unsigned long __user *)(regs->ip + 12));
++		err |= get_user(jmp1, (unsigned short __user *)(regs->ip + 20));
++		err |= get_user(jmp2, (unsigned char __user *)(regs->ip + 22));
++
++		if (err)
++			break;
++
++		if (mov1 == 0xBB49 && mov2 == 0xBA49 && jmp1 == 0xFF49 && jmp2 == 0xE3) {
++			regs->r11 = addr1;
++			regs->r10 = addr2;
++			regs->ip = addr1;
++			return 2;
++		}
++	} while (0);
++
++	return 1; /* PaX in action */
++}
++#endif
++
++/*
++ * PaX: decide what to do with offenders (regs->ip = fault address)
++ *
++ * returns 1 when task should be killed
++ *         2 when gcc trampoline was detected
++ */
++static int pax_handle_fetch_fault(struct pt_regs *regs)
++{
++	if (v8086_mode(regs))
++		return 1;
++
++	if (!(current->mm->pax_flags & MF_PAX_EMUTRAMP))
++		return 1;
++
++#ifdef CONFIG_X86_32
++	return pax_handle_fetch_fault_32(regs);
++#else
++	if (regs->cs == __USER32_CS || (regs->cs & SEGMENT_LDT))
++		return pax_handle_fetch_fault_32(regs);
++	else
++		return pax_handle_fetch_fault_64(regs);
++#endif
++}
++#endif
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index e5495f3..e8baaaf 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -36,6 +36,7 @@
+ #include <linux/coredump.h>
+ #include <linux/sched.h>
+ #include <linux/dax.h>
++#include <linux/xattr.h>
+ #include <asm/uaccess.h>
+ #include <asm/param.h>
+ #include <asm/page.h>
+@@ -67,6 +68,10 @@ static int elf_core_dump(struct coredump_params *cprm);
+ #define elf_core_dump	NULL
+ #endif
+ 
++#ifdef CONFIG_PAX_MPROTECT
++static void elf_handle_mprotect(struct vm_area_struct *vma, unsigned long newflags);
++#endif
++
+ #if ELF_EXEC_PAGESIZE > PAGE_SIZE
+ #define ELF_MIN_ALIGN	ELF_EXEC_PAGESIZE
+ #else
+@@ -86,6 +91,9 @@ static struct linux_binfmt elf_format = {
+ 	.load_binary	= load_elf_binary,
+ 	.load_shlib	= load_elf_library,
+ 	.core_dump	= elf_core_dump,
++#ifdef CONFIG_PAX_MPROTECT
++	.handle_mprotect= elf_handle_mprotect,
++#endif
+ 	.min_coredump	= ELF_EXEC_PAGESIZE,
+ };
+ 
+@@ -846,6 +854,18 @@ static int load_elf_binary(struct linux_binprm *bprm)
+ 	/* Do this immediately, since STACK_TOP as used in setup_arg_pages
+ 	   may depend on the personality.  */
+ 	SET_PERSONALITY2(loc->elf_ex, &arch_state);
++#if defined(CONFIG_PAX)
++	current->mm->pax_flags = 0UL;
++#if defined(CONFIG_PAX_NOWRITEEXEC)
++	if (executable_stack == EXSTACK_ENABLE_X)
++	{
++#if defined(CONFIG_PAX_EMUTRAMP)
++		executable_stack = EXSTACK_DISABLE_X;
++		current->mm->pax_flags |= MF_PAX_EMUTRAMP;
++#endif
++	}
++#endif
++#endif
+ 	if (elf_read_implies_exec(loc->elf_ex, executable_stack))
+ 		current->personality |= READ_IMPLIES_EXEC;
+ 
+@@ -2327,6 +2347,56 @@ out:
+ 
+ #endif		/* CONFIG_ELF_CORE */
+ 
++#ifdef CONFIG_PAX_MPROTECT
++/* PaX: non-PIC ELF libraries need relocations on their executable segments
++ * therefore we'll grant them VM_MAYWRITE once during their life. Similarly
++ * we'll remove VM_MAYWRITE for good on RELRO segments.
++ *
++ * The checks favour ld-linux.so behaviour which operates on a per ELF segment
++ * basis because we want to allow the common case and not the special ones.
++ */
++static void elf_handle_mprotect(struct vm_area_struct *vma, unsigned long newflags)
++{
++	struct elfhdr elf_h;
++	struct elf_phdr elf_p;
++	unsigned long i;
++	unsigned long oldflags;
++	bool is_relro;
++
++	if (!vma->vm_file)
++		return;
++
++	oldflags = vma->vm_flags & (VM_MAYEXEC | VM_MAYWRITE | VM_MAYREAD | VM_EXEC | VM_WRITE | VM_READ);
++	newflags &= VM_MAYEXEC | VM_MAYWRITE | VM_MAYREAD | VM_EXEC | VM_WRITE | VM_READ;
++
++	/* possible RELRO */
++	is_relro = vma->anon_vma && oldflags == (VM_MAYWRITE | VM_MAYREAD | VM_READ) && newflags == (VM_MAYWRITE | VM_MAYREAD | VM_READ);
++
++	if (!is_relro)
++		return;
++
++	if (sizeof(elf_h) != kernel_read(vma->vm_file, 0UL, (char *)&elf_h, sizeof(elf_h)) ||
++	    memcmp(elf_h.e_ident, ELFMAG, SELFMAG) ||
++	    (elf_h.e_type != ET_DYN && elf_h.e_type != ET_EXEC) ||
++	    !elf_check_arch(&elf_h) ||
++	    elf_h.e_phentsize != sizeof(struct elf_phdr) ||
++	    elf_h.e_phnum > 65536UL / sizeof(struct elf_phdr))
++		return;
++
++	for (i = 0UL; i < elf_h.e_phnum; i++) {
++		if (sizeof(elf_p) != kernel_read(vma->vm_file, elf_h.e_phoff + i*sizeof(elf_p), (char *)&elf_p, sizeof(elf_p)))
++			return;
++		if (elf_p.p_type == PT_GNU_RELRO) {
++			if (!is_relro)
++				continue;
++			if ((elf_p.p_offset >> PAGE_SHIFT) == vma->vm_pgoff && ELF_PAGEALIGN(elf_p.p_memsz) == vma->vm_end - vma->vm_start)
++				vma->vm_flags &= ~VM_MAYWRITE;
++			is_relro = false;
++		}
++	}
++}
++#endif
++
+ static int __init init_elf_binfmt(void)
+ {
+ 	register_binfmt(&elf_format);
+diff --git a/fs/exec.c b/fs/exec.c
+index 6fcfb3f..8f667d1 100644
+--- a/fs/exec.c
++++ b/fs/exec.c
+@@ -713,7 +713,12 @@ int setup_arg_pages(struct linux_binprm *bprm,
+ 	if (unlikely(executable_stack == EXSTACK_ENABLE_X))
+ 		vm_flags |= VM_EXEC;
+ 	else if (executable_stack == EXSTACK_DISABLE_X)
++	{
+ 		vm_flags &= ~VM_EXEC;
++#ifdef CONFIG_PAX_MPROTECT
++		vm_flags &= ~VM_MAYEXEC;
++#endif
++	}
+ 	vm_flags |= mm->def_flags;
+ 	vm_flags |= VM_STACK_INCOMPLETE_SETUP;
+ 
+diff --git a/include/linux/binfmts.h b/include/linux/binfmts.h
+index 1303b57..e5ce743 100644
+--- a/include/linux/binfmts.h
++++ b/include/linux/binfmts.h
+@@ -78,6 +78,9 @@ struct linux_binfmt {
+ 	int (*load_binary)(struct linux_binprm *);
+ 	int (*load_shlib)(struct file *);
+ 	int (*core_dump)(struct coredump_params *cprm);
++#ifdef CONFIG_PAX_MPROTECT
++	void (*handle_mprotect)(struct vm_area_struct *vma, unsigned long newflags);
++#endif
+ 	unsigned long min_coredump;	/* minimal dump size */
+ };
+ 
+diff --git a/include/linux/elf.h b/include/linux/elf.h
+index 20fa8d8..3d0dd18 100644
+--- a/include/linux/elf.h
++++ b/include/linux/elf.h
+@@ -29,6 +29,7 @@ extern Elf32_Dyn _DYNAMIC [];
+ #define elf_note	elf32_note
+ #define elf_addr_t	Elf32_Off
+ #define Elf_Half	Elf32_Half
++#define elf_dyn		Elf32_Dyn
+ 
+ #else
+ 
+@@ -39,6 +40,7 @@ extern Elf64_Dyn _DYNAMIC [];
+ #define elf_note	elf64_note
+ #define elf_addr_t	Elf64_Off
+ #define Elf_Half	Elf64_Half
++#define elf_dyn		Elf64_Dyn
+ 
+ #endif
+ 
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 903200f..b321ee5 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -518,6 +518,9 @@ struct mm_struct {
+ #ifdef CONFIG_MMU
+ 	struct work_struct async_put_work;
+ #endif
++#if defined(CONFIG_PAX)
++	unsigned long pax_flags;
++#endif
+ };
+ 
+ static inline void mm_init_cpumask(struct mm_struct *mm)
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 62c68e5..2eb0c94 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1939,6 +1939,8 @@ extern int arch_task_struct_size __read_mostly;
+ # define arch_task_struct_size (sizeof(struct task_struct))
+ #endif
+ 
++#define MF_PAX_EMUTRAMP		0x02000000	/* Emulate trampolines */
++
+ /* Future-safe accessor for struct task_struct's cpus_allowed. */
+ #define tsk_cpus_allowed(tsk) (&(tsk)->cpus_allowed)
+ 
+diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
+index b59ee07..ad4d96b 100644
+--- a/include/uapi/linux/elf.h
++++ b/include/uapi/linux/elf.h
+@@ -37,6 +37,7 @@ typedef __s64	Elf64_Sxword;
+ #define PT_GNU_EH_FRAME		0x6474e550
+ 
+ #define PT_GNU_STACK	(PT_LOOS + 0x474e551)
++#define PT_GNU_RELRO	(PT_LOOS + 0x474e552)
+ 
+ /*
+  * Extended Numbering
+@@ -94,6 +95,8 @@ typedef __s64	Elf64_Sxword;
+ #define DT_DEBUG	21
+ #define DT_TEXTREL	22
+ #define DT_JMPREL	23
++#define DT_FLAGS	30
++  #define DF_TEXTREL  0x00000004
+ #define DT_ENCODING	32
+ #define OLD_DT_LOOS	0x60000000
+ #define DT_LOOS		0x6000000d
+diff --git a/ipc/shm.c b/ipc/shm.c
+index dbac886..266e8bd 100644
+--- a/ipc/shm.c
++++ b/ipc/shm.c
+@@ -1133,6 +1133,9 @@ long do_shmat(int shmid, char __user *shmaddr, int shmflg, ulong *raddr,
+ 		f_mode = FMODE_READ | FMODE_WRITE;
+ 	}
+ 	if (shmflg & SHM_EXEC) {
++#ifdef CONFIG_PAX_NOWRITEEXEC
++		goto out;
++#endif
+ 		prot |= PROT_EXEC;
+ 		acc_mode |= S_IXUGO;
+ 	}
+diff --git a/mm/mmap.c b/mm/mmap.c
+index ca9d91b..d032fe1 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1207,6 +1207,17 @@ unsigned long do_mmap(struct file *file, unsigned long addr,
+ 	vm_flags |= calc_vm_prot_bits(prot, pkey) | calc_vm_flag_bits(flags) |
+ 			mm->def_flags | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
+ 
++#ifdef CONFIG_PAX_NOWRITEEXEC
++	if ((vm_flags & (VM_WRITE | VM_EXEC)) == (VM_WRITE | VM_EXEC))
++		return -EPERM;
++#ifdef CONFIG_PAX_MPROTECT
++	if (!(vm_flags & VM_EXEC))
++		vm_flags &= ~VM_MAYEXEC;
++	else
++		vm_flags &= ~VM_MAYWRITE;
++#endif
++#endif
++
+ 	if (flags & MAP_LOCKED)
+ 		if (!can_do_mlock())
+ 			return -EPERM;
+@@ -2669,6 +2680,9 @@ static int do_brk(unsigned long addr, unsigned long request)
+ 		return 0;
+ 
+ 	flags = VM_DATA_DEFAULT_FLAGS | VM_ACCOUNT | mm->def_flags;
++#ifdef CONFIG_PAX_MPROTECT
++	flags &= ~VM_MAYEXEC;
++#endif
+ 
+ 	error = get_unmapped_area(NULL, addr, len, 0, MAP_FIXED);
+ 	if (offset_in_page(error))
+@@ -3042,6 +3056,17 @@ static struct vm_area_struct *__install_special_mapping(
+ 	vma->vm_start = addr;
+ 	vma->vm_end = addr + len;
+ 
++#ifdef CONFIG_PAX_NOWRITEEXEC
++	if ((vm_flags & (VM_WRITE | VM_EXEC)) == (VM_WRITE | VM_EXEC))
++		return ERR_PTR(-EPERM);
++#ifdef CONFIG_PAX_MPROTECT
++	if (!(vm_flags & VM_EXEC))
++		vm_flags &= ~VM_MAYEXEC;
++	else
++		vm_flags &= ~VM_MAYWRITE;
++#endif
++#endif
++
+ 	vma->vm_flags = vm_flags | mm->def_flags | VM_DONTEXPAND | VM_SOFTDIRTY;
+ 	vma->vm_page_prot = vm_get_page_prot(vma->vm_flags);
+ 
+diff --git a/mm/mprotect.c b/mm/mprotect.c
+index a4830f0..6aba51c 100644
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -25,6 +25,10 @@
+ #include <linux/perf_event.h>
+ #include <linux/ksm.h>
+ #include <linux/pkeys.h>
++#ifdef CONFIG_PAX_MPROTECT
++#include <linux/elf.h>
++#include <linux/binfmts.h>
++#endif
+ #include <asm/uaccess.h>
+ #include <asm/pgtable.h>
+ #include <asm/cacheflush.h>
+@@ -327,6 +331,10 @@ success:
+ 	 * held in write mode.
+ 	 */
+ 	vma->vm_flags = newflags;
++#ifdef CONFIG_PAX_MPROTECT
++	if (mm->binfmt && mm->binfmt->handle_mprotect)
++		mm->binfmt->handle_mprotect(vma, newflags);
++#endif
+ 	dirty_accountable = vma_wants_writenotify(vma);
+ 	vma_set_page_prot(vma);
+ 
+@@ -407,6 +415,10 @@ SYSCALL_DEFINE3(mprotect, unsigned long, start, size_t, len,
+ 	if (start > vma->vm_start)
+ 		prev = vma;
+ 
++#ifdef CONFIG_PAX_MPROTECT
++	if (current->mm->binfmt && current->mm->binfmt->handle_mprotect)
++		current->mm->binfmt->handle_mprotect(vma, calc_vm_prot_bits(prot, 0));
++#endif
+ 	for (nstart = start ; ; ) {
+ 		unsigned long newflags;
+ 		int pkey = arch_override_mprotect_pkey(vma, prot, -1);
+diff --git a/security/Kconfig b/security/Kconfig
+index 118f454..965f1a3 100644
+--- a/security/Kconfig
++++ b/security/Kconfig
+@@ -4,6 +4,84 @@
+ 
+ menu "Security options"
+ 
++menuconfig PAX
++	bool "Enable various PaX features"
++	depends on X86
++	help
++	  This allows you to enable various PaX features.  PaX adds
++	  intrusion prevention mechanisms to the kernel that reduce
++	  the risks posed by exploitable memory corruption bugs.
++
++if PAX
++config PAX_NOWRITEEXEC
++	bool "Enforce non-executable pages"
++	depends on X86
++	help
++	  Enforces writables pages to be non-executable (such as the stack
++	  or heap). And enforces executable pages to be non-writable.
++
++	  Enabling this option will prevent the injection and execution of
++	  'foreign' code in a program.
++
++	  This will also break programs that rely on the old behaviour and
++	  expect that dynamically allocated memory via the malloc() family
++	  of functions is executable (which it is not).  Notable examples
++	  are the XFree86 4.x server, the java runtime and wine.
++
++if PAX_NOWRITEEXEC
++choice
++	prompt "Executable stack"
++
++	help
++	  Select the security model for the binaries with executable stack.
++
++	config PAX_EMUTRAMP
++		bool "emulate"
++		help
++		  There are some programs and libraries that for one reason or
++		  another attempt to execute special small code snippets from
++		  non-executable memory pages.  Most notable examples are the
++		  signal handler return code generated by the kernel itself and
++		  the GCC trampolines.
++
++		  If you enabled CONFIG_NOWRITEEXEC then such programs will no
++		  longer work under your kernel.
++
++		  As a remedy you can say Y here enable trampoline emulation for
++		  the affected programs yet still have the protection provided by
++		  the non-executable pages.
++
++		  NOTE: enabling this feature *may* open up a loophole in the
++		  protection provided by non-executable pages that an attacker
++		  could abuse.  Therefore the best solution is to not have any
++		  files on your system that would require this option.  This can
++		  be achieved by not using libc5 (which relies on the kernel
++		  signal handler return code) and not using or rewriting programs
++		  that make use of the nested function implementation of GCC.
++		  Skilled users can just fix GCC itself so that it implements
++		  nested function calls in a way that does not interfere with PaX.
++
++	config EXECSTACK_DISABLED
++		bool "disabled"
++
++endchoice
++
++config PAX_MPROTECT
++	bool "Restrict mprotect()"
++	help
++	  Enabling this option will prevent programs from
++	   - changing the executable status of memory pages that were
++	     not originally created as executable,
++	   - making read-only executable pages writable again,
++	   - creating executable pages from anonymous memory,
++	   - making read-only-after-relocations (RELRO) data pages writable again.
++
++	  You should say Y here to complete the protection provided by
++	  the enforcement of non-executable pages.
++
++endif
++endif
++
+ source security/keys/Kconfig
+ 
+ config SECURITY_DMESG_RESTRICT
+-- 
+2.8.1
+
