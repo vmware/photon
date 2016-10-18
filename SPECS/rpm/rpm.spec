@@ -1,13 +1,13 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          12%{?dist}
+Release:          13%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
+Source0:          http://rpm.org/releases/rpm-4.12.x/%{name}-%{version}.tar.bz2
 %define sha1 rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
 Source1:          http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
@@ -15,6 +15,7 @@ Source2:          macros
 Source3:          brp-strip-debug-symbols
 Source4:          brp-strip-unneeded
 Patch0:		  find-debuginfo-do-not-generate-non-existing-build-id.patch
+Patch1:		  rpm-4.12-cve-2014-8118.patch
 #Requires:        nspr
 Requires:         nss 
 Requires:         popt
@@ -56,6 +57,7 @@ Binaries, libraries and scripts to build rpms.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %setup -q -T -D -a 1
 mv db-5.3.28 db
 %build
@@ -201,6 +203,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*    Tue Oct 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-13
+-    Apply patch for CVE-2014-8118
 *    Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.11.2-12
 -    Modified %check
 *    Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-11
