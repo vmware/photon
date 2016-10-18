@@ -222,6 +222,9 @@ class Specutils(object):
             check=True
         return check
 
+    def getDefinitions(self):
+        return self.spec.defs
+
 def main():
     spec = Specutils("/workspace1/myrepos/photon/SPECS/docker/docker.spec")
     print "packages",spec.getPackageNames()
