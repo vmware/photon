@@ -65,6 +65,7 @@
         "python-pyasn1",
         "WALinuxAgent",
         "linux-esx",
+        "linux-sec",
         "python-Twisted",
         "python-zope.interface",
         "python-ipaddr",
