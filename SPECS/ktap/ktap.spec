@@ -36,6 +36,7 @@ mkdir -p %{buildroot}%{_bindir}
 make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}
 
 %check
+export PERL_MM_USE_DEFAULT=1
 cpan Test::Base
 make  %{?_smp_mflags} test
 
