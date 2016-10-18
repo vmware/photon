@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.20
-Release:    	4%{?dist}
+Release:    	5%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,6 +31,10 @@ Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 #fixes CVE-2016-0758
 Patch16:        keys-fix-asn.1-indefinite-length-object-parsing.patch
+#fixes CVE-2016-8666
+Patch17:        ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
+#fixes CVE-2016-8666
+Patch18:        tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -103,6 +107,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
+%patch18 -p1
 
 %build
 make mrproper
@@ -200,6 +206,9 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-5
+-   ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
+-   tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
 *   Mon Oct  3 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-4
 -   Package vmlinux with PROGBITS sections in -debuginfo subpackage
 *   Tue Sep 27 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-3
