@@ -1,1 +1,72 @@
-{}
+{
+    "perl": {
+        "release": "4.ph1", 
+        "version": "5.22.1", 
+        "arch": "x86_64", 
+        "name": "perl", 
+        "sourcerpm": "perl-5.22.1-4.ph1.src.rpm"
+    }, 
+    "less": {
+        "release": "1.ph1", 
+        "version": "481", 
+        "arch": "x86_64", 
+        "name": "less", 
+        "sourcerpm": "less-481-1.ph1.src.rpm"
+    }, 
+    "ncurses": {
+        "release": "3.ph1", 
+        "version": "6.0", 
+        "arch": "x86_64", 
+        "name": "ncurses", 
+        "sourcerpm": "ncurses-6.0-3.ph1.src.rpm"
+    }, 
+    "zlib": {
+        "release": "4.ph1", 
+        "version": "1.2.8", 
+        "arch": "x86_64", 
+        "name": "zlib", 
+        "sourcerpm": "zlib-1.2.8-4.ph1.src.rpm"
+    }, 
+    "patch": {
+        "release": "3.ph1", 
+        "version": "2.7.5", 
+        "arch": "x86_64", 
+        "name": "patch", 
+        "sourcerpm": "patch-2.7.5-3.ph1.src.rpm"
+    }, 
+    "xz": {
+        "release": "3.ph1", 
+        "version": "5.2.2", 
+        "arch": "x86_64", 
+        "name": "xz", 
+        "sourcerpm": "xz-5.2.2-3.ph1.src.rpm"
+    }, 
+    "m4": {
+        "release": "3.ph1", 
+        "version": "1.4.17", 
+        "arch": "x86_64", 
+        "name": "m4", 
+        "sourcerpm": "m4-1.4.17-3.ph1.src.rpm"
+    }, 
+    "sed": {
+        "release": "3.ph1", 
+        "version": "4.2.2", 
+        "arch": "x86_64", 
+        "name": "sed", 
+        "sourcerpm": "sed-4.2.2-3.ph1.src.rpm"
+    }, 
+    "util-linux": {
+        "release": "3.ph1", 
+        "version": "2.27.1", 
+        "arch": "x86_64", 
+        "name": "util-linux", 
+        "sourcerpm": "util-linux-2.27.1-3.ph1.src.rpm"
+    }, 
+    "rpm": {
+        "release": "12.ph1", 
+        "version": "4.11.2", 
+        "arch": "x86_64", 
+        "name": "rpm", 
+        "sourcerpm": "rpm-4.11.2-12.ph1.src.rpm"
+    }
+}
