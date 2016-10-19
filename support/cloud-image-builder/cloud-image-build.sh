@@ -74,7 +74,7 @@ mkdir $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}
 
 UUID_VALUE=$(blkid -s UUID -o value /dev/mapper/${DEVICE_NAME}p2)
 PARTUUID_VALUE=$(blkid -s PARTUUID -o value /dev/mapper/${DEVICE_NAME}p2)
-if [ -z "$PARTUUID" ] ; then
+if [ -z "$PARTUUID_VALUE" ] ; then
   PARTUUID_VALUE=$(sgdisk -i 2 $DISK_DEVICE | grep "Partition unique GUID" | cut -d ' ' -f 4)
 fi
 
