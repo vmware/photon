@@ -1,14 +1,14 @@
 Summary:	Sudo
 Name:		sudo
-Version:	1.8.15
-Release:	4%{?dist}
+Version:	1.8.18p1
+Release:	1%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1 sudo=acb5ff3f38fa9e0365f6a91a6620b9846e2ad843
+%define sha1 sudo=2df9c1f68b1101aa600ef428bccda1b4a3090ff3
 BuildRequires:	man-db
 BuildRequires:	Linux-PAM
 Requires:	Linux-PAM
@@ -82,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
 %changelog
+*	Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 1.8.18p1-1
+-	Update to 1.8.18p1
 *       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 1.8.15-4
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-3
