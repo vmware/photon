@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          10%{?dist}
+Release:          11%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -14,6 +14,7 @@ Source1:          http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 Source2:          rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
 Patch0:		  rpm-debuginfo-exclude.1.patch
+Patch1:           rpm-4.11.2-cve-2014-8118.patch
 #Requires:        nspr
 Requires:         nss 
 Requires:         popt
@@ -58,6 +59,7 @@ Binaries, libraries and scripts to build rpms.
 %setup -q -T -D -a 2
 mv db-5.3.28 db
 %patch0 -p1
+%patch1 -p1
 %build
 ./autogen.sh --noconfigure
 ./configure \
@@ -199,6 +201,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*    Thu Oct 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-11
+-    Apply patch for CVE-2014-8118
 *    Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-10
 -    Exclude .build-id/.1 and .build-id/.1.debug from debuginfo pkg
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
