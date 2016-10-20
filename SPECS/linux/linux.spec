@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.20
-Release:    	5%{?dist}
+Release:    	6%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -35,6 +35,10 @@ Patch16:        keys-fix-asn.1-indefinite-length-object-parsing.patch
 Patch17:        ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
 #fixes CVE-2016-8666
 Patch18:        tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
+#fixes CVE-2016-7039
+Patch19:        net-add-recursion-limit-to-GRO.patch
+#fixes CVE-2016-7425
+Patch20:        scsi-arcmsr-buffer-overflow-in-arcmsr_iop_message_xfer.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -109,6 +113,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
+%patch20 -p1
 
 %build
 make mrproper
@@ -206,6 +212,9 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed Oct 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-6
+-   net-add-recursion-limit-to-GRO.patch
+-   scsi-arcmsr-buffer-overflow-in-arcmsr_iop_message_xfer.patch
 *   Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-5
 -   ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
 -   tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
