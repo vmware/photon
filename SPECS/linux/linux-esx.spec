@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.20
-Release:       6%{?dist}
+Release:       7%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -39,6 +39,8 @@ Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
 #fixes CVE-2016-8666
 Patch23:       tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
+#fixes CVE-2016-7039
+Patch24:        net-add-recursion-limit-to-GRO.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -97,6 +99,7 @@ The Linux package contains the Linux kernel doc files
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
 
 %build
 # patch vmw_balloon driver
@@ -168,6 +171,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Wed Oct 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-7
+-   net-add-recursion-limit-to-GRO.patch
 *   Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-6
 -   ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
 -   tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
