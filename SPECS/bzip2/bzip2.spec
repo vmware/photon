@@ -1,7 +1,7 @@
 Summary:	Contains programs for compressing and decompressing files
 Name:		bzip2
 Version:	1.0.6
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		http://www.bzip.org/
 Group:		System Environment/Base
@@ -11,6 +11,7 @@ Source0:		http://www.bzip.org/%{version}/%{name}-%{version}.tar.gz
 Provides:    libbz2.so.1()(64bit)
 %define sha1 bzip2=3f89f861209ce81a6bab1fd1998c0ef311712002
 Patch0:		http://www.linuxfromscratch.org/patches/lfs/7.2/bzip2-1.0.6-install_docs-1.patch
+Patch1:         CVE-2016-3189.patch
 %description
 The Bzip2 package contains programs for compressing and
 decompressing files.  Compressing text files with bzip2 yields a much better
@@ -23,6 +24,7 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
 %build
@@ -77,6 +79,8 @@ make %{?_smp_mflags} check
 %{_includedir}/bzlib.h
 %{_libdir}/libbz2.so
 %changelog
+*       Fri Oct 21 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.6-6
+-       Fixing security bug CVE-2016-3189.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.6-5
 -	GA - Bump release of all rpms
 *	Tue Nov 10 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0.6-4
