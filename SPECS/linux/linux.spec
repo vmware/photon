@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.20
-Release:    	6%{?dist}
+Version:    	4.4.26
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=67f6d0f7d8c90d7f9fe7c3e1ee4d82b008b77767
+%define sha1 linux=ad837664f2759e0453f397de9cc51e96ff1994ce
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -19,8 +19,6 @@ Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
 Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
 Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-#fixes CVE-2016-3135
-Patch8:         netfilter-x_tables-check-for-size-overflow.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 Patch11:        VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
@@ -29,8 +27,6 @@ Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
-#fixes CVE-2016-0758
-Patch16:        keys-fix-asn.1-indefinite-length-object-parsing.patch
 #fixes CVE-2016-8666
 Patch17:        ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
 #fixes CVE-2016-8666
@@ -102,7 +98,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
@@ -110,7 +105,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
-%patch16 -p1
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
@@ -212,6 +206,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Fri Oct 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-1
+-   Update to linux-4.4.26
 *   Wed Oct 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-6
 -   net-add-recursion-limit-to-GRO.patch
 -   scsi-arcmsr-buffer-overflow-in-arcmsr_iop_message_xfer.patch
