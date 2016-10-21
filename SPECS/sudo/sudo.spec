@@ -1,7 +1,7 @@
 Summary:	Sudo
 Name:		sudo
 Version:	1.8.18p1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
 Group:		System Environment/Security
@@ -29,7 +29,6 @@ the ability to run some (or all) commands as root or another user while logging 
 	--with-all-insults         \
         --with-env-editor          \
 	--with-pam                 \
-	--with-pam-login	   \
         --with-passprompt="[sudo] password for %p"
 
 make %{?_smp_mflags}
@@ -62,7 +61,7 @@ make %{?_smp_mflags} check
 %post
 /sbin/ldconfig
 if [ $1 -eq 1 ] ; then
-  groupadd wheel
+  getent group wheel > /dev/null || groupadd wheel
 fi
 %postun	-p /sbin/ldconfig
 %clean
@@ -82,6 +81,9 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
 %changelog
+*	Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.8.18p1-2
+-	Remove --with-pam-login to use /etc/pam.d/sudo for `sudo -i`
+-	Fix groupadd wheel warning during the %post action
 *	Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 1.8.18p1-1
 -	Update to 1.8.18p1
 *       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 1.8.15-4
