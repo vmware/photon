@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.8
-Release:    	8%{?dist}
+Release:    	9%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -24,6 +24,8 @@ Patch7:		netfilter-x_tables-deal-with-bogus-nextoffset-values.patch
 Patch8:		netfilter-x_tables-check-for-size-overflow.patch
 Patch9:		REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:	e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
+#fixes CVE-2016-5195
+Patch11:	CVE-2016-5195.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -90,6 +92,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
 
 %build
 make mrproper
@@ -186,6 +189,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}.debug /boot/vmlin
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Fri Oct 21 2016 Anish Swaminathan <anishs@vmware.com> 4.4.8-9
+-   patch for CVE-2016-5195
 *   Fri Jun 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-8
 -   patch: e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 -   .config: disable rt group scheduling - not supported by systemd
