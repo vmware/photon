@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.20
-Release:       7%{?dist}
+Version:       4.4.26
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=67f6d0f7d8c90d7f9fe7c3e1ee4d82b008b77767
+%define sha1 linux=ad837664f2759e0453f397de9cc51e96ff1994ce
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -23,16 +23,12 @@ Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
 Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-#fixes CVE-2016-3135
-Patch12:       netfilter-x_tables-check-for-size-overflow.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
 Patch16:       vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
 Patch17:       vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
-#fixes CVE-2016-0758
-Patch19:       keys-fix-asn.1-indefinite-length-object-parsing.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 #fixes CVE-2016-8666
@@ -40,7 +36,7 @@ Patch22:       ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
 #fixes CVE-2016-8666
 Patch23:       tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
 #fixes CVE-2016-7039
-Patch24:        net-add-recursion-limit-to-GRO.patch
+Patch24:       net-add-recursion-limit-to-GRO.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -87,14 +83,12 @@ The Linux package contains the Linux kernel doc files
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
-%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
-%patch19 -p1
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
@@ -171,6 +165,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Fri Oct 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-1
+-   Update to linux-4.4.26
 *   Wed Oct 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-7
 -   net-add-recursion-limit-to-GRO.patch
 *   Tue Oct 18 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-6
