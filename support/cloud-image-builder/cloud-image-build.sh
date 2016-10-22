@@ -93,20 +93,6 @@ rm -f $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
 echo "UUID=$UUID_VALUE    /    ext4    defaults 1 1" >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/etc/fstab
 sed -i "s/rootpartition=PARTUUID=$/rootpartition=PARTUUID=$PARTUUID_VALUE/" $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/boot/grub/grub.cfg
 
-mkdir -p $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/var/lib/cloud/seed/nocloud
-cat << EOF >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/var/lib/cloud/seed/nocloud/meta-data
-instance-id: iid-local01
-local-hostname: photon-machine
-EOF
-cat << EOF >> $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/var/lib/cloud/seed/nocloud/user-data
-#cloud-config
-
-runcmd:
-  - (echo -ne 'photon-';cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 9)|xargs hostnamectl set-hostname
-  - hostname | xargs -I '{}' sed -i 's/photon-.*$/{}/g' /etc/hosts
-  - systemctl status systemd-resolved >/dev/null || systemctl restart systemd-resolved
-EOF
-
 mount -o bind /proc $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/proc
 mount -o bind /dev $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev
 mount -o bind /dev/pts $PHOTON_IMG_OUTPUT_PATH/photon-${IMG_NAME}/dev/pts
