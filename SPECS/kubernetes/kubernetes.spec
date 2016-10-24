@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.4.0
+Version:        1.4.4
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/releases/download/v%{version}
-Source0:        https://github.com/GoogleCloudPlatform/kubernetes/releases/download/v%{version}/%{name}-v%{version}.tar.gz
-%define sha1 kubernetes-v%{version}.tar.gz=2520f08d5a383667bc759ddae473d0612e494a0d
+Source0:        https://storage.googleapis.com/kubernetes-release/release/v%{version}/%{name}-server-linux-amd64-v%{version}.tar.gz
+%define sha1 kubernetes-server-linux-amd64-v%{version}.tar.gz=5daad29411b6af81a486f64b507f414951a042c1
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1 contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Group:          Development/Tools
@@ -20,20 +20,19 @@ Kubernetes is an open source implementation of container cluster management.
 %prep -p exit
 %setup -qn %{name}
 tar xf %{SOURCE1}
+sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 
 %build
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
-install -vdm755 tmp
-tar -C tmp/ -xvf server/kubernetes-server-linux-amd64.tar.gz
 
 install -m 755 -d %{buildroot}%{_bindir}
 
 binaries=(kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubelet kubectl hyperkube)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
-  install -p -m 755 -t %{buildroot}%{_bindir} tmp/kubernetes/server/bin/${bin}
+  install -p -m 755 -t %{buildroot}%{_bindir} server/bin/${bin}
 done
 
 # install config files
@@ -90,6 +89,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Fri Oct 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.4-1
+-   Upgraded to version 1.4.4
 *   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.0-1
 -   Upgraded to version 1.4.0
 *   Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.4-1
