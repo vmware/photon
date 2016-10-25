@@ -1,14 +1,14 @@
-Summary:	Libxslt-1.1.28
+Summary:	Libxslt-1.1.29
 Name:		libxslt
-Version:	1.1.28
-Release:	3%{?dist}
+Version:	1.1.29
+Release:	1%{?dist}
 License:	MIT
 URL:		http:/http://xmlsoft.org/libxslt/
 Group:		System Environment/General Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha1 libxslt=4df177de629b2653db322bfb891afa3c0d1fa221
+%define sha1 libxslt=edcaeabb3555ae44853bdc406ee9521fb65c620d
 Requires:	libxml2-devel
 BuildRequires:	libxml2-devel
 BuildRequires:	python2
@@ -61,9 +61,11 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+*       Fri Oct 21 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.29-1
+-       Fix CVEs 2016-1683, 2016-1684, 2015-7995 with version 1.1.29
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.28-3
 -	GA - Bump release of all rpms
-*   Tue Jan 19 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.28-2
--   Add a dev subpackage.
+*	Tue Jan 19 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.28-2
+-	Add a dev subpackage.
 *	Mon Oct 13 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.28-1
 -	Initial build.	First version
