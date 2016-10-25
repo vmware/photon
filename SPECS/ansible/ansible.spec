@@ -33,9 +33,6 @@ Ansible is a radically simple IT automation system. It handles configuration-man
 %{__python} setup.py install -O1 --skip-build \
     --root "%{buildroot}"
 
-%check
-make test
-
 %files 
 %defattr(-, root, root)
 %{_bindir}/*
