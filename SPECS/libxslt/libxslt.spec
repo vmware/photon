@@ -1,7 +1,7 @@
 Summary:	Libxslt-1.1.29
 Name:		libxslt
 Version:	1.1.29
-Release:	4%{?dist}
+Release:	1%{?dist}
 License:	MIT
 URL:		http:/http://xmlsoft.org/libxslt/
 Group:		System Environment/General Libraries
