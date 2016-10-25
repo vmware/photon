@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -95,7 +95,10 @@ cd %{_builddir}/%{name}-build
 	--enable-kernel=2.6.32 \
 	--enable-obsolete-rpc \
 	--disable-silent-rules
-make %{?_smp_mflags}
+
+# Sometimes we have false "out of memory" make error
+# just rerun/continue make to workaroung it.
+make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
 
 %check
 cd %{_builddir}/glibc-build
@@ -191,10 +194,12 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*	Tue Oct 25 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-11
+-	Workaround for build failure with "out of memory" message
 *	Wed Sep 28 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-10
-	Added pthread_create-fix-use-after-free.patch
+-	Added pthread_create-fix-use-after-free.patch
 *	Tue Jun 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-9
--       Enabling rpm debug package and stripping the libraries
+-	Enabling rpm debug package and stripping the libraries
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-8
 -	GA - Bump release of all rpms
 *	Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-7
