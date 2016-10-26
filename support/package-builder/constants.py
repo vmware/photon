@@ -291,7 +291,8 @@ class constants(object):
         "libacl",
         "tzdata",
         "libgcrypt-devel",
-        "Linux-PAM"]
+        "Linux-PAM",
+        "unzip"]
 
     @staticmethod
     def initialize(options):
