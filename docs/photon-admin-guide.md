@@ -61,6 +61,8 @@
         NICs](#setting-up-networking-for-multiple-nics)
     -   [Combining DHCP and Static IP Addresses with IPv4 and
         IPv6](#combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6)
+    -   [Clearing the Machine ID of a Cloned Instance for
+        DHCP](#clearing-the-machine-id-of-a-cloned-instance-for-dhcp)
     -   [Using Predictable Network Interface
         Names](#using-predictable-network-interface-names)
     -   [Inspecting the Status of Network Links with
@@ -1142,6 +1144,14 @@ Here's how to use static IP addresses for both IPv4 and IPv6:
 	Address=fd00::1/48
 	Gateway=fd00::252
 
+### Clearing the Machine ID of a Cloned Instance for DHCP
+
+Photon OS uses the contents of `/etc/machine-id` to determine the DHCP unique identifier (duid) that is used for DHCP requests. If you use a Photon OS instance as the base system for cloning to create additional Photon OS instances, you should clear the machine-id with this command: 
+
+    echo -n > /etc/machine-id
+
+With the value cleared, systemd regenerates the machine-id and, as a result, all DHCP requests will contain a unique duid. 
+
 ### Using Predictable Network Interface Names
 
 On a virtual machine running Photon OS, just as on a bare-metal machine, the Ethernet network interface name might shift from one device to another if you add or removed a card and reboot the machine. A device named `eth2`, for example, might become `eth1` after a NIC is removed and the machine is restarted.
@@ -1919,6 +1929,8 @@ Here's the `tdnf` command to install these packages:
 
 ## References
 
+* [Photon OS Troubleshooting Guide](https://github.com/vmware/photon/blob/master/docs/photon-os-troubleshooting-guide.md).
+
 The following technical articles and guides appear in the [Photon OS wiki](https://github.com/vmware/photon/wiki): 
 
 * FAQ
@@ -1931,6 +1943,7 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
 * RPM OSTree Documentation
+
 
 
 
