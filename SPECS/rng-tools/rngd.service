@@ -1,0 +1,11 @@
+[Unit]
+Description=Hardware RNG entropy gatherer daemon
+Documentation=man:rngd(8)
+
+[Service]
+PIDFile=/var/run/rngd.pid
+ExecStart=/usr/sbin/rngd -f
+
+
+[Install]
+WantedBy=multi-user.target
