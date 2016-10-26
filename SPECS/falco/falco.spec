@@ -49,6 +49,15 @@ make KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build"
 %install
 make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build" DESTDIR=%{buildroot}
 
+%check
+easy_install pip
+pip install avocado-framework
+wget http://stedolan.github.io/jq/download/linux64/jq
+chmod +x ./jq
+cp jq /usr/bin
+pip install -r https://raw.githubusercontent.com/avocado-framework/avocado/master/requirements.txt
+test/run_regression_tests.sh
+
 %clean
 rm -rf %{buildroot}/*
 
