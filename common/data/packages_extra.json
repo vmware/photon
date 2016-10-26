@@ -127,6 +127,7 @@
         "iotop",
         "libgd",
         "rsync",
+        "rng-tools",
         "paramiko",
         "ecdsa",
         "kexec-tools",
