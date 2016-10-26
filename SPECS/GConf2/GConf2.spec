@@ -32,6 +32,11 @@ make DESTDIR=%{buildroot} install
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 find %{buildroot} -name '*.la' -delete
 
+%check
+pushd tests
+make %{?_smp_mflags}
+popd
+
 %files
 %defattr(-,root,root)
 %exclude %{_libdir}/debug
