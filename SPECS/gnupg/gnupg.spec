@@ -41,6 +41,9 @@ make
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+make %{?_smp_mflags} -k check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
