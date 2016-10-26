@@ -38,6 +38,9 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} INSTALL="install -p" install
 rm -f %{buildroot}%{_libdir}/*.la
 
+%check
+make %{?_smp_mflags} -k check
+
 %post
 /sbin/ldconfig
 
