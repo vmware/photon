@@ -28,6 +28,9 @@ make
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
+%check
+make %{?_smp_mflags} -k check
+
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
