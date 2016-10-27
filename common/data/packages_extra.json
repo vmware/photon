@@ -73,6 +73,7 @@
         "chkconfig",
         "libnss-ato",
         "procmail",
+        "unixODBC",
         "dmidecode",
         "iperf",
         "distrib-compat",
