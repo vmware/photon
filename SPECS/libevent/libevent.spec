@@ -37,6 +37,9 @@ make %{?_smp_mflags}
 %makeinstall
 find %{buildroot} -name '*.la' -delete
 
+%check
+make %{?_smp_mflags} -k check
+
 %post -p /sbin/ldconfig
 
 %files
