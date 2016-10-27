@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.9
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -32,6 +32,7 @@ export JAVA_HOME=/var/opt/OpenJDK-1.8.0.102-bin
 export ANT_HOME=/var/opt/apache-ant-1.9.6
 export PATH=$PATH:$ANT_HOME/bin
 
+sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 ant -Dmaven.home=$MAVEN_DIST_DIR
 
 %install
@@ -62,14 +63,16 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*   Thu Oct 27 2016 Alexey Makhalov <amakhalov@vmware.com> 3.3.9-6
+-   Fix build issue - unable to fetch opensource.org/.../mit-license.php
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-5
 -   Updated JAVA_HOME path to point to latest JDK.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-4
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-4
+-   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.9-3
 -   Updated JAVA_HOME path to point to latest JDK.
-* 	Tue Mar 01 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-2
--	Updated the apache-ant version to 1.9.6 
+*   Tue Mar 01 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-2
+-   Updated the apache-ant version to 1.9.6 
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 3.3.9-2
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.9-1
