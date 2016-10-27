@@ -1,0 +1,16 @@
+diff -uNr netmgmt-1.0.4/src/iniparser.c netmgmt-1.0.4-fix/src/iniparser.c
+--- netmgmt-1.0.4/src/iniparser.c	2016-07-28 19:22:38.000000000 +0000
++++ netmgmt-1.0.4-fix/src/iniparser.c	2016-10-27 18:00:05.249848692 +0000
+@@ -447,12 +447,6 @@
+         bail_on_error(err);
+     }
+ 
+-    if (ini_cfg_find_key(pSection, pszKey))
+-    {
+-        err = EEXIST;
+-        bail_on_error(err);
+-    }
+-
+     err = netmgr_alloc(sizeof(KEYVALUE_INI), (void*)&pKeyValue);
+     bail_on_error(err);
+ 
