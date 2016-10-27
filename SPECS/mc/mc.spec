@@ -22,6 +22,10 @@ MC (Midnight Commander) is a text-mode full-screen file manager and visual shell
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
+
+%check
+make %{?_smp_mflags} -k check
+
 %files
 %defattr(-,root,root)
 /etc/*
