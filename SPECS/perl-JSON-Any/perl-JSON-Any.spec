@@ -31,7 +31,7 @@ find %{buildroot} -type f \( -name .packlist -o \
 find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null \;
 
 %check
-make test
+make %{?_smp_mflags} -k test
 
 %files
 %{perl_vendorlib}/*

@@ -33,9 +33,6 @@ mv %{_builddir}/%{name}-%{version}/%{name} %{buildroot}%{_bindir}/
 cp %{SOURCE1} %{buildroot}/usr/lib/systemd/system
 install -vdm755 %{buildroot}/var/lib/%{name}
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %post	-p /sbin/ldconfig
 %systemd_post %{name}.service
 

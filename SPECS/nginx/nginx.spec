@@ -37,9 +37,6 @@ install -vdm755 %{buildroot}/usr/lib/systemd/system
 install -vdm755 %{buildroot}%{_var}/log/nginx
 install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
