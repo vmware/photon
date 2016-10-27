@@ -60,8 +60,10 @@ Python bindings.
 make
 %install
 make DESTDIR=%{buildroot} install
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 find %{buildroot} -name '*.la' -delete
+
+%check
+make %{?_smp_mflags} -k check
 
 %files
 %defattr(-,root,root)
