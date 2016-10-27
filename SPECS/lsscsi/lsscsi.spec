@@ -22,6 +22,9 @@ This lists the information about SCSI devices.
 %install
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
+%check
+make %{?_smp_mflags} -k check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*

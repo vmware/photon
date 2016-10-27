@@ -34,6 +34,12 @@ make
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+pushd tests
+make %{?_smp_mflags} -k check
+./stress
+popd
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
