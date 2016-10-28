@@ -1,7 +1,7 @@
 Summary:	Libsolv-0.6.19
 Name:		libsolv
 Version:	0.6.19
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		https://github.com/openSUSE/libsolv
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -9,10 +9,9 @@ Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Requires:	db
-Requires:	rpm
+Requires:	libdb
 Requires:	expat
-BuildRequires:	db-devel
+BuildRequires:	libdb-devel
 BuildRequires:	cmake
 BuildRequires:	rpm-devel
 BuildRequires:	expat
@@ -38,6 +37,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/*
 %{_includedir}/*
 %changelog
+*   Thu Oct 27 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-3
+-   use libdb
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  0.6.19-1
