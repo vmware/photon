@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -12,6 +12,7 @@ Source0:	http://www.python.org/ftp/python/2.7.11/Python-%{version}.tar.xz
 Patch0: cgi.patch
 Patch1: added-compiler-flags-for-curses-module.patch
 Patch2: added-pyopenssl-ipaddress-certificate-validation.patch
+Patch3: python2-CVE-2016-5636.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel
 BuildRequires:  openssl-devel
@@ -101,6 +102,8 @@ to build python programs.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+
 %build
 export OPT="${CFLAGS}"
 ./configure \
@@ -217,6 +220,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 2.7.11-9
+-   Patch for CVE-2016-5636
 *   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2.7.11-8
 -   Modified %check
 *   Wed Sep 14 2016 Divya Thaluru <dthaluru@vmware.com> 2.7.11-7
