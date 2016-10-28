@@ -1,7 +1,7 @@
 Summary:	An URL retrieval utility and library
 Name:		curl
 Version:	7.47.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:		http://curl.haxx.se
 Group:		System Environment/NetworkingLibraries
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
 Patch0:         CVE-2016-7167.patch
+Patch1:         CVE-2016-5421.patch
 %define sha1 curl=07d8f7a4c7c9ad3293ee3d87f5c2683dd6cc1ca4
 Requires:	ca-certificates
 BuildRequires:	ca-certificates
@@ -25,6 +26,7 @@ functions like streaming media.
 %setup -q
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 %patch0 -p1
+%patch1 -p1
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -62,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_datadir}/zsh/site-functions/_curl
 %changelog
+*   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 7.47.1-4
+-   Patch for CVE-2016-5421
 *   Mon Sep 19 2016 Xiaolin Li <xiaolinl@vmware.com> 7.47.1-3
 -   Applied CVE-2016-7167.patch.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.47.1-2
