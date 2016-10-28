@@ -77,7 +77,7 @@ make all html
 
 %check
 # Run the testsuite
-make check
+make %{?_smp_mflags} -k check
 
 %install
 rm -rf $RPM_BUILD_ROOT
