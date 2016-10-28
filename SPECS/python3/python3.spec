@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.5.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -9,7 +9,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define sha1 Python=0186da436db76776196612b98bb9c2f76acfe90e
-Patch:          cgi3.patch
+Patch0:          cgi3.patch
+Patch1:          python3-CVE-2016-5636.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel
 BuildRequires:	ncurses-devel
@@ -83,7 +84,8 @@ to build python programs.
 
 %prep
 %setup -q -n Python-%{version}
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -186,6 +188,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*       Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-7
+-       Patch for CVE-2016-5636
 *       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 3.5.1-6
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
