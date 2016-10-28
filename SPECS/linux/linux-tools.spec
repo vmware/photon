@@ -1,7 +1,7 @@
 Summary:      This package contains the 'perf' performance analysis tools for Linux kernel 
 Name:         linux-tools
 Version:      4.4.26
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      GPLv2
 URL:          http://www.kernel.org/
 Group:        System/Tools
@@ -20,13 +20,13 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch0 -p1
 
 %build
-cd tools/perf
-sed -i 's/EXTRA_WARNINGS += -Wnested-externs/#EXTRA_WARNINGS += -Wnested-externs/' ../scripts/Makefile.include
-make 
+make -C tools perf
 
 %install
-cd tools
-make DESTDIR=%{buildroot} prefix=%{_prefix} perf_install 
+# disable (JOBS=1) parallel build to fix this issue:
+# fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
+# Linux version that was affected is 4.4.26
+make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 
 %files
@@ -38,6 +38,8 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 /etc/bash_completion.d/* 
 
 %changelog
+*   Fri Oct 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-2
+-   Disable parallel build for the perf_install.
 *   Mon Oct 24 2016 Anish Swaminathan <anishs@vmware.com> 4.4.26-1
 -   Update to linux-4.4.26
 *   Wed Sep  7 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-1
