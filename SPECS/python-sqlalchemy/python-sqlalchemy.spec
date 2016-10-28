@@ -28,6 +28,13 @@ SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives app
 %build
 python setup.py build
 
+%check
+easy_install apipkg
+easy_install py
+easy_install mock
+export PYTHONPATH=$PYTHONPATH:%{_builddir}/SQLAlchemy-%{version}/.eggs/pytest-3.0.3-py2.7.egg
+%{__python} setup.py test
+
 %install
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 

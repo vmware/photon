@@ -20,7 +20,10 @@ perl Makefile.PL --prefix=%{_prefix}
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
+%check
+make %{?_smp_mflags} -k test
+
 %files
 %defattr(-,root,root)
 %{_bindir}/xpath

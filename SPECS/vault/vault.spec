@@ -36,9 +36,6 @@ cp %{SOURCE1} %{buildroot}/usr/lib/systemd/system
 cp %{SOURCE2} %{buildroot}%{_sysconfdir}/vault.d/
 install -vdm755 %{buildroot}/var/lib/vault
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %post	-p /sbin/ldconfig
 setcap cap_ipc_lock=+ep /usr/bin/%{name}
 %systemd_post vault.service

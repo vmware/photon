@@ -47,6 +47,11 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
+%check
+pushd test
+make all
+popd
+
 %pre
 if ! getent group %{name} >/dev/null; then
     /sbin/groupadd -r %{name}
