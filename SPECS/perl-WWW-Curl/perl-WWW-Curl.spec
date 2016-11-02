@@ -7,29 +7,33 @@
 Summary:        Perl extension interface for libcurl
 Name:           perl-WWW-Curl
 Version:        4.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/WWW-Curl/
 Source0:        http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/WWW-Curl-%{version}.tar.gz
 %define sha1 WWW-Curl=8ec7b7b39bd653539671fb02fbb7d0ff4863e636
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  perl
-BuildRequires:	perl-Module-Install
-BuildRequires:	perl-YAML-Tiny
+BuildRequires:  perl-Module-Install
+BuildRequires:  perl-YAML-Tiny
 BuildRequires:  curl
-Requires:	perl
-Requires:	curl
+Requires:       perl
+Requires:       curl
 %description
 WWW::Curl is a Perl extension interface for libcurl.
 
 %prep
 %setup -q -n WWW-Curl-%{version}
 rm -rf inc && sed -i -e '/^inc\//d' MANIFEST
+sed -i 's/_LASTENTRY\\z/_LASTENTRY\\z|CURL_DID_MEMORY_FUNC_TYPEDEFS\\z/' Makefile.PL
 
 %build
 perl Makefile.PL INSTALLDIRS=vendor
+sed -i '/CURL_STRICTER/d' curlopt-constants.c
+sed -i 's/CURLAUTH_ANY/(int)CURLAUTH_ANY/' curlopt-constants.c
+sed -i 's/CURLAUTH_ANYSAFE/(int)CURLAUTH_ANYSAFE/' curlopt-constants.c
 make %{?_smp_mflags}
 
 %install
@@ -59,8 +63,10 @@ make test
 %{_mandir}/man3/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.17-2
--	GA - Bump release of all rpms
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.17-1
--	Initial version.
+*   Thu Sep 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.17-3
+-   Build WWW-Curl with curl 7.50.3
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.17-2
+-   GA - Bump release of all rpms
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.17-1
+-   Initial version.
 
