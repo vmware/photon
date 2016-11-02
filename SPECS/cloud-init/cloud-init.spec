@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -112,10 +112,10 @@ rm -rf $RPM_BUILD_ROOT
 %systemd_preun cloud-init-local.service
 
 %postun
-%systemd_postun_with_restart cloud-config.service
-%systemd_postun_with_restart cloud-final.service
-%systemd_postun_with_restart cloud-init.service
-%systemd_postun_with_restart cloud-init-local.service
+%systemd_postun cloud-config.service
+%systemd_postun cloud-final.service
+%systemd_postun cloud-init.service
+%systemd_postun cloud-init-local.service
 
 %files
 %license LICENSE
@@ -129,6 +129,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Tue Nov 1 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-12
+-   Fixed logic to not restart services after upgrade
 *   Mon Oct 24 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-11
 -   Enabled ssh module in cloud-init
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-10
