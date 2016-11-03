@@ -28,7 +28,7 @@ class PackageSelector(object):
 
         self.load_package_list(options_file)
 
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select Installation', True, self.package_menu)
+        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select Installation', True, self.package_menu, can_go_next=True, position=1)
 
     @staticmethod
     def get_packages_to_install(options, config_type, output_data_path):
@@ -74,7 +74,7 @@ class PackageSelector(object):
                 visible_options_cnt = visible_options_cnt + 1
 
 
-        self.package_menu = Menu(self.menu_starty,  self.maxx, self.package_menu_items, default_selected = default_selected)
+        self.package_menu = Menu(self.menu_starty,  self.maxx, self.package_menu_items, default_selected = default_selected, tab_enable=False)
 
     def exit_function(self,  selected_item_params):
         self.install_config['type'] = selected_item_params[0];

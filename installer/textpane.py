@@ -9,18 +9,29 @@ from actionresult import ActionResult
 from action import Action
 
 class TextPane(Action):
-    def __init__(self, starty, maxx, width, text_file_path, height, menu_items):
+    def __init__(self, starty, maxx, width, text_file_path, height, menu_items, partition = False, popupWindow = False, install_config = {}, text_items = [], table_space = 0, default_start = 0, info=[], size_left=[]):
         self.head_position = 0  #This is the start of showing
-        self.menu_position = 0
+        self.menu_position = default_start
         self.lines = []
-        self.menu_items = menu_items;
+        self.menu_items = menu_items
+        self.text_items = text_items
+        self.table_space = table_space
+        self.info=info
+        self.size_left=size_left
 
         self.width = width
         
-        self.read_file(text_file_path, self.width - 3);
-
+        if partition == False:
+            self.read_file(text_file_path, self.width - 3);
+        else:
+            self.install_config=install_config
+            self.partition();
+        
         self.num_items = len(self.lines)
-        self.text_height = height - 2
+        if self.info:
+            self.text_height = height - 4
+        else:
+            self.text_height = height - 2
 
         # Check if we need to add a scroll bar
         if self.num_items > self.text_height:
@@ -29,7 +40,10 @@ class TextPane(Action):
             self.show_scroll = False
 
         # Some calculation to detitmine the size of the scroll filled portion
-        self.filled = int(round(self.text_height * self.text_height / float(self.num_items)))
+        if (self.num_items == 0):
+            self.filled = 0
+        else:
+            self.filled = int(round(self.text_height * self.text_height / float(self.num_items)))
         if self.filled == 0:
             self.filled += 1
         for i in [1, 2]:
@@ -38,6 +52,7 @@ class TextPane(Action):
 
         self.window = curses.newwin(height, self.width)
         self.window.bkgd(' ', curses.color_pair(2))
+        self.popupWindow = popupWindow
 
         self.window.keypad(1)
         self.panel = curses.panel.new_panel(self.window)
@@ -45,6 +60,37 @@ class TextPane(Action):
         self.panel.move(starty, (maxx - self.width) / 2)
         self.panel.hide()
         curses.panel.update_panels()
+
+    def partition(self):
+        if self.install_config == {}:
+            return
+
+        tstring = ''
+        #calculate the start index for each item and draw the title
+        for index, item in enumerate(self.text_items):
+            tstring = tstring + item[0] + ' '*(item[1] - len(item[0])) + ' '*self.table_space
+
+        self.lines.append(tstring)
+        #draw the table
+        for i in range (int (self.install_config['partitionsnumber'])):
+            pdisk = self.install_config['partition_disk']
+            if len(pdisk) > self.text_items[0][1]:
+                pdisk = pdisk[-self.text_items[0][1]:]
+            psize = self.install_config[str(i)+'partition_info'+str(0)]
+            if len(psize) > self.text_items[1][1]:
+                psize = psize[-self.text_items[1][1]:]
+            if len(psize)==0:
+                psize='<'+self.size_left+'>'
+            ptype = self.install_config[str(i)+'partition_info'+str(1)]
+            if len(ptype) > self.text_items[2][1]:
+                ptype = ptype[-self.text_items[2][1]:]
+            pmountpoint = self.install_config[str(i)+'partition_info'+str(2)]
+            if len(pmountpoint) > self.text_items[3][1]:
+                pmountpoint = pmountpoint[-self.text_items[3][1]:]
+            pstring = pdisk + ' '*(self.text_items[0][1] - len(pdisk)) + ' ' * self.table_space + psize + ' '*(self.text_items[1][1] - len(psize)) + ' ' * self.table_space + ptype + ' '*(self.text_items[2][1] - len(ptype) + self.table_space) + pmountpoint
+            self.lines.append(pstring)
+
+
 
     def read_file(self, text_file_path, line_width):
         with open(text_file_path, "r") as f:
@@ -73,11 +119,12 @@ class TextPane(Action):
                 self.lines.append(line + ' ' * (line_width - len(line)))
 
     def navigate(self, n):
-        self.head_position += n
-        if self.head_position < 0:
-            self.head_position = 0
-        elif self.head_position > (len(self.lines) - self.text_height + 1):
-            self.head_position = len(self.lines) - self.text_height + 1
+        if self.show_scroll:
+            self.head_position += n
+            if self.head_position < 0:
+                self.head_position = 0
+            elif self.head_position > (len(self.lines) - self.text_height + 1):
+                self.head_position = len(self.lines) - self.text_height + 1
 
     def navigate_menu(self, n):
         self.menu_position += n
@@ -134,9 +181,15 @@ class TextPane(Action):
                 mode = curses.color_pair(3)
             else:
                 mode = curses.color_pair(2)
-
-            self.window.addstr(self.text_height + 1, xpos - len(item[0]) - 4, item[0], mode)
+            if self.info:
+                self.window.addstr(self.text_height + 3, xpos - len(item[0]) - 4, item[0], mode)
+            else:
+                self.window.addstr(self.text_height + 1, xpos - len(item[0]) - 4, item[0], mode)
             xpos = xpos - len(item[0]) - 4
+
+        if self.info:
+            self.window.addstr(self.text_height+1, 5, self.info)
+
 
         self.render_scroll_bar()
 
@@ -160,7 +213,6 @@ class TextPane(Action):
             if key in [curses.KEY_ENTER, ord('\n')]:
                 self.hide()
                 return self.menu_items[self.menu_position][1]()
-
             if key == curses.KEY_UP:
                 self.navigate(-1)
             elif key == curses.KEY_DOWN:
