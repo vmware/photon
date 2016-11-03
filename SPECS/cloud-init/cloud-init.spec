@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -61,6 +61,17 @@ cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
 rm -rf $RPM_BUILD_ROOT
 
 %post
+if [ $1 == 2 ]; then
+    cp /usr/lib/systemd/system/cloud-final.service /usr/lib/systemd/system/cloud-final.service.bak
+    cp /usr/lib/systemd/system/cloud-init.service /usr/lib/systemd/system/cloud-init.service.bak
+    cp /usr/lib/systemd/system/cloud-config.service /usr/lib/systemd/system/cloud-config.service.bak
+    cp /usr/lib/systemd/system/cloud-final.service /usr/lib/systemd/system/cloud-final.service.bak
+    sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-init-local.service
+    sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-config.service
+    sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-init.service
+    sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-final.service
+    systemctl daemon-reload >/dev/null 2>&1 || :
+fi
 %systemd_post cloud-config.service
 %systemd_post cloud-final.service
 %systemd_post cloud-init.service
@@ -73,10 +84,17 @@ rm -rf $RPM_BUILD_ROOT
 %systemd_preun cloud-init-local.service
 
 %postun
-%systemd_postun_with_restart cloud-config.service
-%systemd_postun_with_restart cloud-final.service
-%systemd_postun_with_restart cloud-init.service
-%systemd_postun_with_restart cloud-init-local.service
+%systemd_postun cloud-config.service
+%systemd_postun cloud-final.service
+%systemd_postun cloud-init.service
+%systemd_postun cloud-init-local.service
+
+%posttrans
+mv /usr/lib/systemd/system/cloud-final.service.bak /usr/lib/systemd/system/cloud-final.service
+mv /usr/lib/systemd/system/cloud-init.service.bak /usr/lib/systemd/system/cloud-init.service
+mv /usr/lib/systemd/system/cloud-config.service.bak /usr/lib/systemd/system/cloud-config.service
+mv /usr/lib/systemd/system/cloud-final.service.bak /usr/lib/systemd/system/cloud-final.service
+systemctl daemon-reload >/dev/null 2>&1 || :
 
 %files
 %license LICENSE
@@ -90,6 +108,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Tue Nov 1 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-12
+-   Fixed logic to not restart services after upgrade
 *   Mon Oct 24 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-11
 -   Enabled ssh module in cloud-init
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-10
