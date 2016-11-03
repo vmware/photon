@@ -10,7 +10,7 @@ import math
 from curses import panel
 
 class ProgressBar(object):
-    def __init__(self, starty, startx, width):
+    def __init__(self, starty, startx, width, new_win=False):
         self.timer = None
         self.loadding_timer = None
         self.timer_lock = threading.Lock()
@@ -25,6 +25,20 @@ class ProgressBar(object):
         self.window = curses.newwin(5, width)
         self.window.bkgd(' ', curses.color_pair(2)) #defaultbackground color
         self.progress = 0
+
+        self.new_win = new_win
+        self.x=startx
+        self.y=starty
+
+        if new_win:
+            self.contentwin = curses.newwin(7, width+2)
+            self.contentwin.bkgd(' ', curses.color_pair(2)) #Default Window color
+            self.contentwin.erase()
+            self.contentwin.box()
+            self.contentpanel = curses.panel.new_panel(self.contentwin)
+            self.contentpanel.move(starty-1, startx-1)
+            self.contentpanel.hide()
+
 
         self.panel = panel.new_panel(self.window)
         self.panel.move(starty, startx)
@@ -93,6 +107,11 @@ class ProgressBar(object):
         self.render_progress()
 
     def show(self):
+        if self.new_win:
+            self.contentpanel.top()
+            self.contentpanel.move(self.y-1, self.x-1)
+            self.contentpanel.show()
+
         self.refresh()
         self.panel.top()
         self.panel.show()
@@ -135,6 +154,8 @@ class ProgressBar(object):
                 self.loadding_timer.cancel()
                 self.loadding_timer = None
 
+        if self.new_win:
+            self.contentpanel.hide()
         self.panel.hide()
         panel.update_panels()
 

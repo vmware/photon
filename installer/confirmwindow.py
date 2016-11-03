@@ -20,7 +20,7 @@ class ConfirmWindow(Window):
                         ('No',  self.exit_function, False)
                     ]
         self.menu = Menu(menu_starty,  maxx, items, can_navigate_outside = False, horizontal=True)
-        super(ConfirmWindow, self).__init__(height, width, maxy, maxx, 'Confirm', False, self.menu)
+        super(ConfirmWindow, self).__init__(height, width, maxy, maxx, 'Confirm', False, self.menu, items=[])
         self.addstr(0,0, message)
 
     def exit_function(self, yes):
