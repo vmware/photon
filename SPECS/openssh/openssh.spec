@@ -1,7 +1,7 @@
 Summary:	Free version of the SSH connectivity tools
 Name:		openssh
 Version:	7.1p2
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -17,16 +17,27 @@ BuildRequires:  openssl-devel
 BuildRequires:	Linux-PAM
 BuildRequires:  krb5
 BuildRequires:  e2fsprogs-devel
-BuildRequires:  systemd
-Requires:       systemd
-Requires:	openssl
-Requires:	Linux-PAM
-Requires: 	shadow
+Requires:	openssh-clients = %{version}-%{release}
+Requires:	openssh-server = %{version}-%{release}
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
 useful for encrypting authentication and subsequent traffic over a 
 network. The ssh and scp commands are secure implementions of telnet 
 and rcp respectively.
+
+%package clients
+Summary: openssh client applications.
+Requires:	openssl
+%description clients
+This provides the ssh client utilities.
+
+%package server
+Summary: openssh server applications
+Requires:	Linux-PAM
+Requires: 	shadow
+%description server
+This provides the ssh server daemons, utilities, configuration and service files.
+
 %prep
 %setup -q
 tar xf %{SOURCE1}
@@ -64,7 +75,7 @@ Description=OpenSSH Daemon
 After=network.target sshd-keygen.service
 
 [Service]
-ExecStart=/usr/sbin/sshd -D
+ExecStart=%{_sbindir}/sshd -D
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=always
@@ -84,10 +95,13 @@ Before=sshd.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/ssh-keygen -A
+ExecStart=%{_bindir}/ssh-keygen -A
 [Install]
 WantedBy=multi-user.target
 EOF
+
+install -m755 contrib/ssh-copy-id %{buildroot}/%{_bindir}/
+install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 
 %{_fixperms} %{buildroot}/*
 
@@ -99,21 +113,21 @@ if [ ! -d /var/lib/sshd ]; then
 fi
 make %{?_smp_mflags} tests
 
-%pre
+%pre server
 getent group sshd >/dev/null || groupadd -g 50 sshd
 getent passwd sshd >/dev/null || useradd -c 'sshd PrivSep' -d /var/lib/sshd -g sshd -s /bin/false -u 50 sshd
 
-%preun
+%preun server
 %systemd_preun sshd.service sshd-keygen.service
 
-%post
+%post server
 /sbin/ldconfig
 if [ $1 -eq 1 ] ; then
     chown -v root:sys /var/lib/sshd
 fi
 %systemd_post sshd.service sshd-keygen.service
 
-%postun
+%postun server
 /sbin/ldconfig
 %systemd_postun_with_restart sshd.service sshd-keygen.service
 if [ $1 -eq 0 ] ; then
@@ -128,23 +142,56 @@ fi
 %clean
 rm -rf %{buildroot}/*
 %files
+%files server
 %defattr(-,root,root)
-%attr(0755,root,root) %dir %{_sysconfdir}/ssh
-%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/moduli
-%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/ssh_config
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
+%attr(700,root,sys)/var/lib/sshd
+/lib/systemd/system/sshd-keygen.service
 /lib/systemd/system/sshd.service
 /lib/systemd/system/sshd.socket
 /lib/systemd/system/sshd@.service
-/lib/systemd/system/sshd-keygen.service
-%{_bindir}/*
-%{_sbindir}/*
-%{_libexecdir}/*
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-%{_mandir}/man8/*
-%attr(700,root,sys)/var/lib/sshd
+%{_bindir}/slogin
+%{_sbindir}/sshd
+%{_libexecdir}/sftp-server
+%{_mandir}/man1/slogin.1.gz
+%{_mandir}/man5/sshd_config.5.gz
+%{_mandir}/man8/sshd.8.gz
+%{_mandir}/man5/moduli.5.gz
+%{_mandir}/man8/sftp-server.8.gz
+
+
+
+%files clients
+%attr(0755,root,root) %dir %{_sysconfdir}/ssh
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/moduli
+%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/ssh_config
+%{_bindir}/ssh
+%{_bindir}/scp
+%{_bindir}/sftp
+%{_bindir}/ssh-keygen
+%{_bindir}/ssh-keyscan
+%{_bindir}/ssh-add
+%{_bindir}/ssh-agent
+%{_bindir}/ssh-copy-id
+%{_libexecdir}/ssh-keysign
+%{_libexecdir}/ssh-pkcs11-helper
+%{_mandir}/man1/scp.1.gz
+%{_mandir}/man1/ssh-agent.1.gz
+%{_mandir}/man1/ssh-keygen.1.gz
+%{_mandir}/man1/ssh-keyscan.1.gz
+%{_mandir}/man5/ssh_config.5.gz
+%{_mandir}/man1/ssh-add.1.gz
+%{_mandir}/man1/ssh.1.gz
+%{_mandir}/man1/ssh-copy-id.1.gz
+%{_mandir}/man1/sftp.1.gz
+%{_mandir}/man8/ssh-keysign.8.gz
+%{_mandir}/man8/ssh-pkcs11-helper.8.gz
+
+
+
 %changelog
+*       Thu Nov 03 2016 Sharath George <sharathg@vmware.com> 7.1p2-6
+-       Split openssh into client and server rpms.
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.1p2-5
 -       Modified %check
 *	Thu Sep 15 2016 Anish Swaminathan <anishs@vmware.com> 7.1p2-4
