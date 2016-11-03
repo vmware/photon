@@ -10,7 +10,7 @@ from action import Action
 from sets import Set
 
 class Menu(Action):
-    def __init__(self, starty, maxx, items, height = 0, selector_menu = False, can_navigate_outside = True, horizontal = False, default_selected = 0):
+    def __init__(self, starty, maxx, items, height = 0, selector_menu = False, can_navigate_outside = True, horizontal = False, default_selected = 0, save_sel = False, tab_enable = True):
         self.can_navigate_outside = can_navigate_outside
         self.horizontal = horizontal
         self.horizontal_padding = 10
@@ -20,6 +20,8 @@ class Menu(Action):
         self.items_strings = []
         self.width = self.lengthen_items()
         self.num_items = len(self.items)
+        self.save_sel = save_sel
+        self.tab_enable=tab_enable
         if height == 0 or height > self.num_items:
             self.height = self.num_items
         else:
@@ -60,6 +62,9 @@ class Menu(Action):
         self.panel.move(starty, (maxx - menu_win_width) / 2)
         self.panel.hide()
         curses.panel.update_panels()
+
+    def can_save_sel(self, can_save_sel):
+        self.save_sel = can_save_sel
 
     def lengthen_items(self):
         width = 0
@@ -179,13 +184,31 @@ class Menu(Action):
                 else:
                     self.selected_items.add(self.position)
             elif key in [ord('\t')] and self.can_navigate_outside:
+                if not self.tab_enable:
+                    continue
                 self.refresh(False)
-                return ActionResult(False, None)
+                if self.save_sel:
+                    return ActionResult(False, {'diskIndex': self.position})
+                else:
+                    return ActionResult(False, None)
             
             elif key == curses.KEY_UP or key == curses.KEY_LEFT:
+                if not self.tab_enable and key==curses.KEY_LEFT:
+                    if self.save_sel:
+                        return ActionResult(False, {'diskIndex': self.position, 'direction':-1})
+                    elif self.selector_menu:
+                        result = self.items[self.position][1](self.selected_items)
+                    else:
+                        result = self.items[self.position][1](self.items[self.position][2])
+                    return ActionResult(False, {'direction': -1})
                 self.navigate(-1)
 
             elif key == curses.KEY_DOWN or key == curses.KEY_RIGHT:
+                if not self.tab_enable and key==curses.KEY_RIGHT:
+                    if self.save_sel:
+                        return ActionResult(False, {'diskIndex': self.position, 'direction':1})
+                    else:
+                        return ActionResult(False, {'direction': 1})
                 self.navigate(1)
 
             elif key == curses.KEY_NPAGE:

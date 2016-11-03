@@ -11,7 +11,7 @@ from action import Action
 from confirmwindow import ConfirmWindow
 
 class ReadText(Action):
-    def __init__(self, maxy, maxx, textwin, y, install_config, field, confirmation_error_msg, echo_char, accepted_chars, validation_fn, conversion_fn, default_string = None):
+    def __init__(self, maxy, maxx, textwin, y, install_config, field, confirmation_error_msg, echo_char, accepted_chars, validation_fn, conversion_fn, default_string = None, tab_enabled=True):
         self.textwin = textwin
         self.maxy = maxy
         self.maxx = maxx
@@ -26,9 +26,13 @@ class ReadText(Action):
         self.default_string = default_string
         self.textwin_width = self.textwin.getmaxyx()[1] - 1
         self.visible_text_width = self.textwin_width - 1
+        self.tab_enabled=tab_enabled
 
         self.init_text()
         self.maxlength = 255
+
+        if not tab_enabled:
+            self.textwin.keypad(1)
 
         #initialize the accepted characters
         if accepted_chars:
@@ -50,13 +54,23 @@ class ReadText(Action):
         spaces = ' ' * self.textwin_width
         self.textwin.addstr(self.y + 2, 0, spaces)
 
-    def do_action(self):
-        self.init_text()
-        curses.curs_set(1)
-
-        if self.default_string != None:
-            self.textwin.addstr(self.y, 0, self.default_string)
-            self.str = self.default_string
+    def do_action(self, returned=False, go_back=False):
+        if returned:
+            if len(self.str) > self.visible_text_width:
+                text = self.str[-self.visible_text_width:]
+            else:
+                text = self.str
+            if self.echo_char:
+                text = self.echo_char * len(text)
+            # Add the dashes
+            text = text + '_' * (self.visible_text_width - len(self.str))
+            self.textwin.addstr(self.y, 0, text)
+        if not returned:
+            curses.curs_set(1)
+            self.init_text()
+            if self.default_string != None:
+                self.textwin.addstr(self.y, 0, self.default_string)
+                self.str = self.default_string
 
         while True:
             if len(self.str) > self.visible_text_width:
@@ -67,9 +81,11 @@ class ReadText(Action):
 
             update_text = False
             if ch in [curses.KEY_ENTER, ord('\n')]:
+                curses.curs_set(0)
+                if go_back:
+                    return ActionResult(False, {'goBack': True})
                 if self.confirmation_error_msg:
                     if self.str != self.install_config[self.field]:
-                        curses.curs_set(0)
                         conf_message_height = 8
                         conf_message_width = 48
                         conf_message_button_y = (self.maxy - conf_message_height) / 2 + 5
@@ -83,10 +99,14 @@ class ReadText(Action):
                     self.set_field()
                 curses.curs_set(0)
                 return ActionResult(True, None)
+            elif ch ==curses.KEY_LEFT and not self.tab_enabled:
+                return ActionResult(False, {'direction': -1})
+            elif ch ==curses.KEY_RIGHT and not self.tab_enabled:
+                return ActionResult(False, {'direction': 1})
             elif ch in [ord('\t')]:
                 curses.curs_set(0)
                 return ActionResult(False, None)
-            elif ch == 127:
+            elif ch == curses.KEY_BACKSPACE: #originally ==127
                 # Handle the backspace case
                 self.str = self.str[:len(self.str) - 1]
 
