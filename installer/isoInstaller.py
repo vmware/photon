@@ -21,6 +21,7 @@ import random
 import urllib
 import urllib2
 import modules.commons
+from partitionISO import PartitionISO
 from diskpartitioner import DiskPartitioner
 from packageselector import PackageSelector
 from custompackageselector import CustomPackageSelector
@@ -227,10 +228,12 @@ class IsoInstaller(object):
             install_config = {'iso_system': False}
             license_agreement = License(self.maxy, self.maxx)
             select_disk = SelectDisk(self.maxy, self.maxx, install_config)
+            select_partition = PartitionISO(self.maxy, self.maxx, install_config)
             package_selector = PackageSelector(self.maxy, self.maxx, install_config, options_file)
 
             self.alpha_chars = range(65, 91)
             self.alpha_chars.extend(range(97,123))
+            partition_accepted_chars = list(range(48, 58))
             hostname_accepted_chars = list(self.alpha_chars)
             # Adding the numeric chars
             hostname_accepted_chars.extend(range(48, 58))
@@ -246,7 +249,8 @@ class IsoInstaller(object):
                     self.validate_hostname, # validation function of the input
                     None, # post processing of the input field
                     'Choose the hostname for your system', 'Hostname:', 2, install_config,
-                    random_hostname)
+                    random_hostname,
+                    True)
             root_password_reader = WindowStringReader(
                     self.maxy, self.maxx, 10, 70, 
                     'password', 
@@ -290,6 +294,8 @@ class IsoInstaller(object):
             items = items + [
                     (license_agreement.display, False),
                     (select_disk.display, True),
+                    (select_partition.display, False),
+                    (select_disk.guided_partitions, False),
                     (package_selector.display, True),
                     (hostname_reader.get_user_string, True),
                     (root_password_reader.get_user_string, True),
