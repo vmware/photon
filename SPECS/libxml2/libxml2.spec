@@ -1,13 +1,15 @@
 Summary:	Libxml2
 Name:		libxml2
 Version:	2.9.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://xmlsoft.org/
 Group:		System Environment/General Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
+Patch0:         libxml2-2.9.4-support-cve-2016-5131.patch
+Patch1:         libxml2-2.9.4-cve-2016-5131.patch
 %define sha1 libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
 Requires:	python2
 BuildRequires:	python2-devel
@@ -37,6 +39,8 @@ Static libraries and header files for the support library for libxml
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -84,6 +88,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*	Thu Oct 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.4-2
+-	Apply patch for CVE-2016-5131
 *       Wed Jun 01 2016 Anish Swaminathan <anishs@vmware.com> 2.9.4-1
 -       Upgrade to 2.9.4
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.3-2
