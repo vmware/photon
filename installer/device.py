@@ -19,6 +19,11 @@ class Device(object):
         return Device.wrap_devices_from_list(devices_list)
 
     @staticmethod
+    def refresh_devices_bytes():
+        devices_list = subprocess.check_output(['lsblk', '-S', '--bytes', '-I', '8', '-n', '--output', 'NAME,SIZE,MODEL'], stderr=open(os.devnull, 'w'))
+        return Device.wrap_devices_from_list(devices_list)
+
+    @staticmethod
     def wrap_devices_from_list(list):
         devices = []
         deviceslines = list.splitlines()

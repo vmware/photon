@@ -73,6 +73,7 @@
         "chkconfig",
         "libnss-ato",
         "procmail",
+        "unixODBC",
         "dmidecode",
         "iperf",
         "distrib-compat",
@@ -164,6 +165,7 @@
         "openscap-python",
         "openscap-perl",
         "XML-XPath",
-        "GConf2"
+        "GConf2",
+	"sshfs"
             ]
 }

@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -129,6 +129,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Mon Oct 24 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-11
+-   Enabled ssh module in cloud-init
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-10
 -   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-9
