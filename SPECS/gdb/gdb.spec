@@ -6,6 +6,12 @@ License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
 %define sha1 gdb=67cfbc6efcff674aaac3af83d281cf9df0839ff9
+Source1:        http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz
+%define sha1 tcl=9bc452eec453c2ed37625874b9011563db687b07
+Source2:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
+%define sha1 expect=e634992cab35b7c6931e1f21fbb8f74d464bd496
+Source3:         https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz
+%define sha1 dejagnu=d81288e7d7bd38e74b7fee8e570ebfa8c21508d9
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -22,6 +28,10 @@ GDB, the GNU Project debugger, allows you to see what is going on
 another program was doing at the moment it crashed. 
 %prep
 %setup -q
+tar xf %{SOURCE1}
+tar xf %{SOURCE2}
+tar xf %{SOURCE3}
+
 %build
 ./configure \
 	--prefix=%{_prefix}
@@ -45,16 +55,12 @@ rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
 %find_lang %{name} --all-name
 
 %check
-wget http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz --no-check-certificate
-tar xvf tcl8.5.14-src.tar.gz
 pushd tcl8.5.14/unix
 ./configure --enable-threads --prefix=/usr
 make
 make install
 popd
 
-wget http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz --no-check-certificate
-tar xvf expect5.45.tar.gz
 pushd expect5.45
 ./configure --prefix=/usr
 make
@@ -62,8 +68,6 @@ make install
 ln -svf expect5.45/libexpect5.45.so /usr/lib
 popd
 
-wget https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz --no-check-certificate
-tar xvf dejagnu-1.5.3.tar.gz
 pushd dejagnu-1.5.3
 ./configure --prefix=/usr
 make
