@@ -10,6 +10,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0: 	%{name}-%{version}.tar.gz
 %define sha1 createrepo=b4e88b3a8cb4b4ef7154991d33948e3d05bd9663
+Source1:        https://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz
+%define sha1 pychecker=acbc469b4ecde0182e9be42dceeae5375a923ff3
 URL: 		http://createrepo.baseurl.org/download/
 BuildArchitectures: noarch
 Requires: python2 >= 2.1, rpm-devel, rpm >= 0:4.1.1, libxml2
@@ -26,14 +28,12 @@ rpm packages
 
 %prep
 %setup -q
-
+tar xf %{SOURCE1}
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 
 %check
-wget https://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz  --no-check-certificate
-tar xvf pychecker-0.8.19.tar.gz
 pushd pychecker-0.8.19
 python setup.py install
 popd

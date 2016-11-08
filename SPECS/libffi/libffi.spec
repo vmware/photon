@@ -9,6 +9,12 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
 %define sha1 libffi=280c265b789e041c02e5c97815793dfc283fb1e6
+Source1:        https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz
+%define sha1 dejagnu=d81288e7d7bd38e74b7fee8e570ebfa8c21508d9
+Source2:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
+%define sha1 expect=e634992cab35b7c6931e1f21fbb8f74d464bd496
+Source3:        http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz
+%define sha1 tcl=9bc452eec453c2ed37625874b9011563db687b07
 Provides:	pkgconfig(libffi)
 %description
 The libffi library provides a portable, high level programming interface
@@ -16,6 +22,9 @@ to various calling conventions. This allows a programmer to call any
 function specified by a call interface description at run time.
 %prep
 %setup -q
+tar xf %{SOURCE1}
+tar xf %{SOURCE2}
+tar xf %{SOURCE3}
 %build
 sed -e '/^includesdir/ s:$(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:$(includedir):' \
     -i include/Makefile.in &&
@@ -42,14 +51,6 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
 %check
-wget https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz --no-check-certificate
-wget http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz --no-check-certificate
-wget http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz --no-check-certificate
-
-tar xvf dejagnu-1.5.3.tar.gz
-tar xvf expect5.45.tar.gz
-tar xvf tcl8.5.14-src.tar.gz
-
 pushd tcl8.5.14/unix
 ./configure --enable-threads --prefix=/usr
 make install

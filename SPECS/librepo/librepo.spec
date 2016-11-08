@@ -11,6 +11,8 @@ URL:           	https://github.com/Tojaj/librepo/
 Group:         	System Environment/Libraries
 Source0:       	%{name}-%{version}.tar.gz
 %define sha1 librepo=e96b735393cd830caca49fe3bf7da767f22d8a8a
+Source1:        pygpgme-0.3.tar.gz
+%define sha1 pygpgme=f8df35bd2705ac2e1642209fba732e6a42d03fd4
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	curl, gpgme, libassuan, libgpg-error
@@ -44,6 +46,7 @@ Package config and headers for librepo.
 
 %prep
 %setup -q -n %{librepo_name}-%{version}
+tar xf %{SOURCE1}
 
 %build
 mkdir build
@@ -61,8 +64,6 @@ cp %{_builddir}/%{librepo_name}-%{version}/librepo/*.h %{buildroot}%{_includedir
 
 %check
 easy_install nose flask pyxattr
-wget https://launchpad.net/pygpgme/trunk/0.3/+download/pygpgme-0.3.tar.gz
-tar xvf pygpgme-0.3.tar.gz
 pushd pygpgme-0.3
 python setup.py install
 popd
