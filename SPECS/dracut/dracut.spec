@@ -15,6 +15,8 @@ URL:		https://dracut.wiki.kernel.org/
 # http://git.kernel.org/?p=boot/dracut/dracut.git;a=snapshot;h=%{version};sf=tgz
 Source0:	http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
 %define sha1 dracut=e2ef763d25927f2dec8834bb2ee8b34a0fa14ffd
+Source1:        https://sourceforge.net/projects/asciidoc/files/asciidoc/8.6.9/asciidoc-8.6.9.tar.gz
+%define sha1 asciidoc=82e574dd061640561fa0560644bc74df71fb7305
 Patch0:		https://www.gnu.org/licenses/lgpl-2.1.txt
 Summary:	dracut to create initramfs
 Vendor:		VMware, Inc.
@@ -44,6 +46,7 @@ This package contains tools to assemble the local initrd and host configuration.
 %prep
 %setup -q -n %{name}-%{version}
 cp %{PATCH0} .
+tar xf %{SOURCE1}
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) --libdir=%{_prefix}/lib \
@@ -87,15 +90,13 @@ mkdir -p $RPM_BUILD_ROOT%{_sbindir}
 ln -sr $RPM_BUILD_ROOT%{_bindir}/dracut $RPM_BUILD_ROOT%{_sbindir}/dracut
 
 %check
-wget https://sourceforge.net/projects/asciidoc/files/asciidoc/8.6.9/asciidoc-8.6.9.tar.gz --no-check-certificate
-tar xvf asciidoc-8.6.9.tar.gz
 pushd asciidoc-8.6.9
 autoconf
 ./configure
 make
 make install
 popd
-
+make %{?_smp_mflags} -k clean  check
 %clean
 rm -rf -- $RPM_BUILD_ROOT
 

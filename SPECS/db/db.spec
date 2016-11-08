@@ -6,6 +6,8 @@ License:	Sleepycat License
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/%{name}-%{version}.tar.gz
 %define sha1 db=5ae05c6c4a1766270fd5cfb28539e2b7a19c33b2
+Source1:        http://prdownloads.sourceforge.net/tcl/tcl8.6.5-src.tar.gz
+%define sha1 tcl=c3a50ea58dac00a3c7e83cb4a4651c40d0f55160
 Group:		Databases
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -26,6 +28,7 @@ The package contains the DB doc files
 
 %prep
 %setup -q
+tar xf %{SOURCE1}
 %build
 cd build_unix
 ../dist/configure \
@@ -42,8 +45,6 @@ popd
 find %{buildroot} -name '*.la' -delete
 
 %check
-wget http://prdownloads.sourceforge.net/tcl/tcl8.6.5-src.tar.gz --no-check-certificate
-tar xvf tcl8.6.5-src.tar.gz
 pushd tcl8.6.5/unix
 ./configure --enable-threads --prefix=%{_prefix}
 make

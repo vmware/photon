@@ -6,6 +6,8 @@ License:	LGPLv2+
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}-rc1.tar.gz
 %define sha1 libsepol=0bf77d9849f715b29a8ac901461df0cc46da750b
+Source1:        https://sourceforge.net/projects/cunit/files/CUnit-2.1-2-src.tar.bz2
+%define sha1 cunit=6c2d0627eb64c09c7140726d6bf814cf531a3ce0
 URL:		http://www.selinuxproject.org
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -40,6 +42,7 @@ needed for developing applications that manipulate binary policies.
 %prep
 %setup -qn %{name}-%{version}-rc1
 sed  -i 's/int rc;/int rc = SEPOL_OK;/' ./cil/src/cil_binary.c
+tar xf %{SOURCE1}
 
 %build
 make clean
@@ -59,8 +62,6 @@ rm -f %{buildroot}%{_bindir}/chkcon
 rm -rf %{buildroot}%{_mandir}/man8
 
 %check
-wget https://sourceforge.net/projects/cunit/files/CUnit-2.1-2-src.tar.bz2 --no-check-certificate
-tar xjf CUnit-2.1-2-src.tar.bz2
 pushd CUnit-2.1-2/
 ./configure --prefix=/usr
 make
