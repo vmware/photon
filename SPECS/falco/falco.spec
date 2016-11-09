@@ -12,6 +12,11 @@ Source0:	https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
 %define sha1 falco=c40840c6dcbd25fd1d0bf8aa2d1f77b1f5a7cde2
 Source1:	https://github.com/draios/sysdig/archive/sysdig-0.10.1.tar.gz
 %define sha1 sysdig=272b95ad02be4d194bba66d360ff935084d9c842
+Source2:        http://stedolan.github.io/jq/download/linux64/jq
+%define sha1 jq=e820e9e91c9cce6154f52949a3b2a451c4de8af4
+Source3:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
+%define sha1 libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
+
 BuildRequires:	cmake
 BuildRequires:	openssl-devel
 BuildRequires:	curl
@@ -40,6 +45,9 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
 %prep
 %setup
 %setup -T -D -a 1
+chmod +x %{SOURCE2}
+cp %{SOURCE2} /usr/bin
+tar xf %{SOURCE3}
 
 %build
 mv sysdig-0.10.1 ../sysdig
@@ -52,10 +60,8 @@ make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build" DESTDIR=%{buildroo
 %check
 easy_install pip
 pip install avocado-framework
-wget http://stedolan.github.io/jq/download/linux64/jq
-chmod +x ./jq
-cp jq /usr/bin
-pip install -r https://raw.githubusercontent.com/avocado-framework/avocado/master/requirements.txt
+pip install fabric
+pip install aexpect
 test/run_regression_tests.sh
 
 %clean
