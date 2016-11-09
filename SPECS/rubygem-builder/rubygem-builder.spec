@@ -11,6 +11,8 @@ License: MIT
 URL: http://onestepback.org
 Source0: http://rubygems.org/gems/builder-%{version}.gem
 %define sha1 builder=0ee99b207f9994864c2a21ce24be26eddafee7f1
+Source1:  https://get.rvm.io/rvm-installer
+%define sha1 rvm-installer=cf0184a1fc3c0854da5acc1134fac150461d7360
 BuildRequires: ruby
 Requires: ruby
 
@@ -20,13 +22,15 @@ data simple to do. Currently the following builder objects are supported:
 
 %prep
 %setup -q -c -T
+chmod +x  %{SOURCE1}
+cp %{SOURCE1} .
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 
 %check
+./rvm-installer
 pushd /usr/src/photon/BUILDROOT/rubygem-builder-%{version}-%{release}.x86_64/usr/lib/ruby/gems/2.3.0/gems/builder-%{version}/
-curl -sSL https://get.rvm.io | bash -s stable --without-gems="rvm rubygems-bundler"
 export PATH=$PATH:/usr/local/rvm/bin
 rake test
 popd
