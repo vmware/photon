@@ -14,7 +14,7 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     # Remove older artifacts
     files = os.listdir(output_path)    
     for file in files:
-        if file.endswith(".vmdk") or file.endswith(".ova"):
+        if file.endswith(".vmdk"):
             os.remove(os.path.join(output_path, file))
 
     vmx_path = output_path + '/photon-ova.vmx'
@@ -56,16 +56,16 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
 
     if 'additionalhwversion' in config:
         for addlversion in config['additionalhwversion']:
-            new_ovf_path = output_path + "photon-ova-hw{}.ovf".format(addlversion)
-            mf_path = output_path + "photon-ova-hw{}.mf".format(addlversion)
+            new_ovf_path = output_path + "/photon-ova-hw{}.ovf".format(addlversion)
+            mf_path = output_path + "/photon-ova-hw{}.mf".format(addlversion)
             utils.replaceandsaveasnewfile(ovf_path, new_ovf_path, "vmx-.*<", "vmx-{}<".format(addlversion)) 
-            out = utils.runshellcommand("openssl sha1 photon-ova-disk1.vmdk {}".format(new_ovf_path))
+            out = utils.runshellcommand("openssl sha1 photon-ova-disk1.vmdk photon-ova-hw{}.ovf".format(addlversion))
             with open(mf_path, "w") as source:
                 source.write(out)
             temp_name_list = os.path.basename(ova_name).split('-')
             temp_name_list = temp_name_list[:2] + ["hw{}".format(addlversion)] + temp_name_list[2:]
             new_ova_name = '-'.join(temp_name_list)
-            new_ova_path = output_path + new_ova_name
+            new_ova_path = output_path + '/' + new_ova_name
             ovatar = tarfile.open(new_ova_path, "w:gz")
             for name in [new_ovf_path, mf_path, "photon-ova-disk1.vmdk"]:
                 ovatar.add(name, arcname=os.path.basename(name))
@@ -76,6 +76,10 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     os.chdir(cwd)    
     os.remove(ovf_path)
     os.remove(vmdk_path)
+    files = os.listdir(output_path)    
+    for file in files:
+        if file.endswith(".vmdk"):
+            os.remove(os.path.join(output_path, file))    
 
 
 if __name__ == '__main__':
