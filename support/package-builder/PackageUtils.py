@@ -121,7 +121,7 @@ class PackageUtils(object):
                 if sourcePath is None or len(sourcePath) == 0:
                     if sha1 is None:
                         self.logger.error("No sha1 found or missing source for "+source)
-                        raise Exception("No sha1 found or missing source")
+                        raise Exception("No sha1 found or missing source for "+source)
                     else:
                         self.logger.error("Missing source: "+source+". Cannot find sources for package: "+package)
                         raise Exception("Missing source")
