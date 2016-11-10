@@ -7,5 +7,7 @@
     },
     "type": "ovs",
     "size": {"root": "8", "swap": "0"},
-    "public_key":"<ssh-key-here>"
+    "public_key":"<ssh-key-here>",
+    "artifacttype": "ova",
+    "keeprawdisk": "false"
 }
