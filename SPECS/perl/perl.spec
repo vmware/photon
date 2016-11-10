@@ -9,13 +9,14 @@
 Summary:	Practical Extraction and Report Language
 Name:		perl
 Version:	5.22.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv1+
 URL:		http://www.perl.org/
 Group:		Development/Languages
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
+Patch0: 	perl-CVE-2016-1238.patch
 %define sha1 perl=29f9b320b0299577a3e1d02e9e8ef8f26f160332
 Provides:	perl >= 0:5.003000
 Provides:	perl(getopts.pl)
