@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.26
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -37,6 +37,7 @@ Patch22:       ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
 Patch23:       tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
 #fixes CVE-2016-7039
 Patch24:       net-add-recursion-limit-to-GRO.patch
+Patch25:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -94,6 +95,7 @@ The Linux package contains the Linux kernel doc files
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 
 %build
 # patch vmw_balloon driver
@@ -165,6 +167,10 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-2
+-   .config: add ipvs modules for docker swarm
+-   .config: serial driver built in kernel
+-   serial-8250-do-not-probe-U6-16550A-fifo-size.patch - faster boot
 *   Fri Oct 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-1
 -   Update to linux-4.4.26
 *   Wed Oct 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-7
