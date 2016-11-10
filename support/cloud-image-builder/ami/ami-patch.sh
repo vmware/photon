@@ -8,8 +8,11 @@ cd /
 echo "127.0.0.1 localhost" >> /etc/hosts
 
 # Update /etc/resolv.conf
-rm /etc/resolv.conf
-echo "nameserver 172.31.0.2" >> /etc/resolv.conf
+if [ -f /etc/resolv.conf ]
+	then
+		rm /etc/resolv.conf
+fi
+echo "nameserver 169.254.169.253" >> /etc/resolv.conf
 echo "search ec2.internal" >> /etc/resolv.conf
 
 
@@ -60,5 +63,7 @@ sed -i '/.*linux.*vmlinuz/ s/$/ console=ttyS0/' /boot/grub/grub.cfg
 echo 1 > /proc/sys/kernel/modules_disabled
 
 # Remove kernel symbols
-rm /boot/system.map*
-
+if [ -f /boot/system.map* ]
+	then
+		rm /boot/system.map*
+fi
