@@ -8,8 +8,11 @@ cd /
 echo "127.0.0.1 localhost" >> /etc/hosts
 
 # Update /etc/resolv.conf
-rm /etc/resolv.conf
-echo "nameserver 172.31.0.2" >> /etc/resolv.conf
+if [ -f /etc/resolv.conf ]
+	then
+		rm /etc/resolv.conf
+fi
+echo "nameserver 169.254.169.253" >> /etc/resolv.conf
 echo "search ec2.internal" >> /etc/resolv.conf
 
 
@@ -54,11 +57,14 @@ echo "Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,
 echo "Tunnel no" >> /etc/ssh/ssh_config
 echo "ServerAliveInterval 420" >> /etc/ssh/ssh_config
 
-sed -i '/.*linux.*vmlinuz/ s/$/ console=ttyS0/' /boot/grub/grub.cfg
+sed -i 's/net.ifnames=0//' /boot/grub/grub.cfg
+sed -i 's/$photon_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0 earlyprintk=ttyS0/' /boot/grub/grub.cfg
 
 # Disable loading/unloading of modules
 echo 1 > /proc/sys/kernel/modules_disabled
 
 # Remove kernel symbols
-rm /boot/system.map*
-
+if [ -f /boot/system.map* ]
+	then
+		rm /boot/system.map*
+fi

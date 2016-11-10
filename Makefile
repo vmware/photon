@@ -50,9 +50,10 @@ endif
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
+IMGCONVERTER := $(TOOLS_BIN)/imgconverter
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
-check check-docker check-bison check-g++ check-gawk check-createrepo check-vagrant check-packer check-packer-ovf-plugin check-sanity \
+check check-docker check-bison check-g++ check-gawk check-createrepo check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot build-updated-packages
 
 THREADS?=1
@@ -431,13 +432,13 @@ photon-vagrant-local: check-packer check-vagrant
 		echo "Unable to find $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso ... aborting build"; \
 	fi
 
-cloud-image: $(PHOTON_STAGE) $(VIXDISKUTIL) iso
+cloud-image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) iso
 	@echo "Building cloud image $(IMG_NAME)..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso $(ADDITIONAL_RPMS_PATH)
 
 
-cloud-image-all: $(PHOTON_STAGE) $(VIXDISKUTIL) iso
+cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) iso
 	@echo "Building cloud images - gce, ami, azure and ova..."
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso $(ADDITIONAL_RPMS_PATH)
@@ -465,6 +466,9 @@ check-gawk:
 
 check-createrepo:
 	@command -v createrepo >/dev/null 2>&1 || { echo "Package createrepo not installed. Aborting." >&2; exit 1; }
+
+check-kpartx:
+	@command -v kpartx >/dev/null 2>&1 || { echo "Package kpartx not installed. Aborting." >&2; exit 1; }
 
 check-vagrant: check-packer
 	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
@@ -514,3 +518,6 @@ $(VIXDISKUTIL): $(TOOLS_BIN)
 	@cd $(SRCROOT)/tools/src/vixDiskUtil && \
 	make
 
+$(IMGCONVERTER): $(TOOLS_BIN)
+	@cd $(SRCROOT)/tools/src/imgconverter && \
+	make
