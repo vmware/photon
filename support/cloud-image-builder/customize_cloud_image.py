@@ -14,7 +14,7 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     # Remove older artifacts
     files = os.listdir(output_path)    
     for file in files:
-        if file.endswith(".vmdk") or file.endswith(".ova"):
+        if file.endswith(".vmdk"):
             os.remove(os.path.join(output_path, file))
 
     vmx_path = output_path + '/photon-ova.vmx'
