@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.26
-Release:       2%{?dist}
+Version:       4.4.31
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ad837664f2759e0453f397de9cc51e96ff1994ce
+%define sha1 linux=f00153a1b77f921d371ea45df421bfe855b40608
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -29,15 +29,11 @@ Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
 Patch16:       vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
 Patch17:       vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
+Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
-#fixes CVE-2016-8666
-Patch22:       ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
-#fixes CVE-2016-8666
-Patch23:       tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
 #fixes CVE-2016-7039
-Patch24:       net-add-recursion-limit-to-GRO.patch
-Patch25:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch22:       net-add-recursion-limit-to-GRO.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -90,12 +86,10 @@ The Linux package contains the Linux kernel doc files
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
-%patch24 -p1
-%patch25 -p1
 
 %build
 # patch vmw_balloon driver
@@ -167,6 +161,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-1
+-   Update to linux-4.4.31
 *   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-2
 -   .config: add ipvs modules for docker swarm
 -   .config: serial driver built in kernel
