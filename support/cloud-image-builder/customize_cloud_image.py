@@ -46,11 +46,10 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     rawsplit = os.path.splitext(raw_image_name)
     ova_name = rawsplit[0] + '.ova'
 
-    ovatar = tarfile.open(ova_name, "w:gz")
+    ovatar = tarfile.open(ova_name, "w", format = tarfile.USTAR_FORMAT)
     for name in ["photon-ova.ovf", "photon-ova.mf", "photon-ova-disk1.vmdk"]:
         ovatar.add(name, arcname=os.path.basename(name))
     ovatar.close()
-    
     os.remove(vmx_path)    
     os.remove(mf_path)
 
@@ -66,7 +65,7 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
             temp_name_list = temp_name_list[:2] + ["hw{}".format(addlversion)] + temp_name_list[2:]
             new_ova_name = '-'.join(temp_name_list)
             new_ova_path = output_path + '/' + new_ova_name
-            ovatar = tarfile.open(new_ova_path, "w:gz")
+            ovatar = tarfile.open(new_ova_path, "w", format = tarfile.USTAR_FORMAT)
             for name in [new_ovf_path, mf_path, "photon-ova-disk1.vmdk"]:
                 ovatar.add(name, arcname=os.path.basename(name))
             ovatar.close()
@@ -197,7 +196,7 @@ if __name__ == '__main__':
         if config['artifacttype'] == 'tgz':
             print "Generating the tar.gz artifact ..."
             tarname = img_path + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.tar.gz'
-            tgzout = tarfile.open(tarname, "w:gz")
+            tgzout = tarfile.open(tarname, "w:gz", format = tarfile.USTAR_FORMAT)
             tgzout.add(raw_image, arcname=os.path.basename(raw_image))
             tgzout.close()
         elif config['artifacttype'] == 'vhd':
