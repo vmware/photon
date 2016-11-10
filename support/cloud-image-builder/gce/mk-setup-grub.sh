@@ -115,6 +115,7 @@ else
 fi
 
 export menuentry_id_option
+load_env -f "$BOOT_DIRECTORY"photon.cfg
 
 if [ "${prev_saved_entry}" ]; then
   set saved_entry="${prev_saved_entry}"
@@ -164,11 +165,11 @@ menuentry 'GNU/Linux' --class gnu-linux --class gnu --class os $menuentry_id_opt
     else
       search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
     fi
-    echo    'Loading Linux 4.4.8 ...'
-    linux   /boot/vmlinuz-4.4.8 root=/dev/sda2 ro console=ttyS0,38400n8 
+    echo    'Loading Linux $photon_linux ...'
+    linux   "$BOOT_DIRECTORY"\$photon_linux root=UUID_PLACEHOLDER ro console=ttyS0,38400n8 
 }
 submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced-UUID_PLACEHOLDER' {
-    menuentry 'GNU/Linux, with Linux 4.4.8' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.4.8-advanced-UUID_PLACEHOLDER' {
+    menuentry 'GNU/Linux, with Linux $photon_linux' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-$photon_linux-advanced-UUID_PLACEHOLDER' {
         load_video
         set gfxpayload=keep
         insmod gzio
@@ -180,10 +181,10 @@ submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced
         else
           search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
         fi
-        echo    'Loading Linux 4.4.8 ...'
-        linux   /boot/vmlinuz-4.4.8 root=/dev/sda2 ro console=ttyS0,38400n8 
+        echo    'Loading Linux $photon_linux ...'
+        linux   "$BOOT_DIRECTORY"\$photon_linux root=UUID_PLACEHOLDER ro console=ttyS0,38400n8 
     }
-    menuentry 'GNU/Linux, with Linux 4.4.8 (recovery mode)' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-4.4.8-recovery-UUID_PLACEHOLDER' {
+    menuentry 'GNU/Linux, with Linux $photon_linux (recovery mode)' --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-$photon_linux-recovery-UUID_PLACEHOLDER' {
         load_video
         set gfxpayload=keep
         insmod gzio
@@ -195,8 +196,8 @@ submenu 'Advanced options for GNU/Linux' $menuentry_id_option 'gnulinux-advanced
         else
           search --no-floppy --fs-uuid --set=root UUID_PLACEHOLDER
         fi
-        echo    'Loading Linux 4.4.8 ...'
-        linux   /boot/vmlinuz-4.4.8 root=/dev/sda2 ro single console=ttyS0,38400n8
+        echo    'Loading Linux $photon_linux ...'
+        linux   "$BOOT_DIRECTORY"\$photon_linux root=/UUID_PLACEHOLDER ro single console=ttyS0,38400n8
     }
 }
 

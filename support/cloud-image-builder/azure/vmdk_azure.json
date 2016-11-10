@@ -6,7 +6,13 @@
 			"text": "PASSWORD"
 		},
 	"type": "azure",
-    "size": {"root": "8", "swap": "0"},
-    "public_key":"<ssh-key-here>"
+    "size": {"root": "16", "swap": "0"},
+    "public_key":"<ssh-key-here>",
+    "postinstallscripts": [ "azure-patch.sh", "../postinstallscriptspassword-expiry.sh" ],
+    "additionalfiles": [
+    						{"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
+    				   ],
+    "artifacttype": "vhd",
+    "keeprawdisk": "false"
 }
 

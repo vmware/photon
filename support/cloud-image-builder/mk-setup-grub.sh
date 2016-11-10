@@ -96,6 +96,7 @@ set default=0
 set timeout=5
 set root=(hd0,2)
 loadfont /boot/grub2/unifont.pf2
+load_env -f "$BOOT_DIRECTORY"$photon.cfg
 
 insmod gfxterm
 insmod vbe
@@ -112,7 +113,7 @@ set theme=/boot/grub2/themes/photon/theme.txt
 menuentry "Photon" {
 	insmod ext2
     insmod part_gpt
-	linux /boot/vmlinuz-4.4.8 init=/lib/systemd/systemd root=PARTUUID=UUID_PLACEHOLDER loglevel=3 ro
+	linux "$BOOT_DIRECTORY"\$photon_linux init=/lib/systemd/systemd root=PARTUUID=UUID_PLACEHOLDER loglevel=3 ro
 	initrd /boot/initrd.img-no-kmods
 }
 # End /boot/grub2/grub.cfg

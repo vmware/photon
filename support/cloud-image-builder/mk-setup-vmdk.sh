@@ -89,7 +89,7 @@ fi
 sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
 
 echo "Mapping device partition to loop device"
-kpartx -av $DISK_DEVICE >> $LOGFILE
+kpartx -avs $DISK_DEVICE >> $LOGFILE
 
 DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
 
