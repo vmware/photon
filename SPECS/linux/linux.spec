@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.26
+Version:    	4.4.31
 Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=ad837664f2759e0453f397de9cc51e96ff1994ce
+%define sha1 linux=f00153a1b77f921d371ea45df421bfe855b40608
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -27,14 +27,10 @@ Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
-#fixes CVE-2016-8666
-Patch17:        ipip-properly-mark-ipip-GRO-packets-as-encapsulated.patch
-#fixes CVE-2016-8666
-Patch18:        tunnels-dont-apply-GRO-to-multiple-layers-of-encapsulation.patch
 #fixes CVE-2016-7039
-Patch19:        net-add-recursion-limit-to-GRO.patch
+Patch16:        net-add-recursion-limit-to-GRO.patch
 #fixes CVE-2016-7425
-Patch20:        scsi-arcmsr-buffer-overflow-in-arcmsr_iop_message_xfer.patch
+Patch17:        scsi-arcmsr-buffer-overflow-in-arcmsr_iop_message_xfer.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -105,10 +101,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 %patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
 
 %build
 make mrproper
@@ -152,7 +146,7 @@ find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp 
 
 cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release} # copy .config manually to be where it's expected to be
 ln -sf "/usr/src/%{name}-headers-%{version}-%{release}" "%{buildroot}/lib/modules/%{version}/build"
-find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
+find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod a+x
 %post
 /sbin/depmod -aq %{version}
 ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
@@ -206,6 +200,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-1
+-   Update to linux-4.4.31
 *   Fri Oct 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-1
 -   Update to linux-4.4.26
 *   Wed Oct 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-6
