@@ -62,7 +62,7 @@ au BufEnter,BufNew *.py set tabstop=4 shiftwidth=4 expandtab
 EOF
 
 %check
-make %{?_smp_mflags}  test
+make test
 
 %files extra
 %defattr(-,root,root)
