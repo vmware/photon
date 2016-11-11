@@ -149,13 +149,14 @@ if __name__ == '__main__':
         utils.runshellcommand("mount -o bind /sys {}".format(options.mount_path + "/sys"))
 
         if 'additionalfiles' in config:
+            print "  Copying additional files into the raw image ..."
             for filetuples in config['additionalfiles']:
                 for src,dest in filetuples.iteritems():
                     shutil.copyfile(options.build_scripts_path + '/' + options.image_name + '/' + src, options.mount_path + '/' + dest)
 
 
         if 'postinstallscripts' in config:
-            print "Running post install scripts ..."
+            print "  Running post install scripts ..."
             if not os.path.exists(options.mount_path + "/tempscripts"):
                 os.mkdir(options.mount_path + "/tempscripts")
             for script in config['postinstallscripts']:
@@ -170,6 +171,10 @@ if __name__ == '__main__':
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/dev"))
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/proc"))
         utils.runshellcommand("umount -l {}".format(options.mount_path))
+
+        mount_out = utils.runshellcommand("mount")
+        print "List of mounted devices:"
+        print mount_out
 
     finally:
         utils.runshellcommand("kpartx -d {}".format(disk_device))
@@ -196,12 +201,13 @@ if __name__ == '__main__':
         if config['artifacttype'] == 'tgz':
             print "Generating the tar.gz artifact ..."
             tarname = img_path + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.tar.gz'
-            tgzout = tarfile.open(tarname, "w:gz", format = tarfile.USTAR_FORMAT)
+            tgzout = tarfile.open(tarname, "w:gz")
             tgzout.add(raw_image, arcname=os.path.basename(raw_image))
             tgzout.close()
         elif config['artifacttype'] == 'vhd':
-            imgconverter = tools_bin_path + '/imgconverter'
+            imgconverter = options.tools_bin_path + '/imgconverter'
             vhdname = img_path + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.vhd'
+            print "Converting raw disk to vhd ..."
             utils.runshellcommand("{} -i {} -v vhd -o {}".format(imgconverter, raw_image, vhdname))
         elif config['artifacttype'] == 'ova':
             create_ova_image(raw_image, options.tools_bin_path, options.build_scripts_path + '/' + options.image_name, config)
@@ -232,6 +238,11 @@ if __name__ == '__main__':
                         utils.runshellcommand("chroot {} /bin/bash -c '/tempscripts/{}'".format(custom_path, script))
                         shutil.rmtree(custom_path + "/tempscripts", ignore_errors=True)
                         utils.runshellcommand("umount -l {}".format(custom_path))
+
+                        mount_out = utils.runshellcommand("mount")
+                        print "List of mounted devices:"
+                        print mount_out
+
                         utils.runshellcommand("kpartx -d {}".format(disk_device))
                         utils.runshellcommand("losetup -d {}".format(disk_device))
                         create_ova_image(raw_image_custom, options.tools_bin_path, options.build_scripts_path + '/' + options.image_name, config)
