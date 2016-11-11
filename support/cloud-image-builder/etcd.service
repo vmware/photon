@@ -1,9 +1,0 @@
-[Unit]
-Description=etcd service
-
-[Service]
-ExecStart=/usr/sbin/etcd
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
