@@ -76,6 +76,7 @@
         "unixODBC",
         "dmidecode",
         "iperf",
+	"ipvsadm",
         "distrib-compat",
         "crash",
         "systemtap",
