@@ -24,6 +24,13 @@ PHOTON_IMG_OUTPUT_PATH=$PHOTON_STAGE_PATH/$IMG_NAME
 VMDK_CONFIG_FILE=${BUILD_SCRIPTS_PATH}/$IMG_NAME/vmdk_$IMG_NAME.json
 VMDK_CONFIG_SAFE_FILE=${BUILD_SCRIPTS_PATH}/$IMG_NAME/vmdk_safe_$IMG_NAME.json
 
+cd $BUILD_SCRIPTS_PATH
+image_list=`for i in $(ls -d */); do echo ${i%%/}; done`
+if ! [[ $image_list =~ (^|[[:space:]])$IMG_NAME($|[[:space:]]) ]]
+  then
+    echo "Input image name not supported. Aborting."; exit 1;
+fi
+
 rm -rf $WORKING_DIR
 mkdir -p $WORKING_DIR/installer
 cp -R $SRC_ROOT/installer $WORKING_DIR/
