@@ -1,0 +1,10 @@
+[Unit]
+Description=Nomad Client Agent
+Documentation=https://www.nomadproject.io/docs/agent/
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/nomad agent -config /etc/nomad/client.conf -client
+
+[Install]
+WantedBy=multi-user.target
