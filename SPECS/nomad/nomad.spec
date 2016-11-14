@@ -26,14 +26,16 @@ Easily deploy applications at any scale. A Distributed, Highly Available, Datace
 
 %install
 install -vdm755 %{buildroot}%{_bindir}
-install -vdm755 %{buildroot}%{_sysconfdir}/nomad.d
+install -vdm755 %{buildroot}%{_sysconfdir}/%{name}
 install -vdm755 %{buildroot}/usr/lib/systemd/system
 
 chown -R root:root %{buildroot}%{_bindir}
 
 mv %{_builddir}/%{name}-%{version}/%{name} %{buildroot}%{_bindir}/
 
+cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}/client.conf
 cp %{SOURCE2} %{buildroot}/usr/lib/systemd/system
+cp %{SOURCE3} %{buildroot}%{_sysconfdir}/%{name}/server.conf
 cp %{SOURCE4} %{buildroot}/usr/lib/systemd/system
 install -vdm755 %{buildroot}/var/lib/%{name}
 
