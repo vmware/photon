@@ -58,7 +58,7 @@ rm -rf %{buildroot}
 /usr/lib/systemd/system/%{name}-client.service
 /usr/lib/systemd/system/%{name}-server.service
 %dir /var/lib/%{name}
-%dir %{_sysconfdir}/%{name}.d
+%dir %{_sysconfdir}/%{name}
 
 %changelog
 *	Sat Nov 12 2016 Ivan Porto Carrero <icarrero@vmware.com> 0.4.1-1
