@@ -1,15 +1,14 @@
 [Unit]
 Description=Consul Agent
-Wants=basic.target
-After=basic.target network.target
+Requires=network-online.target
+After=network-online.target
 
 [Service]
-EnvironmentFile=-/etc/default/consul
-ExecStart=/usr/bin/consul agent $OPTIONS -config-dir /etc/consul.d
-ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/bin/consul agent -config-dir=/etc/consul.d -dev -advertise 127.0.0.1
+ExecReload=/usr/bin/kill -HUP $MAINPID
+KillSignal=SIGINT
 User=consul
 Group=consul
-KillSignal=SIGINT
 Restart=on-failure
 LimitNOFILE=131072
 
