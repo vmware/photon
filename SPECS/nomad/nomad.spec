@@ -50,7 +50,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/%{name}
 /usr/lib/systemd/system/%{name}.service
 %dir /var/lib/%{name}
-%dir %{_sysconfdir}/%{name}.d
+%dir %{_sysconfdir}/%{name}
 
 %changelog
 *	Sun Jul 24 2016 Ivan Porto Carrero <icarrero@vmware.com> 0.4.0-1
