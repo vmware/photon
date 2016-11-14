@@ -1,16 +1,18 @@
 {
-    "packages":[
-                "bzip2", "pkg-config", "shadow", "procps-ng", "e2fsprogs",
-                "iana-etc", "bash",
-                "net-tools", "coreutils",
-                "iproute2", "kbd", "systemd",
+    "packages":["filesystem",  
+                "pkg-config", 
+                "bash",
+                "bzip2", 
+                "shadow", 
+                "coreutils",
+                "net-tools",
                 "util-linux",
-                "linux", 
-                "iptables", "ca-certificates",
-                "dbus", "docker",
-                "photon-release", "photon-repos",
-                "initramfs"
-                ]
+                "linux-esx",
+                "systemd",
+                "dbus",
+                "photon-release", 
+                "photon-repos",
+                "tdnf"]
 }
 
 
