@@ -112,7 +112,7 @@ if __name__ == '__main__':
         partuuidval = (utils.runshellcommand("blkid -s PARTUUID -o value {}".format(loop_device_path))).rstrip('\n')
         if (partuuidval == ''):
             sgdiskout = utils.runshellcommand("sgdisk -i 2 {} ".format(disk_device))
-            partuuidval = (re.findall(r'Partition unique GUID.*', sgdiskout))[0].split(':')[1].strip(' ')
+            partuuidval = (re.findall(r'Partition unique GUID.*', sgdiskout))[0].split(':')[1].strip(' ').lower()
 
         if (partuuidval == ''):
             raise RuntimeError("Cannot generate partuuid")
