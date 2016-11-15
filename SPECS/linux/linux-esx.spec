@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.31
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -161,6 +161,10 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-2
+-   .config: add ip set support
+-   .config: add ipvs_{tcp,udp} support
+-   .config: add cgrup_{hugetlb,net_prio} support
 *   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-1
 -   Update to linux-4.4.31
 *   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-2
