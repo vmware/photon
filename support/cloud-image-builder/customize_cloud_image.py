@@ -110,6 +110,7 @@ if __name__ == '__main__':
     try:
         print "Generating PARTUUID for the loop device ..."
         partuuidval = (utils.runshellcommand("blkid -s PARTUUID -o value {}".format(loop_device_path))).rstrip('\n')
+        uuidval = (utils.runshellcommand("blkid -s UUID -o value {}".format(loop_device_path))).rstrip('\n')
         if (partuuidval == ''):
             sgdiskout = utils.runshellcommand("sgdisk -i 2 {} ".format(disk_device))
             partuuidval = (re.findall(r'Partition unique GUID.*', sgdiskout))[0].split(':')[1].strip(' ')
@@ -130,7 +131,10 @@ if __name__ == '__main__':
         os.remove(options.mount_path + "/etc/fstab")
 
         f = open(options.mount_path + "/etc/fstab", "w")
-        f.write("PARTUUID={}    /    ext4    defaults 1 1\n".format(partuuidval))
+        if (uuidval != ''):
+            f.write("UUID={}    /    ext4    defaults 1 1\n".format(uuidval))
+        else:
+            f.write("PARTUUID={}    /    ext4    defaults 1 1\n".format(partuuidval))
         f.close()
         utils.replaceinfile(options.mount_path + "/boot/grub/grub.cfg", "rootpartition=PARTUUID=.*$", "rootpartition=PARTUUID={}".format(partuuidval))
 
