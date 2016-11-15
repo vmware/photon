@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.31
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -197,6 +197,10 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-2
+-   .config: add cgrup_hugetlb support
+-   .config: add netfilter_xt_{set,target_ct} support
+-   .config: add netfilter_xt_match_{cgroup,ipvs} support
 *   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-1
 -   Update to linux-4.4.31
 *   Fri Oct 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-1
