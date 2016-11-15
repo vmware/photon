@@ -44,10 +44,6 @@ if [[ $IMG_NAME == ova* ]]
   then
     command -v ovftool >/dev/null 2>&1 || { echo "Ovftool not installed. Aborting." >&2; exit 1; }
 fi
-if [[ $IMG_NAME != ova* ]]
-  then
-    cp ${BUILD_SCRIPTS_PATH}/mk-setup-grub.sh .
-fi
 
 if [ -e ${BUILD_SCRIPTS_PATH}/${IMG_NAME}/mk-setup-grub.sh ]
   then
