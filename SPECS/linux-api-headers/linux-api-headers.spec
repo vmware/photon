@@ -13,7 +13,7 @@ BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
-%setup -q -n linux-4.4.8
+%setup -q -n linux-%{version}
 %build
 make mrproper
 make headers_check
