@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -35,16 +35,23 @@ and so on.
 %package devel
 Summary: Header files for glibc
 Group: Applications/System
-Requires: glibc >= 2.22
+Requires: %{name} = %{version}-%{release}
 %description devel
 These are the header files of glibc.
 
 %package lang
 Summary: Additional language files for glibc
 Group: Applications/System
-Requires: glibc >= 2.22
+Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of glibc.
+
+%package i18n
+Summary: Additional internationalization files for glibc
+Group: Applications/System
+Requires: %{name} = %{version}-%{release}
+%description i18n
+These are the additional internationalization files of glibc.
 
 %prep
 %setup -q
@@ -173,10 +180,20 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %{_bindir}/*
 %{_libexecdir}/*
 %{_sbindir}/*
-%{_datadir}/i18n/charmaps/*.gz
-%{_datadir}/i18n/locales/*
+%{_datadir}/i18n/charmaps/UTF-8.gz
+%{_datadir}/i18n/charmaps/ISO-8859-1.gz
+%{_datadir}/i18n/locales/en_US
 %{_localstatedir}/lib/nss_db/Makefile
 %exclude /usr/bin/mtrace
+
+%files i18n
+%defattr(-,root,root)
+%{_datadir}/i18n/charmaps/*.gz
+%{_datadir}/i18n/locales/*
+%exclude %{_datadir}/i18n/charmaps/UTF-8.gz
+%exclude %{_datadir}/i18n/charmaps/ISO-8859-1.gz
+%exclude %{_datadir}/i18n/locales/en_US
+
 
 %files devel
 %defattr(-,root,root)
@@ -194,6 +211,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*	Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-12
+-	Added i18n subpackage
 *	Tue Oct 25 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-11
 -	Workaround for build failure with "out of memory" message
 *	Wed Sep 28 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-10
