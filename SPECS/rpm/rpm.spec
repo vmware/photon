@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          13%{?dist}
+Release:          14%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -20,16 +20,13 @@ Patch1:		  rpm-4.11.2-cve-2014-8118.patch
 Requires:         nss 
 Requires:         popt
 Requires:         libgcc
-Requires:         lua
 Requires:         zlib
-Requires:         file
 Requires:         bash
 Requires:         elfutils-libelf
 Requires:         libcap
 BuildRequires:    python2
 BuildRequires:    python2-libs
 BuildRequires:    python2-devel
-BuildRequires:    lua-devel
 BuildRequires:    popt-devel
 BuildRequires:    nss-devel
 BuildRequires:    elfutils-devel
@@ -49,7 +46,6 @@ Requires: perl
 Requires: rpm-devel
 Requires: rpm
 Requires: elfutils-libelf
-Requires: lua
 Summary: Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -82,7 +78,7 @@ mv db-5.3.28 db
         --disable-static \
         --enable-python \
         --with-cap \
-        --with-lua \
+        --without-lua \
         --disable-silent-rules
 make %{?_smp_mflags}
 %install
@@ -203,6 +199,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*    Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-14
+-    Disable lua support
 *    Tue Oct 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-13
 -    Apply patch for CVE-2014-8118
 *    Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.11.2-12
