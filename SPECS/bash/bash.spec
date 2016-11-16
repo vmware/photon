@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3.30
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -15,6 +15,8 @@ Patch1:   fix-save_bash_input-segfault.patch
 Patch2:   bash-4.3.patch
 Provides:	/bin/sh
 Provides:	/bin/bash
+BuildRequires:  readline
+Requires:       readline
 %description
 The package contains the Bourne-Again SHell
 
@@ -262,6 +264,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-6
+-   Add readline requirements
 *   Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-5
 -   Enable bash completion support
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
