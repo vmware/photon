@@ -187,7 +187,10 @@ class Installer(object):
         selected_packages = self.install_config['packages']
         for package in selected_packages:
             pattern = package + '-[0-9]*.rpm'
-            pattern2 = package + '-[a-z][0-9]*.rpm'
+            if (package == 'glibc'):
+                pattern2 = pattern
+            else:
+                pattern2 = package + '-[a-z][0-9]*.rpm'
             for rpm in rpms:
                 if fnmatch.fnmatch(rpm['filename'], pattern) or fnmatch.fnmatch(rpm['filename'], pattern2):
                     rpm['package'] = package
