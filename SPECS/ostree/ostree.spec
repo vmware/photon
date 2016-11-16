@@ -1,7 +1,7 @@
 Summary:	Git for operating system binaries
 Name:		ostree
 Version:	2015.7
-Release:	6%{?dist}
+Release:	7%{?dist}
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1 ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
 Source1:	91-ostree.preset
@@ -61,7 +61,7 @@ Requires: %{name} = %{version}-%{release}
 The %{name}-devel package includes the header files for the %{name} library
 
 %prep
-%autosetup -Sgit -n %{name}-%{version}
+%setup -n %{name}-%{version}
 git clone git://git.gnome.org/libglnx libglnx
 git clone https://github.com/mendsley/bsdiff bsdiff
 
@@ -129,18 +129,20 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
-*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 2015.7-6
--       Modified %check
-*       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2015.7-5
--       Fixed logic to restart the active services after upgrade
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.7-4
--	GA - Bump release of all rpms
-*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 2015.7-3
--	Remove commented steps.
-*       Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 2015.7-2
--       Add dracut, mkinitcpio and libsoup as dependencies
-*	Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
--	Updated the version
-*	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.11-1
--	Initial build. First version
+*   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-7
+-   Use %setup instead of %autosetup
+*   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 2015.7-6
+-   Modified %check
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2015.7-5
+-   Fixed logic to restart the active services after upgrade
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.7-4
+-   GA - Bump release of all rpms
+*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 2015.7-3
+-   Remove commented steps.
+*   Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 2015.7-2
+-   Add dracut, mkinitcpio and libsoup as dependencies
+*   Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
+-   Updated the version
+*   Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.11-1
+-   Initial build. First version
 
