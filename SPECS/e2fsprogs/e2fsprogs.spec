@@ -1,7 +1,7 @@
 Summary:	Contains the utilities for the ext2 file system
 Name:		e2fsprogs
 Version:	1.42.13
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://e2fsprogs.sourceforge.net
 Group:		System Environment/Base
@@ -9,9 +9,16 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
 %define sha1 e2fsprogs=77d1412472ac5a67f8954166ec16c37616074c37
+Requires:	%{name}-libs = %{version}-%{release}
 %description
 The E2fsprogs package contains the utilities for handling
 the ext2 file system.
+
+%package	libs
+Summary:	contains libraries used by other packages
+%description	libs
+It contains the libraries: libss and libcom_err
+
 %package	devel
 Summary:	Header and development files for e2fsprogs
 Requires:	%{name} = %{version}
@@ -74,12 +81,8 @@ make %{?_smp_mflags} check
 %{_sbindir}/filefrag
 %{_sbindir}/e2freefrag
 %{_sbindir}/mklost+found
-/lib/libss.so.2
 /lib/libext2fs.so.2.4
-/lib/libcom_err.so.2.1
-/lib/libss.so.2.0
 /lib/libe2p.so.2.3
-/lib/libcom_err.so.2
 /lib/libe2p.so.2
 /lib/libext2fs.so.2
 /sbin/e2label
@@ -101,9 +104,16 @@ make %{?_smp_mflags} check
 /sbin/resize2fs
 /sbin/fsck.ext2
 /sbin/mkfs.ext3
-%{_libdir}/libcom_err.so
 %{_libdir}/libe2p.so
 %{_libdir}/libext2fs.so
+
+%files libs
+/lib/libss.so.2
+/lib/libcom_err.so.2.1
+/lib/libss.so.2.0
+/lib/libcom_err.so.2
+%{_libdir}/libcom_err.so
+%{_libdir}/libss.so
 
 %files devel
 %{_includedir}/ss/ss_err.h
@@ -129,8 +139,9 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/e2p.pc
 %{_libdir}/libe2p.a
 %{_libdir}/libext2fs.a
-%{_libdir}/libss.so
 %changelog
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-4
+-   Create libs subpackage for krb5
 *   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-3
 -   Use symlinks - save a diskspace
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42.13-2
