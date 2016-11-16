@@ -1,7 +1,7 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
 Version:	6.3
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
@@ -50,6 +50,19 @@ make %{?_smp_mflags} check
 %{_libdir}/libhistory.so.6
 %{_libdir}/libhistory.so.6.3
 %{_libdir}/libreadline.so.6.3
+%files devel
+%{_includedir}/%{name}/keymaps.h
+%{_includedir}/%{name}/history.h
+%{_includedir}/%{name}/rlstdc.h
+%{_includedir}/%{name}/chardefs.h
+%{_includedir}/%{name}/readline.h
+%{_includedir}/%{name}/rlconf.h
+%{_includedir}/%{name}/rltypedefs.h
+%{_includedir}/%{name}/tilde.h
+%{_libdir}/libreadline.a
+%{_libdir}/libhistory.a
+%{_libdir}/libhistory.so
+%{_libdir}/libreadline.so
 %{_datadir}/%{name}/hist_purgecmd.c
 %{_datadir}/%{name}/rltest.c
 %{_datadir}/%{name}/rlversion.c
@@ -83,20 +96,9 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/rluserman.pdf
 %{_mandir}/man3/history.3.gz
 %{_mandir}/man3/readline.3.gz
-%files devel
-%{_includedir}/%{name}/keymaps.h
-%{_includedir}/%{name}/history.h
-%{_includedir}/%{name}/rlstdc.h
-%{_includedir}/%{name}/chardefs.h
-%{_includedir}/%{name}/readline.h
-%{_includedir}/%{name}/rlconf.h
-%{_includedir}/%{name}/rltypedefs.h
-%{_includedir}/%{name}/tilde.h
-%{_libdir}/libreadline.a
-%{_libdir}/libhistory.a
-%{_libdir}/libhistory.so
-%{_libdir}/libreadline.so
 %changelog
+*       Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.3-6
+-       Move docs and man to the devel package
 *       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 6.3-5
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.3-4
