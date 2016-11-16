@@ -12,7 +12,7 @@ Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{versi
 Patch0:         krb5-1.14-skip-unnecessary-mech-calls.patch
 Patch1:         krb5-1.14-never-unload-mechanisms.patch
 Requires:	openssl
-Requires:	e2fsprogs
+Requires:	e2fsprogs-libs
 BuildRequires: 	openssl-devel
 BuildRequires:	e2fsprogs-devel
 %description
@@ -95,6 +95,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/man/man5/.k5login.5.gz
 %{_docdir}/%{name}-%{version}
 %changelog
+*	Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-5
+-	Use e2fsprogs-libs as runtime deps
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
 -	GA - Bump release of all rpms
 * 	Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
