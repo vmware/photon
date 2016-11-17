@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.31
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -23,6 +23,8 @@ Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
 Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
+#fixes CVE-2015-8964
+Patch12:       tty-prevent-ldisc-drivers-from-re-using-stale-tty-fields.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
@@ -80,6 +82,7 @@ The Linux package contains the Linux kernel doc files
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -161,6 +164,9 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-3
+-   tty-prevent-ldisc-drivers-from-re-using-stale-tty-fields.patch
+    to fix CVE-2015-8964
 *   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-2
 -   .config: add ip set support
 -   .config: add ipvs_{tcp,udp} support

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.31
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -19,6 +19,8 @@ Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
 Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
 Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
+#fixes CVE-2015-8964
+Patch8:         tty-prevent-ldisc-drivers-from-re-using-stale-tty-fields.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 Patch11:        VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
@@ -92,6 +94,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
@@ -197,6 +200,9 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-3
+-   tty-prevent-ldisc-drivers-from-re-using-stale-tty-fields.patch
+    to fix CVE-2015-8964
 *   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-2
 -   .config: add cgrup_hugetlb support
 -   .config: add netfilter_xt_{set,target_ct} support
