@@ -1,17 +1,15 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20151218
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          GPLv2+
 URL:              http://www.gnu.org/software/inetutils
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          http://www.skbuff.net/iputils/%{name}-s%{version}.tar.bz2
-BuildRequires:    libcap-devel openssl-devel gnutls-devel libgcrypt-devel
+BuildRequires:    libcap-devel libgcrypt-devel
 Requires:         libcap 
-Requires:         openssl
-Requires:         gnutls
 Requires:         libgcrypt
 Obsoletes:        inetutils
 %define sha1 iputils=df9fb125356565496ef7d3fe4aaac0904f3fc054
@@ -69,8 +67,10 @@ mv -f RELNOTES.tmp RELNOTES
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 20151218-3
--	GA - Bump release of all rpms
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 20151218-4
+-   Remove openssl and gnutls deps
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 20151218-3
+-   GA - Bump release of all rpms
 *   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 20151218-2
 -   Fixing permissions for binaries
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 20151218-1
