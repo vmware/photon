@@ -1,7 +1,7 @@
 Summary:	Networking Tools
 Name:		net-tools
 Version:	1.60
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	GPLv2+
 URL:		http://net-tools.sourceforge.net
 Group:		System Environment/Base
@@ -41,7 +41,6 @@ Patch28:	Bug#561161-statistics.c-long_numbers.patch
 Patch29:	Bug#508110-inet6.c-initialize_fields.patch
 Patch30:	Ubuntu_unit_conversion.patch
 Obsoletes:	inetutils 
-Requires:	iputils 
 %description
 The Net-tools package is a collection of programs for controlling the network subsystem of the Linux kernel. 
 %prep
@@ -104,19 +103,21 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
-*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 1.60-8
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60-7
--	GA - Bump release of all rpms
-*	Thu Feb 4 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-6
--	Apply all patches from 1.60-26ubuntu1.
-*	Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-5
--	Added net-tools-1.60-manydevs.patch
-*	Fri Nov 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.60-4
--	Added ipv6 support. Include hostname and dnshostname.
-*	Thu Oct 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.60-3
--	Added changes to replace inetutils with net-tools
-*	Thu Jul 30 2015 Divya Thaluru <dthaluru@vmware.com> 1.60-2
--	Disable building with parallel threads
-*	Mon Jul 13 2015 Divya Thaluru <dthaluru@vmware.com> 1.60-1
--	Initial build.	First version
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-9
+-   Remove iputils deps.
+*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 1.60-8
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60-7
+-   GA - Bump release of all rpms
+*   Thu Feb 4 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-6
+-   Apply all patches from 1.60-26ubuntu1.
+*   Fri Jan 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-5
+-   Added net-tools-1.60-manydevs.patch
+*   Fri Nov 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.60-4
+-   Added ipv6 support. Include hostname and dnshostname.
+*   Thu Oct 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.60-3
+-   Added changes to replace inetutils with net-tools
+*   Thu Jul 30 2015 Divya Thaluru <dthaluru@vmware.com> 1.60-2
+-   Disable building with parallel threads
+*   Mon Jul 13 2015 Divya Thaluru <dthaluru@vmware.com> 1.60-1
+-   Initial build. First version
