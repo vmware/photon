@@ -1,7 +1,7 @@
 Summary:	NetworkManager
 Name:		NetworkManager
 Version:	1.0.10
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		https://wiki.gnome.org/Projects/NetworkManager
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
@@ -25,6 +25,7 @@ BuildRequires:	dhcp-client
 BuildRequires:	libsoup-devel
 BuildRequires:  autogen
 BuildRequires:  libgudev-devel
+BuildRequires:  systemd-devel
 Requires:		libnl
 Requires:		dbus-glib
 Requires:		glib
@@ -95,7 +96,10 @@ EOF
 %{_includedir}/libnm-glib/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+
 %changelog
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.0.10-3
+-   Change systemd dependency
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.10-2
 -	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  1.0.10-1

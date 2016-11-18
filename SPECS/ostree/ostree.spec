@@ -1,7 +1,7 @@
 Summary:	Git for operating system binaries
 Name:		ostree
 Version:	2015.7
-Release:	7%{?dist}
+Release:	8%{?dist}
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1 ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
 Source1:	91-ostree.preset
@@ -40,7 +40,7 @@ BuildRequires:  libsoup-devel
 BuildRequires:  mkinitcpio
 BuildRequires:  dracut
 BuildRequires:  dracut-tools
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  libarchive
 BuildRequires:  libarchive-devel
 
@@ -129,6 +129,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2015.7-8
+-   Change systemd dependency
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-7
 -   Use %setup instead of %autosetup
 *   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 2015.7-6
