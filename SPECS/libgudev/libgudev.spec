@@ -1,7 +1,7 @@
 Summary:        A library providing GObject bindings for libudev
 Name:           libgudev
 Version:        230
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPL2.1
 URL:            https://git.gnome.org/browse/libgudev/
 Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
@@ -14,7 +14,7 @@ BuildRequires:  gnome-common
 BuildRequires:  gobject-introspection
 BuildRequires:  gtk-doc
 BuildRequires:  pkg-config
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  which
 Requires:       systemd
 Provides:       libgudev-1.0.so=0-64
@@ -44,9 +44,9 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 
-%post	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -66,10 +66,12 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 230-3
--	GA - Bump release of all rpms
-*       Thu Aug 13 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-2
--       Split header files into devel package.
-*       Tue Aug 11 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-1
--       Add libgudev v230
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  230-4
+-   Change systemd dependency
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 230-3
+-   GA - Bump release of all rpms
+*   Thu Aug 13 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-2
+-   Split header files into devel package.
+*   Tue Aug 11 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-1
+-   Add libgudev v230
 

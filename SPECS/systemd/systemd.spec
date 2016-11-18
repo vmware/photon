@@ -1,39 +1,24 @@
-Summary:          Systemd-228
+Summary:          Systemd-232
 Name:             systemd
-Version:          228
-Release:          32%{?dist}
+Version:          232
+Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
-%define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
+%define sha1 systemd=74178b96d631058236cf79f5b0cc3953382f12b5
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
-#patch for ostree
-Patch0:           systemd-228-mount.patch
-Patch1:           01-enoX-uses-instance-number-for-vmware-hv.patch
-Patch2:           systemd-228-loopback-address.patch
-Patch3:           systemd-228-never-cache-localhost-rr.patch
-Patch4:           systemd-228-parse-error-message.patch
-Patch5:           systemd-228-networking-fixes.patch
-Patch6:           systemd-228-cleanup-recv.patch
-Patch7:           systemd-228-fix-reading-routes.patch
-Patch8:           systemd-228-kernel-ndisc.patch
-Patch9:           systemd-228-swap-disconnect-order-fix.patch
-Patch10:          systemd-228-duid-iaid-dhcp-preserve.patch
-Patch11:          systemd-228-timedatectl-PR2749.patch
-Patch12:          systemd-228-query-duid.patch
-Patch13:          systemd-228-pam-systemd-user.patch
-Patch14:          systemd-228-ipv6-disabled-fix.patch
-Patch15:          systemd-228-default-dns-from-env.patch
-Patch16:          systemd-228-dhcp-duid-api-update.patch
-Patch17:          systemd-228-domains-search-fix.patch
-Patch18:          systemd-228-dns-transaction-pending-fix.patch
-Patch19:          02-install-general-aliases.patch
-Patch20:          systemd-228-CVE-notify-socket-DOS-fix.patch
-Patch21:          systemd-macros.patch
+
+Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
+Patch1:           02-install-general-aliases.patch
+Patch2:           systemd-232-query-duid.patch
+Patch3:           systemd-232-ipv6-disabled-fix.patch
+Patch4:           systemd-232-default-dns-from-env.patch
+Patch5:           systemd-macros.patch
+
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -56,6 +41,20 @@ BuildRequires:    glib-devel
 %description
 Systemd is an init replacement with better process control and security
 
+%package devel
+Summary:        Development headers for systemd
+Requires:       %{name} = %{version}-%{release}
+
+%description devel
+Development headers for developing applications linking to libsystemd
+
+%package lang
+Summary:        Language pack for systemd
+Requires:       %{name} = %{version}-%{release}
+
+%description lang
+Language pack for systemd
+
 %prep
 %setup -q
 cat > config.cache << "EOF"
@@ -66,28 +65,14 @@ BLKID_CFLAGS="-I/usr/include/blkid"
 cc_cv_CFLAGS__flto=no
 EOF
 sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
+
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -131,11 +116,12 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 
 #cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
-find %{buildroot}%{_libdir} -name '*.la' -delete
+find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
+%find_lang %{name}
 
 %post
 /sbin/ldconfig
@@ -172,7 +158,6 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/resolved.conf
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
-%config(noreplace) %{_sysconfdir}/systemd/bootchart.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
 
 %dir %{_sysconfdir}/udev
@@ -186,17 +171,49 @@ rm -rf %{buildroot}/*
 /lib/systemd/system-*
 /lib/systemd/system/*
 /lib/systemd/network/80-container*
+/lib/systemd/*.so
+/lib/systemd/resolv.conf
 %config(noreplace) /lib/systemd/network/99-default.link
-%exclude %{_libdir}/debug/*
-%{_libdir}/*
+%exclude %{_libdir}/debug
+%exclude %{_datadir}/factory
+%exclude %{_datadir}/locale
+%{_libdir}/binfmt.d
+%{_libdir}/kernel
+%{_libdir}/modules-load.d
+%{_libdir}/rpm
+%{_libdir}/security
+%{_libdir}/sysctl.d
+%{_libdir}/systemd
+%{_libdir}/tmpfiles.d
+%{_libdir}/*.so*
 %{_bindir}/*
 /bin/*
 /sbin/*
-%{_includedir}/*
-%{_datadir}/*
+%{_datadir}/bash-completion/*
+%{_datadir}/dbus-1
+%{_datadir}/doc/*
+%{_mandir}/*
+%{_datadir}/polkit-1
+%{_datadir}/systemd
+%{_datadir}/zsh/*
 %dir %{_localstatedir}/log/journal
 
+%files devel
+%dir %{_includedir}/systemd
+%{_libdir}/libudev.so
+%{_libdir}/libsystemd.so
+%{_includedir}/systemd/*.h
+%{_includedir}/libudev.h
+%{_libdir}/pkgconfig/libudev.pc
+%{_libdir}/pkgconfig/libsystemd.pc
+%{_datadir}/pkgconfig/systemd.pc
+%{_datadir}/pkgconfig/udev.pc
+
+%files lang -f %{name}.lang
+
 %changelog
+*    Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  232-1
+-    Update systemd to 232
 *    Thu Nov 3 2016 Divya Thaluru <dthaluru@vmware.com>  228-32
 -    Added logic to reload services incase of rpm upgrade
 *    Thu Sep 29 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-31
