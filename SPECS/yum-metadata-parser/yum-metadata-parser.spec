@@ -3,7 +3,7 @@
 Summary: 	A fast metadata parser for yum
 Name:       	yum-metadata-parser
 Version:   	1.1.4
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 Source0:    	%{name}-%{version}.tar.gz
 %define sha1 yum-metadata-parser=044e69a04ea5ac39d79020d9e1f1a35c9dc64d9b
 License:    	GPLv2+
@@ -16,7 +16,7 @@ BuildRequires: python2-devel
 BuildRequires: glib-devel
 BuildRequires: libxml2
 BuildRequires: libxml2-devel
-BuildRequires: sqlite-autoconf
+BuildRequires: sqlite-devel
 BuildRequires:	python2-libs
 Requires:	libxml2
 Requires:	glib
@@ -46,5 +46,7 @@ Fast metadata parser for yum implemented in C.
 %{python_sitelib_platform}/*egg-info
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.4-2
--	GA - Bump release of all rpms
+*   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 1.1.4-3
+-   Use sqlite-{devel,libs}
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.4-2
+-   GA - Bump release of all rpms
