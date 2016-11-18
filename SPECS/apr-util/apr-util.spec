@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.5.4
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -12,7 +12,7 @@ Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
 %define     apuver    1
 
 BuildRequires:   apr-devel
-BuildRequires:   openssl
+BuildRequires:   sqlite-devel
 BuildRequires:   openssl-devel
 BuildRequires:   nss-devel
 Requires:   apr
@@ -115,12 +115,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.4-7
--	GA - Bump release of all rpms
+*   Fri Nov 18 2016 Alexey Makhalov <amakhalov@vmware.com> 1.5.4-8
+-   Add sqlite-devel build deps
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.4-7
+-   GA - Bump release of all rpms
 *   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.4-6
 -   remove libexpat files
-*	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.4-5
--	Updated build-requires after creating devel package for apr. 
+*   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.4-5
+-   Updated build-requires after creating devel package for apr. 
 *   Wed Sep 16 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.4-4
 -   Seperate Separate apr-util to apr-util, apr-util-devel, aprutil-ldap, apr-util-pgsql, and apr-utilsqlite.
 *   Wed Jul 15 2015 Sarah Choi <sarahc@vmware.com> 1.5.4-4

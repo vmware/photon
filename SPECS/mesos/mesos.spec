@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.28.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -25,6 +25,7 @@ BuildRequires:	python2-libs
 BuildRequires:  python-xml
 BuildRequires:	python2-devel
 BuildRequires:  python-setuptools
+BuildRequires: 	sqlite-devel
 Requires:	apr >= 1.5.2
 Requires:	apr-util >= 1.5.4
 Requires:	cyrus-sasl >= 2.1.26
@@ -95,25 +96,27 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
-*       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 0.28.2-2
--       Modified check
-*	Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 0.28.2-1
--       Upgraded to version 0.28.2
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.24.0-3
--	GA - Bump release of all rpms
-*	Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2
--	Add python-setuptools to build requires.
-*	Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
--	Upgrade to mesos 0.24.0
-*	Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
--	Updated the dependencies after repackaging the openjdk. 
-*	Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
--	Move headers, pc, dev libs into devel pkg.
-*	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
--	Update to mesos 0.23.0.
-*	Fri Aug 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.1-3
--	Disable parallel build. Fix Requires.
-*	Thu Jul 16 2015 Alexey Makhalov <amakhalov@vmware.com> 0.22.1-2
--	Untar with --no-same-owner to get it compilable in container.
-*	Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 0.22.1-1
--	Initial build.	First version
+*   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 0.28.2-3
+-   Use sqlite-{devel,libs}
+*   Mon Oct 03 2016 ChangLee <changlee@vmware.com> 0.28.2-2
+-   Modified check
+*   Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 0.28.2-1
+-   Upgraded to version 0.28.2
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.24.0-3
+-   GA - Bump release of all rpms
+*   Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2
+-   Add python-setuptools to build requires.
+*   Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
+-   Upgrade to mesos 0.24.0
+*   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
+-   Updated the dependencies after repackaging the openjdk. 
+*   Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
+-   Move headers, pc, dev libs into devel pkg.
+*   Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
+-   Update to mesos 0.23.0.
+*   Fri Aug 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.1-3
+-   Disable parallel build. Fix Requires.
+*   Thu Jul 16 2015 Alexey Makhalov <amakhalov@vmware.com> 0.22.1-2
+-   Untar with --no-same-owner to get it compilable in container.
+*   Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 0.22.1-1
+-   Initial build. First version
