@@ -1,7 +1,7 @@
 Summary:	Photon repo files, gpg keys
 Name:		photon-repos
 Version:	1.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
@@ -11,7 +11,6 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-repos
 BuildArch:	noarch
-Requires:       rpm
 
 %description
 Photon repo files and gpg keys 
@@ -48,6 +47,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*	Fri Nov 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-5
+-	Remove requires for rpm
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-4
 -	GA - Bump release of all rpms
 *       Mon May 23 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-3
