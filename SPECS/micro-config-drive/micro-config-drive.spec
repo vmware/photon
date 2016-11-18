@@ -1,7 +1,7 @@
 Summary:    A cloud-init implementation in C.
 Name:       micro-config-drive
 Version:    25
-Release:    1%{?dist}
+Release:    2%{?dist}
 Group:      Development/Tools
 License:    GPL-3.0
 URL:        https://github.com/clearlinux/micro-config-drive
@@ -15,7 +15,7 @@ BuildRequires:    json-glib-devel
 BuildRequires:    curl
 BuildRequires:    parted
 BuildRequires:    libyaml-devel
-BuildRequires:    systemd
+BuildRequires:    systemd-devel
 Requires:    json-glib
 Requires:    glib
 Requires:    libyaml
@@ -58,5 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc /usr/share/man/man5/*
 
 %changelog
+*    Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  25-2
+-    Change systemd dependency
 *    Wed Aug 3 2016 Divya Thaluru <dthaluru@vmware.com> 25-1
 -    Initial version
