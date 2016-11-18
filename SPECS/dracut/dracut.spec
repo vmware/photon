@@ -5,7 +5,7 @@
 
 Name:		dracut
 Version:	044
-Release:	4%{?dist}
+Release:	5%{?dist}
 Group:		System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -18,6 +18,7 @@ Source0:	http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar
 Source1:        https://sourceforge.net/projects/asciidoc/files/asciidoc/8.6.9/asciidoc-8.6.9.tar.gz
 %define sha1 asciidoc=82e574dd061640561fa0560644bc74df71fb7305
 Patch0:		https://www.gnu.org/licenses/lgpl-2.1.txt
+Patch1:         dracut-add-systemd-initrd-module.patch
 Summary:	dracut to create initramfs
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -47,6 +48,7 @@ This package contains tools to assemble the local initrd and host configuration.
 %setup -q -n %{name}-%{version}
 cp %{PATCH0} .
 tar xf %{SOURCE1}
+%patch1 -p1
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) --libdir=%{_prefix}/lib \
@@ -156,6 +158,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*       Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  044-5
+-       Add systemd initrd root device target to list of modules
 *       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 044-4
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
