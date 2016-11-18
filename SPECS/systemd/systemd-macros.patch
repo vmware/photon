@@ -1,6 +1,7 @@
---- a/src/core/macros.systemd.in   	2016-11-03 13:04:12.219086800 -0700
-+++ b/src/core/macros.systemd.in   	2016-11-03 14:02:53.122672819 -0700
-@@ -39,7 +39,9 @@
+diff -rup systemd-232/src/core/macros.systemd.in systemd-232-new/src/core/macros.systemd.in
+--- systemd-232/src/core/macros.systemd.in	2016-11-03 10:16:42.000000000 -0700
++++ systemd-232-new/src/core/macros.systemd.in	2016-11-18 11:40:03.883181197 -0800
+@@ -47,7 +47,9 @@ OrderWithRequires(postun): systemd \
  %systemd_post() \
  if [ $1 -eq 1 ] ; then \
          # Initial installation \
@@ -11,7 +12,7 @@
  fi \
  %{nil}
  
-@@ -48,7 +50,8 @@
+@@ -56,7 +58,8 @@ fi \
  %systemd_preun() \
  if [ $1 -eq 0 ] ; then \
          # Package removal, not upgrade \
@@ -21,7 +22,7 @@
  fi \
  %{nil}
  
-@@ -59,11 +62,14 @@
+@@ -67,11 +70,14 @@ if [ $1 -eq 0 ] ; then \
  fi \
  %{nil}
  

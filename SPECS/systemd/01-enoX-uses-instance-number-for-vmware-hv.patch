@@ -1,10 +1,10 @@
-diff -ruN systemd-228/src/udev/udev-builtin-net_id.c systemd-228-new/src/udev/udev-builtin-net_id.c
---- systemd-228/src/udev/udev-builtin-net_id.c	2015-11-17 23:59:06.000000000 -0800
-+++ systemd-228-new/src/udev/udev-builtin-net_id.c	2015-12-11 18:22:07.910440956 -0800
-@@ -149,6 +149,21 @@
+diff -rup systemd-232/src/udev/udev-builtin-net_id.c systemd-232-new/src/udev/udev-builtin-net_id.c
+--- systemd-232/src/udev/udev-builtin-net_id.c	2016-11-03 10:16:42.000000000 -0700
++++ systemd-232-new/src/udev/udev-builtin-net_id.c	2016-11-17 18:04:09.560612381 -0800
+@@ -153,6 +153,20 @@ static int dev_pci_onboard(struct udev_d
+         idx = strtoul(attr, NULL, 0);
          if (idx <= 0)
                  return -EINVAL;
- 
 +        if (idx >> 24) {
 +                unsigned domain, bus, slot, func;
 +                /*
@@ -19,8 +19,6 @@ diff -ruN systemd-228/src/udev/udev-builtin-net_id.c systemd-228-new/src/udev/ud
 +                if ((idx & 0xffff) == ((bus << 8) | (slot << 3) | func))
 +                        idx >>= 24;
 +        }
-+
-         /* kernel provided port index for multiple ports on a single PCI function */
-         attr = udev_device_get_sysattr_value(dev, "dev_port");
-         if (attr)
-
+ 
+         /* Some BIOSes report rubbish indexes that are excessively high (2^24-1 is an index VMware likes to report for
+          * example). Let's define a cut-off where we don't consider the index reliable anymore. We pick some arbitrary

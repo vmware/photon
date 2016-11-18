@@ -1,7 +1,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
-Release:	5%{?kernelsubrelease}%{?dist}
+Release:	6%{?kernelsubrelease}%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -44,6 +44,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %changelog
+*   Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  1.0-6
+-   Dracut module change to include systemd initrd target
 *   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-5
 -   Added fsck tools
 -   Use kernel version and release number in initrd file name
