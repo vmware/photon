@@ -1,29 +1,29 @@
-Summary:	Userland logical volume management tools 
-Name:		lvm2
-Version:	2.02.141
-Release:	5%{?dist}
-License:	GPLv2
-Group:		System Environment/Base
-URL:		http://sources.redhat.com/dm
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
+Summary:    Userland logical volume management tools 
+Name:       lvm2
+Version:    2.02.141
+Release:    6%{?dist}
+License:    GPLv2
+Group:      System Environment/Base
+URL:        http://sources.redhat.com/dm
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:    ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
 %define sha1 LVM2=d48b403ca10d407df394889d8dafd167a4bd4819
-Source1:	lvm2-activate.service
-Patch0:		lvm2-set-default-preferred_names.patch
-Patch1:		lvm2-enable-lvmetad-by-default.patch
-Patch2:		lvm2-remove-mpath-device-handling-from-udev-rules.patch
-BuildRequires:	libselinux-devel, libsepol-devel
-BuildRequires:	ncurses-devel
-BuildRequires:	readline-devel
-BuildRequires:	python2-devel
-BuildRequires:	python2-libs
-BuildRequires:	systemd
-BuildRequires:	thin-provisioning-tools
-Requires:	device-mapper-libs = %{version}-%{release}
-Requires:	device-mapper-event-libs = %{version}-%{release}
+Source1:    lvm2-activate.service
+Patch0:     lvm2-set-default-preferred_names.patch
+Patch1:     lvm2-enable-lvmetad-by-default.patch
+Patch2:     lvm2-remove-mpath-device-handling-from-udev-rules.patch
+BuildRequires:  libselinux-devel, libsepol-devel
+BuildRequires:  ncurses-devel
+BuildRequires:  readline-devel
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  systemd-devel
+BuildRequires:  thin-provisioning-tools
+Requires:   device-mapper-libs = %{version}-%{release}
+Requires:   device-mapper-event-libs = %{version}-%{release}
 Requires:       device-mapper-event = %{version}-%{release}
-Requires:	device-mapper = %{version}-%{release}
+Requires:   device-mapper = %{version}-%{release}
 Requires:       systemd
 
 %description
@@ -34,72 +34,73 @@ losetup(8)), creating volume groups (kind of virtual disks) from one
 or more physical volumes and creating one or more logical volumes
 (kind of logical partitions) in volume groups.
 
-%package	devel
-Summary:	Development libraries and headers
-Group:		Development/Libraries
-License:	LGPLv2
-Requires:	%{name} = %{version}-%{release}
-Requires:	device-mapper-devel = %{version}-%{release}
+%package    devel
+Summary:    Development libraries and headers
+Group:      Development/Libraries
+License:    LGPLv2
+Requires:   %{name} = %{version}-%{release}
+Requires:   device-mapper-devel = %{version}-%{release}
 Requires:   util-linux-devel
 
-%description	devel
+%description    devel
 This package contains files needed to develop applications that use
 the lvm2 libraries.
 
-%package	libs
-Summary:	Shared libraries for lvm2
-License:	LGPLv2
-Group:		System Environment/Libraries
-Requires:	device-mapper-libs = %{version}-%{release}
-Requires:	device-mapper-event-libs = %{version}-%{release}
+%package    libs
+Summary:    Shared libraries for lvm2
+License:    LGPLv2
+Group:      System Environment/Libraries
+Requires:   device-mapper-libs = %{version}-%{release}
+Requires:   device-mapper-event-libs = %{version}-%{release}
 
-%description	libs
+%description    libs
 This package contains shared lvm2 libraries for applications.
 
 %post libs -p /sbin/ldconfig
 
 %postun libs -p /sbin/ldconfig
 
-%package	python-libs
-Summary:	Python module to access LVM
-License:	LGPLv2
-Group:		Development/Libraries
-Requires:	%{name}-libs = %{version}-%{release}
-Requires:	python2-libs
-Requires:	python2
+%package    python-libs
+Summary:    Python module to access LVM
+License:    LGPLv2
+Group:      Development/Libraries
+Requires:   %{name}-libs = %{version}-%{release}
+Requires:   python2-libs
+Requires:   python2
 
-%description	python-libs
+%description    python-libs
 Python module to allow the creation and use of LVM
 logical volumes, physical volumes, and volume groups.
 
-%package -n	device-mapper
-Summary:	Device mapper utility
-Group:		System Environment/Base
-URL:		http://sources.redhat.com/dm
-Requires:	device-mapper-libs
-%description -n	device-mapper
+%package -n device-mapper
+Summary:    Device mapper utility
+Group:      System Environment/Base
+URL:        http://sources.redhat.com/dm
+Requires:   device-mapper-libs
+Requires:   systemd-devel
+%description -n device-mapper
 This package contains the supporting userspace utility, dmsetup,
 for the kernel device-mapper.
 
-%package -n	device-mapper-devel
-Summary:	Development libraries and headers for device-mapper
-License:	LGPLv2
-Group:		Development/Libraries
-Requires:	device-mapper = %{version}-%{release}
-Requires:	libselinux-devel
-Provides:	pkgconfig(devmapper)
+%package -n device-mapper-devel
+Summary:    Development libraries and headers for device-mapper
+License:    LGPLv2
+Group:      Development/Libraries
+Requires:   device-mapper = %{version}-%{release}
+Requires:   libselinux-devel
+Provides:   pkgconfig(devmapper)
 
 %description -n device-mapper-devel
 This package contains files needed to develop applications that use
 the device-mapper libraries.
 
-%package -n	device-mapper-libs
-Summary:	Device-mapper shared library
-License:	LGPLv2
-Group:		System Environment/Libraries
-Requires:	libselinux
-Requires:	libsepol
-Requires:	systemd
+%package -n device-mapper-libs
+Summary:    Device-mapper shared library
+License:    LGPLv2
+Group:      System Environment/Libraries
+Requires:   libselinux
+Requires:   libsepol
+Requires:   systemd
 
 %description -n device-mapper-libs
 This package contains the device-mapper shared library, libdevmapper.
@@ -110,11 +111,11 @@ This package contains the device-mapper shared library, libdevmapper.
 %postun -n device-mapper-libs
 /sbin/ldconfig
 
-%package -n	device-mapper-event
-Summary:	Device-mapper event daemon
-Group:		System Environment/Base
-Requires:	device-mapper = %{version}-%{release}
-Requires:	device-mapper-event-libs = %{version}-%{release}
+%package -n device-mapper-event
+Summary:    Device-mapper event daemon
+Group:      System Environment/Base
+Requires:   device-mapper = %{version}-%{release}
+Requires:   device-mapper-event-libs = %{version}-%{release}
 Requires:       systemd
 
 %description -n device-mapper-event
@@ -137,11 +138,11 @@ fi
 %postun -n device-mapper-event
 %systemd_postun_with_restart dm-event.service dm-event.socket
 
-%package -n	device-mapper-event-libs
-Summary:	Device-mapper event daemon shared library
-License:	LGPLv2
-Group:		System Environment/Libraries
-Requires:	device-mapper-libs = %{version}-%{release}
+%package -n device-mapper-event-libs
+Summary:    Device-mapper event daemon shared library
+License:    LGPLv2
+Group:      System Environment/Libraries
+Requires:   device-mapper-libs = %{version}-%{release}
 
 %description -n device-mapper-event-libs
 This package contains the device-mapper event daemon shared library,
@@ -153,12 +154,12 @@ libdevmapper-event.
 %postun -n device-mapper-event-libs
 /sbin/ldconfig
 
-%package -n	device-mapper-event-devel
-Summary:	Development libraries and headers for the device-mapper event daemon
-License:	LGPLv2
-Group:		Development/Libraries
-Requires:	device-mapper-event = %{version}-%{release}
-Requires:	device-mapper-devel = %{version}-%{release}
+%package -n device-mapper-event-devel
+Summary:    Development libraries and headers for the device-mapper event daemon
+License:    LGPLv2
+Group:      Development/Libraries
+Requires:   device-mapper-event = %{version}-%{release}
+Requires:   device-mapper-devel = %{version}-%{release}
 
 %description -n device-mapper-event-devel
 This package contains files needed to develop applications that use
@@ -178,28 +179,28 @@ the device-mapper event library.
 %define _udevdir /lib/udev/rules.d
 
 %configure \
-	--prefix=%{_prefix} \
-	--with-usrlibdir=%{_libdir} \
-	--with-default-dm-run-dir=%{_default_dm_run_dir} \
-	--with-default-run-dir=%{_default_run_dir} \
-	--with-default-pid-dir=%{_default_pid_dir} \
-	--with-default-locking-dir=%{_default_locking_dir} \
-	--enable-lvm1_fallback \
-	--enable-fsadm \
-	--with-pool=internal \
-	--enable-write_install \
-	--enable-pkgconfig \
-	--enable-applib \
-	--enable-cmdlib \
-	--enable-dmeventd \
-	--enable-use_lvmetad \
-	--enable-python-bindings \
-	--enable-blkid_wiping \
-	--enable-lvmetad \
-	--with-udevdir=%{_udevdir} --enable-udev_sync \
-	--with-thin=internal \
-	--with-cache=internal \
-	--with-cluster=internal --with-clvmd=none
+    --prefix=%{_prefix} \
+    --with-usrlibdir=%{_libdir} \
+    --with-default-dm-run-dir=%{_default_dm_run_dir} \
+    --with-default-run-dir=%{_default_run_dir} \
+    --with-default-pid-dir=%{_default_pid_dir} \
+    --with-default-locking-dir=%{_default_locking_dir} \
+    --enable-lvm1_fallback \
+    --enable-fsadm \
+    --with-pool=internal \
+    --enable-write_install \
+    --enable-pkgconfig \
+    --enable-applib \
+    --enable-cmdlib \
+    --enable-dmeventd \
+    --enable-use_lvmetad \
+    --enable-python-bindings \
+    --enable-blkid_wiping \
+    --enable-lvmetad \
+    --with-udevdir=%{_udevdir} --enable-udev_sync \
+    --with-thin=internal \
+    --with-cache=internal \
+    --with-cluster=internal --with-clvmd=none
 
 
 make %{?_smp_mflags}
@@ -223,7 +224,7 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 /sbin/ldconfig
 %systemd_postun_with_restart lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
 
-%files	devel
+%files  devel
 %defattr(-,root,root,-)
 %{_libdir}/liblvm2app.so
 %{_libdir}/liblvm2cmd.so
@@ -248,7 +249,7 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 %{_libdir}/libdevmapper-event-lvm2thin.so
 %{_libdir}/device-mapper/libdevmapper-event-lvm2thin.so
 
-%files	python-libs
+%files  python-libs
 %{python_sitearch}/*
 
 %files -n device-mapper
@@ -424,8 +425,10 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-5
--	GA - Bump release of all rpms
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02.141-6
+-   Change systemd dependency
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-5
+-   GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
 -   Adding upgrade support in pre/post/un scripts.
 *   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3 

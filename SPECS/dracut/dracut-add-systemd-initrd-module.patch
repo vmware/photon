@@ -1,0 +1,21 @@
+From d4efc0aeeecc470d9a267b7f3c130f472488905c Mon Sep 17 00:00:00 2001
+From: Harald Hoyer <harald@redhat.com>
+Date: Wed, 25 May 2016 15:06:29 +0200
+Subject: [PATCH] systemd-initrd: add initrd-root-device.target
+
+---
+ modules.d/01systemd-initrd/module-setup.sh | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/modules.d/01systemd-initrd/module-setup.sh b/modules.d/01systemd-initrd/module-setup.sh
+index fb6a9ea..c1ccd2a 100755
+--- a/modules.d/01systemd-initrd/module-setup.sh
++++ b/modules.d/01systemd-initrd/module-setup.sh
+@@ -28,6 +28,7 @@ install() {
+     inst_multiple -o \
+         $systemdsystemunitdir/initrd.target \
+         $systemdsystemunitdir/initrd-fs.target \
++        $systemdsystemunitdir/initrd-root-device.target \
+         $systemdsystemunitdir/initrd-root-fs.target \
+         $systemdsystemunitdir/initrd-switch-root.target \
+         $systemdsystemunitdir/initrd-switch-root.service \
