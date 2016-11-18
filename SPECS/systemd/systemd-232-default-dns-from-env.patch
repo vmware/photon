@@ -1,0 +1,32 @@
+diff -rup systemd-232/src/resolve/resolved-manager.c systemd-232-new/src/resolve/resolved-manager.c
+--- systemd-232/src/resolve/resolved-manager.c	2016-11-03 10:16:42.000000000 -0700
++++ systemd-232-new/src/resolve/resolved-manager.c	2016-11-18 15:00:08.014910022 -0800
+@@ -484,6 +484,7 @@ static int manager_sigusr2(sd_event_sour
+ int manager_new(Manager **ret) {
+         _cleanup_(manager_freep) Manager *m = NULL;
+         int r;
++        char *default_dns_servers;
+ 
+         assert(ret);
+ 
+@@ -510,9 +511,17 @@ int manager_new(Manager **ret) {
+         if (r < 0)
+                 return r;
+ 
+-        r = manager_parse_config_file(m);
+-        if (r < 0)
+-                return r;
++        default_dns_servers = secure_getenv("DEFAULT_DNS_SERVERS");
++        if (default_dns_servers != NULL) {
++                r = manager_parse_dns_server_string_and_warn(m, DNS_SERVER_FALLBACK, default_dns_servers);
++                if (r < 0)
++                        return r;
++        }
++        else {
++                r = manager_parse_config_file(m);
++                if (r < 0)
++                        return r;
++        }
+ 
+         r = sd_event_default(&m->event);
+         if (r < 0)

@@ -1,20 +1,21 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
-Summary:	GRand Unified Bootloader
-Name:		grub2-efi
-Version:	2.02
-Release:	3%{?dist}
-License:	GPLv3+
-URL:		http://www.gnu.org/software/grub
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
+Summary:    GRand Unified Bootloader
+Name:       grub2-efi
+Version:    2.02
+Release:    4%{?dist}
+License:    GPLv3+
+URL:        http://www.gnu.org/software/grub
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
 %define sha1 grub=b2c9227f9a54587532ae3f727d197ab112cdbbb3
-BuildRequires:	device-mapper-devel
-BuildRequires:	xz-devel
-Requires:	xz
-Requires:	device-mapper
+BuildRequires:  device-mapper-devel
+BuildRequires:  xz-devel
+BuildRequires:  systemd-devel
+Requires:   xz
+Requires:   device-mapper
 %description
 The GRUB package contains the GRand Unified Bootloader.
 
@@ -32,14 +33,14 @@ These are the additional language files of grub.
 %build
 
 ./configure \
-	--prefix=%{_prefix} \
-	--sbindir=/sbin \
-	--sysconfdir=%{_sysconfdir} \
-	--disable-grub-emu-usb \
-	--disable-werror \
+    --prefix=%{_prefix} \
+    --sbindir=/sbin \
+    --sysconfdir=%{_sysconfdir} \
+    --disable-grub-emu-usb \
+    --disable-werror \
     --disable-efiemu \
-	--program-transform-name=s,grub,%{name}, \
-	--with-grubdir=grub2 \
+    --program-transform-name=s,grub,%{name}, \
+    --with-grubdir=grub2 \
     --with-platform=efi \
     --target=x86_64 \
     --with-program-prefix="" \
@@ -56,8 +57,8 @@ ln -sf %{_sysconfdir}/default/grub %{buildroot}%{_sysconfdir}/sysconfig/grub
 mkdir -p %{buildroot}/boot/%{name}
 touch %{buildroot}/boot/%{name}/grub.cfg
 rm -rf %{buildroot}%{_infodir}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
 %dir %{_sysconfdir}/grub.d
@@ -82,9 +83,11 @@ rm -rf %{buildroot}%{_infodir}
 /usr/share/locale/*
 
 %changelog
-*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.02-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02-2
--	GA - Bump release of all rpms
-*	Fri Jul 31 2015 Sharath George <sharathg@vmware.com> 2.02-1
--	Adding EFI support.
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02-4
+-   Change systemd dependency
+*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.02-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02-2
+-   GA - Bump release of all rpms
+*   Fri Jul 31 2015 Sharath George <sharathg@vmware.com> 2.02-1
+-   Adding EFI support.
