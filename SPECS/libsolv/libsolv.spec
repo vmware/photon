@@ -41,8 +41,8 @@ make %{?_smp_mflags} test
 %changelog
 *   Thu Oct 27 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-3
 -   use libdb
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-2
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  0.6.19-1
 -   Upgrade to 0.6.19
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.17-1
@@ -51,5 +51,5 @@ make %{?_smp_mflags} test
 -   Updated build-requires after creating devel package for db. 
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 0.6.6-2
 -   Updated group.
-*	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 0.6.6-1
--	Initial build. First version
+*   Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 0.6.6-1
+-   Initial build. First version

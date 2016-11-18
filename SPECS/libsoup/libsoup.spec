@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.53.90
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -20,6 +20,7 @@ BuildRequires:   python2-devel
 BuildRequires:   python2-tools
 BuildRequires:   glib-networking
 BuildRequires:   autogen
+BuildRequires:   sqlite-devel
 Requires:        libxml2
 Requires:        glib-networking
 
@@ -87,8 +88,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.53.90-2
--	GA - Bump release of all rpms
+*   Fri Nov 18 2016 Alexey Makhalov <amakhalov@vmware.com> 2.53.90-3
+-   Add sqlite-devel build deps
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.53.90-2
+-   GA - Bump release of all rpms
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 2.53.90-1
 -   Updated version.
 *   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-5

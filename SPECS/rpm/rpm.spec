@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          14%{?dist}
+Release:          15%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -16,14 +16,10 @@ Source3:          brp-strip-debug-symbols
 Source4:          brp-strip-unneeded
 Patch0:		  find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:		  rpm-4.11.2-cve-2014-8118.patch
-#Requires:        nspr
-Requires:         nss 
-Requires:         popt
-Requires:         libgcc
 Requires:         zlib
 Requires:         bash
 Requires:         elfutils-libelf
-Requires:         libcap
+Requires:         rpm-libs = %{version}-%{release}
 BuildRequires:    python2
 BuildRequires:    python2-libs
 BuildRequires:    python2-devel
@@ -38,13 +34,22 @@ RPM package manager
 Requires:   python2
 Summary:    Libraries and header files for rpm
 Provides:   pkgconfig(rpm)
+Requires:   %{name} = %{version}-%{release}
 %description devel
 Static libraries and header files for the support library for rpm
 
+%package libs
+Summary:    Libraries for rpm
+Requires:   nss 
+Requires:   popt
+Requires:   libgcc
+Requires:   libcap
+%description libs
+Shared libraries librpm and librpmio
+
 %package build
 Requires: perl
-Requires: rpm-devel
-Requires: rpm
+Requires: %{name}-devel = %{version}-%{release}
 Requires: elfutils-libelf
 Summary: Binaries, scripts and libraries needed to build rpms.
 %description build
@@ -94,8 +99,8 @@ install -vm755 %{SOURCE4} %{buildroot}%{_libdir}/rpm/
 %check
 make %{?_smp_mflags} check
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}
 %files -f %{name}.lang
@@ -136,13 +141,8 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/rpmpopt-4.11.2
 %{_libdir}/rpm/rpmrc
 %{_libdir}/rpm/tgpg
-%{_libdir}/librpmbuild.so
-%{_libdir}/librpmbuild.so.*
-
 %{_libdir}/rpm/platform/*
 %{_libdir}/rpm-plugins/*
-%{_libdir}/librpmio.so.*
-%{_libdir}/librpm.so.*
 %{_mandir}/man8/rpm.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
@@ -156,10 +156,17 @@ rm -rf %{buildroot}
 %exclude %{_mandir}/ru/man8/*.gz
 %exclude %{_mandir}/sk/man8/*.gz
 
+%files libs
+%defattr(-,root,root)
+%{_libdir}/librpmio.so.*
+%{_libdir}/librpm.so.*
+
 %files build
 %{_bindir}/rpmbuild
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
+%{_libdir}/librpmbuild.so
+%{_libdir}/librpmbuild.so.*
 %{_libdir}/rpm/osgideps.pl
 %{_libdir}/rpm/perldeps.pl
 %{_libdir}/rpm/macros.perl
@@ -199,6 +206,8 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*    Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-15
+-    Added -libs subpackage
 *    Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-14
 -    Disable lua support
 *    Tue Oct 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-13

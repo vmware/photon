@@ -3,7 +3,7 @@
 Summary:	A password strength-checking library.
 Name:		cracklib
 Version:	2.9.6
-Release:	3%{?dist}
+Release:	4%{?dist}
 Group:		System Environment/Libraries
 Source:		cracklib-%{version}.tar.gz
 %define sha1 cracklib-2.9.6=9199e7b8830717565a844430653f5a90a04fcd65
@@ -109,7 +109,6 @@ util/cracklib-format dicts/cracklib* | util/cracklib-packer $RPM_BUILD_ROOT/%{_d
 rm -f $RPM_BUILD_ROOT/%{_datadir}/cracklib/cracklib-small
 ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
 ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
-gzip -9 $RPM_BUILD_ROOT/%{_datadir}/cracklib/pw_dict.pwd
 
 %check
 mkdir -p /usr/share/cracklib
@@ -149,6 +148,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/locale/*
 
 %changelog
+*   Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
+-   Revert compressing pw_dict.pwd back. Python code 
+    cracklib.VeryFascistCheck does not handle it.
 *   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-3
 -   Remove any dicts from cracklib main package
 -   Compress pw_dict.pwd file

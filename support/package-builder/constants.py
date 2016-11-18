@@ -19,6 +19,27 @@ class constants(object):
     rpmCheck=False
     sourceRpmPath=""
     noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","openjdk","go"]
+
+    # These packages will be built in first order as build-core-toolchain stage
+    listCoreToolChainPackages=[
+        "linux-api-headers",
+        "glibc",
+        "zlib",
+        "file",
+        "binutils",
+        "gmp",
+        "mpfr",
+        "mpc",
+        "libgcc",
+        "libstdc++",
+        "libgomp",
+        "gcc",
+        "pkg-config",
+        "ncurses",
+        "readline",
+        "bash"]
+
+    # These packages will be built in a second stage to replace publish RPMS
     listToolChainPackages=[
         "linux-api-headers",
         "glibc",
@@ -47,12 +68,10 @@ class constants(object):
         "make",
         "patch",
         "util-linux",
-        "util-linux-devel",
         "tar",
         "xz",
         "libtool",
         "flex",
-        "flex-devel",
         "bison",
         "lua",
         "popt",
@@ -75,33 +94,10 @@ class constants(object):
         "man-pages",
         "cpio"]
 
-    listCoreToolChainRPMPackages=[
-        "linux-api-headers",
-        "glibc",
-        "glibc-devel",
-        "zlib",
-        "zlib-devel",
-        "file",
-        "binutils",
-        "binutils-devel",
-        "gmp",
-        "gmp-devel",
-        "mpfr",
-        "mpfr-devel",
-        "mpc",
-        "libgcc",
-        "libgcc-devel",
-        "libstdc++",
-        "libstdc++-devel",
-        "libgomp",
-        "libgomp-devel",
-        "gcc",
-        "pkg-config",
-        "ncurses",
-        "readline",
-        "bash"]
-
-    listToolChainRPMPkgsToInstall=[
+    # List or RPMS that will be installed in a chroot prior to build each
+    # package. On a stage1 and stage2 published rpms will/might be used
+    # after stage2 only local RPMS will be used
+    listToolChainRPMsToInstall=[
         "linux-api-headers",
         "glibc",
         "glibc-devel",
@@ -127,74 +123,6 @@ class constants(object):
         "bash",
         "bzip2",
         "bzip2-devel",
-        "sed",
-        "procps-ng",
-        "coreutils",
-        "m4",
-        "grep",
-        "readline",
-        "diffutils",
-        "gawk",
-        "findutils",
-        "gettext",
-        "gzip",
-        "make",
-        "patch",
-        "util-linux",
-        "util-linux-devel",
-        "tar",
-        "xz",
-        "libtool",
-        "flex",
-        "flex-devel",
-        "bison",
-        "lua",
-        "popt",
-        "nspr",
-        "sqlite-autoconf",
-        "nss",
-        "elfutils-libelf",
-        "libpipeline",
-        "gdbm",
-        "perl",
-        "texinfo",
-        "libcap",
-        "rpm",
-        "rpm-build",
-        "rpm-devel",
-        "autoconf",
-        "automake",
-        "groff",
-        "man-pages",
-        "elfutils",
-        "cpio",
-		"go"]
-
-    listToolChainRPMPkgsToBuild=[
-        "linux-api-headers",
-        "glibc",
-        "glibc-devel",
-        "zlib",
-        "zlib-devel",
-        "file",
-        "binutils",
-        "binutils-devel",
-        "gmp",
-        "gmp-devel",
-        "mpfr",
-        "mpfr-devel",
-        "mpc",
-        "libgcc",
-        "libgcc-devel",
-        "libstdc++",
-        "libstdc++-devel",
-        "libgomp",
-        "libgomp-devel",
-        "gcc",
-        "pkg-config",
-        "ncurses",
-        "bash",
-        "bzip2",
         "sed",
         "ncurses-devel",
         "procps-ng",
@@ -224,9 +152,9 @@ class constants(object):
         "popt-devel",
         "nspr",
         "sqlite-autoconf",
+        "sqlite-libs",
         "nss",
         "nss-devel",
-        "bzip2-devel",
         "elfutils-libelf",
         "elfutils",
         "elfutils-libelf-devel",
@@ -248,10 +176,22 @@ class constants(object):
         "rpm",
         "rpm-build",
         "rpm-devel",
+        "rpm-libs",
         "groff",
         "man-pages",
-        "cpio"]
+        "cpio",
+        "go"]
 
+    # List of RPMs which are not published. They will be created during the
+    # build process
+    listOfRPMsProvidedAfterBuild=[
+        "util-linux-devel",
+        "flex-devel",
+        "sqlite-libs",
+        "rpm-libs"]
+
+    # List of packages that will be installed in addition for each
+    # package to make check
     listMakeCheckRPMPkgtoInstall=[
         "python2",
         "python2-devel",
