@@ -4,7 +4,7 @@
 Summary:   	Simple package manager built on top of hawkey and librepo
 Name:		libhif
 Version:   	0.2.2
-Release:   	3%{?dist}
+Release:   	4%{?dist}
 License:   	LGPLv2+
 URL:       	https://github.com/hughsie/libhif
 Source0:   	http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -31,7 +31,7 @@ Requires:       librepo
 Requires: 	libsolv
 Requires: 	gobject-introspection
 Requires: 	hawkey
-Requires: 	rpm
+Requires: 	rpm-libs
 Requires: 	glib >= 2.16.1
 
 %description
@@ -85,11 +85,13 @@ make  %{?_smp_mflags} check
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
-*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.2.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.2-2
--	GA - Bump release of all rpms
-*       Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.2.2-1
--       Updated to new version.
-*       Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 0.2.0-1
--       Updated version
+*   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.2-4
+-   Use rpm-libs at runtime
+*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.2.2-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.2-2
+-   GA - Bump release of all rpms
+*   Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.2.2-1
+-   Updated to new version.
+*   Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 0.2.0-1
+-   Updated version
