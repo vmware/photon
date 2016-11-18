@@ -1,7 +1,7 @@
 Summary:	Security client
 Name:		nss
 Version:	3.25
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
 Group:		Applications/System
@@ -11,9 +11,9 @@ Source0:	%{name}-%{version}.tar.gz
 %define sha1 nss=ffa55041a7904bb43afbc6821f479819d9802abf
 Patch:		nss-3.25-standalone-1.patch
 Requires:	nspr
-Requires:	sqlite-autoconf
 BuildRequires:	nspr
-BuildRequires:	sqlite-autoconf
+BuildRequires:	sqlite-devel
+Requires:	sqlite-libs
 
 %description
  The Network Security Services (NSS) package is a set of libraries
@@ -77,6 +77,8 @@ HOST=localhost DOMSUF=localdomain
 
 
 %changelog
+*	Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
+-	Use sqlite-libs as runtime dependency
 *       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
 -       Modified %check
 *       Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1

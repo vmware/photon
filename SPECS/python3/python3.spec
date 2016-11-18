@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python3
 Version:	3.5.1
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -40,12 +40,12 @@ Group: Applications/System
 BuildRequires:	expat >= 2.1.0
 BuildRequires:	libffi >= 3.0.13
 BuildRequires:	ncurses-devel
-BuildRequires:	sqlite-autoconf
+BuildRequires:	sqlite-devel
 Requires:	coreutils
 Requires:	expat >= 2.1.0
 Requires:	libffi >= 3.0.13
 Requires:	ncurses
-Requires:	sqlite-autoconf
+Requires:	sqlite-libs
 
 
 %description libs
@@ -188,23 +188,25 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
-*       Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-7
--       Patch for CVE-2016-5636
-*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 3.5.1-6
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
--	GA - Bump release of all rpms
-*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4
--	Edit scriptlets.
-*   	Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
--   	update python to require python-libs
-*   	Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
--   	Providing python3 binaries instead of the minor versions.
-*   	Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
--   	Updated to version 3.5.1
-*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
--	Edit post script.
-*	Mon Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
--	Remove python.o file, and minor cleanups.
-*	Wed Jul 1 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3
--	Add Python3 package to Photon.
+*   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 3.5.1-8
+-   Use sqlite-{devel,libs}
+*   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-7
+-   Patch for CVE-2016-5636
+*   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 3.5.1-6
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
+-   GA - Bump release of all rpms
+*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4
+-   Edit scriptlets.
+*   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
+-   update python to require python-libs
+*   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
+-   Providing python3 binaries instead of the minor versions.
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
+-   Updated to version 3.5.1
+*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
+-   Edit post script.
+*   Mon Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
+-   Remove python.o file, and minor cleanups.
+*   Wed Jul 1 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3
+-   Add Python3 package to Photon.

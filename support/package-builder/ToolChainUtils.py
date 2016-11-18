@@ -80,71 +80,6 @@ class ToolChainUtils(object):
 
         self.logger.info("Successfully prepared chroot:"+chrootID)
 
-    def installToolChain(self,chrootID):
-        self.logger.info("Installing toolchain.....")
-        self.prepareBuildRoot(chrootID)
-        cmdUtils = CommandUtils()
-
-        rpmFiles = ""
-        packages = ""
-        for package in constants.listToolChainRPMPkgsToInstall:
-            pkgUtils=PackageUtils(self.logName,self.logPath)
-            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
-            if rpmFile is None:
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
-                if rpmFile is None:
-                    if package == "util-linux-devel":
-                        self.logger.info("No old version of util-linux-devel exists, skip until the new version is built")
-                        continue
-                    if package == "flex-devel":
-                        self.logger.info("No old version of flex-devel exists, skip until the new version is built")
-                        continue
-
-                    self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
-                    raise Exception("Input Error")
-            rpmFiles += " " + rpmFile
-            packages += " " + package
-
-        self.logger.debug("Installing toolchain rpms:" + packages)
-        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
-        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
-            self.logger.error("Installing toolchain rpms failed")
-            raise Exception("RPM installation failed")
-        
-        self.logger.info("Installed toolchain successfully on chroot:"+chrootID)
-    
-    def installCoreToolChainPackages(self,chrootID):
-        self.logger.info("Installing toolchain.....")
-        cmdUtils = CommandUtils()
-        self.prepareBuildRoot(chrootID)
-
-        rpmFiles = ""
-        packages = ""
-        for package in constants.listToolChainRPMPkgsToBuild:
-            pkgUtils=PackageUtils(self.logName,self.logPath)
-            rpmFile = None
-            if package in constants.listCoreToolChainRPMPackages:
-                rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
-            else:
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
-            if rpmFile is None:
-                self.logger.error("Unable to find rpm "+ package)
-                raise Exception("Input Error")
-            rpmFiles += " " + rpmFile
-            packages += " " + package
-
-        self.logger.debug("Installing core toolchain rpms:" + packages)
-        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
-        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
-            self.logger.error("Installing toolchain rpms failed")
-            raise Exception("RPM installation failed")
-            
-        self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)    
-    
     def findRPMFileInGivenLocation(self,package,rpmdirPath):
         cmdUtils = CommandUtils()
         listFoundRPMFiles = cmdUtils.findFile(package+"-*.rpm",rpmdirPath)
@@ -168,7 +103,7 @@ class ToolChainUtils(object):
         chrootID=None
         try:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-            for package in constants.listCoreToolChainRPMPackages:
+            for package in constants.listCoreToolChainPackages:
                 rpmPkg=pkgUtils.findRPMFileForGivenPackage(package)
                 if rpmPkg is not None:
                     continue
@@ -202,17 +137,14 @@ class ToolChainUtils(object):
         self.logger.info("Installing Tool Chain RPMS.......")
         rpmFiles = ""
         packages = ""
-        for package in constants.listToolChainRPMPkgsToBuild:
+        for package in constants.listToolChainRPMsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
-                    if package == "util-linux-devel":
-                        self.logger.info("No old version of util-linux-devel exists, skip until the new version is built")
-                        continue
-                    if package == "flex-devel":
-                        self.logger.info("No old version of flex-devel exists, skip until the new version is built")
+                    if package in constants.listOfRPMsProvidedAfterBuild:
+                        self.logger.info("No old version of "+package+" exists, skip until the new version is built")
                         continue
                     self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                     raise Exception("Input Error")

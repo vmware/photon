@@ -2,7 +2,7 @@
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.50
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
@@ -10,7 +10,7 @@ Source0:        http://search.cpan.org/CPAN/authors/id/I/IS/ISHIGAKI/DBD-SQLite-
 %define sha1 DBD-SQLite=49463e8cf40deb91db8ce36cd8a5d8ccb9cb28c7
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires:  sqlite-autoconf
+BuildRequires:  sqlite-devel
 BuildRequires:  perl
 BuildRequires:	perl-DBI
 Requires:	perl-DBI
@@ -45,11 +45,13 @@ make test
 %{_mandir}/man3/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.50-2
--	GA - Bump release of all rpms
+*   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 1.50-3
+-   Use sqlite-devel as a BuildRequires
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.50-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.50-1
 -   Upgraded to version 1.50
-*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.48-1
--	Upgrade version
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.46-1
--	Initial version.
+*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.48-1
+-   Upgrade version
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.46-1
+-   Initial version.
