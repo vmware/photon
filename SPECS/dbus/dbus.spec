@@ -1,27 +1,27 @@
-Summary:	DBus for systemd
-Name:		dbus
-Version:	1.8.8
-Release:	6%{?dist}
-License:	GPLv2+ or AFL
-URL:		http://www.freedesktop.org/wiki/Software/dbus
-Group:		Applications/File
-Source0:	http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
+Summary:    DBus for systemd
+Name:       dbus
+Version:    1.8.8
+Release:    7%{?dist}
+License:    GPLv2+ or AFL
+URL:        http://www.freedesktop.org/wiki/Software/dbus
+Group:      Applications/File
+Source0:    http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
 %define sha1 dbus=e0d10e8b4494383c7e366ac80a942ba45a705a96
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	expat
-BuildRequires:	systemd
-BuildRequires:	xz-devel
-Requires:	expat
-Requires:	systemd
-Requires:	xz
+Vendor:     VMware, Inc.
+Distribution:   Photon
+BuildRequires:  expat
+BuildRequires:  systemd-devel
+BuildRequires:  xz-devel
+Requires:   expat
+Requires:   systemd
+Requires:   xz
 %description
 The dbus package contains dbus.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}
-%description	devel
+%package    devel
+Summary:    Header and development files
+Requires:   %{name} = %{version}
+%description    devel
 It contains the libraries and header files to create applications 
 
 %prep
@@ -62,7 +62,7 @@ make %{?_smp_mflags} check
 %exclude %{_libdir}/*.so
 %exclude %{_libdir}/pkgconfig/*.pc
 
-%files	devel
+%files  devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*.pc
@@ -71,15 +71,17 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.8.8-6
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.8-5
--	GA - Bump release of all rpms
-*	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.8-4
--	Created devel sub-package
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.8.8-7
+-   Change systemd dependency
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.8.8-6
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.8-5
+-   GA - Bump release of all rpms
+*   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.8-4
+-   Created devel sub-package
 *   Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 1.8.8-3
 -   Remove debug files.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.8.8-2
 -   Update according to UsrMove.
-*	Sun Apr 06 2014 Sharath George <sharathg@vmware.com> 1.8.8
--	Initial build. First version
+*   Sun Apr 06 2014 Sharath George <sharathg@vmware.com> 1.8.8
+-   Initial build. First version
