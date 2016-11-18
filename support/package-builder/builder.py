@@ -147,10 +147,6 @@ def main():
     SourcePackageInfo.writePkgListToFile(pkgInfoJsonFile)
     sys.exit(0)
 
-def buildToolChain(buildThreads):
-    pkgManager = PackageManager()
-    pkgManager.buildToolChainPackages(buildThreads)
-
 def buildPackagesList(specPath, csvFilename):
     csvFile = open(csvFilename, "w")
     csvFile.write("Package,Version,License,URL,Sources,Patches\n")
