@@ -4,13 +4,13 @@
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
 Version:	1.0.9
-Release:	2%{?dist}
+Release:	3%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	VMware
 Url:		http://www.vmware.com
 Group:		Applications/RPM
-Requires:	hawkey, librepo, rpm
+Requires:	hawkey, librepo, rpm-libs
 BuildRequires:	popt-devel
 BuildRequires:	rpm-devel
 BuildRequires:	glib-devel
@@ -92,6 +92,8 @@ mv %{buildroot}%{_includedir}/*.h %{buildroot}%{_includedir}/tdnf
     %exclude %{_libdir}/debug
 
 %changelog
+*       Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0.9-3
+-       Use rpm-libs at runtime
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.9-2
 -	GA - Bump release of all rpms
 *       Fri May 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.9-1
