@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       3.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -45,8 +45,9 @@ BuildRequires: rpm-devel
 Requires:      gcc
 Requires:      linux-devel
 Requires:      make
-Requires:	   elfutils 
+Requires:      elfutils
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      shadow
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -332,7 +333,9 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
-*   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 3.0-3
+*   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4
+-   add shadow to requires
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.0-3
 -   Use sqlite-{devel,libs}
 *   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.0-2
 -   Modified %check
