@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -104,12 +104,9 @@ make
 %{_bindir}/toe
 %{_libdir}/lib*.so.6*
 %{_datadir}/tabset/*
-%{_docdir}/ncurses-6.0/html/*
-%{_docdir}/ncurses-6.0/*.doc
 %{_mandir}/man7/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_mandir}/man3/*
 %{_datadir}/terminfo/*
 %{_libdir}/terminfo
 
@@ -150,12 +147,17 @@ make
 %{_libdir}/libcursesw.so
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
+%{_docdir}/ncurses-6.0/html/*
+%{_docdir}/ncurses-6.0/*.doc
+%{_mandir}/man3/*
 %changelog
-*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 6.0-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-2
--	GA - Bump release of all rpms
-*	Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 6.0-1
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.0-4
+-   Move doc and man3 to the devel package
+*   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 6.0-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-2
+-   GA - Bump release of all rpms
+*   Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 6.0-1
 -   Update to version 6.0.
 *   Wed Nov 18 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 5.9-4
 -   Package provides libncurses.so.5()(64bit)
@@ -163,5 +165,5 @@ make
 -   Add libncurses.so.5, and minor fix in the devel package
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 5.9-2
 -   Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.9-1
--	Initial build.	First version
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.9-1
+-   Initial build. First version
