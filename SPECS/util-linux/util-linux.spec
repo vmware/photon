@@ -1,7 +1,7 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
 Version:	2.27.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
@@ -36,6 +36,7 @@ sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 	--disable-nologin \
 	--disable-silent-rules \
 	--disable-static \
+	--disable-use-tty-group \
 	--without-python
 make %{?_smp_mflags}
 %install
@@ -73,6 +74,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_includedir}/*
 
 %changelog
+*       Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2.27.1-4
+-       Disable use tty droup
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.27.1-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.27.1-2
