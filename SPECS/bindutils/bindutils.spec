@@ -1,7 +1,7 @@
 Summary:	Domain Name System software
 Name:		bindutils
 Version:	9.10.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ISC
 URL:		http://www.isc.org/downloads/bind/
 Source0:	ftp://ftp.isc.org/isc/bind9/%{version}-P1/bind-%{version}-P1.tar.gz
@@ -10,6 +10,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	openssl
+Requires:	shadow
 BuildRequires:	openssl-devel
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols 
@@ -67,6 +68,8 @@ fi
 
 
 %changelog
+*	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.10.4-2
+-	add shadow to requires
 *	Mon Jun 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 9.10.4-1
 -	Upgraded the version to 9.10.4
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.10.3-3
