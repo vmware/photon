@@ -1,7 +1,7 @@
 Summary:	A Distributed init System
 Name:		fleet
 Version:	0.11.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache 2.0
 URL:		https://coreos.com/using-coreos/clustering/
 Group:		OS/ClusterManagement
@@ -12,6 +12,7 @@ Source0:	https://github.com/coreos/%{name}/archive/%{name}-%{version}.tar.gz
 %define sha1 fleet=df90c76e7c6458a05a77078993d9bd705a25b8c5
 Source1:	fleet.conf
 Source2:	fleet.rules
+Requires:	shadow
 Requires:	systemd
 BuildRequires:	systemd
 
@@ -85,6 +86,8 @@ getent passwd fleet >/dev/null || /usr/sbin/useradd -c "fleet user" -s /sbin/nol
 /usr/share/polkit-1/rules.d/fleet.rules
 
 %changelog
+*	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.11.5-5
+-	add shadow to requires
 *       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.11.5-4
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.11.5-3
