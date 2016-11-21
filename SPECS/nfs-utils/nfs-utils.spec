@@ -1,7 +1,7 @@
 Summary:	NFS client utils
 Name:		nfs-utils
 Version:	1.3.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/nfs
 Group:		Applications/Nfs-utils-client
@@ -19,6 +19,7 @@ BuildRequires:  libtirpc-devel
 Requires:   python2-libs
 Requires:   libtirpc
 Requires:   rpcbind
+Requires:   shadow
 
 %description
 The nfs-utils package contains simple nfs client service
@@ -65,10 +66,12 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.3-5
+-	add shadow to requires
 *	Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.3.3-4
 -	Removed packaging of debug files
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.3-3
--	GA - Bump release of all rpms
+	GA - Bump release of all rpms
 *   Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-2
 -   Add nfs-server.service to rpm.
 * 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-1

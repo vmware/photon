@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       3.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -47,6 +47,7 @@ Requires:      linux-devel
 Requires:      make
 Requires:	   elfutils 
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
+Requires:      shadow
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -332,6 +333,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-3
+-	add shadow to requires
 *       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.0-2
 -       Modified %check
 * 	Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1 
