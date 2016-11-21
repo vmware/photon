@@ -81,7 +81,7 @@ exit 1
 fi
 echo "Current directory is"
 pwd
-cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
+rm -rf ${BUILDROOT}/boot/grub2/fonts
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
 cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/

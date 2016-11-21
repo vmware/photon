@@ -83,7 +83,7 @@ if [ "$BOOTMODE" == "efi" ]; then
     grub_efi_install
 fi
 
-cp boot/unifont.pf2 ${BUILDROOT}/boot/grub2/
+rm -rf ${BUILDROOT}/boot/grub2/fonts
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
 cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
@@ -94,7 +94,6 @@ cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 set default=0
 set timeout=5
 search -n -u $BOOT_UUID -s
-loadfont "$BOOT_DIRECTORY"grub2/unifont.pf2
 
 insmod gfxterm
 insmod vbe
