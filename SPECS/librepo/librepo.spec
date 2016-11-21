@@ -46,7 +46,7 @@ Package config and headers for librepo.
 
 %prep
 %setup -q -n %{librepo_name}-%{version}
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 
 %build
 mkdir build
