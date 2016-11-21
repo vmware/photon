@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -13,9 +13,13 @@ BuildRequires:  openldap
 BuildRequires:  openssl-devel
 BuildRequires:  db-devel
 BuildRequires:  shadow
+Requires:       coreutils
 Requires:       systemd
 Requires:       m4
 Requires:       openldap
+Requires:       shadow
+Requires:       sed
+Requires:       inetutils
 
 %define sha1 sendmail=5801d4b06f4e38ef228a5954a44d17636eaa5a16
 
@@ -120,11 +124,13 @@ EOF
 make -C test check
 
 %pre
+if [ $1 -eq 1 ] ; then
 groupadd -g 26 smmsp                               &&
 useradd -c "Sendmail Daemon" -g smmsp -d /dev/null \
         -s /bin/false -u 26 smmsp                  &&
 chmod -v 1777 /var/mail                            &&
 install -v -m700 -d /var/spool/mqueue
+fi
 
 
 %post
@@ -171,6 +177,8 @@ fi
 
 
 %changelog
+*	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-8
+-	fix pre script, add coreutils,inetutils,sed,shadow to requires
 *       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 8.15.2-7
 -       Modified %check
 *       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 8.15.2-6
