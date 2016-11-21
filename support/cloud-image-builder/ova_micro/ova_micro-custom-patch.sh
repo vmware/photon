@@ -14,3 +14,6 @@ rm /boot/system.map*
 rm -rf /boot/grub/fonts
 # TODO: clean up spec file
 rm -rf /usr/include
+
+# finally remove rpm tools, keep tdnf only
+rpm -e rpm --nodeps
