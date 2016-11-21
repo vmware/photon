@@ -28,7 +28,7 @@ The package contains the DB doc files
 
 %prep
 %setup -q
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 %build
 cd build_unix
 ../dist/configure \

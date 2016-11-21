@@ -28,9 +28,9 @@ GDB, the GNU Project debugger, allows you to see what is going on
 another program was doing at the moment it crashed. 
 %prep
 %setup -q
-tar xf %{SOURCE1}
-tar xf %{SOURCE2}
-tar xf %{SOURCE3}
+tar xf %{SOURCE1} --no-same-owner
+tar xf %{SOURCE2} --no-same-owner
+tar xf %{SOURCE3} --no-same-owner
 
 %build
 ./configure \

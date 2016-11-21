@@ -46,7 +46,7 @@ This package contains tools to assemble the local initrd and host configuration.
 %prep
 %setup -q -n %{name}-%{version}
 cp %{PATCH0} .
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 
 %build
 %configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) --libdir=%{_prefix}/lib \

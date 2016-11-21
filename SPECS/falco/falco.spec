@@ -47,7 +47,7 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
 %setup -T -D -a 1
 chmod +x %{SOURCE2}
 cp %{SOURCE2} /usr/bin
-tar xf %{SOURCE3}
+tar xf %{SOURCE3} --no-same-owner
 
 %build
 mv sysdig-0.10.1 ../sysdig
