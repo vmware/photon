@@ -42,7 +42,7 @@ needed for developing applications that manipulate binary policies.
 %prep
 %setup -qn %{name}-%{version}-rc1
 sed  -i 's/int rc;/int rc = SEPOL_OK;/' ./cil/src/cil_binary.c
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 
 %build
 make clean
