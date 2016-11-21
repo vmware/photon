@@ -27,8 +27,8 @@ The Ant package contains binaries for a build system
 %prep
 
 %setup -q
-tar xf %{SOURCE1}
-tar xf %{SOURCE2}
+tar xf %{SOURCE1} --no-same-owner
+tar xf %{SOURCE2} --no-same-owner
 %build
 ANT_DIST_DIR=/var/opt/apache-ant-%{version}
 

@@ -19,7 +19,7 @@ Kubernetes is an open source implementation of container cluster management.
 
 %prep -p exit
 %setup -qn %{name}
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 
 %build

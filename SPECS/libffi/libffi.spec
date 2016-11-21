@@ -22,9 +22,9 @@ to various calling conventions. This allows a programmer to call any
 function specified by a call interface description at run time.
 %prep
 %setup -q
-tar xf %{SOURCE1}
-tar xf %{SOURCE2}
-tar xf %{SOURCE3}
+tar xf %{SOURCE1} --no-same-owner
+tar xf %{SOURCE2} --no-same-owner
+tar xf %{SOURCE3} --no-same-owner
 %build
 sed -e '/^includesdir/ s:$(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:$(includedir):' \
     -i include/Makefile.in &&

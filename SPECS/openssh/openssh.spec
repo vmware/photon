@@ -42,7 +42,7 @@ This provides the ssh server daemons, utilities, configuration and service files
 
 %prep
 %setup -q
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 %patch1 -p0
 %patch2 -p1
 %build

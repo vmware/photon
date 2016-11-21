@@ -21,7 +21,7 @@ firewall tool for Linux is Iptables. You will need to install
 Iptables if you intend on using any form of a firewall.
 %prep
 %setup -q
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 cp %{SOURCE2} .
 %patch1 -p0
 %build

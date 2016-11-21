@@ -18,7 +18,7 @@ Sources for time zone and daylight saving time data
 rm -rf %{blddir}
 install -vdm 755 %{blddir}
 cd %{blddir}
-tar xf %{SOURCE0}
+tar xf %{SOURCE0} --no-same-owner
 %build
 %install
 cd %{blddir}

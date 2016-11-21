@@ -28,7 +28,7 @@ rpm packages
 
 %prep
 %setup -q
-tar xf %{SOURCE1}
+tar xf %{SOURCE1} --no-same-owner
 %install
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
