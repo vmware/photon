@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.31
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -36,6 +36,7 @@ Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 #fixes CVE-2016-7039
 Patch22:       net-add-recursion-limit-to-GRO.patch
+Patch23:       net-9p-vsock.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -93,6 +94,7 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -164,6 +166,8 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Tue Nov 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-4
+-   net-9p-vsock.patch
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-3
 -   tty-prevent-ldisc-drivers-from-re-using-stale-tty-fields.patch
     to fix CVE-2015-8964
