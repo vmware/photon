@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.31
-Release:    	3%{?dist}
+Release:    	4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,6 +31,7 @@ Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 #fixes CVE-2016-7039
 Patch16:        net-add-recursion-limit-to-GRO.patch
+Patch17:        net-9p-vsock.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -103,6 +104,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %build
 make mrproper
@@ -200,6 +202,8 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Tue Nov 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-4
+-   net-9p-vsock.patch
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-3
 -   tty-prevent-ldisc-drivers-from-re-using-stale-tty-fields.patch
     to fix CVE-2015-8964
