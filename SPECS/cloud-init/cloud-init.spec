@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -124,27 +124,29 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Tue Nov 22 2016 Kumar Kaushik <kaushikk@vmware.com>  0.7.6-13
+-   Adding flag for vmware customization in config.
 *   Tue Nov 1 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-12
 -   Fixed logic to not restart services after upgrade
 *   Mon Oct 24 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-11
 -   Enabled ssh module in cloud-init
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-10
--   Fixed logic to restart the active services after upgrade
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-9
--	GA - Bump release of all rpms
+-   Fixed logic to restart the active services after upgrade 
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-9
+-   GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-8
 -   Clean up post, preun, postun sections in spec file.
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>
 -   Add systemd to Requires and BuildRequires.
-* Thu Sep 17 2015 Kumar Kaushik <kaushikk@vmware.com>
-- Removing netstat and replacing with ip route.
-* Tue Aug 11 2015 Kumar Kaushik <kaushikk@vmware.com>
-- VCA initial password issue fix.
-* Thu Jun 25 2015 Kumar Kaushik <kaushikk@vmware.com>
-- Removing systemd-service.patch. No longer needed.
-* Thu Jun 18 2015 Vinay Kulkarni <kulkarniv@vmware.com>
-- Add patch to enable logging to /var/log/cloud-init.log
-* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com>
-- Update according to UsrMove.
-* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
-- Initial packaging for Photon
+*   Thu Sep 17 2015 Kumar Kaushik <kaushikk@vmware.com>
+-   Removing netstat and replacing with ip route.
+*   Tue Aug 11 2015 Kumar Kaushik <kaushikk@vmware.com>
+-   VCA initial password issue fix.
+*   Thu Jun 25 2015 Kumar Kaushik <kaushikk@vmware.com>
+-   Removing systemd-service.patch. No longer needed.
+*   Thu Jun 18 2015 Vinay Kulkarni <kulkarniv@vmware.com>
+-   Add patch to enable logging to /var/log/cloud-init.log
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com>
+-   Update according to UsrMove.
+*   Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+-   Initial packaging for Photon
