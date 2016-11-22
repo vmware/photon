@@ -290,6 +290,7 @@ class Installer(object):
     
     def finalize_system(self):
         #Setup the disk
+        shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
         process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.finalize_command, '-w', self.photon_root], stdout=self.output)
         retval = process.wait()
         if self.iso_installer:
