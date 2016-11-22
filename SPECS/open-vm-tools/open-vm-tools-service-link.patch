@@ -1,9 +1,10 @@
---- open-vm-tools-9.10.0/vgauth/service/Makefile.in	2015-03-19 11:11:07.000000000 -0700
-+++ open-vm-tools-9.10.0/vgauth/service/Makefile.in_	2015-05-12 16:01:37.695680243 -0700
-@@ -322,7 +322,7 @@
- 	../lib/libvgauth.la @XERCES_LIBS@ @XMLSECURITY_LIBS@ \
- 	@SSL_LIBS@ -lxerces-c -lxml-security-c -lssl -lcrypto \
- 	$(am__append_1)
+diff -ru open-vm-tools-10.1.0/open-vm-tools/vgauth/service/Makefile.in open-vm-tools-10.1.0-mod/open-vm-tools/vgauth/service/Makefile.in
+--- open-vm-tools-10.1.0/open-vm-tools/vgauth/service/Makefile.in	2016-09-29 03:21:26.000000000 -0700
++++ open-vm-tools-10.1.0-mod/open-vm-tools/vgauth/service/Makefile.in	2016-11-18 17:30:36.047647904 -0800
+@@ -367,7 +367,7 @@
+ 	-I$(top_srcdir)/vgauth/serviceImpl
+ VGAuthService_LDADD = @GLIB2_LIBS@ @GTHREAD_LIBS@ $(am__append_5) \
+ 	$(am__append_6) @SSL_LIBS@ -lssl -lcrypto $(am__append_7)
 -@HAVE_ICU_FALSE@VGAuthService_LINK = $(LINK)
 +@HAVE_ICU_FALSE@VGAuthService_LINK = $(CXXLINK)
  @HAVE_ICU_TRUE@VGAuthService_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS)     \
