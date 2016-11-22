@@ -1,14 +1,14 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.0.5
-Release:        14%{?dist}
+Version:        10.1.0
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-%{version}.tar.gz
-%define sha1 open-vm-tools=9d29a17cce539b032317d0a8c55977666daa137e
+%define sha1 open-vm-tools=6deb5ff09b7033cd4224580e664a608e6b4d1db2
 Source1:        gosc-scripts-1.0.tar.gz
 %define sha1 gosc-scripts-1.0=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
@@ -39,8 +39,8 @@ Requires:       systemd
 %description
 VmWare virtualization user mode tools
 %prep
-%setup -q
-%setup -a 1
+%setup -q -n open-vm-tools
+%setup -a 1 -n open-vm-tools
 %patch0 -p1
 %patch1 -p1
 %patch2 -p0
@@ -62,9 +62,6 @@ install -p -m 644 %{SOURCE3} %{buildroot}/lib/systemd/system
 
 make DESTDIR=%{buildroot} install
 rm -f %{buildroot}/sbin/mount.vmhgfs
-mkdir -p %{buildroot}/etc/pam.d
-mv %{buildroot}/usr/etc/pam.d/* %{buildroot}/etc/pam.d/
-rmdir %{buildroot}/usr/etc/pam.d
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 # Move vm-support to /usr/bin
 mv %{buildroot}%{_sysconfdir}/vmware-tools/vm-support %{buildroot}%{_bindir}
@@ -106,9 +103,11 @@ fi
 
 
 %changelog
+*       Mon Nov 21 2016 Kumar Kaushik <kaushikk@vmware.com> 10.1.0-1
+-       Updating version to 10.1.0
 *       Wed Oct 05 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-14
 -       Adding proper entry to /etc/hosts for IPv6.
-*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 10.0.5-13
+*       Tue Oct 04 2016 ChangLee <changLee@vmware.com> 10.0.5-13
 -       Modified %check
 *       Thu Jun 23 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-12
 -       Avoiding recustomization of hostname, bug#1678537.
