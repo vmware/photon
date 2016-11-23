@@ -1,7 +1,7 @@
 Summary:	Access control list utilities
 Name:		acl
 Version:	2.2.52
-Release:	3%{?dist}
+Release:	4%{?dist}
 Source0:	http://download.savannah.gnu.org/releases-noredirect/acl/acl-%{version}.src.tar.gz
 %define sha1 acl=537dddc0ee7b6aa67960a3de2d36f1e2ff2059d9
 License:	GPLv2+
@@ -10,7 +10,7 @@ URL:		http://acl.bestbits.at/
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	libacl = %{version}-%{release}
-BuildRequires:	attr
+BuildRequires:	attr-devel
 
 %description
 This package contains the getfacl and setfacl utilities needed for
@@ -96,9 +96,11 @@ fi
 %{_libdir}/libacl.so.*
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.2.52-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.52-2
--	GA - Bump release of all rpms
+* Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.2.52-4
+- BuildRequired attr-devel.
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.2.52-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.52-2
+- GA - Bump release of all rpms
 * Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.2.52-1
 - Initial version

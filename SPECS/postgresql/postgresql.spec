@@ -1,7 +1,7 @@
 Summary:	PostgreSQL database engine
 Name:		postgresql
 Version:	9.5.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	PostgreSQL
 URL:		www.postgresql.org
 Group:		Applications/Databases
@@ -13,7 +13,7 @@ Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar
 %define sha1 postgresql=bd8dcbc8c4882468675dcc93263182a27d4ff201
 
 # Common libraries needed
-BuildRequires:	krb5
+BuildRequires:	krb5-devel
 BuildRequires:	libxml2-devel
 BuildRequires:	openldap
 BuildRequires:	perl
@@ -162,23 +162,25 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
-*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4 
--       Modified %check
-*       Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
--       Add tzdata to buildrequires and requires.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
--	GA - Bump release of all rpms
-*	Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
--	Updated to version 9.5.3
-*       Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
--       Updated to version 9.5.2
-*       Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
--       Updated to version 9.5.1
-*       Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
--       Updated to version 9.5.0
-*	Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
--	Update to version 9.4.4.
-*	Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
--	Exclude /usr/lib/debug
-*	Tue May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
--	Initial build.	First version
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
+-   Required krb5-devel.
+*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4 
+-   Modified %check
+*   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
+-   Add tzdata to buildrequires and requires.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
+-   GA - Bump release of all rpms
+*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
+-   Updated to version 9.5.3
+*   Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
+-   Updated to version 9.5.2
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
+-   Updated to version 9.5.1
+*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
+-   Updated to version 9.5.0
+*   Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
+-   Update to version 9.4.4.
+*   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
+-   Exclude /usr/lib/debug
+*   Tue May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
+-   Initial build. First version

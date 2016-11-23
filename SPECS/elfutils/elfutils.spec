@@ -2,7 +2,7 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.165
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:        	https://fedorahosted.org/elfutils/
@@ -98,6 +98,13 @@ Conflicts: libelf-devel
 The elfutils-libelf-static package contains the static archive
 for libelf.
 
+%package libelf-lang
+Summary: Additional language files for elfutils
+Group: Development/Tools
+Requires: %{name}-libelf = %{version}-%{release}
+%description libelf-lang
+These are the additional language files of elfutils.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -171,7 +178,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libdw.a
 #%{_libdir}/libasm.a
 
-%files -f %{name}.lang libelf
+%files libelf
 %defattr(-,root,root)
 %{_libdir}/libelf-%{version}.so
 %{_libdir}/libelf.so.*
@@ -187,11 +194,16 @@ rm -rf ${RPM_BUILD_ROOT}
 %files libelf-devel-static
 %{_libdir}/libelf.a
 
+%files libelf-lang -f %{name}.lang
+%defattr(-,root,root)
+
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.165-2
--	GA - Bump release of all rpms
-*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 0.165-1
--   Updated to version 0.165
+* Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 0.165-3
+- Added -libelf-lang subpackage
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.165-2
+- GA - Bump release of all rpms
+* Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 0.165-1
+- Updated to version 0.165
 * Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.158-4
 - Handled locale files with macro find_lang
 * Sat Aug 15 2015 Sharath George <sharathg@vmware.com> 0.158-3
