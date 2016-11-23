@@ -1,7 +1,7 @@
 Summary:	The Kerberos newtork authentication system
 Name:		krb5
 Version:	1.14
-Release:	4%{?dist}
+Release:	6%{?dist}
 License:	MIT
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -15,10 +15,26 @@ Requires:	openssl
 Requires:	e2fsprogs-libs
 BuildRequires: 	openssl-devel
 BuildRequires:	e2fsprogs-devel
+Provides:	pkgconfig(mit-krb5)
+Provides:	pkgconfig(mit-krb5-gssapi)
 %description
 Kerberos V5 is a trusted-third-party network authentication system,
 which can improve your network's security by eliminating the insecure
 practice of clear text passwords.
+
+%package devel
+Summary:	Libraries and header files for krb5
+Requires:	%{name} = %{version}-%{release}
+%description devel
+Static libraries and header files for the support library for krb5
+
+%package lang
+Summary: Additional language files for krb5
+Group:		System Environment/Security
+Requires: %{name} = %{version}-%{release}
+%description lang
+These are the additional language files of krb5.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -82,28 +98,37 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_libdir}/*.so
 %{_libdir}/*.so.*
-%{_libdir}/pkgconfig/*.pc
 %{_libdir}/krb5/plugins/*
 %{_sbindir}/*
-%{_includedir}/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_datarootdir}/examples/*
-%{_datarootdir}/locale/*
 %{_datarootdir}/man/man5/.k5identity.5.gz
 %{_datarootdir}/man/man5/.k5login.5.gz
-%{_docdir}/%{name}-%{version}
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/pkgconfig/*.pc
+%{_includedir}/*
+%{_datarootdir}/examples/*
+%{_docdir}/*
+
+%files lang
+%defattr(-,root,root)
+%{_datarootdir}/locale/*
+
 %changelog
-*	Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-5
--	Use e2fsprogs-libs as runtime deps
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
--	GA - Bump release of all rpms
-* 	Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
-- 	Add patch to never unload gssapi mechanisms
-* 	Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
-- 	Add patch for skipping unnecessary mech calls in gss_inquire_cred
-*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
--	Upgrade version
-*	Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
--	Initial build.	First version
+*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-6
+-   Added -lang and -devel subpackages
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-5
+-   Use e2fsprogs-libs as runtime deps
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
+-   GA - Bump release of all rpms
+*   Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
+-   Add patch to never unload gssapi mechanisms
+*   Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
+-   Add patch for skipping unnecessary mech calls in gss_inquire_cred
+*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
+-   Upgrade version
+*   Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
+-   Initial build. First version

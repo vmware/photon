@@ -2,7 +2,7 @@
 Summary:      	libgpg-error
 Name:         	libgpg-error
 Version:      	1.21
-Release:      	2%{?dist}
+Release:      	3%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/
 Group:		Development/Libraries
@@ -15,6 +15,19 @@ Distribution:	Photon
 This is a library that defines common error values for all GnuPG
 components.  Among these are GPG, GPGSM, GPGME, GPG-Agent, libgcrypt,
 pinentry, SmartCard Daemon and possibly more in the future.
+
+%package devel
+Summary:	Libraries and header files for libgpg-error
+Requires:	%{name} = %{version}-%{release}
+%description devel
+Static libraries and header files for the support library for libgpg-error
+
+%package lang
+Summary: Additional language files for libgpg-error
+Group:		Applications/System
+Requires: %{name} = %{version}-%{release}
+%description lang
+These are the additional language files of libgpg-error.
 
 %prep
 %setup -q
@@ -43,23 +56,29 @@ make %{?_smp_mflags} check
 /sbin/ldconfig
 
 echo %{_libdir}
-%files -f %{name}.lang
+%files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*gpg-error.so*
-%{_includedir}/gpg-error.h
-%{_datadir}/aclocal/gpg-error.m4
+%{_libdir}/libgpg-error.so*
+%exclude %{_datadir}/aclocal/gpg-error.m4
 %{_mandir}/man1/*
-%{_datarootdir}/common-lisp/*
+%exclude %{_datarootdir}/common-lisp/*
+
+%files devel
+%defattr(-,root,root)
+%{_includedir}/gpg-error.h
+
+%files lang -f %{name}.lang
+%defattr(-,root,root)
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
--	GA - Bump release of all rpms
-* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
-- 	Updated to version 1.21
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.17-2
--	Handled locale files with macro find_lang
-* Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>
-- initial specfile.
-
-# EOF
+*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.21-3
+-   Added -lang subpackage
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
+-   GA - Bump release of all rpms
+*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
+-   Updated to version 1.21
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.17-2
+-   Handled locale files with macro find_lang
+*   Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>
+-   initial specfile.
