@@ -1,14 +1,14 @@
 Summary:	Very secure and very small FTP daemon.
 Name:		vsftpd
-Version:	3.0.2
-Release:	3%{?dist}
+Version:	3.0.3
+Release:	1%{?dist}
 License:	GPLv2 with exceptions
 URL:		https://security.appspot.com/vsftpd.html
 Group:		System Environment/Daemons
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
-%define sha1 vsftpd=f36976bb1c5df25ac236d8a29e965ba2b825ccd0
+%define sha1 vsftpd=d5f5a180dbecd0fbcdc92bf0ba2fc001c962b55a
 BuildRequires:	libcap-devel Linux-PAM openssl-devel
 Requires:	libcap Linux-PAM openssl
 %description
@@ -78,6 +78,8 @@ fi
 %{_datadir}/*
 %exclude %{_libdir}/debug
 %changelog
+*	Wed Nov 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.0.3-1
+-	Upgraded to version 3.0.3, fixes CVE-2015-1419
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.2-3
 -	GA - Bump release of all rpms
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.2-2
