@@ -16,6 +16,8 @@
         "libtasn1",
         "libunistring",
         "nettle",
+        "ncurses-terminfo",
+        "cracklib-dicts",
         "rsyslog",
         "device-mapper-multipath",
         "NetworkManager",

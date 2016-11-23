@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -25,9 +25,16 @@ compatibility.
 
 %package	devel
 Summary:	Header and development files for ncurses
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 %description	devel
 It contains the libraries and header files to create applications 
+
+%package	terminfo
+Summary:	terminfo files for ncurses
+Requires:	%{name} = %{version}-%{release}
+%description	terminfo
+It contains all terminfo files
+
 %prep
 %setup -q
 %build
@@ -107,7 +114,7 @@ make
 %{_mandir}/man7/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_datadir}/terminfo/*
+%{_datadir}/terminfo/l/linux
 %{_libdir}/terminfo
 
 %files compat
@@ -150,7 +157,15 @@ make
 %{_docdir}/ncurses-6.0/html/*
 %{_docdir}/ncurses-6.0/*.doc
 %{_mandir}/man3/*
+
+%files terminfo
+%defattr(-,root,root)
+%{_datadir}/terminfo/*
+%exclude %{_datadir}/terminfo/l/linux
+
 %changelog
+*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 6.0-5
+-   Add -terminfo subpackage. Main package carries only 'linux' terminfo
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.0-4
 -   Move doc and man3 to the devel package
 *   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 6.0-3
