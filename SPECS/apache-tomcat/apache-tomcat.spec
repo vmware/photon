@@ -1,6 +1,6 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
-Version:	8.0.37
+Version:	8.5.8
 Release:	1%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
@@ -8,8 +8,8 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
-Source0:	http://mirrors.gigenet.com/apache/tomcat/tomcat-8/v8.0.37/bin/%{name}-%{version}.tar.gz
-%define sha1 apache-tomcat=1d3178ee1a6f9be638eaf078053ed11118560049
+Source0:	http://mirror.cogentco.com/pub/apache/tomcat/tomcat-8/v%{version}/bin/%{name}-%{version}.tar.gz
+%define sha1 apache-tomcat=25fc3b108a81c421fb5cd2632a56cdde9fcc03bc
 Requires: openjre >= 1.8.0.102
 
 %define _prefix /var/opt/%{name}-%{version}
@@ -22,8 +22,8 @@ Requires: openjre >= 1.8.0.102
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
 
 %prep
-
 %setup -qn %{name}-%{version}
+
 %build
 
 %install
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*   	Tue Nov 22 2016 Anish Swaminathan <anishs@vmware.com> 8.5.8-1
+-   	Upgraded to version 8.5.8
 *	Wed Oct 05 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.0.37-1
 -	Update to version 8.0.37. Change openjre requires to latest
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.0.35-2
