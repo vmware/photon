@@ -1,16 +1,16 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
-Version:	4.3.3
-Release:	4%{?dist}
+Version:	4.3.5
+Release:	1%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
-Source0:  	ftp://ftp.isc.org/isc/%{name}/%{version}/%{name}-%{version}-P1.tar.gz
-%define sha1 dhcp=4e76757a0aebcb9200c1d2ca0f28ff41a5c56586
+Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
+%define sha1 dhcp=6140a0cf6b3385057d76c14278294284ba19e5a5
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/dhcp-4.3.3-P1-client_script-1.patch
-Patch1:         dhcp-4.3.3-CVE-2016-2774.patch
+Patch0:		dhcp-4.3.5-client_script-1.patch
+Patch1:		dhcp-4.3.5-missing_ipv6-1.patch
 BuildRequires:	systemd
 %description
 The ISC DHCP package contains both the client and server programs for DHCP. dhclient (the client) is used for connecting to a network which uses DHCP to assign network addresses. dhcpd (the server) is used for assigning network addresses on private networks
@@ -40,7 +40,7 @@ The ISC DHCP Client, dhclient, provides a means for configuring one or more netw
 
 
 %prep
-%setup -qn %{name}-%{version}-P1
+%setup -qn %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
 %build
@@ -159,6 +159,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+*	Mon Nov 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.3.5-1
+-	Upgraded to version 4.3.5.
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.3.3-4
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.3-3
