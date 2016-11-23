@@ -1,7 +1,7 @@
 Summary:	Libraries for Transport Independent RPC
 Name:		libtirpc
 Version:	1.0.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 Source0:	http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
 %define sha1 libtirpc=8da1636f98b5909c0d587e7534bc1e91f5c1a970
 Patch0:         libtirpc-1.0.1-bindrsvport-blacklist.patch
@@ -10,7 +10,7 @@ Group:		System Environment/Libraries
 URL:		http://nfsv4.bullopensource.org/
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires:	krb5
+BuildRequires:	krb5-devel
 BuildRequires:	automake
 BuildRequires:  e2fsprogs-devel
 Requires:	krb5
@@ -29,7 +29,8 @@ by almost 70 vendors on all major operating systems.  TS-RPC source code
 %package	devel
 Summary:	Development files for the libtirpc library
 Group:		Development/Libraries
-Requires:	libtirpc
+Requires:	%{name} = %{version}-%{release}
+Requires:	krb5-devel
 
 %description 	devel
 This package includes header files and libraries necessary for developing programs which use the tirpc library.
@@ -65,13 +66,14 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/tirpc/*
    
-
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-3
--	GA - Bump release of all rpms
-* 	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.0.1-2
-- 	Added patch for bindresvport blacklist
-* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
-- 	Updated to version 1.0.1
-* 	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.2-1
-- 	Initial version
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-4
+-   Required krb5-devel.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-3
+-   GA - Bump release of all rpms
+*   Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.0.1-2
+-   Added patch for bindresvport blacklist
+*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
+-   Updated to version 1.0.1
+*   Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.2-1
+-   Initial version
