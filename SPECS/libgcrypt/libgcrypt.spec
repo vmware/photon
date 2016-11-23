@@ -1,14 +1,14 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
 Version:	1.6.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.gz
 %define sha1 libgcrypt=765370d9ee9e858c257dc06c3f0621bda8acaf69
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
-BuildRequires:	libgpg-error
+BuildRequires:	libgpg-error-devel
 Requires:	libgpg-error
 Distribution:	Photon
 %description
@@ -16,7 +16,8 @@ The libgcrypt package contains a general purpose crypto library based on the cod
 
 %package devel
 Summary:	Development libraries and header files for libgcrypt
-Requires:	libgcrypt
+Requires:	%{name} = %{version}-%{release}
+Requires:	libgpg-error-devel
 
 %description devel
 The package contains libraries and header files for
@@ -49,10 +50,12 @@ make %{?_smp_mflags} check
 %{_includedir}/*.h
 %{_libdir}/*.so
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.5-2
--	GA - Bump release of all rpms
-* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  1.6.5-1
-- 	Upgrade to 1.6.5
-*	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.3-1
--	Initial build. First version
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.6.5-3
+-   Required libgpg-error-devel.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.5-2
+-   GA - Bump release of all rpms
+*   Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  1.6.5-1
+-   Upgrade to 1.6.5
+*   Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.3-1
+-   Initial build. First version
 

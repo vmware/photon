@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.51.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -14,7 +14,7 @@ BuildRequires:  ca-certificates
 Requires:       openssl
 Requires:       krb5
 BuildRequires:  openssl-devel
-BuildRequires:  krb5
+BuildRequires:  krb5-devel
 %description
 The cURL package contains an utility and a library used for 
 transferring files with URL syntax to any of the following 
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 
 %changelog
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.51.0-2
+-   Required krb5-devel.
 *   Wed Nov 02 2016 Anish Swaminathan <anishs@vmware.com> 7.51.0-1
 -   Upgrade curl to 7.51.0
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.50.3-2
