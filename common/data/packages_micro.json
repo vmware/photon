@@ -1,7 +1,6 @@
 {
     "packages":["filesystem",  
                 "bash",
-                "bzip2", 
                 "shadow", 
                 "net-tools",
                 "util-linux",
@@ -9,7 +8,9 @@
                 "dbus",
                 "photon-release", 
                 "photon-repos",
-                "tdnf"]
+                "tdnf",
+
+                "rpm"]
 }
 
 
