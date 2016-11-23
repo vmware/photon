@@ -5,7 +5,7 @@
 Summary:       	Repodata downloading library
 Name:          	librepo
 Version:       	1.7.17
-Release:       	3%{?dist}
+Release:       	4%{?dist}
 License:       	LGPLv2+
 URL:           	https://github.com/Tojaj/librepo/
 Group:         	System Environment/Libraries
@@ -28,7 +28,7 @@ BuildRequires:	python2-libs
 BuildRequires:	python2-tools
 BuildRequires:	gpgme-devel
 BuildRequires:	openssl-devel
-BuildRequires:	attr
+BuildRequires:	attr-devel
 
 Requires:       openssl
 
@@ -85,12 +85,14 @@ PYTHONPATH=`readlink -f ./librepo/python/python2/` nosetests -s -v tests/python/
 %{_includedir}/librepo/*.h
 
 %changelog
-*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.7.1-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.17-2
--	GA - Bump release of all rpms
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.17-1
--   Updated to version 1.7.17
+* Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.7.1-4
+- BuildRequired attr-devel.
+* Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.7.1-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.17-2
+- GA - Bump release of all rpms
+* Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.17-1
+- Updated to version 1.7.17
 * Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 1.7.15-1
 - Updated version and split devel package.
 * Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>
