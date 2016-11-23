@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2015.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 %define sha1 rpm-ostree=9a0fa260d8671d9998b5f5509de1bbadd42f7127
 Source1:        libglnx-58a9a5c.tar.gz
@@ -28,7 +28,7 @@ BuildRequires:	libhif-devel >= 0.2.0
 BuildRequires: 	hawkey-devel >= 0.4.6
 BuildRequires: 	rpm-devel >= 4.11.0
 BuildRequires: 	librepo-devel >= 1.7.11
-BuildRequires:	attr
+BuildRequires:	attr-devel
 BuildRequires: 	python2-libs
 BuildRequires:	python2
 BuildRequires: 	gobject-introspection-python
@@ -59,7 +59,7 @@ Includes the header files for the rpm-ostree library.
 
 %prep
 %setup -q
-cat /usr/src/photon/SOURCES/libglnx-58a9a5c.tar.gz | tar -xvvzf -
+tar xf /usr/src/photon/SOURCES/libglnx-58a9a5c.tar.gz --no-same-owner
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -90,9 +90,11 @@ make %{?_smp_mflags}  check
 %{_datadir}/gir-1.0/*-1.0.gir
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2015.7-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.7-2
--	GA - Bump release of all rpms
-*	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
--	Added new version of rpm-ostree
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-4
+-   BuildRequired attr-devel.
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2015.7-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.7-2
+-   GA - Bump release of all rpms
+*   Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 2015.7-1
+-   Added new version of rpm-ostree
