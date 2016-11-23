@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:              rpm
 Version:          4.11.2
-Release:          15%{?dist}
+Release:          16%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -16,9 +16,7 @@ Source3:          brp-strip-debug-symbols
 Source4:          brp-strip-unneeded
 Patch0:		  find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:		  rpm-4.11.2-cve-2014-8118.patch
-Requires:         zlib
 Requires:         bash
-Requires:         elfutils-libelf
 Requires:         rpm-libs = %{version}-%{release}
 BuildRequires:    python2
 BuildRequires:    python2-libs
@@ -44,6 +42,9 @@ Requires:   nss
 Requires:   popt
 Requires:   libgcc
 Requires:   libcap
+Requires:   zlib
+Requires:   bzip2
+Requires:   elfutils-libelf
 %description libs
 Shared libraries librpm and librpmio
 
@@ -106,7 +107,6 @@ rm -rf %{buildroot}
 %files -f %{name}.lang
 %defattr(-,root,root)
 /bin/rpm
-%{_sysconfdir}/rpm/macros
 %{_bindir}/gendiff
 %{_bindir}/rpm2cpio
 %{_bindir}/rpmdb
@@ -127,7 +127,6 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/elfdeps
 %{_libdir}/rpm/fontconfig.prov
 %{_libdir}/rpm/libtooldeps.sh
-%{_libdir}/rpm/macros
 %{_libdir}/rpm/mkinstalldirs
 %{_libdir}/rpm/pkgconfigdeps.sh
 %{_libdir}/rpm/platform
@@ -139,9 +138,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/rpmdb_*
 %{_libdir}/rpm/rpmdeps
 %{_libdir}/rpm/rpmpopt-4.11.2
-%{_libdir}/rpm/rpmrc
 %{_libdir}/rpm/tgpg
-%{_libdir}/rpm/platform/*
 %{_libdir}/rpm-plugins/*
 %{_mandir}/man8/rpm.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
@@ -158,8 +155,12 @@ rm -rf %{buildroot}
 
 %files libs
 %defattr(-,root,root)
+%{_sysconfdir}/rpm/macros
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
+%{_libdir}/rpm/macros
+%{_libdir}/rpm/rpmrc
+%{_libdir}/rpm/platform/*
 
 %files build
 %{_bindir}/rpmbuild
@@ -206,6 +207,10 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so.*
 
 %changelog
+*    Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-16
+-    Move rpmrc and macros into -libs subpackage
+-    Move zlib and elfutils-libelf dependency from rpm to rpm-libs
+-    Add bzip2 dependency to rpm-libs
 *    Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-15
 -    Added -libs subpackage
 *    Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-14
