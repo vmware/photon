@@ -1,7 +1,7 @@
 Summary:	Programs to parse command-line options
 Name:		popt
 Version:	1.16
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:		http://rpm5.org/files/popt
 Group:		Applications/System
@@ -19,6 +19,13 @@ Requires:	%{name} = %{version}
 
 %description devel
 Static libraries and header files for the support library for popt
+
+%package lang
+Summary: Additional language files for popt
+Group:		Applications/System
+Requires: %{name} = %{version}-%{release}
+%description lang
+These are the additional language files of popt.
 
 %prep
 %setup -q
@@ -38,10 +45,9 @@ make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
-%files -f %{name}.lang
+%files
 %defattr(-,root,root)
 %{_libdir}/libpopt.so.*
-%{_mandir}/*/*
 
 %files devel
 %defattr(-,root,root)
@@ -49,11 +55,17 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/popt.pc
 %{_libdir}/libpopt.a
 %{_libdir}/libpopt.so
+%{_mandir}/man3/*
+
+%files lang -f %{name}.lang
+%defattr(-,root,root)
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.16-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.16-2
--	GA - Bump release of all rpms
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.16-1
--	Initial build.	First version	
+*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.16-4
+-   Added -lang subpackage
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.16-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.16-2
+-   GA - Bump release of all rpms
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.16-1
+-   Initial build. First version	
