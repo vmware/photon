@@ -1,7 +1,7 @@
 Summary:	GIO-based library with Unix/Linux specific API
 Name:		libgsystem
 Version:	2015.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 Group:		Development/Libraries
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/libgsystem/%{version}/%{name}-%{version}.tar.xz
 %define sha1 libgsystem=9b14593c87a386d2d3c01490ba126047aa6eba30
@@ -16,7 +16,7 @@ BuildRequires:	gtk-doc
 # Core requirements
 BuildRequires:  glib-devel
 BuildRequires:	pkg-config
-BuildRequires:	attr
+BuildRequires:	attr-devel
 BuildRequires:  rpm
 BuildRequires:	autoconf
 BuildRequires:	which
@@ -67,6 +67,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datarootdir}/gir-1.0/GSystem-1.0.gir
 
 %changelog
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.1-4
+-   BuildRequired attr-devel.
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.1-3
 -   Use %setup instead of %autosetup
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.1-2

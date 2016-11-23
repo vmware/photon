@@ -1,7 +1,7 @@
 Summary:	Programs for compressing and decompressing files
 Name:		xz
 Version:	5.2.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		http://tukaani.org/xz
 License:	GPLv2+ and GPLv3+ and LGPLv2+
 Group:		Applications/File
@@ -12,11 +12,20 @@ Source0:	http://tukaani.org/xz/%{name}-%{version}.tar.xz
 %description
 The Xz package contains programs for compressing and
 decompressing files
+
+%package lang
+Summary: Additional language files for xz
+Group:		Applications/File
+Requires: %{name} = %{version}-%{release}
+%description lang
+These are the additional language files of xz.
+
 %package	devel
 Summary:	Header and development files for xz
 Requires:	%{name} = %{version}
 %description	devel
 It contains the libraries and header files to create applications 
+
 %prep
 %setup -q
 %build
@@ -37,7 +46,8 @@ make  %{?_smp_mflags}  check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
-%files -f %{name}.lang
+
+%files
 %defattr(-,root,root)
 /bin/xz
 /bin/lzcat
@@ -65,21 +75,28 @@ make  %{?_smp_mflags}  check
 %{_libdir}/liblzma.so.5.2.2
 %{_libdir}/liblzma.so.5
 %{_mandir}/man1/*
-%{_defaultdocdir}/%{name}-%{version}/*
+
 %files devel
 %{_includedir}/lzma.h
 %{_includedir}/lzma/*.h
 %{_libdir}/pkgconfig/liblzma.pc
 %{_libdir}/liblzma.a
 %{_libdir}/liblzma.so
+%{_defaultdocdir}/%{name}-%{version}/*
+
+%files lang -f %{name}.lang
+%defattr(-,root,root)
+
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 5.2.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.2.2-2
--	GA - Bump release of all rpms
+*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 5.2.2-4
+-   Added -lang subpackage
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 5.2.2-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.2.2-2
+-   GA - Bump release of all rpms
 *   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 5.2.2-1
 -   Upgrade version.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 5.0.5-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.0.5-1
--   Initial build.	First version
+-   Initial build. First version

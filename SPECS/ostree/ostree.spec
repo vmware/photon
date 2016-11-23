@@ -1,7 +1,7 @@
 Summary:	Git for operating system binaries
 Name:		ostree
 Version:	2015.7
-Release:	8%{?dist}
+Release:	9%{?dist}
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1 ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
 Source1:	91-ostree.preset
@@ -27,7 +27,8 @@ Requires:   mkinitcpio
 Requires:   dracut
 Requires:   dracut-tools
 Requires:   libarchive
-BuildRequires:	attr
+BuildRequires:	attr-devel
+BuildRequires:	libgpg-error-devel
 BuildRequires:	python2-libs
 BuildRequires:	python2
 BuildRequires:	gobject-introspection
@@ -129,6 +130,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-9
+-   BuildRequired attr-devel and libgpg-error-devel
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2015.7-8
 -   Change systemd dependency
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-7

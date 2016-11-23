@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -12,7 +12,7 @@ Source0:	ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
 BuildRequires:  systemd
 BuildRequires:	openssl-devel
-BuildRequires:  krb5 >= 1.12
+BuildRequires:  krb5-devel >= 1.12
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  Linux-PAM
 Requires:   openssl
@@ -126,22 +126,25 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man8/saslauthd.8.gz
+
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.1.26-9
--       Modified %check
-*       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-8
--       Fixed logic to restart the active services after upgrade
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.26-7
--	GA - Bump release of all rpms
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.1.26-10
+-   Required krb5-devel.
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.1.26-9
+-   Modified %check
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-8
+-   Fixed logic to restart the active services after upgrade
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.26-7
+-   GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-6
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.1.26-5
 -   Add systemd to Requires and BuildRequires.
 *   Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.1.26-4
 -   Add saslauthd service to systemd.
-*	Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.1.26-3
--	Enable CRAM.
-*	Thu Jul 16 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.26-2
--	Disabling parallel threads in make
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.26-1
--	Initial build.	First version
+*   Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.1.26-3
+-   Enable CRAM.
+*   Thu Jul 16 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.26-2
+-   Disabling parallel threads in make
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.26-1
+-   Initial build. First version

@@ -1,7 +1,7 @@
 Summary:	Kernel Audit Tool
 Name:		audit
 Version:	2.5
-Release:	5%{?dist}
+Release:	6%{?dist}
 Source0:	http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1 audit=b684a8dca31776a4184044733cd5fd4b1b652298
 License:	GPLv2+
@@ -11,7 +11,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
-BuildRequires:	krb5
+BuildRequires:	krb5-devel
 BuildRequires:	openldap
 BuildRequires:	go
 BuildRequires:	tcp_wrappers-devel
@@ -122,12 +122,14 @@ make %{?_smp_mflags} check
 %{_includedir}/*.h
 
 %changelog
-*   Fri Jul 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-5
--   Add gawk requirement.
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-4
--   Fixed logic to restart the active services after upgrade 
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-3
--	GA - Bump release of all rpms
+* Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.5-6
+- Required krb5-devel.
+* Fri Jul 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-5
+- Add gawk requirement.
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-4
+- Fixed logic to restart the active services after upgrade 
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-3
+- GA - Bump release of all rpms
 * Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-2
 - Fixing spec file to handle rpm upgrade scenario correctly
 * Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  2.5-1
