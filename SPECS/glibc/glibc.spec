@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -150,6 +150,13 @@ cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
 EOF
 popd
 %find_lang %{name} --all-name
+pushd localedata
+# Generate out of locale-archive an (en_US.) UTF-8 locale
+mkdir -p %{buildroot}/usr/lib/locale
+I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C ../../glibc-build/locale/localedef --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
+mv %{buildroot}/usr/lib/locale/en_US.utf8 %{buildroot}/usr/lib/locale/en_US.UTF-8
+popd
+
 
 %post
 printf "Creating ldconfig cache\n";/sbin/ldconfig
@@ -160,7 +167,7 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %files
 %defattr(-,root,root)
 %dir %{_localstatedir}/cache/nscd
-%dir %{_libdir}/locale
+%{_libdir}/locale/*
 %dir %{_sysconfdir}/ld.so.conf.d
 %config(noreplace) %{_sysconfdir}/nsswitch.conf
 %config(noreplace) %{_sysconfdir}/ld.so.conf
@@ -183,6 +190,7 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %{_datadir}/i18n/charmaps/UTF-8.gz
 %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %{_datadir}/i18n/locales/en_US
+%{_datarootdir}/locale/locale.alias
 %{_localstatedir}/lib/nss_db/Makefile
 %exclude /usr/bin/mtrace
 
@@ -207,10 +215,11 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 %files -f %{name}.lang lang
 %defattr(-,root,root)
-%{_datarootdir}/locale/locale.alias
 
 
 %changelog
+*	Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-13
+-	Install en_US.UTF-8 locale by default
 *	Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-12
 -	Added i18n subpackage
 *	Tue Oct 25 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-11
