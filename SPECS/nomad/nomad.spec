@@ -1,6 +1,6 @@
-Summary:	Nomad Scheduler 0.4.0
+Summary:	Nomad Scheduler 0.4.1
 Name:		nomad
-Version:	0.4.0
+Version:	0.4.1
 Release:	1%{?dist}
 License:	Mozilla Public License, version 2.0
 URL:		https://www.nomadproject.io/
@@ -8,8 +8,11 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0: https://releases.hashicorp.com/%{name}/%{version}/%{name}_%{version}_linux_amd64.zip
-%define sha1 nomad=62685976dc86b3d2c89b529ade8e4d83be4d80fa
-Source1:	%{name}.service
+%define sha1 %{name}_%{version}_linux_amd64.zip=33ebb18daf38621e1c5e1d5e98b5eb9dbc3446c9
+Source1:	%{name}-client.conf
+Source2:	%{name}-client.service
+Source3:	%{name}-server.conf
+Source4:	%{name}-server.service
 Requires:	shadow
 BuildRequires:  unzip
 
@@ -23,35 +26,44 @@ Easily deploy applications at any scale. A Distributed, Highly Available, Datace
 
 %install
 install -vdm755 %{buildroot}%{_bindir}
-install -vdm755 %{buildroot}%{_sysconfdir}/nomad.d
+install -vdm755 %{buildroot}%{_sysconfdir}/%{name}
 install -vdm755 %{buildroot}/usr/lib/systemd/system
 
 chown -R root:root %{buildroot}%{_bindir}
 
 mv %{_builddir}/%{name}-%{version}/%{name} %{buildroot}%{_bindir}/
 
-cp %{SOURCE1} %{buildroot}/usr/lib/systemd/system
+cp %{SOURCE1} %{buildroot}%{_sysconfdir}/%{name}/client.conf
+cp %{SOURCE2} %{buildroot}/usr/lib/systemd/system
+cp %{SOURCE3} %{buildroot}%{_sysconfdir}/%{name}/server.conf
+cp %{SOURCE4} %{buildroot}/usr/lib/systemd/system
 install -vdm755 %{buildroot}/var/lib/%{name}
 
-%post	-p /sbin/ldconfig
-%systemd_post %{name}.service
+%post
+%systemd_post %{name}-client.service
+%systemd_post %{name}-server.service
 
-%postun	-p /sbin/ldconfig
-%systemd_postun_with_restart %{name}.service
+%postun
+%systemd_postun_with_restart %{name}-client.service
+%systemd_postun_with_restart %{name}-server.service
 
 %preun
-%systemd_preun %{name}.service
+%systemd_preun %{name}-client.service
+%systemd_preun %{name}-server.service
 
 %clean
-rm -rf %{buildroot}/*
+rm -rf %{buildroot}
 
 %files
-%defattr(-,%{name},%{name})
+%defattr(-,root,root)
 %{_bindir}/%{name}
-/usr/lib/systemd/system/%{name}.service
+/usr/lib/systemd/system/%{name}-client.service
+/usr/lib/systemd/system/%{name}-server.service
 %dir /var/lib/%{name}
-%dir %{_sysconfdir}/%{name}.d
+%dir %{_sysconfdir}/%{name}
 
 %changelog
+*	Sat Nov 12 2016 Ivan Porto Carrero <icarrero@vmware.com> 0.4.1-1
+-	Defaults to dev mode
 *	Sun Jul 24 2016 Ivan Porto Carrero <icarrero@vmware.com> 0.4.0-1
 -	Initial build.	First version
