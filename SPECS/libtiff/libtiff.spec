@@ -1,22 +1,16 @@
 Summary:	TIFF libraries and associated utilities.
 Name:		libtiff
-Version:	4.0.6
-Release:	3%{?dist}
+Version:	4.0.7
+Release:	1%{?dist}
 License:	libtiff
 URL:		http://www.remotesensing.org/libtiff
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://download.osgeo.org/%{name}/tiff-%{version}.tar.gz
-%define sha1 tiff=280e27704eaca5f592b82e71ac0c78b87395e2de
-Patch0:		libtiff-4.0.6-CVE-2015-8668.patch
-Patch1:		libtiff-4.0.6-CVE-2015-7554.patch
-Patch2:		libtiff-4.0.6-CVE-2015-8683+CVE-2015-8665.patch
-Patch3:     	libtiff-4.0.6-CVE-2016-3186.patch
-Patch4:     	libtiff-4.0.6-CVE-2015-1547.patch
-Patch5:     	libtiff-4.0.6-CVE-2016-3945.patch
-Patch6:     	libtiff-4.0.6-CVE-2016-3990.patch
-Patch7:     	libtiff-4.0.6-CVE-2016-3991.patch
+%define sha1 tiff=2c1b64478e88f93522a42dd5271214a0e5eae648
+Patch0:		libtiff-4.0.6-CVE-2015-7554.patch
+Patch1:     	libtiff-4.0.6-CVE-2015-1547.patch
 BuildRequires:	libjpeg-turbo-devel
 Requires:	libjpeg-turbo
 %description
@@ -25,6 +19,7 @@ The LibTIFF package contains the TIFF libraries and associated utilities. The li
 %package	devel
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
+Requires:	libjpeg-turbo-devel
 %description	devel
 It contains the libraries and header files to create applications 
 
@@ -32,12 +27,6 @@ It contains the libraries and header files to create applications
 %setup -q -n tiff-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p2
-%patch6 -p2
-%patch7 -p2
 
 %build
 ./configure \
@@ -62,19 +51,24 @@ make %{?_smp_mflags} -k check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_datadir}/*
+%{_datadir}/man/man1/*
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/doc/*
+%{_datadir}/man/man3/*
 
 %changelog
-*       Wed Oct 12 2016 Dheeraj Shetty <dheerajs@vmware.com> 4.0.6-3
--       Fixed security issues : CVE-2016-3945, CVE-2016-3990, CVE-2016-3991
-*       Thu Sep 22 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.6-2
--       Fixed security issues : CVE-2015-8668, CVE-2015-7554, CVE-2015-8683+CVE-2015-8665,CVE-2016-3186
-        CVE-2015-1547
-*       Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.0.6-1
--       Initial version
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 4.0.7-1
+-   Update to 4.0.7. It fixes CVE-2016-953[3456789] and CVE-2016-9540
+-   Remove obsolete patches
+*   Wed Oct 12 2016 Dheeraj Shetty <dheerajs@vmware.com> 4.0.6-3
+-   Fixed security issues : CVE-2016-3945, CVE-2016-3990, CVE-2016-3991
+*   Thu Sep 22 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.6-2
+-   Fixed security issues : CVE-2015-8668, CVE-2015-7554, CVE-2015-8683+CVE-2015-8665,CVE-2016-3186
+-   CVE-2015-1547
+*   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.0.6-1
+-   Initial version
