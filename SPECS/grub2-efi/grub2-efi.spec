@@ -1,20 +1,21 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
-Summary:	GRand Unified Bootloader
-Name:		grub2-efi
-Version:	2.02
-Release:	2%{?dist}
-License:	GPLv3+
-URL:		http://www.gnu.org/software/grub
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
+Summary:    GRand Unified Bootloader
+Name:       grub2-efi
+Version:    2.02
+Release:    3%{?dist}
+License:    GPLv3+
+URL:        http://www.gnu.org/software/grub
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
 %define sha1 grub=b2c9227f9a54587532ae3f727d197ab112cdbbb3
-BuildRequires:	device-mapper-devel
-BuildRequires:	xz-devel
-Requires:	xz
-Requires:	device-mapper
+Patch0:     grub2-efi-CVE-2015-8370.patch
+BuildRequires:  device-mapper-devel
+BuildRequires:  xz-devel
+Requires:   xz
+Requires:   device-mapper
 %description
 The GRUB package contains the GRand Unified Bootloader.
 
@@ -28,6 +29,7 @@ These are the additional language files of grub.
 
 %prep
 %setup -qn grub-2.02~beta2
+%patch0 -p1
 #sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
 %build
 
@@ -84,7 +86,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/locale/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02-2
--	GA - Bump release of all rpms
-*	Fri Jul 31 2015 Sharath George <sharathg@vmware.com> 2.02-1
--	Adding EFI support.
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02-3
+-   Add fix for CVE-2015-8370
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02-2
+-   GA - Bump release of all rpms
+*   Fri Jul 31 2015 Sharath George <sharathg@vmware.com> 2.02-1
+-   Adding EFI support.
