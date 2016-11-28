@@ -1,7 +1,7 @@
 Summary:      This package contains the 'perf' performance analysis tools for Linux kernel 
 Name:         linux-tools
 Version:      4.4.31
-Release:      1%{?dist}
+Release:      2%{?dist}
 License:      GPLv2
 URL:          http://www.kernel.org/
 Group:        System/Tools
@@ -10,7 +10,8 @@ Distribution: Photon
 Source0:      http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=f00153a1b77f921d371ea45df421bfe855b40608
 Patch0:		  perf-top-sigsegv-fix.patch
-Requires:         filesystem kmod coreutils binutils
+BuildRequires:	audit-devel
+Requires:       audit filesystem kmod coreutils binutils
 
 %description
 This package contains the 'perf' performance analysis tools for Linux kernel. 
@@ -36,8 +37,11 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 %{_libdir}/traceevent
 %{_bindir}
 /etc/bash_completion.d/* 
+/usr/share/perf-core/strace/groups/file
 
 %changelog
+*   Mon Nov 28 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.31-2
+-   Building it with audit-devel
 *   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-1
 -   Update to linux-4.4.31
 *   Fri Oct 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-2

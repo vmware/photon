@@ -13,6 +13,7 @@ Patch0:         krb5-1.14-skip-unnecessary-mech-calls.patch
 Patch1:         krb5-1.14-never-unload-mechanisms.patch
 Requires:	openssl
 Requires:	e2fsprogs-libs
+Requires:	e2fsprogs
 BuildRequires: 	openssl-devel
 BuildRequires:	e2fsprogs-devel
 %description
