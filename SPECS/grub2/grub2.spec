@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.02
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -12,6 +12,7 @@ Distribution:   Photon
 Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
 %define sha1 grub=b2c9227f9a54587532ae3f727d197ab112cdbbb3
 Patch0:     Fix_to_boot_entries_with_out_password.patch
+Patch1:     grub2-CVE-2015-8370.patch
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
@@ -31,6 +32,7 @@ These are the additional language files of grub.
 %prep
 %setup -qn grub-2.02~beta2
 %patch0 -p1
+%patch1 -p1
 #sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
 %build
 ./configure \
@@ -79,6 +81,8 @@ rm -rf %{buildroot}%{_infodir}
 /usr/share/locale/*
 
 %changelog
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02-7
+-   Add fix for CVE-2015-8370
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02-6
 -   Change systemd dependency
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.02-5
