@@ -1,37 +1,39 @@
 %define debug_package %{nil}
 
-Summary:	Text editor
-Name:		vim
-Version:	7.4
-Release:	5%{?dist}
-License:	Charityware
-URL:		http://www.vim.org
-Group:		Applications/Editors
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.bz2
+Summary:    Text editor
+Name:       vim
+Version:    7.4
+Release:    6%{?dist}
+License:    Charityware
+URL:        http://www.vim.org
+Group:      Applications/Editors
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:    %{name}-%{version}.tar.bz2
 %define sha1 vim=601abf7cc2b5ab186f40d8790e542f86afca86b7
-BuildRequires:	ncurses-devel
-Requires:	tcsh
+Patch0:         vim-CVE-2016-1248.patch
+BuildRequires:  ncurses-devel
+Requires:   tcsh
 
 %description
 The Vim package contains a powerful text editor.
 
-%package 	extra
-Summary: 	Extra files for Vim text editor
-Group: 		Applications/Editors
-Requires:	tcsh
+%package    extra
+Summary:    Extra files for Vim text editor
+Group:      Applications/Editors
+Requires:   tcsh
 
 %description extra
 The vim extra package contains a extra files for powerful text editor.
 
 %prep
 %setup -q -n %{name}74
+%patch0 -p1
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--enable-multibyte
+    --prefix=%{_prefix} \
+    --enable-multibyte
 make VERBOSE=1 %{?_smp_mflags}
 %install
 cd %{_builddir}/%{name}74
@@ -144,13 +146,15 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5
--	GA - Bump release of all rpms
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  7.4-6
+-   Fix for CVE-2016-1248
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5
+-   GA - Bump release of all rpms
 *   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
 -   Added profile related files in minimal vim package.
 *   Tue Jun 30 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
 -   Pack extra files separately, to make vim package small.
-*	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2
--	Disable debug package. Use 'desert' colorscheme.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
--	Initial build.	First version
+*   Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2
+-   Disable debug package. Use 'desert' colorscheme.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
+-   Initial build.  First version
