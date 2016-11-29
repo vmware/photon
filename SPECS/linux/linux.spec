@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.31
-Release:    	4%{?dist}
+Version:    	4.4.35
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=f00153a1b77f921d371ea45df421bfe855b40608
+%define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -19,8 +19,8 @@ Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
 Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
 Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-#fixes CVE-2015-8964
-Patch8:         tty-prevent-ldisc-drivers-from-re-using-stale-tty-fields.patch
+#fixes CVE-2016-9083
+Patch8:         vfio-pci-fix-integer-overflows-bitmask-check.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 Patch11:        VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
@@ -29,9 +29,7 @@ Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
-#fixes CVE-2016-7039
-Patch16:        net-add-recursion-limit-to-GRO.patch
-Patch17:        net-9p-vsock.patch
+Patch16:        net-9p-vsock.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -104,7 +102,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
-%patch17 -p1
 
 %build
 make mrproper
@@ -126,6 +123,8 @@ cp -v .config           %{buildroot}/boot/config-%{version}-%{release}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{version}
 cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}
+# `perf test 1` needs it
+ln -s vmlinux-%{version}-%{release} %{buildroot}/usr/lib/debug/lib/modules/%{version}/vmlinux
 
 cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
 # GRUB Environment Block
@@ -202,6 +201,10 @@ ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug 
 /lib/modules/%{version}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Mon Nov 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-1
+-   Update to linux-4.4.35
+-   vfio-pci-fix-integer-overflows-bitmask-check.patch
+    to fix CVE-2016-9083
 *   Tue Nov 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-4
 -   net-9p-vsock.patch
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-3
