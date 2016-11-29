@@ -84,6 +84,7 @@ if [ "$BOOTMODE" == "efi" ]; then
 fi
 
 rm -rf ${BUILDROOT}/boot/grub2/fonts
+cp boot/ascii.pf2 ${BUILDROOT}/boot/grub2/
 mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
 cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
@@ -94,6 +95,7 @@ cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 set default=0
 set timeout=5
 search -n -u $BOOT_UUID -s
+loadfont "$BOOT_DIRECTORY"grub2/ascii.pf2
 
 insmod gfxterm
 insmod vbe
