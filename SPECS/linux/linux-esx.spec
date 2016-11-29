@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.31
-Release:       4%{?dist}
+Version:       4.4.35
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f00153a1b77f921d371ea45df421bfe855b40608
+%define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -23,8 +23,8 @@ Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
 Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-#fixes CVE-2015-8964
-Patch12:       tty-prevent-ldisc-drivers-from-re-using-stale-tty-fields.patch
+#fixes CVE-2016-9083
+Patch12:       vfio-pci-fix-integer-overflows-bitmask-check.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
@@ -34,9 +34,7 @@ Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
-#fixes CVE-2016-7039
-Patch22:       net-add-recursion-limit-to-GRO.patch
-Patch23:       net-9p-vsock.patch
+Patch22:       net-9p-vsock.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -94,7 +92,6 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -166,6 +163,10 @@ ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{version}-%{release}
 
 %changelog
+*   Mon Nov 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-1
+-   Update to linux-4.4.35
+-   vfio-pci-fix-integer-overflows-bitmask-check.patch
+    to fix CVE-2016-9083
 *   Tue Nov 22 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-4
 -   net-9p-vsock.patch
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-3
