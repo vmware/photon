@@ -1,37 +1,39 @@
 %define debug_package %{nil}
 
-Summary:	Text editor
-Name:		vim
-Version:	7.4
-Release:	7%{?dist}
-License:	Charityware
-URL:		http://www.vim.org
-Group:		Applications/Editors
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.bz2
+Summary:    Text editor
+Name:       vim
+Version:    7.4
+Release:    8%{?dist}
+License:    Charityware
+URL:        http://www.vim.org
+Group:      Applications/Editors
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:    %{name}-%{version}.tar.bz2
 %define sha1 vim=601abf7cc2b5ab186f40d8790e542f86afca86b7
-BuildRequires:	ncurses-devel
-Requires:	tcsh
+Patch0:         vim-CVE-2016-1248.patch
+BuildRequires:  ncurses-devel
+Requires:   tcsh
 
 %description
 The Vim package contains a powerful text editor.
 
-%package 	extra
-Summary: 	Extra files for Vim text editor
-Group: 		Applications/Editors
-Requires:	tcsh
+%package    extra
+Summary:    Extra files for Vim text editor
+Group:      Applications/Editors
+Requires:   tcsh
 
 %description extra
 The vim extra package contains a extra files for powerful text editor.
 
 %prep
 %setup -q -n %{name}74
+%patch0 -p1
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--enable-multibyte
+    --prefix=%{_prefix} \
+    --enable-multibyte
 make VERBOSE=1 %{?_smp_mflags}
 %install
 cd %{_builddir}/%{name}74
@@ -155,8 +157,10 @@ make test
 %{_bindir}/vimdiff
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.4-7
--       Modified %check
+*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  7.4-8
+-   Fix for CVE-2016-1248
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.4-7
+-   Modified %check
 *   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.4-6
 -   vimrc: Added tags search, tab->spaces and some bindings
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5
