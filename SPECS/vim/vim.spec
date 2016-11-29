@@ -3,7 +3,7 @@
 Summary:	Text editor
 Name:		vim
 Version:	7.4
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Charityware
 URL:		http://www.vim.org
 Group:		Applications/Editors
@@ -11,6 +11,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.bz2
 %define sha1 vim=601abf7cc2b5ab186f40d8790e542f86afca86b7
+Patch0:         vim-CVE-2016-1248.patch
 BuildRequires:	ncurses-devel
 Requires:	tcsh
 
@@ -27,6 +28,7 @@ The vim extra package contains a extra files for powerful text editor.
 
 %prep
 %setup -q -n %{name}74
+%patch0 -p1
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
 ./configure \
