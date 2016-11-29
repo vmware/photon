@@ -1,6 +1,6 @@
 Summary:      This package contains the 'perf' performance analysis tools for Linux kernel 
 Name:         linux-tools
-Version:      4.4.31
+Version:      4.4.35
 Release:      1%{?dist}
 License:      GPLv2
 URL:          http://www.kernel.org/
@@ -8,7 +8,7 @@ Group:        System/Tools
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f00153a1b77f921d371ea45df421bfe855b40608
+%define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
 Patch0:		  perf-top-sigsegv-fix.patch
 Requires:         filesystem kmod coreutils binutils
 
@@ -38,6 +38,8 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 /etc/bash_completion.d/* 
 
 %changelog
+*   Mon Nov 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-1
+-   Update to linux-4.4.35
 *   Thu Nov 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.31-1
 -   Update to linux-4.4.31
 *   Fri Oct 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.26-2
