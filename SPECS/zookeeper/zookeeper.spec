@@ -1,22 +1,22 @@
-Summary:	Highly reliable distributed coordination
-Name:		zookeeper
-Version:	3.4.8
-Release:	4%{?dist}
-URL:		http://zookeeper.apache.org/
-License:	Apache License, Version 2.0
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source:	http://www.carfab.com/apachesoftware/zookeeper/stable/%{name}-%{version}.tar.gz
-%define sha1 zookeeper=51b61611a329294f75aed82f3a4517a4b6ff116f
-Source1:	zookeeper.service
-Source2:	zkEnv.sh
-Patch0:		zookeeper-3.4.8-server.patch
+Summary:        Highly reliable distributed coordination
+Name:           zookeeper
+Version:        3.4.9
+Release:        1%{?dist}
+URL:            http://zookeeper.apache.org/
+License:        Apache License, Version 2.0
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source:         http://mirrors.ocf.berkeley.edu/apache/zookeeper/zookeeper-3.4.9/%{name}-%{version}.tar.gz
+%define sha1 zookeeper=0285717bf5ea87a7a36936bf37851d214a32bb99
+Source1:        zookeeper.service
+Source2:        zkEnv.sh
+Patch0:	        zookeeper-3.4.8-server.patch
 BuildRequires:  systemd
 Requires:       systemd
-Requires: shadow
-Requires: openjre
-Provides: zookeeper
+Requires:       shadow
+Requires:       openjre
+Provides:       zookeeper
 %description
 ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. All of these kinds of services are used in some form or another by distributed applications. Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable. Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them ,which make them brittle in the presence of change and difficult to manage. Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
@@ -104,8 +104,10 @@ fi
 %{_prefix}
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.8-4
--	GA - Bump release of all rpms
+*   Mon Nov 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.76-1
+-   Upgrade to 3.4.9 to address CVE-2016-5017
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.8-4
+-   GA - Bump release of all rpms
 *   Mon May 2 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-3
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com>  3.4.8-2
