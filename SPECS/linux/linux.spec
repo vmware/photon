@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.35
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -42,6 +42,7 @@ BuildRequires:  Linux-PAM
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod coreutils
+%define uname_r %{version}-%{release}
 
 %description
 The Linux package contains the Linux kernel. 
@@ -106,101 +107,127 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %build
 make mrproper
 cp %{SOURCE1} .config
+sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+
+%define __modules_install_post \
+    find %{buildroot}/lib/modules/%{uname_r} -name *.ko | xargs xz \
+%{nil}
+
+# We want to compress modules after stripping. Extra step is added to
+# the default __spec_install_post.
+%define __spec_install_post\
+    %{?__debug_package:%{__debug_install_post}}\
+    %{__arch_install_post}\
+    %{__os_install_post}\
+    %{__modules_install_post}\
+%{nil}
 
 %install
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}/etc/modprobe.d
-install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
+install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
+install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{version}-%{release}
-cp -v System.map        %{buildroot}/boot/System.map-%{version}-%{release}
-cp -v .config           %{buildroot}/boot/config-%{version}-%{release}
-cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{version}
-install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{version}
-cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}
-# `perf test 1` needs it
-ln -s vmlinux-%{version}-%{release} %{buildroot}/usr/lib/debug/lib/modules/%{version}/vmlinux
+# Verify for build-id match
+# We observe different IDs sometimes
+# TODO: debug it
+ID1=`readelf -n vmlinux | grep "Build ID"`
+./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
+ID2=`readelf -n extracted-vmlinux | grep "Build ID"`
+if [ "$ID1" != "$ID2" ] ; then
+	echo "Build IDs do not match"
+	echo $ID1
+	echo $ID2
+	exit 1
+fi
+install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+# Restrict the permission on System.map-X file
+install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
+install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
+cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
+install -vm 644 vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
+# `perf test vmlinux` needs it
+ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux
 
-cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
+cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
-photon_linux=vmlinuz-%{version}-%{release}
-photon_initrd=initrd.img-%{version}-%{release}
+photon_linux=vmlinuz-%{uname_r}
+photon_initrd=initrd.img-%{uname_r}
 EOF
 
-# Restrict the permission on System.map-X file
-chmod -v 400 %{buildroot}/boot/System.map-%{version}-%{release}
-
 #    Cleanup dangling symlinks
-rm -rf %{buildroot}/lib/modules/%{version}/source
-rm -rf %{buildroot}/lib/modules/%{version}/build
+rm -rf %{buildroot}/lib/modules/%{uname_r}/source
+rm -rf %{buildroot}/lib/modules/%{uname_r}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
 
-cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release} # copy .config manually to be where it's expected to be
-ln -sf "/usr/src/%{name}-headers-%{version}-%{release}" "%{buildroot}/lib/modules/%{version}/build"
+cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
+ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 %post
-/sbin/depmod -aq %{version}
-ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
+/sbin/depmod -aq %{uname_r}
+ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 %post drivers-gpu
-/sbin/depmod -aq %{version}
+/sbin/depmod -aq %{uname_r}
 
 %post sound
-/sbin/depmod -aq %{version}
+/sbin/depmod -aq %{uname_r}
 
 %post oprofile
-/sbin/depmod -aq %{version}
-
-%post debuginfo
-ln -s /usr/lib/debug/lib/modules/%{version}/vmlinux-%{version}-%{release}.debug /boot/vmlinux-%{version}-%{release}.debug
+/sbin/depmod -aq %{uname_r}
 
 %files
 %defattr(-,root,root)
-/boot/System.map-%{version}-%{release}
-/boot/config-%{version}-%{release}
-/boot/vmlinuz-%{version}-%{release}
-%config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
+/boot/System.map-%{uname_r}
+/boot/config-%{uname_r}
+/boot/vmlinuz-%{uname_r}
+%config(noreplace) /boot/%{name}-%{uname_r}.cfg
 /lib/firmware/*
 %defattr(0644,root,root)
-/lib/modules/%{version}/*
-%exclude /lib/modules/%{version}/build
-%exclude /lib/modules/%{version}/kernel/drivers/gpu
-%exclude /lib/modules/%{version}/kernel/sound
-%exclude /lib/modules/%{version}/kernel/arch/x86/oprofile/
+/lib/modules/%{uname_r}/*
+%exclude /lib/modules/%{uname_r}/build
+%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
+%exclude /lib/modules/%{uname_r}/kernel/sound
+%exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/%{name}-%{version}/*
+%{_defaultdocdir}/%{name}-%{uname_r}/*
 
 %files dev
 %defattr(-,root,root)
-/lib/modules/%{version}/build
-/usr/src/%{name}-headers-%{version}-%{release}
+/lib/modules/%{uname_r}/build
+/usr/src/%{name}-headers-%{uname_r}
 
 %files drivers-gpu
 %defattr(-,root,root)
-%exclude /lib/modules/%{version}/kernel/drivers/gpu/drm/cirrus/
-/lib/modules/%{version}/kernel/drivers/gpu
+%exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
+/lib/modules/%{uname_r}/kernel/drivers/gpu
 
 %files sound
 %defattr(-,root,root)
-/lib/modules/%{version}/kernel/sound
+/lib/modules/%{uname_r}/kernel/sound
 
 %files oprofile
 %defattr(-,root,root)
-/lib/modules/%{version}/kernel/arch/x86/oprofile/
+/lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-2
+-   Expand `uname -r` with release number
+-   Check for build-id matching
+-   Added syscalls tracing support
+-   Compress modules
 *   Mon Nov 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-1
 -   Update to linux-4.4.35
 -   vfio-pci-fix-integer-overflows-bitmask-check.patch
