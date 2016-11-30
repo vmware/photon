@@ -1,14 +1,14 @@
 Summary:    	The Apache Subversion control system
 Name:       	subversion
-Version:    	1.9.3
-Release:    	8%{?dist}
+Version:    	1.9.4
+Release:    	1%{?dist}
 License:    	Apache License 2.0
 URL:        	http://subversion.apache.org/
 Group:      	Utilities/System
 Vendor:     	VMware, Inc.
 Distribution: 	Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 subversion=27e8df191c92095f48314a415194ec37c682cbcf
+%define sha1 subversion=bc7d51fdda43bea01e1272dfe9d23d0a9d6cd11c
 Requires:   	apr
 Requires:   	apr-util
 BuildRequires: 	apr-devel
@@ -56,6 +56,8 @@ make  %{?_smp_mflags} check
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Wed Nov 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.4-1
+-	Upgraded to version 1.9.4, fixes CVE-2016-2167  CVE-2016-2168 
 *   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 1.9.3-8
 -   Use sqlite-{devel,libs}
 *   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 1.9.3-7
