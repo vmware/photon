@@ -2,7 +2,7 @@
 Summary:	Sysdig is a universal system visibility tool with native support for containers.
 Name:		sysdig
 Version:	0.10.1
-Release:	2%{?kernelsubrelease}%{?dist}
+Release:	3%{?kernelsubrelease}%{?dist}
 License:	GPLv2	  
 URL:		http://www.sysdig.org/
 Group:		Applications/System	
@@ -39,17 +39,17 @@ cmake \
 	-DUSE_BUNDLED_ZLIB=OFF \
 	-DUSE_BUNDLED_NCURSES=OFF ..
 
-make KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build" 
+make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 
 %install
 cd build
-make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build"
+make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 mv %{buildroot}/usr/src/sysdig* %{buildroot}/usr/src/sysdig-%{version}
 mkdir -p %{buildroot}/etc/
 mv %{buildroot}/usr/etc/bash_completion.d %{buildroot}/etc/
 rm -rf %{buildroot}/usr/share/zsh/
-mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}/extra
-mv driver/sysdig-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}/extra
+mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
+mv driver/sysdig-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
 
 %clean
 rm -rf %{buildroot}/*
@@ -64,26 +64,28 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 /etc/bash_completion.d/* 
 %{_bindir}
-/usr/src 
 %{_datadir}
-/lib/modules/%{KERNEL_VERSION}/extra/sysdig-probe.ko
+/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.10.1-3
+-   Expand uname -r to have release number
+-   Exclude /usr/src
 *   Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 0.10.1-2
 -   Added kernel macros
-*	Thu Jul 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.10.1-2
--	Updated sysdig to build the kernel module 
-*       Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 0.10.1-1
--       Upgrade sysdig to 0.10.1
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.8.0-4
--	GA - Bump release of all rpms
-*       Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 0.8.0-3
--	Removing usage of bundled packages to build sysdig package
-*       Wed Mar 16 2016 Anish Swaminathan <anishs@vmware.com> 0.8.0-2
--       Add openssl to buildrequires.
-*       Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.8.0-1
--       Upgraded to new version.
-*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 0.6.0-1
--   	Upgrade version.
-*	Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.1.101-1
--	Initial build.	First version
+*   Thu Jul 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.10.1-2
+-   Updated sysdig to build the kernel module
+*   Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 0.10.1-1
+-   Upgrade sysdig to 0.10.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.8.0-4
+-   GA - Bump release of all rpms
+*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 0.8.0-3
+-   Removing usage of bundled packages to build sysdig package
+*   Wed Mar 16 2016 Anish Swaminathan <anishs@vmware.com> 0.8.0-2
+-   Add openssl to buildrequires.
+*   Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.8.0-1
+-   Upgraded to new version.
+*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 0.6.0-1
+-   Upgrade version.
+*   Mon Nov 30 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.1.101-1
+-   Initial build. First version
