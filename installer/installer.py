@@ -140,6 +140,7 @@ class Installer(object):
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
 
+        shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
         self.finalize_system()
 
         if not self.install_config['iso_system']:
@@ -159,6 +160,9 @@ class Installer(object):
             retval = process.wait()
 
             self.update_fstab()
+
+        if os.path.exists(self.photon_root + '/etc/resolv.conf'):
+            os.remove(self.photon_root + '/etc/resolv.conf')
 
         command = [self.unmount_disk_command, '-w', self.photon_root]
         if not self.install_config['iso_system']:
@@ -290,7 +294,6 @@ class Installer(object):
     
     def finalize_system(self):
         #Setup the disk
-        shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
         process = subprocess.Popen([self.chroot_command, '-w', self.photon_root, self.finalize_command, '-w', self.photon_root], stdout=self.output)
         retval = process.wait()
         if self.iso_installer:
