@@ -2,7 +2,7 @@
 Summary:	The Behavioral Activity Monitor With Container Support
 Name:		falco
 Version:	0.2.0
-Release:	3%{?kernelsubrelease}%{?dist}
+Release:	4%{?kernelsubrelease}%{?dist}
 License:	GPLv2	  
 URL:		http://www.sysdig.org/falco/
 Group:		Applications/System	
@@ -52,10 +52,10 @@ tar xf %{SOURCE3} --no-same-owner
 %build
 mv sysdig-0.10.1 ../sysdig
 cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} CMakeLists.txt
-make KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build"
+make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 
 %install
-make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}/build" DESTDIR=%{buildroot}
+make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" DESTDIR=%{buildroot}
 
 %check
 easy_install pip
@@ -70,14 +70,17 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_usrsrc}/*
-/etc/*
+%exclude %{_usrsrc}
+%{_sysconfdir}/*
 %{_datadir}/*
 
 %changelog
-*	Fri Sep  2 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-3
--	Use KERNEL_VERSION macro
-*	Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 0.2.0-2
--	Removed packaging of debug files
-*	Tue Jun 28 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.2.0-1
--	Initial build.	First version
+*   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-4
+-   Expand uname -r to have release number
+-   Exclude /usr/src
+*   Fri Sep  2 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-3
+-   Use KERNEL_VERSION macro
+*   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 0.2.0-2
+-   Removed packaging of debug files
+*   Tue Jun 28 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.2.0-1
+-   Initial build. First version
