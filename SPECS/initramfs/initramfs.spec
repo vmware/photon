@@ -1,7 +1,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
-Release:	6%{?kernelsubrelease}%{?dist}
+Release:	7%{?kernelsubrelease}%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -29,7 +29,7 @@ echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev x
 echo 'add_dracutmodules+=" ostree systemd "' > /etc/dracut.conf.d/ostree.conf
 
 %build
-dracut --force --kver %{KERNEL_VERSION} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+dracut --force --kver %{KERNEL_VERSION}-%{KERNEL_RELEASE} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/boot
@@ -44,6 +44,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %changelog
+*   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-7
+-   Expand uname -r to have release number
 *   Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  1.0-6
 -   Dracut module change to include systemd initrd target
 *   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-5
