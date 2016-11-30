@@ -1,7 +1,7 @@
 Summary:    Userland logical volume management tools 
 Name:       lvm2
 Version:    2.02.141
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GPLv2
 Group:      System Environment/Base
 URL:        http://sources.redhat.com/dm
@@ -214,15 +214,15 @@ make install_tmpfiles_configuration DESTDIR=%{buildroot}
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 
 %preun
-%systemd_preun lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
+%systemd_preun lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
 
 %post
 /sbin/ldconfig
-%systemd_post lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
+%systemd_post lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
 
 %postun
 /sbin/ldconfig
-%systemd_postun_with_restart lvm2-lvmetad.service lvm2-monitor.service lvm2-activate.service
+%systemd_postun_with_restart lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
 
 %files  devel
 %defattr(-,root,root,-)
@@ -425,6 +425,8 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
+*   Wed Nov 30 2016 Anish Swaminathan <anishs@vmware.com>  2.02.141-7
+-   Start lvmetad socket with the service
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02.141-6
 -   Change systemd dependency
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-5
