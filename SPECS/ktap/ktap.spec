@@ -1,7 +1,7 @@
 Summary: A New Scripting Dynamic Tracing Tool For Linux
 Name:    ktap
 Version: 0.4
-Release: 3%{?kernelsubrelease}%{?dist}
+Release: 5%{?kernelsubrelease}%{?dist}
 License: GPLv2
 URL: https://github.com/ktap/ktap
 Source: %{name}-master.zip
@@ -29,11 +29,15 @@ make ktap
 # ugly hack: disable security hardening to build kernel module
 # we need to remove sec hard specs file for that.
 rm -f `dirname $(gcc --print-libgcc-file-name)`/../specs
-make KVERSION=%{KERNEL_VERSION} mod
+make KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE} mod
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}
+make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+
+%check
+cpan Test::Base
+make  %{?_smp_mflags} test
 
 %post
 /sbin/depmod -a
@@ -45,13 +49,18 @@ make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}
 %defattr(-, root, root, 0755)
 %doc README.md
 %{_bindir}/ktap
-/lib/modules/%{KERNEL_VERSION}/extra/ktapvm.ko
+/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/ktapvm.ko
 
 %changelog
+*   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.4-5
+-   Expand uname -r to have release number
+*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.4-4
+-   Modified %check
 *   Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 0.4-3
 -   Added kernel macros
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.4-3
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.4-3
+-   GA - Bump release of all rpms
+>>>>>>> bf36478... kernels: Expand uname -r. Compress modules
 *   Thu Apr 28 2016 Alexey Makhalov <amakhalov@vmware.com> 0.4-2
 -   Update to linux-4.4.8
 *   Fri Dec 04 2015 Xiaolin Li <xiaolinl@vmware.com> 0.4-1
