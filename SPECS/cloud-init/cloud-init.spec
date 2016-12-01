@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -60,26 +60,27 @@ cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%pre
-if [ -f /usr/lib/systemd/system/cloud-final.service ]; then
-    cp /usr/lib/systemd/system/cloud-final.service /usr/lib/systemd/system/cloud-final.service.bak
-    sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-final.service
-fi
-if [ -f /usr/lib/systemd/system/cloud-init.service ]; then
-    cp /usr/lib/systemd/system/cloud-init.service /usr/lib/systemd/system/cloud-init.service.bak
-    sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-init.service
-fi
-if [ -f /usr/lib/systemd/system/cloud-config.service ]; then
-    cp /usr/lib/systemd/system/cloud-config.service /usr/lib/systemd/system/cloud-config.service.bak
-    sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-config.service
-fi
-if [ -f /usr/lib/systemd/system/cloud-init-local.service ]; then
-    cp /usr/lib/systemd/system/cloud-init-local.service /usr/lib/systemd/system/cloud-init-local.service.bak
-    sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-init-local.service
-fi
-systemctl daemon-reload >/dev/null 2>&1 || :
-
 %post
+if [ $1 -eq 2 ]; then
+    if [ -f /usr/lib/systemd/system/cloud-final.service ]; then
+        cp /usr/lib/systemd/system/cloud-final.service /usr/lib/systemd/system/cloud-final.service.bak
+        sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-final.service
+    fi
+    if [ -f /usr/lib/systemd/system/cloud-init.service ]; then
+        cp /usr/lib/systemd/system/cloud-init.service /usr/lib/systemd/system/cloud-init.service.bak
+        sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-init.service
+    fi
+    if [ -f /usr/lib/systemd/system/cloud-config.service ]; then
+        cp /usr/lib/systemd/system/cloud-config.service /usr/lib/systemd/system/cloud-config.service.bak
+        sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-config.service
+    fi
+    if [ -f /usr/lib/systemd/system/cloud-init-local.service ]; then
+        cp /usr/lib/systemd/system/cloud-init-local.service /usr/lib/systemd/system/cloud-init-local.service.bak
+        sed -i "s@ExecStart=.*@ExecStart=/usr/bin/cloud-init --version@g" /usr/lib/systemd/system/cloud-init-local.service
+    fi
+    systemctl daemon-reload >/dev/null 2>&1 || :
+fi
+
 %systemd_post cloud-config.service
 %systemd_post cloud-final.service
 %systemd_post cloud-init.service
@@ -124,6 +125,8 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Thu Dec 1 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-14
+-   Moved update logic to post section from pre
 *   Tue Nov 22 2016 Kumar Kaushik <kaushikk@vmware.com>  0.7.6-13
 -   Adding flag for vmware customization in config.
 *   Tue Nov 1 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-12
