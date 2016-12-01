@@ -78,7 +78,7 @@
         "unixODBC",
         "dmidecode",
         "iperf",
-	"ipvsadm",
+        "ipvsadm",
         "distrib-compat",
         "crash",
         "systemtap",
@@ -153,6 +153,7 @@
         "nginx",
         "kaigen-gothic-cjk",
         "dialog",
+        "gnuplot",
         "libwebp",
         "libtiff",
         "libpng",
@@ -169,6 +170,6 @@
         "openscap-perl",
         "XML-XPath",
         "GConf2",
-	"sshfs"
+        "sshfs"
             ]
 }
