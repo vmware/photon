@@ -32,7 +32,7 @@ The following process for building the ISO assumes that the following prerequisi
 Here's how to install the packages on Ubuntu: 
 
 ```
-sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests
+sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
 ```
 Here's how to get Docker:
 ```
