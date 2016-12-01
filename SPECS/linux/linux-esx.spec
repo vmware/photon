@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.35
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -47,6 +47,7 @@ BuildRequires: Linux-PAM
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 Requires:      filesystem kmod coreutils
+%define uname_r %{version}-%{release}-esx
 
 %description
 The Linux kernel build for GOS for VMware hypervisor.
@@ -99,70 +100,73 @@ sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 
 make mrproper
 cp %{SOURCE1} .config
+sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
+install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/etc/modprobe.d
-install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
+install -vdm 755 %{buildroot}/usr/src/linux-headers-%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-esx-%{version}-%{release}
-cp -v System.map        %{buildroot}/boot/system.map-esx-%{version}-%{release}
-cp -v .config            %{buildroot}/boot/config-esx-%{version}-%{release}
-cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-esx-%{version}
-install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{version}-esx
-cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{version}-esx/vmlinux-esx-%{version}-%{release}
+cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
+cp -v System.map        %{buildroot}/boot/System.map-%{uname_r}
+cp -v .config            %{buildroot}/boot/config-%{uname_r}
+cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
+install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
+cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
 
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
-cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
+cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
-photon_linux=vmlinuz-esx-%{version}-%{release}
+photon_linux=vmlinuz-%{uname_r}
 EOF
 
 # cleanup dangling symlinks
-rm -f %{buildroot}/lib/modules/%{version}-esx/source
-rm -f %{buildroot}/lib/modules/%{version}-esx/build
+rm -f %{buildroot}/lib/modules/%{uname_r}/source
+rm -f %{buildroot}/lib/modules/%{uname_r}/build
 
-# create /use/src/linux-esx-headers-*/ content
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
+# create /use/src/linux-headers-*/ content
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 
 # copy .config manually to be where it's expected to be
-cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
+cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 # symling to the build folder
-ln -sf /usr/src/%{name}-headers-%{version}-%{release} %{buildroot}/lib/modules/%{version}-esx/build
+ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 %post
-/sbin/depmod -aq %{version}-esx
-ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
+/sbin/depmod -aq %{uname_r}
+ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %files
 %defattr(-,root,root)
-/boot/system.map-esx-%{version}-%{release}
-/boot/config-esx-%{version}-%{release}
-/boot/vmlinuz-esx-%{version}-%{release}
-%config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
+/boot/System.map-%{uname_r}
+/boot/config-%{uname_r}
+/boot/vmlinuz-%{uname_r}
+%config(noreplace) /boot/linux-%{uname_r}.cfg
 /lib/modules/*
-%exclude /lib/modules/%{version}-esx/build
+%exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/linux-esx-%{version}/*
+%{_defaultdocdir}/linux-%{uname_r}/*
 
 %files devel
 %defattr(-,root,root)
-/lib/modules/%{version}-esx/build
-/usr/src/%{name}-headers-%{version}-%{release}
+/lib/modules/%{uname_r}/build
+/usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-3
+-   Expand `uname -r` with release number
 *   Tue Nov 29 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-2
 -   Added btrfs module
 *   Mon Nov 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-1
