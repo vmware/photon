@@ -1,7 +1,7 @@
 Summary:	ASN.1 library
 Name:		libtasn1
 Version:	4.7
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+ and LGPLv2+
 URL:		http://www.gnu.org/software/libtasn1/
 Source0:	http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
@@ -9,6 +9,9 @@ Source0:	http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
+Patch0:         CVE-2016-4008.patch
+
 %description
 Libtasn1 library provides Abstract Syntax Notation One (ASN.1, as specified by the X.680 ITU-T recommendation) parsing and structures management, 
 and Distinguished Encoding Rules (DER, as per X.690) encoding and decoding functions.
@@ -24,6 +27,8 @@ developing applications that use libtasn1.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 ./configure \
 	--prefix=%{_prefix}
@@ -49,6 +54,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %changelog
+*       Wed Nov 30 2016 Dheeraj Shetty <dheerajs@vmware.com> 4.7-3
+-       Added patch for CVE-2016-4008
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.7-2
 -	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.7-1
