@@ -107,9 +107,20 @@ The OVA image uses an optimized version of the 4.4.8 Linux kernel. Two ova files
 
 [VDDK 6.0](https://developercenter.vmware.com/web/sdk/60/vddk)
 
-You must copy the libraries to /usr/lib/vmware and run ldconfig. You must also copy the include files to /usr/include.
+To utilize the VDDK libraries the following procedure may be used, this extracts the libraries and temporarily exports them to the LD_LIBRARY_PATH for the *current session*.  (tested on Ubuntu 1404 & 1604)  If you wish to make this permenant and system-wide then you may want to create a config file in /etc/ld.so.conf.d/.
+
+    tar -zxf VMware-vix-disklib-6.0.2-3566099.x86_64.tar.gz
+    cp -r vmware-vix-disklib-distrib/include/* /usr/include/
+    mkdir /usr/lib/vmware
+    cp -a ~/vmware-vix-disklib-distrib/lib64/* /usr/lib/vmware/
+    rm /usr/lib/vmware/libstdc++.so.6
+    export LD_LIBRARY_PATH=/usr/lib/vmware
 
 [OVFTOOL](https://my.vmware.com/group/vmware/details?downloadGroup=OVFTOOL410&productId=491)
+
+OVF Tool should be downloaded and installed on the host.
+
+    sh VMware-ovftool-4.1.0-2459827-lin.x86_64.bundle --eulas-agreed --required
 
 <!-- 
 ##Photon Bosh
