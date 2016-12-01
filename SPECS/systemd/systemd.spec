@@ -1,7 +1,7 @@
 Summary:          Systemd-232
 Name:             systemd
 Version:          232
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -97,6 +97,7 @@ sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
             --with-dbussessionservicedir=%{_prefix}/share/dbus-1/services \
             --with-dbussystemservicedir=%{_prefix}/share/dbus-1/system-services \
             --enable-compat-libs \
+            --disable-elfutils \
             --with-sysvinit-path=/etc/rc.d/init.d \
             --with-rc-local-script-path-start=/etc/rc.d/rc.local
 
@@ -214,6 +215,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 232-2
+-    disable-elfutils.
 *    Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  232-1
 -    Update systemd to 232
 *    Thu Nov 3 2016 Divya Thaluru <dthaluru@vmware.com>  228-32
