@@ -257,6 +257,8 @@
         "cifs-utils",
         "cifs-utils-devel",
         "python-curses",
+        "libssh2",
+        "libssh2-devel",
         "c-ares",
         "c-ares-devel",
         "dnsmasq",
