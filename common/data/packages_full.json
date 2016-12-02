@@ -127,6 +127,7 @@
         "nss-devel",
         "ncurses-devel",
         "ncurses-compat", 
+        "ncurses-terminfo",
         "tzdata",
         "itstool",
         "sed-lang",
