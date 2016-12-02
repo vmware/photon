@@ -16,7 +16,6 @@ set -o nounset          # exit if variable not initalized
 set +h                  # disable hashall
 PRGNAME=${0##*/}        # script name minus the path
 source config.inc       #   configuration parameters
-source function.inc     #   commonn functions
 LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 
 ROOT=$1

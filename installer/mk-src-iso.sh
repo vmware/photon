@@ -6,17 +6,15 @@
 #      Author:  dthaluru@vmware.com             #
 #     Options:                                  #
 #################################################
-#	Overview
-#		Generates a photon source iso
-#	End
+#   Overview
+#       Generates a photon source iso
+#   End
 #
 
 set +x                 # disable hashall
-PRGNAME=${0##*/}	    # script name minus the path
-source config.inc		#	configuration parameters
-source function.inc		#	commonn functions
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
-
+PRGNAME=${0##*/}        # script name minus the path
+source config.inc       #   configuration parameters
+LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 
 # Grab the name of the iso file 
 if [ $# -lt 2 ]

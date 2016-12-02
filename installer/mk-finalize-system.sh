@@ -6,19 +6,18 @@
 #      Author:  mbassiouny@vmware.com           #
 #     Options:                                  #
 #################################################
-#	Overview
-#		Finalize the system after the installation
-#	End
+#   Overview
+#       Finalize the system after the installation
+#   End
 #
-set -o errexit		# exit if error...insurance ;
-set -o nounset		# exit if variable not initalized
-set +h			# disable hashall
+set -o errexit      # exit if error...insurance ;
+set -o nounset      # exit if variable not initalized
+set +h          # disable hashall
 source config.inc
-source function.inc
-PRGNAME=${0##*/}	# script name minus the path
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
-#LOGFILE=/dev/null		#	uncomment to disable log file
-[ ${EUID} -eq 0 ] 	|| fail "${PRGNAME}: Need to be root user: FAILURE"
+PRGNAME=${0##*/}    # script name minus the path
+LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
+#LOGFILE=/dev/null      #   uncomment to disable log file
+[ ${EUID} -eq 0 ]   || fail "${PRGNAME}: Need to be root user: FAILURE"
 
 /sbin/ldconfig
 /usr/sbin/pwconv
