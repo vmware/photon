@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-sec
 Version:       4.8.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -20,7 +20,8 @@ Patch4:        linux-4.8-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch5:        SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch6:        06-sunrpc.patch
 Patch7:        linux-4.8-vmware-log-kmsg-dump-on-panic.patch
-#Patch8:        linux-4.8-REVERT-sched-fair-Beef-up-wake_wide.patch
+#Patch8:        net-9p-vsock.patch
+#Patch9:        linux-4.8-REVERT-sched-fair-Beef-up-wake_wide.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -33,6 +34,7 @@ BuildRequires: Linux-PAM
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 Requires:      filesystem kmod coreutils
+%define uname_r %{version}-%{release}-secure
 
 %description
 Security hardened Linux kernel.
@@ -72,71 +74,95 @@ sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 
 make mrproper
 cp %{SOURCE1} .config
+sed -i 's/CONFIG_LOCALVERSION="-sec"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+
+%define __modules_install_post \
+for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
+	./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+	rm -f $MODULE.{sig,dig} \
+	xz $MODULES \
+done \
+%{nil}
+
+# __os_install_post strips signature from modules. We need to resign it again
+# and then compress. Extra step is added to the default __spec_install_post.
+%define __spec_install_post\
+    %{?__debug_package:%{__debug_install_post}}\
+    %{__arch_install_post}\
+    %{__os_install_post}\
+    %{__modules_install_post}\
+%{nil}
 
 %install
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-sec-%{version}
+install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/etc/modprobe.d
-install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
+install -vdm 755 %{buildroot}/usr/src/linux-headers-%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-sec-%{version}-%{release}
-cp -v System.map        %{buildroot}/boot/system.map-sec-%{version}-%{release}
-cp -v .config            %{buildroot}/boot/config-sec-%{version}-%{release}
-cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-sec-%{version}
-install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{version}-sec
-cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{version}-sec/vmlinux-sec-%{version}-%{release}
+cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
+cp -v System.map        %{buildroot}/boot/System.map-%{uname_r}
+cp -v .config            %{buildroot}/boot/config-%{uname_r}
+cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
+install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
+cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
 
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
-cat > %{buildroot}/boot/%{name}-%{version}-%{release}.cfg << "EOF"
+cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
-photon_linux=vmlinuz-sec-%{version}-%{release}
+photon_linux=vmlinuz-%{uname_r}
 EOF
 
 # cleanup dangling symlinks
-rm -f %{buildroot}/lib/modules/%{version}-sec/source
-rm -f %{buildroot}/lib/modules/%{version}-sec/build
+rm -f %{buildroot}/lib/modules/%{uname_r}/source
+rm -f %{buildroot}/lib/modules/%{uname_r}/build
 
-# create /use/src/linux-sec-headers-*/ content
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
-find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}' copy
+# create /use/src/linux-headers-*/ content
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 
 # copy .config manually to be where it's expected to be
-cp .config %{buildroot}/usr/src/%{name}-headers-%{version}-%{release}
+cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 # symling to the build folder
-ln -sf /usr/src/%{name}-headers-%{version}-%{release} %{buildroot}/lib/modules/%{version}-sec/build
-find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
+ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
 
 %post
-/sbin/depmod -aq %{version}-sec
-ln -sf %{name}-%{version}-%{release}.cfg /boot/photon.cfg
+/sbin/depmod -aq %{uname_r}
+ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %files
 %defattr(-,root,root)
-/boot/system.map-sec-%{version}-%{release}
-/boot/config-sec-%{version}-%{release}
-/boot/vmlinuz-sec-%{version}-%{release}
-%config(noreplace) /boot/%{name}-%{version}-%{release}.cfg
+/boot/System.map-%{uname_r}
+/boot/config-%{uname_r}
+/boot/vmlinuz-%{uname_r}
+%config(noreplace) /boot/linux-%{uname_r}.cfg
 /lib/firmware/*
 /lib/modules/*
-%exclude /lib/modules/%{version}-sec/build
+%exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
 
 %files docs
 %defattr(-,root,root)
-%{_defaultdocdir}/linux-sec-%{version}/*
+%{_defaultdocdir}/linux-%{uname_r}/*
 
 %files devel
 %defattr(-,root,root)
-/lib/modules/%{version}-sec/build
-/usr/src/%{name}-headers-%{version}-%{release}
+/lib/modules/%{uname_r}/build
+/usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-2
+-   Expand `uname -r` with release number
+-   Resign and compress modules after stripping
+-   .config: add syscalls tracing support
+-   .config: add cgrup_hugetlb support
+-   .config: add netfilter_xt_{set,target_ct} support
+-   .config: add netfilter_xt_match_{cgroup,ipvs} support
 *   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
     Initial commit. 
 
