@@ -38,9 +38,7 @@ class Installer(object):
         self.setup_grub_command = "./mk-setup-grub.sh"
         self.unmount_disk_command = "./mk-unmount-disk.sh"
 
-        if self.iso_installer:
-            self.working_directory = "/mnt/photon-root"
-        elif 'working_directory' in self.install_config:
+        if 'working_directory' in self.install_config:
             self.working_directory = self.install_config['working_directory']
         else:
             self.working_directory = "/mnt/photon-root"
@@ -76,7 +74,7 @@ class Installer(object):
             self.window.addstr(0, 0, 'Opps, Installer got interrupted.\n\nPress any key to get to the bash...')
             self.window.content_window().getch()
 
-        modules.commons.dump(modules.commons.LOG_FILE_NAME)        
+        modules.commons.dump(modules.commons.LOG_FILE_NAME)
         sys.exit(1)
 
     def install(self, params):
@@ -287,7 +285,7 @@ class Installer(object):
             #Setup the filesystem basics
             process = subprocess.Popen([self.prepare_command, '-w', self.photon_root], stdout=self.output)
             retval = process.wait()
-    
+
     def finalize_system(self):
         #Setup the disk
         shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
@@ -376,7 +374,7 @@ class Installer(object):
             size = self.get_install_size_of_a_package(name_size_pairs, package)
             progressbar_num_items += size;
             self.size_of_packages[package] = size;
-        self.progress_bar.update_num_items(progressbar_num_items)    
+        self.progress_bar.update_num_items(progressbar_num_items)
 
 
     def run(self, command, comment = None):
