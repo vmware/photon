@@ -1,7 +1,7 @@
 Summary:	Free version of the SSH connectivity tools
 Name:		openssh
 Version:	7.1p2
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	BSD
 URL:		http://openssh.org
 Group:		System Environment/Security
@@ -36,6 +36,7 @@ This provides the ssh client utilities.
 Summary: openssh server applications
 Requires:	Linux-PAM
 Requires: 	shadow
+Requires: 	ncurses-terminfo
 Requires:	openssh-clients = %{version}-%{release}
 %description server
 This provides the ssh server daemons, utilities, configuration and service files.
@@ -190,6 +191,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1p2-8
+-   openssh-devel requires ncurses-terminfo to provide extra terms
+    for the clients
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1p2-7
 -   Required krb5-devel.
 *   Thu Nov 03 2016 Sharath George <sharathg@vmware.com> 7.1p2-6
