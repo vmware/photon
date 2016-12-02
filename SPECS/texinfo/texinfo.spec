@@ -27,9 +27,6 @@ rm -rf %{buildroot}%{_infodir}
 
 %find_lang %{name} --all-name
 
-%check
-make %{?_smp_mflags} check
-
 %post
 /sbin/ldconfig
 
