@@ -161,6 +161,8 @@
         "libpng",
         "libjpeg-turbo",
         "nasm",
+        "libssh2",
+        "libssh2-devel",
         "libmnl",
         "ipset",
         "build-essential",
