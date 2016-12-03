@@ -82,7 +82,7 @@ class PackageBuilder(object):
                 break
         return packageIsAlreadyBuilt
 
-    def buildPackage(self,package):
+    def buildPackage(self, package):
         #do not build if RPM is already built
         #test only if the package is in the testForceRPMS with rpmCheck
         #build only if the package is not in the testForceRPMS with rpmCheck
