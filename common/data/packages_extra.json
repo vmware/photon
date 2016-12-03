@@ -140,6 +140,7 @@
         "traceroute",
         "bindutils",
         "libusb",
+        "tree",
         "mc",
         "python-pip",
         "python-sqlalchemy",
