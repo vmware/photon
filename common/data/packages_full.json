@@ -243,6 +243,7 @@
         "apr-util-sqlite",
         "openjre",
         "sshpass",
+        "iputils",
         "openjdk-src",
         "openjdk-sample",
         "openjdk-doc",
