@@ -130,6 +130,8 @@
         "zsh",
         "iotop",
         "libgd",
+        "lz4",
+        "lz4-devel",
         "rsync",
         "rng-tools",
         "paramiko",
