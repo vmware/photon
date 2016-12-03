@@ -107,7 +107,7 @@ def create_additional_file_list_to_copy_in_iso(base_path, build_install_option):
     file_list = []
     for install_option in options_sorted:
         if install_option[1].has_key("additional-files"):
-            file_list = file_list + map(lambda filename: os.path.join(base_path, filename), install_option[1].get("additional-files")) 
+            file_list = file_list + map(lambda filename: os.path.join(base_path, filename), install_option[1].get("additional-files"))
     return file_list
 
 def get_live_cd_status_string(build_install_option):
@@ -120,21 +120,6 @@ def get_live_cd_status_string(build_install_option):
             if install_option[1].get("live-cd") == True:
                 return "true"
     return "false"
-
-def generate_pkginfo_text_file(list_rpms, pkg_info_json_file_path, pkg_info_text_file_path):
-    if not os.path.isfile(pkg_info_json_file_path):
-        return
-    pkg_info_json_file = open(pkg_info_json_file_path,'r')
-    data = json.load(pkg_info_json_file)
-    pkg_info_json_file.close()
-    list_lines = []
-    list_lines.append("#%{name},%{version},%{release},%{arch},%{sourcerpm}\n") 
-    for rpm in list_rpms:
-       if data.has_key(rpm):
-           list_lines.append(data[rpm]["name"]+","+data[rpm]["version"]+","+data[rpm]["release"]+","+data[rpm]["arch"]+","+data[rpm]["sourcerpm"]+"\n") 
-    pkg_info_text_file = open(pkg_info_text_file_path,'w')
-    pkg_info_text_file.writelines(list_lines)
-    pkg_info_text_file.close()
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <config file> <tools path>"
@@ -153,8 +138,6 @@ if __name__ == '__main__':
     parser.add_option("-m", "--stage-path", dest="stage_path", default="../stage")
     parser.add_option("-c", "--dracut-configuration", dest="dracut_configuration_file", default="../common/data/dracut_configuration.json")
     parser.add_option("-s", "--json-data-path", dest="json_data_path", default="../stage/common/data/")
-    parser.add_option("-u", "--pkginfo-json-file", dest="pkginfo_json_file", default="../common/data/pkg_info.json")
-    parser.add_option("-z", "--pkginfo-txt-file", dest="pkginfo_txt_file", default="../stage/pkg_info.txt")
 
     (options,  args) = parser.parse_args()
     if options.iso_path or options.src_iso_path:
@@ -262,7 +245,6 @@ if __name__ == '__main__':
         list_rpms = rpm_list.split(" ")
         list_rpms = list(set(list_rpms))
         list_rpms.sort()
-        generate_pkginfo_text_file(list_rpms, options.pkginfo_json_file, options.pkginfo_txt_file)
 
     # Cleaning up for vmdk
     if 'vmdk_install' in config and config['vmdk_install']:
