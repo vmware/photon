@@ -3,42 +3,49 @@ from Logger import Logger
 from constants import constants
 import os.path
 from CommandUtils import CommandUtils
+from PackageUtils import PackageUtils
 
-class SourcePackageInfo(object):
-     sourcePkgList = {}
-     logger = None
+class PackageInfo(object):
 
-
-     @staticmethod
-     def setLogging(logName=None,logPath=None):
+    def __init__(self, logName=None, logPath=None):
         if logName is None:
-            logName = "SourcePackageInfo"
+            logName = "PackageInfo"
         if logPath is None:
             logPath = constants.logPath
-        SourcePackageInfo.logger=Logger.getLogger(logName,logPath)
+        self.logName=logName
+        self.logPath=logPath
+        self.logger=Logger.getLogger(logName,logPath)
+        self.pkgList = {}
 
-     @staticmethod
-     def loadPkgInfoFromFile(filePath):
-         SourcePackageInfo.logger.info("Loading source package list from the json file")
-         if not os.path.isfile(filePath):
-             return
-         pkgInfoFile = open(filePath,'r')
-         SourcePackageInfo.sourcePkgList = json.load(pkgInfoFile)
-         pkgInfoFile.close()
+    def loadPackagesData(self):
+        listPackages =  constants.specData.getListPackages()
+        listPackages.sort()
+        listRPMFiles = []
+        cmdUtils = CommandUtils()
+        for package in listPackages:
+            release = constants.specData.getRelease(package)
+            version = constants.specData.getVersion(package)
+            listRPMPackages = constants.specData.getRPMPackages(package)
+            srpmFileName = package+"-"+version+"-"+release+".src.rpm"
+            srpmFiles = cmdUtils.findFile(srpmFileName, constants.sourceRpmPath)
+            srpmFile = None
+            if len(srpmFiles) == 1:
+                srpmFile = srpmFiles[0]
+            pkgUtils = PackageUtils(self.logName,self.logPath)
+            for rpmPkg in listRPMPackages:
+                rpmFile = pkgUtils.findRPMFileForGivenPackage(rpmPkg)
+                if rpmFile is not None:
+                    listRPMFiles.append(rpmFile)
+                    listPkgAttributes = {"sourcerpm":srpmFile, "rpm":rpmFile}
+                    self.pkgList[rpmPkg] = listPkgAttributes
+                    self.logger.info("Added "+rpmPkg +" rpm package to the list")
 
-     @staticmethod
-     def addSRPMData(packageName,version,release,arch,srpmFile):
-         listPkgAttributes={"name":packageName,"version":version,"release":release,"arch":arch,"sourcerpm":srpmFile}
-         SourcePackageInfo.sourcePkgList[packageName]=listPkgAttributes
-         SourcePackageInfo.logger.info("Added source package to the list:"+packageName)
-
-     @staticmethod
-     def writePkgListToFile(fileName):
-         SourcePackageInfo.logger.info("Writing source package list to the json file")
+    def writePkgListToFile(self, fileName):
+         self.logger.info("Writing package list to the json file")
          cmdUtils=CommandUtils()
          dirPath=os.path.basename(fileName)
          if not os.path.isdir(dirPath):
              cmdUtils.runCommandInShell("mkdir -p "+dirPath)
          pkgInfoFile = open(fileName,'w+')
-         json.dump(SourcePackageInfo.sourcePkgList, pkgInfoFile,indent=4)
+         json.dump(self.pkgList, pkgInfoFile, indent=4)
          pkgInfoFile.close()

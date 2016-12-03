@@ -6,7 +6,6 @@ from constants import constants
 import re
 from time import sleep
 import PullSources
-from PackageInfo import SourcePackageInfo
 import json
 import collections
 
@@ -200,16 +199,12 @@ class PackageUtils(object):
                 shutil.copy2(chrootLogsFilePath, destLogPath)
         self.logger.info("RPM build is successful")
         arch = self.getRPMArch(listRPMFiles[0])
-       
-        for rpmFile in listRPMFiles:
-            self.copyRPM(chrootID+"/"+rpmFile, constants.rpmPath)
-        
-        for srpmFile in listSRPMFiles:
-            self.copyRPM(chrootID+"/"+srpmFile, constants.sourceRpmPath)
-            srpmName = os.path.basename(srpmFile)
-            package,version,release = self.findPackageInfoFromSourceRPMFile(srpmFile)
-            SourcePackageInfo.addSRPMData(package,version,release,arch,srpmName)
 
+        for rpmFile in listRPMFiles:
+            rpmDestFilePath = self.copyRPM(chrootID+"/"+rpmFile, constants.rpmPath)
+
+        for srpmFile in listSRPMFiles:
+            srpmDestFile = self.copyRPM(chrootID+"/"+srpmFile, constants.sourceRpmPath)
     
     def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
         
@@ -242,7 +237,7 @@ class PackageUtils(object):
                 if (len(listcontents) == 2) and listcontents[1].strip()[-8:] == ".src.rpm" and listcontents[1].find("/SRPMS/") != -1:
                     listSRPMFiles.append(listcontents[1])
         return listRPMFiles,listSRPMFiles    
-    
+
     def findRPMFileForGivenPackage(self,package):
         cmdUtils = CommandUtils()
         version = constants.specData.getVersion(package)
@@ -290,22 +285,6 @@ class PackageUtils(object):
         release=rpmfile[releaseindex+1:]
         return packageName,version,release
 
-    def findPackageInfoFromSourceRPMFile(self,sourcerpmfile):
-        sourcerpmfile=os.path.basename(sourcerpmfile)
-        sourcerpmfile=sourcerpmfile.replace(".src.rpm","")
-        releaseindex=sourcerpmfile.rfind("-")
-        if releaseindex == -1:
-            self.logger.error("Invalid source rpm file:"+sourcerpmfile)
-            raise Exception("Invalid Source RPM")
-        versionindex=sourcerpmfile[0:releaseindex].rfind("-")
-        if versionindex == -1:
-            self.logger.error("Invalid source rpm file:"+sourcerpmfile)
-            raise Exception("Invalid source RPM")
-        packageName=sourcerpmfile[0:versionindex]
-        version=sourcerpmfile[versionindex+1:releaseindex]
-        release=sourcerpmfile[releaseindex+1:]
-        return packageName,version,release
- 
     def findInstalledRPMPackages(self, chrootID):
         cmd = self.rpmBinary+" "+self.queryRpmPackageOptions
         chrootCmd=self.runInChrootCommand+" "+chrootID

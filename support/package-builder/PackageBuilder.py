@@ -85,7 +85,7 @@ class PackageBuilder(object):
                 break
         return packageIsAlreadyBuilt
 
-    def buildPackage(self,package):
+    def buildPackage(self, package):
         #do not build if RPM is already built
         if self.checkIfPackageIsAlreadyBuilt(package):
             self.logger.info("Skipping building the package:"+package)
