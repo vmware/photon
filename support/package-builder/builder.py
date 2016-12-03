@@ -12,7 +12,7 @@ from SpecUtils import Specutils
 from StringUtils import StringUtils
 import collections
 import traceback
-from PackageInfo import SourcePackageInfo
+from PackageInfo import PackageInfo
 
 def main():
     usage = "Usage: %prog [options] <package name>"
@@ -23,9 +23,7 @@ def main():
     parser.add_option("-i",  "--install-package", dest="installPackage",  default=False,  action ="store_true")
     parser.add_option("-p",  "--publish-RPMS-path", dest="publishRPMSPath",  default="../../stage/PUBLISHRPMS")
     parser.add_option("-l",  "--log-path", dest="logPath",  default="../../stage/LOGS")
-    parser.add_option("-o",  "--build-option", dest="buildOption",  default="full")
     parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
-    parser.add_option("-j",  "--json-file", dest="inputJSONFile",  default="../../common/data/build_install_options_all.json")
     parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
     parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Number of working threads")
     parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
@@ -36,7 +34,7 @@ def main():
     parser.add_option("-v",  "--release-version", dest="releaseVersion",  default="NNNnNNN")
     parser.add_option("-u",  "--enable-rpmcheck", dest="rpmCheck",  default=False, action ="store_true")
     parser.add_option("-a",  "--source-rpm-path",  dest="sourceRpmPath",  default="../../stage/SRPMS")
-    parser.add_option("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../common/data/pkg_info.json")
+    parser.add_option("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../stage/pkg_info.json")
     parser.add_option("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
 
     (options,  args) = parser.parse_args()
@@ -48,7 +46,7 @@ def main():
 
     errorFlag=False
     package = None
-    pkgInfoJsonFile=options.pkgInfoFile
+    pkgInfoJsonFile = options.pkgInfoFile
     if not os.path.isdir(options.sourcePath):
         logger.error("Given Sources Path is not a directory:"+options.sourcePath)
         errorFlag = True
@@ -65,9 +63,6 @@ def main():
         logger.error("Given RPMS Path is missing noarch sub-directory:"+options.publishRPMSPath)
         errorFlag = True
 
-    if not os.path.isfile(options.inputJSONFile) and not options.installPackage:
-        logger.error("Given JSON File is not a file:"+options.inputJSONFile)
-        errorFlag = True
     if not os.path.isfile(options.pkgBuildOptionFile):
         logger.warning("Given JSON File is not a file:"+options.pkgBuildOptionFile)
 
@@ -103,19 +98,16 @@ def main():
     logger.info("Log Path :" + options.logPath)
     logger.info("Top Dir Path :" + options.topDirPath)
     logger.info("Publish RPMS Path :" + options.publishRPMSPath)
-    if not options.installPackage:
-        logger.info("JSON File :" + options.inputJSONFile)
-    else:
+
+    if options.installPackage:
         logger.info("Package to build:"+package)
 
     listBuildOptionPackages = get_packages_with_build_options(options.pkgBuildOptionFile)
 
     try:
         constants.initialize(options)
-        SourcePackageInfo.setLogging()
-        SourcePackageInfo.loadPkgInfoFromFile(pkgInfoJsonFile)
         if package == "packages_list":
-            buildPackagesList(options.specPath, options.buildRootPath+"/../packages_list.csv")
+            buildPackagesList(options.buildRootPath+"/../packages_list.csv")
         elif package == "sources_list":
             if not os.path.isdir("../../stage/yaml_sources"):
                 cmdUtils.runCommandInShell("mkdir -p ../../stage/yaml_sources")
@@ -133,7 +125,7 @@ def main():
         elif options.installPackage:
             buildAPackage(package, listBuildOptionPackages, options.pkgBuildOptionFile, options.buildThreads)
         else:
-            buildPackagesFromGivenJSONFile(options.inputJSONFile, options.buildOption, listBuildOptionPackages, options.pkgBuildOptionFile, logger, options.buildThreads)
+            buildPackagesForAllSpecs(listBuildOptionPackages, options.pkgBuildOptionFile, logger, options.buildThreads)
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
@@ -141,26 +133,24 @@ def main():
         traceback.print_exc()
         sys.exit(1)
 
-    logger.info("Writing Package info to the file:"+pkgInfoJsonFile)
-    SourcePackageInfo.writePkgListToFile(pkgInfoJsonFile)
     sys.exit(0)
 
 def buildToolChain(buildThreads):
     pkgManager = PackageManager()
     pkgManager.buildToolChainPackages(buildThreads)
 
-def buildPackagesList(specPath, csvFilename):
+def buildPackagesList(csvFilename):
     csvFile = open(csvFilename, "w")
     csvFile.write("Package,Version,License,URL,Sources,Patches\n")
-    listSpecs =  constants.specData.getListSpecs()
-    listSpecs.sort()
-    for spec in listSpecs:
-        name = spec
-        version = constants.specData.getVersion(spec)
-        license = constants.specData.getLicense(spec)
-        listPatches = constants.specData.getPatches(spec)
-        url = constants.specData.getURL(spec)
-        listSourceNames = constants.specData.getSources(spec)
+    listPackages =  constants.specData.getListPackages()
+    listPackages.sort()
+    for package in listPackages:
+        name = package
+        version = constants.specData.getVersion(package)
+        license = constants.specData.getLicense(package)
+        listPatches = constants.specData.getPatches(package)
+        url = constants.specData.getURL(package)
+        listSourceNames = constants.specData.getSources(package)
         sources = ""
         patches = ""
         if listPatches is not None:
@@ -174,25 +164,25 @@ def buildSourcesList(yamlDir, logger, singleFile=True):
     strUtils = StringUtils()
     if singleFile:
         yamlFile = open(yamlDir+"/sources_list.yaml", "w")
-    listSpecs =  constants.specData.getListSpecs()
-    listSpecs.sort()
+    listPackages =  constants.specData.getListPackages()
+    listPackages.sort()
     import PullSources
-    for spec in listSpecs:
-        ossname = spec
-        ossversion = constants.specData.getVersion(spec)
+    for package in listPackages:
+        ossname = package
+        ossversion = constants.specData.getVersion(package)
         modified = False
-        listPatches = constants.specData.getPatches(spec)
+        listPatches = constants.specData.getPatches(package)
         if listPatches is not None and len(listPatches) > 0 :
             modified = True
-        url = constants.specData.getSourceURL(spec)
+        url = constants.specData.getSourceURL(package)
         if url is None:
-            url = constants.specData.getURL(spec)
+            url = constants.specData.getURL(package)
 
         sourceName = None
-        listSourceNames = constants.specData.getSources(spec)
+        listSourceNames = constants.specData.getSources(package)
         if len(listSourceNames) >0:
             sourceName=listSourceNames[0]
-            sha1 = constants.specData.getSHA1(spec, sourceName)
+            sha1 = constants.specData.getSHA1(package, sourceName)
             if sha1 is not None:
                 PullSources.get(sourceName, sha1, yamlDir, constants.pullsourcesConfig)
 
@@ -220,13 +210,13 @@ def buildSRPMList(srpmPath, yamlDir, logger, singleFile=True):
     strUtils = StringUtils()
     if singleFile:
         yamlFile = open(yamlDir+"/srpm_list.yaml", "w")
-    listSpecs =  constants.specData.getListSpecs()
-    listSpecs.sort()
+    listPackages =  constants.specData.getListPackages()
+    listPackages.sort()
     cmdUtils = CommandUtils()
-    for spec in listSpecs:
-        ossname = spec
-        ossversion = constants.specData.getVersion(spec)
-        ossrelease = constants.specData.getRelease(spec)
+    for package in listPackages:
+        ossname = package
+        ossversion = constants.specData.getVersion(package)
+        ossrelease = constants.specData.getRelease(package)
 
         listFoundSRPMFiles = cmdUtils.findFile(ossname+"-"+ossversion+"-"+ossrelease+".src.rpm",srpmPath)
         srpmName = None
@@ -264,17 +254,19 @@ def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThr
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
 
-def buildPackagesFromGivenJSONFile(inputJSONFile, buildOption, listBuildOptionPackages, pkgBuildOptionFile, logger, buildThreads):
-    listPackages = get_all_package_names(inputJSONFile)
+def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger, buildThreads):
+    listPackages = constants.specData.getListPackages()
 
-    listPackagesToBuild=[]
-    for pkg in listPackages:
-        p =  pkg.encode('utf-8')
-        listPackagesToBuild.append(str(p))
     logger.info("List of packages to build:")
-    logger.info(listPackagesToBuild)
+    logger.info(listPackages)
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackagesToBuild, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+    pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+
+    #Generating package info file which is required by installer
+    logger.info("Writing Package info to the file:"+pkgInfoJsonFile)
+    pkgInfo = PackageInfo()
+    pkgInfo.loadPackagesData()
+    pkgInfo.writePkgListToFile(pkgInfoJsonFile)
 
 def get_packages_with_build_options(pkg_build_options_file):
     packages = []
