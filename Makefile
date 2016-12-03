@@ -91,14 +91,13 @@ micro-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
 packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all Micro RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -o full \
+        $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_GENERATED_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -154,14 +153,13 @@ live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
 packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -o full \
+        $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -211,8 +209,6 @@ src-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
                 -s $(PHOTON_DATA_DIR) \
-                -u $(PHOTON_DATA_DIR)/pkg_info.json\
-                -z $(PHOTON_STAGE)/pkg_info.txt\
                 -f > \
                 $(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
 
@@ -226,12 +222,12 @@ imgtree:
 
 who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg) 
+		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
 packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -o full \
+        $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -a $(PHOTON_SRPMS_DIR) \
@@ -239,12 +235,11 @@ packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
-                -w $(PHOTON_DATA_DIR)/pkg_info.json \
+                -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 $(PHOTON_RPMCHECK_FLAGS) \
                 -t ${THREADS}
@@ -252,14 +247,13 @@ packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $
 updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -o full \
+        $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_UPDATED_RPMS_DIR) \
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -271,7 +265,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
 tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -o full \
+        $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -a $(PHOTON_SRPMS_DIR) \
@@ -279,7 +273,6 @@ tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -t ${THREADS} \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
@@ -291,7 +284,7 @@ tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
 tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -o full \
+        $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -a $(PHOTON_SRPMS_DIR) \
@@ -299,7 +292,6 @@ tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -t ${THREADS} \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
