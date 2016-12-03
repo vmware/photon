@@ -8,7 +8,7 @@ from constants import constants
 import shutil
 
 class PackageBuilder(object):
-    
+
     def __init__(self,mapPackageToCycles,listAvailableCyclicPackages,listBuildOptionPackages,pkgBuildOptionFile,logName=None,logPath=None):
         if logName is None:
             logName = "PackageBuilder"
@@ -22,7 +22,7 @@ class PackageBuilder(object):
         self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
         self.listBuildOptionPackages=listBuildOptionPackages
         self.pkgBuildOptionFile=pkgBuildOptionFile
-        
+
     def prepareBuildRoot(self,chrootName,isToolChainPackage=False):
         chrootID=None
         try:
@@ -42,7 +42,7 @@ class PackageBuilder(object):
                 chrUtils.destroyChroot(chrootID)
             raise e
         return chrootID
-    
+
     def findPackageNameFromRPMFile(self,rpmfile):
         rpmfile=os.path.basename(rpmfile)
         releaseindex=rpmfile.rfind("-")
@@ -55,7 +55,7 @@ class PackageBuilder(object):
             return None
         packageName=rpmfile[0:versionindex]
         return packageName
-    
+
     def findInstalledPackages(self,chrootID):
         pkgUtils = PackageUtils(self.logName,self.logPath)
         listInstalledRPMs=pkgUtils.findInstalledRPMPackages(chrootID)
@@ -65,7 +65,7 @@ class PackageBuilder(object):
             if packageName is not None:
                 listInstalledPackages.append(packageName)
         return listInstalledPackages
-    
+
     def buildPackageThreadAPI(self,package,outputMap, threadName,):
         try:
             self.buildPackage(package)
@@ -85,7 +85,7 @@ class PackageBuilder(object):
                 break
         return packageIsAlreadyBuilt
 
-    def buildPackage(self,package):
+    def buildPackage(self, package):
         #do not build if RPM is already built
         if self.checkIfPackageIsAlreadyBuilt(package):
             self.logger.info("Skipping building the package:"+package)
@@ -104,12 +104,12 @@ class PackageBuilder(object):
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()
                 cmdUtils.runCommandInShell("mkdir -p "+destLogPath)
-            
+
             listInstalledPackages=self.findInstalledPackages(chrootID)
             self.logger.info("List of installed packages")
             self.logger.info(listInstalledPackages)
             listDependentPackages=self.findBuildTimeRequiredPackages(package)
-            
+
             pkgUtils = PackageUtils(self.logName,self.logPath)
             if len(listDependentPackages) != 0:
                 self.logger.info("Installing the build time dependent packages......")
@@ -129,16 +129,16 @@ class PackageBuilder(object):
             raise e
         if chrootID is not None:
             chrUtils.destroyChroot(chrootID)
-        
-        
+
+
     def findRunTimeRequiredRPMPackages(self,rpmPackage):
         listRequiredPackages=constants.specData.getRequiresForPackage(rpmPackage)
         return listRequiredPackages
-    
+
     def findBuildTimeRequiredPackages(self,package):
         listRequiredPackages=constants.specData.getBuildRequiresForPackage(package)
         return listRequiredPackages
-    
+
     def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
         if package in listInstalledPackages:
             return

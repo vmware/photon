@@ -53,16 +53,16 @@ class SerializableSpecObjectsUtils(object):
             specObj.url=spec.getURL()
             specObj.sourceurl=spec.getSourceURL()
             for specPkg in specObj.listPackages:
-	    	if specPkg in self.mapPackageToSpec:
-		    existingObj = self.mapSerializableSpecObjects[self.mapPackageToSpec[specPkg]]
-		    if self.compareVersions(existingObj,specObj) == 1:
-			skipUpdating = True
-			break;
+                if specPkg in self.mapPackageToSpec:
+                    existingObj = self.mapSerializableSpecObjects[self.mapPackageToSpec[specPkg]]
+                    if self.compareVersions(existingObj,specObj) == 1:
+                        skipUpdating = True
+                        break;
             	specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
-            	self.mapPackageToSpec[specPkg]=specName
+                self.mapPackageToSpec[specPkg]=specName
                 if spec.getIsRPMPackage(specPkg):
                     specObj.listRPMPackages.append(specPkg)
-	    if skipUpdating == False:
+            if skipUpdating == False:
                 self.mapSerializableSpecObjects[specName]=specObj
 
     def getListSpecFiles(self,listSpecFiles,path):
@@ -169,19 +169,19 @@ class SerializableSpecObjectsUtils(object):
                 return specName
         self.logger.error("Could not able to find "+package+" package from specs")
         raise Exception("Invalid package:"+package)
-    
+
     def isRPMPackage(self,package):
         if self.mapPackageToSpec.has_key(package):
             specName=self.mapPackageToSpec[package]
             if self.mapSerializableSpecObjects.has_key(specName):
                 return True
         return False
-    
+
     def getSecurityHardeningOption(self, package):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].securityHardening
 
-    def getListSpecs(self):
+    def getListPackages(self):
         return self.mapSerializableSpecObjects.keys()
 
     def getURL(self, package):
