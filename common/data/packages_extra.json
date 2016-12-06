@@ -135,6 +135,7 @@
         "rsync",
         "rng-tools",
         "paramiko",
+        "vsftpd",
         "ecdsa",
         "kexec-tools",
         "traceroute",
