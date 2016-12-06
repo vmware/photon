@@ -4,7 +4,7 @@
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 from installer import Installer
 import crypt
 import random
@@ -137,41 +137,41 @@ def generate_pkginfo_text_file(list_rpms, pkg_info_json_file_path, pkg_info_text
     pkg_info_text_file.close()
 
 if __name__ == '__main__':
-    usage = "Usage: %prog [options] <config file> <tools path>"
-    parser = OptionParser(usage)
 
-    parser.add_option("-i", "--iso-path",  dest="iso_path")
-    parser.add_option("-j", "--src-iso-path",  dest="src_iso_path")
-    parser.add_option("-v", "--vmdk-path", dest="vmdk_path")
-    parser.add_option("-w",  "--working-directory",  dest="working_directory", default="/mnt/photon-root")
-    parser.add_option("-l",  "--log-path",  dest="log_path", default="../stage/LOGS")
-    parser.add_option("-r",  "--rpm-path",  dest="rpm_path", default="../stage/RPMS")
-    parser.add_option("-x",  "--srpm-path",  dest="srpm_path", default="../stage/SRPMS")
-    parser.add_option("-o", "--output-data-path", dest="output_data_path", default="../stage/common/data/")
-    parser.add_option("-f", "--force", action="store_true", dest="force", default=False)
-    parser.add_option("-p", "--package-list-file", dest="package_list_file", default="../common/data/build_install_options_all.json")
-    parser.add_option("-m", "--stage-path", dest="stage_path", default="../stage")
-    parser.add_option("-c", "--dracut-configuration", dest="dracut_configuration_file", default="../common/data/dracut_configuration.json")
-    parser.add_option("-s", "--json-data-path", dest="json_data_path", default="../stage/common/data/")
-    parser.add_option("-u", "--pkginfo-json-file", dest="pkginfo_json_file", default="../common/data/pkg_info.json")
-    parser.add_option("-z", "--pkginfo-txt-file", dest="pkginfo_txt_file", default="../stage/pkg_info.txt")
+    parser = ArgumentParser(prog='PROG', usage = 'Usage: %prog [options] <config file> <tools path>')
 
-    (options,  args) = parser.parse_args()
+    parser.add_argument("-i", "--iso-path",  dest="iso_path")
+    parser.add_argument("-j", "--src-iso-path",  dest="src_iso_path")
+    parser.add_argument("-v", "--vmdk-path", dest="vmdk_path")
+    parser.add_argument("-w",  "--working-directory",  dest="working_directory", default="/mnt/photon-root")
+    parser.add_argument("-l",  "--log-path",  dest="log_path", default="../stage/LOGS")
+    parser.add_argument("-r",  "--rpm-path",  dest="rpm_path", default="../stage/RPMS")
+    parser.add_argument("-x",  "--srpm-path",  dest="srpm_path", default="../stage/SRPMS")
+    parser.add_argument("-o", "--output-data-path", dest="output_data_path", default="../stage/common/data/")
+    parser.add_argument("-f", "--force", action="store_true", dest="force", default=False)
+    parser.add_argument("-p", "--package-list-file", dest="package_list_file", default="../common/data/build_install_options_all.json")
+    parser.add_argument("-m", "--stage-path", dest="stage_path", default="../stage")
+    parser.add_argument("-c", "--dracut-configuration", dest="dracut_configuration_file", default="../common/data/dracut_configuration.json")
+    parser.add_argument("-s", "--json-data-path", dest="json_data_path", default="../stage/common/data/")
+    parser.add_argument("-u", "--pkginfo-json-file", dest="pkginfo_json_file", default="../common/data/pkg_info.json")
+    parser.add_argument("-z", "--pkginfo-txt-file", dest="pkginfo_txt_file", default="../stage/pkg_info.txt")
+    parser.add_argument('configfile', nargs='?')
+    options = parser.parse_args()
+    #parser.error("Incorrect arguments")
     if options.iso_path or options.src_iso_path:
         # Check the arguments
-        if (len(args)) != 0:
+        if options.configfile:
             parser.error("Incorrect arguments")
         config = {}
         config['iso_system'] = True
         config['vmdk_install'] = False
-
     elif options.vmdk_path:
         # Check the arguments
-        if (len(args)) != 1:
+        if not options.configfile:
             parser.error("Incorrect arguments")
 
         # Read the conf file
-        config = (JsonWrapper(args[0])).read()
+        config = (JsonWrapper(options.configfile)).read()
         config['disk'], success = create_vmdk_and_partition(config, options.vmdk_path)
         if not success:
             print "Unexpected failure, please check the logs"
@@ -184,11 +184,11 @@ if __name__ == '__main__':
 
     else:
         # Check the arguments
-        if (len(args)) != 1:
+        if  not options.configfile:
             parser.error("Incorrect arguments")
 
         # Read the conf file
-        config = (JsonWrapper(args[0])).read()
+        config = (JsonWrapper(options.configfile)).read()
 
         config['iso_system'] = False
         config['vmdk_install'] = False
