@@ -2,8 +2,8 @@
 Description=NFS status monitor for NFSv2/3 locking.
 DefaultDependencies=no
 Conflicts=umount.target
-Requires=nss-lookup.target rpcbind.target
-After=network.target nss-lookup.target rpcbind.target
+Requires=nss-lookup.target rpcbind.socket
+After=network.target nss-lookup.target rpcbind.socket
 PartOf=nfs-client.service
 
 [Service]
