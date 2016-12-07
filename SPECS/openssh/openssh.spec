@@ -1,25 +1,25 @@
-Summary:	Free version of the SSH connectivity tools
-Name:		openssh
-Version:	7.1p2
-Release:	8%{?dist}
-License:	BSD
-URL:		http://openssh.org
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1 openssh=9202f5a2a50c8a55ecfb830609df1e1fde97f758
-Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
-%define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
-Patch1:		blfs_systemd_fixes.patch
+Summary:        Free version of the SSH connectivity tools
+Name:           openssh
+Version:        7.1p2
+Release:        9%{?dist}
+License:        BSD
+URL:            http://openssh.org
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+%define sha1    openssh=9202f5a2a50c8a55ecfb830609df1e1fde97f758
+Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
+%define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
+Patch1:         blfs_systemd_fixes.patch
 Patch2:         openssh-7.1p2-skip-long-passwords.patch
 BuildRequires:  openssl-devel
-BuildRequires:	Linux-PAM
+BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
-Requires:	openssh-clients = %{version}-%{release}
-Requires:	openssh-server = %{version}-%{release}
+Requires:       openssh-clients = %{version}-%{release}
+Requires:       openssh-server = %{version}-%{release}
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
 useful for encrypting authentication and subsequent traffic over a 
@@ -28,16 +28,16 @@ and rcp respectively.
 
 %package clients
 Summary: openssh client applications.
-Requires:	openssl
+Requires:   openssl
 %description clients
 This provides the ssh client utilities.
 
 %package server
 Summary: openssh server applications
-Requires:	Linux-PAM
-Requires: 	shadow
-Requires: 	ncurses-terminfo
-Requires:	openssh-clients = %{version}-%{release}
+Requires:   Linux-PAM
+Requires:   shadow
+Requires:   ncurses-terminfo
+Requires:   openssh-clients = %{version}-%{release}
 %description server
 This provides the ssh server daemons, utilities, configuration and service files.
 
@@ -48,18 +48,18 @@ tar xf %{SOURCE1} --no-same-owner
 %patch2 -p1
 %build
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--sysconfdir=/etc/ssh \
-	--datadir=/usr/share/sshd \
-	--with-md5-passwords \
-	--with-privsep-path=/var/lib/sshd \
-    	--with-pam \
-	--with-maintype=man \
-	--with-kerberos5=/usr
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --sysconfdir=/etc/ssh \
+    --datadir=/usr/share/sshd \
+    --with-md5-passwords \
+    --with-privsep-path=/var/lib/sshd \
+        --with-pam \
+    --with-maintype=man \
+    --with-kerberos5=/usr
 make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -67,7 +67,7 @@ make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/var/lib/sshd
 echo "PermitRootLogin no" >> %{buildroot}/etc/ssh/sshd_config
 echo "UsePAM yes" >> %{buildroot}/etc/ssh/sshd_config
-#	Install daemon script
+#   Install daemon script
 pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} install-sshd
 popd
@@ -191,6 +191,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1p2-9
+-   BuildRequires Linux-PAM-devel
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1p2-8
 -   openssh-devel requires ncurses-terminfo to provide extra terms
     for the clients

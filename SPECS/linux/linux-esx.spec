@@ -2,14 +2,14 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.35
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
+%define sha1   linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -43,7 +43,7 @@ BuildRequires: xerces-c-devel
 BuildRequires: xml-security-c-devel
 BuildRequires: libdnet
 BuildRequires: libmspack
-BuildRequires: Linux-PAM
+BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 Requires:      filesystem kmod coreutils
@@ -181,6 +181,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.4.35-4
+-   BuildRequires Linux-PAM-devel
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-3
 -   Expand `uname -r` with release number
 -   Compress modules

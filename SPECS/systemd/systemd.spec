@@ -1,14 +1,14 @@
 Summary:          Systemd-232
 Name:             systemd
 Version:          232
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
-%define sha1 systemd=74178b96d631058236cf79f5b0cc3953382f12b5
+%define sha1      systemd=74178b96d631058236cf79f5b0cc3953382f12b5
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 
@@ -29,7 +29,7 @@ BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
 BuildRequires:    xz-devel
-BuildRequires:    Linux-PAM
+BuildRequires:    Linux-PAM-devel
 BuildRequires:    XML-Parser
 BuildRequires:    kbd
 BuildRequires:    kmod
@@ -215,6 +215,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 232-3
+-    BuildRequires Linux-PAM-devel
 *    Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 232-2
 -    disable-elfutils.
 *    Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  232-1

@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -23,7 +23,7 @@ BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet
 BuildRequires:  libmspack
-BuildRequires:  Linux-PAM
+BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  fuse-devel
@@ -103,20 +103,22 @@ fi
 
 
 %changelog
-*       Mon Nov 21 2016 Kumar Kaushik <kaushikk@vmware.com> 10.1.0-1
--       Updating version to 10.1.0
-*       Wed Oct 05 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-14
--       Adding proper entry to /etc/hosts for IPv6.
-*       Tue Oct 04 2016 ChangLee <changLee@vmware.com> 10.0.5-13
--       Modified %check
-*       Thu Jun 23 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-12
--       Avoiding recustomization of hostname, bug#1678537.
-*       Mon Jun 13 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-11
--       Adding IPv6 Support for VCHA in customization.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 10.0.5-10
--	GA - Bump release of all rpms
-*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-9
--	Edit scriptlets.
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 10.1.0-2
+-   BuildRequires Linux-PAM-devel
+*   Mon Nov 21 2016 Kumar Kaushik <kaushikk@vmware.com> 10.1.0-1
+-   Updating version to 10.1.0
+*   Wed Oct 05 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-14
+-   Adding proper entry to /etc/hosts for IPv6.
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 10.0.5-13
+-   Modified %check
+*   Thu Jun 23 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-12
+-   Avoiding recustomization of hostname, bug#1678537.
+*   Mon Jun 13 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-11
+-   Adding IPv6 Support for VCHA in customization.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 10.0.5-10
+-   GA - Bump release of all rpms
+*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-9
+-   Edit scriptlets.
 *       Fri Apr 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-8
 -       Combining all GOSC scripts patches and fixing bug#1648133.
 *       Tue Apr 19 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-7

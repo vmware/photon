@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.35
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -38,7 +38,7 @@ BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet
 BuildRequires:  libmspack
-BuildRequires:  Linux-PAM
+BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod coreutils
@@ -223,6 +223,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.4.35-3
+-   BuildRequires Linux-PAM-devel
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-2
 -   Expand `uname -r` with release number
 -   Check for build-id matching
