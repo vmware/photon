@@ -1,19 +1,19 @@
-Summary:	Management tools and libraries relating to cryptography
-Name:		openssl
-Version:	1.0.2j
-Release:	2%{?dist}
-License:	OpenSSL
-URL:		http://www.openssl.org
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=bdfbdb416942f666865fa48fe13c2d0e588df54f
-Patch0:		c_rehash.patch
+Summary:        Management tools and libraries relating to cryptography
+Name:           openssl
+Version:        1.0.2j
+Release:        3%{?dist}
+License:        OpenSSL
+URL:            http://www.openssl.org
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
+%define sha1    openssl=bdfbdb416942f666865fa48fe13c2d0e588df54f
+Patch0:         c_rehash.patch
 Patch1:         openssl-1.0.2f-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-use-fips-drbg-by-default.patch
-Requires:	bash glibc libgcc 
+Requires:       bash glibc libgcc 
 
 %description
 The OpenSSL package contains management tools and libraries relating
@@ -57,13 +57,13 @@ Perl scripts that convert certificates and keys to various formats.
 %build
 export CFLAGS="%{optflags}"
 ./config \
-	--prefix=%{_prefix} \
-	--libdir=lib \
-	--openssldir=/%{_sysconfdir}/ssl \
-	shared \
-	zlib-dynamic \
+    --prefix=%{_prefix} \
+    --libdir=lib \
+    --openssldir=/%{_sysconfdir}/ssl \
+    shared \
+    zlib-dynamic \
         %{?_with_fips} \
-	-Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
+    -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
 make
 %install
@@ -75,8 +75,8 @@ ln -sf %{_libdir}/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 %check
 make %{?_smp_mflags} tests
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 
@@ -94,13 +94,12 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so.*
 %{_libdir}/engines/*
 %{_mandir}/man1/*
-%{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 
 %files devel
 %{_includedir}/*
-%{_mandir}/man3*/*
+%{_mandir}/man3/*
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.a
 %{_libdir}/*.so
@@ -113,6 +112,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.2j-3
+-   Moved man3 to devel subpackage.
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.0.2j-2
 -   Modified %check
 *   Mon Sep 26 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2j-1
@@ -143,5 +144,5 @@ rm -rf %{buildroot}/*
 -   Split perl scripts to a different package.
 *   Fri Jul 24 2015 Chang Lee <changlee@vmware.com> 1.0.2d-1
 -   Update new version.
-*	Wed Mar 25 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2a-1
--	Initial build.	First version
+*   Wed Mar 25 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2a-1
+-   Initial build.  First version
