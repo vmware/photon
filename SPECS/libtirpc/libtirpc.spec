@@ -1,19 +1,19 @@
-Summary:	Libraries for Transport Independent RPC
-Name:		libtirpc
-Version:	1.0.1
-Release:	4%{?dist}
-Source0:	http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
-%define sha1 libtirpc=8da1636f98b5909c0d587e7534bc1e91f5c1a970
+Summary:        Libraries for Transport Independent RPC
+Name:           libtirpc
+Version:        1.0.1
+Release:        5%{?dist}
+Source0:        http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
+%define sha1    libtirpc=8da1636f98b5909c0d587e7534bc1e91f5c1a970
 Patch0:         libtirpc-1.0.1-bindrsvport-blacklist.patch
-License:	BSD
-Group:		System Environment/Libraries
-URL:		http://nfsv4.bullopensource.org/
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	krb5-devel
-BuildRequires:	automake
+License:        BSD
+Group:          System Environment/Libraries
+URL:            http://nfsv4.bullopensource.org/
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  krb5-devel
+BuildRequires:  automake
 BuildRequires:  e2fsprogs-devel
-Requires:	krb5
+Requires:       krb5
 
 %description
 This package contains SunLib's implementation of transport-independent
@@ -26,13 +26,13 @@ Transport Layer Interface (TLI) or an equivalent X/Open Transport Interface
 by almost 70 vendors on all major operating systems.  TS-RPC source code
 (RPCSRC 4.0) remains available from several internet sites.
 
-%package	devel
-Summary:	Development files for the libtirpc library
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
-Requires:	krb5-devel
+%package    devel
+Summary:    Development files for the libtirpc library
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+Requires:   krb5-devel
 
-%description 	devel
+%description    devel
 This package includes header files and libraries necessary for developing programs which use the tirpc library.
 
 %prep
@@ -55,18 +55,20 @@ make install DESTDIR=%{buildroot}
 
 %files
 %{_sysconfdir}/netconfig
-%{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_libdir}/*.so.*
-%{_libdir}/*.a
-%{_libdir}/*.la
 
 %files devel
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/tirpc/*
-   
+%{_mandir}/man3/*
+%{_libdir}/*.a
+%{_libdir}/*.la
+
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-5
+-   Moved man3 to devel subpackage.
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-4
 -   Required krb5-devel.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-3
