@@ -1,21 +1,21 @@
 Summary:          Package manager
-Name:              rpm
+Name:             rpm
 Version:          4.11.2
-Release:          16%{?dist}
+Release:          17%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
-%define sha1 rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
+%define sha1      rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
 Source1:          http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
-%define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
+%define sha1      db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:          macros
 Source3:          brp-strip-debug-symbols
 Source4:          brp-strip-unneeded
-Patch0:		  find-debuginfo-do-not-generate-non-existing-build-id.patch
-Patch1:		  rpm-4.11.2-cve-2014-8118.patch
+Patch0:           find-debuginfo-do-not-generate-non-existing-build-id.patch
+Patch1:           rpm-4.11.2-cve-2014-8118.patch
 Requires:         bash
 Requires:         rpm-libs = %{version}-%{release}
 BuildRequires:    python2
@@ -49,12 +49,19 @@ Requires:   elfutils-libelf
 Shared libraries librpm and librpmio
 
 %package build
-Requires: perl
-Requires: %{name}-devel = %{version}-%{release}
-Requires: elfutils-libelf
+Requires:   perl
+Requires:   %{name}-devel = %{version}-%{release}
+Requires:   elfutils-libelf
 Summary: Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
+
+%package lang
+Summary:    Additional language files for rpm
+Group:      Applications/System
+Requires:   %{name} = %{version}-%{release}
+%description lang
+These are the additional language files of rpm.
 
 %prep
 %setup -q
@@ -104,7 +111,7 @@ make %{?_smp_mflags} check
 %postun libs -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}
-%files -f %{name}.lang
+%files
 %defattr(-,root,root)
 /bin/rpm
 %{_bindir}/gendiff
@@ -206,7 +213,12 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so
 %{_libdir}/librpmsign.so.*
 
+%files lang -f %{name}.lang
+%defattr(-,root,root)
+
 %changelog
+*    Tue Dec 06 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-17
+-    Added -lang subpackage.
 *    Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-16
 -    Move rpmrc and macros into -libs subpackage
 -    Move zlib and elfutils-libelf dependency from rpm to rpm-libs
