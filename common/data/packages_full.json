@@ -185,6 +185,7 @@
         "swig",
         "rpm-devel",
         "pycurl",
+        "curl-devel",
         "urlgrabber",
         "yum-metadata-parser",
         "yum",

@@ -1,14 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.51.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
-%define sha1 curl=19bf2c1e60a513910355cc9769c6371ea2ff5d1f
+%define sha1    curl=19bf2c1e60a513910355cc9769c6371ea2ff5d1f
 Requires:       ca-certificates
 BuildRequires:  ca-certificates
 Requires:       openssl
@@ -22,6 +22,13 @@ protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET,
 DICT, LDAP, LDAPS and FILE. Its ability to both download and 
 upload files can be incorporated into other programs to support
 functions like streaming media.
+
+%package devel
+Summary:    Libraries and header files for curl
+Requires:   %{name} = %{version}-%{release}
+%description devel
+Static libraries and header files for the support library for curl
+
 %prep
 %setup -q
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
@@ -56,15 +63,21 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so*
+%{_libdir}/*.so.*
+%{_mandir}/man1/*
+
+%files devel
+%defattr(-,root,root)
+%{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
-%{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 7.51.0-3
+-   Added -devel subpackage.
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.51.0-2
 -   Required krb5-devel.
 *   Wed Nov 02 2016 Anish Swaminathan <anishs@vmware.com> 7.51.0-1
