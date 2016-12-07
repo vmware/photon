@@ -1,28 +1,28 @@
-Summary:	Contains the utilities for the ext2 file system
-Name:		e2fsprogs
-Version:	1.42.13
-Release:	4%{?dist}
-License:	GPLv2+
-URL:		http://e2fsprogs.sourceforge.net
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha1 e2fsprogs=77d1412472ac5a67f8954166ec16c37616074c37
-Requires:	%{name}-libs = %{version}-%{release}
+Summary:        Contains the utilities for the ext2 file system
+Name:           e2fsprogs
+Version:        1.42.13
+Release:        5%{?dist}
+License:        GPLv2+
+URL:            http://e2fsprogs.sourceforge.net
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
+%define sha1    e2fsprogs=77d1412472ac5a67f8954166ec16c37616074c37
+Requires:       %{name}-libs = %{version}-%{release}
 %description
 The E2fsprogs package contains the utilities for handling
 the ext2 file system.
 
-%package	libs
-Summary:	contains libraries used by other packages
-%description	libs
+%package    libs
+Summary:    contains libraries used by other packages
+%description    libs
 It contains the libraries: libss and libcom_err
 
-%package	devel
-Summary:	Header and development files for e2fsprogs
-Requires:	%{name} = %{version}
-%description	devel
+%package    devel
+Summary:    Header and development files for e2fsprogs
+Requires:   %{name} = %{version}
+%description    devel
 It contains the libraries and header files to create applications 
 %prep
 %setup -q
@@ -34,15 +34,15 @@ LIBS=-L/tools/lib \
 CFLAGS=-I/tools/include \
 PKG_CONFIG_PATH=/tools/lib/pkgconfig \
 ../configure \
-	--prefix=%{_prefix} \
-	--with-root-prefix='' \
-	--enable-elf-shlibs \
-	--disable-libblkid \
-	--disable-libuuid \
-	--disable-uuidd \
-	--disable-fsck \
-	--disable-silent-rules \
-	--enable-symlink-install
+    --prefix=%{_prefix} \
+    --with-root-prefix='' \
+    --enable-elf-shlibs \
+    --disable-libblkid \
+    --disable-libuuid \
+    --disable-uuidd \
+    --disable-fsck \
+    --disable-silent-rules \
+    --enable-symlink-install
 make %{?_smp_mflags}
 %install
 pushd build
@@ -76,7 +76,6 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_mandir}/man3/*
 %{_sbindir}/e4defrag
 %{_sbindir}/filefrag
 %{_sbindir}/e2freefrag
@@ -139,7 +138,10 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/e2p.pc
 %{_libdir}/libe2p.a
 %{_libdir}/libext2fs.a
+%{_mandir}/man3/*
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-5
+-   Moved man3 to devel subpackage.
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-4
 -   Create libs subpackage for krb5
 *   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-3

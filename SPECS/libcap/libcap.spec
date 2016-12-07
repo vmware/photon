@@ -1,15 +1,15 @@
-Summary:	Libcap
-Name:		libcap
-Version:	2.25
-Release:	4%{?dist}
-License:	GPLv2+
-URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
-Source0:	https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
-%define sha1 libcap=f0b102e4a68e1bbdcb6b143b63c34a250e473088
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
+Summary:		Libcap
+Name:			libcap
+Version:		2.25
+Release:		5%{?dist}
+License:		GPLv2+
+URL:			https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
+Source0:		https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
+%define sha1 	libcap=f0b102e4a68e1bbdcb6b143b63c34a250e473088
+Group:			System Environment/Security
+Vendor:			VMware, Inc.
 Distribution:	Photon
-Requires:	attr
+Requires:		attr
 BuildRequires:	attr-devel
 %description
 The libcap package implements the user-space interfaces to the POSIX 1003.1e capabilities available 
@@ -40,7 +40,6 @@ cd progs
 %defattr(-,root,root)
 %{_lib64dir}/libcap.so.*
 %{_mandir}/man1/*
-%{_mandir}/man3/*
 %{_mandir}/man8/*
 %{_sbindir}/*
 
@@ -50,8 +49,11 @@ cd progs
 %{_lib64dir}/libcap.a
 %{_lib64dir}/pkgconfig/*
 %{_lib64dir}/libcap.so
+%{_mandir}/man3/*
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.25-5
+-   Moved man3 to devel subpackage.
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.25-4
 -   BuildRequired attr-devel.
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.25-3

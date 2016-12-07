@@ -1,15 +1,15 @@
-Summary:	Utilities for file systems, consoles, partitions, and messages
-Name:		util-linux
-Version:	2.27.1
-Release:	4%{?dist}
-URL:		http://www.kernel.org/pub/linux/utils/util-linux
-License:	GPLv2+
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	%{name}-%{version}.tar.xz
-%define sha1 util-linux=462bca6320535d39b62216d8609da5531bfef0bb
-BuildRequires:	ncurses-devel
+Summary:        Utilities for file systems, consoles, partitions, and messages
+Name:           util-linux
+Version:        2.27.1
+Release:        5%{?dist}
+URL:            http://www.kernel.org/pub/linux/utils/util-linux
+License:        GPLv2+
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:    %{name}-%{version}.tar.xz
+%define sha1    util-linux=462bca6320535d39b62216d8609da5531bfef0bb
+BuildRequires:  ncurses-devel
 %description
 Utilities for handling file systems, consoles, partitions,
 and messages.
@@ -33,11 +33,11 @@ These are the header and library files of util-linux.
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 %build
 ./configure \
-	--disable-nologin \
-	--disable-silent-rules \
-	--disable-static \
-	--disable-use-tty-group \
-	--without-python
+    --disable-nologin \
+    --disable-silent-rules \
+    --disable-static \
+    --disable-use-tty-group \
+    --without-python
 make %{?_smp_mflags}
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
@@ -50,8 +50,8 @@ find %{buildroot} -name '*.la' -delete
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
 %dir %{_sharedstatedir}/hwclock
@@ -60,7 +60,9 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 /sbin/*
 %{_bindir}/*
 %{_sbindir}/*
-%{_mandir}/*/*
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
 %{_datadir}/bash-completion/completions/*
 %{_datadir}/doc/util-linux/getopt/*
 
@@ -72,20 +74,23 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.so
 %{_includedir}/*
+%{_mandir}/man3/*
 
 %changelog
-*       Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2.27.1-4
--       Disable use tty droup
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.27.1-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.27.1-2
--	GA - Bump release of all rpms
-*   	Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 2.27.1-1
--   	Upgrade version.
-*   	Tue Oct 6 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24.1-3
--   	Disable static, move header files, .so and config files to devel package.
-*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.24.1-2
--   	Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1
--	Initial build. First version
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.27.1-5
+-   Moved man3 to devel subpackage.
+*   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2.27.1-4
+-   Disable use tty droup
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.27.1-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.27.1-2
+-   GA - Bump release of all rpms
+*   Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 2.27.1-1
+-   Upgrade version.
+*   Tue Oct 6 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24.1-3
+-   Disable static, move header files, .so and config files to devel package.
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.24.1-2
+-   Update according to UsrMove.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1
+-   Initial build. First version
 

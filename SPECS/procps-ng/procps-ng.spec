@@ -1,36 +1,36 @@
-Summary:	Programs for monitoring processes
-Name:		procps-ng
-Version:	3.3.11
-Release:	4%{?dist}
-License:	GPLv2
-URL:		http://procps.sourceforge.net/
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:		http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1 procps-ng=1bdca65547df9ed019bd83649b0f8b8eaa017e25
-Patch0:		Fixto-interpret-ascii-sequence.patch
-BuildRequires:	ncurses-devel
-Requires:	ncurses
+Summary:        Programs for monitoring processes
+Name:           procps-ng
+Version:        3.3.11
+Release:        5%{?dist}
+License:        GPLv2
+URL:            http://procps.sourceforge.net/
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
+%define sha1    procps-ng=1bdca65547df9ed019bd83649b0f8b8eaa017e25
+Patch0:         Fixto-interpret-ascii-sequence.patch
+BuildRequires:  ncurses-devel
+Requires:       ncurses
 %description
 The Procps package contains programs for monitoring processes.
-%package	devel
-Summary:	Header and development files for procps-ng
-Requires:	%{name} = %{version}
-%description	devel
+%package    devel
+Summary:    Header and development files for procps-ng
+Requires:   %{name} = %{version}
+%description    devel
 It contains the libraries and header files to create applications 
 %prep
 %setup -q
 %patch0 -p1
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--exec-prefix= \
-	--libdir=%{_libdir} \
-	--docdir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-static \
-	--disable-kill \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --exec-prefix= \
+    --libdir=%{_libdir} \
+    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --disable-static \
+    --disable-kill \
+    --disable-silent-rules
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -44,8 +44,8 @@ find %{buildroot} -name '*.la' -delete
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
 /bin/ps
@@ -81,7 +81,6 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/w.1.gz
 %{_mandir}/man1/watch.1.gz
 %{_mandir}/man1/ps.1.gz
-%{_mandir}/man3/*
 %{_mandir}/man5/sysctl.conf.5.gz
 %{_libdir}/libprocps.so.5
 %{_libdir}/libprocps.so.5.0.0
@@ -101,16 +100,19 @@ make %{?_smp_mflags} check
 %{_includedir}/proc/whattime.h
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
+%{_mandir}/man3/*
 %changelog
-*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.3.11-4
--       Modified %check
-*	Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
--	Added patch to interpret ASCII sequence correctly
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
--	GA - Bump release of all rpms
-*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
--	Upgrade version
-*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
--   	Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
--	Initial build. First version
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.11-5
+-   Moved man3 to devel subpackage.
+*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.3.11-4
+-   Modified %check
+*   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
+-   Added patch to interpret ASCII sequence correctly
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
+-   GA - Bump release of all rpms
+*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
+-   Upgrade version
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
+-   Update according to UsrMove.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
+-   Initial build. First version
