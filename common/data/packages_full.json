@@ -225,6 +225,7 @@
         "cve-check-tool",
         "flannel",
         "rpm-build",
+        "rpm-lang",
         "dkms",
         "openssl-perl",
         "openssl-c_rehash",
