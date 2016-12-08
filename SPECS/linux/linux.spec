@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.35
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -30,6 +30,8 @@ Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 Patch16:        net-9p-vsock.patch
+#fixes CVE-2016-8655
+Patch17:       net-packet-fix-race-condition-in-packet_set_ring.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -103,6 +105,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %build
 make mrproper
@@ -223,6 +226,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Dec  8 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-3
+-   net-packet-fix-race-condition-in-packet_set_ring.patch
+    to fix CVE-2016-8655
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-2
 -   Expand `uname -r` with release number
 -   Check for build-id matching
