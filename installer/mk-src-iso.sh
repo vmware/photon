@@ -34,7 +34,7 @@ rm -r ${WORKINGDIR}/*
 cd ${SRPMS_PATH}
 mkdir ${WORKINGDIR}/SRPMS
 for srpm_name in $SRPM_LIST; do
-    FILENAME="`find . -name "$srpm_name-[0-9]*" -type f`"
+    FILENAME="`find . -name ${srpm_name} -type f`"
     if [ -n "$FILENAME" ]; then
         cp --parent $FILENAME ${WORKINGDIR}/SRPMS/;
     fi
