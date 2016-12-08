@@ -1,7 +1,7 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
 Version:	4.3.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/%{name}/%{version}/%{name}-%{version}.tar.gz
@@ -103,6 +103,7 @@ WantedBy=multi-user.target
 EOF
 
 install -v -dm 755 %{buildroot}/var/lib/dhclient
+touch %{buildroot}/etc/default/dhcpd
 
 %post	libs -p /sbin/ldconfig
 %postun	libs -p /sbin/ldconfig
@@ -121,6 +122,7 @@ install -v -dm 755 %{buildroot}/var/lib/dhclient
 %files server
 %defattr(-,root,root)
 /etc/dhcp/dhcpd.conf.example
+/etc/default/dhcpd
 %{_bindir}/omshell
 %{_sbindir}/dhcpd
 %{_sbindir}/dhcrelay
@@ -147,13 +149,15 @@ install -v -dm 755 %{buildroot}/var/lib/dhclient
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
-*	Mon Nov 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.3.5-1
--	Upgraded to version 4.3.5.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.3-3
--	GA - Bump release of all rpms
-* 	Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  4.3.3-2
-- 	Add patch for CVE-2016-2774
-*   	Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
--   	Updated to version 4.3.3
-*	Wed Jul 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.3.2-1
--	Initial build./
+*   Wed Dec 7 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.5-2
+-   Added configuration file for dhcp service
+*   Mon Nov 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.3.5-1
+-   Upgraded to version 4.3.5.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.3-3
+-   GA - Bump release of all rpms
+*   Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  4.3.3-2
+-   Add patch for CVE-2016-2774
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
+-   Updated to version 4.3.3
+*   Wed Jul 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.3.2-1
+-   Initial build.
