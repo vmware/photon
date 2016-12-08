@@ -87,7 +87,7 @@ def create_vmdk_and_partition(config, vmdk_path):
 
     return partitions_data, count == 2
 
-def create_rpm_list_to_copy_in_iso(build_install_option, output_data_path):
+def create_pkg_list_to_copy_to_iso(build_install_option, output_data_path):
     json_wrapper_option_list = JsonWrapper(build_install_option)
     option_list_json = json_wrapper_option_list.read()
     options_sorted = option_list_json.items()
@@ -99,6 +99,29 @@ def create_rpm_list_to_copy_in_iso(build_install_option, output_data_path):
             package_list_json = json_wrapper_package_list.read()
             packages = packages + package_list_json["packages"]
     return packages
+
+    #copy_flags 1: add the rpm file for the package
+    #           2: add debuginfo rpm file for the package.
+    #           4: add src rpm file for the package
+def create_rpm_list_to_be_copied_to_iso(pkg_to_rpm_map_file, build_install_option, copy_flags, output_data_path):
+    packages = []
+    if build_install_option is None:
+        packages = []
+    else:
+        packages = create_pkg_list_to_copy_to_iso(build_install_option, output_data_path)
+
+    rpm_list = []
+    json_pkg_to_rpm_map = JsonWrapper(pkg_to_rpm_map_file)
+    pkg_to_rpm_map = json_pkg_to_rpm_map.read()
+    for k in pkg_to_rpm_map:
+        if build_install_option is None or k in packages:
+            if not pkg_to_rpm_map[k]['rpm'] is None and bool(copy_flags & 1):
+                rpm_list.append(os.path.basename(pkg_to_rpm_map[k]['rpm']))
+            if not pkg_to_rpm_map[k]['debugrpm'] is None and bool(copy_flags & 2):
+                rpm_list.append(os.path.basename(pkg_to_rpm_map[k]['debugrpm']))
+            if not pkg_to_rpm_map[k]['sourcerpm'] is None and bool(copy_flags & 4):
+                rpm_list.append(os.path.basename(pkg_to_rpm_map[k]['sourcerpm']))
+    return rpm_list
 
 def create_additional_file_list_to_copy_in_iso(base_path, build_install_option):
     json_wrapper_option_list = JsonWrapper(build_install_option)
@@ -138,6 +161,7 @@ if __name__ == '__main__':
     parser.add_option("-m", "--stage-path", dest="stage_path", default="../stage")
     parser.add_option("-c", "--dracut-configuration", dest="dracut_configuration_file", default="../common/data/dracut_configuration.json")
     parser.add_option("-s", "--json-data-path", dest="json_data_path", default="../stage/common/data/")
+    parser.add_option("-d", "--pkg-to_rpm-map-file", dest="pkg_to_rpm_map_file", default="../stage/pkg_info.json")
 
     (options,  args) = parser.parse_args()
     if options.iso_path or options.src_iso_path:
@@ -217,9 +241,6 @@ if __name__ == '__main__':
     if (os.path.isdir(options.working_directory)):
         process = subprocess.Popen(['rm', '-rf', options.working_directory])
         retval = process.wait()
-    else:
-        process = subprocess.Popen(['mkdir', '-p', options.working_directory])
-        retval = process.wait()
 
     process = subprocess.Popen(['mkdir', '-p', os.path.join(options.working_directory, "photon-chroot")])
     retval = process.wait()
@@ -232,14 +253,14 @@ if __name__ == '__main__':
 
     # Making the iso if needed
     if options.iso_path:
-        rpm_list = " ".join(create_rpm_list_to_copy_in_iso(options.package_list_file, options.output_data_path))
+        rpm_list = " ".join(create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.package_list_file, 3, options.output_data_path))
         files_to_copy = " ".join(create_additional_file_list_to_copy_in_iso(os.path.abspath(options.stage_path), options.package_list_file))
         live_cd = get_live_cd_status_string(options.package_list_file)
         process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd, options.json_data_path])
         retval = process.wait()
 
     if options.src_iso_path:
-        rpm_list = " ".join(create_rpm_list_to_copy_in_iso(options.package_list_file, options.output_data_path))
+        rpm_list = " ".join(create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.package_list_file, 4, options.output_data_path))
         process = subprocess.Popen(['./mk-src-iso.sh', '-w', options.working_directory, options.src_iso_path, options.srpm_path, rpm_list])
         retval = process.wait()
         list_rpms = rpm_list.split(" ")
