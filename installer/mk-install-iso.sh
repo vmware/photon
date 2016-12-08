@@ -118,12 +118,13 @@ fi
 mkdir -p ${BUILDROOT}/mnt/photon-root/photon-chroot
 rm -rf ${BUILDROOT}/RPMS
 
+run_command " echo ${RPMS_PATH}" "echo ${RPMS_PATH}" "${LOGFILE}"
 #cp -r ${RPMS_PATH} ${WORKINGDIR}/
 (
 cd ${RPMS_PATH}
 mkdir ${WORKINGDIR}/RPMS
 for rpm_name in $RPM_LIST; do
-    FILENAME="`find . -name "$rpm_name-[0-9]*" -or -name "$rpm_name-[a-z][0-9]*" -or -name "$rpm_name-debuginfo*" -type f`"
+    FILENAME="`find . -name ${rpm_name} -type f`"
     if [ -n "$FILENAME" ]; then
         cp --parent $FILENAME ${WORKINGDIR}/RPMS/;
     fi
