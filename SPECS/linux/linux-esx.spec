@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.35
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -35,6 +35,8 @@ Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
+#fixes CVE-2016-8655
+Patch23:       net-packet-fix-race-condition-in-packet_set_ring.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -93,6 +95,7 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -181,6 +184,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Dec  8 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-4
+-   net-packet-fix-race-condition-in-packet_set_ring.patch
+    to fix CVE-2016-8655
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-3
 -   Expand `uname -r` with release number
 -   Compress modules
