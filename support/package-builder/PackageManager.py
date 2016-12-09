@@ -9,7 +9,7 @@ from Scheduler import Scheduler
 from ThreadPool import ThreadPool
 
 class PackageManager(object):
-    
+
     def __init__(self,logName=None,logPath=None):
         if logName is None:
             logName = "PackageManager"
@@ -27,8 +27,8 @@ class PackageManager(object):
         self.mapThreadsLaunchTime={}
         self.listAvailableCyclicPackages=[]
         self.listBuildOptionPackages=[]
-        self.pkgBuildOptionFile="" 
-        
+        self.pkgBuildOptionFile=""
+
     def readPackageBuildData(self, listPackages):
         try:
             pkgBuildDataGen = PackageBuildDataGenerator(self.logName,self.logPath)
@@ -37,15 +37,16 @@ class PackageManager(object):
             self.logger.error("unable to get sorted list")
             return False
         return True
-    
+
     def readAlreadyAvailablePackages(self):
         listAvailablePackages=[]
+        listFoundRPMPackages=[]
         listRPMFiles=[]
         listDirectorys=[]
         listDirectorys.append(constants.rpmPath)
         if constants.inputRPMSPath is not None:
             listDirectorys.append(constants.inputRPMSPath)
-        
+
         while len(listDirectorys) > 0:
             dirPath=listDirectorys.pop()
             for dirEntry in os.listdir(dirPath):
@@ -61,7 +62,19 @@ class PackageManager(object):
                 specVersion=constants.specData.getVersion(package)
                 specRelease=constants.specData.getRelease(package)
                 if version == specVersion and release == specRelease:
-                    listAvailablePackages.append(package)
+                    listFoundRPMPackages.append(package)
+        #Mark package available only if all sub packages are available
+        for package in listFoundRPMPackages:
+            basePkg = constants.specData.getSpecName(package)
+            if basePkg in listAvailablePackages:
+                continue;
+            listRPMPackages = constants.specData.getRPMPackages(basePkg)
+            packageIsAlreadyBuilt = True
+            for rpmpkg in listRPMPackages:
+                if rpmpkg not in listFoundRPMPackages:
+                    packageIsAlreadyBuilt = False
+            if packageIsAlreadyBuilt:
+                listAvailablePackages.append(package)
         self.logger.info("List of Already built packages")
         self.logger.info(listAvailablePackages)
         return listAvailablePackages
@@ -74,7 +87,7 @@ class PackageManager(object):
         self.mapCyclesToPackageList.clear()
         self.mapPackageToCycle.clear()
         self.sortedPackageList=[]
-        
+
         listOfPackagesAlreadyBuilt = []
         listOfPackagesAlreadyBuilt = self.readAlreadyAvailablePackages()
         self.listOfPackagesAlreadyBuilt = listOfPackagesAlreadyBuilt[:]
@@ -187,7 +200,7 @@ class PackageManager(object):
             self.logger.error("Some of the packages failed:")
             self.logger.error(Scheduler.listOfFailedPackages)
             raise Exception("Failed during building package")
-        
+
         if not setFailFlag:
             if allPackagesBuilt:
                 self.logger.info("All packages built successfully")
