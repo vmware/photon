@@ -259,7 +259,7 @@ def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger
     logger.info("List of packages to build:")
     logger.info(listPackages)
     if constants.rpmCheck:
-        constants.setTestForceRPMS(listPackagesToBuild[:])
+        constants.setTestForceRPMS(listPackages[:])
     pkgManager = PackageManager()
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
 
