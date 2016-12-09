@@ -505,7 +505,7 @@ check: packages
     endif
 	@echo "Testing all RPMS ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -o full \
+        $(PHOTON_PACKAGE_BUILDER) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -a $(PHOTON_SRPMS_DIR) \
@@ -513,7 +513,6 @@ check: packages
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -j $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
