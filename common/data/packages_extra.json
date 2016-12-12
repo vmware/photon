@@ -86,6 +86,8 @@
         "rubygem-rbvmomi",
         "compat-gdbm",
         "tiptop",
+        "libssh2",
+        "libssh2-devel",
 	"irqbalance",
         "lttng-tools",
         "userspace-rcu",
