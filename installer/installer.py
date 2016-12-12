@@ -140,7 +140,7 @@ class Installer(object):
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
 
-        #shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
+        shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
         self.finalize_system()
 
         if not self.install_config['iso_system']:
