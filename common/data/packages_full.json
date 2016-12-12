@@ -192,6 +192,8 @@
         "c-ares",
         "dnsmasq",
         "ddclient",
-        "netmgmt"
+        "netmgmt",
+        "erlang",
+        "rabbitmq-server"
     ]
 }
