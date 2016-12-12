@@ -1,7 +1,7 @@
 Summary:	An URL retrieval utility and library
 Name:		curl
 Version:	7.51.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://curl.haxx.se
 Group:		System Environment/NetworkingLibraries
@@ -13,6 +13,7 @@ Requires:	ca-certificates
 BuildRequires:	ca-certificates
 Requires:	openssl
 BuildRequires:	openssl-devel
+BuildRequires:  libssh2-devel
 %description
 The cURL package contains an utility and a library used for 
 transferring files with URL syntax to any of the following 
@@ -34,6 +35,7 @@ sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 	--disable-static \
 	--enable-threaded-resolver \
 	--with-ssl \
+	--with-libssh2 \
 	--with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
 %install
@@ -59,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 %changelog
+*   Wed Nov 30 2016 Xiaolin Li <xiaolinl@vmware.com> 7.51.0-2
+-   Enable sftp support.
 *   	Wed Nov 02 2016 Anish Swaminathan <anishs@vmware.com> 7.51.0-1
 -   	Upgrade curl to 7.51.0
 *   	Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 7.47.1-4
