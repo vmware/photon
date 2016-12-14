@@ -281,19 +281,6 @@ index 835563c..a8a676e 100644
  				    int *max_error,
  				    struct timeval *vblank_time,
  				    unsigned flags)
-diff --git a/drivers/staging/lustre/lustre/llite/dir.c b/drivers/staging/lustre/lustre/llite/dir.c
-index 5b38177..929e628 100644
---- a/drivers/staging/lustre/lustre/llite/dir.c
-+++ b/drivers/staging/lustre/lustre/llite/dir.c
-@@ -136,7 +136,7 @@
-  */
- 
- /* returns the page unlocked, but with a reference */
--static int ll_dir_filler(void *_hash, struct page *page0)
-+static int ll_dir_filler(struct file *_hash, struct page *page0)
- {
- 	struct inode *inode = page0->mapping->host;
- 	int hash64 = ll_i2sbi(inode)->ll_flags & LL_SBI_64BIT_HASH;
 diff --git a/drivers/video/console/dummycon.c b/drivers/video/console/dummycon.c
 index 9269d56..78d2a06 100644
 --- a/drivers/video/console/dummycon.c
@@ -1221,7 +1208,7 @@ diff --git a/scripts/Makefile.gcc-plugins b/scripts/Makefile.gcc-plugins
 index 61f0e6d..978c1c8 100644
 --- a/scripts/Makefile.gcc-plugins
 +++ b/scripts/Makefile.gcc-plugins
-@@ -19,9 +19,21 @@ ifdef CONFIG_GCC_PLUGINS
+@@ -25,10 +25,22 @@ ifdef CONFIG_GCC_PLUGINS
      endif
    endif
  
@@ -1238,9 +1225,9 @@ index 61f0e6d..978c1c8 100644
    GCC_PLUGINS_CFLAGS := $(strip $(addprefix -fplugin=$(objtree)/scripts/gcc-plugins/, $(gcc-plugin-y)) $(gcc-plugin-cflags-y))
 +  GCC_PLUGINS_AFLAGS := $(gcc-plugin-aflags-y)
  
--  export PLUGINCC GCC_PLUGINS_CFLAGS GCC_PLUGIN GCC_PLUGIN_SUBDIR SANCOV_PLUGIN
-+  export PLUGINCC GCC_PLUGINS_CFLAGS GCC_PLUGIN GCC_PLUGIN_SUBDIR SANCOV_PLUGIN GCC_PLUGINS_AFLAGS
-+  export RAP_PLUGIN_ABS_CFLAGS
+   export PLUGINCC GCC_PLUGINS_CFLAGS GCC_PLUGIN GCC_PLUGIN_SUBDIR
+   export SANCOV_PLUGIN DISABLE_LATENT_ENTROPY_PLUGIN
++  export RAP_PLUGIN_ABS_CFLAGS GCC_PLUGINS_AFLAGS
  
    ifneq ($(PLUGINCC),)
      # SANCOV_PLUGIN can be only in CFLAGS_KCOV because avoid duplication.
@@ -1256,14 +1243,6 @@ diff --git a/scripts/gcc-plugins/gcc-common.h b/scripts/gcc-plugins/gcc-common.h
 index 172850b..ec4abe3 100644
 --- a/scripts/gcc-plugins/gcc-common.h
 +++ b/scripts/gcc-plugins/gcc-common.h
-@@ -130,6 +130,7 @@ extern void dump_gimple_stmt(pretty_printer *, gimple, int, int);
- #endif
- 
- #define __unused __attribute__((__unused__))
-+#define __visible __attribute__((visibility("default")))
- 
- #define DECL_NAME_POINTER(node) IDENTIFIER_POINTER(DECL_NAME(node))
- #define DECL_NAME_LENGTH(node) IDENTIFIER_LENGTH(DECL_NAME(node))
 @@ -286,6 +287,22 @@ static inline struct cgraph_node *cgraph_next_function_with_gimple_body(struct c
  	return NULL;
  }
