@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -13,6 +13,7 @@ Patch0:         photon-distro.patch
 Patch1:         cloud-init-log.patch
 Patch2:         vca-admin-pwd.patch
 Patch3:         remove-netstat.patch
+Patch4:         distro-systemctl.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -39,6 +40,7 @@ ssh keys and to let the user run various scripts.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -125,6 +127,8 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Wed Dec 14 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-15
+-   Fixed restarting of sshd daemon
 *   Thu Dec 1 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-14
 -   Moved update logic to post section from pre
 *   Tue Nov 22 2016 Kumar Kaushik <kaushikk@vmware.com>  0.7.6-13
