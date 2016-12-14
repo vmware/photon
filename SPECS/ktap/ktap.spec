@@ -1,14 +1,14 @@
 Summary: A New Scripting Dynamic Tracing Tool For Linux
 Name:    ktap
 Version: 0.4
-Release: 5%{?kernelsubrelease}%{?dist}
+Release: 6%{?kernelsubrelease}%{?dist}
 License: GPLv2
 URL: https://github.com/ktap/ktap
 Source: %{name}-master.zip
 %define sha1 ktap=8dca9a25e8917ad8cabdf176de487949c235ec80
 Group:      Development/Tools
 Vendor:     VMware, Inc.
-Patch0:        linux-4.4-support.patch
+Patch0:        linux-4.9-support.patch
 Distribution:  Photon
 BuildRequires: elfutils-devel
 BuildRequires: linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
@@ -53,6 +53,8 @@ make  %{?_smp_mflags} test
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/ktapvm.ko
 
 %changelog
+*   Thu Dec 15 2016 Alexey Makhalov <amakhalov@vmware.com> 0.4-6
+-   Update to linux-4.9.0. Added support patch
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.4-5
 -   Expand uname -r to have release number
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.4-4

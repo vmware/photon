@@ -2,7 +2,7 @@
 Summary:	The Behavioral Activity Monitor With Container Support
 Name:		falco
 Version:	0.2.0
-Release:	4%{?kernelsubrelease}%{?dist}
+Release:	5%{?kernelsubrelease}%{?dist}
 License:	GPLv2	  
 URL:		http://www.sysdig.org/falco/
 Group:		Applications/System	
@@ -51,6 +51,9 @@ tar xf %{SOURCE3} --no-same-owner
 
 %build
 mv sysdig-0.10.1 ../sysdig
+# fix for linux-4.9
+sed -i 's|task_thread_info(current)->status|current->thread.status|g' ../sysdig/driver/main.c
+sed -i 's|task_thread_info(task)->status|current->thread.status|g' ../sysdig/driver/ppm_syscall.h
 cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} CMakeLists.txt
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 
@@ -75,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Thu Dec 15 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-5
+-   Fix building for linux-4.9
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-4
 -   Expand uname -r to have release number
 -   Exclude /usr/src
