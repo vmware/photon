@@ -1,0 +1,23 @@
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index c998fba..8a2ffa5 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -262,11 +262,17 @@ static __init int activate_jump_labels(void)
+ }
+ arch_initcall(activate_jump_labels);
+ 
++/*
++ * No need for any "IO delay" on VMware hypervisor
++ */
++static void vmware_io_delay(void)
++{
++}
+ 
+ static void __init vmware_paravirt_ops_setup(void)
+ {
+ 	pv_info.name = "VMware hypervisor";
+-	pv_cpu_ops.io_delay = paravirt_nop;
++	pv_cpu_ops.io_delay = vmware_io_delay;
+ 
+ 	if (vmware_tsc_khz == 0)
+ 		return;

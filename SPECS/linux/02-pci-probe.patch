@@ -341,7 +341,7 @@ index edb1984..522bdaa 100644
 +        return rom;
 +}
 +
- void pci_msi_setup_pci_dev(struct pci_dev *dev)
+ static void pci_msi_setup_pci_dev(struct pci_dev *dev)
  {
  	/*
 @@ -1178,6 +1481,7 @@ int pci_setup_device(struct pci_dev *dev)
