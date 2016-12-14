@@ -2,11 +2,14 @@ diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
 index 628a059..a964013 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -26,16 +26,20 @@
- #include <asm/div64.h>
- #include <asm/x86_init.h>
+@@ -26,19 +26,23 @@
  #include <asm/hypervisor.h>
+ #include <asm/timer.h>
+ #include <asm/apic.h>
 +#include <linux/kmsg_dump.h>
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt)	"vmware: " fmt
  
 -#define CPUID_VMWARE_INFO_LEAF	0x40000000
 -#define VMWARE_HYPERVISOR_MAGIC	0x564D5868
@@ -27,7 +30,7 @@ index 628a059..a964013 100644
  #define VMWARE_PORT(cmd, eax, ebx, ecx, edx)				\
  	__asm__("inl (%%dx)" :						\
 @@ -75,6 +79,13 @@ static unsigned long vmware_get_tsc_khz(void)
- 	return tsc_hz;
+ 	return vmware_tsc_khz;
  }
  
 +static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
@@ -37,13 +40,13 @@ index 628a059..a964013 100644
 +	.dump = kmsg_dumper_vmware_log
 +};
 +
- static void __init vmware_platform_setup(void)
- {
- 	uint32_t eax, ebx, ecx, edx;
+ #ifdef CONFIG_PARAVIRT
+ static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
+ static int vmw_sched_clock __initdata = 1;
 @@ -86,6 +97,8 @@ static void __init vmware_platform_setup(void)
- 	else
- 		printk(KERN_WARNING
- 		       "Failed to get TSC freq from the hypervisor\n");
+ #endif
+ 
+ 	vmware_paravirt_ops_setup();
 +
 +	kmsg_dump_register(&kmsg_dumper);
  }

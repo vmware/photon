@@ -23,10 +23,10 @@ diff --git a/kernel/watchdog.c b/kernel/watchdog.c
 index a6ffa43f2993..b378b762844a 100644
 --- a/kernel/watchdog.c
 +++ b/kernel/watchdog.c
-@@ -20,6 +20,7 @@
- #include <linux/smpboot.h>
+@@ -21,6 +21,7 @@
  #include <linux/sched/rt.h>
  #include <linux/tick.h>
+ #include <linux/workqueue.h>
 +#include <linux/dmi.h>
  
  #include <asm/irq_regs.h>
