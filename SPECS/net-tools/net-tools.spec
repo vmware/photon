@@ -1,7 +1,7 @@
 Summary:	Networking Tools
 Name:		net-tools
 Version:	1.60
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	GPLv2+
 URL:		http://net-tools.sourceforge.net
 Group:		System Environment/Base
@@ -86,6 +86,7 @@ sed -i -e 's|#define HAVE_HWSTRIP 1|#define HAVE_HWSTRIP 0|g' \
 sed -i -e 's|# HAVE_IP_TOOLS=0|HAVE_IP_TOOLS=1|g' \
        -e 's|# HAVE_AFINET6=0|HAVE_AFINET6=1|g' \
        -e 's|# HAVE_MII=0|HAVE_MII=1|g' config.make
+sed -i 's|#include <netinet/ip.h>|//#include <netinet/ip.h>|g' iptunnel.c
 make
 %install
 make BASEDIR=%{buildroot} BINDIR=%{_bindir} SBINDIR=%{_sbindir} install
@@ -103,9 +104,11 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-10
+-   Fix compilation issue with linux-4.9
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.60-9
 -   Remove iputils deps.
-*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 1.60-8
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 1.60-8
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60-7
 -   GA - Bump release of all rpms

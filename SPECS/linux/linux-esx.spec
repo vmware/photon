@@ -1,42 +1,40 @@
 %global security_hardening none
-Summary:       Kernel
-Name:          linux-esx
-Version:       4.4.35
-Release:       4%{?dist}
-License:       GPLv2
-URL:           http://www.kernel.org/
-Group:         System Environment/Kernel
-Vendor:        VMware, Inc.
-Distribution:  Photon
-Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
-Source1:       config-esx-%{version}
-Patch0:        double-tcp_mem-limits.patch
-Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch2:        linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch3:        SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:        vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
-Patch5:        01-clear-linux.patch
-Patch6:        02-pci-probe.patch
-Patch7:        03-poweroff.patch
-Patch8:        04-quiet-boot.patch
-Patch9:        05-pv-ops.patch
-Patch10:       06-sunrpc.patch
-Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-#fixes CVE-2016-9083
-Patch12:       vfio-pci-fix-integer-overflows-bitmask-check.patch
-Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
-Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
-Patch16:       vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
-Patch17:       vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
-Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
-Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
-Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
-Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
-Patch22:       net-9p-vsock.patch
-#fixes CVE-2016-8655
-Patch23:       net-packet-fix-race-condition-in-packet_set_ring.patch
+Summary:        Kernel
+Name:           linux-esx
+Version:        4.9.0
+Release:        1%{?dist}
+License:        GPLv2
+URL:            http://www.kernel.org/
+Group:          System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution:   Photon
+#Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
+%define sha1 linux=fa46da077c077467776cdc45a7b50d327a081ab4
+Source1:        config-esx-%{version}
+# common
+Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
+Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
+Patch2:         x86-vmware-add-basic-paravirt-ops-support.patch
+Patch3:         x86-vmware-add-paravirt-sched-clock.patch
+Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
+Patch5:         double-tcp_mem-limits.patch
+Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
+Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch8:         linux-4.9-REVERT-sched-fair-Beef-up-wake_wide.patch
+Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch11:        net-9p-vsock.patch
+Patch12:        x86-vmware-sta.patch
+# -esx
+Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch14:        01-clear-linux.patch
+Patch15:        02-pci-probe.patch
+Patch16:        03-poweroff.patch
+Patch17:        04-quiet-boot.patch
+Patch18:        05-pv-ops-clocksource.patch
+Patch19:        06-pv-ops-boot_clock.patch
+Patch20:        07-vmware-only.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -57,7 +55,7 @@ The Linux kernel build for GOS for VMware hypervisor.
 %package devel
 Summary:       Kernel Dev
 Group:         System Environment/Kernel
-Requires:      python2
+Requires:      python2 gawk
 Requires:      %{name} = %{version}-%{release}
 %description devel
 The Linux package contains the Linux kernel dev files
@@ -71,7 +69,8 @@ Requires:      %{name} = %{version}-%{release}
 The Linux package contains the Linux kernel doc files
 
 %prep
-%setup -q -n linux-%{version}
+#%setup -q -n linux-%{version}
+%setup -q -n linux-4.9
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -93,9 +92,6 @@ The Linux package contains the Linux kernel doc files
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
-%patch21 -p1
-%patch22 -p1
-%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -184,6 +180,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
+-   Update to linux-4.9.0
 *   Thu Dec  8 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-4
 -   net-packet-fix-race-condition-in-packet_set_ring.patch
     to fix CVE-2016-8655
