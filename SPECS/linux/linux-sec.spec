@@ -1,39 +1,47 @@
 %global security_hardening none
-Summary:       Kernel
-Name:          linux-sec
-Version:       4.8.0
-Release:       2%{?dist}
-License:       GPLv2
-URL:           http://www.kernel.org/
-Group:         System Environment/Kernel
-Vendor:        VMware, Inc.
-Distribution:  Photon
+Summary:        Kernel
+Name:           linux-sec
+Version:        4.9.0
+Release:        1%{?dist}
+License:        GPLv2
+URL:            http://www.kernel.org/
+Group:          System Environment/Kernel
+Vendor:         VMware, Inc.
+Distribution:   Photon
 #Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.8.tar.xz
-%define sha1 linux=e375f93600a7b96191498af39e5a2416b6666e59
-Source1:       config-sec-%{version}
-Patch0:        0001-NOWRITEEXEC-and-PAX-features-EMUTRAMP-MPROTECT.patch
-Patch1:        0002-Added-rap_plugin.-Func-signature-fixing-is-still-req.patch
-Patch2:        double-tcp_mem-limits.patch
-Patch3:        linux-4.8-sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch4:        linux-4.8-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch5:        SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch6:        06-sunrpc.patch
-Patch7:        linux-4.8-vmware-log-kmsg-dump-on-panic.patch
-#Patch8:        net-9p-vsock.patch
-#Patch9:        linux-4.8-REVERT-sched-fair-Beef-up-wake_wide.patch
-BuildRequires: bc
-BuildRequires: kbd
-BuildRequires: kmod
-BuildRequires: glib-devel
-BuildRequires: xerces-c-devel
-BuildRequires: xml-security-c-devel
-BuildRequires: libdnet
-BuildRequires: libmspack
-BuildRequires: Linux-PAM
-BuildRequires: openssl-devel
-BuildRequires: procps-ng-devel
-Requires:      filesystem kmod coreutils
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
+%define sha1 linux=fa46da077c077467776cdc45a7b50d327a081ab4
+Source1:        config-sec-%{version}
+# common
+Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
+Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
+Patch2:         x86-vmware-add-basic-paravirt-ops-support.patch
+Patch3:         x86-vmware-add-paravirt-sched-clock.patch
+Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
+Patch5:         double-tcp_mem-limits.patch
+Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
+Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch8:         linux-4.9-REVERT-sched-fair-Beef-up-wake_wide.patch
+Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch11:        net-9p-vsock.patch
+Patch12:        x86-vmware-sta.patch
+# secure
+Patch13:        vmware_io_delay.patch
+Patch14:        0001-NOWRITEEXEC-and-PAX-features-EMUTRAMP-MPROTECT.patch
+Patch15:        0002-Added-rap_plugin.-Func-signature-fixing-is-still-req.patch
+BuildRequires:  bc
+BuildRequires:  kbd
+BuildRequires:  kmod
+BuildRequires:  glib-devel
+BuildRequires:  xerces-c-devel
+BuildRequires:  xml-security-c-devel
+BuildRequires:  libdnet
+BuildRequires:  libmspack
+BuildRequires:  Linux-PAM
+BuildRequires:  openssl-devel
+BuildRequires:  procps-ng-devel
+Requires:       filesystem kmod coreutils
 %define uname_r %{version}-%{release}-secure
 
 %description
@@ -42,7 +50,7 @@ Security hardened Linux kernel.
 %package devel
 Summary:       Kernel Dev
 Group:         System Environment/Kernel
-Requires:      python2
+Requires:      python2 gawk
 Requires:      %{name} = %{version}-%{release}
 %description devel
 The Linux package contains the Linux kernel dev files
@@ -57,7 +65,7 @@ The Linux package contains the Linux kernel doc files
 
 %prep
 #%setup -q -n linux-%{version}
-%setup -q -n linux-4.8
+%setup -q -n linux-4.9
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -66,7 +74,14 @@ The Linux package contains the Linux kernel doc files
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-#%patch8 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
 
 %build
 # patch vmw_balloon driver
@@ -113,7 +128,7 @@ cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_
 # because .ko files will be loaded from the memory (LoadPin: obj=<unknown>)
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0 loadpin.enabled=0
+photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0 loadpin.enabled=0 no-vmw-sta
 photon_linux=vmlinuz-%{uname_r}
 EOF
 
@@ -157,6 +172,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
+-   Update to linux-4.9.0
+-   Add paravirt stolen time accounting feature (from linux-esx),
+    but disable it by default (no-vmw-sta cmdline parameter)
+-   Use vmware_io_delay() to keep "void fn(void)" signature
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-2
 -   Expand `uname -r` with release number
 -   Resign and compress modules after stripping
