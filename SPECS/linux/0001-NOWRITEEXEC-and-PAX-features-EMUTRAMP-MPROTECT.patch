@@ -423,9 +423,9 @@ index 903200f..b321ee5 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
 @@ -518,6 +518,9 @@ struct mm_struct {
- #ifdef CONFIG_MMU
- 	struct work_struct async_put_work;
+ 	atomic_long_t hugetlb_usage;
  #endif
+ 	struct work_struct async_put_work;
 +#if defined(CONFIG_PAX)
 +	unsigned long pax_flags;
 +#endif
@@ -436,8 +436,8 @@ diff --git a/include/linux/sched.h b/include/linux/sched.h
 index 62c68e5..2eb0c94 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -1939,6 +1939,8 @@ extern int arch_task_struct_size __read_mostly;
- # define arch_task_struct_size (sizeof(struct task_struct))
+@@ -1939,6 +1939,8 @@ static inline struct vm_struct *task_stack_vm_area(const struct task_struct *t)
+ }
  #endif
  
 +#define MF_PAX_EMUTRAMP		0x02000000	/* Emulate trampolines */
@@ -536,8 +536,8 @@ index a4830f0..6aba51c 100644
 +++ b/mm/mprotect.c
 @@ -25,6 +25,10 @@
  #include <linux/perf_event.h>
- #include <linux/ksm.h>
  #include <linux/pkeys.h>
+ #include <linux/ksm.h>
 +#ifdef CONFIG_PAX_MPROTECT
 +#include <linux/elf.h>
 +#include <linux/binfmts.h>
@@ -553,7 +553,7 @@ index a4830f0..6aba51c 100644
 +	if (mm->binfmt && mm->binfmt->handle_mprotect)
 +		mm->binfmt->handle_mprotect(vma, newflags);
 +#endif
- 	dirty_accountable = vma_wants_writenotify(vma);
+ 	dirty_accountable = vma_wants_writenotify(vma, vma->vm_page_prot);
  	vma_set_page_prot(vma);
  
 @@ -407,6 +415,10 @@ SYSCALL_DEFINE3(mprotect, unsigned long, start, size_t, len,
@@ -565,8 +565,8 @@ index a4830f0..6aba51c 100644
 +		current->mm->binfmt->handle_mprotect(vma, calc_vm_prot_bits(prot, 0));
 +#endif
  	for (nstart = start ; ; ) {
+ 		unsigned long mask_off_old_flags;
  		unsigned long newflags;
- 		int pkey = arch_override_mprotect_pkey(vma, prot, -1);
 diff --git a/security/Kconfig b/security/Kconfig
 index 118f454..965f1a3 100644
 --- a/security/Kconfig

@@ -1,37 +1,31 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.35
-Release:    	3%{?dist}
+Version:        4.9.0
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
+#Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
+%define sha1 linux=fa46da077c077467776cdc45a7b50d327a081ab4
 Source1:	config-%{version}
-Patch0:         double-tcp_mem-limits.patch
-Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         06-sunrpc.patch
-Patch5:         vmware-log-kmsg-dump-on-panic.patch
-Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
-Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-#fixes CVE-2016-9083
-Patch8:         vfio-pci-fix-integer-overflows-bitmask-check.patch
-Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
-Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-Patch11:        VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
-Patch12:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
-Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
-Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
-#fixes CVE-2016-6187
-Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
-Patch16:        net-9p-vsock.patch
-#fixes CVE-2016-8655
-Patch17:       net-packet-fix-race-condition-in-packet_set_ring.patch
+# common
+Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
+Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
+Patch2:         x86-vmware-add-basic-paravirt-ops-support.patch
+Patch3:         x86-vmware-add-paravirt-sched-clock.patch
+Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
+Patch5:         double-tcp_mem-limits.patch
+Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
+Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch8:         linux-4.9-REVERT-sched-fair-Beef-up-wake_wide.patch
+Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch11:        net-9p-vsock.patch
+Patch12:        x86-vmware-sta.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -87,7 +81,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 
 %prep
-%setup -q
+#%setup -q -n linux-%{version}
+%setup -q -n linux-4.9
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -101,11 +96,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
 
 %build
 make mrproper
@@ -159,7 +149,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlin
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0 no-vmw-sta
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -172,6 +162,9 @@ find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --pare
 find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
 find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
 find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+# CONFIG_STACK_VALIDATION=y requires objtool to build external modules
+install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
+install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
 
 cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
 ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
@@ -226,6 +219,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
+-   Update to linux-4.9.0
+-   Add paravirt stolen time accounting feature (from linux-esx),
+    but disable it by default (no-vmw-sta cmdline parameter)
 *   Thu Dec  8 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-3
 -   net-packet-fix-race-condition-in-packet_set_ring.patch
     to fix CVE-2016-8655

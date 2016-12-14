@@ -48,6 +48,6 @@ diff -Naur a/kernel/sysctl.c b/kernel/sysctl.c
 +		.mode		= 0644,
 +		.proc_handler	= proc_dointvec,
 +	},
- #endif /* CONFIG_SMP */
- #ifdef CONFIG_NUMA_BALANCING
+ #ifdef CONFIG_SCHEDSTATS
  	{
+ 		.procname	= "sched_schedstats",

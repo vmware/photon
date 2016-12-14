@@ -81,7 +81,7 @@ index bced8c0..ac57c4b 100644
 +		vsock_server->svm_family = AF_VSOCK;
 +		vsock_server->svm_port = opts.port;
 +		vsock_server->svm_cid = opts.vsock;
-+		err = __sock_create(read_pnet(&current->nsproxy->net_ns), PF_VSOCK,
++		err = __sock_create(current->nsproxy->net_ns, PF_VSOCK,
 +		                    SOCK_STREAM, 0, &csocket, 1);
 +	}
  	if (err) {

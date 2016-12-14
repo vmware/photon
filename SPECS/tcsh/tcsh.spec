@@ -2,12 +2,13 @@
 Summary:	An enhanced version of csh, the C shell
 Name:		tcsh
 Version:	6.19.00
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 Group:		System Environment/Shells
 Source:		http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.gz
 %define sha1 tcsh=cdb1abe319fab5d3caff101c393293e5b3607f0c
 Patch0:         tcsh-6.19.00-calloc-gcc-5.patch
+Patch1:         tcsh.glibc-2.24.patch
 URL:		http://www.tcsh.org/
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -29,6 +30,7 @@ like syntax.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
@@ -101,6 +103,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*	Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 6.19.00-5
+-	tcsh.glibc-2.24.patch
 *	Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-4
 -	Fix calloc for gcc 5 optimization
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-3
