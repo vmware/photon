@@ -13,6 +13,7 @@ Patch0:         photon-distro.patch
 Patch1:         cloud-init-log.patch
 Patch2:         vca-admin-pwd.patch
 Patch3:         remove-netstat.patch
+Patch4:         systemctl-sshd.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -40,6 +41,7 @@ ssh keys and to let the user run various scripts.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 

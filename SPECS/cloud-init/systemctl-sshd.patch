@@ -1,0 +1,19 @@
+diff -rupr a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
+--- a/cloudinit/distros/photon.py	2016-12-13 14:48:43.551079771 -0800
++++ b/cloudinit/distros/photon.py	2016-12-13 14:32:39.366192499 -0800
+@@ -20,6 +20,7 @@ class Distro(distros.Distro):
+     hostname_conf_fn = "/etc/hostname"
+     locale_conf_fn = "/etc/default/locale"
+     network_conf_fn = "/etc/network/interfaces"
++    init_cmd = ['systemctl']  # init scripts
+ 
+     def __init__(self, name, cfg, paths):
+         distros.Distro.__init__(self, name, cfg, paths)
+@@ -28,6 +29,7 @@ class Distro(distros.Distro):
+         # should only happen say once per instance...)
+         self._runner = helpers.Runners(paths)
+         self.osfamily = 'photon'
++        cfg['ssh_svcname'] = 'sshd'
+ 
+     def apply_locale(self, locale, out_fn=None):
+         if not out_fn:
