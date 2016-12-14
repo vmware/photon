@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -19,7 +19,7 @@ Requires:       m4
 Requires:       openldap
 Requires:       shadow
 Requires:       sed
-Requires:       inetutils
+Requires:       net-tools
 
 %define sha1 sendmail=5801d4b06f4e38ef228a5954a44d17636eaa5a16
 
@@ -177,6 +177,8 @@ fi
 
 
 %changelog
+*	Wed Dec 14 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-9
+-       Replace obsoleted dependency inetutils with net-tools
 *	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-8
 -	fix pre script, add coreutils,inetutils,sed,shadow to requires
 *       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 8.15.2-7
