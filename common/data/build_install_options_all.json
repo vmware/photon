@@ -32,12 +32,6 @@
         "include" : ["minimal"],
         "additional-files" : ["ostree-repo.tar.gz"]
     },
-    "extra" : {
-        "title" : "Extra packages not installed but packed in ISO.",
-        "file" : "packages_extra.json",
-        "visible" : false,
-        "include" : []
-    },
     "appliance" : {
         "title" : "Minimal packages to support appliances.",
         "file" : "packages_appliance.json",

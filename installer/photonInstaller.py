@@ -167,7 +167,6 @@ def make_src_iso(working_directory, src_iso_path, rpm_list):
     process = subprocess.Popen(['rm', '-rf', options.working_directory])
     retval = process.wait()
 
-
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <config file> <tools path>"
     parser = OptionParser(usage)
@@ -183,9 +182,9 @@ if __name__ == '__main__':
     parser.add_option("-f", "--force", action="store_true", dest="force", default=False)
     parser.add_option("-p", "--package-list-file", dest="package_list_file", default="../common/data/build_install_options_all.json")
     parser.add_option("-m", "--stage-path", dest="stage_path", default="../stage")
-    parser.add_option("-c", "--dracut-configuration", dest="dracut_configuration_file", default="../common/data/dracut_configuration.json")
     parser.add_option("-s", "--json-data-path", dest="json_data_path", default="../stage/common/data/")
-    parser.add_option("-d", "--pkg-to_rpm-map-file", dest="pkg_to_rpm_map_file", default="../stage/pkg_info.json")
+    parser.add_option("-d", "--pkg-to-rpm-map-file", dest="pkg_to_rpm_map_file", default="../stage/pkg_info.json")
+    parser.add_option("-c", "--pkg-to-be-copied-conf-file", dest="pkg_to_be_copied_conf_file")
 
     (options,  args) = parser.parse_args()
     # Cleanup the working directory
@@ -195,7 +194,7 @@ if __name__ == '__main__':
             sys.exit(0)
 
     if options.src_iso_path:
-        rpm_list = create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.package_list_file, 4, options.output_data_path)
+        rpm_list = create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 4, options.output_data_path)
         make_src_iso(options.working_directory, options.src_iso_path, rpm_list)
 
     else:
@@ -219,8 +218,6 @@ if __name__ == '__main__':
             if not success:
                 print "Unexpected failure, please check the logs"
                 sys.exit(1)
-
-            config['initrd_dir'] = "/boot"
 
             config['iso_system'] = False
             config['vmdk_install'] = True
@@ -253,13 +250,6 @@ if __name__ == '__main__':
 
         config['packages'] = packages
 
-        if options.iso_path:
-            if os.path.isfile(options.dracut_configuration_file):
-                json_wrapper_package_list = JsonWrapper(options.dracut_configuration_file)
-                dracut_configuration_list_json = json_wrapper_package_list.read()
-                config["dracut_configuration"]=dracut_configuration_list_json["dracut_configuration"]
-
-
         if (os.path.isdir(options.working_directory)):
             process = subprocess.Popen(['rm', '-rf', options.working_directory])
             retval = process.wait()
@@ -275,7 +265,7 @@ if __name__ == '__main__':
 
         # Making the iso if needed
         if options.iso_path:
-            rpm_list = " ".join(create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.package_list_file, 3, options.output_data_path))
+            rpm_list = " ".join(create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 3, options.output_data_path))
             files_to_copy = " ".join(create_additional_file_list_to_copy_in_iso(os.path.abspath(options.stage_path), options.package_list_file))
             live_cd = get_live_cd_status_string(options.package_list_file)
             process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd, options.json_data_path])
