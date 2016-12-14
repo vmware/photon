@@ -2,7 +2,7 @@
 Summary:	Sysdig is a universal system visibility tool with native support for containers.
 Name:		sysdig
 Version:	0.10.1
-Release:	3%{?kernelsubrelease}%{?dist}
+Release:	4%{?kernelsubrelease}%{?dist}
 License:	GPLv2	  
 URL:		http://www.sysdig.org/
 Group:		Applications/System	
@@ -29,6 +29,10 @@ Requires:	curl
 %setup -q
 
 %build
+# fix for linux-4.9
+sed -i 's|task_thread_info(current)->status|current->thread.status|g' driver/main.c
+sed -i 's|task_thread_info(task)->status|current->thread.status|g' driver/ppm_syscall.h
+
 mkdir build
 cd build
 
@@ -69,6 +73,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Thu Dec 15 2016 Alexey Makhalov <amakhalov@vmware.com> 0.10.1-4
+-   Fix building for linux-4.9
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.10.1-3
 -   Expand uname -r to have release number
 -   Exclude /usr/src

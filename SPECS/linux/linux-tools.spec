@@ -1,15 +1,15 @@
 Summary:      This package contains the 'perf' performance analysis tools for Linux kernel 
 Name:         linux-tools
-Version:      4.4.35
-Release:      2%{?dist}
+Version:      4.9.0
+Release:      1%{?dist}
 License:      GPLv2
 URL:          http://www.kernel.org/
 Group:        System/Tools
 Vendor:       VMware, Inc.
 Distribution: Photon
-Source0:      http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
-Patch0:		  perf-top-sigsegv-fix.patch
+#Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
+%define sha1 linux=fa46da077c077467776cdc45a7b50d327a081ab4
 BuildRequires:	audit-devel
 Requires:       audit filesystem kmod coreutils binutils
 
@@ -17,8 +17,8 @@ Requires:       audit filesystem kmod coreutils binutils
 This package contains the 'perf' performance analysis tools for Linux kernel. 
 
 %prep
-%setup -q -n linux-%{version}
-%patch0 -p1
+#%setup -q -n linux-%{version}
+%setup -q -n linux-4.9
 
 %build
 make -C tools perf
@@ -38,8 +38,11 @@ mv %{buildroot}/usr/lib64 %{buildroot}%{_libdir}
 %{_bindir}
 /etc/bash_completion.d/* 
 /usr/share/perf-core/strace/groups/file
+/usr/share/doc/*
 
 %changelog
+*   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
+-   Update to linux-4.9.0
 *   Mon Nov 28 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.35-2
 -   Building it with audit-devel
 *   Mon Nov 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-1

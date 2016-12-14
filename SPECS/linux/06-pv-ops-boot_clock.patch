@@ -1,0 +1,156 @@
+diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
+index ce93281..3d4ba2a 100644
+--- a/arch/x86/include/asm/paravirt.h
++++ b/arch/x86/include/asm/paravirt.h
+@@ -193,6 +193,11 @@ static inline u64 paravirt_steal_clock(int cpu)
+ 	return PVOP_CALL1(u64, pv_time_ops.steal_clock, cpu);
+ }
+ 
++static inline void paravirt_read_boot_clock64(struct timespec64 *ts)
++{
++	PVOP_VCALL1(pv_time_ops.read_boot_clock64, ts);
++}
++
+ static inline unsigned long long paravirt_read_pmc(int counter)
+ {
+ 	return PVOP_CALL1(u64, pv_cpu_ops.read_pmc, counter);
+diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
+index 0f400c0..5f09979 100644
+--- a/arch/x86/include/asm/paravirt_types.h
++++ b/arch/x86/include/asm/paravirt_types.h
+@@ -51,6 +51,10 @@ struct mm_struct;
+ struct desc_struct;
+ struct task_struct;
+ struct cpumask;
++#if __BITS_PER_LONG == 64
++# define timespec64 timespec
++#endif
++struct timespec64;
+ 
+ /*
+  * Wrapper type for pointers to code which uses the non-standard
+@@ -96,6 +100,7 @@ struct pv_lazy_ops {
+ struct pv_time_ops {
+ 	unsigned long long (*sched_clock)(void);
+ 	unsigned long long (*steal_clock)(int cpu);
++	void (*read_boot_clock64)(struct timespec64 *ts);
+ };
+ 
+ struct pv_cpu_ops {
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 8129f99..387ac46 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -124,6 +124,7 @@ static struct kmsg_dumper kmsg_dumper = {
+ #ifdef CONFIG_PARAVIRT
+ static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
+ static int vmw_sched_clock __initdata = 1;
++uint64_t __initdata tsc_at_head;
+ 
+ static __init int setup_vmw_sched_clock(char *s)
+ {
+@@ -145,7 +146,7 @@ static unsigned long long vmware_sched_clock(void)
+ static void __init vmware_cyc2ns_setup(void)
+ {
+ 	struct cyc2ns_data *d = &vmware_cyc2ns;
+-	unsigned long long tsc_now = rdtsc();
++	unsigned long long tsc_now = tsc_at_head;
+ 
+ 	clocks_calc_mult_shift(&d->cyc2ns_mul, &d->cyc2ns_shift,
+ 			       vmware_tsc_khz, NSEC_PER_MSEC, 0);
+@@ -175,6 +176,26 @@ struct clocksource * __init clocksource_default_clock(void)
+ 	return &clocksource_vmware;
+ }
+ 
++/* Function to read the exact time the system has been started. It will be
++   used as zero time for monotonic clock */
++static void vmware_read_boot_clock64(struct timespec64 *ts)
++{
++	struct timespec64 now;
++	u64 delta_nsec;
++	u32 rem;
++
++	read_persistent_clock64(&now);
++	delta_nsec = mul_u64_u32_shr(rdtsc(), vmware_cyc2ns.cyc2ns_mul,
++			     vmware_cyc2ns.cyc2ns_shift);
++	delta_nsec -= vmware_cyc2ns.cyc2ns_offset;
++	ts->tv_sec = now.tv_sec - div_s64_rem(delta_nsec, NSEC_PER_SEC, &rem);
++	ts->tv_nsec = now.tv_nsec - rem;
++	while (unlikely(ts->tv_nsec < 0)) {
++		ts->tv_sec--;
++		ts->tv_nsec += NSEC_PER_SEC;
++	}
++}
++
+ static uint64_t vmware_steal_clock(int cpu)
+ {
+ 	struct vmware_steal_time *steal;
+@@ -311,6 +332,7 @@ static void __init vmware_paravirt_ops_setup(void)
+ #endif
+ 	}
+ 	clocksource_register_khz(&clocksource_vmware, vmware_tsc_khz);
++	pv_time_ops.read_boot_clock64 = vmware_read_boot_clock64;
+ }
+ #else
+ #define vmware_paravirt_ops_setup() do {} while (0)
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index b4421cc..f7b8017 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -184,6 +184,14 @@ ENTRY(secondary_startup_64)
+ 	 * after the boot processor executes this code.
+ 	 */
+ 
++	/*
++	 * Read a TSC value first
++	 */
++	rdtsc
++	shl	$0x20, %rdx
++	or	%rax, %rdx
++	mov	%rdx, tsc_at_head(%rip)
++
+ 	/* Sanitize CPU configuration */
+ 	call verify_cpu
+ 
+diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
+index bbf3d59..10bbdb3 100644
+--- a/arch/x86/kernel/paravirt.c
++++ b/arch/x86/kernel/paravirt.c
+@@ -203,6 +203,12 @@ static u64 native_steal_clock(int cpu)
+ 	return 0;
+ }
+ 
++static void native_read_boot_clock64(struct timespec64 *ts)
++{
++	ts->tv_sec = 0;
++	ts->tv_nsec = 0;
++}
++
+ /* These are in entry.S */
+ extern void native_iret(void);
+ extern void native_usergs_sysret64(void);
+@@ -310,6 +316,7 @@ struct pv_init_ops pv_init_ops = {
+ struct pv_time_ops pv_time_ops = {
+ 	.sched_clock = native_sched_clock,
+ 	.steal_clock = native_steal_clock,
++	.read_boot_clock64 = native_read_boot_clock64,
+ };
+ 
+ __visible struct pv_irq_ops pv_irq_ops = {
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 9c337b0..67a42e5 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -1302,3 +1302,12 @@ void arch_show_smap(struct seq_file *m, struct vm_area_struct *vma)
+ 
+ 	seq_printf(m, "ProtectionKey:  %8u\n", vma_pkey(vma));
+ }
++
++/* We need to define a real function for read_boot_clock64, to override the
++   weak default version */
++#ifdef CONFIG_PARAVIRT
++void read_boot_clock64(struct timespec64 *ts)
++{
++	paravirt_read_boot_clock64(ts);
++}
++#endif

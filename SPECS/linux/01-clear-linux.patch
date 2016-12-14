@@ -1,62 +1,3 @@
-From 7f6aac4ffc7feb6ed143d936f0457edcfc078aa0 Mon Sep 17 00:00:00 2001
-From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Tue, 29 Sep 2015 15:58:41 -0700
-Subject: [PATCH] clean linux patch set.
-
----
- arch/x86/kernel/cpu/perf_event_intel.c |  2 +-
- arch/x86/kernel/tsc.c                  |  3 +++
- drivers/tty/sysrq.c                    |  4 +++-
- drivers/video/console/fbcon.c          |  2 +-
- include/linux/blkdev.h                 |  2 +-
- init/do_mounts.c                       |  4 +++-
- kernel/fork.c                          | 39 ++++++++++++++++++++--------------
- mm/vmstat.c                            |  2 +-
- 8 files changed, 36 insertions(+), 22 deletions(-)
-
-diff --git a/arch/x86/kernel/cpu/perf_event_intel.c b/arch/x86/kernel/cpu/perf_event_intel.c
-index e2a4300..1abd753 100644
---- a/arch/x86/kernel/cpu/perf_event_intel.c
-+++ b/arch/x86/kernel/cpu/perf_event_intel.c
-@@ -3604,7 +3604,7 @@ __init int intel_pmu_init(void)
- 	 */
- 	if (x86_pmu.extra_regs) {
- 		for (er = x86_pmu.extra_regs; er->msr; er++) {
--			er->extra_msr_access = check_msr(er->msr, 0x11UL);
-+			er->extra_msr_access = false;
- 			/* Disable LBR select mapping */
- 			if ((er->idx == EXTRA_REG_LBR) && !er->extra_msr_access)
- 				x86_pmu.lbr_sel_map = NULL;
-diff --git a/arch/x86/kernel/tsc.c b/arch/x86/kernel/tsc.c
-index c7c4d9c..8913f79 100644
---- a/arch/x86/kernel/tsc.c
-+++ b/arch/x86/kernel/tsc.c
-@@ -1253,6 +1253,9 @@ unsigned long calibrate_delay_is_known(void)
- 	if (!tsc_disabled && !cpu_has(&cpu_data(cpu), X86_FEATURE_CONSTANT_TSC))
- 		return 0;
- 
-+	if (cpu != 0)
-+		return cpu_data(0).loops_per_jiffy;
-+
- 	for_each_online_cpu(i)
- 		if (cpu_data(i).phys_proc_id == cpu_data(cpu).phys_proc_id)
- 			return cpu_data(i).loops_per_jiffy;
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index 5381a72..6aa6e81 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -1058,8 +1058,10 @@ static int __sysrq_swap_key_ops(int key, struct sysrq_key_op *insert_op_p,
- 	 * A concurrent __handle_sysrq either got the old op or the new op.
- 	 * Wait for it to go away before returning, so the code for an old
- 	 * op is not freed (eg. on module unload) while it is in use.
-+	 * This is only relevant if the old op is not NULL of course.
- 	 */
--	synchronize_rcu();
-+	if (remove_op_p)
-+		synchronize_rcu();
- 
- 	return retval;
- }
 diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
 index 92f3949..4ff61d7 100644
 --- a/drivers/video/console/fbcon.c
@@ -105,70 +46,6 @@ index dea5de9..da84094 100644
  
  	md_run_setup();
  
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 1155eac..3a790cf 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -74,6 +74,7 @@
- #include <linux/uprobes.h>
- #include <linux/aio.h>
- #include <linux/compiler.h>
-+#include <linux/async.h>
- #include <linux/sysctl.h>
- 
- #include <asm/pgtable.h>
-@@ -689,6 +690,26 @@ void __mmdrop(struct mm_struct *mm)
- }
- EXPORT_SYMBOL_GPL(__mmdrop);
- 
-+
-+static void mmput_async(void *data, async_cookie_t cookie)
-+{
-+	struct mm_struct *mm = data;
-+	uprobe_clear_state(mm);
-+	exit_aio(mm);
-+	ksm_exit(mm);
-+	khugepaged_exit(mm); /* must run before exit_mmap */
-+	exit_mmap(mm);
-+	set_mm_exe_file(mm, NULL);
-+	if (!list_empty(&mm->mmlist)) {
-+		spin_lock(&mmlist_lock);
-+		list_del(&mm->mmlist);
-+		spin_unlock(&mmlist_lock);
-+	}
-+	if (mm->binfmt)
-+		module_put(mm->binfmt->module);
-+	mmdrop(mm);
-+}
-+
- /*
-  * Decrement the use count and release all resources for an mm.
-  */
-@@ -696,22 +717,8 @@ void mmput(struct mm_struct *mm)
- {
- 	might_sleep();
- 
--	if (atomic_dec_and_test(&mm->mm_users)) {
--		uprobe_clear_state(mm);
--		exit_aio(mm);
--		ksm_exit(mm);
--		khugepaged_exit(mm); /* must run before exit_mmap */
--		exit_mmap(mm);
--		set_mm_exe_file(mm, NULL);
--		if (!list_empty(&mm->mmlist)) {
--			spin_lock(&mmlist_lock);
--			list_del(&mm->mmlist);
--			spin_unlock(&mmlist_lock);
--		}
--		if (mm->binfmt)
--			module_put(mm->binfmt->module);
--		mmdrop(mm);
--	}
-+	if (atomic_dec_and_test(&mm->mm_users))
-+		async_schedule(mmput_async, mm);
- }
- EXPORT_SYMBOL_GPL(mmput);
- 
 diff --git a/mm/vmstat.c b/mm/vmstat.c
 index c54fd29..f0baa1a 100644
 --- a/mm/vmstat.c
@@ -179,9 +56,9 @@ index c54fd29..f0baa1a 100644
  static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
 -int sysctl_stat_interval __read_mostly = HZ;
 +int sysctl_stat_interval __read_mostly = 8 * HZ;
- static cpumask_var_t cpu_stat_off;
  
- static void vmstat_update(struct work_struct *w)
+ #ifdef CONFIG_PROC_FS
+ static void refresh_vm_stats(struct work_struct *work)
 -- 
 1.9.1
 
