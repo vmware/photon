@@ -1,0 +1,39 @@
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index c998fba..8129f99 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -155,6 +155,26 @@ static void __init vmware_cyc2ns_setup(void)
+ 	pr_info("using clock offset of %llu ns\n", d->cyc2ns_offset);
+ }
+ 
++static cycle_t vmware_clock_get_cycles(struct clocksource *cs)
++{
++	return rdtsc();
++}
++
++static struct clocksource clocksource_vmware = {
++	.name = "vmware-clock",
++	.read = vmware_clock_get_cycles,
++	.rating = 400,
++	.mask = CLOCKSOURCE_MASK(64),
++	.flags = CLOCK_SOURCE_IS_CONTINUOUS,
++};
++
++/* We want to use clocksource_vmware from the beginning to avoid drifting in
++   monotonic clock */
++struct clocksource * __init clocksource_default_clock(void)
++{
++	return &clocksource_vmware;
++}
++
+ static uint64_t vmware_steal_clock(int cpu)
+ {
+ 	struct vmware_steal_time *steal;
+@@ -290,6 +310,7 @@ static void __init vmware_paravirt_ops_setup(void)
+ 		vmware_guest_cpu_init();
+ #endif
+ 	}
++	clocksource_register_khz(&clocksource_vmware, vmware_tsc_khz);
+ }
+ #else
+ #define vmware_paravirt_ops_setup() do {} while (0)
