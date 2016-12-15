@@ -1,7 +1,7 @@
 Summary:        Mesos
 Name:           mesos
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -11,7 +11,7 @@ Source0:        http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}
 %define sha1    mesos=5ea8f46cdb5c1b96fdce19120655c8df15732a60
 BuildRequires:  openjre >= 1.8.0.45
 BuildRequires:  openjdk >= 1.8.0.45
-BuildRequires:  curl
+BuildRequires:  curl-devel
 BuildRequires:  apache-maven >= 3.3.3
 BuildRequires:  apr-devel >= 1.5.2
 BuildRequires:  apr >= 1.5.2
@@ -98,6 +98,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-2
+-   BuildRequires curl-devel.
 *   Tue Dec 13 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-1
 -   Updated to version 1.1.0
 *   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 0.28.2-3
