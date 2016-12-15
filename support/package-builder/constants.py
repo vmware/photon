@@ -22,6 +22,7 @@ class constants(object):
 
     # These packages will be built in first order as build-core-toolchain stage
     listCoreToolChainPackages=[
+        "filesystem",
         "linux-api-headers",
         "glibc",
         "zlib",
@@ -41,6 +42,7 @@ class constants(object):
 
     # These packages will be built in a second stage to replace publish RPMS
     listToolChainPackages=[
+        "filesystem",
         "linux-api-headers",
         "glibc",
         "zlib",
@@ -98,6 +100,7 @@ class constants(object):
     # package. On a stage1 and stage2 published rpms will/might be used
     # after stage2 only local RPMS will be used
     listToolChainRPMsToInstall=[
+        "filesystem",
         "linux-api-headers",
         "glibc",
         "glibc-devel",

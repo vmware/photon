@@ -31,6 +31,11 @@ class ToolChainUtils(object):
     def prepareBuildRoot(self,chrootID):
         self.logger.info("Preparing build environment")
         cmdUtils = CommandUtils()
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/dev")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/etc")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/proc")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/run")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/sys")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/tmp")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath)
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
@@ -40,36 +45,6 @@ class ToolChainUtils(object):
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/LOGS")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/BUILD")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/BUILDROOT")
-
-        package="filesystem"
-        pkgUtils=PackageUtils(self.logName,self.logPath)
-        rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
-        if rpmFile is None:
-            specFile=constants.specData.getSpecFile(package)
-            cmd=self.rpmbuildCommand+" -ba --nocheck --define \'_topdir "+chrootID+constants.topDirPath+"\' --define \'_dbpath "+chrootID+"/var/lib/rpm\' --define \'dist "+constants.dist+"\' "+specFile
-            self.logger.info(cmd)
-            cmdUtils.runCommandInShell(cmd,self.logPath+"/filesystem.log")
-            filesystemrpmFile = cmdUtils.findFile(package+"-[0-9]*.rpm", chrootID+constants.topDirPath+"/RPMS")
-            filesystemsrpmFile = cmdUtils.findFile(package+"-[0-9]*.src.rpm", chrootID+constants.topDirPath+"/SRPMS")
-            if len(filesystemrpmFile) > 0:
-                shutil.copy2(filesystemrpmFile[0],constants.rpmPath+"/x86_64/")
-            if len(filesystemsrpmFile) > 0:
-                shutil.copy2(filesystemsrpmFile[0],constants.sourceRpmPath+"/")
-            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
-            if rpmFile is None:
-                self.logger.error("Cannot find filesystem rpm")
-                raise Exception("Cannot find filesystem rpm")
-        
-        self.logger.debug("Installing filesystem rpms:" + package)
-        if os.geteuid()==0:
-            cmd=self.rpmCommand + " -i --nodeps --root "+chrootID+" --define '_dbpath /var/lib/rpm' "+ rpmFile
-        else:
-            cmd=self.rpmCommand + " -i --nodeps --badreloc --relocate /="+chrootID+" --define '_dbpath "+chrootID+"/var/lib/rpm' "+ rpmFile
-        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
-            self.logger.error("Installing filesystem rpm failed")
-            raise Exception("RPM installation failed")
         
         prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID
         logFile=constants.logPath+"/prepareBuildRoot.log"
