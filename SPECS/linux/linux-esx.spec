@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.35
-Release:       4%{?dist}
+Release:       5%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -45,7 +45,7 @@ BuildRequires: xerces-c-devel
 BuildRequires: xml-security-c-devel
 BuildRequires: libdnet
 BuildRequires: libmspack
-BuildRequires: Linux-PAM
+BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 Requires:      filesystem kmod coreutils
@@ -184,6 +184,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 14 2016 Xiaolin Li <xiaolinl@vmware.com> 4.4.35-5
+-   BuildRequires Linux-PAM-devel
 *   Thu Dec  8 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-4
 -   net-packet-fix-race-condition-in-packet_set_ring.patch
     to fix CVE-2016-8655

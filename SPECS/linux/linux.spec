@@ -1,16 +1,16 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.35
-Release:    	3%{?dist}
-License:    	GPLv2
-URL:        	http://www.kernel.org/
-Group:        	System Environment/Kernel
+Version:        4.4.35
+Release:        4%{?dist}
+License:        GPLv2
+URL:            http://www.kernel.org/
+Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
-Distribution: 	Photon
-Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
+Distribution:   Photon
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
 %define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
-Source1:	config-%{version}
+Source1:    config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -18,7 +18,7 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
 Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
-Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
+Patch7:         vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
 #fixes CVE-2016-9083
 Patch8:         vfio-pci-fix-integer-overflows-bitmask-check.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
@@ -40,7 +40,7 @@ BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet
 BuildRequires:  libmspack
-BuildRequires:  Linux-PAM
+BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod coreutils
@@ -143,10 +143,10 @@ ID1=`readelf -n vmlinux | grep "Build ID"`
 ./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
 ID2=`readelf -n extracted-vmlinux | grep "Build ID"`
 if [ "$ID1" != "$ID2" ] ; then
-	echo "Build IDs do not match"
-	echo $ID1
-	echo $ID2
-	exit 1
+    echo "Build IDs do not match"
+    echo $ID1
+    echo $ID2
+    exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 # Restrict the permission on System.map-X file
@@ -226,6 +226,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Wed Dec 14 2016 Xiaolin Li <xiaolinl@vmware.com> 4.4.35-4
+-   BuildRequires Linux-PAM-devel
 *   Thu Dec  8 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-3
 -   net-packet-fix-race-condition-in-packet_set_ring.patch
     to fix CVE-2016-8655

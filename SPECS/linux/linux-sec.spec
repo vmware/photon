@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-sec
 Version:       4.8.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -157,6 +157,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 14 2016 Xiaolin Li <xiaolinl@vmware.com> 4.8.0-3
+-   BuildRequires Linux-PAM-devel
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-2
 -   Expand `uname -r` with release number
 -   Resign and compress modules after stripping
