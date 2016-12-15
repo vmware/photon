@@ -39,11 +39,6 @@ Here's how to get Docker:
 wget -qO- https://get.docker.com/ | sh
 ```
 
-Make sure `/bin/sh` is a symbolic link pointing to `/bin/bash`. If `/bin/sh` is pointing `/bin/dash`, execute the following:
-```
-sudo ln -sf /bin/bash /bin/sh
-```
-
 Here's how to make the ISO, assuming you checked out the workspace under `$HOME/workspaces/photon`:
 ```
 cd $HOME/workspaces/photon
