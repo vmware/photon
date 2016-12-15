@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:             rpm
 Version:          4.11.2
-Release:          17%{?dist}
+Release:          18%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -122,30 +122,14 @@ rm -rf %{buildroot}
 %{_bindir}/rpmquery
 %{_bindir}/rpmverify
 
-%{_libdir}/rpm/check-buildroot
-%{_libdir}/rpm/check-files
-%{_libdir}/rpm/check-prereqs
-%{_libdir}/rpm/check-rpaths
-%{_libdir}/rpm/check-rpaths-worker
-%{_libdir}/rpm/config.guess
-%{_libdir}/rpm/config.sub
-%{_libdir}/rpm/debugedit
-%{_libdir}/rpm/desktop-file.prov
-%{_libdir}/rpm/elfdeps
-%{_libdir}/rpm/fontconfig.prov
-%{_libdir}/rpm/libtooldeps.sh
-%{_libdir}/rpm/mkinstalldirs
-%{_libdir}/rpm/pkgconfigdeps.sh
-%{_libdir}/rpm/platform
-%{_libdir}/rpm/pythondeps.sh
+%{_libdir}/rpm/rpmpopt-*
+%{_libdir}/rpm/rpmdb_*
 %{_libdir}/rpm/rpm.daily
 %{_libdir}/rpm/rpm.log
 %{_libdir}/rpm/rpm.supp
 %{_libdir}/rpm/rpm2cpio.sh
-%{_libdir}/rpm/rpmdb_*
-%{_libdir}/rpm/rpmdeps
-%{_libdir}/rpm/rpmpopt-4.11.2
 %{_libdir}/rpm/tgpg
+%{_libdir}/rpm/platform
 %{_libdir}/rpm-plugins/*
 %{_mandir}/man8/rpm.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
@@ -196,6 +180,23 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/fileattrs/*
 %{_libdir}/rpm/script.req
 %{_libdir}/rpm/tcl.req
+%{_libdir}/rpm/check-buildroot
+%{_libdir}/rpm/check-files
+%{_libdir}/rpm/check-prereqs
+%{_libdir}/rpm/check-rpaths
+%{_libdir}/rpm/check-rpaths-worker
+%{_libdir}/rpm/config.guess
+%{_libdir}/rpm/config.sub
+%{_libdir}/rpm/debugedit
+%{_libdir}/rpm/desktop-file.prov
+%{_libdir}/rpm/elfdeps
+%{_libdir}/rpm/fontconfig.prov
+%{_libdir}/rpm/libtooldeps.sh
+%{_libdir}/rpm/mkinstalldirs
+%{_libdir}/rpm/pkgconfigdeps.sh
+
+%{_libdir}/rpm/pythondeps.sh
+%{_libdir}/rpm/rpmdeps
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -217,6 +218,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+*    Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18
+-    Moved some files from rpm to rpm-build.
 *    Tue Dec 06 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-17
 -    Added -lang subpackage.
 *    Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-16
