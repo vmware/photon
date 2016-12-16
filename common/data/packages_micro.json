@@ -9,7 +9,6 @@
                 "photon-release", 
                 "photon-repos",
                 "tdnf",
-
                 "rpm"]
 }
 

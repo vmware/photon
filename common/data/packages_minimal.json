@@ -5,7 +5,7 @@
                 "systemd", "dbus", "file", "e2fsprogs", "rpm",
                 "openssh", "gdbm", "python2", "python2-libs", "python-xml", 
                 "photon-release", "photon-repos",
-                "sed", "grep", "cpio", "gzip", "vim", "db", "tdnf",
+                "sed", "grep", "cpio", "gzip", "vim", "libdb", "tdnf",
                 "open-vm-tools",
                 "docker","bridge-utils",
                 "cloud-init", "tzdata",
