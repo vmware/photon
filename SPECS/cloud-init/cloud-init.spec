@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -14,6 +14,7 @@ Patch1:         cloud-init-log.patch
 Patch2:         vca-admin-pwd.patch
 Patch3:         remove-netstat.patch
 Patch4:         distro-systemctl.patch
+Patch5:         photon-hosts-template.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -27,6 +28,7 @@ Requires:       python-prettytable
 Requires:       python-requests
 Requires:       PyYAML
 Requires:       python-jsonpatch
+Requires:       python-jinja2
 
 %description
 Cloud-init is a set of init scripts for cloud instances.  Cloud instances
@@ -41,6 +43,7 @@ ssh keys and to let the user run various scripts.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -127,6 +130,8 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Thu Dec 15 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-16
+-   Adding template file and python-jinja2 dependency to update hosts
 *   Wed Dec 14 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-15
 -   Fixed restarting of sshd daemon
 *   Thu Dec 1 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.6-14
