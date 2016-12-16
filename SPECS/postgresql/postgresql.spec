@@ -1,32 +1,32 @@
-Summary:	PostgreSQL database engine
-Name:		postgresql
-Version:	9.5.3
-Release:	3%{?dist}
-License:	PostgreSQL
-URL:		www.postgresql.org
-Group:		Applications/Databases
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Provides:	%{name}
+Summary:        PostgreSQL database engine
+Name:           postgresql
+Version:        9.5.3
+Release:        4%{?dist}
+License:        PostgreSQL
+URL:            www.postgresql.org
+Group:          Applications/Databases
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Provides:   %{name}
 
-Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
+Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
 %define sha1 postgresql=bd8dcbc8c4882468675dcc93263182a27d4ff201
-
+Patch0:         CVE-2016-5423.patch
 # Common libraries needed
-BuildRequires:	krb5
-BuildRequires:	libxml2-devel
-BuildRequires:	openldap
-BuildRequires:	perl
-BuildRequires:	readline-devel
-BuildRequires:	openssl-devel
-BuildRequires:	zlib-devel
-BuildRequires:	tzdata
-Requires:		krb5
-Requires:		libxml2
-Requires:		openldap
-Requires:		openssl
-Requires:		readline
-Requires:		zlib
+BuildRequires:  krb5
+BuildRequires:  libxml2-devel
+BuildRequires:  openldap
+BuildRequires:  perl
+BuildRequires:  readline-devel
+BuildRequires:  openssl-devel
+BuildRequires:  zlib-devel
+BuildRequires:  tzdata
+Requires:       krb5
+Requires:       libxml2
+Requires:       openldap
+Requires:       openssl
+Requires:       readline
+Requires:       zlib
 Requires:       tzdata
 
 Requires:   %{name}-libs = %{version}-%{release}
@@ -47,18 +47,19 @@ PostgreSQL server.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
 ./configure \
-	--enable-thread-safety \
-	--prefix=%{_prefix} \
-	--with-ldap \
-	--with-libxml \
-	--with-openssl \
-	--with-gssapi \
-	--with-readline \
-	--with-system-tzdata=%{_datadir}/zoneinfo \
-	--docdir=%{_docdir}/postgresql
+    --enable-thread-safety \
+    --prefix=%{_prefix} \
+    --with-ldap \
+    --with-libxml \
+    --with-openssl \
+    --with-gssapi \
+    --with-readline \
+    --with-system-tzdata=%{_datadir}/zoneinfo \
+    --docdir=%{_docdir}/postgresql
 make %{?_smp_mflags}
 cd contrib && make %{?_smp_mflags}
 
@@ -69,8 +70,8 @@ cd contrib && make install DESTDIR=%{buildroot}
 
 %{_fixperms} %{buildroot}/*
 %check
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 
@@ -158,21 +159,23 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
+*   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-4
+-   Applied CVE-2016-5423.patch
 *   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
 -   Add tzdata to buildrequires and requires.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
--	GA - Bump release of all rpms
-*	Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
--	Updated to version 9.5.3
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
+-   GA - Bump release of all rpms
+*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
+-   Updated to version 9.5.3
 *       Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
 -       Updated to version 9.5.2
 *       Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
 -       Updated to version 9.5.1
 *       Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
 -       Updated to version 9.5.0
-*	Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
--	Update to version 9.4.4.
-*	Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
--	Exclude /usr/lib/debug
-*	Tue May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
--	Initial build.	First version
+*   Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
+-   Update to version 9.4.4.
+*   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
+-   Exclude /usr/lib/debug
+*   Tue May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
+-   Initial build.  First version
