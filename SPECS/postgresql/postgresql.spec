@@ -1,32 +1,32 @@
-Summary:	PostgreSQL database engine
-Name:		postgresql
-Version:	9.5.3
-Release:	5%{?dist}
-License:	PostgreSQL
-URL:		www.postgresql.org
-Group:		Applications/Databases
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Provides:	%{name}
+Summary:        PostgreSQL database engine
+Name:           postgresql
+Version:        9.5.3
+Release:        6%{?dist}
+License:        PostgreSQL
+URL:            www.postgresql.org
+Group:          Applications/Databases
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Provides:       %{name}
 
-Source0:	http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1 postgresql=bd8dcbc8c4882468675dcc93263182a27d4ff201
-
+Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
+%define sha1    postgresql=bd8dcbc8c4882468675dcc93263182a27d4ff201
+Patch0:         CVE-2016-5423.patch
 # Common libraries needed
-BuildRequires:	krb5-devel
-BuildRequires:	libxml2-devel
-BuildRequires:	openldap
-BuildRequires:	perl
-BuildRequires:	readline-devel
-BuildRequires:	openssl-devel
-BuildRequires:	zlib-devel
-BuildRequires:	tzdata
-Requires:		krb5
-Requires:		libxml2
-Requires:		openldap
-Requires:		openssl
-Requires:		readline
-Requires:		zlib
+BuildRequires:  krb5-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  openldap
+BuildRequires:  perl
+BuildRequires:  readline-devel
+BuildRequires:  openssl-devel
+BuildRequires:  zlib-devel
+BuildRequires:  tzdata
+Requires:       krb5
+Requires:       libxml2
+Requires:       openldap
+Requires:       openssl
+Requires:       readline
+Requires:       zlib
 Requires:       tzdata
 
 Requires:   %{name}-libs = %{version}-%{release}
@@ -47,18 +47,19 @@ PostgreSQL server.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
 ./configure \
-	--enable-thread-safety \
-	--prefix=%{_prefix} \
-	--with-ldap \
-	--with-libxml \
-	--with-openssl \
-	--with-gssapi \
-	--with-readline \
-	--with-system-tzdata=%{_datadir}/zoneinfo \
-	--docdir=%{_docdir}/postgresql
+    --enable-thread-safety \
+    --prefix=%{_prefix} \
+    --with-ldap \
+    --with-libxml \
+    --with-openssl \
+    --with-gssapi \
+    --with-readline \
+    --with-system-tzdata=%{_datadir}/zoneinfo \
+    --docdir=%{_docdir}/postgresql
 make %{?_smp_mflags}
 cd contrib && make %{?_smp_mflags}
 
@@ -73,8 +74,8 @@ cd contrib && make install DESTDIR=%{buildroot}
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 
@@ -162,6 +163,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
+*   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
+-   Applied CVE-2016-5423.patch
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
 -   Required krb5-devel.
 *   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4 
