@@ -1,7 +1,7 @@
 Summary:	Contains programs for manipulating text files
 Name:		gawk
 Version:	4.1.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gawk
 Group:		Applications/File
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
 %define sha1 gawk=76b0acbbdeaa0e58466675c5faf68895eedd8306
+Provides:	/bin/awk
 Provides:	/bin/gawk
 Provides:	awk
 Requires:	mpfr
@@ -46,11 +47,13 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1.3-2
--	GA - Bump release of all rpms
-* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.1.3-1
-- 	Updated to version 4.1.3
-*	Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.0-2
--	Provide /bin/gawk.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.0-1
--	Initial build. First version
+*   Sun Dec 18 2016 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
+-   Provides /bin/awk
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1.3-2
+-   GA - Bump release of all rpms
+*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.1.3-1
+-   Updated to version 4.1.3
+*   Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.0-2
+-   Provide /bin/gawk.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.0-1
+-   Initial build. First version
