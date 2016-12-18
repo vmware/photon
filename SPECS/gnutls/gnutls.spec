@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.4.11
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.4/%{name}-%{version}.tar.xz
@@ -38,11 +38,15 @@ developing applications that use gnutls.
 %setup -q
 %patch0 -p1
 %build
+# check for trust store file presence
+[ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
+
 ./configure \
     --prefix=%{_prefix} \
     --without-p11-kit \
     --disable-openssl-compatibility \
-    --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities
+    --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
+    --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -72,6 +76,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Sun Dec 18 2016 Alexey Makhalov <amakhalov@vmware.com> 3.4.11-4
+-   configure to use default trust store file
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-3
 -   Moved man3 to devel subpackage.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.11-2
