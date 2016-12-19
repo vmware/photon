@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/boost/boost_1_60_0.tar.bz2
 %define sha1 boost=7f56ab507d3258610391b47fef6b11635861175a
 BuildRequires:	bzip2-devel
+BuildRequires:	python2-devel
 
 %description
 Boost provides a set of free peer-reviewed portable C++ source libraries. It includes libraries for 
