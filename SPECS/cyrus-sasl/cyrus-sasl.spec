@@ -1,22 +1,22 @@
-Summary:	Cyrus Simple Authentication Service Layer (SASL) library
-Name:		cyrus-sasl
-Version:	2.1.26
-Release:	10%{?dist}
-License:	Custom
-URL:		http://cyrusimap.web.cmu.edu/
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
-%define sha1 cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
-Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
+Summary:        Cyrus Simple Authentication Service Layer (SASL) library
+Name:           cyrus-sasl
+Version:        2.1.26
+Release:        11%{?dist}
+License:        Custom
+URL:            http://cyrusimap.web.cmu.edu/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
+%define sha1    cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
+Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
 BuildRequires:  systemd
-BuildRequires:	openssl-devel
+BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel >= 1.12
 BuildRequires:  e2fsprogs-devel
-BuildRequires:  Linux-PAM
-Requires:   openssl
-Requires:   krb5 >= 1.12
+BuildRequires:  Linux-PAM-devel
+Requires:       openssl
+Requires:       krb5 >= 1.12
 Requires:       Linux-PAM
 Requires:       systemd
 %description
@@ -36,13 +36,13 @@ pushd saslauthd
 autoreconf -fi
 popd
 ./configure \
-	CFLAGS="%{optflags} -fPIC" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--sysconfdir=/etc \
-	--with-plugindir=%{_libdir}/sasl2 \
+    CFLAGS="%{optflags} -fPIC" \
+    CXXFLAGS="%{optflags}" \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --sysconfdir=/etc \
+    --with-plugindir=%{_libdir}/sasl2 \
     --without-dblib \
     --with-saslauthd=/run/saslauthd \
     --without-authdaemond \
@@ -128,6 +128,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.1.26-11
+-   BuildRequires Linux-PAM-devel
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.1.26-10
 -   Required krb5-devel.
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.1.26-9

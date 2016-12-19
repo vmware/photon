@@ -1,18 +1,18 @@
 Summary:        Cron Daemon
 Name:           cronie
 Version:        1.5.0
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
 URL:            https://fedorahosted.org/cronie
 Source0:        https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
-%define sha1 cronie=bbf154a6db7c9802664d1f0397b5e7ae9a9618e4
+%define sha1    cronie=bbf154a6db7c9802664d1f0397b5e7ae9a9618e4
 Source1:        run-parts.sh
 Patch0:         cronie_fix_pam_configuration.patch
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libselinux-devel
-BuildRequires:  Linux-PAM
+BuildRequires:  Linux-PAM-devel
 BuildRequires:  systemd
 Requires:       systemd
 Requires:       libselinux
@@ -29,13 +29,13 @@ sed -i "s/\/usr\/sbin\/anacron -s/\/usr\/sbin\/anacron -s -S \/var\/spool\/anacr
 %build
 autoreconf
 ./configure \
-	--prefix=%{_prefix} \
-        --sysconfdir=/etc   \
-	--with-pam	    \
-	--with-selinux      \
-	--enable-anacron    \
-	--enable-pie        \
-	--enable-relro
+    --prefix=%{_prefix} \
+    --sysconfdir=/etc   \
+    --with-pam      \
+    --with-selinux      \
+    --enable-anacron    \
+    --enable-pie        \
+    --enable-relro
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -106,6 +106,8 @@ make %{?_smp_mflags} check
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-13
+-   BuildRequires Linux-PAM-devel
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.5.0-12
 -   Modified %check
 *   Mon Aug 29 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-11
