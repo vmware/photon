@@ -1,16 +1,16 @@
-Summary:	Very secure and very small FTP daemon.
-Name:		vsftpd
-Version:	3.0.3
-Release:	1%{?dist}
-License:	GPLv2 with exceptions
-URL:		https://security.appspot.com/vsftpd.html
-Group:		System Environment/Daemons
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
-%define sha1 vsftpd=d5f5a180dbecd0fbcdc92bf0ba2fc001c962b55a
-BuildRequires:	libcap-devel Linux-PAM openssl-devel
-Requires:	libcap Linux-PAM openssl
+Summary:        Very secure and very small FTP daemon.
+Name:           vsftpd
+Version:        3.0.3
+Release:        2%{?dist}
+License:        GPLv2 with exceptions
+URL:            https://security.appspot.com/vsftpd.html
+Group:          System Environment/Daemons
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
+%define sha1    vsftpd=d5f5a180dbecd0fbcdc92bf0ba2fc001c962b55a
+BuildRequires:  libcap-devel Linux-PAM-devel openssl-devel
+Requires:       libcap Linux-PAM openssl
 %description
 Very secure and very small FTP daemon.
 %prep
@@ -78,11 +78,13 @@ fi
 %{_datadir}/*
 %exclude %{_libdir}/debug
 %changelog
-*	Wed Nov 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.0.3-1
--	Upgraded to version 3.0.3, fixes CVE-2015-1419
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.2-3
--	GA - Bump release of all rpms
-*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.2-2
--   	Fix for upgrade issues
-*	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 3.0.2-1
--	initial version
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.3-2
+-   BuildRequires Linux-PAM-devel
+*   Wed Nov 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.0.3-1
+-   Upgraded to version 3.0.3, fixes CVE-2015-1419
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.2-3
+-   GA - Bump release of all rpms
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.2-2
+-   Fix for upgrade issues
+*   Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 3.0.2-1
+-   initial version
