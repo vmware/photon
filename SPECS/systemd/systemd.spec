@@ -1,7 +1,7 @@
 Summary:          Systemd-232
 Name:             systemd
 Version:          232
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -19,6 +19,12 @@ Patch3:           systemd-232-ipv6-disabled-fix.patch
 Patch4:           systemd-232-default-dns-from-env.patch
 Patch5:           systemd-macros.patch
 Patch6:           systemd-232-resolv-conf-symlink.patch
+# Fix for inird-switch-root sigterm exit issue
+# problem is described here:
+# https://github.com/systemd/systemd/commit/a4021390fef27f4136497328f2e35e79bc88855d
+# https://github.com/systemd/systemd/commit/acc28e2e3037d689d6481e4664925cf31d4d087b
+# this patch uses '@' trick
+Patch7:           core-make-sure-initrd-switch-root-survives-pids1-killing-spree.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -74,6 +80,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -215,6 +222,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Dec 20 2016 Alexey Makhalov <amakhalov@vmware.com>  232-3
+-    Fix initrd-switch-root issue
 *    Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 232-2
 -    disable-elfutils.
 *    Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  232-1
