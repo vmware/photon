@@ -1,24 +1,24 @@
-Summary:	Fast distributed version control system
-Name:		git
-Version:	2.8.1
-Release:	6%{?dist}
-License:	GPLv2
-URL:		http://git-scm.com/
-Group:		System Environment/Programming
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1 git=fc97f987bbdc9dc302a525047bf8a014f6574f92
-BuildRequires:  curl
-BuildRequires:	python2
-BuildRequires:	python2-libs
-BuildRequires:	openssl-devel
-Requires:	python2
-Requires:	openssl
-Requires:	curl
-Requires:	expat
-Requires:	perl-YAML
-Requires:	perl-DBI
+Summary:        Fast distributed version control system
+Name:           git
+Version:        2.8.1
+Release:        7%{?dist}
+License:        GPLv2
+URL:            http://git-scm.com/
+Group:          System Environment/Programming
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
+%define sha1    git=fc97f987bbdc9dc302a525047bf8a014f6574f92
+BuildRequires:  curl-devel
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  openssl-devel
+Requires:       python2
+Requires:       openssl
+Requires:       curl
+Requires:       expat
+Requires:       perl-YAML
+Requires:       perl-DBI
 Requires:       perl-CGI
 
 %description
@@ -42,13 +42,13 @@ These are the additional language files of git.
 %setup -q
 %build
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--libexec=%{_libexecdir} \
-	--with-gitconfig=/etc/gitconfig
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --libexec=%{_libexecdir} \
+    --with-gitconfig=/etc/gitconfig
 make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.8.1-7
+-   BuildRequires curl-devel.
 *   Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 2.8.1-6
 -   Add bash completion file
 *   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
