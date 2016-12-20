@@ -1,23 +1,23 @@
-Summary:	Programs for handling passwords in a secure way
-Name:		shadow
-Version:	4.2.1
-Release:	10%{?dist}
-URL:		http://pkg-shadow.alioth.debian.org/
-License:	BSD
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://pkg-shadow.alioth.debian.org/releases/%{name}-%{version}.tar.xz
-%define sha1 shadow=0917cbadd4ce0c7c36670e5ecd37bbed92e6d82d
-Source1:	PAM-Configuration-Files-1.5.tar.gz
-%define sha1 PAM=08052511f985e3b3072c194ac1287e036d9299fb
-Patch0: chkname-allowcase.patch   
-BuildRequires: 	cracklib
-BuildRequires: 	cracklib-devel
-Requires:   	cracklib
-Requires:   	cracklib-dicts
-BuildRequires:	Linux-PAM
-Requires:	Linux-PAM
+Summary:        Programs for handling passwords in a secure way
+Name:           shadow
+Version:        4.2.1
+Release:        11%{?dist}
+URL:            http://pkg-shadow.alioth.debian.org/
+License:        BSD
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://pkg-shadow.alioth.debian.org/releases/%{name}-%{version}.tar.xz
+%define sha1    shadow=0917cbadd4ce0c7c36670e5ecd37bbed92e6d82d
+Source1:        PAM-Configuration-Files-1.5.tar.gz
+%define sha1    PAM=08052511f985e3b3072c194ac1287e036d9299fb
+Patch0:         chkname-allowcase.patch
+BuildRequires:  cracklib
+BuildRequires:  cracklib-devel
+Requires:       cracklib
+Requires:       cracklib-dicts
+BuildRequires:  Linux-PAM-devel
+Requires:       Linux-PAM
 
 %description
 The Shadow package contains programs for handling passwords
@@ -25,7 +25,7 @@ in a secure way.
 
 %package lang
 Summary: Additional language files for shadow
-Group:		Applications/System
+Group:      Applications/System
 Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of shadow.
@@ -37,17 +37,17 @@ These are the additional language files of shadow.
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
-	-e 's@/var/spool/mail@/var/mail@' etc/login.defs
+    -e 's@/var/spool/mail@/var/mail@' etc/login.defs
 
 sed -i 's@DICTPATH.*@DICTPATH\t/usr/share/cracklib/pw_dict@' \
     etc/login.defs
 
 %build
 ./configure \
-	--sysconfdir=/etc \
-	--with-libpam \
-    	--with-libcrack \
-	--with-group-name-max-length=32
+    --sysconfdir=/etc \
+    --with-libpam \
+        --with-libcrack \
+    --with-group-name-max-length=32
 
 make %{?_smp_mflags}
 %install
@@ -138,6 +138,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-11
+-   BuildRequires Linux-PAM-devel
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-10
 -   Added -lang subpackage
 *   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 4.2.1-9
