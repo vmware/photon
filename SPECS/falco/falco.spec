@@ -1,29 +1,29 @@
 %global security_hardening none
-Summary:	The Behavioral Activity Monitor With Container Support
-Name:		falco
-Version:	0.2.0
-Release:	5%{?kernelsubrelease}%{?dist}
-License:	GPLv2	  
-URL:		http://www.sysdig.org/falco/
-Group:		Applications/System	
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1 falco=c40840c6dcbd25fd1d0bf8aa2d1f77b1f5a7cde2
-Source1:	https://github.com/draios/sysdig/archive/sysdig-0.10.1.tar.gz
-%define sha1 sysdig=272b95ad02be4d194bba66d360ff935084d9c842
+Summary:        The Behavioral Activity Monitor With Container Support
+Name:           falco
+Version:        0.2.0
+Release:        6%{?kernelsubrelease}%{?dist}
+License:        GPLv2     
+URL:            http://www.sysdig.org/falco/
+Group:          Applications/System 
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
+%define sha1    falco=c40840c6dcbd25fd1d0bf8aa2d1f77b1f5a7cde2
+Source1:        https://github.com/draios/sysdig/archive/sysdig-0.10.1.tar.gz
+%define sha1    sysdig=272b95ad02be4d194bba66d360ff935084d9c842
 Source2:        http://stedolan.github.io/jq/download/linux64/jq
-%define sha1 jq=e820e9e91c9cce6154f52949a3b2a451c4de8af4
+%define sha1    jq=e820e9e91c9cce6154f52949a3b2a451c4de8af4
 Source3:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
-%define sha1 libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
+%define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
 
-BuildRequires:	cmake
-BuildRequires:	openssl-devel
-BuildRequires:	curl
-BuildRequires:	zlib-devel
-BuildRequires:	ncurses-devel
+BuildRequires:  cmake
+BuildRequires:  openssl-devel
+BuildRequires:  curl-devel
+BuildRequires:  zlib-devel
+BuildRequires:  ncurses-devel
 BuildRequires:  automake
-BuildRequires:	linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  autoconf 
 BuildRequires:  libgcrypt 
 BuildRequires:  sysdig
@@ -31,13 +31,13 @@ BuildRequires:  git
 BuildRequires:  lua-devel
 BuildRequires:  libyaml-devel
 BuildRequires:  linux-api-headers
-Requires:	zlib
-Requires:	ncurses
-Requires:	openssl
-Requires:	curl
-Requires:	libyaml
-Requires:	lua
-Requires:	sysdig
+Requires:       zlib
+Requires:       ncurses
+Requires:       openssl
+Requires:       curl
+Requires:       libyaml
+Requires:       lua
+Requires:       sysdig
 
 %description
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules. 
@@ -78,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.2.0-6
+-   BuildRequires curl-devel
 *   Thu Dec 15 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-5
 -   Fix building for linux-4.9
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.0-4
