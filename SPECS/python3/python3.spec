@@ -1,32 +1,32 @@
-Summary:	A high-level scripting language
-Name:		python3
-Version:	3.5.1
-Release:	8%{?dist}
-License:	PSF
-URL:		http://www.python.org/
-Group:		System Environment/Programming
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1 Python=0186da436db76776196612b98bb9c2f76acfe90e
-Patch0:          cgi3.patch
-Patch1:          python3-CVE-2016-5636.patch
-BuildRequires:	pkg-config >= 0.28
-BuildRequires:	bzip2-devel
-BuildRequires:	ncurses-devel
+Summary:        A high-level scripting language
+Name:           python3
+Version:        3.5.1
+Release:        9%{?dist}
+License:        PSF
+URL:            http://www.python.org/
+Group:          System Environment/Programming
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
+%define sha1    Python=0186da436db76776196612b98bb9c2f76acfe90e
+Patch0:         cgi3.patch
+Patch1:         python3-CVE-2016-5636.patch
+BuildRequires:  pkg-config >= 0.28
+BuildRequires:  bzip2-devel
+BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  readline-devel
 BuildRequires:  xz-devel
-Requires:	bzip2
-Requires:	ncurses
-Requires:  	openssl
-Requires:	python3-libs = %{version}-%{release}
-Requires:  	readline
-Requires:  	xz
-Provides: 	python-sqlite
-Provides: 	python(abi)
-Provides: 	/usr/bin/python
-Provides: 	/bin/python
+Requires:       bzip2
+Requires:       ncurses
+Requires:       openssl
+Requires:       python3-libs = %{version}-%{release}
+Requires:       readline
+Requires:       xz
+Provides:       python-sqlite
+Provides:       python(abi)
+Provides:       /usr/bin/python
+Provides:       /bin/python
 
 %description
 The Python 3 package contains a new version of Python development environment.
@@ -37,15 +37,15 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-BuildRequires:	expat >= 2.1.0
-BuildRequires:	libffi >= 3.0.13
-BuildRequires:	ncurses-devel
-BuildRequires:	sqlite-devel
-Requires:	coreutils
-Requires:	expat >= 2.1.0
-Requires:	libffi >= 3.0.13
-Requires:	ncurses
-Requires:	sqlite-libs
+BuildRequires:  expat >= 2.1.0
+BuildRequires:  libffi >= 3.0.13
+BuildRequires:  ncurses-devel
+BuildRequires:  sqlite-devel
+Requires:       coreutils
+Requires:       expat >= 2.1.0
+Requires:       libffi >= 3.0.13
+Requires:       ncurses
+Requires:       sqlite-libs
 
 
 %description libs
@@ -90,15 +90,15 @@ to build python programs.
 %build
 export OPT="${CFLAGS}"
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--enable-shared \
-	--with-system-expat \
-	--with-system-ffi \
-	--with-dbmliborder=gdbm:ndbm
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --enable-shared \
+    --with-system-expat \
+    --with-system-ffi \
+    --with-dbmliborder=gdbm:ndbm
 make %{?_smp_mflags}
 
 %install
@@ -140,7 +140,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/pyvenv*
 %{_bindir}/python*
 %{_bindir}/pip*
-%{_bindir}/easy_install-3.5
 %{_mandir}/*/*
 
 %dir %{_libdir}/python3.5
@@ -174,6 +173,7 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
+%{_bindir}/easy_install-3.5
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %{_libdir}/libpython3.so
@@ -188,6 +188,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Tue Dec 20 2016 Xiaolin Li <xiaolinl@vmware.com> 3.5.1-9
+-   Move easy_install-3.5 to devel subpackage.
 *   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 3.5.1-8
 -   Use sqlite-{devel,libs}
 *   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-7
