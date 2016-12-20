@@ -1,0 +1,56 @@
+From acc28e2e3037d689d6481e4664925cf31d4d087b Mon Sep 17 00:00:00 2001
+From: Franck Bui <fbui@suse.com>
+Date: Thu, 24 Nov 2016 18:52:04 +0100
+Subject: [PATCH] core: make sure initrd-switch-root command survives PID1's
+ killing spree (#4730)
+
+This is a different way to implement the fix proposed by commit
+a4021390fef27f4136497328f suggested by Lennart Poettering.
+
+In this patch we instruct PID1 to not kill "systemctl switch-root" command
+started by initrd-switch-root service using the "argv[0][0]='@'" trick.
+
+See: https://www.freedesktop.org/wiki/Software/systemd/RootStorageDaemons/ for
+more details.
+
+We had to backup argv[0] because argv is modified by dispatch_verb().
+---
+ src/systemctl/systemctl.c           | 10 ++++++++++
+ units/initrd-switch-root.service.in |  8 +-------
+ 2 files changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/src/systemctl/systemctl.c b/src/systemctl/systemctl.c
+index 4fd8d7b..ed1c717 100644
+--- a/src/systemctl/systemctl.c
++++ b/src/systemctl/systemctl.c
+@@ -142,6 +142,7 @@ static const char *arg_kill_who = NULL;
+ static int arg_signal = SIGTERM;
+ static char *arg_root = NULL;
+ static usec_t arg_when = 0;
++static char *argv_cmdline = NULL;
+ static enum action {
+         _ACTION_INVALID,
+         ACTION_SYSTEMCTL,
+@@ -5638,6 +5639,13 @@ static int switch_root(int argc, char *argv[], void *userdata) {
+                         init = NULL;
+         }
+ 
++        /* Instruct PID1 to exclude us from its killing spree applied during
++         * the transition from the initrd to the main system otherwise we would
++         * exit with a failure status even though the switch to the new root
++         * has succeed. */
++        if (in_initrd())
++                argv_cmdline[0] = '@';
++
+         r = acquire_bus(BUS_MANAGER, &bus);
+         if (r < 0)
+                 return r;
+@@ -8373,6 +8381,8 @@ static int logind_cancel_shutdown(void) {
+ int main(int argc, char*argv[]) {
+         int r;
+ 
++        argv_cmdline = argv[0];
++
+         setlocale(LC_ALL, "");
+         log_parse_environment();
+         log_open();
