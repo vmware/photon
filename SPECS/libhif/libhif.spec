@@ -1,38 +1,38 @@
 # Copied from inside of libhif.<version>.tar.gz
 %define libhif_version %{name}-%{name}_0_2_2
 
-Summary:   	Simple package manager built on top of hawkey and librepo
-Name:		libhif
-Version:   	0.2.2
-Release:   	4%{?dist}
-License:   	LGPLv2+
-URL:       	https://github.com/hughsie/libhif
-Source0:   	http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-%define sha1 libhif=2816f914e25a1a625503b4b474a8ad63969e8c7e
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Simple package manager built on top of hawkey and librepo
+Name:           libhif
+Version:        0.2.2
+Release:        5%{?dist}
+License:        LGPLv2+
+URL:            https://github.com/hughsie/libhif
+Source0:        http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+%define sha1    libhif=2816f914e25a1a625503b4b474a8ad63969e8c7e
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-BuildRequires: 	glib-devel >= 2.16.1
-BuildRequires: 	libtool
-BuildRequires: 	gtk-doc
-BuildRequires: 	gobject-introspection-devel
-BuildRequires: 	hawkey-devel >= 0.4.6
-BuildRequires: 	rpm-devel >= 4.11.0
-BuildRequires: 	librepo-devel >= 1.7.11
-BuildRequires: 	libsolv
-BuildRequires: 	popt-devel
-BuildRequires: 	python2-libs
-BuildRequires:	python2
-BuildRequires: 	gobject-introspection-python
-BuildRequires:	openssl-devel
+BuildRequires:  glib-devel >= 2.16.1
+BuildRequires:  libtool
+BuildRequires:  gtk-doc
+BuildRequires:  gobject-introspection-devel
+BuildRequires:  hawkey-devel >= 0.4.6
+BuildRequires:  rpm-devel >= 4.11.0
+BuildRequires:  librepo-devel >= 1.7.11
+BuildRequires:  libsolv-devel
+BuildRequires:  popt-devel
+BuildRequires:  python2-libs
+BuildRequires:  python2
+BuildRequires:  gobject-introspection-python
+BuildRequires:  openssl-devel
 
 Requires:       openssl
 Requires:       librepo
-Requires: 	libsolv
-Requires: 	gobject-introspection
-Requires: 	hawkey
-Requires: 	rpm-libs
-Requires: 	glib >= 2.16.1
+Requires:       libsolv
+Requires:       gobject-introspection
+Requires:       hawkey
+Requires:       rpm-libs
+Requires:       glib >= 2.16.1
 
 %description
 This library provides a simple interface to hawkey and librepo and is currently
@@ -85,6 +85,8 @@ make  %{?_smp_mflags} check
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+*   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.2.2-5
+-   BuildRequires libsolv-devel.
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.2-4
 -   Use rpm-libs at runtime
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 0.2.2-3

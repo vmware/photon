@@ -1,48 +1,49 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2015.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
-%define sha1 rpm-ostree=9a0fa260d8671d9998b5f5509de1bbadd42f7127
+%define sha1    rpm-ostree=9a0fa260d8671d9998b5f5509de1bbadd42f7127
 Source1:        libglnx-58a9a5c.tar.gz
-%define sha1 libglnx=ba892544e28201508450dd123a4ebd4dfe6d5ea7
+%define sha1    libglnx=ba892544e28201508450dd123a4ebd4dfe6d5ea7
 License:        LGPLv2+
 URL:            https://github.com/cgwalters/rpm-ostree
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Vendor:         VMware, Inc.
+Distribution:   Photon
 # We always run autogen.sh
-BuildRequires: autoconf
-BuildRequires: automake
-BuildRequires: libtool
-BuildRequires: git
-BuildRequires: json-glib-devel
-BuildRequires: gtk-doc
-BuildRequires: libcap-devel
-BuildRequires: ostree-devel
-BuildRequires: libgsystem
-BuildRequires: docbook-xsl
-BuildRequires:	libxslt
-BuildRequires:	gobject-introspection-devel
-BuildRequires:	openssl-devel
-BuildRequires:	libhif-devel >= 0.2.0
-BuildRequires: 	hawkey-devel >= 0.4.6
-BuildRequires: 	rpm-devel >= 4.11.0
-BuildRequires: 	librepo-devel >= 1.7.11
-BuildRequires:	attr-devel
-BuildRequires: 	python2-libs
-BuildRequires:	python2
-BuildRequires: 	gobject-introspection-python
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  git
+BuildRequires:  json-glib-devel
+BuildRequires:  gtk-doc
+BuildRequires:  libcap-devel
+BuildRequires:  ostree-devel
+BuildRequires:  libgsystem
+BuildRequires:  docbook-xsl
+BuildRequires:  libxslt
+BuildRequires:  gobject-introspection-devel
+BuildRequires:  openssl-devel
+BuildRequires:  libhif-devel >= 0.2.0
+BuildRequires:  hawkey-devel >= 0.4.6
+BuildRequires:  rpm-devel >= 4.11.0
+BuildRequires:  librepo-devel >= 1.7.11
+BuildRequires:  attr-devel
+BuildRequires:  python2-libs
+BuildRequires:  python2
+BuildRequires:  gobject-introspection-python
 BuildRequires:  autogen
+BuildRequires:  libsolv-devel
 
-BuildRequires:	which
-BuildRequires:	popt-devel
-Requires:	libcap
-Requires:	librepo
-Requires:	hawkey
-Requires:	libhif
-Requires:	openssl
-Requires:	ostree
-Requires:	json-glib
+BuildRequires:  which
+BuildRequires:  popt-devel
+Requires:   libcap
+Requires:   librepo
+Requires:   hawkey
+Requires:   libhif
+Requires:   openssl
+Requires:   ostree
+Requires:   json-glib
 
 
 %description
@@ -90,6 +91,8 @@ make %{?_smp_mflags}  check
 %{_datadir}/gir-1.0/*-1.0.gir
 
 %changelog
+*   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 2015.7-5
+-   BuildRequires libsolv-devel.
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-4
 -   BuildRequired attr-devel.
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2015.7-3

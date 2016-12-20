@@ -1,29 +1,38 @@
-Summary:	Libsolv-0.6.19
-Name:		libsolv
-Version:	0.6.19
-Release:	3%{?dist}
-License:	BSD
-URL:		https://github.com/openSUSE/libsolv
-Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha1 libsolv=2066529e5a95aac15a79863bb937bb159b05cffa
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Requires:	libdb
-Requires:	expat
-BuildRequires:	libdb-devel
-BuildRequires:	cmake
-BuildRequires:	rpm-devel
-BuildRequires:	expat
+Summary:        Libsolv-0.6.19
+Name:           libsolv
+Version:        0.6.19
+Release:        4%{?dist}
+License:        BSD
+URL:            https://github.com/openSUSE/libsolv
+Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
+%define sha1    libsolv=2066529e5a95aac15a79863bb937bb159b05cffa
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Requires:       libdb
+Requires:       expat
+BuildRequires:  libdb-devel
+BuildRequires:  cmake
+BuildRequires:  rpm-devel
+BuildRequires:  expat
 %description
 Libsolv is a free package management library, using SAT technology to solve requests. 
-It supports debian, rpm, archlinux and haiku style distributions. 
+It supports debian, rpm, archlinux and haiku style distributions.
+
+%package devel
+Summary:        Development headers for libsolv
+Requires:       %{name} = %{version}-%{release}
+
+%description devel
+The libsolv-devel package contains libraries, header files and documentation
+for developing applications that use libsolv.
+
 %prep
 %setup -q
 %build
 cmake \
-	-DCMAKE_INSTALL_PREFIX=%{_prefix} \
-	-DRPM5=ON
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DRPM5=ON
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -35,10 +44,23 @@ make %{?_smp_mflags} test
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_lib64dir}/*
-/usr/share/*
+%{_lib64dir}/libsolv.so.*
+%{_lib64dir}/libsolvext.so.*
+%{_mandir}/man1/*
+
+
+%files devel
+%defattr(-,root,root)
 %{_includedir}/*
+%{_lib64dir}/libsolv.so
+%{_lib64dir}/libsolvext.so
+%{_lib64dir}/pkgconfig/*
+%{_datadir}/cmake/*
+%{_mandir}/man3/*
+
 %changelog
+*   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.19-4
+-   Added -devel subpackage.
 *   Thu Oct 27 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-3
 -   use libdb
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-2
