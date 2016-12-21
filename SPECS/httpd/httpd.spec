@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.18
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -23,7 +23,7 @@ Requires:   pcre
 Requires:   apr-util
 Requires:   openssl
 Requires:   openldap
-Provides:	apache2
+Provides:   apache2
 %description
 The Apache HTTP Server.
 
@@ -153,7 +153,12 @@ fi
 %{_datadir}/*
 %{_sysconfdir}/httpd/build/*
 %{_sysconfdir}/httpd/cgi-bin/*
-%{_sysconfdir}/httpd/conf/*
+%{_sysconfdir}/httpd/conf/extra
+%{_sysconfdir}/httpd/conf/original
+%config(noreplace) %{_sysconfdir}/httpd/conf/magic
+%{_sysconfdir}/httpd/conf/envvars
+%config(noreplace) %{_sysconfdir}/httpd/conf/httpd.conf
+%{_sysconfdir}/httpd/conf/mime.types
 %{_sysconfdir}/httpd/error/*
 %{_sysconfdir}/httpd/htdocs/*
 %{_sysconfdir}/httpd/icons/*
@@ -166,6 +171,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Wed Dec 21 2016 Anish Swaminathan <anishs@vmware.com>  2.4.18-6
+-   Change config file properties for httpd.conf
 *   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-5
 -   Added patch for CVE-2016-5387
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.18-4
