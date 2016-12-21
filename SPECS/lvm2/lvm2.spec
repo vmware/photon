@@ -1,18 +1,18 @@
-Summary:    Userland logical volume management tools 
-Name:       lvm2
-Version:    2.02.141
-Release:    7%{?dist}
-License:    GPLv2
-Group:      System Environment/Base
-URL:        http://sources.redhat.com/dm
-Vendor:     VMware, Inc.
+Summary:        Userland logical volume management tools 
+Name:           lvm2
+Version:        2.02.141
+Release:        8%{?dist}
+License:        GPLv2
+Group:          System Environment/Base
+URL:            http://sources.redhat.com/dm
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1 LVM2=d48b403ca10d407df394889d8dafd167a4bd4819
-Source1:    lvm2-activate.service
-Patch0:     lvm2-set-default-preferred_names.patch
-Patch1:     lvm2-enable-lvmetad-by-default.patch
-Patch2:     lvm2-remove-mpath-device-handling-from-udev-rules.patch
+Source0:        ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
+%define sha1    LVM2=d48b403ca10d407df394889d8dafd167a4bd4819
+Source1:        lvm2-activate.service
+Patch0:         lvm2-set-default-preferred_names.patch
+Patch1:         lvm2-enable-lvmetad-by-default.patch
+Patch2:         lvm2-remove-mpath-device-handling-from-udev-rules.patch
 BuildRequires:  libselinux-devel, libsepol-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
@@ -20,10 +20,10 @@ BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  systemd-devel
 BuildRequires:  thin-provisioning-tools
-Requires:   device-mapper-libs = %{version}-%{release}
-Requires:   device-mapper-event-libs = %{version}-%{release}
+Requires:       device-mapper-libs = %{version}-%{release}
+Requires:       device-mapper-event-libs = %{version}-%{release}
 Requires:       device-mapper-event = %{version}-%{release}
-Requires:   device-mapper = %{version}-%{release}
+Requires:       device-mapper = %{version}-%{release}
 Requires:       systemd
 
 %description
@@ -77,7 +77,7 @@ Summary:    Device mapper utility
 Group:      System Environment/Base
 URL:        http://sources.redhat.com/dm
 Requires:   device-mapper-libs
-Requires:   systemd-devel
+Requires:   systemd
 %description -n device-mapper
 This package contains the supporting userspace utility, dmsetup,
 for the kernel device-mapper.
@@ -425,6 +425,8 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
+*   Wed Dec 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.02.141-8
+-   device-mapper requires systemd.
 *   Wed Nov 30 2016 Anish Swaminathan <anishs@vmware.com>  2.02.141-7
 -   Start lvmetad socket with the service
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02.141-6
