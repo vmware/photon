@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.18
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -23,7 +23,7 @@ Requires:   pcre
 Requires:   apr-util
 Requires:   openssl
 Requires:   openldap
-Provides:	apache2
+Provides:   apache2
 %description
 The Apache HTTP Server.
 
@@ -145,7 +145,7 @@ fi
 
 %files
 %defattr(-,root,root)
-%{_libdir}/httpd/*
+%{_libdir}/*
 %{_bindir}/*
 %exclude %{_bindir}/apxs
 %exclude %{_bindir}/dbmmanage
@@ -153,13 +153,17 @@ fi
 %{_datadir}/*
 %{_sysconfdir}/httpd/build/*
 %{_sysconfdir}/httpd/cgi-bin/*
-%{_sysconfdir}/httpd/conf/*
+%{_sysconfdir}/httpd/conf/extra
+%{_sysconfdir}/httpd/conf/original
+%config(noreplace) %{_sysconfdir}/httpd/conf/magic
+%{_sysconfdir}/httpd/conf/envvars
+%config(noreplace) %{_sysconfdir}/httpd/conf/httpd.conf
+%{_sysconfdir}/httpd/conf/mime.types
 %{_sysconfdir}/httpd/error/*
 %{_sysconfdir}/httpd/htdocs/*
 %{_sysconfdir}/httpd/icons/*
 %{_sysconfdir}/httpd/httpd.conf
 %dir %{_sysconfdir}/httpd/logs
-%{_libdir}/systemd/system/httpd.service
 
 %files tools
 %defattr(-,root,root)
@@ -167,6 +171,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Wed Dec 21 2016 Anish Swaminathan <anishs@vmware.com>  2.4.18-7
+-   Change config file properties for httpd.conf
 *   Thu Jul 28 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-6
 -   Removed packaging of debug files
 *   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-5
