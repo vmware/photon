@@ -137,8 +137,6 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/python2.7/LICENSE.txt
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
 find %{buildroot}%{_libdir} -name '*.pyo' -delete
 
-%check
-make  %{?_smp_mflags}  test
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %clean
