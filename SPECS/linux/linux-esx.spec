@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -180,6 +180,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-3
+-   .config: CONFIG_IPV6_MULTIPLE_TABLES=y
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 4.9.0-2
 -   BuildRequires Linux-PAM-devel
 *   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
