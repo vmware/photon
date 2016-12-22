@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.9.6
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -14,7 +14,7 @@ Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
-Requires: openjre >= 1.8.0.102, python2
+Requires: openjre >= 1.8.0.112, python2
 BuildRequires: openjre >= 1.8.0.45
 BuildRequires: openjdk >= 1.8.0.45
 %define _prefix /var/opt/apache-ant-%{version}
@@ -36,7 +36,7 @@ cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
 
 mkdir -p -m 700 $ANT_DIST_DIR
 
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.102-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.112-bin
 
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
@@ -66,6 +66,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_prefix}/maven-ant-tasks/*
 
 %changelog
+*   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-5
+-   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-4
 -   Updated JAVA_HOME path to point to latest JDK.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-3

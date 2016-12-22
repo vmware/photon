@@ -1,7 +1,7 @@
 %define _use_internal_dependency_generator 0
 Summary:	OpenJDK 
 Name:		openjdk
-Version:	1.8.0.102
+Version:	1.8.0.112
 Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
@@ -9,7 +9,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK/OpenJDK-%{version}-x86_64-bin.tar.xz
-%define sha1 OpenJDK=86e9d71f2ce36f54c9f80c7649cbc9ccaadb487a
+%define sha1 OpenJDK=c14a20158e16a8877940cfa6dbdf0900d4099a4a
 Requires:       openjre = %{version}-%{release}
 AutoReqProv: 	no
 %description
@@ -136,6 +136,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*       Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-1
+-       Update to 1.8.0.112. addresses CVE-2016-5582 CVE-2016-5573
 *       Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.102-1
 -       Update to 1.8.0.102, minor fixes in url, spelling.
 -       addresses CVE-2016-3598, CVE-2016-3606, CVE-2016-3610
