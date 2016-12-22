@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.9
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -10,7 +10,7 @@ Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=1912316078f1f7041dd8cd2580f210d30f898162
-Requires: openjre >= 1.8.0.102
+Requires: openjre >= 1.8.0.112
 BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.6, wget >= 1.15
 
 %define _prefix /var/opt/apache-maven-3.3.9
@@ -28,7 +28,7 @@ find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 %build
 MAVEN_DIST_DIR=/var/opt/apache-maven-3.3.9
 
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.102-bin
+export JAVA_HOME=/var/opt/OpenJDK-1.8.0.112-bin
 export ANT_HOME=/var/opt/apache-ant-1.9.6
 export PATH=$PATH:$ANT_HOME/bin
 
@@ -63,6 +63,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-7
+-   Updated JAVA_HOME path to point to latest JDK.
 *   Thu Oct 27 2016 Alexey Makhalov <amakhalov@vmware.com> 3.3.9-6
 -   Fix build issue - unable to fetch opensource.org/.../mit-license.php
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-5
