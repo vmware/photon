@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-sec
 Version:        4.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -54,6 +54,13 @@ Requires:      python2 gawk
 Requires:      %{name} = %{version}-%{release}
 %description devel
 The Linux package contains the Linux kernel dev files
+
+%package certs
+Summary:       Kernel certificates
+Group:         System Environment/Kernel
+Requires:      %{name}-devel = %{version}-%{release}
+%description certs
+The Linux package contains the Linux certificates to sign external modules
 
 %package docs
 Summary:       Kernel docs
@@ -141,6 +148,8 @@ find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --pare
 find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
 find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/linux-headers-%{uname_r}' copy
+install -vm 644 certs/signing_key.pem %{buildroot}/usr/src/linux-headers-%{uname_r}/certs/
+install -vm 644 certs/signing_key.x509 %{buildroot}/usr/src/linux-headers-%{uname_r}/certs/
 
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
@@ -170,8 +179,15 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/build
 /usr/src/linux-headers-%{uname_r}
+%exclude /usr/src/linux-headers-%{uname_r}/certs/signing_key.*
+
+%files certs
+%defattr(-,root,root)
+/usr/src/linux-headers-%{uname_r}/certs/signing_key.*
 
 %changelog
+*   Wed Dec 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-3
+-   Added -certs subpackage
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 4.9.0-2
 -   BuildRequires Linux-PAM-devel
 *   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
