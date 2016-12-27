@@ -1,29 +1,30 @@
-Summary:    The Apache HTTP Server
-Name:       httpd
-Version:    2.4.18
-Release:    7%{?dist}
-License:    Apache License 2.0
-URL:        http://httpd.apache.org/
-Group:      Applications/System
-Vendor:     VMware, Inc.
-Distribution: Photon
+Summary:        The Apache HTTP Server
+Name:           httpd
+Version:        2.4.18
+Release:        8%{?dist}
+License:        Apache License 2.0
+URL:            http://httpd.apache.org/
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        http://archive.apache.org/dist/httpd/%{name}-%{version}.tar.bz2
-%define sha1 httpd=271a129f2f04e3aa694e5c2091df9b707bf8ef80
-Patch0: http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.18-blfs_layout-1.patch
-Patch1: httpd-2.4.18-CVE-2016-5387.patch 
-BuildRequires: openssl
-BuildRequires: openssl-devel
-BuildRequires: pcre-devel
-BuildRequires: apr
-BuildRequires: apr-util
-BuildRequires: apr-util-devel
-BuildRequires: openldap
-BuildRequires: expat
-Requires:   pcre
-Requires:   apr-util
-Requires:   openssl
-Requires:   openldap
-Provides:   apache2
+%define sha1    httpd=271a129f2f04e3aa694e5c2091df9b707bf8ef80
+Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.18-blfs_layout-1.patch
+Patch1:         httpd-2.4.18-CVE-2016-5387.patch
+BuildRequires:  openssl
+BuildRequires:  openssl-devel
+BuildRequires:  pcre-devel
+BuildRequires:  apr
+BuildRequires:  apr-util
+BuildRequires:  apr-util-devel
+BuildRequires:  openldap
+BuildRequires:  expat
+Requires:       pcre
+Requires:       apr-util
+Requires:       openssl
+Requires:       openldap
+Requires:       lua
+Provides:       apache2
 %description
 The Apache HTTP Server.
 
@@ -172,6 +173,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Tue Dec 27 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-8
+-   Requires lua.
 *   Wed Dec 21 2016 Anish Swaminathan <anishs@vmware.com>  2.4.18-7
 -   Change config file properties for httpd.conf
 *   Thu Jul 28 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-6

@@ -1,38 +1,38 @@
-Summary:    	The Apache Subversion control system
-Name:       	subversion
-Version:    	1.9.4
-Release:    	1%{?dist}
-License:    	Apache License 2.0
-URL:        	http://subversion.apache.org/
-Group:      	Utilities/System
-Vendor:     	VMware, Inc.
-Distribution: 	Photon
+Summary:        The Apache Subversion control system
+Name:           subversion
+Version:        1.9.4
+Release:        2%{?dist}
+License:        Apache License 2.0
+URL:            http://subversion.apache.org/
+Group:          Utilities/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 subversion=bc7d51fdda43bea01e1272dfe9d23d0a9d6cd11c
-Requires:   	apr
-Requires:   	apr-util
-BuildRequires: 	apr-devel
-BuildRequires: 	apr-util
-BuildRequires: 	apr-util-devel
-BuildRequires: 	sqlite-devel
-BuildRequires: 	libtool
-BuildRequires: 	expat
+%define sha1    subversion=bc7d51fdda43bea01e1272dfe9d23d0a9d6cd11c
+Requires:       apr
+Requires:       apr-util
+BuildRequires:  apr-devel
+BuildRequires:  apr-util
+BuildRequires:  apr-util-devel
+BuildRequires:  sqlite-devel
+BuildRequires:  libtool
+BuildRequires:  expat
 
 %description
 The Apache version control system.
 
-%package	devel
-Summary:	Header and development files for mesos
-Requires:	%{name} = %{version}
+%package    devel
+Summary:    Header and development files for mesos
+Requires:   %{name} = %{version}
 %description    devel
  subversion-devel package contains header files, libraries.
 
 %prep
 %setup -q
 %build
-./configure --prefix=%{_prefix}                        	\
-	    --disable-static				\
-	    --with-apache-libexecdir 
+./configure --prefix=%{_prefix}         \
+        --disable-static                \
+        --with-apache-libexecdir
 
 make %{?_smp_mflags}
 
@@ -47,17 +47,21 @@ make  %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/svn*
 %{_libdir}/libsvn_*.so.*
-%{_datadir}/*
+%{_mandir}/man[158]/*
+%{_datadir}/locale/*
 
 %files devel
 %{_includedir}/*
 %{_libdir}/libsvn_*.*a
 %{_libdir}/libsvn_*.so
+%{_datadir}/pkgconfig/*.pc
 %exclude %{_libdir}/debug/
 
 %changelog
-*	Wed Nov 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.4-1
--	Upgraded to version 1.9.4, fixes CVE-2016-2167  CVE-2016-2168 
+*   Tue Dec 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-2
+-   Moved pkgconfig/*.pc to devel subpackage.
+*   Wed Nov 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.4-1
+-   Upgraded to version 1.9.4, fixes CVE-2016-2167  CVE-2016-2168
 *   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 1.9.3-8
 -   Use sqlite-{devel,libs}
 *   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 1.9.3-7
