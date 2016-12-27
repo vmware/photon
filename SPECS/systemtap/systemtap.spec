@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       3.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -22,7 +22,7 @@ BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
 BuildRequires: elfutils-libelf-devel
 BuildRequires: libgcc
-BuildRequires: nspr
+BuildRequires: nspr-devel
 BuildRequires: nss-devel
 BuildRequires: sqlite-devel
 BuildRequires: libstdc++-devel
@@ -333,6 +333,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*   Wed Dec 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.5
+-   BuildRequires nspr-devel.
 *   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4
 -   add shadow to requires
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.0-3

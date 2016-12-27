@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:             rpm
 Version:          4.11.2
-Release:          18%{?dist}
+Release:          19%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -23,6 +23,7 @@ BuildRequires:    python2-libs
 BuildRequires:    python2-devel
 BuildRequires:    popt-devel
 BuildRequires:    nss-devel
+BuildRequires:    nspr-devel
 BuildRequires:    elfutils-devel
 BuildRequires:    libcap-devel
 %description
@@ -218,6 +219,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+*    Wed Dec 21 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-19
+-    BuildRequires nspr-devel.
 *    Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18
 -    Moved some files from rpm to rpm-build.
 *    Tue Dec 06 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-17
