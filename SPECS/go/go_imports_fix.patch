@@ -1,9 +1,9 @@
 --- a/src/go/internal/gcimporter/exportdata.go	2016-02-17 12:35:17.000000000 -0800
 +++ b/src/go/internal/gcimporter/exportdata.go	2016-03-31 15:54:24.274398819 -0700
-@@ -79,7 +79,7 @@
+@@ -57,7 +57,7 @@ func FindExportData(r *bufio.Reader) (hdr string, err error) {
  		}
  
- 		// First real entry should be __.PKGDEF.
+ 		// First entry should be __.PKGDEF.
 -		if name != "__.PKGDEF" {
 +		if name != "__.PKGDEF" && name != "__.PKGDEF/"  {
  			err = errors.New("go archive is missing __.PKGDEF")
