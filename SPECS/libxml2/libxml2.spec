@@ -1,7 +1,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -10,6 +10,9 @@ Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
 Patch0:         libxml2-2.9.4-support-cve-2016-5131.patch
 Patch1:         libxml2-2.9.4-cve-2016-5131.patch
+# Proposed patch from https://bugzilla.gnome.org/show_bug.cgi?id=772726#c17
+# Fix for CVE-2016-9318
+Patch2:         cve-2016-9318.patch
 %define sha1    libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
 Requires:       python2
 BuildRequires:  python2-devel
@@ -91,6 +94,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Tue Jan 3 2017 Alexey Makhalov <amakhalov@vmware.com> 2.9.4-5
+-   Fix for CVE-2016-9318
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-4
 -   Moved man3 to devel subpackage.
 *   Thu Oct 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.4-3
