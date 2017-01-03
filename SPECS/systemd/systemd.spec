@@ -1,7 +1,7 @@
 Summary:          Systemd-232
 Name:             systemd
 Version:          232
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -11,6 +11,7 @@ Source0:          %{name}-%{version}.tar.gz
 %define sha1      systemd=74178b96d631058236cf79f5b0cc3953382f12b5
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
+Source3:          systemd.cfg
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
@@ -129,6 +130,8 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
+install -dm 0755 %{buildroot}/boot/
+install -m 0644 %{SOURCE3} %{buildroot}/boot/
 rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 %find_lang %{name}
@@ -175,6 +178,7 @@ rm -rf %{buildroot}/*
 %dir %{_sysconfdir}/udev/hwdb.d
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %config(noreplace) %{_sysconfdir}/udev/udev.conf
+%config(noreplace) /boot/systemd.cfg
 %{_sysconfdir}/systemd/system/*
 /lib/udev/*
 /lib/systemd/systemd*
@@ -223,6 +227,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Jan 3 2017 Alexey Makhalov <amakhalov@vmware.com>  232-5
+-    Added /boot/systemd.cfg
 *    Tue Dec 20 2016 Alexey Makhalov <amakhalov@vmware.com>  232-4
 -    Fix initrd-switch-root issue
 *    Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 232-3
