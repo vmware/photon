@@ -79,7 +79,7 @@ def create_vmdk_and_partition(config, vmdk_path):
         elif line.startswith("ROOT_PARTITION="):
             partitions_data['root'] = line.replace("ROOT_PARTITION=", "").strip()
             partitions_data['boot'] = partitions_data['root']
-            partitions_data['bootdirectory'] = '/boot/'
+            partitions_data['bootdirectory'] = '/boot'
             count += 1
 
     if count == 2:
