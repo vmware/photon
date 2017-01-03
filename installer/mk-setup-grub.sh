@@ -95,7 +95,7 @@ cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 set default=0
 set timeout=5
 search -n -u $BOOT_UUID -s
-loadfont "$BOOT_DIRECTORY"grub2/ascii.pf2
+loadfont $BOOT_DIRECTORY/grub2/ascii.pf2
 
 insmod gfxterm
 insmod vbe
@@ -109,14 +109,19 @@ gfxpayload=keep
 
 terminal_output gfxterm
 
-set theme="$BOOT_DIRECTORY"grub2/themes/photon/theme.txt
-load_env -f "$BOOT_DIRECTORY"photon.cfg
+set theme=$BOOT_DIRECTORY/grub2/themes/photon/theme.txt
+load_env -f $BOOT_DIRECTORY/photon.cfg
+if [ -f  $BOOT_DIRECTORY/systemd.cfg ]; then
+    load_env -f $BOOT_DIRECTORY/systemd.cfg
+else
+    set systemd_cmdline=net.ifnames=0
+fi
 set rootpartition=PARTUUID=$PARTUUID
 
 menuentry "Photon" {
-    linux "$BOOT_DIRECTORY"\$photon_linux root=\$rootpartition net.ifnames=0 \$photon_cmdline
-    if [ "\$photon_initrd" ]; then
-        initrd "$BOOT_DIRECTORY"\$photon_initrd
+    linux $BOOT_DIRECTORY/\$photon_linux root=\$rootpartition \$photon_cmdline \$systemd_cmdline
+    if [ -f $BOOT_DIRECTORY/\$photon_initrd ]; then
+        initrd $BOOT_DIRECTORY/\$photon_initrd
     fi
 }
 # End /boot/grub2/grub.cfg
