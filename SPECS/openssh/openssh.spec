@@ -1,19 +1,17 @@
 Summary:    Free version of the SSH connectivity tools
 Name:       openssh
-Version:    7.1p2
-Release:    5%{?dist}
+Version:    7.4p1
+Release:    1%{?dist}
 License:    BSD
-URL:        http://openssh.org
+URL:         https://www.openssh.com/
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution: Photon
-Source0:    http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1 openssh=9202f5a2a50c8a55ecfb830609df1e1fde97f758
+Source0:    https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+%define sha1 openssh=2330bbf82ed08cf3ac70e0acf00186ef3eeb97e0
 Source1:    http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Patch1:     blfs_systemd_fixes.patch
-Patch2:     openssh-7.1p2-skip-long-passwords.patch
-Patch3:     openssh-7.1p2-CVE-2016-8858.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM
 BuildRequires:  krb5
@@ -32,8 +30,6 @@ and rcp respectively.
 %setup -q
 tar xf %{SOURCE1}
 %patch1 -p0
-%patch2 -p1
-%patch3 -p1
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -45,7 +41,7 @@ tar xf %{SOURCE1}
     --datadir=/usr/share/sshd \
     --with-md5-passwords \
     --with-privsep-path=/var/lib/sshd \
-        --with-pam \
+    --with-pam \
     --with-maintype=man \
     --with-kerberos5=/usr
 make
@@ -141,6 +137,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Fri Jan 07 2017 Xiaolin Li <xiaolinl@vmware.com> 7.4p1-1
+-   Updated to version 7.4p1.
 *   Mon Dec 12 2016 Anish Swaminathan <anishs@vmware.com> 7.1p2-5
 -   Add patch to fix CVE-2016-8858
 *   Thu Sep 15 2016 Anish Swaminathan <anishs@vmware.com> 7.1p2-4
