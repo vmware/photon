@@ -194,6 +194,7 @@
         "ddclient",
         "netmgmt",
         "erlang",
-        "rabbitmq-server"
+        "rabbitmq-server",
+        "jansson"
     ]
 }
