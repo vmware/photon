@@ -41,7 +41,9 @@ class OstreeServerInstaller(Installer):
         self.run("ln -s /etc/yum.repos.d/photon-extras.repo {}/srv/rpm-ostree/photon-extras-ostree.repo".format(self.photon_root))
         self.run("ln -s /etc/yum.repos.d/lightwave.repo {}/srv/rpm-ostree/lightwave-ostree.repo".format(self.photon_root))
         self.run("cp ./ostree-httpd.conf {}/srv/rpm-ostree/".format(self.photon_root))
-        self.run("cp ./httpd.service {}/usr/lib/systemd/system/".format(self.photon_root))
+        # Use a custom httpd service file for ostree server
+        self.run("mkdir {}/etc/systemd/system/httpd.service.d".format(self.photon_root))
+        self.run("cp ./10-httpd-service.conf {}/etc/systemd/system/httpd.service.d/".format(self.photon_root))
         self.run("cp ./get-ip-address.sh {}/usr/bin/".format(self.photon_root))
         self.run("cp ./ostree-server-greeting.txt {}/etc/issue".format(self.photon_root))
         self.run("ln -s /usr/lib/systemd/system/httpd.service {}/usr/lib/systemd/system/multi-user.target.wants/httpd.service".format(self.photon_root))
