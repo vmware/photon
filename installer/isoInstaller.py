@@ -197,7 +197,7 @@ class IsoInstaller(object):
         self.screen.bkgd(' ', curses.color_pair(1))
 
         self.maxy,  self.maxx = self.screen.getmaxyx()
-        self.screen.addstr(self.maxy - 1, 0, '<Arrows> moves; <Enter> selects')
+        self.screen.addstr(self.maxy - 1, 0, '  Arrow keys make selections; <Enter> activates.')
         curses.curs_set(0)
 
         self.cd_path = None;
