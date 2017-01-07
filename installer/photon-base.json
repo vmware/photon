@@ -7,7 +7,7 @@
 
     "automatic_version_prefix": "1.0_minimal",
 
-    "repos": ["photon"],
+    "repos": ["photon", "photon-updates"],
 
     "selinux": false,
 
