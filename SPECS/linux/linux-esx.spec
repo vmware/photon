@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.35
-Release:       4%{?dist}
+Version:       4.4.41
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d1a05dfbdce3c1e729163187ce3208691c730ccb
+%define sha1 linux=de1f6c866f3e07d923e1b46a2617ef134df45c6b
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -35,8 +35,6 @@ Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
-#fixes CVE-2016-8655
-Patch23:       net-packet-fix-race-condition-in-packet_set_ring.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -95,7 +93,6 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -184,6 +181,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jan 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.41-1
+-   Update to linux-4.4.41
+    to fix CVE-2016-10088, CVE-2016-9793 and CVE-2016-9576
 *   Thu Dec  8 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-4
 -   net-packet-fix-race-condition-in-packet_set_ring.patch
     to fix CVE-2016-8655
