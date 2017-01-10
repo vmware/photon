@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:             rpm
 Version:          4.11.2
-Release:          18%{?dist}
+Release:          19%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -25,6 +25,7 @@ BuildRequires:    popt-devel
 BuildRequires:    nss-devel
 BuildRequires:    elfutils-devel
 BuildRequires:    libcap-devel
+BuildRequires:    xz-devel
 %description
 RPM package manager
 
@@ -45,6 +46,7 @@ Requires:   libcap
 Requires:   zlib
 Requires:   bzip2
 Requires:   elfutils-libelf
+Requires:   xz
 %description libs
 Shared libraries librpm and librpmio
 
@@ -218,6 +220,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+*    Mon Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
+-    added buildrequires for xz-devel for PayloadIsLzma cap
 *    Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18
 -    Moved some files from rpm to rpm-build.
 *    Tue Dec 06 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-17
