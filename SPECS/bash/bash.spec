@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3.30
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -237,20 +237,31 @@ rm -rf %{buildroot}/%{_infodir}
 %check
 make  NON_ROOT_USERNAME=nobody %{?_smp_mflags} check
 
-
-
 %post
 if [ $1 -eq 1 ] ; then
     if [ ! -f "/root/.bash_logout" ] ; then
         cp /etc/skel/.bash_logout /root/.bash_logout
     fi
+    if [ ! -f /etc/shells ]; then
+        echo "%{_bindir}/bash" >> /etc/shells
+    else
+        grep -q '^%{_bindir}/bash$' /etc/shells || \
+        echo "%{_bindir}/bash" >> /etc/shells
+    fi
 fi
+
 %postun
 if [ $1 -eq 0 ] ; then
     if [ -f "/root/.bash_logout" ] ; then
         rm -f /root/.bash_logout
     fi
+    if [ ! -x %{_bindir}/bash ]; then
+        grep -v '^%{_bindir}/bash$'  /etc/shells | \
+        grep -v '^%{_bindir}/bash$' > /etc/shells.rpm && \
+        mv /etc/shells.rpm /etc/shells
+    fi
 fi
+
 %files
 %defattr(-,root,root)
 /bin/*
@@ -264,6 +275,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Tue Jan 10 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-7
+-   Added bash entry to /etc/shells
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-6
 -   Add readline requirements
 *   Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-5
