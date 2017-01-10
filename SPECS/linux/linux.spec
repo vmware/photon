@@ -1,16 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.0
-Release:        2%{?dist}
+Version:        4.9.2
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
-#Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
-%define sha1 linux=fa46da077c077467776cdc45a7b50d327a081ab4
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=b1502af3a2cb2956ee5315450acc05bc9149ee0a
 Source1:	config-%{version}
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
@@ -45,44 +44,52 @@ The Linux package contains the Linux kernel.
 
 
 %package devel
-Summary:    Kernel Dev
-Group:        System Environment/Kernel
-Requires:    python2 gawk
+Summary:        Kernel Dev
+Group:          System Environment/Kernel
+Requires:       python2 gawk
 %description devel
 The Linux package contains the Linux kernel dev files
 
 %package drivers-gpu
-Summary:    Kernel GPU Drivers
-Group:        System Environment/Kernel
-Requires:    %{name} = %{version}-%{release}
+Summary:        Kernel GPU Drivers
+Group:          System Environment/Kernel
+Requires:       %{name} = %{version}-%{release}
 %description drivers-gpu
 The Linux package contains the Linux kernel drivers for GPU
 
 %package sound
-Summary:    Kernel Sound modules
-Group:        System Environment/Kernel
-Requires:    %{name} = %{version}-%{release}
+Summary:        Kernel Sound modules
+Group:          System Environment/Kernel
+Requires:       %{name} = %{version}-%{release}
 %description sound
 The Linux package contains the Linux kernel sound support
 
 %package docs
-Summary:    Kernel docs
-Group:        System Environment/Kernel
-Requires:    python2
+Summary:        Kernel docs
+Group:          System Environment/Kernel
+Requires:       python2
 %description docs
 The Linux package contains the Linux kernel doc files
 
 %package oprofile
-Summary:    Kernel driver for oprofile, a statistical profiler for Linux systems
-Group:        System Environment/Kernel
-Requires:    %{name} = %{version}-%{release}
+Summary:        Kernel driver for oprofile, a statistical profiler for Linux systems
+Group:          System Environment/Kernel
+Requires:       %{name} = %{version}-%{release}
 %description oprofile
 Kernel driver for oprofile, a statistical profiler for Linux systems
 
+%package tools
+Summary:        This package contains the 'perf' performance analysis tools for Linux kernel 
+Group:          System/Tools
+Requires:       %{name} = %{version}-%{release}
+Requires:       audit
+BuildRequires:	audit-devel
+%description tools
+This package contains the 'perf' performance analysis tools for Linux kernel. 
+
 
 %prep
-#%setup -q -n linux-%{version}
-%setup -q -n linux-4.9
+%setup -q -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -103,6 +110,7 @@ cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+make -C tools perf
 
 %define __modules_install_post \
     find %{buildroot}/lib/modules/%{uname_r} -name *.ko | xargs xz \
@@ -149,7 +157,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlin
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet plymouth.enable=0 no-vmw-sta
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -169,6 +177,12 @@ install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/%{name}-headers-%{una
 cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
 ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
+
+# disable (JOBS=1) parallel build to fix this issue:
+# fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
+# Linux version that was affected is 4.4.26
+make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
+
 %post
 /sbin/depmod -aq %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
@@ -218,7 +232,20 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
+%files tools
+%defattr(-,root,root)
+/usr/libexec
+%exclude %{_libdir}/debug
+/usr/lib64/traceevent
+%{_bindir}
+/etc/bash_completion.d/* 
+/usr/share/perf-core/strace/groups/file
+/usr/share/doc/*
+
 %changelog
+*   Tue Jan 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.2-1
+-   Update to linux-4.9.2 to fix CVE-2016-10088
+-   Move linux-tools.spec to linux.spec as -tools subpackage
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 4.9.0-2
 -   BuildRequires Linux-PAM-devel
 *   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1

@@ -1,16 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-sec
-Version:        4.9.0
-Release:        2%{?dist}
+Version:        4.9.2
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
-%define sha1 linux=fa46da077c077467776cdc45a7b50d327a081ab4
+Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=b1502af3a2cb2956ee5315450acc05bc9149ee0a
 Source1:        config-sec-%{version}
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
@@ -64,8 +63,7 @@ Requires:      %{name} = %{version}-%{release}
 The Linux package contains the Linux kernel doc files
 
 %prep
-#%setup -q -n linux-%{version}
-%setup -q -n linux-4.9
+%setup -q -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -128,7 +126,7 @@ cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_
 # because .ko files will be loaded from the memory (LoadPin: obj=<unknown>)
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0 loadpin.enabled=0 no-vmw-sta
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta loadpin.enabled=0
 photon_linux=vmlinuz-%{uname_r}
 EOF
 
@@ -172,6 +170,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.2-1
+-   Update to linux-4.9.2 to fix CVE-2016-10088
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 4.9.0-2
 -   BuildRequires Linux-PAM-devel
 *   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
