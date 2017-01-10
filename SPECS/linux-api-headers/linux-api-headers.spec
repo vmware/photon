@@ -1,33 +1,32 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.9.0
+Version:	4.9.2
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
-#Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
-%define sha1 linux=fa46da077c077467776cdc45a7b50d327a081ab4
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=b1502af3a2cb2956ee5315450acc05bc9149ee0a
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
-#%setup -q -n linux-%{version}
-%setup -q -n linux-4.9
+%setup -q -n linux-%{version}
 %build
 make mrproper
 make headers_check
 %install
-#cd %{_builddir}/linux-%{version}
-cd %{_builddir}/linux-4.9
+cd %{_builddir}/linux-%{version}
 make INSTALL_HDR_PATH=%{buildroot}%{_prefix} headers_install
 find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -delete
 %files
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Tue Jan 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.2-1
+-   Update to linux-4.9.2
 *   Mon Dec 12 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-1
 -   Update to linux-4.9.0
 *   Mon Nov 28 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.35-1
