@@ -23,6 +23,7 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     vmdk_path = output_path + '/photon-ova.vmdk'
     ovf_path = output_path + '/photon-ova.ovf'
     mf_path = output_path + '/photon-ova.mf'
+    ovfinfo_path = build_scripts_path + '/ovfinfo.txt'
     utils.runshellcommand("{} -convert {} -cap 16000 {}".format(vixdiskutil_path, raw_image_name, vmdk_path))
     utils.runshellcommand("{} -wmeta toolsVersion 2147483647 {}".format(vixdiskutil_path, vmdk_path))
 
@@ -30,10 +31,14 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     utils.replaceinfile(ovf_path, 'otherGuest', 'other3xLinux64Guest')
 
     #Add product info
-    for line in fileinput.input(ovf_path, inplace=True):
-        if line.strip() == '</VirtualSystem>':
-            print ' \t<ProductSection> \n \t\t<Info>Information about the installed software</Info> \n \t\t<Product>Photon</Product> \n \t\t<Vendor>VMware Inc.</Vendor> \n \t\t<Version>1.0</Version> \n \t\t<FullVersion>1.0</FullVersion> \n \t</ProductSection> '
-        print line,
+    if os.path.exists(ovfinfo_path):
+        with open(ovfinfo_path) as f:
+            lines = f.readlines()
+            for line in fileinput.input(ovf_path, inplace=True):
+                if line.strip() == '</VirtualSystem>':
+                    for ovfinfoline in lines:
+                        print ovfinfoline,
+                print line,
 
     if os.path.exists(mf_path):
         os.remove(mf_path)

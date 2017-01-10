@@ -1,0 +1,246 @@
+ 	<ProductSection> 
+ 		<Info>Information about the installed software</Info> 
+ 		<Product>Photon</Product> 
+ 		<Vendor>VMware Inc.</Vendor> 
+ 		<Version>1.0</Version> 
+ 		<FullVersion>1.0</FullVersion> 
+ 	</ProductSection>
+	<EulaSection>
+        <Info>End User License Agreement</Info>
+        <License msgid="eula">
+
+        VMWARE END USER LICENSE AGREEMENT FOR PHOTON OS
+
+IMPORTANT-READ CAREFULLY:   BY DOWNLOADING, INSTALLING, OR USING THE PROGRAM, YOU (THE
+
+INDIVIDUAL OR LEGAL ENTITY) AGREE TO BE BOUND BY THE TERMS OF THIS END USER LICENSE
+
+AGREEMENT (“EULA”).  IF YOU DO NOT AGREE TO THE TERMS OF THIS EULA, YOU MUST NOT DOWNLOAD,
+
+INSTALL, OR USE THE PROGRAM, AND YOU MUST DELETE OR RETURN THE UNUSED PROGRAM TO THE
+
+VENDOR FROM WHICH YOU ACQUIRED IT WITHIN THIRTY (30) DAYS.
+
+1.      DEFINITIONS.
+
+1.1     “Documentation” means that documentation that is generally provided to You by
+
+VMware with the Program, as revised by VMware from time to time, and which may include end
+
+user manuals, operation instructions, installation guides, release notes, and on-line help
+
+files regarding the use of the Program.
+
+1.2     “GPL v2” means the GNU General Public License version 2 the terms of which are
+
+available at http://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
+
+1.3     “Intellectual Property Rights” means all worldwide intellectual property rights,
+
+including without limitation, copyrights, trademarks, service marks, trade secrets, know
+
+how, inventions, patents, patent applications, moral rights and all other proprietary
+
+rights, whether registered or unregistered.
+
+1.4     “Open Source Software” or “OSS” means software components embedded in the Program
+
+and provided under separate license terms, which can be found either in the
+
+open_source_licenses.txt file (or similar file) provided with the Program or at the Photon
+
+OS source repository at https://github.com/vmware/photon.
+
+1.5     “Program” means the computer programs included in the object code version of
+
+Photon OS.
+
+1.6     “VMware” means VMware, Inc., a Delaware corporation, if You are purchasing
+
+services for use in the United States and VMware International Limited, a company
+
+organized and existing under the laws of Ireland, for all other purchases.
+2.              LICENSE GRANT.
+
+2.1     General License Grant.  VMware grants to You a license to use the Program pursuant
+
+to the terms of the GPL v2.
+
+2.2     Open Source Software.  Notwithstanding anything herein to the contrary, Open
+
+Source Software is licensed to You under such OSS’s own applicable license terms, which
+
+can be found in the open_source_licenses.txt file, or the corresponding source files for
+
+the Program available at https://github.com/vmware/photon. To the extent the license for
+
+any Open Source Software requires VMware to make available to You the corresponding source
+
+code and/or modifications (the "Source Files"), You may obtain a copy of the applicable
+
+Source Files from the Photon OS source repository at  https://github.com/vmware/photon or
+
+by sending a written request, with Your name and address to: VMware, Inc., 3401 Hillview
+
+Avenue, Palo Alto, CA 94304, United States of America. All requests should clearly
+
+specify:  Open Source Files Request, Attention: General Counsel.  This offer to obtain a
+
+copy of the Source Files is valid for three years from the date You acquired this Program.
+
+2.3     Copying of Documentation Permitted. You may copy the Documentation as necessary to
+
+install, run and use the Program, but otherwise for archival purposes only.
+
+2.4     Restrictions.  You are not authorized to redistribute modified versions of the
+
+Program with VMware trademarks and logos.
+
+2.5     Intellectual Property in Trademarks and Documentation.  Notwithstanding the terms
+
+applicable to the Program, VMware and its licensors retain all ownership in VMware
+
+trademarks and the Documentation, including all modifications, enhancements and derivative
+
+works thereof, and all Intellectual Property Rights therein. Your rights to use the
+
+Documentation and VMware trademarks are limited to those expressly granted in this EULA,
+
+and no other rights are implied.
+
+3.      SUPPORT AND SUBSCRIPTION SERVICES.  VMware does not provide any support or
+
+subscription services for the Program under this EULA.
+
+4.      DATA PRIVACY. You agree that VMware may process technical and related information
+
+about Your use of the Program which may include internet protocol address, hardware
+
+identification, operating system, application software, peripheral hardware, and non-
+
+personally identifiable Program usage statistics to facilitate the provisioning of online
+
+services and may transfer such information to other companies in the VMware worldwide
+
+group of companies from time to time. To the extent that this information constitutes
+
+personal data, VMware shall be the controller of such personal data. To the extent that it
+
+acts as a controller, each party shall comply at all times with its obligations under
+
+applicable data protection legislation.
+
+5.      WARRANTY DISCLAIMER &amp; LIMITATION OF LIABILITY
+
+5.1 Limitation of Liability. IN ADDITION TO ANY AND ALL LIMITATION OF LIABILITY IN THE GPL
+
+V2, IN RESPECT TO THE DOCUMENTATION AND OTHERWISE, TO THE MAXIMUM EXTENT MANDATED BY LAW,
+
+IN NO EVENT WILL VMWARE AND ITS LICENSORS BE LIABLE FOR ANY LOST PROFITS OR BUSINESS
+
+OPPORTUNITIES, LOSS OF USE, LOSS OF REVENUE, LOSS OF GOODWILL, BUSINESS INTERRUPTION, LOSS
+
+OF DATA, OR ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES UNDER ANY THEORY
+
+OF LIABILITY, WHETHER BASED IN CONTRACT, TORT, NEGLIGENCE, PRODUCT LIABILITY, OR
+
+OTHERWISE.  BECAUSE SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR LIMITATION OF
+
+LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, THE PRECEDING LIMITATION MAY NOT APPLY
+
+TO YOU.  VMWARE’S AND ITS LICENSORS’ LIABILITY UNDER THIS EULA WILL NOT, IN ANY EVENT,
+
+REGARDLESS OF WHETHER THE CLAIM IS BASED IN CONTRACT, TORT, STRICT LIABILITY, OR
+
+OTHERWISE, EXCEED USD$100. THE FOREGOING LIMITATIONS SHALL APPLY REGARDLESS OF WHETHER
+
+VMWARE OR ITS LICENSORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES AND
+
+REGARDLESS OF WHETHER ANY REMEDY FAILS OF ITS ESSENTIAL PURPOSE.
+
+5.2 Further Limitations.  VMware’s licensors shall have no liability of any kind under
+
+this EULA and VMware’s liability with respect to any third party software embedded in the
+
+Program shall be subject to Section 5.1 (Limitation of Liability).  You may not bring a
+
+claim under this EULA more than eighteen (18) months after the cause of action arises.
+
+5.3     Documentation Warranty Disclaimer: TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE
+
+LAW, VMWARE AND ITS LICENSORS MAKE NO EXPRESS WARRANTIES UNDER THIS EULA IN RESPECT TO THE
+
+DOCUMENTATION OR OTHERWISE, AND DISCLAIM ALL IMPLIED WARRANTIES OF MERCHANTABILITY,
+
+FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT, AND ANY WARRANTY ARISING BY
+
+STATUTE, OPERATION OF LAW, COURSE OF DEALING OR PERFORMANCE, OR USAGE OF TRADE. VMWARE AND
+
+ITS LICENSORS DO NOT WARRANT THAT THE DOCUMENTATION WILL BE FREE FROM DEFECTS OR THAT IT
+
+WILL MEET YOUR REQUIREMENTS.
+
+6.      COMPLIANCE WITH LAWS; EXPORT CONTROL; GOVERNMENT REGULATIONS.  Each party shall
+
+comply with all laws applicable to the actions contemplated by this EULA. You acknowledge
+
+that the Program is of United States origin, is provided subject to the U.S. Export
+
+Administration Regulations, may be subject to the export control laws of the applicable
+
+territory, and that diversion contrary to applicable export control laws is prohibited.
+
+You represent that (1) you are not, and are not acting on behalf of, (a) any person who is
+
+a citizen, national, or resident of, or who is controlled by the government of any country
+
+to which the United States has prohibited export transactions; or (b) any person or entity
+
+listed on the U.S. Treasury Department list of Specially Designated Nationals and Blocked
+
+Persons, or the U.S. Commerce Department Denied Persons List or Entity List; and (2) you
+
+will not permit the Program to be used for, any purposes prohibited by law, including, any
+
+prohibited development, design, manufacture or production of missiles or nuclear, chemical
+
+or biological weapons. The Program and Documentation are deemed to be “commercial computer
+
+software” and “commercial computer software documentation”, respectively, pursuant to
+
+DFARS Section 227.7202 and FAR Section 12.212(b), as applicable.  Any use, modification,
+
+reproduction, release, performing, displaying or disclosing of the Program and
+
+Documentation by or for the U.S. Government shall be governed solely by the terms and
+
+conditions of this EULA.
+
+11
+12
+12.5
+12.6
+7.      GOVERNING LAW.  This EULA is governed by the laws of the State of California,
+
+United States of America (excluding its conflict of law rules), and the federal laws of
+
+the United States. To the extent permitted by law, the state and federal courts located in
+
+Santa Clara County, California will be the exclusive jurisdiction for disputes arising out
+
+of or in connection with this EULA. The U.N. Convention on Contracts for the International
+
+Sale of Goods does not apply.
+
+Photon OS 1.0 GA EULA_2016May19
+
+        </License>
+    </EulaSection>
+
+    <AnnotationSection>
+        <Info>Description of the Product</Info>
+        <Annotation>This OVA provides a minimal installed profile of PhotonOS.
+   Default password for root user is changeme. However user will be prompted to change the password during first login.
+        </Annotation>
+
+    </AnnotationSection>
