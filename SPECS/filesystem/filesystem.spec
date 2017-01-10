@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -19,23 +19,95 @@ for the directories. This version is for a system configured with systemd.
 #
 #	6.5.  Creating Directories
 #
-install -vdm 755 %{buildroot}/{dev,proc,run/{media/{floppy,cdrom},lock},sys}
-install -vdm 755 %{buildroot}/{boot,etc/{opt,sysconfig},home,mnt}
-install -vdm 755 %{buildroot}/etc/systemd/network
-install -vdm 755 %{buildroot}/{var}
-install -dv -m 0750 %{buildroot}/root
-install -dv -m 1777 %{buildroot}/tmp %{buildroot}/var/tmp
-install -vdm 755 %{buildroot}/usr/{,local/}{bin,include,lib,sbin,src}
-install -vdm 755 %{buildroot}/usr/{,local/}share/{color,dict,doc,info,locale,man}
-install -vdm 755 %{buildroot}/usr/{,local/}share/{misc,terminfo,zoneinfo}
-install -vdm 755 %{buildroot}/usr/libexec
-install -vdm 755 %{buildroot}/usr/{,local/}share/man/man{1..8}
+install -vdm 755 %{buildroot}
+install -vdm 755 %{buildroot}/boot
+install -vdm 755 %{buildroot}/dev
+install -vdm 755 %{buildroot}/etc
+install -vdm 755 %{buildroot}/etc/opt
 install -vdm 755 %{buildroot}/etc/profile.d
+install -vdm 755 %{buildroot}/etc/sysconfig
+install -vdm 755 %{buildroot}/etc/systemd/network
+install -vdm 755 %{buildroot}/home
+install -vdm 755 %{buildroot}/mnt
+install -vdm 755 %{buildroot}/mnt/cdrom
+install -vdm 755 %{buildroot}/mnt/hgfs
+install -vdm 755 %{buildroot}/proc
+install -vdm 750 %{buildroot}/root
+install -vdm 755 %{buildroot}/run
+install -vdm 755 %{buildroot}/run/media
+install -vdm 755 %{buildroot}/run/media/floppy
+install -vdm 755 %{buildroot}/run/media/cdrom
+install -vdm 755 %{buildroot}/run/lock
+install -vdm 755 %{buildroot}/sys
+install -vdm 1777 %{buildroot}/tmp
+install -vdm 755 %{buildroot}/usr/bin
+install -vdm 755 %{buildroot}/usr/include
+install -vdm 755 %{buildroot}/usr/lib
+install -vdm 755 %{buildroot}/usr/libexec
+install -vdm 755 %{buildroot}/usr/local/bin
+install -vdm 755 %{buildroot}/usr/local/include
+install -vdm 755 %{buildroot}/usr/local/lib
+install -vdm 755 %{buildroot}/usr/local/sbin
+install -vdm 755 %{buildroot}/usr/local/share/color
+install -vdm 755 %{buildroot}/usr/local/share/dict
+install -vdm 755 %{buildroot}/usr/local/share/doc
+install -vdm 755 %{buildroot}/usr/local/share/info
+install -vdm 755 %{buildroot}/usr/local/share/locale
+install -vdm 755 %{buildroot}/usr/local/share/man
+install -vdm 755 %{buildroot}/usr/local/share/man/man1
+install -vdm 755 %{buildroot}/usr/local/share/man/man2
+install -vdm 755 %{buildroot}/usr/local/share/man/man3
+install -vdm 755 %{buildroot}/usr/local/share/man/man4
+install -vdm 755 %{buildroot}/usr/local/share/man/man5
+install -vdm 755 %{buildroot}/usr/local/share/man/man6
+install -vdm 755 %{buildroot}/usr/local/share/man/man7
+install -vdm 755 %{buildroot}/usr/local/share/man/man8
+install -vdm 755 %{buildroot}/usr/local/share/misc
+install -vdm 755 %{buildroot}/usr/local/share/terminfo
+install -vdm 755 %{buildroot}/usr/local/share/zoneinfo
+install -vdm 755 %{buildroot}/usr/local/src
+install -vdm 755 %{buildroot}/usr/sbin
+install -vdm 755 %{buildroot}/usr/share/color
+install -vdm 755 %{buildroot}/usr/share/dict
+install -vdm 755 %{buildroot}/usr/share/doc
+install -vdm 755 %{buildroot}/usr/share/info
+install -vdm 755 %{buildroot}/usr/share/locale
+install -vdm 755 %{buildroot}/usr/share/man
+install -vdm 755 %{buildroot}/usr/share/man/man1
+install -vdm 755 %{buildroot}/usr/share/man/man2
+install -vdm 755 %{buildroot}/usr/share/man/man3
+install -vdm 755 %{buildroot}/usr/share/man/man4
+install -vdm 755 %{buildroot}/usr/share/man/man5
+install -vdm 755 %{buildroot}/usr/share/man/man6
+install -vdm 755 %{buildroot}/usr/share/man/man7
+install -vdm 755 %{buildroot}/usr/share/man/man8
+install -vdm 755 %{buildroot}/usr/share/misc
+install -vdm 755 %{buildroot}/usr/share/terminfo
+install -vdm 755 %{buildroot}/usr/share/zoneinfo
+install -vdm 755 %{buildroot}/usr/src
+install -vdm 755 %{buildroot}/var
+install -vdm 755 %{buildroot}/var/cache
+install -vdm 755 %{buildroot}/var/lib
+install -vdm 755 %{buildroot}/var/lib/color
+install -vdm 755 %{buildroot}/var/lib/misc
+install -vdm 755 %{buildroot}/var/lib/locate
+install -vdm 755 %{buildroot}/var/local
+install -vdm 755 %{buildroot}/var/log
+install -vdm 755 %{buildroot}/var/mail
+install -vdm 755 %{buildroot}/var/mnt
+install -vdm 755 %{buildroot}/var/opt
+install -vdm 755 %{buildroot}/var/spool
+install -vdm 755 %{buildroot}/var/srv
+install -vdm 1777 %{buildroot}/var/tmp
+
 
 ln -svfn usr/lib %{buildroot}/lib
 ln -svfn usr/bin %{buildroot}/bin
 ln -svfn usr/sbin %{buildroot}/sbin
 ln -svfn run/media %{buildroot}/media
+ln -svfn var/srv %{buildroot}/srv
+ln -svfn ../run %{buildroot}/var/run
+ln -svfn ../run/lock %{buildroot}/var/lock
 
 #	Symlinks for AMD64
 %ifarch x86_64
@@ -43,14 +115,6 @@ ln -svfn run/media %{buildroot}/media
 	ln -svfn lib %{buildroot}/usr/lib64
 	ln -svfn ../lib %{buildroot}/usr/local/lib64
 %endif
-install -vdm 755 %{buildroot}/var/{log,mail,spool,mnt,srv}
-
-ln -svfn var/srv %{buildroot}/srv
-ln -svfn ../run %{buildroot}/var/run
-ln -svfn ../run/lock %{buildroot}/var/lock
-install -vdm 755 %{buildroot}/var/{opt,cache,lib/{color,misc,locate},local}
-install -vdm 755 %{buildroot}/mnt/cdrom
-install -vdm 755 %{buildroot}/mnt/hgfs
 
 #
 #	6.6. Creating Essential Files and Symlinks
@@ -58,7 +122,9 @@ install -vdm 755 %{buildroot}/mnt/hgfs
 ln -svfn /proc/self/mounts %{buildroot}/etc/mtab
 #touch -f %{buildroot}/etc/mtab
 
-touch %{buildroot}/var/log/{btmp,lastlog,wtmp}
+touch %{buildroot}/var/log/btmp
+touch %{buildroot}/var/log/lastlog
+touch %{buildroot}/var/log/wtmp
 #
 #	Configuration files
 #
@@ -535,6 +601,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Mon Jan 9 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-9
+-   Support build with /bin/dash
 *   Fri Jul 8 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-8
 -   Removing multiple entries of localhost in /etc/hosts file
 *   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-7
