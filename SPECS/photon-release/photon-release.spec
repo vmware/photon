@@ -1,17 +1,17 @@
-Summary:	Photon release files
-Name:		photon-release
-Version:	1.0
-Release:	5%{?dist}
-License:	Apache License
-Group:		System Environment/Base
-URL:		https://vmware.github.io/photon/
-Source:		%{name}-%{version}.4.tar.gz
+Summary:    Photon release files
+Name:       photon-release
+Version:    1.0
+Release:    6%{?dist}
+License:    Apache License
+Group:      System Environment/Base
+URL:        https://vmware.github.io/photon/
+Source:     %{name}-%{version}.4.tar.gz
 %define sha1 photon-release=d67b149f28117f1ad30acb585f180f8fa951f679
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Provides:	photon-release
-BuildArch:	noarch
-Requires:       rpm
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Provides:   photon-release
+BuildArch:  noarch
+Requires:   rpm
 
 %description
 Photon release files such as yum configs and other /etc/ release related files
@@ -73,20 +73,22 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-5
--	GA - Bump release of all rpms
+*       Tue Jan 10 2017 Anish Swaminathan <anishs@vmware.com> 1.0-6
+-       Bump up release to reflect right build number
+*       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-5
+-       GA - Bump release of all rpms
 *       Mon Apr 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-4
 -       Split up repo and gpg key files to photon-repos
-*  		Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-3
--		yum repo gpgkey to VMWARE-RPM-GPG-KEY.
-*  		Wed Mar 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-2
--		Add revision to photon-release
+*       Thu Mar 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-3
+-       yum repo gpgkey to VMWARE-RPM-GPG-KEY.
+*       Wed Mar 23 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0-2
+-       Add revision to photon-release
 *       Mon Jan 11 2016 Anish Swaminathan <anishs@vmware.com> 1.0-1
 -       Reset version to match with Photon version
 *       Mon Jan 04 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4
 -       Adding photon-extras.repo
-*	Thu Nov 19 2015 Anish Swaminathan <anishs@vmware.com> 1.3-1
--	Upgrade photon repo
+*       Thu Nov 19 2015 Anish Swaminathan <anishs@vmware.com> 1.3-1
+-       Upgrade photon repo
 *       Fri Aug 14 2015 Sharath George <sharathg@vmware.com> 1.2
 -       Install photon repo links
 *       Wed Jun 17 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1
