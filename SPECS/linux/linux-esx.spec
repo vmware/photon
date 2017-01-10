@@ -1,16 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.0
-Release:        3%{?dist}
+Version:        4.9.2
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-4.9.tar.xz
-%define sha1 linux=fa46da077c077467776cdc45a7b50d327a081ab4
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=b1502af3a2cb2956ee5315450acc05bc9149ee0a
 Source1:        config-esx-%{version}
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
@@ -69,8 +68,7 @@ Requires:      %{name} = %{version}-%{release}
 The Linux package contains the Linux kernel doc files
 
 %prep
-#%setup -q -n linux-%{version}
-%setup -q -n linux-4.9
+%setup -q -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -136,7 +134,7 @@ cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0 plymouth.enable=0
+photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0
 photon_linux=vmlinuz-%{uname_r}
 EOF
 
@@ -180,6 +178,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.2-1
+-   Update to linux-4.9.2 to fix CVE-2016-10088
 *   Wed Dec 21 2016 Alexey Makhalov <amakhalov@vmware.com> 4.9.0-3
 -   .config: CONFIG_IPV6_MULTIPLE_TABLES=y
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 4.9.0-2
