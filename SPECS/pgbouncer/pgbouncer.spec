@@ -1,14 +1,14 @@
-Summary:	Connection pooler for PostgreSQL.
-Name:		pgbouncer
-Version:	1.7.2
-Release:	3%{?dist}
-License:	BSD
-URL:		https://wiki.postgresql.org/wiki/PgBouncer
+Summary:        Connection pooler for PostgreSQL.
+Name:           pgbouncer
+Version:        1.7.2
+Release:        4%{?dist}
+License:        BSD
+URL:            https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
-%define sha1 pgbouncer=d9bb29da15d90713e2399af3ebf5019da5cbe2d6
-Group:		Application/Databases.
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha1    pgbouncer=d9bb29da15d90713e2399af3ebf5019da5cbe2d6
+Group:          Application/Databases.
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  libevent-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
@@ -56,10 +56,10 @@ if ! getent passwd %{name} >/dev/null; then
 fi
 
 %post
-if [ $1 -eq 1 ] ; then
-    chown %{name}:%{name} /var/log/%{name}
-    chown %{name}:%{name} /var/run/%{name}
-fi
+
+chown %{name}:%{name} /var/log/%{name}
+chown %{name}:%{name} /var/run/%{name}
+
 
 %postun
 if [ $1 -eq 0 ] ; then
@@ -85,9 +85,11 @@ fi
 /var/run/pgbouncer
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3
--	GA - Bump release of all rpms
-*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 1.7.2-2
--	Edit scriptlets.
-*       Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 1.7.2-1
--       Initial Version.
+*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-4
+-   Enabled post scriptlet for upgrade.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3
+-   GA - Bump release of all rpms
+*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 1.7.2-2
+-   Edit scriptlets.
+*   Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 1.7.2-1
+-   Initial Version.
