@@ -1,6 +1,6 @@
 Summary:        Docker
 Name:           docker
-Version:        1.12.1
+Version:        1.12.6
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
@@ -8,7 +8,7 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz 
-%define sha1 docker=9e51f3432a8ab68784ba92c4b6fbe58f59b0fb70
+%define sha1 docker=53e47bc1c888279753c474c7c75c4e6756422165
 Source1:        docker.service
 Source2:        docker-containerd.service
 Source3:        docker-completion.bash
@@ -56,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/bash-completion/completions/docker
 
 %changelog
+*   Fri Jan 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.6-1
+-   Upgraded to version 1.12.6
 *   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-1
 -   Upgraded to version 1.12.1
 *   Mon Aug 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.12.0-2
