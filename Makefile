@@ -73,6 +73,7 @@ micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(MICRO_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
+                -d $(PHOTON_STAGE)/pkg_info.json \
                 -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
@@ -107,6 +108,7 @@ minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
+                -d $(PHOTON_STAGE)/pkg_info.json \
                 -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
@@ -135,6 +137,7 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
                 -r $(PHOTON_STAGE)/RPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_livecd.json \
                 -o $(PHOTON_STAGE)/common/data \
+                -d $(PHOTON_STAGE)/pkg_info.json \
                 -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
@@ -167,6 +170,7 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
                 -x $(PHOTON_STAGE)/SRPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
+                -d $(PHOTON_STAGE)/pkg_info.json \
                 -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
@@ -182,6 +186,7 @@ custom-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                 -x $(PHOTON_STAGE)/SRPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_custom.json \
                 -o $(PHOTON_STAGE)/common/data \
+                -d $(PHOTON_STAGE)/pkg_info.json \
                 -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
@@ -197,6 +202,7 @@ src-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                 -x $(PHOTON_STAGE)/SRPMS \
                 -p $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
                 -o $(PHOTON_STAGE)/common/data \
+                -d $(PHOTON_STAGE)/pkg_info.json \
                 -s $(PHOTON_DATA_DIR) \
                 -f > \
                 $(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
