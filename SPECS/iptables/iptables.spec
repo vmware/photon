@@ -1,7 +1,7 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.6.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
@@ -9,10 +9,9 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
 %define sha1 iptables=21a694e75b0d6863cc001f85fb15915d12b8cc22
-Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
-%define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
-Source2:	iptable_rules
-Patch1:		blfs_systemd_fixes.patch
+Source1:	iptables.service
+Source2:	iptables
+Source3:	iptables.stop
 BuildRequires:  systemd
 Requires:       systemd
 %description
@@ -21,9 +20,6 @@ firewall tool for Linux is Iptables. You will need to install
 Iptables if you intend on using any form of a firewall.
 %prep
 %setup -q
-tar xf %{SOURCE1}
-cp %{SOURCE2} .
-%patch1 -p0
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -44,13 +40,13 @@ make V=0
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 ln -sfv ../../sbin/xtables-multi %{buildroot}%{_libdir}/iptables-xml
-#	Install daemon script
-pushd blfs-systemd-units-20140907
-make DESTDIR=%{buildroot} install-iptables
-popd
+#	Install daemon scripts
+install -vdm755 %{buildroot}%{_unitdir}
+install -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}/etc/systemd/scripts
-cp iptable_rules %{buildroot}/etc/systemd/scripts/iptables
-chmod 755 %{buildroot}/etc/systemd/scripts/iptables
+install -m 755 %{SOURCE2} %{buildroot}/etc/systemd/scripts
+install -m 755 %{SOURCE3} %{buildroot}/etc/systemd/scripts
+
 find %{buildroot} -name '*.a'  -delete
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
@@ -73,6 +69,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %config(noreplace) /etc/systemd/scripts/iptables
+%config(noreplace) /etc/systemd/scripts/iptables.stop
 /lib/systemd/system/iptables.service
 /sbin/*
 %{_bindir}/*
@@ -85,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
+*   Wed Jan 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.0-6
+-   Flush iptables on service stop
 *   Tue Aug 30 2016 Anish Swaminathan <anishs@vmware.com> 1.6.0-5
 -   Change config file properties for iptables script
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-4
