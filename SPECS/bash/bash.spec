@@ -1,18 +1,16 @@
 Summary:	Bourne-Again SHell
 Name:		bash
-Version:	4.3.30
-Release:	7%{?dist}
+Version:	4.4
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
-%define sha1 bash=33b1bcc5dca1b72f28b2baeca6efa0d422097964
+%define sha1 bash=8de012df1e4f3e91f571c3eb8ec45b43d7c747eb
 Source1:	bash_completion
-Patch0:   http://www.linuxfromscratch.org/patches/downloads/bash/bash-4.3.30-upstream_fixes-2.patch
-Patch1:   fix-save_bash_input-segfault.patch
-Patch2:   bash-4.3.patch
+Patch0:		bash-4.4.patch
 Provides:	/bin/sh
 Provides:	/bin/bash
 BuildRequires:  readline
@@ -20,20 +18,25 @@ Requires:       readline
 %description
 The package contains the Bourne-Again SHell
 
+%package	devel
+Summary:	Header and development files for bash
+Requires:	%{name} = %{version}
+%description	devel
+It contains the libraries and header files to create applications
+
 %package lang
 Summary: Additional language files for bash
 Group: System Environment/Base
-Requires: bash >= 4.3.30
+Requires: bash >= 4.4
 %description lang
 These are the additional language files of bash.
 
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 %build
 ./configure \
+	"CFLAGS=-fPIC" \
 	--prefix=%{_prefix} \
 	--bindir=/bin \
 	--htmldir=%{_defaultdocdir}/%{name}-%{version} \
@@ -48,6 +51,7 @@ install -vdm 755 %{buildroot}/etc/profile.d
 install -vdm 755 %{buildroot}/etc/skel
 install -vdm 755 %{buildroot}/usr/share/bash-completion
 install -m 0644 %{SOURCE1} %{buildroot}/usr/share/bash-completion
+rm %{buildroot}/usr/lib/bash/Makefile.inc
 
 # Create dircolors
 cat > %{buildroot}/etc/profile.d/dircolors.sh << "EOF"
@@ -265,16 +269,23 @@ fi
 %files
 %defattr(-,root,root)
 /bin/*
+%{_libdir}/%{name}/*
 %{_sysconfdir}/
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_defaultdocdir}/%{name}/*
 %{_mandir}/*/*
 /usr/share/bash-completion/
 
+%files devel
+%{_includedir}/%{name}/*
+%{_libdir}/pkgconfig/*
+
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4-1
+-   Upgraded version to 4.4
 *   Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.30-7
 -   Added bash entry to /etc/shells
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-6
