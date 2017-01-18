@@ -6,7 +6,7 @@ class CommandUtils(object):
         self.findBinary = "find"
 
     def findFile (self, filename, sourcePath):
-        process = subprocess.Popen([self.findBinary,  "-L", sourcePath,  "-name", filename],  stdout=subprocess.PIPE)
+        process = subprocess.Popen([self.findBinary,  "-L", sourcePath,  "-name", filename, "-not", "-type", "d"],  stdout=subprocess.PIPE)
         returnVal = process.wait()
         if returnVal != 0:
             return None

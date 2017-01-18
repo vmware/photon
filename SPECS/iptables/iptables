@@ -53,6 +53,9 @@ iptables -X
 iptables -Z
 
 iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
 
 # Allow local-only connections
 iptables -A INPUT  -i lo -j ACCEPT
