@@ -41,18 +41,16 @@ echo 2 > /proc/sys/net/ipv4/ip_dynaddr
 echo 0 > /proc/sys/net/ipv4/tcp_ecn
 
 # Set a known state
-iptables -P INPUT   DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT  DROP
-
-# These lines are here in case rules are already in place and the
-# script is ever rerun on the fly. We want to remove all rules and
-# pre-existing user defined chains before we implement new rules.
-iptables -F
-iptables -X
 iptables -Z
-
+iptables -F
 iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
+iptables -X
+iptables -P INPUT       ACCEPT
+iptables -P FORWARD     ACCEPT
+iptables -P OUTPUT      ACCEPT
 
 # Allow local-only connections
 iptables -A INPUT  -i lo -j ACCEPT
