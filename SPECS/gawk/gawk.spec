@@ -1,7 +1,7 @@
 Summary:	Contains programs for manipulating text files
 Name:		gawk
 Version:	4.1.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gawk
 Group:		Applications/File
@@ -14,6 +14,7 @@ Provides:	/bin/gawk
 Provides:	awk
 Requires:	mpfr
 Requires:	gmp
+Requires:	readline >= 7.0
 %description
 The Gawk package contains programs for manipulating text files.
 %prep
@@ -47,6 +48,8 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.1.3-4
+-   Bump up for depending on readline 7.0
 *   Sun Dec 18 2016 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
 -   Provides /bin/awk
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1.3-2
