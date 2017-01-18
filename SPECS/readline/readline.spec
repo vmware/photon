@@ -1,15 +1,14 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
-Version:	6.3
-Release:	6%{?dist}
+Version:	7.0
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
-%define sha1 readline=017b92dc7fd4e636a2b5c9265a77ccc05798c9e1
-Patch:		http://www.linuxfromscratch.org/patches/lfs/development/readline-6.3-upstream_fixes-3.patch
+%define sha1 readline=d9095fa14a812495052357e1d678b3f2ac635463
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description
@@ -24,7 +23,6 @@ It contains the libraries and header files to create applications
 %setup -q
 sed -i '/MV.*old/d' Makefile.in
 sed -i '/{OLDSUFF}/c:' support/shlib-install
-%patch -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -46,10 +44,10 @@ make %{?_smp_mflags} check
 %postun	-p /sbin/ldconfig
 %files
 %defattr(-,root,root)
-%{_libdir}/libreadline.so.6
-%{_libdir}/libhistory.so.6
-%{_libdir}/libhistory.so.6.3
-%{_libdir}/libreadline.so.6.3
+%{_libdir}/libreadline.so.7
+%{_libdir}/libhistory.so.7
+%{_libdir}/libhistory.so.7.0
+%{_libdir}/libreadline.so.7.0
 %files devel
 %{_includedir}/%{name}/keymaps.h
 %{_includedir}/%{name}/history.h
@@ -64,6 +62,7 @@ make %{?_smp_mflags} check
 %{_libdir}/libhistory.so
 %{_libdir}/libreadline.so
 %{_datadir}/%{name}/hist_purgecmd.c
+%{_datadir}/%{name}/rlbasic.c
 %{_datadir}/%{name}/rltest.c
 %{_datadir}/%{name}/rlversion.c
 %{_datadir}/%{name}/rlptytest.c
@@ -97,6 +96,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/history.3.gz
 %{_mandir}/man3/readline.3.gz
 %changelog
+*       Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.0-1
+-       Updated to version 7.0
 *       Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.3-6
 -       Move docs and man to the devel package
 *       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 6.3-5
