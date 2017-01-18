@@ -1,0 +1,16 @@
+#! /bin/sh
+
+# Begin /etc/systemd/scripts/iptables.stop
+
+iptables -Z
+iptables -F
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
+iptables -X
+iptables -P INPUT       ACCEPT
+iptables -P FORWARD     ACCEPT
+iptables -P OUTPUT      ACCEPT
+
+# End /etc/systemd/scripts/iptables.stop
