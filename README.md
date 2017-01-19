@@ -1,7 +1,16 @@
 ![Photon](http://storage.googleapis.com/project-photon/vmw-logo-photon.svg "VMware Photon")
 
-VMware Photon: Minimal Linux Container Host
-===========================================
+**Update - January 19th, 2017**
+-------------------------------
+**Updated Photon OS 1.0 binaries are available.** 
+We've been busy updating RPMs in our repository for months, now, to address both functional and security issues. However, our binaries have remained fixed since their release back in September 2015. In order to make it faster and easier to get a up-to-date Photon OS system, we've repackaged all of our binaries to include all of these RPM updates. For clarity, we'll call these updated binaries, which are still backed by the 1.0 repos - **1.0, Revision 2**.
+
+We recommend downloading these newer images and building new systems from these refreshed binaries, so that new systems won't have as many initial package updates.
+
+You can find the updated links in the [Download Guide in the github wiki](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
+
+**VMware Photon: Minimal Linux Container Host**
+-------------------------------------------
 
 Photon OS is a minimal Linux container host designed to have a small footprint and tuned for VMware platforms. Photon is intended to invite collaboration around running containerized applications in a virtualized environment.
 
@@ -11,7 +20,7 @@ Photon OS is a minimal Linux container host designed to have a small footprint a
 
 This repository is intended for developers wishing to modify Photon and build their own customized ISO images or contribute to the code base.
 
-Download pre-built [OVA](https://bintray.com/artifact/download/vmware/photon/photon-custom-1.0-a6f0f63-RC.ova) and [ISO](https://bintray.com/artifact/download/vmware/photon/photon-1.0-a6f0f63.iso) versions of the 1.0, Release Candidate.
+For instructions and links to download Photon OS binaries, see the [Download Guide in the github wiki](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
 
 An official Vagrant box is available on Hashicorp Atlas, to get started: `vagrant init vmware/photon`. A plugin to support Photon OS guests in Vagrant is available at https://github.com/vmware/vagrant-guests-photon. Some users have found that our Vagrant box requires VirtualBox 4.3 or later. If you have issues, please check your version.
 
