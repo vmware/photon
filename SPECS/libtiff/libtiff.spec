@@ -1,7 +1,7 @@
 Summary:	TIFF libraries and associated utilities.
 Name:		libtiff
 Version:	4.0.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	libtiff
 URL:		http://www.remotesensing.org/libtiff
 Group:		System Environment/Libraries
@@ -11,6 +11,7 @@ Source0:	http://download.osgeo.org/%{name}/tiff-%{version}.tar.gz
 %define sha1 tiff=2c1b64478e88f93522a42dd5271214a0e5eae648
 Patch0:		libtiff-4.0.6-CVE-2015-7554.patch
 Patch1:     	libtiff-4.0.6-CVE-2015-1547.patch
+Patch2:     	libtiff-4.0.7-CVE-2017-5225.patch
 BuildRequires:	libjpeg-turbo-devel
 Requires:	libjpeg-turbo
 %description
@@ -27,6 +28,7 @@ It contains the libraries and header files to create applications
 %setup -q -n tiff-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 ./configure \
@@ -62,6 +64,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Thu Jan 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.0.7-2
+-   Patch : CVE-2017-5225
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 4.0.7-1
 -   Update to 4.0.7. It fixes CVE-2016-953[3456789] and CVE-2016-9540
 -   Remove obsolete patches
