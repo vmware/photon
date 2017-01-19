@@ -1,0 +1,26 @@
+From 53110871935244816bbb9d131da0bccff734bfe9 Mon Sep 17 00:00:00 2001
+From: "Christoph M. Becker" <cmbecker69@gmx.de>
+Date: Wed, 12 Oct 2016 11:15:32 +0200
+Subject: [PATCH] Avoid potentially dangerous signed to unsigned conversion
+
+We make sure to never pass a negative `rlen` as size to memcpy(). See
+also <https://bugs.php.net/bug.php?id=73280>.
+
+Patch provided by Emmanuel Law.
+---
+ src/gd_io_dp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gd_io_dp.c b/src/gd_io_dp.c
+index 135eda3..228bfa5 100644
+--- a/src/gd_io_dp.c
++++ b/src/gd_io_dp.c
+@@ -276,7 +276,7 @@ static int dynamicGetbuf(gdIOCtxPtr ctx, void *buf, int len)
+ 	if(remain >= len) {
+ 		rlen = len;
+ 	} else {
+-		if(remain == 0) {
++		if(remain <= 0) {
+ 			/* 2.0.34: EOF is incorrect. We use 0 for
+ 			 * errors and EOF, just like fileGetbuf,
+ 			 * which is a simple fread() wrapper.
