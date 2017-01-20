@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.4.4
+Version:        1.5.2
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/releases/download/v%{version}
-Source0:        https://storage.googleapis.com/kubernetes-release/release/v%{version}/%{name}-server-linux-amd64-v%{version}.tar.gz
-%define sha1 kubernetes-server-linux-amd64-v%{version}.tar.gz=5daad29411b6af81a486f64b507f414951a042c1
+Source0:        https://dl.k8s.io/v1.5.2/kubernetes-server-linux-amd64-v%{version}.tar.gz
+%define sha1    kubernetes-server-linux-amd64-v%{version}.tar.gz=4dbdcfa623412dac6be8fd5a4209a1f1423e8d30
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1 contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Group:          Development/Tools
@@ -89,6 +89,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Thu Jan 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-1
+-   Upgraded to version 1.5.2
 *   Fri Oct 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.4-1
 -   Upgraded to version 1.4.4
 *   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.0-1
