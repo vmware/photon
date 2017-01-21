@@ -1,7 +1,7 @@
 Summary:	A high-level scripting language
 Name:		python2
 Version:	2.7.11
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	PSF
 URL:		http://www.python.org/
 Group:		System Environment/Programming
@@ -13,6 +13,7 @@ Patch0: cgi.patch
 Patch1: added-compiler-flags-for-curses-module.patch
 Patch2: added-pyopenssl-ipaddress-certificate-validation.patch
 Patch3: python2-CVE-2016-5636.patch
+Patch4: python2-support-photon-platform.patch
 BuildRequires:	pkg-config >= 0.28
 BuildRequires:	bzip2-devel
 BuildRequires:  openssl-devel
@@ -103,6 +104,7 @@ to build python programs.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -218,6 +220,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Fri Jan 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.11-11
+-   Added patch to support Photon OS
 *   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 2.7.11-10
 -   Use sqlite-{devel,libs}
 *   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 2.7.11-9
