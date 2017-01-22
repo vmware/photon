@@ -1,0 +1,37 @@
+diff -uNr systemd-228/src/libsystemd/sd-event/sd-event.c systemd-228-new/src/libsystemd/sd-event/sd-event.c
+--- systemd-228/src/libsystemd/sd-event/sd-event.c	2017-01-22 15:47:20.840228663 +0000
++++ systemd-228-new/src/libsystemd/sd-event/sd-event.c	2017-01-22 16:31:33.256355140 +0000
+@@ -40,6 +40,7 @@
+ #include "string-util.h"
+ #include "time-util.h"
+ #include "util.h"
++#include "virt.h"
+ 
+ #define DEFAULT_ACCURACY_USEC (250 * USEC_PER_MSEC)
+ 
+@@ -2381,14 +2382,21 @@
+ static int arm_watchdog(sd_event *e) {
+         struct itimerspec its = {};
+         usec_t t;
+-        int r;
++        int r, v;
+ 
+         assert(e);
+         assert(e->watchdog_fd >= 0);
+ 
+-        t = sleep_between(e,
+-                          e->watchdog_last + (e->watchdog_period / 2),
+-                          e->watchdog_last + (e->watchdog_period * 3 / 4));
++        v = detect_virtualization();
++
++        if (VIRTUALIZATION_IS_VM(v))
++            t = sleep_between(e,
++                              e->watchdog_last + (e->watchdog_period * 1 / 4),
++                              e->watchdog_last + (e->watchdog_period / 2));
++        else
++            t = sleep_between(e,
++                              e->watchdog_last + (e->watchdog_period / 2),
++                              e->watchdog_last + (e->watchdog_period * 3 / 4));
+ 
+         timespec_store(&its.it_value, t);
+ 
