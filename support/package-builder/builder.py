@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import os.path
 from CommandUtils import CommandUtils
 from Logger import Logger
@@ -16,29 +16,30 @@ from PackageInfo import PackageInfo
 
 def main():
     usage = "Usage: %prog [options] <package name>"
-    parser = OptionParser(usage)
-    parser.add_option("-s",  "--spec-path",  dest="specPath",  default="../../SPECS")
-    parser.add_option("-x",  "--source-path",  dest="sourcePath",  default="../../stage/SOURCES")
-    parser.add_option("-r",  "--rpm-path",  dest="rpmPath",  default="../../stage/RPMS")
-    parser.add_option("-i",  "--install-package", dest="installPackage",  default=False,  action ="store_true")
-    parser.add_option("-p",  "--publish-RPMS-path", dest="publishRPMSPath",  default="../../stage/PUBLISHRPMS")
-    parser.add_option("-l",  "--log-path", dest="logPath",  default="../../stage/LOGS")
-    parser.add_option("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
-    parser.add_option("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
-    parser.add_option("-t",  "--threads", dest="buildThreads",  default=1, type="int", help="Number of working threads")
-    parser.add_option("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
-    parser.add_option("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
-    parser.add_option("-d",  "--dist", dest="dist",  default="")
-    parser.add_option("-k",  "--input-RPMS-path", dest="inputRPMSPath",   default=None)
-    parser.add_option("-n",  "--build-number", dest="buildNumber",  default="0000000")
-    parser.add_option("-v",  "--release-version", dest="releaseVersion",  default="NNNnNNN")
-    parser.add_option("-u",  "--enable-rpmcheck", dest="rpmCheck",  default=False, action ="store_true")
-    parser.add_option("-a",  "--source-rpm-path",  dest="sourceRpmPath",  default="../../stage/SRPMS")
-    parser.add_option("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../stage/pkg_info.json")
-    parser.add_option("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
-    parser.add_option("-q",  "--rpmcheck-stop-on-error", dest="rpmCheckStopOnError",  default=False, action ="store_true")
+    parser = ArgumentParser(usage)
+    parser.add_argument("-s",  "--spec-path",  dest="specPath",  default="../../SPECS")
+    parser.add_argument("-x",  "--source-path",  dest="sourcePath",  default="../../stage/SOURCES")
+    parser.add_argument("-r",  "--rpm-path",  dest="rpmPath",  default="../../stage/RPMS")
+    parser.add_argument("-i",  "--install-package", dest="installPackage",  default=False,  action ="store_true")
+    parser.add_argument("-p",  "--publish-RPMS-path", dest="publishRPMSPath",  default="../../stage/PUBLISHRPMS")
+    parser.add_argument("-l",  "--log-path", dest="logPath",  default="../../stage/LOGS")
+    parser.add_argument("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
+    parser.add_argument("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
+    parser.add_argument("-t",  "--threads", dest="buildThreads",  default=1, type=int, help="Number of working threads")
+    parser.add_argument("-m",  "--tool-chain-stage", dest="toolChainStage",  default="None")
+    parser.add_argument("-c",  "--pullsources-config", dest="pullsourcesConfig",  default="pullsources.conf")
+    parser.add_argument("-d",  "--dist", dest="dist",  default="")
+    parser.add_argument("-k",  "--input-RPMS-path", dest="inputRPMSPath",   default=None)
+    parser.add_argument("-n",  "--build-number", dest="buildNumber",  default="0000000")
+    parser.add_argument("-v",  "--release-version", dest="releaseVersion",  default="NNNnNNN")
+    parser.add_argument("-u",  "--enable-rpmcheck", dest="rpmCheck",  default=False, action ="store_true")
+    parser.add_argument("-a",  "--source-rpm-path",  dest="sourceRpmPath",  default="../../stage/SRPMS")
+    parser.add_argument("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../stage/pkg_info.json")
+    parser.add_argument("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
+    parser.add_argument("-q",  "--rpmcheck-stop-on-error", dest="rpmCheckStopOnError",  default=False, action ="store_true")
 
-    (options,  args) = parser.parse_args()
+    parser.add_argument("PackageName", nargs='?')
+    options = parser.parse_args()
     cmdUtils=CommandUtils()
     if not os.path.isdir(options.logPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
@@ -72,11 +73,11 @@ def main():
         errorFlag = True
 
     if options.installPackage :
-        if len(args) != 1:
+        if not options.PackageName:
             logger.error("Please provide package name")
             errorFlag = True
         else:
-            package=args[0]
+            package=options.PackageName
 
     if errorFlag:
         logger.error("Found some errors. Please fix input options and re-run it.")
