@@ -1,0 +1,26 @@
+--- b/ceph_deploy/hosts/photon/__init__.py	2017-01-24 01:06:16.760983944 +0000
++++ a/ceph_deploy/hosts/photon/__init__.py	2017-01-19 23:59:05.899266483 +0000
+@@ -0,0 +1,23 @@
++from . import mon  # noqa
++from ceph_deploy.hosts.centos.install import repo_install  # noqa
++from .install import install, mirror_install  # noqa
++from .uninstall import uninstall  # noqa
++from ceph_deploy.util import pkg_managers
++
++# Allow to set some information about this distro
++#
++
++distro = None
++release = None
++codename = None
++
++def choose_init(module):
++    """
++    Select a init system
++
++    Returns the name of a init system (upstart, sysvinit ...).
++    """
++    return 'systemd'
++
++def get_packager(module):
++        return pkg_managers.Tdnf(module)

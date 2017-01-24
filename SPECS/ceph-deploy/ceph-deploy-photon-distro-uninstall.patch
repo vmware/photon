@@ -1,0 +1,11 @@
+--- b/ceph_deploy/hosts/photon/uninstall.py	2017-01-24 01:06:32.644595896 +0000
++++ a/ceph_deploy/hosts/photon/uninstall.py	2017-01-05 02:34:23.589511890 +0000
+@@ -0,0 +1,8 @@
++def uninstall(distro, purge=False):
++    packages = [
++        'ceph',
++        'ceph-common',
++        'ceph-radosgw',
++        ]
++
++    distro.packager.remove(packages)
