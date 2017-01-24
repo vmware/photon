@@ -71,4 +71,6 @@ iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 #Enable ssh connections
 iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+#Enable ping
+iptables -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 # End /etc/systemd/scripts/iptables
