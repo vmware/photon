@@ -1,0 +1,5 @@
+--- b/ceph_deploy/hosts/photon/mon/__init__.py	2017-01-24 01:06:58.759955741 +0000
++++ a/ceph_deploy/hosts/photon/mon/__init__.py	2017-01-05 02:34:23.589511890 +0000
+@@ -0,0 +1,2 @@
++from ceph_deploy.hosts.common import mon_add as add  # noqa
++from .create import create  # noqa
