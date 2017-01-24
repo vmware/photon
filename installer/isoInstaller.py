@@ -4,7 +4,7 @@
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import os.path
 import curses
 import sys
@@ -331,8 +331,8 @@ class IsoInstaller(object):
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"
-    parser = OptionParser(usage)
-    parser.add_option("-j",  "--json-file", dest="options_file",  default="input.json")
+    parser = ArgumentParser(usage)
+    parser.add_argument("-j",  "--json-file", dest="options_file",  default="input.json")
 
-    (options,  args) = parser.parse_args()
+    options = parser.parse_args()
     curses.wrapper(IsoInstaller, options.options_file)
