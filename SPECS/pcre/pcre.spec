@@ -12,6 +12,7 @@ Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
 Requires:       libgcc
+Requires:		readline
 Requires:       libstdc++
 %description
 The PCRE package contains Perl Compatible Regular Expression libraries. These are useful for implementing regular expression pattern matching using the same syntax and semantics as Perl 5.
