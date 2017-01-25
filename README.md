@@ -22,6 +22,8 @@ This repository is intended for developers wishing to modify Photon and build th
 
 For instructions and links to download Photon OS binaries, see the [Download Guide in the github wiki](https://github.com/vmware/photon/wiki/Downloading-Photon-OS).
 
+For Security Updates, visit [Security-Advisories](https://github.com/vmware/photon/wiki/Security-Advisories).
+
 An official Vagrant box is available on Hashicorp Atlas, to get started: `vagrant init vmware/photon`. A plugin to support Photon OS guests in Vagrant is available at https://github.com/vmware/vagrant-guests-photon. Some users have found that our Vagrant box requires VirtualBox 4.3 or later. If you have issues, please check your version.
 
 For up-to-date documentation, see the [Docs](docs/) folder.
