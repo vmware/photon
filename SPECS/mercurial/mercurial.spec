@@ -1,14 +1,14 @@
-Summary:    A free, distributed source control management tool.
-Name:       mercurial
-Version:    3.7.1
-Release:    4%{?dist}
-License:    GPLv2+
-URL:        https://www.ruby-lang.org/en/
-Group:      System Environment/Security
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    http://mercurial.selenic.com/release/%{name}-%{version}.tar.gz
-%define sha1 mercurial=8ce55b297c6a62e987657498746eeca870301ffb
+Summary:        A free, distributed source control management tool.
+Name:           mercurial
+Version:        3.7.1
+Release:        5%{?dist}
+License:        GPLv2+
+URL:            https://www.ruby-lang.org/en/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://mercurial.selenic.com/release/%{name}-%{version}.tar.gz
+%define sha1    mercurial=8ce55b297c6a62e987657498746eeca870301ffb
 Patch0:   hg-CVE-2016-3068.patch
 Patch1:   hg-CVE-2016-3069-1.patch
 Patch2:   hg-CVE-2016-3069-2.patch
@@ -18,7 +18,7 @@ Patch5:   hg-CVE-2016-3069-5.patch
 Patch6:   hg-CVE-2016-3105.patch
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
-Requires:   python2
+Requires:       python2
 %description
 Mercurial is a distributed source control management tool similar to Git and Bazaar.
 Mercurial is written in Python and is used by projects such as Mozilla and Vim.
@@ -36,14 +36,9 @@ Mercurial is written in Python and is used by projects such as Mozilla and Vim.
 make build
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make PREFIX=%{_prefix} install-bin
+mkdir -p %{buildroot}/%{_bindir}
+%{__python} setup.py install --skip-build --root %{buildroot}
 
-install -vdm755 %{buildroot}/var/opt/%{name}-%{version}
-mv -v %{_builddir}/%{name}-%{version}/* %{buildroot}/var/opt/%{name}-%{version}/
-chown -R root:root %{buildroot}/var/opt/%{name}-%{version}
-
-install -vdm755 %{buildroot}/bin
-ln -sfv ../var/opt/%{name}-%{version}/hg %{buildroot}/bin/hg
 cat >> %{buildroot}/.hgrc << "EOF"
 [ui]
 username = "$(id -u)"
@@ -57,7 +52,7 @@ EOF
 %{_fixperms} %{buildroot}/*
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} check
 
 %post -p /sbin/ldconfig
 
@@ -68,14 +63,13 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 rm -rf %{buildroot}/*
 
 %files
-%defattr(-,root,root)
 /.hgrc
-/var/opt/%{name}-%{version}/*
-/bin/hg
-/etc/profile.d/mercurial-exports.sh
-%exclude /var/opt/%{name}-%{version}/contrib/plan9
-%exclude /var/opt/%{name}-%{version}/build/temp.*
+%{_bindir}/hg
+%{python_sitelib}/*
+
 %changelog
+*   Mon Jan 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-5
+-   Install with setup.py.
 *   Tue Nov 22 2016 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-4
 -   Apply patches for CVE-2016-3068, CVE-2016-3069, CVE-2016-3105
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.7.1-3
