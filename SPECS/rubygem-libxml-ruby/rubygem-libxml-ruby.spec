@@ -3,7 +3,7 @@
 %define gem_name libxml-ruby
 Name: rubygem-libxml-ruby
 Version: 2.8.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group: Applications/Programming
 License: BSD
@@ -23,8 +23,10 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.0-2
--	GA - Bump release of all rpms
+* Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 2.8.0-3
+- Bump up release number to reflect ruby upgrade
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.0-2
+- GA - Bump release of all rpms
 * Wed Nov 11 2015 Anish Swaminathan <anishs@vmware.com> 2.8.0-1
 - Initial build
 
