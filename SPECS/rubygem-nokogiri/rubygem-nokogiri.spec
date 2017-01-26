@@ -4,7 +4,7 @@
 
 Name: rubygem-nokogiri
 Version: 1.6.7.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Nokogiri is an HTML, XML, SAX, and Reader parser.
 Group: Development/Languages
 License: MIT
@@ -33,12 +33,14 @@ NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install -V --local --force --install-dir %{b
 %{gemdir}
 
 %changelog
-*	Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 1.6.7.2-3
--	Use SYSTEM_LIBRARIES for nokogiri
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.7.2-2
--	GA - Bump release of all rpms
-*	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 1.6.7.2-1
-- 	Upgrade version.
-* 	Wed Nov 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.6.2-1
-- 	Initial build
+*   Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 1.6.7.2-4
+-   Bump up release number to reflect ruby upgrade
+*   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 1.6.7.2-3
+-   Use SYSTEM_LIBRARIES for nokogiri
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.7.2-2
+-   GA - Bump release of all rpms
+*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 1.6.7.2-1
+-   Upgrade version.
+*   Wed Nov 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.6.2-1
+-   Initial build
 
