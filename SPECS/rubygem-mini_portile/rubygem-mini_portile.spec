@@ -4,7 +4,7 @@
 
 Name: rubygem-mini_portile
 Version: 0.6.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Simplistic port-like solution for developers
 Group: Development/Languages
 License: MIT
@@ -28,7 +28,9 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.2-2
--	GA - Bump release of all rpms
+* Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 0.6.2-3
+- Bump up release number to reflect ruby upgrade
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.2-2
+- GA - Bump release of all rpms
 * Wed Nov 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.6.2-1
 - Initial build
