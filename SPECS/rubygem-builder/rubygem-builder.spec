@@ -40,9 +40,11 @@ popd
 %{gemdir}
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 3.2.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.2-2
--	GA - Bump release of all rpms
+* Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 3.2.2-3
+- Bump up release number to reflect ruby upgrade
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 3.2.2-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.2-2
+- GA - Bump release of all rpms
 * Wed Nov 11 2015 Xiaolin Li <amakhalov@vmware.com> 3.2.2-1
 - Initial build

@@ -36,11 +36,13 @@ popd
 %{gemdir}
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.8.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.2-2
--	GA - Bump release of all rpms
-* 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.8.2-1
-- 	Upgrade to 1.8.2
-* 	Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-1
-- 	Initial build
+*   Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 1.8.2-3
+-   Bump up release number to reflect ruby upgrade
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.8.2-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.2-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.8.2-1
+-   Upgrade to 1.8.2
+*   Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-1
+-   Initial build
