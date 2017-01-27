@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/releases/download/v%{version}
 Source0:        https://dl.k8s.io/v1.5.2/kubernetes-server-linux-amd64-v%{version}.tar.gz
@@ -46,6 +46,11 @@ install -m 0644 -t %{buildroot}/usr/lib/systemd/system contrib-0.7.0/init/system
 # install the place the kubelet defaults to put volumes
 install -d %{buildroot}/var/lib/kubelet
 
+mkdir -p %{buildroot}/lib/tmpfiles.d
+cat << EOF >> %{buildroot}/lib/tmpfiles.d/kubernetes.conf
+d /run/kubernetes 0755 kube kube -
+EOF
+
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
@@ -79,6 +84,7 @@ fi
 /usr/lib/systemd/system/kube-scheduler.service
 /usr/lib/systemd/system/kube-controller-manager.service
 /usr/lib/systemd/system/kube-proxy.service
+/lib/tmpfiles.d/kubernetes.conf
 %dir %{_sysconfdir}/%{name}
 %dir /var/lib/kubelet
 %config(noreplace) %{_sysconfdir}/%{name}/config
@@ -89,6 +95,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Fri Jan 27 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
+-   Added /lib/tmpfiles.d/kubernetes.conf.
 *   Thu Jan 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-1
 -   Upgraded to version 1.5.2
 *   Fri Oct 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.4-1
