@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -22,7 +22,7 @@ BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet
-BuildRequires:  libmspack
+BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
@@ -38,6 +38,17 @@ Requires:       openssl
 Requires:       systemd
 %description
 VmWare virtualization user mode tools
+
+%package          devel
+Summary:          Development libraries for open-vm-tools
+Group:            Development/Libraries
+Requires:         %{name} = %{version}-%{release}
+
+
+%description      devel
+The iptables-devel package contains libraries, header files and documentation
+for developing applications that use open-vm-tools.
+
 %prep
 %setup -q -n open-vm-tools
 %setup -a 1 -n open-vm-tools
@@ -89,20 +100,26 @@ fi
 
 %files 
 %defattr(-,root,root)
-%{_libdir}/open-vm-tools/plugins/*
-%{_libdir}/*.so
+%{_libdir}/open-vm-tools/plugins/vmsvc/*.so
+%{_libdir}/open-vm-tools/plugins/common/*.so
 %{_libdir}/*.so.*
-%{_libdir}/*.la
-%{_libdir}/pkgconfig/*.pc
-%{_includedir}/*
 %{_bindir}/*
 %{_sysconfdir}/*
 %{_datadir}/*
 /lib/*
 %{_sbindir}/*
 
+%files devel
+%{_libdir}/*.so
+%{_libdir}/*.la
+%{_libdir}/pkgconfig/*.pc
+%{_includedir}/*
+%{_libdir}/open-vm-tools/plugins/common/*.la
+
 
 %changelog
+*   Mon Jan 30 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.0-3
+-   Add devel subpackage.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 10.1.0-2
 -   BuildRequires Linux-PAM-devel
 *   Mon Nov 21 2016 Kumar Kaushik <kaushikk@vmware.com> 10.1.0-1
@@ -119,59 +136,59 @@ fi
 -   GA - Bump release of all rpms
 *   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-9
 -   Edit scriptlets.
-*       Fri Apr 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-8
--       Combining all GOSC scripts patches and fixing bug#1648133.
-*       Tue Apr 19 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-7
--       Fixing libDeploy not to overwrite for SRM cust needs.
-*       Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-6
--       Replacing timedatectl with systemd patch..
-*       Fri Mar 25 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-5
--       Time data ctl fix for ignoring message print in stderr.
-*       Tue Feb 09 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 10.0.5-4
--       Preserve network onboot config.
-*       Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-3
--       Add vgauthd service.
-*       Tue Feb 02 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-2
--       Making interface file name according to convention.
-*       Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-1
--       Upgrade version.
-*       Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 10.0.0-13
--       Edit post script.
-*       Fri Nov 27 2015 Sharath George <sharathg@vmware.com> 10.0.0-12
--       Correcting path of pam file.
-*       Tue Sep 15 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-11
--       Adding ssh RSA public support for password-less login.
-*       Wed Sep 09 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-10
--       Adding option to modify /etc/hosts for lightwave on optional basis.
-*       Wed Sep 09 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-9
--       Fixing once in while issue related to customization failure.
-*       Wed Sep 02 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-8
--       Fixing systemd cloud-init and GOSC cloud-init race.
-*       Tue Sep 01 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-7
--       Fixing GOSC counter bug.
-*       Wed Aug 26 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-6
--       Avoiding reboot after successful customization.
-*       Tue Aug 25 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-5
--       Adding support for NFS mount in GOSC scripts.
-*       Thu Aug 20 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-4
--       Fixing GOSC-libdeploy return code problem.
-*       Thu Aug 13 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-3
--       Combining all GOSC patches and adding support for lightwave.
-*       Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-2
--       Build with fuse support.
-*       Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-1
--       Update version to 10.0.0.
-*       Tue Aug 11 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-7
--       VCA initial login password issue fix.
-*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-6
--       Adding preun and post install commands.
-*       Thu Jul 30 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-5
--       Adding Blob configuation support to GOSC scripts.
-*       Thu Jul 09 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-4
--       Fixing GOSC to work on VCA.
-*       Tue Apr 21 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-3
--       Adding guest optimizations support for photon.
-*       Tue Apr 21 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.0-2
--       Added open-vm-tools-stderr_r-fix upstream patch and removed glibc patch.
-*       Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 9.10.0-1
--       Initial version
+*   Fri Apr 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-8
+-   Combining all GOSC scripts patches and fixing bug#1648133.
+*   Tue Apr 19 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-7
+-   Fixing libDeploy not to overwrite for SRM cust needs.
+*   Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-6
+-   Replacing timedatectl with systemd patch..
+*   Fri Mar 25 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-5
+-   Time data ctl fix for ignoring message print in stderr.
+*   Tue Feb 09 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 10.0.5-4
+-   Preserve network onboot config.
+*   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-3
+-   Add vgauthd service.
+*   Tue Feb 02 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-2
+-   Making interface file name according to convention.
+*   Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-1
+-   Upgrade version.
+*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 10.0.0-13
+-   Edit post script.
+*   Fri Nov 27 2015 Sharath George <sharathg@vmware.com> 10.0.0-12
+-   Correcting path of pam file.
+*   Tue Sep 15 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-11
+-   Adding ssh RSA public support for password-less login.
+*   Wed Sep 09 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-10
+-   Adding option to modify /etc/hosts for lightwave on optional basis.
+*   Wed Sep 09 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-9
+-   Fixing once in while issue related to customization failure.
+*   Wed Sep 02 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-8
+-   Fixing systemd cloud-init and GOSC cloud-init race.
+*   Tue Sep 01 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-7
+-   Fixing GOSC counter bug.
+*   Wed Aug 26 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-6
+-   Avoiding reboot after successful customization.
+*   Tue Aug 25 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-5
+-   Adding support for NFS mount in GOSC scripts.
+*   Thu Aug 20 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-4
+-   Fixing GOSC-libdeploy return code problem.
+*   Thu Aug 13 2015 Kumar Kaushik <kaushikk@vmware.com> 10.0.0-3
+-   Combining all GOSC patches and adding support for lightwave.
+*   Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-2
+-   Build with fuse support.
+*   Wed Aug 12 2015 Alexey Makhalov <amakhalov@vmware.com> 10.0.0-1
+-   Update version to 10.0.0.
+*   Tue Aug 11 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-7
+-   VCA initial login password issue fix.
+*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-6
+-   Adding preun and post install commands.
+*   Thu Jul 30 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-5
+-   Adding Blob configuation support to GOSC scripts.
+*   Thu Jul 09 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-4
+-   Fixing GOSC to work on VCA.
+*   Tue Apr 21 2015 Kumar Kaushik <kaushikk@vmware.com> 9.10.0-3
+-   Adding guest optimizations support for photon.
+*   Tue Apr 21 2015 Divya Thaluru <dthaluru@vmware.com> 9.10.0-2
+-   Added open-vm-tools-stderr_r-fix upstream patch and removed glibc patch.
+*   Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 9.10.0-1
+-   Initial version
