@@ -1,21 +1,22 @@
-Summary:    NetworkManager
-Name:       NetworkManager
-Version:    1.0.10
-Release:    3%{?dist}
-License:    LGPLv2+
-URL:        https://wiki.gnome.org/Projects/NetworkManager
-Source0:    https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
-%define sha1 NetworkManager=1c199fdfb9fff9e7f540d51952699ce815a12369
-Group:      System Environment/Base
-Vendor:     VMware, Inc.
+Summary:        NetworkManager
+Name:           NetworkManager
+Version:        1.0.10
+Release:        4%{?dist}
+License:        LGPLv2+
+URL:            https://wiki.gnome.org/Projects/NetworkManager
+Source0:        https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
+%define sha1    NetworkManager=1c199fdfb9fff9e7f540d51952699ce815a12369
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  intltool
-BuildRequires:  iptables
+BuildRequires:  iptables-devel
 BuildRequires:  dbus-devel
 BuildRequires:  dbus-glib-devel
 BuildRequires:  libnl-devel
 BuildRequires:  readline-devel
 BuildRequires:  ncurses-devel
+BuildRequires:  nspr-devel
 BuildRequires:  nss-devel
 BuildRequires:  libndp-devel
 BuildRequires:  python2
@@ -98,6 +99,8 @@ EOF
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Jan 30 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.10-4
+-   BuildRequires nspr-devel and iptables-devel.
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.0.10-3
 -   Change systemd dependency
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.10-2

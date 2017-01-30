@@ -8,21 +8,21 @@
 
 Name:          systemtap
 Version:       3.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
-Vendor:	       VMware, Inc.
+Vendor:        VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=5ef3a2d9945b0f6bae0061e33811e25e5138f5b7
+%define sha1   systemtap=5ef3a2d9945b0f6bae0061e33811e25e5138f5b7
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
 BuildRequires: elfutils-libelf-devel
 BuildRequires: libgcc
-BuildRequires: nspr
+BuildRequires: nspr-devel
 BuildRequires: nss-devel
 BuildRequires: sqlite-devel
 BuildRequires: libstdc++-devel
@@ -104,29 +104,29 @@ sed -i "s#"devel"#"dev"#g" stap-prep
 %build
 %configure \
 %if %with_crash
-	--enable-crash \
+    --enable-crash \
 %else
-	--disable-crash \
+    --disable-crash \
 %endif
-	--disable-docs \
+    --disable-docs \
 %if %with_sqlite
-	--enable-sqlite \
+    --enable-sqlite \
 %else
-	--disable-sqlite \
+    --disable-sqlite \
 %endif
 %if %with_rpm
-	--with-rpm \
+    --with-rpm \
 %else
-	--without-rpm \
+    --without-rpm \
 %endif
 %if %with_pie
-	--enable-pie \
+    --enable-pie \
 %else
-	--disable-pie \
+    --disable-pie \
 %endif
-	--disable-grapher \
+    --disable-grapher \
         --disable-virt \
-	--disable-silent-rules
+    --disable-silent-rules
 
 make
 
@@ -203,10 +203,10 @@ if [ $1 -eq 1 ] ; then
   }
 
   if test ! -e ~stap-server/.systemtap/ssl/server/stap.cert; then
-	runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
+    runuser -s /bin/sh - stap-server -c %{_libexecdir}/%{name}/stap-gen-cert >/dev/null
 
-	%{_bindir}/stap-authorize-server-cert ~stap-server/.systemtap/ssl/server/stap.cert
-	%{_bindir}/stap-authorize-signing-cert ~stap-server/.systemtap/ssl/server/stap.cert
+    %{_bindir}/stap-authorize-server-cert ~stap-server/.systemtap/ssl/server/stap.cert
+    %{_bindir}/stap-authorize-signing-cert ~stap-server/.systemtap/ssl/server/stap.cert
   fi
   /sbin/chkconfig --add stap-server
   exit 0
@@ -214,46 +214,46 @@ fi
 
 %preun server
 if [ $1 = 0 ] ; then
-	/sbin/service stap-server stop >/dev/null 2>&1
-	/sbin/chkconfig --del stap-server
+    /sbin/service stap-server stop >/dev/null 2>&1
+    /sbin/chkconfig --del stap-server
 fi
 exit 0
 
 %postun server
 if [ "$1" -ge "1" ] ; then
-	/sbin/service stap-server condrestart >/dev/null 2>&1 || :
+    /sbin/service stap-server condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post initscript
 if [ $1 -eq 1 ] ; then
-	/sbin/chkconfig --add systemtap
-	exit 0
+    /sbin/chkconfig --add systemtap
+    exit 0
 fi
 
 %preun initscript
 if [ $1 = 0 ] ; then
-	/sbin/service systemtap stop >/dev/null 2>&1
-	/sbin/chkconfig --del systemtap
+    /sbin/service systemtap stop >/dev/null 2>&1
+    /sbin/chkconfig --del systemtap
 fi
 exit 0
 
 %postun initscript
 if [ "$1" -ge "1" ] ; then
-	/sbin/service systemtap condrestart >/dev/null 2>&1 || :
+    /sbin/service systemtap condrestart >/dev/null 2>&1 || :
 fi
 exit 0
 
 %post
 if [ $1 -eq 1 ] ; then
-	(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+    (make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+    (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %preun
 if [ $1 -eq 0 ] ; then
-	(make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
-	(/sbin/rmmod uprobes) >/dev/null 2>&1 || true
+    (make -C %{_datadir}/systemtap/runtime/linux/uprobes clean) >/dev/null 3>&1 || true
+    (/sbin/rmmod uprobes) >/dev/null 2>&1 || true
 fi
 
 %files -f %{name}.lang
@@ -333,6 +333,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*   Mon Jan 30 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.5
+-   BuildRequires nspr-devel.
 *   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4
 -   add shadow to requires
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.0-3

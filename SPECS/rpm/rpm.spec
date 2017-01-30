@@ -1,7 +1,7 @@
 Summary:          Package manager
 Name:             rpm
 Version:          4.11.2
-Release:          19%{?dist}
+Release:          20%{?dist}
 License:          GPLv2+
 URL:              http://rpm.org
 Group:            Applications/System
@@ -23,6 +23,7 @@ BuildRequires:    python2-libs
 BuildRequires:    python2-devel
 BuildRequires:    popt-devel
 BuildRequires:    nss-devel
+BuildRequires:    nspr-devel
 BuildRequires:    elfutils-devel
 BuildRequires:    libcap-devel
 BuildRequires:    xz-devel
@@ -220,6 +221,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+*    Mon Jan 30 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20
+-    BuildRequires nspr-devel.
 *    Mon Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
 -    added buildrequires for xz-devel for PayloadIsLzma cap
 *    Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18

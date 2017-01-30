@@ -1,19 +1,19 @@
-Summary:	Security client
-Name:		nss
-Version:	3.25
-Release:	3%{?dist}
-License:	MPLv2.0
-URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 nss=ffa55041a7904bb43afbc6821f479819d9802abf
-Patch:		nss-3.25-standalone-1.patch
-Requires:	nspr
-BuildRequires:	nspr
-BuildRequires:	sqlite-devel
-Requires:	sqlite-libs
+Summary:        Security client
+Name:           nss
+Version:        3.25
+Release:        4%{?dist}
+License:        MPLv2.0
+URL:            http://ftp.mozilla.org/pub/mozilla.org/security/nss
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    nss=ffa55041a7904bb43afbc6821f479819d9802abf
+Patch:          nss-3.25-standalone-1.patch
+Requires:       nspr
+BuildRequires:  nspr-devel
+BuildRequires:  sqlite-devel
+Requires:       sqlite-libs
 
 %description
  The Network Security Services (NSS) package is a set of libraries
@@ -27,7 +27,8 @@ Requires:	sqlite-libs
 %package devel
 Summary: Development Libraries for Network Security Services
 Group: Development/Libraries
-Requires: nss = %{version}-%{release}
+Requires: nss-devel = %{version}-%{release}
+Requires: nspr-devel 
 %description devel
 Header files for doing development with Network Security Services.
 
@@ -38,11 +39,11 @@ Header files for doing development with Network Security Services.
 cd nss
 # -j is not supported by nss
 make VERBOSE=1 BUILD_OPT=1 \
-	NSPR_INCLUDE_DIR=%{_includedir}/nspr \
-	USE_SYSTEM_ZLIB=1 \
-	ZLIB_LIBS=-lz \
-	$([ $(uname -m) = x86_64 ] && echo USE_64=1) \
-	$([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
+    NSPR_INCLUDE_DIR=%{_includedir}/nspr \
+    USE_SYSTEM_ZLIB=1 \
+    ZLIB_LIBS=-lz \
+    $([ $(uname -m) = x86_64 ] && echo USE_64=1) \
+    $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
 %install
 cd nss
 cd ../dist
@@ -62,7 +63,7 @@ cd nss/tests
 HOST=localhost DOMSUF=localdomain
 ./all.sh
 
-%post	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -77,19 +78,21 @@ HOST=localhost DOMSUF=localdomain
 
 
 %changelog
-*	Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
--	Use sqlite-libs as runtime dependency
-*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
--       Modified %check
-*       Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
--       Upgrade to 3.25
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2
--	GA - Bump release of all rpms
-* 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
-- 	Updated to version 3.21
-*       Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2
--       Version update. Firefox requirement.
-*	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19-1
--	Version update. Firefox requirement.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.15.4-1
--	Initial build. First version
+*   Mon Jan 30 2017 Xiaolin Li <xiaolinl@vmware.com> 3.25-4
+-   BuildRequires nspr-devel.
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
+-   Use sqlite-libs as runtime dependency
+*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
+-   Modified %check
+*   Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
+-   Upgrade to 3.25
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2
+-   GA - Bump release of all rpms
+*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
+-   Updated to version 3.21
+*   Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2
+-   Version update. Firefox requirement.
+*   Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19-1
+-   Version update. Firefox requirement.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.15.4-1
+-   Initial build. First version
