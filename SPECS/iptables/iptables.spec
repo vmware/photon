@@ -1,7 +1,7 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
 Version:	1.6.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
@@ -12,6 +12,8 @@ Source0:	http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar
 Source1:	http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:	iptable_rules
+Source3:	ip4save
+Source4:	ip6save
 Patch1:		blfs_systemd_fixes.patch
 BuildRequires:  systemd
 Requires:       systemd
@@ -23,6 +25,8 @@ Iptables if you intend on using any form of a firewall.
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
 cp %{SOURCE2} .
+cp %{SOURCE3} .
+cp %{SOURCE4} .
 %patch1 -p0
 %build
 ./configure \
@@ -51,6 +55,10 @@ popd
 install -vdm755 %{buildroot}/etc/systemd/scripts
 cp iptable_rules %{buildroot}/etc/systemd/scripts/iptables
 chmod 755 %{buildroot}/etc/systemd/scripts/iptables
+cp ip4save %{buildroot}/etc/systemd/scripts/ip4save
+chmod 644 %{buildroot}/etc/systemd/scripts/ip4save
+cp ip6save %{buildroot}/etc/systemd/scripts/ip6save
+chmod 644 %{buildroot}/etc/systemd/scripts/ip6save
 find %{buildroot} -name '*.a'  -delete
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
@@ -71,6 +79,8 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %config(noreplace) /etc/systemd/scripts/iptables
+%config(noreplace) /etc/systemd/scripts/ip4save
+%config(noreplace) /etc/systemd/scripts/ip6save
 /lib/systemd/system/iptables.service
 /sbin/*
 %{_bindir}/*
@@ -83,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
+*   Mon Jan 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-6
+-   Change scripts to use iptables-restore
 *   Tue Aug 30 2016 Anish Swaminathan <anishs@vmware.com> 1.6.0-5
 -   Change config file properties for iptables script
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-4
