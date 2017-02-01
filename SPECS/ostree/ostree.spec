@@ -1,39 +1,39 @@
-Summary:	Git for operating system binaries
-Name:		ostree
-Version:	2015.7
-Release:	9%{?dist}
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
-%define sha1 ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
-Source1:	91-ostree.preset
-License:	LGPLv2+
-URL:		http://live.gnome.org/OSTree
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	git
-BuildRequires:	which
-BuildRequires:	libgsystem
-BuildRequires:	xz-devel
-BuildRequires:	gtk-doc
-BuildRequires:	e2fsprogs-devel
+Summary:        Git for operating system binaries
+Name:           ostree
+Version:        2015.7
+Release:        10%{?dist}
+Source0:        http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
+%define sha1    ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
+Source1:        91-ostree.preset
+License:        LGPLv2+
+URL:            http://live.gnome.org/OSTree
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  git
+BuildRequires:  which
+BuildRequires:  libgsystem
+BuildRequires:  xz-devel
+BuildRequires:  gtk-doc
+BuildRequires:  e2fsprogs-devel
 BuildRequires:  libsoup-devel
 BuildRequires:  autogen
-Requires:	libgsystem
-Requires:	gpgme
-Requires:	libassuan
-Requires:	libgpg-error
-Requires:   systemd
-Requires:   libsoup
-Requires:   mkinitcpio
-Requires:   dracut
-Requires:   dracut-tools
-Requires:   libarchive
-BuildRequires:	attr-devel
-BuildRequires:	libgpg-error-devel
-BuildRequires:	python2-libs
-BuildRequires:	python2
-BuildRequires:	gobject-introspection
-BuildRequires:	gobject-introspection-devel
-BuildRequires:	gobject-introspection-python
+Requires:       libgsystem
+Requires:       gpgme
+Requires:       libassuan
+Requires:       libgpg-error
+Requires:       systemd
+Requires:       libsoup
+Requires:       mkinitcpio
+Requires:       dracut
+Requires:       dracut-tools
+Requires:       libarchive
+BuildRequires:  attr-devel
+BuildRequires:  libgpg-error-devel
+BuildRequires:  python2-libs
+BuildRequires:  python2
+BuildRequires:  gobject-introspection
+BuildRequires:  gobject-introspection-devel
+BuildRequires:  gobject-introspection-python
 BuildRequires:  gpgme-devel
 BuildRequires:  libcap-devel
 BuildRequires:  libsoup
@@ -63,19 +63,18 @@ The %{name}-devel package includes the header files for the %{name} library
 
 %prep
 %setup -n %{name}-%{version}
-git clone git://git.gnome.org/libglnx libglnx
+(git clone git://git.gnome.org/libglnx libglnx  && cd libglnx && git checkout abd37a4)
 git clone https://github.com/mendsley/bsdiff bsdiff
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
 %configure \
-	--disable-silent-rules \
-	--enable-gtk-doc \
-	--with-dracut \
-	--with-mkinitcpio \
+    --disable-silent-rules \
+    --enable-gtk-doc \
+    --with-dracut \
+    --with-mkinitcpio \
     --enable-libsoup-client-certs  \
-	--prefix=%{_prefix}
-	  
+    --prefix=%{_prefix}
 make %{?_smp_mflags}
 
 %install
@@ -130,6 +129,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Wed Feb 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2015.7-10
+-   libglnx: Bump to master (for -fsanitize fixes)
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-9
 -   BuildRequired attr-devel and libgpg-error-devel
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2015.7-8
