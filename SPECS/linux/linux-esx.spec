@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.41
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -181,6 +181,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 1 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.41-2
+-   .config: added MODULES_SIG, CRYPTO_FIPS, SYN_COOKIES support.
 *   Mon Jan 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.41-1
 -   Update to linux-4.4.41
     to fix CVE-2016-10088, CVE-2016-9793 and CVE-2016-9576
