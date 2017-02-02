@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3.30
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -226,18 +226,21 @@ if [ $1 -eq 1 ] ; then
         cp /etc/skel/.bash_logout /root/.bash_logout
     fi
     if [ ! -f /etc/shells ]; then
-        echo "%{_bindir}/bash" >> /etc/shells
+        echo "/bin/bash" >> /etc/shells
     else
-        grep -q '^%{_bindir}/bash$' /etc/shells || \
-        echo "%{_bindir}/bash" >> /etc/shells
+        grep -q '^/bin/bash$' /etc/shells || \
+        echo "/bin/bash" >> /etc/shells
     fi
 fi
 if [ $1 -eq 2 ] ; then
     if [ ! -f /etc/shells ]; then
-        echo "%{_bindir}/bash" >> /etc/shells
+        echo "/bin/bash" >> /etc/shells
     else
-        grep -q '^%{_bindir}/bash$' /etc/shells || \
-        echo "%{_bindir}/bash" >> /etc/shells
+        grep -v '^%{_bindir}/bash$'  /etc/shells | \
+        grep -v '^%{_bindir}/bash$' > /etc/shells.rpm && \
+        mv /etc/shells.rpm /etc/shells
+        grep -q '^/bin/bash$' /etc/shells || \
+        echo "/bin/bash" >> /etc/shells
     fi
 fi
 
@@ -246,9 +249,9 @@ if [ $1 -eq 0 ] ; then
     if [ -f "/root/.bash_logout" ] ; then
         rm -f /root/.bash_logout
     fi
-    if [ ! -x %{_bindir}/bash ]; then
-        grep -v '^%{_bindir}/bash$'  /etc/shells | \
-        grep -v '^%{_bindir}/bash$' > /etc/shells.rpm && \
+    if [ ! -x /bin/bash ]; then
+        grep -v '^/bin/bash$'  /etc/shells | \
+        grep -v '^/bin/bash$' > /etc/shells.rpm && \
         mv /etc/shells.rpm /etc/shells
     fi
 fi
@@ -265,6 +268,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-6
+-   Modified bash entry in /etc/shells
 *   Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-5
 -   Added bash entry to /etc/shells
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
