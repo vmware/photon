@@ -2,7 +2,7 @@
 Summary:	An enhanced version of csh, the C shell
 Name:		tcsh
 Version:	6.19.00
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 Group:		System Environment/Shells
 Source:		http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.gz
@@ -79,11 +79,17 @@ if [ $1 -eq 1 ] ; then
   if [ ! -f /etc/shells ]; then
    echo "%{_bindir}/tcsh" >> /etc/shells
    echo "%{_bindir}/csh"	>> /etc/shells
+   echo "/bin/tcsh" >> /etc/shells
+   echo "/bin/csh"	>> /etc/shells
   else
    grep -q '^%{_bindir}/tcsh$' /etc/shells || \
    echo "%{_bindir}/tcsh" >> /etc/shells
    grep -q '^%{_bindir}/csh$'  /etc/shells || \
    echo "%{_bindir}/csh"	>> /etc/shells
+   grep -q '^/bin/tcsh$' /etc/shells || \
+   echo "/bin/tcsh" >> /etc/shells
+   grep -q '^/bin/csh$'  /etc/shells || \
+   echo "/bin/csh"	>> /etc/shells
   fi
 fi
 
@@ -92,6 +98,11 @@ if [ $1 -eq 0 ] ; then
   if [ ! -x %{_bindir}/tcsh ]; then
    grep -v '^%{_bindir}/tcsh$'  /etc/shells | \
    grep -v '^%{_bindir}/csh$' > /etc/shells.rpm && \
+   mv /etc/shells.rpm /etc/shells
+  fi
+  if [ ! -x /bin/tcsh ]; then
+   grep -v '^/bin/tcsh$'  /etc/shells | \
+   grep -v '^/bin/csh$' > /etc/shells.rpm && \
    mv /etc/shells.rpm /etc/shells
   fi
 fi
@@ -103,6 +114,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*	Tue Feb 7 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-6
+-	Added /bin/csh and /bin/tsch entries in /etc/shells
 *	Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 6.19.00-5
 -	tcsh.glibc-2.24.patch
 *	Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-4
