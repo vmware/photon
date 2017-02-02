@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -247,8 +247,11 @@ if [ $1 -eq 1 ] ; then
         cp /etc/skel/.bash_logout /root/.bash_logout
     fi
     if [ ! -f /etc/shells ]; then
+        echo "/bin/bash" >> /etc/shells
         echo "%{_bindir}/bash" >> /etc/shells
     else
+        grep -q '^/bin/bash$' /etc/shells || \
+        echo "/bin/bash" >> /etc/shells
         grep -q '^%{_bindir}/bash$' /etc/shells || \
         echo "%{_bindir}/bash" >> /etc/shells
     fi
@@ -259,6 +262,10 @@ if [ $1 -eq 0 ] ; then
     if [ -f "/root/.bash_logout" ] ; then
         rm -f /root/.bash_logout
     fi
+    if [ ! -x /bin/bash ]; then
+        grep -v '^/bin/bash$'  /etc/shells | \
+        grep -v '^/bin/bash$' > /etc/shells.rpm && \
+        mv /etc/shells.rpm /etc/shells
     if [ ! -x %{_bindir}/bash ]; then
         grep -v '^%{_bindir}/bash$'  /etc/shells | \
         grep -v '^%{_bindir}/bash$' > /etc/shells.rpm && \
@@ -284,6 +291,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com> 4.4-2
+-   Modified bash entry in /etc/shells
 *   Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4-1
 -   Upgraded version to 4.4
 *   Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.30-7
