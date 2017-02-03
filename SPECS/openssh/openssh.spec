@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.4p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -11,7 +11,8 @@ Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{v
 %define sha1    openssh=2330bbf82ed08cf3ac70e0acf00186ef3eeb97e0
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
-Patch1:         blfs_systemd_fixes.patch
+Patch0:         blfs_systemd_fixes.patch
+Patch1:         openssh-7.4p1-fips.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -43,7 +44,8 @@ This provides the ssh server daemons, utilities, configuration and service files
 %prep
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
-%patch1 -p0
+%patch0 -p0
+%patch1 -p1
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -187,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Thu Feb 02 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-2
+-   Add patch to support FIPS mode
 *   Fri Jan 07 2017 Xiaolin Li <xiaolinl@vmware.com> 7.4p1-1
 -   Updated to version 7.4p1.
 *   Wed Dec 14 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1p2-10
