@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.3.30
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -227,20 +227,23 @@ if [ $1 -eq 1 ] ; then
     fi
     if [ ! -f /etc/shells ]; then
         echo "/bin/bash" >> /etc/shells
+        echo "%{_bindir}/bash" >> /etc/shells
     else
         grep -q '^/bin/bash$' /etc/shells || \
         echo "/bin/bash" >> /etc/shells
+        grep -q '^%{_bindir}/bash$' /etc/shells || \
+        echo "%{_bindir}/bash" >> /etc/shells
     fi
 fi
 if [ $1 -eq 2 ] ; then
     if [ ! -f /etc/shells ]; then
         echo "/bin/bash" >> /etc/shells
+        echo "%{_bindir}/bash" >> /etc/shells
     else
-        grep -v '^%{_bindir}/bash$'  /etc/shells | \
-        grep -v '^%{_bindir}/bash$' > /etc/shells.rpm && \
-        mv /etc/shells.rpm /etc/shells
         grep -q '^/bin/bash$' /etc/shells || \
         echo "/bin/bash" >> /etc/shells
+        grep -q '^%{_bindir}/bash$' /etc/shells || \
+        echo "%{_bindir}/bash" >> /etc/shells
     fi
 fi
 
@@ -252,6 +255,9 @@ if [ $1 -eq 0 ] ; then
     if [ ! -x /bin/bash ]; then
         grep -v '^/bin/bash$'  /etc/shells | \
         grep -v '^/bin/bash$' > /etc/shells.rpm && \
+        mv /etc/shells.rpm /etc/shells
+        grep -v '^%{_bindir}/bash$'  /etc/shells | \
+        grep -v '^%{_bindir}/bash$' > /etc/shells.rpm && \
         mv /etc/shells.rpm /etc/shells
     fi
 fi
@@ -268,6 +274,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Thu Feb 7 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-7
+-   Added /usr/bin/bash and /bin/bash entries in /etc/shells
 *   Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-6
 -   Modified bash entry in /etc/shells
 *   Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-5
