@@ -1,0 +1,123 @@
+diff -rup openssh-7.4p1/servconf.c openssh-7.4p1-fips-enable/servconf.c
+--- openssh-7.4p1/servconf.c	2016-12-18 20:59:41.000000000 -0800
++++ openssh-7.4p1-fips-enable/servconf.c	2017-02-09 17:28:30.828647619 -0800
+@@ -164,6 +164,7 @@ initialize_server_options(ServerOptions
+ 	options->version_addendum = NULL;
+ 	options->fingerprint_hash = -1;
+ 	options->disable_forwarding = -1;
++	options->fips_mode = -1;
+ }
+ 
+ /* Returns 1 if a string option is unset or set to "none" or 0 otherwise. */
+@@ -333,6 +334,8 @@ fill_default_server_options(ServerOption
+ 		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
+ 	if (options->disable_forwarding == -1)
+ 		options->disable_forwarding = 0;
++	if (options->fips_mode == -1)
++		options->fips_mode = 0;
+ 
+ 	assemble_algorithms(options);
+ 
+@@ -418,7 +421,8 @@ typedef enum {
+ 	sAuthenticationMethods, sHostKeyAgent, sPermitUserRC,
+ 	sStreamLocalBindMask, sStreamLocalBindUnlink,
+ 	sAllowStreamLocalForwarding, sFingerprintHash, sDisableForwarding,
+-	sDeprecated, sIgnore, sUnsupported
++	sDeprecated, sIgnore, sUnsupported,
++	sFipsMode
+ } ServerOpCodes;
+ 
+ #define SSHCFG_GLOBAL	0x01	/* allowed in main section of sshd_config */
+@@ -561,6 +565,7 @@ static struct {
+ 	{ "allowstreamlocalforwarding", sAllowStreamLocalForwarding, SSHCFG_ALL },
+ 	{ "fingerprinthash", sFingerprintHash, SSHCFG_GLOBAL },
+ 	{ "disableforwarding", sDisableForwarding, SSHCFG_ALL },
++	{ "fipsmode", sFipsMode, SSHCFG_GLOBAL },
+ 	{ NULL, sBadOption, 0 }
+ };
+ 
+@@ -1836,6 +1841,10 @@ process_server_config_line(ServerOptions
+ 			options->fingerprint_hash = value;
+ 		break;
+ 
++	case sFipsMode:
++		intptr = &options->fips_mode;
++		goto parse_flag;
++
+ 	case sDeprecated:
+ 	case sIgnore:
+ 	case sUnsupported:
+@@ -2277,6 +2286,7 @@ dump_config(ServerOptions *o)
+ 	dump_cfg_fmtint(sStreamLocalBindUnlink, o->fwd_opts.streamlocal_bind_unlink);
+ 	dump_cfg_fmtint(sUsePrivilegeSeparation, use_privsep);
+ 	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
++	dump_cfg_fmtint(sFipsMode, o->fips_mode);
+ 
+ 	/* string arguments */
+ 	dump_cfg_string(sPidFile, o->pid_file);
+diff -rup openssh-7.4p1/servconf.h openssh-7.4p1-fips-enable/servconf.h
+--- openssh-7.4p1/servconf.h	2016-12-18 20:59:41.000000000 -0800
++++ openssh-7.4p1-fips-enable/servconf.h	2017-02-09 16:04:11.872761901 -0800
+@@ -189,6 +189,7 @@ typedef struct {
+ 	char   *auth_methods[MAX_AUTH_METHODS];
+ 
+ 	int	fingerprint_hash;
++	int fips_mode;
+ }       ServerOptions;
+ 
+ /* Information about the incoming connection as used by Match */
+diff -rup openssh-7.4p1/sshd.c openssh-7.4p1-fips-enable/sshd.c
+--- openssh-7.4p1/sshd.c	2016-12-18 20:59:41.000000000 -0800
++++ openssh-7.4p1-fips-enable/sshd.c	2017-02-09 17:49:18.804619427 -0800
+@@ -1600,6 +1600,11 @@ main(int ac, char **av)
+ 		fatal("AuthorizedPrincipalsCommand set without "
+ 		    "AuthorizedPrincipalsCommandUser");
+ 
++	/* Call FIPS_mode_set depending on whether fips mode is set or not */
++	if (options.fips_mode)
++		if (!FIPS_mode_set(1)) 
++			fatal("FIPS mode could not be set");
++
+ 	/*
+ 	 * Check whether there is any path through configured auth methods.
+ 	 * Unfortunately it is not possible to verify this generally before
+diff -rup openssh-7.4p1/sshd_config openssh-7.4p1-fips-enable/sshd_config
+--- openssh-7.4p1/sshd_config	2016-12-18 20:59:41.000000000 -0800
++++ openssh-7.4p1-fips-enable/sshd_config	2017-02-09 17:38:09.624634543 -0800
+@@ -105,6 +105,8 @@ AuthorizedKeysFile	.ssh/authorized_keys
+ #ChrootDirectory none
+ #VersionAddendum none
+ 
++#FipsMode no
++
+ # no default banner path
+ #Banner none
+ 
+diff -rup openssh-7.4p1/sshd_config.0 openssh-7.4p1-fips-enable/sshd_config.0
+--- openssh-7.4p1/sshd_config.0	2016-12-18 21:21:22.000000000 -0800
++++ openssh-7.4p1-fips-enable/sshd_config.0	2017-02-09 17:38:05.524634636 -0800
+@@ -331,6 +331,10 @@ DESCRIPTION
+              Specifies the hash algorithm used when logging key fingerprints.
+              Valid options are: md5 and sha256.  The default is sha256.
+ 
++     FipsMode
++             Enables or disables FIPS mode. Requires FIPS capable ssl modules.
++             The default is no.
++
+      ForceCommand
+              Forces the execution of the command specified by ForceCommand,
+              ignoring any command supplied by the client and ~/.ssh/rc if
+diff -rup openssh-7.4p1/sshd_config.5 openssh-7.4p1-fips-enable/sshd_config.5
+--- openssh-7.4p1/sshd_config.5	2016-12-18 20:59:41.000000000 -0800
++++ openssh-7.4p1-fips-enable/sshd_config.5	2017-02-09 17:37:12.200635841 -0800
+@@ -578,6 +578,10 @@ and
+ .Cm sha256 .
+ The default is
+ .Cm sha256 .
++.It Cm FipsMode
++Enables or disables FIPS mode. Requires FIPS capable ssl modules.
++The default is 
++.Cm no .
+ .It Cm ForceCommand
+ Forces the execution of the command specified by
+ .Cm ForceCommand ,
