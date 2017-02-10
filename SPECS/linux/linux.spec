@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.2
+Version:        4.9.9
 Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b1502af3a2cb2956ee5315450acc05bc9149ee0a
+%define sha1 linux=c98e55be055619a9513e32e2a5dccb950ff15ca1
 Source1:	config-%{version}
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
@@ -243,6 +243,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
+-   Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
+    CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
+-   .config: added CRYPTO_FIPS support.
 *   Tue Jan 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.2-1
 -   Update to linux-4.9.2 to fix CVE-2016-10088
 -   Move linux-tools.spec to linux.spec as -tools subpackage
