@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.2.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD and GPLv2+
 URL:            https://www.kernel.org/pub/linux/libs/pam/
 Group:          System Environment/Security
@@ -39,9 +39,9 @@ for developing applications that use Linux-PAM.
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
-        --sysconfdir=/etc   \
-        --enable-securedir=/usr/lib/security \
-        --docdir=%{_docdir}/%{name}-%{version}
+    --sysconfdir=/etc   \
+    --enable-securedir=/usr/lib/security \
+    --docdir=%{_docdir}/%{name}-%{version}
 
 make %{?_smp_mflags}
 %install
@@ -49,6 +49,10 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 chmod -v 4755 %{buildroot}/sbin/unix_chkpwd
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
+ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_auth.so
+ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_acct.so
+ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_passwd.so
+ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_session.so
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 find %{buildroot}/usr/lib/ -name '*.la' -delete
 %{find_lang} Linux-PAM
@@ -88,6 +92,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-5
+-   Added pam_unix_auth.so, pam_unix_acct.so, pam_unix_passwd.so,
+-   and pam_unix_session.so.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-4
 -   Added devel subpackage.
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
