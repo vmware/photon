@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.2
+Version:        4.9.9
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b1502af3a2cb2956ee5315450acc05bc9149ee0a
+%define sha1 linux=c98e55be055619a9513e32e2a5dccb950ff15ca1
 Source1:        config-secure-%{version}
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
@@ -26,9 +26,9 @@ Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch11:        net-9p-vsock.patch
 Patch12:        x86-vmware-sta.patch
 # secure
-Patch13:        vmware_io_delay.patch
-Patch14:        0001-NOWRITEEXEC-and-PAX-features-EMUTRAMP-MPROTECT.patch
-Patch15:        0002-Added-rap_plugin.-Func-signature-fixing-is-still-req.patch
+Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
+Patch14:        0002-Added-rap_plugin.patch
+Patch15:        0003-Added-PAX_RANDKSTACK.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -170,6 +170,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
+-   Update to linux-4.9.9 to fix CVE-2016-10153 and CVE-2017-5548.
+-   Added PAX_RANDKSTACK feature.
+-   Extra func signatures cleanup to fix 1809717 and 1809722.
+-   .config: added CRYPTO_FIPS support.
 *   Tue Jan 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.2-1
 -   Update to linux-4.9.2 to fix CVE-2016-10088
 -   Rename package to linux-secure.
