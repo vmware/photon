@@ -192,6 +192,11 @@
         "c-ares",
         "dnsmasq",
         "ddclient",
-        "netmgmt"
+        "netmgmt",
+        "gperftools",
+        "libunwind",
+        "libvirt",
+        "python-mako",
+        "python-netaddr"
     ]
 }
