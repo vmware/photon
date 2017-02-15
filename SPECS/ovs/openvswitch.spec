@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -65,7 +65,8 @@ It contains the documentation and manpages for openvswitch.
         --libdir=%{_libdir} \
         --sysconfdir=/etc \
         --localstatedir=/var \
-        --enable-ssl
+        --enable-ssl \
+        --enable-shared
 
 make %{_smp_mflags}
 
@@ -121,7 +122,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_includedir}/ovn/*.h
 %{_includedir}/openflow/*.h
 %{_includedir}/openvswitch/*.h
-%{_libdir}/*.a
+%{_libdir}/lib*
 %{_libdir}/pkgconfig/*.pc
 
 %files doc
@@ -136,6 +137,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/man/man8/vtep-ctl.8.gz
 
 %changelog
+*	Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
+-	Build ovs shared library
 *	Wed Nov 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-1
 -	Update to openvswitch 2.6.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
