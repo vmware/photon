@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/releases/download/v%{version}
 Source0:        https://dl.k8s.io/v1.5.2/kubernetes-server-linux-amd64-v%{version}.tar.gz
@@ -29,7 +29,7 @@ install -vdm644 %{buildroot}/etc/profile.d
 
 install -m 755 -d %{buildroot}%{_bindir}
 
-binaries=(kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubelet kubectl hyperkube)
+binaries=(kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubelet kubectl hyperkube kubeadm kube-discovery kube-dns kubefed)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} server/bin/${bin}
@@ -72,7 +72,7 @@ fi
 if [ $1 -eq 0 ]; then
     # Package deletion
     userdel kube
-    groupdel kube 
+    groupdel kube
 fi
 
 %files
@@ -95,6 +95,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Mon Feb 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.5.2-3
+-   Added kubeadm, kubefed, dns, discovery to package.
 *   Fri Jan 27 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
 -   Added /lib/tmpfiles.d/kubernetes.conf.
 *   Thu Jan 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-1
