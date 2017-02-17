@@ -19,6 +19,8 @@ BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-cryptography
+Requires:       python-enum
+Requires:       python-ipaddress
 
 BuildArch:      noarch
 
@@ -61,5 +63,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Feb 21 2017 Xiaolin Li <xiaolinl@vmware.com> 16.2.0-2
+-   Add Requires for python-enum and python-ipaddress
 *   Tue Feb 14 2017 Xiaolin Li <xiaolinl@vmware.com> 16.2.0-1
 -   Initial packaging for Photon
