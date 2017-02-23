@@ -1,0 +1,57 @@
+diff -Naur gcc-5.3.0.orig/gcc/c/c-typeck.c gcc-5.3.0/gcc/c/c-typeck.c
+--- gcc-5.3.0.orig/gcc/c/c-typeck.c	2015-10-05 05:35:20.000000000 -0700
++++ gcc-5.3.0/gcc/c/c-typeck.c	2017-02-22 01:11:51.672617711 -0800
+@@ -69,6 +69,8 @@
+ #include "cilk.h"
+ #include "wide-int.h"
+ #include "gomp-constants.h"
++#include "plugin-api.h"
++#include "plugin.h"
+ 
+ /* Possible cases of implicit bad conversions.  Used to select
+    diagnostic messages in convert_for_assignment.  */
+@@ -5029,6 +5031,12 @@
+ 	return error_mark_node;
+     }
+ 
++  {
++    tree cast_info[] {type, TREE_TYPE(value)};
++    invoke_plugin_callbacks (PLUGIN_TYPE_CAST, cast_info);
++  }
++   
++
+   if (type == TYPE_MAIN_VARIANT (TREE_TYPE (value)))
+     {
+       if (TREE_CODE (type) == RECORD_TYPE
+diff -Naur gcc-5.3.0.orig/gcc/plugin.c gcc-5.3.0/gcc/plugin.c
+--- gcc-5.3.0.orig/gcc/plugin.c	2015-01-30 08:15:00.000000000 -0800
++++ gcc-5.3.0/gcc/plugin.c	2017-02-22 01:04:55.642416671 -0800
+@@ -462,6 +462,7 @@
+       case PLUGIN_EARLY_GIMPLE_PASSES_END:
+       case PLUGIN_NEW_PASS:
+       case PLUGIN_INCLUDE_FILE:
++      case PLUGIN_TYPE_CAST:
+         {
+           struct callback_info *new_callback;
+           if (!callback)
+@@ -540,6 +541,7 @@
+       case PLUGIN_EARLY_GIMPLE_PASSES_END:
+       case PLUGIN_NEW_PASS:
+       case PLUGIN_INCLUDE_FILE:
++      case PLUGIN_TYPE_CAST:
+         {
+           /* Iterate over every callback registered with this event and
+              call it.  */
+diff -Naur gcc-5.3.0.orig/gcc/plugin.def gcc-5.3.0/gcc/plugin.def
+--- gcc-5.3.0.orig/gcc/plugin.def	2015-01-05 04:33:28.000000000 -0800
++++ gcc-5.3.0/gcc/plugin.def	2017-02-22 00:35:02.986905569 -0800
+@@ -94,6 +94,9 @@
+    as a const char* pointer.  */
+ DEFEVENT (PLUGIN_INCLUDE_FILE)
+ 
++/* Called when expression is casted to some type.  */
++DEFEVENT (PLUGIN_TYPE_CAST)
++
+ /* When adding a new hard-coded plugin event, don't forget to edit in
+    file plugin.c the functions register_callback and
+    invoke_plugin_callbacks_full accordingly!  */

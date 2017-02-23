@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	5.3.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -10,6 +10,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
 %define sha1 gcc=0612270b103941da08376df4d0ef4e5662a2e9eb
+Patch0:		PLUGIN_TYPE_CAST.patch
 Requires:	libstdc++-devel = %{version}-%{release}
 Requires:	libgcc-devel = %{version}-%{release}
 Requires:	libgomp-devel = %{version}-%{release}
@@ -71,6 +72,7 @@ This package contains development headers and static library for libgomp
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 
@@ -91,7 +93,6 @@ SED=sed \
 	--enable-plugin \
 	--with-system-zlib
 #	--disable-silent-rules
-#sed -i '/-D_FORTIFY_SOURCE=2 for preprocessor/,+2d' `dirname $(gcc --print-libgcc-file-name)`/../specs
 make
 %install
 pushd ../gcc-build
@@ -214,6 +215,8 @@ make %{?_smp_mflags} check
 %endif
 
 %changelog
+*   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-5
+-   Added new plugin entry point: PLUGIN_TYPE_CAST (.patch)
 *   Thu Sep  8 2016 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-4
 -   Enable plugins and linker build id.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.0-3
