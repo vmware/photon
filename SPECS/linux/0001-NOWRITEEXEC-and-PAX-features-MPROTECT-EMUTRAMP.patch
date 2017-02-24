@@ -1,21 +1,21 @@
-From 709f57eae846f791c96815a0180e60d0f3d5472a Mon Sep 17 00:00:00 2001
+From e048baf67b5531a291ce6616d040a57cc339d62e Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 3 Feb 2017 07:10:18 -0800
 Subject: [PATCH 1/3] NOWRITEEXEC and PAX features: MPROTECT, EMUTRAMP
 
 ---
- arch/x86/mm/fault.c      | 218 +++++++++++++++++++++++++++++++++++
- fs/binfmt_elf.c          |  70 +++++++++++
- fs/exec.c                |   5 +
+ arch/x86/mm/fault.c      | 218 +++++++++++++++++++++++++++++++++++++++++++++++
+ fs/binfmt_elf.c          |  70 +++++++++++++++
+ fs/exec.c                |   5 ++
  include/linux/binfmts.h  |   3 +
  include/linux/elf.h      |   2 +
  include/linux/mm_types.h |   3 +
  include/linux/sched.h    |   2 +
  include/uapi/linux/elf.h |   3 +
  ipc/shm.c                |   3 +
- mm/mmap.c                |  25 ++++
- mm/mprotect.c            |  12 ++
- security/Kconfig         |  78 +++++++++++++
+ mm/mmap.c                |  25 ++++++
+ mm/mprotect.c            |  12 +++
+ security/Kconfig         |  78 +++++++++++++++++
  12 files changed, 424 insertions(+)
 
 diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
@@ -310,7 +310,7 @@ index 2472af2..c7b750d 100644
  	if (elf_read_implies_exec(loc->elf_ex, executable_stack))
  		current->personality |= READ_IMPLIES_EXEC;
  
-@@ -2320,6 +2340,56 @@ out:
+@@ -2320,6 +2340,56 @@ static int elf_core_dump(struct coredump_params *cprm)
  
  #endif		/* CONFIG_ELF_CORE */
  
@@ -545,7 +545,7 @@ index 1193652..88aa56a 100644
  #include <asm/uaccess.h>
  #include <asm/pgtable.h>
  #include <asm/cacheflush.h>
-@@ -329,6 +333,10 @@ success:
+@@ -329,6 +333,10 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
  	 * held in write mode.
  	 */
  	vma->vm_flags = newflags;
