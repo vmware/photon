@@ -1,14 +1,14 @@
 Summary:	contains libraries for reading and writing PNG files.
 Name:		libpng
-Version:	1.6.23
-Release:	2%{?dist}
+Version:	1.6.27
+Release:	1%{?dist}
 License:	libpng
 URL:		http://www.libpng.org/
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/libpng/%{name}-%{version}.tar.xz
-%define sha1 libpng=4857fb8dbd5ca7ddacc40c183e340b9ffa34a097
+%define sha1 libpng=af5d742f5d0a6492133aed7790bb43e8854cca64
 Provides:	pkgconfig(libpng)
 Provides:	pkgconfig(libpng16)
 %description
@@ -54,6 +54,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Thu Feb 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.6.27-1
+-       Updated to version 1.6.27
 *       Mon Sep 12 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.23-2
 -       Included the libpng16 pkgconfig 
 *       Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.23-1
