@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.9
+Version:        4.9.13
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c98e55be055619a9513e32e2a5dccb950ff15ca1
+%define sha1 linux=236f993bf556ad6d839160ec0d0ea31ff4d34034
 Source1:        config-secure-%{version}
 Source2:        aufs4.9.tar.gz
 # common
@@ -201,6 +201,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-1
+-   Update to linux-4.9.13 to fix CVE-2017-5986 and CVE-2017-6074
+-   .config: disable XEN guest (needs rap_plugin verification)
+*   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-2
+-   rap_plugin improvement: throw error on function type casting
+    function signatures were cleaned up using this feature.
+-   Added RAP_ENTRY for asm functions. 
 *   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
 -   Update to linux-4.9.9 to fix CVE-2016-10153, CVE-2017-5546,
     CVE-2017-5547, CVE-2017-5548 and CVE-2017-5576.
