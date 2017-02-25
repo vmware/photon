@@ -497,16 +497,16 @@ well as the RESTful interface. These have to do with querying the daemons for
 command-description information, validating user command input against those
 descriptions, and submitting the command to the appropriate daemon.
 
-%if 0%{with ceph_test_package}
-%package -n ceph-test
-Summary:	Ceph benchmarks and test tools
-Group:		System Environment/Libraries
-License:	LGPL-2.0
-Requires:	ceph-common
+#%if 0%{with ceph_test_package}
+#%package -n ceph-test
+#Summary:	Ceph benchmarks and test tools
+#Group:		System Environment/Libraries
+#License:	LGPL-2.0
+#Requires:	ceph-common
 #Requires:	xmlstarlet
-%description -n ceph-test
-This package contains Ceph benchmarks and test tools.
-%endif
+#%description -n ceph-test
+#This package contains Ceph benchmarks and test tools.
+#%endif
 
 
 %package -n python-ceph-compat
@@ -558,7 +558,7 @@ cmake .. \
     -DWITH_PYTHON3=ON \
     -DWITH_SYSTEMD=ON \
     -DWITH_XIO=OFF \
-    -DWITH_TESTS=ON \
+    -DWITH_TESTS=OFF \
     -DWITH_LTTNG=OFF \
     -DHAVE_BABELTRACE=OFF \
     $CEPH_EXTRA_CMAKE_ARGS \
@@ -1148,43 +1148,43 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{_libdir}/python3.5/site-packages/ceph_argparse.py
 %{_libdir}/python3.5/site-packages/ceph_daemon.py
 
-%if 0%{with ceph_test_package}
-%files -n ceph-test
-%defattr(-,root,root,-)
-%{_bindir}/ceph-client-debug
-%{_bindir}/ceph_bench_log
-%{_bindir}/ceph_kvstorebench
-%{_bindir}/ceph_multi_stress_watch
-%{_bindir}/ceph_erasure_code
-%{_bindir}/ceph_erasure_code_benchmark
-%{_bindir}/ceph_omapbench
-%{_bindir}/ceph_objectstore_bench
-%{_bindir}/ceph_perf_objectstore
-%{_bindir}/ceph_perf_local
-%{_bindir}/ceph_perf_msgr_client
-%{_bindir}/ceph_perf_msgr_server
-%{_bindir}/ceph_psim
-%{_bindir}/ceph_radosacl
-%{_bindir}/ceph_rgw_jsonparser
-%{_bindir}/ceph_rgw_multiparser
-%{_bindir}/ceph_scratchtool
-%{_bindir}/ceph_scratchtoolpp
-%{_bindir}/ceph_smalliobench
-%{_bindir}/ceph_smalliobenchdumb
-%{_bindir}/ceph_smalliobenchfs
-%{_bindir}/ceph_smalliobenchrbd
-%{_bindir}/ceph_test_*
-%{_bindir}/ceph_tpbench
-%{_bindir}/ceph_xattr_bench
-%{_bindir}/ceph-coverage
-%{_bindir}/ceph-monstore-tool
-%{_bindir}/ceph-osdomap-tool
-%{_bindir}/ceph-kvstore-tool
-%{_bindir}/ceph-debugpack
+#%if 0%{with ceph_test_package}
+#%files -n ceph-test
+#%defattr(-,root,root,-)
+#%{_bindir}/ceph-client-debug
+#%{_bindir}/ceph_bench_log
+#%{_bindir}/ceph_kvstorebench
+#%{_bindir}/ceph_multi_stress_watch
+#%{_bindir}/ceph_erasure_code
+#%{_bindir}/ceph_erasure_code_benchmark
+#%{_bindir}/ceph_omapbench
+#%{_bindir}/ceph_objectstore_bench
+#%{_bindir}/ceph_perf_objectstore
+#%{_bindir}/ceph_perf_local
+#%{_bindir}/ceph_perf_msgr_client
+#%{_bindir}/ceph_perf_msgr_server
+#%{_bindir}/ceph_psim
+#%{_bindir}/ceph_radosacl
+#%{_bindir}/ceph_rgw_jsonparser
+#%{_bindir}/ceph_rgw_multiparser
+#%{_bindir}/ceph_scratchtool
+#%{_bindir}/ceph_scratchtoolpp
+#%{_bindir}/ceph_smalliobench
+#%{_bindir}/ceph_smalliobenchdumb
+#%{_bindir}/ceph_smalliobenchfs
+#%{_bindir}/ceph_smalliobenchrbd
+#%{_bindir}/ceph_test_*
+#%{_bindir}/ceph_tpbench
+#%{_bindir}/ceph_xattr_bench
+#%{_bindir}/ceph-coverage
+#%{_bindir}/ceph-monstore-tool
+#%{_bindir}/ceph-osdomap-tool
+#%{_bindir}/ceph-kvstore-tool
+#%{_bindir}/ceph-debugpack
 #%{_mandir}/man8/ceph-debugpack.8*
-%dir %{_libdir}/ceph
-%{_libdir}/ceph/ceph-monstore-update-crush.sh
-%endif
+#%dir %{_libdir}/ceph
+#%{_libdir}/ceph/ceph-monstore-update-crush.sh
+#%endif
 
 %files -n python-ceph-compat
 # We need an empty %%files list for python-ceph-compat, to tell rpmbuild to
@@ -1192,5 +1192,7 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 
 %changelog
+* Fri Feb 24 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-2
+- Turned off switch to build test package
 * Fri Jan 27 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-1
 - Initial build. First version based on ceph github repo with modifications for photon
