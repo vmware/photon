@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.41
-Release:    	2%{?dist}
+Version:    	4.4.51
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=de1f6c866f3e07d923e1b46a2617ef134df45c6b
+%define sha1 linux=1e162187379ac72e0b486ab65819ad1b6118372f
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -30,6 +30,8 @@ Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 Patch16:        net-9p-vsock.patch
+#fixes CVE-2017-6074
+Patch17:        dccp-fix-freeing-skb-too-early-for-IPV6_RECVPKTINFO.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -103,6 +105,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 
 %build
 make mrproper
@@ -223,6 +226,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Feb 23 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.51-1
+-   Update to linux-4.4.51 and apply a patch to fix
+    CVE-2017-5986 and CVE-2017-6074
 *   Wed Feb 1 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.41-2
 -   .config: added MODULES_SIG, CRYPTO_FIPS support.
 *   Mon Jan 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.41-1
