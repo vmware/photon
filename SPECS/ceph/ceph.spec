@@ -1,25 +1,10 @@
-#%bcond_with ocf
-#%bcond_without ceph_test_package
-#%bcond_with make_check
-#%bcond_with xio
-#%bcond_without tcmalloc
-
 %bcond_with lowmem_builder
-
-# LTTng-UST enabled on Fedora, RHEL 6+, and SLE (not openSUSE)
-#%if 0%{?fedora} || 0%{?rhel} >= 6 || 0%{?suse_version}
-#%if ! 0%{?is_opensuse}
-#%bcond_with lttng
-#%endif
-#%endif
-
 %{!?_udevrulesdir: %define _udevrulesdir /lib/udev/rules.d}
 %{!?tmpfiles_create: %define tmpfiles_create systemd-tmpfiles --create}
-#%{!?python3_pkgversion: %define python3_pkgversion 3}
+
 %define python3_pkgversion 3
 %define tmpfiles_create systemd-tmpfiles --create
 %define _udevrulesdir /lib/udev/rules.d
-# unify libexec for all targets
 %define _libexecdir %{_exec_prefix}/lib
 %define _unitdir /usr/lib/systemd/system
 
@@ -28,7 +13,7 @@
 #################################################################################
 Name:		ceph
 Version:	11.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -48,12 +33,8 @@ Requires:       ceph-mon = %{epoch}:%{version}-%{release}
 Requires(post):	binutils
 BuildRequires:	boost-devel
 BuildRequires:  cmake
-#BuildRequires:	cryptsetup
 BuildRequires:	fuse-devel
 BuildRequires:	gdbm
-#%if 0%{with tcmalloc}
-#BuildRequires:	gperftools-devel
-#%endif
 BuildRequires:	leveldb-devel > 1.2
 BuildRequires:	libaio-devel
 BuildRequires:	libatomic_ops-devel
@@ -71,17 +52,13 @@ BuildRequires:	python2-devel
 BuildRequires:	python-xml
 BuildRequires:	python3
 BuildRequires:	python3-devel
-#For testing
-#BuildRequires:	python-nose
 BuildRequires:	python-requests
 BuildRequires:	python-sphinx
-#BuildRequires:	python-virtualenv
 BuildRequires:	snappy-devel
 BuildRequires:	util-linux
 BuildRequires:	valgrind
 BuildRequires:	xfsprogs
 BuildRequires:	xfsprogs-devel
-#BuildRequires:	xmlstarlet
 BuildRequires:	nasm
 
 #################################################################################
@@ -98,31 +75,7 @@ BuildRequires:	cython
 BuildRequires:	cython3
 BuildRequires:	python-setuptools
 BuildRequires:	fcgi-devel
-# lttng and babeltrace for rbd-replay-prep
-#%if %{with lttng}
-#%if 0%{?fedora} || 0%{?rhel}
-#BuildRequires:	lttng-ust-devel
-#BuildRequires:	libbabeltrace-devel
-#%endif
-#%if 0%{?suse_version}
-#BuildRequires:	lttng-ust-devel
-#BuildRequires:  babeltrace-devel
-#%endif
-#%endif
-# expat and fastcgi for RGW
-%if 0%{?suse_version}
-#BuildRequires:	libexpat-devel
-#BuildRequires:	FastCGI-devel
-%endif
-#%if 0%{?rhel} || 0%{?fedora}
-#BuildRequires:	expat-devel
-#BuildRequires:	fcgi-devel
-#%endif
 
-# Accelio IB/RDMA
-%if 0%{with xio}
-#BuildRequires:  libxio-devel
-%endif
 
 %description
 Ceph is a massively scalable, open-source, distributed storage system that runs
@@ -148,13 +101,8 @@ Requires:      grep
 Requires:      xfsprogs
 Requires:      logrotate
 Requires:      util-linux
-#to encrypt hard disk
-#Requires:      cryptsetup
 Requires:      findutils
 Requires:      which
-#%if 0%{with xio}
-#Requires:      libxio
-#%endif
 %description base
 Base is the package that includes all the files shared amongst ceph servers
 
@@ -170,9 +118,6 @@ Requires:	python-cephfs = %{epoch}:%{version}-%{release}
 Requires:	python-rgw = %{epoch}:%{version}-%{release}
 Requires:	python-requests
 %{?systemd_requires}
-#%if 0%{with xio}
-#Requires:       libxio
-#%endif
 %description -n ceph-common
 Common utilities to mount and interact with a ceph storage cluster.
 Comprised of files that are common to Ceph clients and servers.
@@ -190,13 +135,6 @@ namespace, coordinating access to the shared OSD cluster.
 Summary:	Ceph Monitor Daemon
 Group:		System Environment/Base
 Requires:	ceph-base = %{epoch}:%{version}-%{release}
-# For ceph-rest-api
-#%if 0%{?fedora} || 0%{?rhel}
-#Requires:      python-flask
-#%endif
-#%if 0%{?suse_version}
-#Requires:      python-Flask
-#%endif
 %description mon
 ceph-mon is the cluster monitor daemon for the Ceph distributed file
 system. One or more instances of ceph-mon form a Paxos part-time
@@ -252,27 +190,11 @@ Group:		Development/Libraries
 Requires:	ceph-common = %{epoch}:%{version}-%{release}
 Requires:	librados2 = %{epoch}:%{version}-%{release}
 Requires:	librgw2 = %{epoch}:%{version}-%{release}
-#%if 0%{?rhel} || 0%{?fedora}
-#Requires:	mailcap
-#%endif
 %description radosgw
 RADOS is a distributed object store used by the Ceph distributed
 storage system.  This package provides a REST gateway to the
 object store that aims to implement a superset of Amazon's S3
 service as well as the OpenStack Object Storage ("Swift") API.
-
-#%if %{with ocf}
-#%package resource-agents
-#Summary:	OCF-compliant resource agents for Ceph daemons
-#Group:		System Environment/Base
-#License:	LGPL-2.0
-#Requires:	ceph-base = %{epoch}:%{version}
-#Requires:	resource-agents
-#%description resource-agents
-#Resource agents for monitoring and managing Ceph daemons
-#under Open Cluster Framework (OCF) compliant resource
-#managers such as Pacemaker.
-#%endif
 
 %package osd
 Summary:	Ceph Object Storage Daemon
@@ -497,18 +419,6 @@ well as the RESTful interface. These have to do with querying the daemons for
 command-description information, validating user command input against those
 descriptions, and submitting the command to the appropriate daemon.
 
-%if 0%{with ceph_test_package}
-%package -n ceph-test
-Summary:	Ceph benchmarks and test tools
-Group:		System Environment/Libraries
-License:	LGPL-2.0
-Requires:	ceph-common
-#Requires:	xmlstarlet
-%description -n ceph-test
-This package contains Ceph benchmarks and test tools.
-%endif
-
-
 %package -n python-ceph-compat
 Summary:	Compatibility package for Cephs python libraries
 Group:		System Environment/Libraries
@@ -558,40 +468,13 @@ cmake .. \
     -DWITH_PYTHON3=ON \
     -DWITH_SYSTEMD=ON \
     -DWITH_XIO=OFF \
-    -DWITH_TESTS=ON \
+    -DWITH_TESTS=OFF \
     -DWITH_LTTNG=OFF \
     -DHAVE_BABELTRACE=OFF \
     $CEPH_EXTRA_CMAKE_ARGS \
     -DWITH_OCF=OFF
-#%if 0%{with xio}
-#    -DWITH_XIO=ON \
-#%endif
-#%if 0%{without ceph_test_package}
-#    -DWITH_TESTS=OFF \
-#%endif
-#%if %{with lttng}
-#    -DWITH_LTTNG=ON \
-#    -DHAVE_BABELTRACE=ON \
-#%else
-#    -DWITH_LTTNG=OFF \
-#    -DHAVE_BABELTRACE=OFF \
-#%endif
-#    $CEPH_EXTRA_CMAKE_ARGS \
-#%if 0%{with ocf}
-#    -DWITH_OCF=ON
-#%endif
 
 make %{?_smp_mflags}
-
-%if 0%{with make_check}
-%check
-# run in-tree unittests
-#cd build
-#ctest %{?_smp_mflags}
-
-%endif
-
-
 
 %install
 pushd build
@@ -605,6 +488,8 @@ install -m 0644 -D systemd/ceph.tmpfiles.d %{buildroot}%{_tmpfilesdir}/ceph-comm
 install -m 0755 -D systemd/ceph %{buildroot}%{_sbindir}/rcceph
 install -m 0644 -D systemd/50-ceph.preset %{buildroot}%{_libexecdir}/systemd/system-preset/50-ceph.preset
 mkdir -p %{buildroot}%{_sbindir}
+sed -i 's/\/bin/\/usr\/bin/g' %{buildroot}%{_bindir}/ceph
+sed -i 's/\/bin/\/usr\/bin/g' %{buildroot}%{_sbindir}/ceph-disk
 install -m 0644 -D src/logrotate.conf %{buildroot}%{_sysconfdir}/logrotate.d/ceph
 chmod 0644 %{buildroot}%{_docdir}/ceph/sample.ceph.conf
 chmod 0644 %{buildroot}%{_docdir}/ceph/sample.fetch_config
@@ -664,19 +549,10 @@ rm -rf %{buildroot}
 %endif
 %config %{_sysconfdir}/bash_completion.d/ceph
 %config(noreplace) %{_sysconfdir}/logrotate.d/ceph
-#%if 0%{?fedora} || 0%{?rhel}
 %config(noreplace) %{_sysconfdir}/sysconfig/ceph
-#%endif
 %{_unitdir}/ceph.target
 %{python_sitelib}/ceph_detect_init*
 %{python_sitelib}/ceph_disk*
-#%{_mandir}/man8/ceph-deploy.8*
-#%{_mandir}/man8/ceph-detect-init.8*
-#%{_mandir}/man8/ceph-create-keys.8*
-#%{_mandir}/man8/ceph-run.8*
-#%{_mandir}/man8/crushtool.8*
-#%{_mandir}/man8/osdmaptool.8*
-#%{_mandir}/man8/monmaptool.8*
 #set up placeholder directories
 %attr(750,ceph,ceph) %dir %{_localstatedir}/run/ceph
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/tmp
@@ -720,20 +596,6 @@ rm -rf %{buildroot}
 %{_bindir}/ceph-post-file
 %{_bindir}/ceph-brag
 %{_tmpfilesdir}/ceph-common.conf
-#%{_mandir}/man8/ceph-authtool.8*
-#%{_mandir}/man8/ceph-conf.8*
-#%{_mandir}/man8/ceph-dencoder.8*
-#%{_mandir}/man8/ceph-rbdnamer.8*
-#%{_mandir}/man8/ceph-syn.8*
-#%{_mandir}/man8/ceph-post-file.8*
-#%{_mandir}/man8/ceph.8*
-#%{_mandir}/man8/mount.ceph.8*
-#%{_mandir}/man8/rados.8*
-#%{_mandir}/man8/rbd.8*
-#%{_mandir}/man8/rbdmap.8*
-#%{_mandir}/man8/rbd-replay.8*
-#%{_mandir}/man8/rbd-replay-many.8*
-#%{_mandir}/man8/rbd-replay-prep.8*
 %dir %{_datadir}/ceph/
 %{_datadir}/ceph/known_hosts_drop.ceph.com
 %{_datadir}/ceph/id_rsa_drop.ceph.com
@@ -828,8 +690,6 @@ fi
 %files mon
 %{_bindir}/ceph-mon
 %{_bindir}/ceph-rest-api
-#%{_mandir}/man8/ceph-mon.8*
-#%{_mandir}/man8/ceph-rest-api.8*
 %{python_sitelib}/ceph_rest_api.py*
 %{_unitdir}/ceph-mon@.service
 %{_unitdir}/ceph-mon.target
@@ -860,7 +720,6 @@ fi
 %files fuse
 %defattr(-,root,root,-)
 %{_bindir}/ceph-fuse
-#%{_mandir}/man8/ceph-fuse.8*
 %{_sbindir}/mount.fuse.ceph
 %{_unitdir}/ceph-fuse@.service
 %{_unitdir}/ceph-fuse.target
@@ -868,12 +727,10 @@ fi
 %files -n rbd-fuse
 %defattr(-,root,root,-)
 %{_bindir}/rbd-fuse
-#%{_mandir}/man8/rbd-fuse.8*
 
 %files -n rbd-mirror
 %defattr(-,root,root,-)
 %{_bindir}/rbd-mirror
-#%{_mandir}/man8/rbd-mirror.8*
 %{_unitdir}/ceph-rbd-mirror@.service
 %{_unitdir}/ceph-rbd-mirror.target
 
@@ -902,7 +759,6 @@ fi
 %files -n rbd-nbd
 %defattr(-,root,root,-)
 %{_bindir}/rbd-nbd
-#%{_mandir}/man8/rbd-nbd.8*
 
 %files radosgw
 %defattr(-,root,root,-)
@@ -910,8 +766,6 @@ fi
 %{_bindir}/radosgw-admin
 %{_bindir}/radosgw-token
 %{_bindir}/radosgw-object-expirer
-#%{_mandir}/man8/radosgw.8*
-#%{_mandir}/man8/radosgw-admin.8*
 %config %{_sysconfdir}/bash_completion.d/radosgw-admin
 %dir %{_localstatedir}/lib/ceph/radosgw
 %{_unitdir}/ceph-radosgw@.service
@@ -950,9 +804,6 @@ fi
 %dir %{_udevrulesdir}
 %{_udevrulesdir}/60-ceph-by-parttypeuuid.rules
 %{_udevrulesdir}/95-ceph-osd.rules
-#%{_mandir}/man8/ceph-clsinfo.8*
-#%{_mandir}/man8/ceph-disk.8*
-#%{_mandir}/man8/ceph-osd.8*
 %{_unitdir}/ceph-osd@.service
 %{_unitdir}/ceph-osd.target
 %{_unitdir}/ceph-disk@.service
@@ -979,17 +830,6 @@ if [ $FIRST_ARG -ge 1 ] ; then
     /usr/bin/systemctl try-restart ceph-disk@\*.service ceph-osd@\*.service > /dev/null 2>&1 || :
   fi
 fi
-
-#%if %{with ocf}
-
-#%files resource-agents
-#%defattr(0755,root,root,-)
-#%dir %{_prefix}/lib/ocf
-#%dir %{_prefix}/lib/ocf/resource.d
-#%dir %{_prefix}/lib/ocf/resource.d/ceph
-#%{_prefix}/lib/ocf/resource.d/ceph/rbd
-
-#%endif
 
 %files -n librados2
 %defattr(-,root,root,-)
@@ -1022,7 +862,6 @@ fi
 %{_libdir}/librados_tp.so
 %endif
 %{_bindir}/librados-config
-#%{_mandir}/man8/librados-config.8*
 
 %files -n python-rados
 %defattr(-,root,root,-)
@@ -1148,43 +987,6 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{_libdir}/python3.5/site-packages/ceph_argparse.py
 %{_libdir}/python3.5/site-packages/ceph_daemon.py
 
-%if 0%{with ceph_test_package}
-%files -n ceph-test
-%defattr(-,root,root,-)
-%{_bindir}/ceph-client-debug
-%{_bindir}/ceph_bench_log
-%{_bindir}/ceph_kvstorebench
-%{_bindir}/ceph_multi_stress_watch
-%{_bindir}/ceph_erasure_code
-%{_bindir}/ceph_erasure_code_benchmark
-%{_bindir}/ceph_omapbench
-%{_bindir}/ceph_objectstore_bench
-%{_bindir}/ceph_perf_objectstore
-%{_bindir}/ceph_perf_local
-%{_bindir}/ceph_perf_msgr_client
-%{_bindir}/ceph_perf_msgr_server
-%{_bindir}/ceph_psim
-%{_bindir}/ceph_radosacl
-%{_bindir}/ceph_rgw_jsonparser
-%{_bindir}/ceph_rgw_multiparser
-%{_bindir}/ceph_scratchtool
-%{_bindir}/ceph_scratchtoolpp
-%{_bindir}/ceph_smalliobench
-%{_bindir}/ceph_smalliobenchdumb
-%{_bindir}/ceph_smalliobenchfs
-%{_bindir}/ceph_smalliobenchrbd
-%{_bindir}/ceph_test_*
-%{_bindir}/ceph_tpbench
-%{_bindir}/ceph_xattr_bench
-%{_bindir}/ceph-coverage
-%{_bindir}/ceph-monstore-tool
-%{_bindir}/ceph-osdomap-tool
-%{_bindir}/ceph-kvstore-tool
-%{_bindir}/ceph-debugpack
-#%{_mandir}/man8/ceph-debugpack.8*
-%dir %{_libdir}/ceph
-%{_libdir}/ceph/ceph-monstore-update-crush.sh
-%endif
 
 %files -n python-ceph-compat
 # We need an empty %%files list for python-ceph-compat, to tell rpmbuild to
@@ -1192,5 +994,7 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 
 %changelog
+* Fri Feb 24 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-2
+- Turned off switch to build test package
 * Fri Jan 27 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-1
 - Initial build. First version based on ceph github repo with modifications for photon
