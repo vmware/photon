@@ -1,32 +1,31 @@
-Summary:	A high-level scripting language
-Name:		python3
-Version:	3.5.1
-Release:	6%{?dist}
-License:	PSF
-URL:		http://www.python.org/
-Group:		System Environment/Programming
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1 Python=0186da436db76776196612b98bb9c2f76acfe90e
+Summary:        A high-level scripting language
+Name:           python3
+Version:        3.5.3
+Release:        1%{?dist}
+License:        PSF
+URL:            http://www.python.org/
+Group:          System Environment/Programming
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
+%define         sha1 Python=127121fdca11e735b3686e300d66f73aba663e93
 Patch0:         cgi3.patch
-Patch1:         python3-CVE-2016-5636.patch
-BuildRequires:	pkg-config >= 0.28
-BuildRequires:	bzip2-devel
-BuildRequires:	ncurses-devel
+BuildRequires:  pkg-config >= 0.28
+BuildRequires:  bzip2-devel
+BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  readline-devel
 BuildRequires:  xz-devel
-Requires:	bzip2
-Requires:	ncurses
-Requires:  	openssl
-Requires:	python3-libs = %{version}-%{release}
-Requires:  	readline
-Requires:  	xz
-Provides: 	python-sqlite
-Provides: 	python(abi)
-Provides: 	/usr/bin/python
-Provides: 	/bin/python
+Requires:       bzip2
+Requires:       ncurses
+Requires:       openssl
+Requires:       python3-libs = %{version}-%{release}
+Requires:       readline
+Requires:       xz
+Provides:       python-sqlite
+Provides:       python(abi)
+Provides:       /usr/bin/python
+Provides:       /bin/python
 
 %description
 The Python 3 package contains a new version of Python development environment.
@@ -35,17 +34,17 @@ strings support, easier and more intuitive syntax, and removes the deprecated
 code. It is incompatible with Python 2.x releases.
 
 %package libs
-Summary: The libraries for python runtime
-Group: Applications/System
-BuildRequires:	expat >= 2.1.0
-BuildRequires:	libffi >= 3.0.13
-BuildRequires:	ncurses-devel
-BuildRequires:	sqlite-autoconf
-Requires:	coreutils
-Requires:	expat >= 2.1.0
-Requires:	libffi >= 3.0.13
-Requires:	ncurses
-Requires:	sqlite-autoconf
+Summary:        The libraries for python runtime
+Group:          Applications/System
+BuildRequires:  expat >= 2.1.0
+BuildRequires:  libffi >= 3.0.13
+BuildRequires:  ncurses-devel
+BuildRequires:  sqlite-autoconf
+Requires:       coreutils
+Requires:       expat >= 2.1.0
+Requires:       libffi >= 3.0.13
+Requires:       ncurses
+Requires:       sqlite-autoconf
 
 
 %description libs
@@ -85,20 +84,19 @@ to build python programs.
 %prep
 %setup -q -n Python-%{version}
 %patch0 -p1
-%patch1 -p1
 
 %build
 export OPT="${CFLAGS}"
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--enable-shared \
-	--with-system-expat \
-	--with-system-ffi \
-	--with-dbmliborder=gdbm:ndbm
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --enable-shared \
+    --with-system-expat \
+    --with-system-ffi \
+    --with-dbmliborder=gdbm:ndbm
 make %{?_smp_mflags}
 
 %install
@@ -188,21 +186,23 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
-*   	Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-6
--   	Patch for CVE-2016-5636
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
--	GA - Bump release of all rpms
-*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4
--	Edit scriptlets.
-*   	Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
--   	update python to require python-libs
-*   	Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
--   	Providing python3 binaries instead of the minor versions.
-*   	Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
--   	Updated to version 3.5.1
-*	Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
--	Edit post script.
-*	Mon Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
--	Remove python.o file, and minor cleanups.
-*	Wed Jul 1 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3
--	Add Python3 package to Photon.
+*   Tue Feb 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-1
+-   Updated to version 3.5.3
+*   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-6
+-   Patch for CVE-2016-5636
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
+-   GA - Bump release of all rpms
+*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4
+-   Edit scriptlets.
+*   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
+-   update python to require python-libs
+*   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
+-   Providing python3 binaries instead of the minor versions.
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
+-   Updated to version 3.5.1
+*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
+-   Edit post script.
+*   Mon Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
+-   Remove python.o file, and minor cleanups.
+*   Wed Jul 1 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3
+-   Add Python3 package to Photon.
