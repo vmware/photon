@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.51
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -184,6 +184,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.51-2
+-   .config: enable 32-bit vDSO back
 *   Thu Feb 23 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.51-1
 -   Update to linux-4.4.51 and apply a patch to fix
     CVE-2017-5986 and CVE-2017-6074
