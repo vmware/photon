@@ -1,16 +1,15 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.5.1
-Release:        10%{?dist}
+Version:        3.5.3
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=0186da436db76776196612b98bb9c2f76acfe90e
+%define sha1    Python=127121fdca11e735b3686e300d66f73aba663e93
 Patch0:         cgi3.patch
-Patch1:         python3-CVE-2016-5636.patch
 Patch2:         python3-support-photon-platform.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -86,7 +85,6 @@ to build python programs.
 %prep
 %setup -q -n Python-%{version}
 %patch0 -p1
-%patch1 -p1
 %patch2 -p1
 
 %build
@@ -190,6 +188,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Tue Feb 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-1
+-   Updated to version 3.5.3.
 *   Fri Jan 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.5.1-10
 -   Added patch to support Photon OS
 *   Tue Dec 20 2016 Xiaolin Li <xiaolinl@vmware.com> 3.5.1-9
