@@ -3,7 +3,7 @@
 Summary:    Text editor
 Name:       vim
 Version:    7.4
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    Charityware
 URL:        http://www.vim.org
 Group:      Applications/Editors
@@ -13,6 +13,7 @@ Source0:    %{name}-%{version}.tar.bz2
 %define sha1 vim=601abf7cc2b5ab186f40d8790e542f86afca86b7
 Patch0:         vim-CVE-2016-1248.patch
 Patch1:         vim-7.4-CVE-2017-5953.patch
+Patch2:         vim-7.4-CVE-2017-6349_CVE-2017-6350.patch
 BuildRequires:  ncurses-devel
 Requires:   tcsh
 
@@ -148,6 +149,8 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
+*   Tue Feb 28 2017 Anish Swaminathan <anishs@vmware.com>  7.4-8
+-   Fix for CVE-2017-6349 and CVE-2017-6350
 *   Fri Feb 17 2017 Anish Swaminathan <anishs@vmware.com>  7.4-7
 -   Fix for CVE-2017-5953
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  7.4-6
