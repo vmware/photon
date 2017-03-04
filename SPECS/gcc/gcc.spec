@@ -1,28 +1,28 @@
 %define _use_internal_dependency_generator 0
-Summary:	Contains the GNU compiler collection
-Name:		gcc
-Version:	5.3.0
-Release:	5%{?dist}
-License:	GPLv2+
-URL:		http://gcc.gnu.org
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
+Summary:        Contains the GNU compiler collection
+Name:           gcc
+Version:        5.3.0
+Release:        6%{?dist}
+License:        GPLv2+
+URL:            http://gcc.gnu.org
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
 %define sha1 gcc=0612270b103941da08376df4d0ef4e5662a2e9eb
-Patch0:		PLUGIN_TYPE_CAST.patch
-Requires:	libstdc++-devel = %{version}-%{release}
-Requires:	libgcc-devel = %{version}-%{release}
-Requires:	libgomp-devel = %{version}-%{release}
-Requires:	libgcc-atomic = %{version}-%{release}
-Requires:	gmp
+Patch0:         PLUGIN_TYPE_CAST.patch
+Requires:       libstdc++-devel = %{version}-%{release}
+Requires:       libgcc-devel = %{version}-%{release}
+Requires:       libgomp-devel = %{version}-%{release}
+Requires:       libgcc-atomic = %{version}-%{release}
+Requires:       gmp
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
 
-%package -n	libgcc
-Summary:	GNU C Library
-Group:         	System Environment/Libraries
+%package -n     libgcc
+Summary:    GNU C Library
+Group:          System Environment/Libraries
 %description -n libgcc
 The libgcc package contains GCC shared libraries for gcc .
 
@@ -33,36 +33,36 @@ Requires:       libgcc = %{version}-%{release}
 %description -n libgcc-atomic
 The libgcc package contains GCC shared libraries for atomic counter updates.
 
-%package -n	libgcc-devel
-Summary:	GNU C Library
-Group:         	Development/Libraries
+%package -n     libgcc-devel
+Summary:        GNU C Library
+Group:          Development/Libraries
 Requires:       libgcc = %{version}-%{release}
 %description -n libgcc-devel
 The libgcc package contains GCC shared libraries for gcc .
 This package contains development headers and static library for libgcc.
 
-%package -n	libstdc++
-Summary:       	GNU C Library
-Group:         	System Environment/Libraries
-Requires:	libgcc = %{version}-%{release}
+%package -n     libstdc++
+Summary:        GNU C Library
+Group:          System Environment/Libraries
+Requires:       libgcc = %{version}-%{release}
 %description -n libstdc++
 This package contains the GCC Standard C++ Library v3, an ongoing project to implement the ISO/IEC 14882:1998 Standard C++ library.
 
-%package -n	libstdc++-devel
-Summary:       	GNU C Library
-Group:         	Development/Libraries
+%package -n     libstdc++-devel
+Summary:        GNU C Library
+Group:          Development/Libraries
 Requires:       libstdc++ = %{version}-%{release}
 %description -n libstdc++-devel
 This is the GNU implementation of the standard C++ libraries.
 This package includes the headers files and libraries needed for C++ development.
 
-%package -n	libgomp
-Summary:       	GNU C Library
-Group:         	System Environment/Libraries
+%package -n     libgomp
+Summary:        GNU C Library
+Group:          System Environment/Libraries
 %description -n libgomp
 An implementation of OpenMP for the C, C++, and Fortran 95 compilers in the GNU Compiler Collection.
 
-%package -n	libgomp-devel
+%package -n     libgomp-devel
 Summary:        Development headers and static library for libgomp
 Group:          Development/Libraries
 Requires:       libgomp = %{version}-%{release}
@@ -81,18 +81,18 @@ install -vdm 755 ../gcc-build
 cd ../gcc-build
 SED=sed \
 ../%{name}-%{version}/configure \
-	--prefix=%{_prefix} \
-	--enable-shared \
-	--enable-threads=posix \
-	--enable-__cxa_atexit \
-	--enable-clocale=gnu \
-	--enable-languages=c,c++ \
-	--disable-multilib \
-	--disable-bootstrap \
-	--enable-linker-build-id \
-	--enable-plugin \
-	--with-system-zlib
-#	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --enable-shared \
+    --enable-threads=posix \
+    --enable-__cxa_atexit \
+    --enable-clocale=gnu \
+    --enable-languages=c,c++,fortran\
+    --disable-multilib \
+    --disable-bootstrap \
+    --enable-linker-build-id \
+    --enable-plugin \
+    --with-system-zlib
+#   --disable-silent-rules
 make
 %install
 pushd ../gcc-build
@@ -102,9 +102,9 @@ ln -sv %{_bindir}/cpp %{buildroot}/%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
 install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 %ifarch x86_64
-	mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+    mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 %else
-	mv -v %{buildroot}%{_libdir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+    mv -v %{buildroot}%{_libdir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 %endif
 rm -rf %{buildroot}%{_infodir}
 popd
@@ -115,22 +115,22 @@ cd ../gcc-build
 ulimit -s 32768
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_lib}/cpp
-#	Executables
+#   Executables
 %{_bindir}/*
-#	Libraries
+#   Libraries
 %ifarch x86_64
 %{_lib64dir}/*
 %endif
 %{_libdir}/gcc/*
-#	Library executables
+#   Library executables
 %{_libexecdir}/gcc/*
-#	Man pages
+#   Man pages
 %{_mandir}/man1/*.gz
 %{_mandir}/man7/*.gz
 %{_datadir}/gdb/*
@@ -215,6 +215,8 @@ make %{?_smp_mflags} check
 %endif
 
 %changelog
+*   Fri Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 5.3.0-6
+-   Enabled fortran.
 *   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-5
 -   Added new plugin entry point: PLUGIN_TYPE_CAST (.patch)
 *   Thu Sep  8 2016 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-4
