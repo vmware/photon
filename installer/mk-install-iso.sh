@@ -39,6 +39,13 @@ WORKINGDIR=${BUILDROOT}
 BUILDROOT=${BUILDROOT}/photon-chroot
 
 run_command "cp isolinux to working directory: ${WORKINGDIR}" "cp -r BUILD_DVD/isolinux ${WORKINGDIR}/" "${LOGFILE}"
+run_command "cp boot/grub2 to working directory: ${WORKINGDIR}" "cp -r BUILD_DVD/boot ${WORKINGDIR}/" "${LOGFILE}"
+run_command "# 1" "mkdir ${WORKINGDIR}/boot/grub2/fonts/" "${LOGFILE}"
+run_command "# 2" "cp boot/ascii.pf2 ${WORKINGDIR}/boot/grub2/fonts/" "${LOGFILE}"
+run_command "# 3" "mkdir -p ${WORKINGDIR}/boot/grub2/themes/photon/" "${LOGFILE}"
+run_command "# 4" "cp boot/splash.png ${WORKINGDIR}/boot/grub2/themes/photon/photon.png" "${LOGFILE}"
+run_command "# 5" "cp boot/terminal_*.tga ${WORKINGDIR}/boot/grub2/themes/photon/" "${LOGFILE}"
+run_command "# 6" "cp boot/theme.txt ${WORKINGDIR}/boot/grub2/themes/photon/" "${LOGFILE}"
 run_command "echo : ${WORKINGDIR}" "echo ${WORKINGDIR}" "${LOGFILE}"
 cp BUILD_DVD/isolinux/splash.png ${BUILDROOT}/installer/boot/.
 
@@ -276,7 +283,9 @@ rm -rf $BUILDROOT
 #Step 9 Generate the ISO!!!!
 pushd $WORKINGDIR
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
-		-no-emul-boot -boot-load-size 4 -boot-info-table -V "PHOTON_$(date +%Y%m%d)" \
+		-no-emul-boot -boot-load-size 4 -boot-info-table \
+		-eltorito-alt-boot -e boot/grub2/efiboot.img -no-emul-boot \
+		-V "PHOTON_$(date +%Y%m%d)" \
 		$WORKINGDIR >$ISO_OUTPUT_NAME
 
 popd
