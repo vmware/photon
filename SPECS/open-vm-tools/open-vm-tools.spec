@@ -1,23 +1,22 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.1.0
-Release:        2%{?dist}
+Version:        10.1.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-%{version}.tar.gz
-%define sha1 open-vm-tools=6deb5ff09b7033cd4224580e664a608e6b4d1db2
+Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
+%define sha1 open-vm-tools=9672874e8b785de27d7fda57bf791f900546c18f
 Source1:        gosc-scripts-1.0.tar.gz
 %define sha1 gosc-scripts-1.0=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
-Patch0:         open-vm-tools-service-link.patch
-Patch1:         GOSC-libDeploy.patch
-Patch2:         IPv6Support.patch
-Patch3:         hostnameReCustomizationFix.patch
-Patch4:         PureIPv6-hosts.patch
+Patch0:         GOSC-libDeploy.patch
+Patch1:         IPv6Support.patch
+Patch2:         hostnameReCustomizationFix.patch
+Patch3:         PureIPv6-hosts.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -39,13 +38,12 @@ Requires:       systemd
 %description
 VmWare virtualization user mode tools
 %prep
-%setup -q -n open-vm-tools
-%setup -a 1 -n open-vm-tools
+%setup -q -n %{name}-stable-%{version}/%{name}
+%setup -a 1 -n %{name}-stable-%{version}/%{name}
 %patch0 -p2
-%patch1 -p2
+%patch1 -p0
 %patch2 -p0
 %patch3 -p0
-%patch4 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -103,6 +101,8 @@ fi
 
 
 %changelog
+*   Fri Mar 03 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-1
+-   Updating version to 10.1.5
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 10.1.0-2
 -   BuildRequires Linux-PAM-devel
 *   Mon Nov 21 2016 Kumar Kaushik <kaushikk@vmware.com> 10.1.0-1

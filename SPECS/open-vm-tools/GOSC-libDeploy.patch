@@ -1,6 +1,6 @@
-diff -ru open-vm-tools-stable-10.1.0/open-vm-tools/libDeployPkg/linuxDeployment.c open-vm-tools-stable-10.1.0-modified/open-vm-tools/libDeployPkg/linuxDeployment.c
---- open-vm-tools-stable-10.1.0/open-vm-tools/libDeployPkg/linuxDeployment.c	2016-11-14 15:36:30.000000000 -0800
-+++ open-vm-tools-stable-10.1.0-modified/open-vm-tools/libDeployPkg/linuxDeployment.c	2016-11-18 12:36:48.544140958 -0800
+diff -ru open-vm-tools-stable-10.1.5/open-vm-tools/libDeployPkg/linuxDeployment.c open-vm-tools-stable-10.1.5-modified/open-vm-tools/libDeployPkg/linuxDeployment.c
+--- open-vm-tools-stable-10.1.5/open-vm-tools/libDeployPkg/linuxDeployment.c	2017-02-24 14:15:37.000000000 -0800
++++ open-vm-tools-stable-10.1.5-modified/open-vm-tools/libDeployPkg/linuxDeployment.c	2017-03-03 15:55:49.921709009 -0800
 @@ -558,13 +558,17 @@
     close(fd);
  
