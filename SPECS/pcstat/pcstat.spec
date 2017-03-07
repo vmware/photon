@@ -1,7 +1,7 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:           pcstat 
 Version:        1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache 
 URL:            https://github.com/tobert/pcstat
 Group:          Development/Debuggers
@@ -34,17 +34,19 @@ go build
 go install
 
 %install
-mkdir -p %{buildroot}/usr/local/bin
-cp ../build/bin/pcstat %{buildroot}/usr/local/bin
+mkdir -p %{buildroot}/%{_bindir}
+cp ../build/bin/pcstat %{buildroot}/%{_bindir}
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-/usr/local/bin
+%{_bindir}/pcstat
 
 %changelog
+*   Tue Mar 07 2017 XIaolin Li <xiaolinl@vmware.com> 1-4
+-   Moved executable from /usr/local/bin to /usr/bin.
 *   Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1-3
 -   Fix the build.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1-2
