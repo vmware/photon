@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -243,6 +243,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Mar 6 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-2
+-   .config: NSX requirements for crypto and netfilter
 *   Tue Feb 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-1
 -   Update to linux-4.9.13 to fix CVE-2017-5986 and CVE-2017-6074
 *   Thu Feb 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.9-1
