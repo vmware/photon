@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -107,7 +107,8 @@ EOF
 cat > %{buildroot}/etc/systemd/system/sendmail.service <<- "EOF"
 [Unit]
 Description=Sendmail Mail Transport Agent
-After=syslog.target network.target
+Wants=network-online.target
+After=network-online.target syslog.target network.target
 
 [Service]
 Environment=QUEUE=1h
@@ -177,6 +178,8 @@ fi
 
 
 %changelog
+*       Mon Mar 06 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-10
+-       Adding dependency to start after network-online.
 *	Wed Dec 14 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-9
 -       Replace obsoleted dependency inetutils with net-tools
 *	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-8
