@@ -130,3 +130,12 @@ Please refer [bosh docs] (http://bosh.io/docs) to deploy BOSH on Photon
 
 
 
+##Links to the pre-built TP2 images
+[GCE] (https://dl.bintray.com/vmware/photon/gce/1.0TP2/x86_64/photon-1.0TP2.tar.gz)
+
+[Azure] (https://dl.bintray.com/vmware/photon/azure/1.0TP2/x86_64/photon-1.0TP2.vhd)
+
+[AMI] (https://dl.bintray.com/vmware/photon/ami/1.0TP2/x86_64/photon-1.0TP2.tar.gz)
+
+[OVA for Workstation/Fusion] (https://dl.bintray.com/vmware/photon/ova/1.0TP2/x86_64/photon-1.0TP2.ova)
+
