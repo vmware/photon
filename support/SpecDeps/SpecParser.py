@@ -142,12 +142,13 @@ class SpecParser(object):
     
     def isPackageMacro(self,line):
         line=line.strip()
-
-        if re.search('^'+'%post',line) :
-            return True
-        elif re.search('^'+'%postun',line) :
-            return True
-        elif re.search('^'+'%files',line) :
+# What is the point of this function?
+# Why does it track post/postun sections?
+#        if re.search('^'+'%post',line) :
+#            return True
+#        elif re.search('^'+'%postun',line) :
+#            return True
+        if re.search('^'+'%files',line) :
             return True
         elif re.search('^'+'%description',line) :
             return True
