@@ -130,3 +130,5 @@ Please refer [bosh docs] (http://bosh.io/docs) to deploy BOSH on Photon
 
 
 
+[vSphere Photon bosh-stemcell] (https://bintray.com/artifact/download/vmware/photon/vSpherePhotonStemcell/1.0TP2/bosh-stemcell-0000-vsphere-esxi-photon-TP2-go_agent.tgz)
+
