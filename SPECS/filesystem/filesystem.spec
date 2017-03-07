@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -181,7 +181,7 @@ EOF
 #
 #	7.2.2. Creating Network Interface Configuration Files"
 #
-cat > %{buildroot}/etc/systemd/network/10-dhcp-en.network <<- "EOF"
+cat > %{buildroot}/etc/systemd/network/99-dhcp-en.network <<- "EOF"
 [Match]
 Name=e*
 
@@ -516,7 +516,7 @@ EOF
 %config(noreplace) /etc/sysconfig/console
 %config(noreplace) /etc/sysconfig/proxy
 %dir /etc/systemd/network
-%config(noreplace) /etc/systemd/network/10-dhcp-en.network
+%config(noreplace) /etc/systemd/network/99-dhcp-en.network
 %dir /etc/profile.d
 %config(noreplace) /etc/profile.d/proxy.sh
 #	media filesystem
@@ -601,6 +601,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Tue Mar 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0-10
+-   Create default DHCP net config in 99-dhcp-en.network instead of 10-dhcp-en.network
 *   Mon Jan 9 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-9
 -   Support build with /bin/dash
 *   Fri Jul 8 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-8
