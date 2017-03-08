@@ -1,31 +1,25 @@
-Summary:          Systemd-232
+Summary:          Systemd-233
 Name:             systemd
-Version:          232
-Release:          5%{?dist}
+Version:          233
+Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      systemd=74178b96d631058236cf79f5b0cc3953382f12b5
+%define sha1      systemd=432ec4ce665f65d1d616558358fb7e7cba953930
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
-Patch2:           systemd-232-query-duid.patch
-Patch3:           systemd-232-ipv6-disabled-fix.patch
-Patch4:           systemd-232-default-dns-from-env.patch
+Patch2:           systemd-233-query-duid.patch
+Patch3:           systemd-233-ipv6-disabled-fix.patch
+Patch4:           systemd-233-default-dns-from-env.patch
 Patch5:           systemd-macros.patch
-Patch6:           systemd-232-resolv-conf-symlink.patch
-# Fix for inird-switch-root sigterm exit issue
-# problem is described here:
-# https://github.com/systemd/systemd/commit/a4021390fef27f4136497328f2e35e79bc88855d
-# https://github.com/systemd/systemd/commit/acc28e2e3037d689d6481e4664925cf31d4d087b
-# this patch uses '@' trick
-Patch7:           core-make-sure-initrd-switch-root-survives-pids1-killing-spree.patch
+Patch6:           systemd-233-resolv-conf-symlink.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -81,7 +75,6 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -188,6 +181,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/*.so
 /lib/systemd/resolv.conf
 %config(noreplace) /lib/systemd/network/99-default.link
+%{_libdir}/environment.d/99-environment.conf
+/var/lib/polkit-1/localauthority/10-vendor.d/systemd-networkd.pkla
 %exclude %{_libdir}/debug
 %exclude %{_datadir}/locale
 %{_libdir}/binfmt.d
@@ -227,6 +222,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Mon Mar 06 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-1
+-    Update systemd to 233
 *    Tue Jan 3 2017 Alexey Makhalov <amakhalov@vmware.com>  232-5
 -    Added /boot/systemd.cfg
 *    Tue Dec 20 2016 Alexey Makhalov <amakhalov@vmware.com>  232-4
