@@ -116,8 +116,12 @@ class Installer(object):
             self.get_size_of_packages()
             selected_packages = self.install_config['packages']
             for package in selected_packages:
-                self.progress_bar.update_message('Installing {0}...'.format(package))
-                process = subprocess.Popen(['tdnf', 'install', package, '--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=self.output, stderr=subprocess.STDOUT)
+                package2 = package
+                if package == 'linux' and self.is_vmware_virtualization():
+                    package2 = 'linux-esx'
+
+                self.progress_bar.update_message('Installing {0}...'.format(package2))
+                process = subprocess.Popen(['tdnf', 'install', package2, '--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=self.output, stderr=subprocess.STDOUT)
                 retval = process.wait()
                 # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
                 if retval != 0 and retval != 137:
@@ -133,7 +137,6 @@ class Installer(object):
                 return_value = self.install_package(rpm['filename'])
                 if return_value != 0:
                     self.exit_gracefully(None, None)
-
 
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
@@ -175,7 +178,7 @@ class Installer(object):
                 self.window.content_window().getch()
 
         return ActionResult(True, None)
-        
+
     def copy_rpms(self):
         # prepare the RPMs list
         rpms = []
@@ -279,7 +282,7 @@ class Installer(object):
             command.extend(self.generate_partitions_param())
             process = subprocess.Popen(command, stdout=self.output)
             retval = process.wait()
-        
+
         if self.iso_installer:
             self.bind_installer()
             process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, 'install'], stdout=self.output)
@@ -394,3 +397,12 @@ class Installer(object):
             self.exit_gracefully(None, None)
 
         return err
+
+    def is_vmware_virtualization(self):
+        process = subprocess.Popen(['systemd-detect-virt'], stdout=subprocess.PIPE)
+        out,err = process.communicate()
+        if err != None and err != 0:
+            return False
+        else:
+            return out == 'vmware\n'
+
