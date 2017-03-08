@@ -348,7 +348,7 @@ diff -rup systemd-232/src/network/networkd-link.c systemd-232-new/src/network/ne
          sd_dhcp_server_unref(link->dhcp_server);
          sd_dhcp_client_unref(link->dhcp_client);
          sd_dhcp_lease_unref(link->dhcp_lease);
-+        sd_dhcp_lease_unref(link->dhcp6_lease);
++        sd_dhcp6_lease_unref(link->dhcp6_lease);
  
          link_lldp_emit_stop(link);
  
