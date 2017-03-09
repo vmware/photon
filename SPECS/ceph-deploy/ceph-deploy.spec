@@ -1,6 +1,6 @@
 Name:           ceph-deploy
 Version:        1.5.36
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            http://ceph.com/
 Summary:        Admin and deploy tool for Ceph
 License:        MIT
@@ -22,7 +22,8 @@ BuildRequires:  python2
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 
-Requires:       python2
+Requires:	python2
+Requires:	python-setuptools
 
 %description
 An easy to use admin tool for deploy ceph storage clusters.
@@ -56,5 +57,7 @@ install -m 0755 -D scripts/ceph-deploy $RPM_BUILD_ROOT/usr/bin
 %{_bindir}/ceph-deploy
 
 %changelog
+*   Thu Mar 9 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.36-2
+-   Adding python-setuptools to Requires section
 *   Mon Jan 23 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.36-1
 -   Initial packaging for Photon
