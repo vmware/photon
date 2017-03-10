@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -26,6 +26,7 @@ Provides:       python-sqlite
 Provides:       python(abi)
 Provides:       /usr/bin/python
 Provides:       /bin/python
+Provides:       /bin/python3
 
 %description
 The Python 3 package contains a new version of Python development environment.
@@ -186,6 +187,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-2
+-   Provides /bin/python3.
 *   Tue Feb 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-1
 -   Updated to version 3.5.3
 *   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-6
