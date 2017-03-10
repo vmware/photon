@@ -1,7 +1,7 @@
 Summary:	Logrotate
 Name:		logrotate
 Version:	3.9.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPL+
 URL:		https://fedorahosted.org/logrotate
 Source0:	https://fedorahosted.org/releases/l/o/logrotate/%{name}-%{version}.tar.gz
@@ -19,7 +19,9 @@ The logrotate utility is designed to simplify the administration of log files on
 ./autogen.sh
 ./configure \
 	--prefix=%{_prefix}
-make %{?_smp_mflags}
+# logrotate code has misleading identation and GCC 6.3 does not like it.
+make %{?_smp_mflags} CFLAGS="-Wno-error=misleading-indentation -g -O2"
+
 %install
 make DESTDIR=%{buildroot} install
 install -vd %{buildroot}%{_sysconfdir}/logrotate.d
@@ -40,6 +42,8 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 %{_mandir}/man8/logrotate.8.gz
 /var/lib/logrotate/logrotate.status
 %changelog
+*	Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.9.1-3
+-	Compilation for gcc 6.3
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.9.1-2
 -	GA - Bump release of all rpms
 *	Wed Jun 24 2015 Divya Thaluru <dthaluru@vmware.com> 3.9.1-1
