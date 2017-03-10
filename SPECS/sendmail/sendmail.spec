@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -103,7 +103,8 @@ EOF
 cat > %{buildroot}/etc/systemd/system/sendmail.service <<- "EOF"
 [Unit]
 Description=Sendmail Mail Transport Agent
-After=syslog.target network.target
+Wants=network-online.target
+After=network-online.target syslog.target network.target
 
 [Service]
 Environment=QUEUE=1h
@@ -168,6 +169,8 @@ fi
 
 
 %changelog
+*       Fri Mar 10 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-7
+-       Updating systemd service file to start after network.Reboot issue.
 *       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 8.15.2-6
 -       Fixed logic to restart the active services after upgrade 
 *       Wed May 25 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-5
