@@ -1,0 +1,116 @@
+diff -Naur thin-provisioning-tools-0.6.1.orig/base/progress_monitor.cc thin-provisioning-tools-0.6.1/base/progress_monitor.cc
+--- thin-provisioning-tools-0.6.1.orig/base/progress_monitor.cc	2016-02-10 06:28:49.000000000 -0800
++++ thin-provisioning-tools-0.6.1/base/progress_monitor.cc	2017-03-12 13:24:07.000000000 -0700
+@@ -63,16 +63,16 @@
+ 
+ //----------------------------------------------------------------
+ 
+-std::auto_ptr<base::progress_monitor>
++std::unique_ptr<base::progress_monitor>
+ base::create_progress_bar(std::string const &title)
+ {
+-	return auto_ptr<progress_monitor>(new progress_bar(title));
++	return unique_ptr<progress_monitor>(new progress_bar(title));
+ }
+ 
+-std::auto_ptr<base::progress_monitor>
++std::unique_ptr<base::progress_monitor>
+ base::create_quiet_progress_monitor()
+ {
+-	return auto_ptr<progress_monitor>(new quiet_progress());
++	return unique_ptr<progress_monitor>(new quiet_progress());
+ }
+ 
+ //----------------------------------------------------------------
+diff -Naur thin-provisioning-tools-0.6.1.orig/base/progress_monitor.h thin-provisioning-tools-0.6.1/base/progress_monitor.h
+--- thin-provisioning-tools-0.6.1.orig/base/progress_monitor.h	2016-02-10 06:28:49.000000000 -0800
++++ thin-provisioning-tools-0.6.1/base/progress_monitor.h	2017-03-12 13:24:19.000000000 -0700
+@@ -15,8 +15,8 @@
+ 		virtual void update_percent(unsigned) = 0;
+ 	};
+ 
+-	std::auto_ptr<progress_monitor> create_progress_bar(std::string const &title);
+-	std::auto_ptr<progress_monitor> create_quiet_progress_monitor();
++	std::unique_ptr<progress_monitor> create_progress_bar(std::string const &title);
++	std::unique_ptr<progress_monitor> create_quiet_progress_monitor();
+ }
+ 
+ //----------------------------------------------------------------
+diff -Naur thin-provisioning-tools-0.6.1.orig/base/xml_utils.cc thin-provisioning-tools-0.6.1/base/xml_utils.cc
+--- thin-provisioning-tools-0.6.1.orig/base/xml_utils.cc	2016-02-10 06:28:49.000000000 -0800
++++ thin-provisioning-tools-0.6.1/base/xml_utils.cc	2017-03-12 13:23:07.000000000 -0700
+@@ -14,7 +14,7 @@
+ 	persistent_data::check_file_exists(backup_file);
+ 	ifstream in(backup_file.c_str(), ifstream::in);
+ 
+-	std::auto_ptr<base::progress_monitor> monitor = create_monitor(quiet);
++	std::unique_ptr<base::progress_monitor> monitor = create_monitor(quiet);
+ 
+ 	size_t total = 0;
+ 	size_t input_length = get_file_length(backup_file);
+@@ -53,7 +53,7 @@
+ 	return info.st_size;
+ }
+ 
+-auto_ptr<base::progress_monitor>
++unique_ptr<base::progress_monitor>
+ xml_parser::create_monitor(bool quiet)
+ {
+ 	if (!quiet && isatty(fileno(stdout)))
+diff -Naur thin-provisioning-tools-0.6.1.orig/base/xml_utils.h thin-provisioning-tools-0.6.1/base/xml_utils.h
+--- thin-provisioning-tools-0.6.1.orig/base/xml_utils.h	2016-02-10 06:28:49.000000000 -0800
++++ thin-provisioning-tools-0.6.1/base/xml_utils.h	2017-03-12 13:22:21.000000000 -0700
+@@ -37,7 +37,7 @@
+ 
+ 	private:
+ 		size_t get_file_length(string const &file) const;
+-		auto_ptr<base::progress_monitor> create_monitor(bool quiet);
++		unique_ptr<base::progress_monitor> create_monitor(bool quiet);
+ 
+ 		XML_Parser parser_;
+         };
+diff -Naur thin-provisioning-tools-0.6.1.orig/caching/cache_restore.cc thin-provisioning-tools-0.6.1/caching/cache_restore.cc
+--- thin-provisioning-tools-0.6.1.orig/caching/cache_restore.cc	2016-02-10 06:28:49.000000000 -0800
++++ thin-provisioning-tools-0.6.1/caching/cache_restore.cc	2017-03-12 13:26:47.000000000 -0700
+@@ -32,7 +32,7 @@
+ 		return info.st_size;
+ 	}
+ 
+-	auto_ptr<progress_monitor> create_monitor(bool quiet) {
++	unique_ptr<progress_monitor> create_monitor(bool quiet) {
+ 		if (!quiet && isatty(fileno(stdout)))
+ 			return create_progress_bar("Restoring");
+ 		else
+@@ -70,7 +70,7 @@
+ 			check_file_exists(*fs.input);
+ 			ifstream in(fs.input->c_str(), ifstream::in);
+ 
+-			auto_ptr<progress_monitor> monitor = create_monitor(fs.quiet);
++			unique_ptr<progress_monitor> monitor = create_monitor(fs.quiet);
+ 			parse_xml(in, restorer, get_file_length(*fs.input), *monitor);
+ 
+ 		} catch (std::exception &e) {
+diff -Naur thin-provisioning-tools-0.6.1.orig/thin-provisioning/restore_emitter.cc thin-provisioning-tools-0.6.1/thin-provisioning/restore_emitter.cc
+--- thin-provisioning-tools-0.6.1.orig/thin-provisioning/restore_emitter.cc	2016-02-10 06:28:49.000000000 -0800
++++ thin-provisioning-tools-0.6.1/thin-provisioning/restore_emitter.cc	2017-03-12 13:17:44.000000000 -0700
+@@ -142,7 +142,7 @@
+ 		bool device_exists(thin_dev_t dev) const {
+ 			uint64_t key[1] = {dev};
+ 			device_tree::maybe_value v = md_->details_->lookup(key);
+-			return v;
++			return !!v;
+ 		}
+ 
+ 		metadata::ptr md_;
+diff -Naur thin-provisioning-tools-0.6.1.orig/thin-provisioning/thin_pool.cc thin-provisioning-tools-0.6.1/thin-provisioning/thin_pool.cc
+--- thin-provisioning-tools-0.6.1.orig/thin-provisioning/thin_pool.cc	2016-02-10 06:28:49.000000000 -0800
++++ thin-provisioning-tools-0.6.1/thin-provisioning/thin_pool.cc	2017-03-12 13:18:35.000000000 -0700
+@@ -232,7 +232,7 @@
+ thin_pool::device_exists(thin_dev_t dev) const
+ {
+ 	uint64_t key[1] = {dev};
+-	return md_->details_->lookup(key);
++	return !!md_->details_->lookup(key);
+ }
+ 
+ //----------------------------------------------------------------
