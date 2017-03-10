@@ -1,15 +1,15 @@
 %define _use_internal_dependency_generator 0
 Summary:        Contains the GNU compiler collection
 Name:           gcc
-Version:        5.3.0
-Release:        6%{?dist}
+Version:        6.3.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha1 gcc=0612270b103941da08376df4d0ef4e5662a2e9eb
+%define sha1 gcc=928ab552666ee08eed645ff20ceb49d139205dea
 Patch0:         PLUGIN_TYPE_CAST.patch
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
@@ -79,8 +79,12 @@ This package contains development headers and static library for libgomp
 %prep
 %setup -q
 %patch0 -p1
+
+# disable FORTIFY_SOURCE=2 from hardening
 sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
+# disable no-pie for gcc binaries
+sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 install -vdm 755 ../gcc-build
 %build
@@ -129,7 +133,7 @@ make %{?_smp_mflags} check
 %{_lib}/cpp
 #   Executables
 %exclude %{_bindir}/*gfortran
-%exclude %{_libexecdir}/gcc/x86_64-unknown-linux-gnu/5.3.0/f951
+%exclude %{_libexecdir}/gcc/x86_64-pc-linux-gnu/%{version}/f951
 %{_bindir}/*
 #   Libraries
 %ifarch x86_64
@@ -160,7 +164,7 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*gfortran
 %{_mandir}/man1/gfortran.1.gz
-%{_libexecdir}/gcc/x86_64-unknown-linux-gnu/5.3.0/f951
+%{_libexecdir}/gcc/x86_64-pc-linux-gnu/%{version}/f951
 
 %files -n libgcc
 %defattr(-,root,root)
@@ -232,7 +236,9 @@ make %{?_smp_mflags} check
 %endif
 
 %changelog
-*   Fri Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 5.3.0-6
+*   Thu Mar 9 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-1
+-   Update version to 6.3
+*   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 5.3.0-6
 -   Enabled fortran.
 *   Wed Feb 22 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.0-5
 -   Added new plugin entry point: PLUGIN_TYPE_CAST (.patch)
