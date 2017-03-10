@@ -1,12 +1,13 @@
 Summary: 	Thin provisioning tools
 Name:		thin-provisioning-tools
 Version:	0.6.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 Group:		System Environment/Base
 URL:		https://github.com/jthornber/thin-provisioning-tools
 Source0:	https://github.com/jthornber/thin-provisioning-tools/releases/thin-provisioning-tools-%{version}.tar.gz
 %define sha1 thin-provisioning-tools=387096be52b2f846b8b83f3d8da8e2cc6775465f
+Patch0:		thin-provisioning-tools-fix-for-gcc-6.3.patch
 BuildRequires:	expat , libaio-devel, boost-devel
 Requires:	expat, libaio
 Vendor:		VMware, Inc.
@@ -21,8 +22,8 @@ are included and era check, dump, restore and invalidate to manage
 snapshot eras
 
 %prep
-#%setup -q -n thin-provisioning-tools-thin-provisioning-tools-%{version}
 %setup -q
+%patch0 -p1
 
 %build
 autoconf
@@ -73,8 +74,10 @@ make DESTDIR=%{buildroot} MANDIR=%{_mandir} install
 %{_sbindir}/thin_trim
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.1-2
--	GA - Bump release of all rpms
+* Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.1-3
+- Fix gcc-6.3 compilation errors
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.1-2
+- GA - Bump release of all rpms
 * Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 0.6.1-1
 - Updating version
 * Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.4.1-1
