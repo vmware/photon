@@ -28,9 +28,6 @@ make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
-%check
-make %{?_smp_mflags} check
-
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
