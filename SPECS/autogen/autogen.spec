@@ -48,9 +48,6 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 
-%check
-make %{?_smp_mflags}  check
-
 %post	libopts -p /sbin/ldconfig
 %postun	libopts -p /sbin/ldconfig
 
