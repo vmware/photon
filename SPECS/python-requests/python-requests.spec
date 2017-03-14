@@ -3,15 +3,15 @@
 
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python-requests
-Version:        2.9.1
-Release:        3%{?dist}
+Version:        2.13.0
+Release:        1%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://python-requests.org
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
-%define sha1 requests=17f01c47a0d7c676f6291608ef2f43db3fa74095
+%define sha1    requests=827f7c8abb5a57d980d9870908724613b8b120c1
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -78,6 +78,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-1
+-   Updated to version 2.13.0.
 *   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.1-3
 -   Added python3 package.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.1-2
