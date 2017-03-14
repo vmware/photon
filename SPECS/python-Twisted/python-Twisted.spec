@@ -18,10 +18,11 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-incremental
+BuildRequires:  python-zope.interface
 
 Requires:       python2
 Requires:       python2-libs
-requires:       python-zope.interface
+Requires:       python-zope.interface
 
 BuildArch:      x86_64
 
@@ -35,9 +36,12 @@ Summary:        python-Twisted
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-incremental
+BuildRequires:  python3-zope.interface
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-zope.interface
+
 %description -n python3-Twisted
 Python 3 version.
 
