@@ -13,7 +13,7 @@
 #################################################################################
 Name:		ceph
 Version:	11.2.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -489,6 +489,7 @@ install -m 0755 -D systemd/ceph %{buildroot}%{_sbindir}/rcceph
 install -m 0644 -D systemd/50-ceph.preset %{buildroot}%{_libexecdir}/systemd/system-preset/50-ceph.preset
 mkdir -p %{buildroot}%{_sbindir}
 sed -i 's/\/bin/\/usr\/bin/g' %{buildroot}%{_bindir}/ceph
+sed -i 's/\/bin/\/usr\/bin/g' %{buildroot}%{_bindir}/ceph-detect-init
 sed -i 's/\/bin/\/usr\/bin/g' %{buildroot}%{_sbindir}/ceph-disk
 install -m 0644 -D src/logrotate.conf %{buildroot}%{_sysconfdir}/logrotate.d/ceph
 chmod 0644 %{buildroot}%{_docdir}/ceph/sample.ceph.conf
@@ -994,6 +995,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 
 %changelog
+* Mon Mar 13 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-3
+- change the python2 path variable
 * Fri Feb 24 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-2
 - Turned off switch to build test package
 * Fri Jan 27 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-1
