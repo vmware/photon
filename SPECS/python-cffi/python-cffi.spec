@@ -2,15 +2,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Interface for Python to call C code
 Name:           python-cffi
-Version:        1.5.2
-Release:        3%{?dist}
+Version:        1.9.1
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
-%define sha1    cffi=5239b3aa4f67eed3559c09778096ecd4faeca876
+%define sha1    cffi=16265a4b305d433fb9089b19278502e904b0cb43
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -60,6 +60,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.1-1
+-   Updated to version 1.9.1.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-3
 -   Added python3 site-packages.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-2
