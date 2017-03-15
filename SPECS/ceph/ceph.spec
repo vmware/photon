@@ -13,7 +13,7 @@
 #################################################################################
 Name:		ceph
 Version:	11.2.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -995,9 +995,11 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 
 %changelog
-* Mon Mar 13 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-3
+* Wed Mar 15 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.2.0-4
+- corrected version number
+* Mon Mar 13 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.2.0-3
 - change the python2 path variable
-* Fri Feb 24 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-2
+* Fri Feb 24 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.2.0-2
 - Turned off switch to build test package
-* Fri Jan 27 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.1.0-1
+* Fri Jan 27 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.2.0-1
 - Initial build. First version based on ceph github repo with modifications for photon
