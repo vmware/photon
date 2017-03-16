@@ -1,6 +1,6 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.4.51
+Version:	4.4.54
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
@@ -8,7 +8,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1e162187379ac72e0b486ab65819ad1b6118372f
+%define sha1 linux=78765ce1cc4eb91bb984c0a8105602592ed56cd5
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
@@ -25,6 +25,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Wed Mar 15 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.54-1
+-   Update to linux-4.4.54
 *   Thu Feb 23 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.51-1
 -   Update to linux-4.4.51
 *   Mon Jan 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.41-1
