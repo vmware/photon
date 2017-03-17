@@ -76,7 +76,11 @@ def partition_disk(disk, partitions):
         return None
 
     # Add the grub flags
-    process = subprocess.Popen(['sgdisk', '-t' + `partitions_count + 1` + ':ef02', disk], stdout = output)
+    grub_flag = ':ef02'
+    if os.path.isdir("/sys/firmware/efi"):
+        grub_flag = ':ef00'
+
+    process = subprocess.Popen(['sgdisk', '-t' + `partitions_count + 1` + grub_flag, disk], stdout = output)
     retval = process.wait()
     if retval != 0:
         log(LOG_ERROR, "Failed to setup grub partition")
