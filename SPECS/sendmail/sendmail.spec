@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -11,7 +11,7 @@ Source0:        http://ftp.vim.org/pub/mail/sendmail/sendmail-r8/sendmail.8.15.2
 BuildRequires:	systemd
 BuildRequires:  openldap
 BuildRequires:  openssl-devel
-BuildRequires:  db-devel
+BuildRequires:  libdb-devel
 BuildRequires:  shadow
 Requires:       coreutils
 Requires:       systemd
@@ -177,6 +177,8 @@ fi
 
 
 %changelog
+*	Thu Mar 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-10
+-       Use libdb-5.3 as dependency
 *	Wed Dec 14 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-9
 -       Replace obsoleted dependency inetutils with net-tools
 *	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-8
