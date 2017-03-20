@@ -145,6 +145,8 @@ class Installer(object):
             # Execute post installation modules
             self.execute_modules(modules.commons.POST_INSTALL)
 
+            if self.iso_installer and os.path.isdir("/sys/firmware/efi"):
+                self.install_config['boot'] = 'efi'
             # install grub
             try:
                 if self.install_config['boot'] == 'bios':
