@@ -3,15 +3,15 @@
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
-Version:        16.6.0
-Release:        1%{?dist}
+Version:        17.1.0
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://twistedmatrix.com
 Source0:        https://files.pythonhosted.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
-%define         sha1 Twisted=57ea06c54e59c314f904870946c4a3586d7b86ea
+%define         sha1 Twisted=1cd9e3e39323f555a89d882cbbcf001015bd3113
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -72,6 +72,8 @@ popd
 %{_bindir}/*
 
 %changelog
+*   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 17.1.0-3
+-   Upgraded to 17.1.0.
 *   Tue Mar 15 2017 Xiaolin Li <xiaolinl@vmware.com> 16.6.0-1
 -   Downgraded to 16.6.0
 *   Tue Mar 14 2017 Anish Swaminathan <anishs@vmware.com> 17.1.0-2
