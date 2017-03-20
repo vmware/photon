@@ -39,33 +39,6 @@ def query_yes_no(question, default="no"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
-def partition_disk(disk):
-    partitions_data = {}
-    partitions_data['disk'] = disk
-    partitions_data['root'] = disk + '2'
-    partitions_data['swap'] = disk + '3'
-
-    # Clear the disk
-    process = subprocess.Popen(['sgdisk', '-z', partitions_data['disk']])
-    retval = process.wait()
-
-    # 1: grub, 2: swap, 3: filesystem
-    process = subprocess.Popen(['sgdisk', '-n', '1::+2M', '-n', '3:-3G:', '-n', '2:', '-p', partitions_data['disk']])
-    retval = process.wait()
-
-    # Add the grub flags
-    process = subprocess.Popen(['sgdisk', '-t1:ef02', partitions_data['disk']])
-    retval = process.wait()
-
-    # format the swap
-    process = subprocess.Popen(['mkswap', partitions_data['swap']])
-    retval = process.wait()
-
-    # format the file system
-    process = subprocess.Popen(['mkfs', '-t', 'ext4', partitions_data['root']])
-    retval = process.wait()
-    return partitions_data
-
 def create_vmdk_and_partition(config, vmdk_path):
     partitions_data = {}
 

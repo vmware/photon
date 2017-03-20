@@ -15,7 +15,7 @@
 
 grub_efi_install()
 {
-    mkdir $BUILDROOT/boot/efi
+    mkdir -p $BUILDROOT/boot/efi
     #
     # if it is a loop device then we should mount the dev mapped boot partition
     #
@@ -23,14 +23,16 @@ grub_efi_install()
     then
          BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
     else
-         BOOT_PARTITION=${HDD}1
+         BOOT_PARTITION=${HDD}2
     fi
     mkfs.vfat $BOOT_PARTITION
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
     grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
     rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
-    cp efi/bootx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
+    cp EFI/BOOT/bootx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
+    mkdir -p $BUILDROOT/boot/efi/boot/grub2
+    echo "configfile (hd0,gpt1)/boot/grub2/grub.cfg" > $BUILDROOT/boot/efi/boot/grub2/grub.cfg
     umount $BUILDROOT/boot/efi
 }
 
@@ -71,12 +73,12 @@ mkdir -p $BUILDROOT/boot/grub2
 ln -sfv grub2 $BUILDROOT/boot/grub
 command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
 command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
-if [ -z $grubInstallCmd ]; then
-echo "Unable to find grub install command"
-exit 1
-fi
 
-if [ "$BOOTMODE" == "bios" ]; then 
+if [ "$BOOTMODE" == "bios" ]; then
+    if [ -z $grubInstallCmd ]; then
+        echo "Unable to find grub install command"
+        exit 1
+    fi
     grub_mbr_install
 fi
 if [ "$BOOTMODE" == "efi" ]; then 
