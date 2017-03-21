@@ -38,7 +38,7 @@ grub_efi_install()
 
 grub_mbr_install()
 {
-    $grubInstallCmd --force --boot-directory=$BUILDROOT/boot "$HDD"
+    grub2-install --force --boot-directory=$BUILDROOT/boot "$HDD"
 }
 
 set -o errexit        # exit if error...insurance ;)
@@ -68,17 +68,10 @@ fi
 PARTUUID=$(blkid -s PARTUUID -o value $ROOT_PARTITION_PATH)
 BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
 
-grubInstallCmd=""
 mkdir -p $BUILDROOT/boot/grub2
 ln -sfv grub2 $BUILDROOT/boot/grub
-command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
-command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
 
 if [ "$BOOTMODE" == "bios" ]; then
-    if [ -z $grubInstallCmd ]; then
-        echo "Unable to find grub install command"
-        exit 1
-    fi
     grub_mbr_install
 fi
 if [ "$BOOTMODE" == "efi" ]; then 
