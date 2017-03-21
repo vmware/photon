@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        2.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -27,7 +27,7 @@ developing applications that use protobuf.
 autoreconf -iv
 
 %build
-%configure --disable-static
+%configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -48,13 +48,18 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
+%{_libdir}/libprotobuf-lite.a
 %{_libdir}/libprotobuf-lite.la
 %{_libdir}/libprotobuf-lite.so
+%{_libdir}/libprotobuf.a
 %{_libdir}/libprotobuf.la
 %{_libdir}/libprotobuf.so
+%{_libdir}/libprotoc.a
 %{_libdir}/libprotoc.la
 %{_libdir}/libprotoc.so
 
 %changelog
+*   Mon Mar 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
+-   Build static lib.
 *   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6.1-1
 -   Initial packaging for Photon
