@@ -6,16 +6,16 @@
 #      Author:  dthaluru@vmware.com             #
 #     Options:                                  #
 #################################################
-#	Overview
-#		Generates a photon iso
-#	End
+#   Overview
+#       Generates a photon iso
+#   End
 #
 
 set +x                 # disable hashall
-source config.inc		#	configuration parameters
-source function.inc		#	commonn functions
+source config.inc       #   configuration parameters
+source function.inc     #   commonn functions
 PRGNAME=${0##*/}    # script name minus the path
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
+LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 
 
 # Grab the name of the iso file 
@@ -197,29 +197,8 @@ if [ "$LIVE_CD" = false ] ; then
     rm -rf ${BUILDROOT}/usr/include
 
     rm ${BUILDROOT}/lib64/libmvec*
-    rm ${BUILDROOT}/usr/sbin/grub2-bios-setup
-    rm ${BUILDROOT}/usr/sbin/grub2-probe
-    rm ${BUILDROOT}/usr/sbin/grub2-macbless
-    rm ${BUILDROOT}/usr/sbin/grub2-reboot   
-    rm ${BUILDROOT}/usr/sbin/grub2-sparc64-setup
     rm ${BUILDROOT}/usr/sbin/sln
-    
-    rm ${BUILDROOT}/usr/bin/grub2-mkrescue
-    rm ${BUILDROOT}/usr/bin/grub2-fstest
-    rm ${BUILDROOT}/usr/bin/grub2-syslinux2cfg
-    rm ${BUILDROOT}/usr/bin/grub2-mkstandalone
-    rm ${BUILDROOT}/usr/bin/grub2-render-label
-    rm ${BUILDROOT}/usr/bin/grub2-mkimage
-    rm ${BUILDROOT}/usr/bin/grub2-file
-    rm ${BUILDROOT}/usr/bin/grub2-mkrelpath
-    rm ${BUILDROOT}/usr/bin/grub2-glue-efi
-    rm ${BUILDROOT}/usr/bin/grub2-editenv
-    rm ${BUILDROOT}/usr/bin/grub2-mklayout
-    rm ${BUILDROOT}/usr/bin/grub2-mkpasswd-pbkdf2lsls
-    rm ${BUILDROOT}/usr/bin/grub2-script-check
-    rm ${BUILDROOT}/usr/bin/grub2-mknetdir
     rm ${BUILDROOT}/usr/bin/oldfind
-
 
     rm ${BUILDROOT}/usr/bin/localedef
     rm ${BUILDROOT}/usr/bin/systemd-nspawn
@@ -252,23 +231,22 @@ if [ "$LIVE_CD" = false ] ; then
     rm ${BUILDROOT}/usr/lib/libdb_cxx*
     rm ${BUILDROOT}/usr/lib/libnss_compat*
 
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/mpi.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/net.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/regexp.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/grub-bios-setup
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/file.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/bsd.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/efiemu.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/functional_test.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/gcry_*.module
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/xnu.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/zfs.*
+    rm ${BUILDROOT}/usr/bin/grub2-*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/*.module
+    rm ${BUILDROOT}/usr/lib/grub/x86_64-efi/*.module
+
+    for j in `ls ${BUILDROOT}/usr/sbin/grub2*`; do
+        bsname=$(basename "$j")
+        if [ $bsname != 'grub2-efi-install' -a $bsname != 'grub2-install' ]; then
+            rm $j
+        fi
+    done
 
     # TODO: mbassiouny, Find a clean way to do that
     for i in `ls ${BUILDROOT}/usr/share/`; do
-    	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' ]; then
-    		rm -rf ${BUILDROOT}/usr/share/$i
-    	fi
+        if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' ]; then
+            rm -rf ${BUILDROOT}/usr/share/$i
+        fi
     done
 
 fi
@@ -285,9 +263,9 @@ rm -rf $BUILDROOT
 #Step 9 Generate the ISO!!!!
 pushd $WORKINGDIR
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
-		-no-emul-boot -boot-load-size 4 -boot-info-table \
-		-eltorito-alt-boot -e boot/grub2/efiboot.img -no-emul-boot \
-		-V "PHOTON_$(date +%Y%m%d)" \
-		$WORKINGDIR >$ISO_OUTPUT_NAME
+        -no-emul-boot -boot-load-size 4 -boot-info-table \
+        -eltorito-alt-boot -e boot/grub2/efiboot.img -no-emul-boot \
+        -V "PHOTON_$(date +%Y%m%d)" \
+        $WORKINGDIR >$ISO_OUTPUT_NAME
 
 popd
