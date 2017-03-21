@@ -1,69 +1,91 @@
-Summary:          Package manager
-Name:             rpm
-Version:          4.11.2
-Release:          19%{?dist}
-License:          GPLv2+
-URL:              http://rpm.org
-Group:            Applications/System
-Vendor:           VMware, Inc.
-Distribution:     Photon
-Source0:          http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
-%define sha1      rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
-Source1:          http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
-%define sha1      db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
-Source2:          macros
-Source3:          brp-strip-debug-symbols
-Source4:          brp-strip-unneeded
-Patch0:           find-debuginfo-do-not-generate-non-existing-build-id.patch
-Patch1:           rpm-4.11.2-cve-2014-8118.patch
-Requires:         bash
-Requires:         rpm-libs = %{version}-%{release}
-BuildRequires:    python2
-BuildRequires:    python2-libs
-BuildRequires:    python2-devel
-BuildRequires:    popt-devel
-BuildRequires:    nss-devel
-BuildRequires:    elfutils-devel
-BuildRequires:    libcap-devel
-BuildRequires:    xz-devel
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
+Summary:        Package manager
+Name:           rpm
+Version:        4.11.2
+Release:        20%{?dist}
+License:        GPLv2+
+URL:            http://rpm.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
+%define sha1    rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
+Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
+%define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
+Source2:        macros
+Source3:        brp-strip-debug-symbols
+Source4:        brp-strip-unneeded
+Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
+Patch1:         rpm-4.11.2-cve-2014-8118.patch
+Requires:       bash
+Requires:       rpm-libs = %{version}-%{release}
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  python2-devel
+BuildRequires:  popt-devel
+BuildRequires:  nss-devel
+BuildRequires:  elfutils-devel
+BuildRequires:  libcap-devel
+BuildRequires:  xz-devel
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
 %description
 RPM package manager
 
 %package devel
-Requires:   python2
-Summary:    Libraries and header files for rpm
-Provides:   pkgconfig(rpm)
-Requires:   %{name} = %{version}-%{release}
+Requires:       python2
+Summary:        Libraries and header files for rpm
+Provides:       pkgconfig(rpm)
+Requires:       %{name} = %{version}-%{release}
 %description devel
 Static libraries and header files for the support library for rpm
 
 %package libs
-Summary:    Libraries for rpm
-Requires:   nss 
-Requires:   popt
-Requires:   libgcc
-Requires:   libcap
-Requires:   zlib
-Requires:   bzip2
-Requires:   elfutils-libelf
-Requires:   xz
-%description libs
+Summary:        Libraries for rpm
+Requires:       nss
+Requires:       popt
+Requires:       libgcc
+Requires:       libcap
+Requires:       zlib
+Requires:       bzip2
+Requires:       elfutils-libelf
+Requires:       xz
+%description    libs
 Shared libraries librpm and librpmio
 
 %package build
-Requires:   perl
-Requires:   %{name}-devel = %{version}-%{release}
-Requires:   elfutils-libelf
+Requires:       perl
+Requires:       %{name}-devel = %{version}-%{release}
+Requires:       elfutils-libelf
 Summary: Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
 
 %package lang
-Summary:    Additional language files for rpm
-Group:      Applications/System
-Requires:   %{name} = %{version}-%{release}
+Summary:        Additional language files for rpm
+Group:          Applications/System
+Requires:       %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of rpm.
+
+%package -n     python-rpm
+Summary:        Python 2 bindings for rpm.
+Group:          Development/Libraries
+BuildRequires:  python2-devel
+Requires:       python2
+%description -n python-rpm
+
+%package -n     python3-rpm
+Summary:        Python 3 bindings for rpm.
+Group:          Development/Libraries
+BuildRequires:  python3-devel
+Requires:       python3
+
+%description -n python3-rpm
+Python3 rpm.
 
 %prep
 %setup -q
@@ -96,6 +118,12 @@ mv db-5.3.28 db
         --without-lua \
         --disable-silent-rules
 make %{?_smp_mflags}
+
+pushd python
+python2 setup.py build
+python3 setup.py build
+popd
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -106,8 +134,18 @@ install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/
 install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
 install -vm755 %{SOURCE4} %{buildroot}%{_libdir}/rpm/
 
+pushd python
+python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+popd
+
 %check
 make %{?_smp_mflags} check
+pushd python
+python2 setup.py test
+python3 setup.py test
+popd
+
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -219,7 +257,17 @@ rm -rf %{buildroot}
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
+%files -n python-rpm
+%defattr(-,root,root)
+%{python2_sitelib}/*
+
+%files -n python3-rpm
+%defattr(-,root,root)
+%{python3_sitelib}/*
+
 %changelog
+*    Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20
+-    Added python3 packages and moved python2 site packages from devel to python-rpm.
 *    Mon Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
 -    added buildrequires for xz-devel for PayloadIsLzma cap
 *    Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18
