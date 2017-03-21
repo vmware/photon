@@ -6,16 +6,16 @@
 #      Author:  dthaluru@vmware.com             #
 #     Options:                                  #
 #################################################
-#	Overview
-#		Generates a photon iso
-#	End
+#   Overview
+#       Generates a photon iso
+#   End
 #
 
 set +x                 # disable hashall
-source config.inc		#	configuration parameters
-source function.inc		#	commonn functions
+source config.inc       #   configuration parameters
+source function.inc     #   commonn functions
 PRGNAME=${0##*/}    # script name minus the path
-LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"	#	set log file name
+LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 
 
 # Grab the name of the iso file 
@@ -252,23 +252,26 @@ if [ "$LIVE_CD" = false ] ; then
     rm ${BUILDROOT}/usr/lib/libdb_cxx*
     rm ${BUILDROOT}/usr/lib/libnss_compat*
 
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/mpi.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/net.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/regexp.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/grub-bios-setup
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/file.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/bsd.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/efiemu.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/functional_test.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/gcry_*.module
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/xnu.*
-    rm ${BUILDROOT}/usr/lib/grub/i386-pc/zfs.*
+    rm ${BUILDROOT}/usr/lib/grub/i386-pc/*.module
+    for j in `ls ${BUILDROOT}/usr/lib/grub/i386-pc/*.mod`; do
+        if [ $j != 'fshelp.mod' ]; then
+            rm ${BUILDROOT}/usr/lib/grub/i386-pc/$j
+        fi
+    done
+
+    #rm ${BUILDROOT}/usr/lib/grub/x86_64-efi/*.mod
+    rm ${BUILDROOT}/usr/lib/grub/x86_64-efi/*.module
+    for k in `ls ${BUILDROOT}/usr/lib/grub/x86_64-efi/*.mod`; do
+        if [ $k != 'fshelp.mod' ]; then
+            rm ${BUILDROOT}/usr/lib/grub/x86_64-efi/$k
+        fi
+    done
 
     # TODO: mbassiouny, Find a clean way to do that
     for i in `ls ${BUILDROOT}/usr/share/`; do
-    	if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' ]; then
-    		rm -rf ${BUILDROOT}/usr/share/$i
-    	fi
+        if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' ]; then
+            rm -rf ${BUILDROOT}/usr/share/$i
+        fi
     done
 
 fi
@@ -285,9 +288,9 @@ rm -rf $BUILDROOT
 #Step 9 Generate the ISO!!!!
 pushd $WORKINGDIR
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
-		-no-emul-boot -boot-load-size 4 -boot-info-table \
-		-eltorito-alt-boot -e boot/grub2/efiboot.img -no-emul-boot \
-		-V "PHOTON_$(date +%Y%m%d)" \
-		$WORKINGDIR >$ISO_OUTPUT_NAME
+        -no-emul-boot -boot-load-size 4 -boot-info-table \
+        -eltorito-alt-boot -e boot/grub2/efiboot.img -no-emul-boot \
+        -V "PHOTON_$(date +%Y%m%d)" \
+        $WORKINGDIR >$ISO_OUTPUT_NAME
 
 popd

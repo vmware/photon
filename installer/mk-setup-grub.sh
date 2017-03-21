@@ -71,10 +71,10 @@ BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
 grubInstallCmd=""
 mkdir -p $BUILDROOT/boot/grub2
 ln -sfv grub2 $BUILDROOT/boot/grub
-command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
-command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
 
 if [ "$BOOTMODE" == "bios" ]; then
+    command -v grub-install >/dev/null 2>&1 && grubInstallCmd="grub-install" && { echo >&2 "Found grub-install"; }
+    command -v grub2-install >/dev/null 2>&1 && grubInstallCmd="grub2-install" && { echo >&2 "Found grub2-install"; }
     if [ -z $grubInstallCmd ]; then
         echo "Unable to find grub install command"
         exit 1
