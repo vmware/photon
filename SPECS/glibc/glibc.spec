@@ -3,7 +3,7 @@
 
 Summary:	Main C library
 Name:		glibc
-Version:	2.24
+Version:	2.25
 Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
@@ -11,12 +11,11 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1 glibc=e5d9725d94d59475d9a6869a4447a70c1bf3ef78
+%define sha1 glibc=5fff5a94ef4470bf48fe1b79093185f19f5c827a
 Source1:	locale-gen.sh
 Source2:	locale-gen.conf
-Patch0:   	http://http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.24-fhs-1.patch
+Patch0:   	http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
 Patch1:		glibc-2.24-bindrsvport-blacklist.patch
-Patch2:		pthread_create-fix-use-after-free.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -51,7 +50,6 @@ These are the additional internationalization files of glibc.
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -204,6 +202,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-1
+-   Version update
 *   Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 2.24-1
 -   Version update
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-13
