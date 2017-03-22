@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -17,6 +17,7 @@ Patch0:         GOSC-libDeploy.patch
 Patch1:         IPv6Support.patch
 Patch2:         hostnameReCustomizationFix.patch
 Patch3:         PureIPv6-hosts.patch
+Patch4:         open-vm-tools-sysmacros.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -44,6 +45,7 @@ VmWare virtualization user mode tools
 %patch1 -p0
 %patch2 -p0
 %patch3 -p0
+%patch4 -p1
 %build
 touch ChangeLog
 autoreconf -i
@@ -101,6 +103,8 @@ fi
 
 
 %changelog
+*   Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 10.1.5-2
+-   Added *-sysmacros.patch to fix build issue with glibc-2.25
 *   Fri Mar 03 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-1
 -   Updating version to 10.1.5
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 10.1.0-2
