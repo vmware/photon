@@ -1,18 +1,19 @@
 Name:          crash
-Version:       7.1.5
-Release:       2%{?dist}
+Version:       7.1.8
+Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
 Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha1 crash=dd6b6f9e6aed648bdac4550d9d81442896dc98fd
-%define CRASH_GCORE_VERSION	1.3.1
-Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-1.3.1.tar.gz
-%define sha1 crash-gcore=9f1a889ad7b3f01c88866dac44cabddd7d35f99c
+%define sha1 crash=bcacab6bdabb4c53cc8b0171011ed50ccaf5310d
+%define CRASH_GCORE_VERSION	1.4.0
+Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-1.4.0.tar.gz
+%define sha1 crash-gcore=1434f787d7210516b12c2f28e5b9e5917c5b3eca
+Source2:       gdb-7.6-extra-patch.patch
 License:       GPL
-Patch0:        gcore-support-linux-4.4.patch
+#Patch0:        gcore-support-linux-4.4.patch
 BuildRequires: binutils
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
@@ -36,10 +37,11 @@ This package contains libraries and header files need for development.
 %prep
 %setup -q -n %{name}-%{version}
 %setup -a 1
-cd crash-gcore-command-%{CRASH_GCORE_VERSION}
-%patch0 -p1
+#cd crash-gcore-command-%{CRASH_GCORE_VERSION}
+#%patch0 -p1
 
 %build
+cat %{SOURCE2} >> gdb-7.6.patch
 make RPMPKG=%{version}-%{release}
 cd crash-gcore-command-%{CRASH_GCORE_VERSION}
 make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
@@ -72,6 +74,9 @@ install -pm 755 crash-gcore-command-%{CRASH_GCORE_VERSION}/gcore.so %{buildroot}
 %{_includedir}/crash/*.h
 
 %changelog
+*   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 7.1.8-1
+-   Update version to 7.1.8 (it supports linux-4.9)
+-   Disable a patch - it requires a verification.
 *   Fri Oct 07 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-2
 -   gcore-support-linux-4.4.patch
 *   Fri Sep 30 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-1
