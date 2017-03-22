@@ -1,7 +1,7 @@
 Summary:        Mesos
 Name:           mesos
 Version:        1.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1    mesos=5ea8f46cdb5c1b96fdce19120655c8df15732a60
+Patch0:         mesos-sysmacros.patch
 BuildRequires:  openjre >= 1.8.0.45
 BuildRequires:  openjdk >= 1.8.0.45
 BuildRequires:  curl-devel
@@ -47,13 +48,14 @@ Requires:   %{name} = %{version}
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.am
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.am
 ./configure \
     CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
-    CXXFLAGS="%{optflags} -Wno-deprecated-declarations" \
+    CXXFLAGS="%{optflags} -Wno-deprecated-declarations -Wno-strict-aliasing" \
     --disable-silent-rules \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
@@ -98,6 +100,9 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-3
+-   Added mesos-sysmacros.patch and -Wno-strict-aliasing CPPFLAGS
+    to fix build issues with glibc-2.25
 *   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-2
 -   BuildRequires curl-devel.
 *   Tue Dec 13 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-1

@@ -1,11 +1,11 @@
 Summary:	C debugger
 Name:		gdb
-Version:	7.8.2	
-Release:	3%{?dist}
+Version:	7.12.1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
-Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
-%define sha1 gdb=67cfbc6efcff674aaac3af83d281cf9df0839ff9
+Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
+%define sha1 gdb=ef77c5345d6f9fdcdf7a5d8503301242b701936e
 Source1:        http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz
 %define sha1 tcl=9bc452eec453c2ed37625874b9011563db687b07
 Source2:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
@@ -78,7 +78,8 @@ make %{?_smp_mflags} check
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%{_includedir}/*.h
+%exclude %{_datadir}/locale
+%exclude %{_includedir}/*.h
 %{_includedir}/gdb/*.h
 %{_libdir}/*.so
 %{_infodir}/*.gz
@@ -89,9 +90,11 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-3
--	GA - Bump release of all rpms
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 7.8.2-2
--	Handled locale files with macro find_lang
-*	Wed Apr 08 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-1
--	Initial build. First version
+*   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-1
+-   Version update
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-3
+-   GA - Bump release of all rpms
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 7.8.2-2
+-   Handled locale files with macro find_lang
+*   Wed Apr 08 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-1
+-   Initial build. First version
