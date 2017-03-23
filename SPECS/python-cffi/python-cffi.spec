@@ -1,17 +1,17 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Interface for Python to call C code
 Name:           python-cffi
-Version:        1.5.2
-Release:        4%{?dist}
+Version:        1.9.1
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
-%define sha1    cffi=5239b3aa4f67eed3559c09778096ecd4faeca876
+%define sha1    cffi=16265a4b305d433fb9089b19278502e904b0cb43
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -41,28 +41,38 @@ Python 3 version.
 
 %prep
 %setup -q -n cffi-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
-python setup.py build
+python2 setup.py build
+pushd ../p3dir
 python3 setup.py build
+popd
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+popd
 
 %check
-python setup.py test
+python2 setup.py test
+pushd ../p3dir
 python3 setup.py test
+popd
 
 %files
 %defattr(-,root,root)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-cffi
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.1-1
+-   Updated to version 1.9.1.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-4
 -   Added python3 site-packages.
 *   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 1.5.2-3
