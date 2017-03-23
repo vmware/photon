@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -118,11 +118,13 @@ WantedBy=multi-user.target
 EOF
 
 %pre
+if [ $1 -eq 1 ] ; then
 groupadd -g 26 smmsp                               &&
 useradd -c "Sendmail Daemon" -g smmsp -d /dev/null \
         -s /bin/false -u 26 smmsp                  &&
 chmod -v 1777 /var/mail                            &&
 install -v -m700 -d /var/spool/mqueue
+fi
 
 
 %post
@@ -169,6 +171,8 @@ fi
 
 
 %changelog
+*       Wed Mar 22 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-8
+-       Adding missing change from master for upgrade case.
 *       Fri Mar 10 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-7
 -       Updating systemd service file to start after network.Reboot issue.
 *       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 8.15.2-6
