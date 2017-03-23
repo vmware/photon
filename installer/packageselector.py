@@ -28,7 +28,9 @@ class PackageSelector(object):
 
         self.load_package_list(options_file)
 
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select Installation', True, self.package_menu, can_go_next=True, position=1)
+        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
+                             'Select Installation', True, action_panel = self.package_menu,
+                             can_go_next = True, position = 1)
 
     @staticmethod
     def get_packages_to_install(options, config_type, output_data_path):

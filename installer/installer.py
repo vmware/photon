@@ -113,6 +113,7 @@ class Installer(object):
         self.initialize_system()
 
         if self.iso_installer:
+            self.adjust_packages_for_vmware_virt()
             self.get_size_of_packages()
             selected_packages = self.install_config['packages']
             for package in selected_packages:
@@ -381,6 +382,22 @@ class Installer(object):
             self.size_of_packages[package] = size;
         self.progress_bar.update_num_items(progressbar_num_items)
 
+    def adjust_packages_for_vmware_virt(self):
+        try:
+            if (self.install_config['vmware_virt'] and
+                self.install_config['install_linux_esx']):
+                selected_packages = self.install_config['packages']
+                try:
+                    selected_packages.remove('linux')
+                except ValueError:
+                    pass
+                try:
+                    selected_packages.remove('initramfs')
+                except ValueError:
+                    pass
+                selected_packages.append('linux-esx')
+        except ValueError:
+            pass
 
     def run(self, command, comment = None):
         if comment != None:
