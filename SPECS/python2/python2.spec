@@ -1,33 +1,34 @@
-Summary:	A high-level scripting language
-Name:		python2
-Version:	2.7.11
-Release:	11%{?dist}
-License:	PSF
-URL:		http://www.python.org/
-Group:		System Environment/Programming
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://www.python.org/ftp/python/2.7.11/Python-%{version}.tar.xz
-%define sha1 Python=c3b8bbe3f084c4d4ea13ffb03d75a5e22f9756ff
-Patch0: cgi.patch
-Patch1: added-compiler-flags-for-curses-module.patch
-Patch2: added-pyopenssl-ipaddress-certificate-validation.patch
-Patch3: python2-CVE-2016-5636.patch
-Patch4: python2-support-photon-platform.patch
-BuildRequires:	pkg-config >= 0.28
-BuildRequires:	bzip2-devel
+Summary:        A high-level scripting language
+Name:           python2
+Version:        2.7.11
+Release:        12%{?dist}
+License:        PSF
+URL:            http://www.python.org/
+Group:          System Environment/Programming
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://www.python.org/ftp/python/2.7.11/Python-%{version}.tar.xz
+%define sha1    Python=c3b8bbe3f084c4d4ea13ffb03d75a5e22f9756ff
+Patch0:         cgi.patch
+Patch1:         added-compiler-flags-for-curses-module.patch
+Patch2:         added-pyopenssl-ipaddress-certificate-validation.patch
+Patch3:         python2-CVE-2016-5636.patch
+Patch4:         python2-support-photon-platform.patch
+BuildRequires:  pkg-config >= 0.28
+BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
-BuildRequires:	expat >= 2.1.0
-BuildRequires:	libffi >= 3.0.13
-BuildRequires:	sqlite-devel
-BuildRequires:	ncurses-devel
-BuildRequires:	readline-devel
-Requires:	bzip2
-Requires:  	openssl
-Requires:	python2-libs = %{version}-%{release}
-Provides: 	python-sqlite
-Provides: 	python(abi)
-Provides: 	/bin/python
+BuildRequires:  expat >= 2.1.0
+BuildRequires:  libffi >= 3.0.13
+BuildRequires:  sqlite-devel
+BuildRequires:  ncurses-devel
+BuildRequires:  readline-devel
+Requires:       bzip2
+Requires:       openssl
+Requires:       python2-libs = %{version}-%{release}
+Provides:       python-sqlite
+Provides:       python(abi)
+Provides:       /bin/python
+Provides:       /bin/python2
 
 %description
 The Python 2 package contains the Python development environment. It 
@@ -36,13 +37,13 @@ prototyping large programs or developing entire applications. This
 version is for backward compatibility with other dependent packages.
 
 %package libs
-Summary: The libraries for python runtime
-Group: Applications/System
-Requires:	sqlite-libs
-Requires:	expat >= 2.1.0
-Requires:	libffi >= 3.0.13
-Requires:	ncurses
-Requires:	coreutils
+Summary:        The libraries for python runtime
+Group:          Applications/System
+Requires:       sqlite-libs
+Requires:       expat >= 2.1.0
+Requires:       libffi >= 3.0.13
+Requires:       ncurses
+Requires:       coreutils
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size
 # Requires: binutils
@@ -109,17 +110,17 @@ to build python programs.
 %build
 export OPT="${CFLAGS}"
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--enable-shared \
-	--with-ssl \
-	--with-system-expat \
-	--with-system-ffi \
-	--enable-unicode=ucs4 \
-	--with-dbmliborder=gdbm:ndbm
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --enable-shared \
+    --with-ssl \
+    --with-system-expat \
+    --with-system-ffi \
+    --enable-unicode=ucs4 \
+    --with-dbmliborder=gdbm:ndbm
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -139,8 +140,8 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/python2.7/LICENSE.txt
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
 find %{buildroot}%{_libdir} -name '*.pyo' -delete
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 
@@ -220,6 +221,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.11-12
+-   Provides /bin/python2.
 *   Fri Jan 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.11-11
 -   Added patch to support Photon OS
 *   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 2.7.11-10
@@ -258,4 +261,4 @@ rm -rf %{buildroot}/*
 -   Adding coreutils package to run time required package
 
 *   Mon Apr 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.9-1
--   Initial build.	First version
+-   Initial build.  First version
