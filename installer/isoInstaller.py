@@ -34,9 +34,10 @@ from jsonwrapper import JsonWrapper
 from selectdisk import SelectDisk
 from license import License
 from ostreeserverselector import OSTreeServerSelector
+from linuxselector import LinuxSelector
 
 class IsoInstaller(object):
-    
+
     def get_config(self, path):
         if path.startswith("http://"):
             # Do 5 trials to get the kick start
@@ -185,6 +186,14 @@ class IsoInstaller(object):
 
         return ""
 
+    def is_vmware_virtualization(self):
+        process = subprocess.Popen(['systemd-detect-virt'], stdout=subprocess.PIPE)
+        out,err = process.communicate()
+        if err != None and err != 0:
+            return False
+        else:
+            return out == 'vmware\n'
+
     def __init__(self, stdscreen, options_file):
         self.screen = stdscreen
 
@@ -225,11 +234,13 @@ class IsoInstaller(object):
             random_id = '%12x' % random.randrange(16**12)
             random_hostname = "photon-" + random_id.strip()
             install_config = {'iso_system': False}
+            install_config['vmware_virt'] = False
+            if self.is_vmware_virtualization():
+                install_config['vmware_virt'] = True
             license_agreement = License(self.maxy, self.maxx)
             select_disk = SelectDisk(self.maxy, self.maxx, install_config)
             select_partition = PartitionISO(self.maxy, self.maxx, install_config)
             package_selector = PackageSelector(self.maxy, self.maxx, install_config, options_file)
-
             self.alpha_chars = range(65, 91)
             self.alpha_chars.extend(range(97,123))
             partition_accepted_chars = list(range(48, 58))
@@ -289,20 +300,24 @@ class IsoInstaller(object):
                     None, # post processing of the input field
                     'Please provide the Refspec in OSTree repo', 'OSTree Repo Refspec:', 2, install_config,
                     "photon/1.0/x86_64/minimal")
-            
-            items = items + [
-                    (license_agreement.display, False),
-                    (select_disk.display, True),
-                    (select_partition.display, False),
-                    (select_disk.guided_partitions, False),
-                    (package_selector.display, True),
-                    (hostname_reader.get_user_string, True),
-                    (root_password_reader.get_user_string, True),
-                    (confirm_password_reader.get_user_string, False),
-                    (ostree_server_selector.display, True),
-                    (ostree_url_reader.get_user_string, True),
-                    (ostree_ref_reader.get_user_string, True),
-                 ]
+
+            items.append((license_agreement.display, False))                    ,
+            items.append((select_disk.display, True))
+            items.append((select_partition.display, False))
+            items.append((select_disk.guided_partitions, False))
+            items.append((package_selector.display, True))
+            select_linux_index = -1
+            if install_config['vmware_virt'] == True:
+                linux_selector   = LinuxSelector(self.maxy, self.maxx, install_config)
+                items.append((linux_selector.display, True))
+                select_linux_index = items.index((linux_selector.display, True))
+            items.append((hostname_reader.get_user_string, True))
+            items.append((root_password_reader.get_user_string, True))
+            items.append((confirm_password_reader.get_user_string, False))
+            items.append((ostree_server_selector.display, True))
+            items.append((ostree_url_reader.get_user_string, True))
+            items.append((ostree_ref_reader.get_user_string, True))
+
         else:
             install_config = ks_config
             install_config['iso_system'] = False
@@ -328,6 +343,10 @@ class IsoInstaller(object):
                     index -= 1
                 if index < 0:
                     index = 0
+                if index == select_linux_index:
+                    if (install_config['type'] == 'ostree_host' or
+                        install_config['type'] == 'ostree_server'):
+                        index -= 1
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"
