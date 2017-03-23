@@ -1,16 +1,16 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python C parser
 Name:           python-pycparser
-Version:        2.14
-Release:        4%{?dist}
+Version:        2.17
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pycparser
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://pypi.python.org/packages/source/p/pycparser/pycparser-2.14.tar.gz
-%define sha1    pycparser=922162bad4aa8503988035506c1c65bbf8690ba4
+Source0:        https://pypi.python.org/packages/source/p/pycparser/pycparser-%{version}.tar.gz
+%define sha1    pycparser=afc1f70c6fce0e196dece88d6da3b8d5b2af6297
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -39,7 +39,7 @@ Python 3 version.
 %setup -q -n pycparser-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 
 %install
@@ -52,13 +52,15 @@ python all_tests.py
 
 %files
 %defattr(-,root,root)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-pycparser
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.17-1
+-   Updated to version 2.17.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.14-4
 -   Added python3 site-packages.
 *   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 2.14-3

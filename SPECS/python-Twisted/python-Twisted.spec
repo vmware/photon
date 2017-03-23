@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
 Version:        17.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,7 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-incremental
+BuildRequires:  python-zope.interface
 
 Requires:       python2
 Requires:       python2-libs
@@ -35,22 +36,31 @@ Summary:        python-Twisted
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-incremental
+BuildRequires:  python3-zope.interface
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-zope.interface
+
 %description -n python3-Twisted
 Python 3 version.
 
 %prep
 %setup -q -n Twisted-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
 python2 setup.py build
+pushd ../p3dir
 python3 setup.py build
+popd
 
 %install
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+popd
 
 %check
 easy_install tox
@@ -66,6 +76,8 @@ tox -e py27-tests
 %{_bindir}/*
 
 %changelog
+*   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 17.1.0-2
+-   Change requires
 *   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 17.1.0-1
 -   Added python3 package and updated to version 17.1.0.
 *   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 15.5.0-3
