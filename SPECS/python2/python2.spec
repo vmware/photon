@@ -1,18 +1,17 @@
 Summary:        A high-level scripting language
 Name:           python2
-Version:        2.7.11
-Release:        9%{?dist}
+Version:        2.7.13
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.python.org/ftp/python/2.7.11/Python-%{version}.tar.xz
-%define sha1    Python=c3b8bbe3f084c4d4ea13ffb03d75a5e22f9756ff
+Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
+%define sha1    Python=18a8f30a0356c751b8d0ea6f76e764cab13ee046
 Patch0:         cgi.patch
 Patch1:         added-compiler-flags-for-curses-module.patch
 Patch2:         added-pyopenssl-ipaddress-certificate-validation.patch
-Patch3:         python2-CVE-2016-5636.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -103,7 +102,6 @@ to build python programs.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -221,6 +219,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Wed Mar 22 2017 Divya Thaluru <dthaluru@vmware.com> 2.7.13-1
+-   Updated to version 2.7.13
 *   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.11-9
 -   Provides /bin/python2.
 *   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 2.7.11-8
