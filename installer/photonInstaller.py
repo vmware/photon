@@ -140,11 +140,27 @@ def make_src_iso(working_directory, src_iso_path, rpm_list):
     process = subprocess.Popen(['rm', '-rf', options.working_directory])
     retval = process.wait()
 
+def make_debug_iso(working_directory, debug_iso_path, rpm_list):
+    if os.path.isdir(working_directory):
+        process = subprocess.Popen(['rm', '-rf', working_directory])
+        retval = process.wait()
+    process = subprocess.Popen(['mkdir', '-p', os.path.join(working_directory, "DEBUGRPMS")])
+    retval = process.wait()
+    for aaa in rpm_list:
+        if os.path.isfile(aaa):
+            process = subprocess.Popen(['cp', aaa, os.path.join(working_directory, "DEBUGRPMS")])
+            retval = process.wait()
+    process = subprocess.Popen(['mkisofs', '-r', '-o', debug_iso_path, working_directory])
+    retval = process.wait()
+    process = subprocess.Popen(['rm', '-rf', options.working_directory])
+    retval = process.wait()
+
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <config file> <tools path>"
     parser = ArgumentParser(usage)
     parser.add_argument("-i", "--iso-path",  dest="iso_path")
     parser.add_argument("-j", "--src-iso-path",  dest="src_iso_path")
+    parser.add_argument("-k", "--debug-iso-path",  dest="debug_iso_path")
     parser.add_argument("-v", "--vmdk-path", dest="vmdk_path")
     parser.add_argument("-w",  "--working-directory",  dest="working_directory", default="/mnt/photon-root")
     parser.add_argument("-l",  "--log-path",  dest="log_path", default="../stage/LOGS")
@@ -237,11 +253,15 @@ if __name__ == '__main__':
 
         # Making the iso if needed
         if options.iso_path:
-            rpm_list = " ".join(create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 3, options.output_data_path))
+            rpm_list = " ".join(create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 1, options.output_data_path))
             files_to_copy = " ".join(create_additional_file_list_to_copy_in_iso(os.path.abspath(options.stage_path), options.package_list_file))
             live_cd = get_live_cd_status_string(options.package_list_file)
             process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd, options.json_data_path])
             retval = process.wait()
+
+        if options.debug_iso_path:
+            debug_rpm_list = create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 2, options.output_data_path)
+            make_debug_iso(options.working_directory, options.debug_iso_path, debug_rpm_list)
 
         # Cleaning up for vmdk
         if 'vmdk_install' in config and config['vmdk_install']:
@@ -249,6 +269,6 @@ if __name__ == '__main__':
             process.wait()
 
         #Clean up the working directories
-        if (options.iso_path or options.vmdk_path):
+        if (options.iso_path or options.vmdk_path or options.debug_iso_path):
             process = subprocess.Popen(['rm', '-rf', options.working_directory])
             retval = process.wait()
