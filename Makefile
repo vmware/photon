@@ -68,6 +68,7 @@ micro-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MICRO)
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-micro-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
+                -k $(PHOTON_STAGE)/photon-micro-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
@@ -104,6 +105,7 @@ minimal-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
+                -k $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
@@ -135,6 +137,7 @@ live-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-live-iso-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
+                -k $(PHOTON_STAGE)/photon-live-iso-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
@@ -168,6 +171,7 @@ iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
+                -k $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
@@ -184,6 +188,7 @@ custom-iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER)-custom.iso \
+                -k $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER)-custom.debug.iso \
                 -w $(PHOTON_STAGE)/photon_iso \
                 -l $(PHOTON_STAGE)/LOGS \
                 -r $(PHOTON_STAGE)/RPMS \
