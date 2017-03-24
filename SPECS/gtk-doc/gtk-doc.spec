@@ -1,11 +1,11 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
-Version:	1.24
-Release:	3%{?dist}
+Version:	1.25
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
-Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.21/%{name}-%{version}.tar.xz
-%define sha1 gtk-doc=b2648b535894e4a1897dc511a963868763d65bd6
+Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.25/%{name}-%{version}.tar.xz
+%define sha1 gtk-doc=bd93ff19403805b4faddcd86b58a6f338ce1fd6d
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -41,7 +41,11 @@ cd tests && make check-TESTS
 %defattr(-,root,root)
 %{_bindir}/*
 /usr/share/*
+%{_libdir}/cmake/
+
 %changelog
+* 	Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com>  1.25-1
+- 	Upgrade to 1.25
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.24-3
 -	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.24-1
