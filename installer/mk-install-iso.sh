@@ -49,7 +49,7 @@ run_command "# 6" "cp boot/theme.txt ${WORKINGDIR}/boot/grub2/themes/photon/" "$
 run_command "echo : ${WORKINGDIR}" "echo ${WORKINGDIR}" "${LOGFILE}"
 cp BUILD_DVD/isolinux/splash.png ${BUILDROOT}/installer/boot/.
 mkdir -p ${BUILDROOT}/installer/EFI/BOOT
-cp EFI/BOOT/bootx64.efi ${BUILDROOT}/installer/EFI/BOOT/bootx64.efi
+cp EFI/BOOT/* ${BUILDROOT}/installer/EFI/BOOT/
 
 if [ "$LIVE_CD" = true ] ; then
     mv ${WORKINGDIR}/isolinux/live-menu.cfg ${WORKINGDIR}/isolinux/menu.cfg

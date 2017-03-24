@@ -3,15 +3,18 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2-efi
 Version:    2.02
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~beta2.tar.gz
-%define sha1 grub=b2c9227f9a54587532ae3f727d197ab112cdbbb3
-Patch0:     grub2-efi-CVE-2015-8370.patch
+Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~beta3.tar.xz
+%define sha1 grub=14a1f9239a9c974957e835dc706fc6a1e4819c83
+Patch0:     0020-Add-support-for-linuxefi.patch
+Patch1:     0022-Don-t-allow-insmod-when-secure-boot-is-enabled.patch
+Patch2:     linuxefi_require_shim.patch
+Patch3:     linuxefi_non_sb_fallback.patch
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
@@ -29,11 +32,13 @@ These are the additional language files of grub.
 
 
 %prep
-%setup -qn grub-2.02~beta2
+%setup -qn grub-2.02~beta3
 %patch0 -p1
-#sed -i -e '/gets is a/d' grub-core/gnulib/stdio.in.h
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 %build
-
+./autogen.sh
 ./configure \
     --prefix=%{_prefix} \
     --sbindir=/sbin \
@@ -85,6 +90,9 @@ rm -rf %{buildroot}%{_infodir}
 /usr/share/locale/*
 
 %changelog
+*   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com>  2.02-6
+-   Version update to 2.02~beta3
+-   SecureBoot support
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02-5
 -   Add fix for CVE-2015-8370
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2.02-4

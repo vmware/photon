@@ -30,7 +30,7 @@ grub_efi_install()
     cp boot/unifont.pf2 /usr/share/grub/
     grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
     rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
-    cp EFI/BOOT/bootx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
+    cp EFI/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
     mkdir -p $BUILDROOT/boot/efi/boot/grub2
     echo "configfile (hd0,gpt1)/boot/grub2/grub.cfg" > $BUILDROOT/boot/efi/boot/grub2/grub.cfg
     umount $BUILDROOT/boot/efi
