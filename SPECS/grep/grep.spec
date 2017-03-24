@@ -1,20 +1,18 @@
 Summary:	Programs for searching through files
 Name:		grep
-Version:	2.21
-Release:	3%{?dist}
+Version:	3.0
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grep
 Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:		http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
-%define sha1 grep=c7e6525c5c5aaa1bc3c1774db1697f42b11c2d85
-Patch0:     out-of-bound-heap-read-CVE-2015-1345.patch
+Source0:	http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
+%define sha1 grep=7b742a6278f28ff056da799c62c1b9e417fe86ba
 %description
 The Grep package contains programs for searching through files.
 %prep
 %setup -q
-%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -32,6 +30,8 @@ make  %{?_smp_mflags} check
 /bin/*
 %{_mandir}/*/*
 %changelog
+*       Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.0-1
+-       Upgrading grep to 3.0 version
 *       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.21-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.21-2
