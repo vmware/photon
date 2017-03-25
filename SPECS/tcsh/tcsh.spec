@@ -2,7 +2,7 @@
 Summary:	An enhanced version of csh, the C shell
 Name:		tcsh
 Version:	6.19.00
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 Group:		System Environment/Shells
 Source:		http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.gz
