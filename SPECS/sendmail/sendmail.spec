@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -146,9 +146,10 @@ EOF
   cd /etc/mail
   m4 m4/cf.m4 sendmail.mc > sendmail.cf
 
-  chmod 700 /var/spool/clientmqueue
-  chown smmsp:smmsp /var/spool/clientmqueue
 fi
+
+chmod 700 /var/spool/clientmqueue
+chown smmsp:smmsp /var/spool/clientmqueue
 
 %systemd_post sendmail.service
 
@@ -166,7 +167,23 @@ fi
 %systemd_postun_with_restart sendmail.service
 
 %files
-%{_sysconfdir}/*
+%config(noreplace)%{_sysconfdir}/mail/sendmail.mc
+%config(noreplace)%{_sysconfdir}/mail/sendmail.cf
+%config(noreplace)%{_sysconfdir}/mail/submit.cf
+%config(noreplace)%{_sysconfdir}/mail/submit.mc
+%{_sysconfdir}/mail/feature/*
+%{_sysconfdir}/mail/hack/*
+%{_sysconfdir}/mail/m4/*
+%{_sysconfdir}/mail/mailer/*
+%{_sysconfdir}/mail/ostype/*
+%{_sysconfdir}/mail/sh/*
+%{_sysconfdir}/mail/siteconfig/*
+%{_sysconfdir}/mail/cf/*
+%{_sysconfdir}/mail/domain/*
+%{_sysconfdir}/mail/README
+%{_sysconfdir}/mail/helpfile
+%{_sysconfdir}/mail/sendmail.schema
+%{_sysconfdir}/mail/statistics
 /usr/*
 /var/*
 /etc/systemd/system/sendmail.service
@@ -178,6 +195,8 @@ fi
 
 
 %changelog
+*       Fri Mar 24 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-11
+-       Fixing sendmail upgrade config no replace.
 *       Mon Mar 06 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-10
 -       Adding dependency to start after network-online.
 *	Wed Dec 14 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-9
