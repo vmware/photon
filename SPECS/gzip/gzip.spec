@@ -1,14 +1,14 @@
 Summary:	Programs for compressing and decompressing files
 Name:		gzip
-Version:	1.6
-Release:	2%{?dist}
+Version:	1.8
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software
 Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:		http://ftp.gnu.org/gnu/gzip/%{name}-%{version}.tar.xz
-%define sha1 gzip=05bd01fc90178b806e0c13f9526e2ad392084085
+Source0:	http://ftp.gnu.org/gnu/gzip/%{name}-%{version}.tar.xz
+%define sha1 gzip=224bc2af5202eccf47f22357023d222011f9de78
 %description
 The Gzip package contains programs for compressing and
 decompressing files.
@@ -37,6 +37,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*	Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.8-1
+-	Upgrading to version 1.8
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6-2
 -	GA - Bump release of all rpms
 *	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.6-1
