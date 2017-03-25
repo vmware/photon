@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -30,6 +30,8 @@ Patch12:        x86-vmware-sta.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch14:        0002-Added-rap_plugin.patch
 Patch15:        0003-Added-PAX_RANDKSTACK.patch
+# NSX requirements
+Patch16:        LKCM.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -111,6 +113,9 @@ EOF
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+pushd ..
+%patch16 -p0
+popd
 
 %build
 # patch vmw_balloon driver
@@ -121,6 +126,11 @@ cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+# build LKCM module
+bldroot=`pwd`
+pushd ../LKCM
+make -C $bldroot M=`pwd` modules
+popd
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -146,6 +156,11 @@ install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/linux-headers-%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
+# install LKCM module
+bldroot=`pwd`
+pushd ../LKCM
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
 cp -v System.map        %{buildroot}/boot/System.map-%{uname_r}
 cp -v .config            %{buildroot}/boot/config-%{uname_r}
@@ -201,6 +216,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Mar 21 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-3
+-   Added LKCM module
 *   Mon Mar 6 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-2
 -   .config: NSX requirements for crypto and netfilter
 *   Tue Feb 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-1
