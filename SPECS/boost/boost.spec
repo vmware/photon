@@ -1,7 +1,7 @@
 Summary:	Boost 
 Name:		boost
 Version:	1.60.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Boost Software License V1
 URL:		http://www.boost.org/
 Group:		System Environment/Security
@@ -24,33 +24,53 @@ Requires:       %{name} = %{version}-%{release}
 The boost-devel package contains libraries, header files and documentation
 for developing applications that use boost.
 
+%package        static
+Summary:        boost static libraries
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description    static
+The boost-static package contains boost static libraries.
+
 %prep
 %setup -qn boost_1_60_0
+
 %build
 ./bootstrap.sh --prefix=%{buildroot}%{_prefix}
 ./b2 %{?_smp_mflags} stage threading=multi link=shared
+./b2 %{?_smp_mflags} stage threading=multi link=static
+
 %install
 ./b2 install threading=multi link=shared
+./b2 install threading=multi link=static
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%{_libdir}/*.so.*
-%{_libdir}/*.so
+%{_libdir}/libboost_*.so.*
+%{_libdir}/libboost_*.so
 
 %files devel
-%{_libdir}/*.a
-%{_includedir}/*
+%defattr(-,root,root)
+%{_includedir}/boost/*
+
+%files static
+%defattr(-,root,root)
+%{_libdir}/libboost_*.a
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60.0-2
--	GA - Bump release of all rpms
-*	Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.60.0-1
+*   Wed Mar 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.60.0-3
+-   Build static libs in additon to shared.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60.0-2
+-   GA - Bump release of all rpms
+*   Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.60.0-1
 -   Update to version 1.60.0.
-*	Thu Oct 01 2015 Xiaolin Li <xiaolinl@vmware.com> 1.56.0-2
-_	Move header files to devel package.
-*	Tue Feb 10 2015 Divya Thaluru <dthaluru@vmware.com> 1.56.0-1
--	Initial build.	First version
+*   Thu Oct 01 2015 Xiaolin Li <xiaolinl@vmware.com> 1.56.0-2
+_   Move header files to devel package.
+*   Tue Feb 10 2015 Divya Thaluru <dthaluru@vmware.com> 1.56.0-1
+-   Initial build. First version
