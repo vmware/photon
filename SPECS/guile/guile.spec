@@ -1,11 +1,11 @@
 Summary:	GNU Ubiquitous Intelligent Language for Extensions
 Name:		guile
-Version:	2.0.13
+Version:	2.2.0
 Release:	1%{?dist}
 License: 	LGPLv3+
 URL:		http://www.gnu.org/software/guile/
 Source0: 	ftp://ftp.gnu.org/pub/gnu/guile/%{name}-%{version}.tar.gz
-%define sha1 guile=efd3f9769d04b51803ea4ebcbfd7b6add1d419e6
+%define sha1 guile=354bad138b4e39382e25152bd7195dbc37ccb07d
 Group: 		Development/Languages
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -60,11 +60,13 @@ make  %{?_smp_mflags} check
 %{_libdir}/*.la
 %files devel
 %defattr(-,root,root)
-%{_includedir}/guile/2.0/*.h
-%{_includedir}/guile/2.0/libguile/*.h
+%{_includedir}/guile/2.2/*.h
+%{_includedir}/guile/2.2/libguile/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*       Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.2.0-1
+-       Upgrading to 2.2.0
 *       Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-1
 -       Bumped to latest version 2.0.13 to handle CVE-2016-8606
 *       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.0.11-3
