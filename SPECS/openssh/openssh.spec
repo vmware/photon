@@ -1,19 +1,19 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        7.4p1
-Release:        3%{?dist}
+Version:        7.5p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1    openssh=2330bbf82ed08cf3ac70e0acf00186ef3eeb97e0
+%define sha1    openssh=5e8f185d00afb4f4f89801e9b0f8b9cee9d87ebd
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Patch0:         blfs_systemd_fixes.patch
-Patch1:         openssh-7.4p1-fips.patch
-Patch2:         openssh-7.4p1-configure-fips.patch
+Patch1:         openssh-7.5p1-fips.patch
+Patch2:         openssh-7.5p1-configure-fips.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -23,8 +23,8 @@ Requires:       openssh-clients = %{version}-%{release}
 Requires:       openssh-server = %{version}-%{release}
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
-useful for encrypting authentication and subsequent traffic over a 
-network. The ssh and scp commands are secure implementions of telnet 
+useful for encrypting authentication and subsequent traffic over a
+network. The ssh and scp commands are secure implementions of telnet
 and rcp respectively.
 
 %package clients
@@ -112,7 +112,9 @@ install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 %{_fixperms} %{buildroot}/*
 
 %check
-useradd sshd
+if ! getent passwd sshd >/dev/null; then
+   useradd sshd
+fi
 if [ ! -d /var/lib/sshd ]; then
    mkdir /var/lib/sshd
    chmod 0755 /var/lib/sshd
@@ -192,6 +194,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.5p1-1
+-   Update version
 *   Thu Feb 09 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-3
 -   Add patch to configure openssh FIPS mode
 *   Thu Feb 02 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-2
