@@ -1,14 +1,14 @@
 Name:           traceroute
 Summary:        Traces the route taken by packets over an IPv4/IPv6 network
-Version:        2.0.22
-Release:        2%{?dist}
+Version:        2.1.0
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Internet
 Url:            http://traceroute.sourceforge.net
 Source0:        http://downloads.sourceforge.net/project/traceroute/traceroute/traceroute-%{version}/traceroute-%{version}.tar.gz
-%define sha1 traceroute=2d2797a2684fc41639f80537cefabe9a8c27fa7b
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha1    traceroute=bc5c6c8022187511be5665b3818d919be5987dcc
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 
 %description
@@ -49,7 +49,9 @@ popd
 
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.22-2
--	GA - Bump release of all rpms
-* 	Fri Feb 26 2016 Anish Swaminathan <anishs@vmware.com>  2.0.22-1
-- 	Initial version
+*   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.0-1
+-   Updated to version 2.1.0.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.22-2
+-   GA - Bump release of all rpms
+*   Fri Feb 26 2016 Anish Swaminathan <anishs@vmware.com>  2.0.22-1
+-   Initial version
