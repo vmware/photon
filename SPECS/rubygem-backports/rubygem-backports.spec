@@ -4,15 +4,15 @@
 %global gem_name backports
 
 Name: rubygem-backports
-Version: 3.6.8
-Release: 3%{?dist}
-Summary: Backports of Ruby features for older Ruby
-Group: Development/Languages
-License: MIT
-URL: http://github.com/marcandre/backports
-Source0: https://rubygems.org/gems/backports-%{version}.gem
-%define sha1 backports=5c9dd0d5552d242ee6bb338a9097e85f0a0a45d5
-BuildRequires: ruby
+Version:        3.7.0
+Release:        1%{?dist}
+Summary:        Backports of Ruby features for older Ruby
+Group:          Development/Languages
+License:        MIT
+URL:            http://github.com/marcandre/backports
+Source0:        https://rubygems.org/gems/backports-%{version}.gem
+%define sha1    backports=66c9d715726d3fa2d6dbb818f4d09c652ae7cbc9
+BuildRequires:  ruby
 
 %description
 Essential backports that enable many of the nice features of Ruby 1.8.7 up to
@@ -28,13 +28,15 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
-* Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 3.6.8-3
-- Bump up release number to reflect ruby upgrade
-* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.8-2
-- GA - Bump release of all rpms
-* Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 3.6.8-1
-- Upgrade version.
-* Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.6.7-1
-- Upgrade version.
-* Wed Nov 11 2015 Xiaolin Li <amakhalov@vmware.com> 3.6.4-1
-- Initial build
+*   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
+-   Updated to version 3.7.0.
+*   Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 3.6.8-3
+-   Bump up release number to reflect ruby upgrade
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.8-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 3.6.8-1
+-   Upgrade version.
+*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.6.7-1
+-   Upgrade version.
+*   Wed Nov 11 2015 Xiaolin Li <amakhalov@vmware.com> 3.6.4-1
+-   Initial build
