@@ -1,17 +1,17 @@
-Summary: 	Thin provisioning tools
-Name:		thin-provisioning-tools
-Version:	0.6.1
-Release:	3%{?dist}
-License:	GPLv3+
-Group:		System Environment/Base
-URL:		https://github.com/jthornber/thin-provisioning-tools
-Source0:	https://github.com/jthornber/thin-provisioning-tools/releases/thin-provisioning-tools-%{version}.tar.gz
-%define sha1 thin-provisioning-tools=387096be52b2f846b8b83f3d8da8e2cc6775465f
-Patch0:		thin-provisioning-tools-fix-for-gcc-6.3.patch
-BuildRequires:	expat , libaio-devel, boost-devel
-Requires:	expat, libaio
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        Thin provisioning tools
+Name:           thin-provisioning-tools
+Version:        0.6.3
+Release:        1%{?dist}
+License:        GPLv3+
+Group:          System Environment/Base
+URL:            https://github.com/jthornber/thin-provisioning-tools
+Source0:        thin-provisioning-tools-%{version}.tar.gz
+%define sha1    thin-provisioning-tools=6e2db216ffaa62a8945d42d91131b94b59fe73d7
+Patch0:         thin-provisioning-tools-fix-for-gcc-6.3.patch
+BuildRequires:  expat , libaio-devel, boost-devel
+Requires:       expat, libaio
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 %description
 thin-provisioning-tools contains check,dump,restore,repair,rmap
@@ -23,7 +23,6 @@ snapshot eras
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 autoconf
@@ -37,22 +36,7 @@ make DESTDIR=%{buildroot} MANDIR=%{_mandir} install
 
 %files
 %doc COPYING README.md
-%{_mandir}/man8/cache_check.8.gz
-%{_mandir}/man8/cache_dump.8.gz
-%{_mandir}/man8/cache_restore.8.gz
-%{_mandir}/man8/cache_repair.8.gz
-%{_mandir}/man8/era_check.8.gz
-%{_mandir}/man8/era_dump.8.gz
-%{_mandir}/man8/era_invalidate.8.gz
-%{_mandir}/man8/thin_check.8.gz
-%{_mandir}/man8/thin_dump.8.gz
-%{_mandir}/man8/thin_metadata_size.8.gz
-%{_mandir}/man8/thin_restore.8.gz
-%{_mandir}/man8/thin_repair.8.gz
-%{_mandir}/man8/thin_rmap.8.gz
-%{_mandir}/man8/thin_delta.8.gz
-%{_mandir}/man8/thin_ls.8.gz
-%{_mandir}/man8/thin_trim.8.gz
+%{_mandir}/man8/*
 %{_sbindir}/pdata_tools
 %{_sbindir}/cache_check
 %{_sbindir}/cache_dump
@@ -74,12 +58,14 @@ make DESTDIR=%{buildroot} MANDIR=%{_mandir} install
 %{_sbindir}/thin_trim
 
 %changelog
-* Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.1-3
-- Fix gcc-6.3 compilation errors
-* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.1-2
-- GA - Bump release of all rpms
-* Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 0.6.1-1
-- Updating version
-* Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.4.1-1
-- Initial version
+*   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6.3-1
+-   Updated to version 0.6.3.
+*   Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.1-3
+-   Fix gcc-6.3 compilation errors
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.1-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 0.6.1-1
+-   Updating version
+*   Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.4.1-1
+-   Initial version
 

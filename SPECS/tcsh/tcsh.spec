@@ -1,21 +1,21 @@
 # Got the intial spec from Fedora and modified it
-Summary:	An enhanced version of csh, the C shell
-Name:		tcsh
-Version:	6.19.00
-Release:	6%{?dist}
-License:	BSD
-Group:		System Environment/Shells
-Source:		http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.gz
-%define sha1 tcsh=cdb1abe319fab5d3caff101c393293e5b3607f0c
+Summary:        An enhanced version of csh, the C shell
+Name:           tcsh
+Version:        6.20.00
+Release:        1%{?dist}
+License:        BSD
+Group:          System Environment/Shells
+Source:         http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.xz
+%define sha1    tcsh=a52deb0181e32583dbe666474c9c2e784357feba
 Patch0:         tcsh-6.19.00-calloc-gcc-5.patch
 Patch1:         tcsh.glibc-2.24.patch
-URL:		http://www.tcsh.org/
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Provides:	csh = %{version}
-Provides:	/bin/tcsh, /bin/csh
-BuildRequires:	ncurses-devel
-Requires:	ncurses
+URL:            http://www.tcsh.org/
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Provides:       csh = %{version}
+Provides:       /bin/tcsh, /bin/csh
+BuildRequires:  ncurses-devel
+Requires:       ncurses
 Requires(post): grep
 Requires(postun): coreutils, grep
 
@@ -29,8 +29,6 @@ like syntax.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
 sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
@@ -47,12 +45,12 @@ ln -sf tcsh %{buildroot}%{_bindir}/csh
 ln -sf tcsh.1 %{buildroot}%{_mandir}/man1/csh.1
 
 while read lang language ; do
-	dest=%{buildroot}%{_datadir}/locale/$lang/LC_MESSAGES
-	if test -f tcsh.$language.cat ; then
-		mkdir -p $dest
-		install -p -m 644 tcsh.$language.cat $dest/tcsh
-		echo "%lang($lang) %{_datadir}/locale/$lang/LC_MESSAGES/tcsh"
-	fi
+  dest=%{buildroot}%{_datadir}/locale/$lang/LC_MESSAGES
+  if test -f tcsh.$language.cat ; then
+    mkdir -p $dest
+    install -p -m 644 tcsh.$language.cat $dest/tcsh
+    echo "%lang($lang) %{_datadir}/locale/$lang/LC_MESSAGES/tcsh"
+  fi
 done > tcsh.lang << _EOF
 de german
 el greek
@@ -78,18 +76,18 @@ rm -rf %{buildroot}
 if [ $1 -eq 1 ] ; then
   if [ ! -f /etc/shells ]; then
    echo "%{_bindir}/tcsh" >> /etc/shells
-   echo "%{_bindir}/csh"	>> /etc/shells
+   echo "%{_bindir}/csh"  >> /etc/shells
    echo "/bin/tcsh" >> /etc/shells
-   echo "/bin/csh"	>> /etc/shells
+   echo "/bin/csh"  >> /etc/shells
   else
    grep -q '^%{_bindir}/tcsh$' /etc/shells || \
    echo "%{_bindir}/tcsh" >> /etc/shells
    grep -q '^%{_bindir}/csh$'  /etc/shells || \
-   echo "%{_bindir}/csh"	>> /etc/shells
+   echo "%{_bindir}/csh"  >> /etc/shells
    grep -q '^/bin/tcsh$' /etc/shells || \
    echo "/bin/tcsh" >> /etc/shells
    grep -q '^/bin/csh$'  /etc/shells || \
-   echo "/bin/csh"	>> /etc/shells
+   echo "/bin/csh"  >> /etc/shells
   fi
 fi
 
@@ -114,17 +112,19 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
-*	Tue Feb 7 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-6
--	Added /bin/csh and /bin/tsch entries in /etc/shells
-*	Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 6.19.00-5
--	tcsh.glibc-2.24.patch
-*	Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-4
--	Fix calloc for gcc 5 optimization
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-3
--	GA - Bump release of all rpms
-*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-2
--   	Fix for upgrade issues
-*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-1
--	Upgrade version
-*	Wed Apr 1 2015 Divya Thaluru <dthaluru@vmware.com> 6.18.01-1
--	Initial build. First version
+*   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.20.00-1
+-   Updated to version 6.20.00
+*   Tue Feb 07 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-6
+-   Added /bin/csh and /bin/tsch entries in /etc/shells
+*   Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 6.19.00-5
+-   tcsh.glibc-2.24.patch
+*   Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-4
+-   Fix calloc for gcc 5 optimization
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-3
+-   GA - Bump release of all rpms
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-2
+-   Fix for upgrade issues
+*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-1
+-   Upgrade version
+*   Wed Apr 1 2015 Divya Thaluru <dthaluru@vmware.com> 6.18.01-1
+-   Initial build. First version
