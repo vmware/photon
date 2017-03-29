@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        2.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -37,6 +37,34 @@ Requires:       protobuf = %{version}-%{release}
 %description    static
 The protobuf-static package contains static protobuf libraries.
 
+%package        python
+Summary:        protobuf python lib
+Group:          Development/Libraries
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+Requires:       python2
+Requires:       python2-libs
+Requires:       protobuf = %{version}-%{release}
+
+%description    python
+This contains protobuf python libraries.
+
+%package        python3
+Summary:        protobuf python3 lib
+Group:          Development/Libraries
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+BuildRequires:  python-setuptools
+Requires:       python3
+Requires:       python3-libs
+Requires:       protobuf = %{version}-%{release}
+
+%description    python3
+This contains protobuf python3 libraries.
+
 %prep
 %setup
 autoreconf -iv
@@ -44,9 +72,15 @@ autoreconf -iv
 %build
 %configure --disable-silent-rules
 make %{?_smp_mflags}
+cd python
+python setup.py build
+python3 setup.py build
 
 %install
 make DESTDIR=%{buildroot} install
+cd python
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -75,7 +109,15 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libprotobuf.a
 %{_libdir}/libprotoc.a
 
+%files python
+/usr/lib/python2.7/site-packages/*
+
+%files python3
+/usr/lib/python3.5/site-packages/*
+
 %changelog
+*   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
+-   Build protobuf-python.
 *   Mon Mar 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
 -   Build static lib.
 *   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6.1-1
