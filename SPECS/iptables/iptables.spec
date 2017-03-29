@@ -1,14 +1,14 @@
 Summary:	Linux kernel packet control tool
 Name:		iptables
-Version:	1.6.0
-Release:	6%{?dist}
+Version:	1.6.1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.netfilter.org/projects/iptables
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1 iptables-=21a694e75b0d6863cc001f85fb15915d12b8cc22
+%define sha1 iptables-=b2592490ca7a6c2cd0f069e167a4337c86acdf91
 Source1:	iptables.service
 Source2:	iptables
 Source3:	iptables.stop
@@ -80,6 +80,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_mandir}/man8/*
 %changelog
+*   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.1-1
+-   Updated to version 1.6.1
 *   Wed Jan 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.0-6
 -   Flush iptables on service stop
 *   Tue Aug 30 2016 Anish Swaminathan <anishs@vmware.com> 1.6.0-5
