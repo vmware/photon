@@ -1,6 +1,6 @@
 Summary:    administration tool for IP sets 
 Name:       ipset
-Version:    6.29
+Version:    6.32
 Release:    1%{?dist}
 License:    GPLv2
 URL:        http://ipset.netfilter.org/
@@ -8,7 +8,7 @@ Group:      System Environment/tools
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:     ipset.netfilter.org/%{name}-%{version}.tar.bz2
-%define sha1 ipset=fa11b387716544c798bc9549cedbd8dbee471605
+%define sha1 ipset=2c03ac15aa6807c0f0344b61090147d4bfaa4fd2
 BuildRequires:    libmnl-devel
 Requires:         libmnl
 %description
@@ -71,5 +71,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libipset.pc
 
 %changelog
+*   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.32-1
+-   Upgrading version to 6.32
 *   Wed Aug 3 2016 Xiaolin Li <xiaolinl@vmware.com> 6.29-1
 -   Initial build.  First version
