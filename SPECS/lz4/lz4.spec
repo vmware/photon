@@ -1,17 +1,18 @@
 Summary:        Extremely fast compression.
 Name:           lz4
-Version:        1.7.4
+Version:        1.7.5
 Release:        1%{?dist}
 License:        GPLv2+ and BSD
 URL:            http://www.gnuplot.info/
 Group:          Applications
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/Cyan4973/lz4/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    lz4=2b676bbcce1e69c05c44595372685379ad524cda
+Source0:        https://github.com/lz4/lz4/archive/v%{version}.tar.gz
+%define sha1    lz4=a710a7d45beb0951806d2b98f0c1739107e97c14
 
 %description
-LZ4 is lossless compression algorithm, providing compression speed at 400 MB/s per core, scalable with multi-cores CPU. It features an extremely fast decoder, with speed in multiple GB/s per core, typically reaching RAM speed limits on multi-core systems.
+LZ4 is lossless compression algorithm, providing compression speed at 400 MB/s per core, scalable with multi-cores CPU. 
+It features an extremely fast decoder, with speed in multiple GB/s per core, typically reaching RAM speed limits on multi-core systems.
 
 %package devel
 Summary:    Libraries and header files for lz4
@@ -48,6 +49,8 @@ make install DESTDIR=%{buildroot} LIBDIR=%{_libdir} PREFIX=%{_prefix}
 
 
 %changelog
+*   Wed Mar 29 2017 Michelle Wang <michellew@vmware.com> 1.7.5-1
+-   Update lz4 package.
 *   Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.4-1
 -   Add lz4 package.
 
