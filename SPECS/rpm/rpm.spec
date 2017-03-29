@@ -1,57 +1,77 @@
-Summary:          Package manager
-Name:              rpm
-Version:          4.11.2
-Release:          11%{?dist}
-License:          GPLv2+
-URL:              http://rpm.org
-Group:            Applications/System
-Vendor:           VMware, Inc.
-Distribution:     Photon
-Source0:          http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
-%define sha1 rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
-Source1:          http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
-%define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
+Summary:        Package manager
+Name:           rpm
+Version:        4.11.2
+Release:        12%{?dist}
+License:        GPLv2+
+URL:            http://rpm.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
+%define sha1    rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
+Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
+%define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:          rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
-Patch0:		  rpm-debuginfo-exclude.1.patch
-Patch1:           rpm-4.11.2-cve-2014-8118.patch
-#Requires:        nspr
-Requires:         nss 
-Requires:         popt
-Requires:         libgcc
-Requires:         lua
-Requires:         zlib
-Requires:         file
-Requires:         bash
-Requires:         elfutils-libelf
-Requires:         libcap
-BuildRequires:    python2
-BuildRequires:    python2-libs
-BuildRequires:    python2-devel
-BuildRequires:    lua-devel
-BuildRequires:    popt-devel
-BuildRequires:    nss-devel
-BuildRequires:    elfutils-devel
-BuildRequires:    libcap-devel
+Patch0:       rpm-debuginfo-exclude.1.patch
+Patch1:         rpm-4.11.2-cve-2014-8118.patch
+#Requires:      nspr
+Requires:       nss 
+Requires:       popt
+Requires:       libgcc
+Requires:       lua
+Requires:       zlib
+Requires:       file
+Requires:       bash
+Requires:       elfutils-libelf
+Requires:       libcap
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  python2-devel
+BuildRequires:  lua-devel
+BuildRequires:  popt-devel
+BuildRequires:  nss-devel
+BuildRequires:  elfutils-devel
+BuildRequires:  libcap-devel
 %description
 RPM package manager
 
 %package devel
-Requires:   python2
-Summary:    Libraries and header files for rpm
-Provides:   pkgconfig(rpm)
-%description devel
+Requires:       python2
+Summary:        Libraries and header files for rpm
+Provides:       pkgconfig(rpm)
+%description    devel
 Static libraries and header files for the support library for rpm
 
 %package build
-Requires: perl
-Requires: rpm-devel
-Requires: rpm
-Requires: elfutils-libelf
-Requires: lua
-Summary: Binaries, scripts and libraries needed to build rpms.
+Requires:       perl
+Requires:       rpm-devel
+Requires:       rpm
+Requires:       elfutils-libelf
+Requires:       lua
+Summary:        Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
+
+
+%package -n     python-rpm
+Summary:        Python 2 bindings for rpm.
+Group:          Development/Libraries
+BuildRequires:  python2-devel
+Requires:       python2
+%description -n python-rpm
+
+%package -n     python3-rpm
+Summary:        Python 3 bindings for rpm.
+Group:          Development/Libraries
+BuildRequires:  python3-devel
+Requires:       python3
+
+%description -n python3-rpm
+Python3 rpm.
 
 %prep
 %setup -q
@@ -60,6 +80,7 @@ Binaries, libraries and scripts to build rpms.
 mv db-5.3.28 db
 %patch0 -p1
 %patch1 -p1
+
 %build
 ./autogen.sh --noconfigure
 ./configure \
@@ -85,6 +106,12 @@ mv db-5.3.28 db
         --with-lua \
         --disable-silent-rules
 make %{?_smp_mflags}
+
+pushd python
+python2 setup.py build
+python3 setup.py build
+popd
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -96,6 +123,12 @@ install -vm644 macros %{buildroot}%{_sysconfdir}/rpm/
 install -vm755 brp-strip-debug-symbols %{buildroot}%{_libdir}/rpm/
 install -vm755 brp-strip-unneeded %{buildroot}%{_libdir}/rpm/
 popd
+
+pushd python
+python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
+popd
+
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %clean
@@ -192,7 +225,6 @@ rm -rf %{buildroot}
 
 %files devel
 %defattr(-,root,root)
-%{_libdir}/python*
 %{_includedir}/*
 %{_libdir}/pkgconfig/rpm.pc
 %{_libdir}/librpmio.so
@@ -200,13 +232,23 @@ rm -rf %{buildroot}
 %{_libdir}/librpmsign.so
 %{_libdir}/librpmsign.so.*
 
+%files -n python-rpm
+%defattr(-,root,root)
+%{python2_sitelib}/*
+
+%files -n python3-rpm
+%defattr(-,root,root)
+%{python3_sitelib}/*
+
 %changelog
+*    Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-12
+-    Added python3 packages and moved python2 site packages from devel to python-rpm.
 *    Thu Oct 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-11
 -    Apply patch for CVE-2014-8118
 *    Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-10
 -    Exclude .build-id/.1 and .build-id/.1.debug from debuginfo pkg
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
--	GA - Bump release of all rpms
+*    Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
+-    GA - Bump release of all rpms
 *    Thu May 05 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-8
 -    Update rpm version in lock-step with lua update to 5.3.2
 *    Fri Apr 08 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.11.2-7
