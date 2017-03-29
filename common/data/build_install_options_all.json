@@ -18,15 +18,8 @@
         "visible" : true,
         "include" : ["minimal"]
     },
-    "ostree_host" : {
-        "title" : "3. Photon OSTree Host",
-        "file" : "packages_ostree_host.json",
-        "visible" : true,
-        "include" : [],
-        "additional-files" : ["ostree-repo.tar.gz"]
-    },
     "ostree_server" : {
-        "title" : "4. Photon OSTree Server",
+        "title" : "3. Photon OSTree Server",
         "file" : "packages_ostree_server.json",
         "visible" : true,
         "include" : ["minimal"],

@@ -27,13 +27,10 @@ from packageselector import PackageSelector
 from custompackageselector import CustomPackageSelector
 from installer import Installer
 from installercontainer import InstallerContainer
-from ostreeinstaller import OstreeInstaller
 from windowstringreader import WindowStringReader
-from ostreewindowstringreader import OSTreeWindowStringReader
 from jsonwrapper import JsonWrapper
 from selectdisk import SelectDisk
 from license import License
-from ostreeserverselector import OSTreeServerSelector
 from linuxselector import LinuxSelector
 
 class IsoInstaller(object):
@@ -105,53 +102,6 @@ class IsoInstaller(object):
 
         machinename = fields[0]
         return (len(machinename) <= 64) and (ord(machinename[0]) in self.alpha_chars), error_hostname
-
-    def validate_ostree_url_input(self, ostree_repo_url):
-        if not ostree_repo_url:
-            return False, "Error: Invalid input"
-
-        exception_text = "Error: Invalid or unreachable URL"
-        error_text = "Error: Repo URL not accessible"
-        ret = self.validate_http_response(ostree_repo_url, [], exception_text, error_text)
-        if ret != "":
-            return False, ret
-
-        exception_text = "Error: Invalid repo - missing config"
-        ret = self.validate_http_response(
-            ostree_repo_url + "/config",
-            [ [".*\[core\]\s*", 1, "Error: Invalid config - 'core' group expected" ],
-              ["\s*mode[ \t]*=[ \t]*archive-z2[^ \t]", 1, "Error: can't pull from repo in 'bare' mode, 'archive-z2' mode required" ] ],
-            exception_text, exception_text)
-        if ret != "":
-            return False, ret
-    
-        exception_text = "Error: Invalid repo - missing refs"
-        ret = self.validate_http_response(ostree_repo_url + "/refs/heads", [], exception_text, exception_text)
-        if ret != "":
-            return False, ret
-
-        exception_text = "Error: Invalid repo - missing objects"
-        ret = self.validate_http_response(ostree_repo_url + "/objects", [], exception_text, exception_text)
-        if ret != "":
-            return False, ret
-
-        self.ostree_repo_url = ostree_repo_url
-
-        return True, None
-
-    def validate_ostree_refs_input(self, ostree_repo_ref):
-        if not ostree_repo_ref:
-            return False, "Error: Invalid input"
-
-        ret = self.validate_http_response(
-                self.ostree_repo_url  + '/refs/heads/' + ostree_repo_ref,
-                [ ["^\s*[0-9A-Fa-f]{64}\s*$", 1, "Error: Incomplete Refspec path, or unexpected Refspec format"] ],
-                "Error: Invalid Refspec path",
-                "Error: Refspec not accessible")
-        if ret != "":
-            return False, ret
-
-        return True, None
 
     def validate_password(self, text):
         try:
@@ -279,29 +229,8 @@ class IsoInstaller(object):
                     None, # validation function of the input
                     self.generate_password_hash, # post processing of the input field
                     'Confirm root password', 'Confirm Root password:', 2, install_config)
-            ostree_server_selector = OSTreeServerSelector(self.maxy, self.maxx, install_config)
-            ostree_url_reader = OSTreeWindowStringReader(
-                    self.maxy, self.maxx, 10, 80, 
-                    'ostree_repo_url', 
-                    None, # confirmation error msg if it's a confirmation text
-                    None, # echo char
-                    None, # set of accepted chars
-                    self.validate_ostree_url_input, # validation function of the input
-                    None, # post processing of the input field
-                    'Please provide the URL of OSTree repo', 'OSTree Repo URL:', 2, install_config,
-                    "http://")
-            ostree_ref_reader = OSTreeWindowStringReader(
-                    self.maxy, self.maxx, 10, 70, 
-                    'ostree_repo_ref', 
-                    None, # confirmation error msg if it's a confirmation text
-                    None, # echo char
-                    None, # set of accepted chars
-                    self.validate_ostree_refs_input, # validation function of the input
-                    None, # post processing of the input field
-                    'Please provide the Refspec in OSTree repo', 'OSTree Repo Refspec:', 2, install_config,
-                    "photon/1.0/x86_64/minimal")
 
-            items.append((license_agreement.display, False))                    ,
+            items.append((license_agreement.display, False))
             items.append((select_disk.display, True))
             items.append((select_partition.display, False))
             items.append((select_disk.guided_partitions, False))
@@ -314,9 +243,6 @@ class IsoInstaller(object):
             items.append((hostname_reader.get_user_string, True))
             items.append((root_password_reader.get_user_string, True))
             items.append((confirm_password_reader.get_user_string, False))
-            items.append((ostree_server_selector.display, True))
-            items.append((ostree_url_reader.get_user_string, True))
-            items.append((ostree_ref_reader.get_user_string, True))
 
         else:
             install_config = ks_config
@@ -339,8 +265,7 @@ class IsoInstaller(object):
                     break
                 #Skip linux select screen for ostree installation.
                 if index == select_linux_index:
-                    if (install_config['type'] == 'ostree_host' or
-                        install_config['type'] == 'ostree_server'):
+                    if (install_config['type'] == 'ostree_server'):
                         index += 1
             else:
                 index -= 1
@@ -350,8 +275,7 @@ class IsoInstaller(object):
                     index = 0
                 #Skip linux select screen for ostree installation.
                 if index == select_linux_index:
-                    if (install_config['type'] == 'ostree_host' or
-                        install_config['type'] == 'ostree_server'):
+                    if (install_config['type'] == 'ostree_server'):
                         index -= 1
 
 if __name__ == '__main__':
