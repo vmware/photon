@@ -1,4 +1,4 @@
 {
-    "packages":["openvswitch", "iperf"]
+    "packages":["openvswitch", "gawk", "cloud-utils", "gptfdisk", "iperf"]
 }
 
