@@ -1,14 +1,14 @@
 Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python-sqlalchemy
-Version:        1.0.15
-Release:        2%{?dist}
+Version:        1.1.7
+Release:        1%{?dist}
 Url:            http://www.sqlalchemy.org
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://pypi.python.org/packages/18/7d/f230ac50198cfe3cdc957c3572a18dc92600047ce707b5b923c56ab92c1b/SQLAlchemy-%{version}.tar.gz
-%define sha1 SQLAlchemy=b510372c8ee29772b85042dae4f3ba9a1e4d0e2e
+Source0:        https://pypi.python.org/packages/29/18/a78469bc449d9f92f6269cc62d0d6fbe6bf394d1031b447ad5e54463c3a0/SQLAlchemy-%{version}.tar.gz
+%define sha1 SQLAlchemy=9f7ba90b47f79ca556097f5eeea3b82c4a0ec6f2
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
