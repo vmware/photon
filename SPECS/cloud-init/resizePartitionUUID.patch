@@ -1,0 +1,24 @@
+diff -ru cloud-init-0.7.6/cloudinit/config/cc_growpart.py cloud-init-0.7.6-modified/cloudinit/config/cc_growpart.py
+--- cloud-init-0.7.6/cloudinit/config/cc_growpart.py	2014-10-10 08:26:25.000000000 -0700
++++ cloud-init-0.7.6-modified/cloudinit/config/cc_growpart.py	2017-03-29 17:12:40.059392874 -0700
+@@ -276,7 +276,7 @@
+             log.debug("use ignore_growroot_disabled to ignore")
+             return
+ 
+-    devices = util.get_cfg_option_list(cfg, "devices", ["/"])
++    devices = util.get_cfg_option_list(mycfg, "devices", ["/"])
+     if not len(devices):
+         log.debug("growpart: empty device list")
+         return
+diff -ru cloud-init-0.7.6/cloudinit/config/cc_resizefs.py cloud-init-0.7.6-modified/cloudinit/config/cc_resizefs.py
+--- cloud-init-0.7.6/cloudinit/config/cc_resizefs.py	2014-10-10 08:26:25.000000000 -0700
++++ cloud-init-0.7.6-modified/cloudinit/config/cc_resizefs.py	2017-03-29 17:00:59.965405389 -0700
+@@ -71,6 +71,8 @@
+         return "/dev/disk/by-label/" + found[len("LABEL="):]
+     if found.startswith("UUID="):
+         return "/dev/disk/by-uuid/" + found[len("UUID="):]
++    if found.startswith("PARTUUID="):
++        return "/dev/disk/by-partuuid/" + found[len("PARTUUID="):]
+ 
+     return "/dev/" + found
+ 

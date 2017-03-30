@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -15,6 +15,7 @@ Patch2:         vca-admin-pwd.patch
 Patch3:         remove-netstat.patch
 Patch4:         distro-systemctl.patch
 Patch5:         photon-hosts-template.patch
+Patch6:         resizePartitionUUID.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -45,6 +46,7 @@ ssh keys and to let the user run various scripts.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -134,6 +136,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Mar 29 2017 Kumar Kaushik <kaushikk@vmware.com>  0.7.6-16
+-   Adding support for disk partition and resize fs
 *   Thu Dec 15 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-15
 -   Adding template file and python-jinja2 dependency to update hosts
 *   Tue Dec 13 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-14
