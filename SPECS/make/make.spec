@@ -1,28 +1,30 @@
 Summary:	Program for compiling packages
 Name:		make
-Version:	4.1
-Release:	4%{?dist}
+Version:	4.2
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/make
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Patch0:         chroot-segfault-fix.patch
 Source0:	http://ftp.gnu.org/gnu/make/%{name}-%{version}.tar.bz2
-%define sha1 make=0d701882fd6fd61a9652cb8d866ad7fc7de54d58
+%define sha1 make=d78b84a219b4c16593544f541dff7eb765ce3d74
+
 %description
 The Make package contains a program for compiling packages.
+
 %prep
 %setup -q
-%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
+
 %find_lang %{name}
 
 %check
@@ -33,7 +35,10 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_includedir}/gnumake.h
 %{_mandir}/*/*
+
 %changelog
+*       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.2-1
+-       Update package version
 *       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 4.1-4
 -       Modified check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1-3
