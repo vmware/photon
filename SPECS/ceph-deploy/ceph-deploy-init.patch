@@ -1,5 +1,5 @@
---- b/ceph_deploy/hosts/__init__.py	2016-02-08 14:11:39.000000000 +0000
-+++ a/ceph_deploy/hosts/__init__.py	2017-01-05 02:34:50.662524086 +0000
+--- a/ceph_deploy/hosts/__init__.py	2017-01-03 21:38:42.000000000 +0000
++++ b/ceph_deploy/hosts/__init__.py	2017-03-30 23:27:32.453109790 +0000
 @@ -7,7 +7,7 @@ on the type of distribution/version we a
  import logging
  from ceph_deploy import exc
@@ -11,14 +11,14 @@
  logger = logging.getLogger()
 @@ -68,7 +68,7 @@ def get(hostname,
      module.distro = module.normalized_name
-     module.is_el = module.normalized_name in ['redhat', 'centos', 'fedora', 'scientific']
+     module.is_el = module.normalized_name in ['redhat', 'centos', 'fedora', 'scientific', 'oracle']
      module.is_rpm = module.normalized_name in ['redhat', 'centos',
--                                               'fedora', 'scientific', 'suse']
-+                                               'fedora', 'scientific', 'suse', 'photon']
+-                                               'fedora', 'scientific', 'suse', 'oracle']
++                                               'fedora', 'scientific', 'suse', 'oracle', 'photon']
      module.is_deb = not module.is_rpm
      module.release = release
      module.codename = codename
-@@ -96,6 +96,7 @@ def _get_distro(distro, fallback=None, u
+@@ -97,6 +97,7 @@ def _get_distro(distro, fallback=None, u
          'redhat': centos,
          'fedora': fedora,
          'suse': suse,
@@ -26,8 +26,8 @@
          }
  
      if distro == 'redhat' and use_rhceph:
-@@ -112,6 +113,8 @@ def _normalized_distro_name(distro):
-         return 'scientific'
+@@ -115,6 +116,8 @@ def _normalized_distro_name(distro):
+         return 'oracle'
      elif distro.startswith(('suse', 'opensuse')):
          return 'suse'
 +    elif distro.startswith('photon'):
