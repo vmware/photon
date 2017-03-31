@@ -1,14 +1,14 @@
 Summary:    A free, distributed source control management tool.
 Name:       mercurial
-Version:    3.7.1
-Release:    6%{?dist}
+Version:    4.1
+Release:    1%{?dist}
 License:    GPLv2+
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    http://mercurial.selenic.com/release/%{name}-%{version}.tar.gz
-%define sha1 mercurial=8ce55b297c6a62e987657498746eeca870301ffb
+%define sha1 mercurial=d5f88e05cbbd8f13dd5fc4004433f54435fc27c8
 Patch0:   hg-CVE-2016-3068.patch
 Patch1:   hg-CVE-2016-3069-1.patch
 Patch2:   hg-CVE-2016-3069-2.patch
@@ -64,6 +64,8 @@ rm -rf %{buildroot}/*
 %{python_sitelib}/*
 
 %changelog
+*   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.1-1
+-   Update package version
 *   Mon Jan 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-6
 -   Install with setup.py.
 *   Tue Nov 22 2016 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-5
