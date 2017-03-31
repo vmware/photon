@@ -1,7 +1,7 @@
 Summary:	Programs to parse command-line options
 Name:		popt
 Version:	1.16
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	MIT
 URL:		http://rpm5.org/files/popt
 Group:		Applications/System
@@ -26,6 +26,13 @@ Group:		Applications/System
 Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of popt.
+
+%package static
+Summary: Additional static files of popt for package efivar.
+Group:		Development/Libraries
+Requires: %{name} = %{version}-%{release}
+%description static
+These are the additional staic files of popt for package efivar.
 
 %prep
 %setup -q
@@ -60,7 +67,12 @@ make %{?_smp_mflags} check
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
+%files static
+%defattr(-,root,root)
+
 %changelog
+*   Fri Mar 31 2017 Rongrong Qiu <rqiu@vmware.com> 1.16-5
+-   Added -static subpackage
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.16-4
 -   Added -lang subpackage
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.16-3
