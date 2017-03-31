@@ -43,6 +43,6 @@ python2 setup.py test
 
 %changelog
 *   Wed Mar 29 2017 Rongrong Qiu <rqiu@vmware.com> 3.1.3-1
--   Initial packaging for Photon
+-   ugrade to 3.1.3
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-1
 -   Initial packaging for Photon
