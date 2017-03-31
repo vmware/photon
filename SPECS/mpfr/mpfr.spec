@@ -1,22 +1,24 @@
 Summary:	Functions for multiple precision math
 Name:		mpfr
-Version:	3.1.3
-Release:	3%{?dist}
+Version:	3.1.5
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.mpfr.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.xz
-%define sha1 mpfr=383303f9de5ebe055b03b94642b03465baf9e6c7
+Source0:	http://www.mpfr.org/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha1 mpfr=2a2118179f8f3c682389dcddc800d30132e8794a
 Requires:	gmp
 %description
 The MPFR package contains functions for multiple precision math.
 %package	devel
 Summary:	Header and development files for mpfr
 Requires:	%{name} = %{version}
+
 %description	devel
 It contains the libraries and header files to create applications 
+
 %prep
 %setup -q
 %build
@@ -26,6 +28,7 @@ It contains the libraries and header files to create applications
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
@@ -52,12 +55,16 @@ make %{?_smp_mflags} check
 %{_docdir}/mpfr-3.1.3/BUGS
 %{_docdir}/mpfr-3.1.3/AUTHORS
 %{_docdir}/mpfr-3.1.3/COPYING
+
 %files devel
 %{_includedir}/mpf2mpfr.h
 %{_includedir}/mpfr.h
 %{_libdir}/libmpfr.a
 %{_libdir}/libmpfr.so
+
 %changelog
+*       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 3.1.5-1
+-       Update package version
 *       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 3.1.3-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.3-2
