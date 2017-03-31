@@ -3,15 +3,15 @@
 
 Summary:        The Swiss Army knife of Python web development
 Name:           python-werkzeug
-Version:        0.11.15
+Version:        0.12.1
 Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Werkzeug
-Source0:        Werkzeug-%{version}.tar.gz
-%define         sha1 Werkzeug=7ed22d01e666773b269b766a0aa31f8511cc7e01
+Source0:        https://pypi.python.org/packages/ab/65/d3f1edd1109cb1beb6b82f4139addad482df5b5ea113bdc98242383bf402/Werkzeug-%{version}.tar.gz
+%define         sha1 Werkzeug=c602720e37920533cfe533d4d16a5bc4fb7b2289
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -62,5 +62,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Mar 30 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.12.1-1
+-   Updating package to latest
 *   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.11.15-1
 -   Initial packaging for Photon.
