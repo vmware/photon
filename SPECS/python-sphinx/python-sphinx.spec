@@ -1,13 +1,13 @@
 Summary:       Python documentation generator
 Name:          python-sphinx
-Version:       1.5.1
+Version:       1.5.3
 Release:       1%{?dist}
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 License:       BSD-2-Clause
 URL:           http://www.vmware.com
-Source0:       https://files.pythonhosted.org/packages/source/S/Sphinx/Sphinx-%{version}.tar.gz
-%define sha1 Sphinx=4c413bd6310f4452c5fbeb9493065fc3dd968210
+Source0:       https://pypi.python.org/packages/a7/df/4487783152b14f2b7cd0b0c9afb119b262c584bf972b90ab544b61b74c62/Sphinx-%{version}.tar.gz
+%define sha1 Sphinx=e296be1f697ba5eda7941570d718544df8182648
 Distribution:  Photon
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -39,5 +39,7 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
+*   Thu Mar 30 2017 Sarah Choi <sarahc@vmware.com> 1.5.3-1
+-   Upgrade version to 1.5.3
 *   Fri Dec 16 2016 Dheeraj Shetty <dheerajs@vmware.com> 1.5.1-1
 -   Initial
