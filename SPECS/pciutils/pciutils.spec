@@ -1,14 +1,14 @@
 Summary:	System utilities to list pci devices
 Name:		pciutils
-Version:	3.3.1
-Release:	3%{?dist}
+Version:	3.5.4
+Release:	1%{?dist}
 License:	GPLv2
 URL:		https://www.kernel.org/pub/software/utils/pciutils/
 Group:		System Environment/System Utilities
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	https://www.kernel.org/pub/software/utils/pciutils/%{name}-%{version}.tar.gz
-%define sha1 pciutils=cd93c519307addd542f6fdbcceaefc5a7d7f58bc
+%define sha1 pciutils=4fc1ec91181a1211e7af0f1889b14d17dc431532
 %description
 The pciutils package contains a set of programs for listing PCI devices, inspecting their status and setting their configuration registers.
 
@@ -27,7 +27,7 @@ make %{?_smp_mflags} PREFIX=%{_prefix} \
     SHARED=yes
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} \
     PREFIX=%{_prefix} \
     SHAREDIR=%{_datadir}/misc \
@@ -42,7 +42,6 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_sbindir}/*
 %{_libdir}/*.so.*
-%{_includedir}/*
 %{_datadir}/misc/*
 %{_mandir}/*
 
@@ -50,8 +49,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/pkgconfig/*
 %{_libdir}/*.so
+%{_includedir}/*
 
 %changelog
+*	Wed Mar 29 2017 Robert Qi <qij@vmware.com> 3.5.4-1
+-	Upgraded to 3.5.4 version.
 *	Mon Jul 25 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.1-3
 -	Added devel package and removed packaging of debug files
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.1-2
