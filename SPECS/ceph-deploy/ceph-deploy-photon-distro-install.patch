@@ -1,5 +1,5 @@
---- b/ceph_deploy/hosts/photon/install.py	2017-01-24 01:06:26.356750086 +0000
-+++ a/ceph_deploy/hosts/photon/install.py	2017-01-10 23:45:59.844911936 +0000
+--- a/ceph_deploy/hosts/photon/install.py	2017-03-30 23:17:51.357073655 +0000
++++ b/ceph_deploy/hosts/photon/install.py	2017-03-30 21:59:36.921406467 +0000
 @@ -0,0 +1,88 @@
 +from ceph_deploy.lib import remoto
 +from ceph_deploy.hosts.centos.install import repo_install, mirror_install  # noqa
