@@ -1,18 +1,20 @@
 Summary:	Text editor
 Name:		nano
-Version:	2.5.2
-Release:	3%{?dist}
+Version:	2.8.0
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.nano-editor.org/
 Group:		Applications/Editors
-Source0:	http://www.nano-editor.org/dist/v2.2/%{name}-%{version}.tar.gz
-%define sha1 nano=ee21ed3f3771f6959bf430ab9e80de56026798b8
+Source0:	http://www.nano-editor.org/dist/v2.2/%{name}-%{version}.tar.xz
+%define sha1 nano=d18c8c2793efdc9a2516a286677aa30537bde406
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	ncurses-devel
 Requires:	ncurses
+
 %description
 The Nano package contains a small, simple text editor
+
 %prep
 %setup -q -n %{name}-%{version}
 %build
@@ -22,6 +24,7 @@ The Nano package contains a small, simple text editor
             --infodir=%{_infodir}/%{name}-%{version} \
             --docdir=%{_docdir}/%{name}-%{version}
 make
+
 %install
 make DESTDIR=%{buildroot} install
 install -v -m644 %{_builddir}/%{name}-%{version}/doc/nanorc.sample %{_sysconfdir}
@@ -41,6 +44,8 @@ make %{?_smp_mflags} check
 %{_datadir}/doc/nano-2.5.2/*
 
 %changelog
+*       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 2.8.0-1
+-       Update package version
 *       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 2.5.2-3
 -       Modified check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5.2-2

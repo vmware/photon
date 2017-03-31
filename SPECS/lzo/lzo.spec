@@ -92,7 +92,7 @@ rm -rf %{buildroot}
 %{_libdir}/lib*lzo*.so
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.09-2
--	GA - Bump release of all rpms
-* Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.09-1
-- Initial version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.09-2
+-   GA - Bump release of all rpms
+*   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.09-1
+-   Initial version

@@ -1,14 +1,14 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
-Version:    19
-Release:    2%{?dist}
+Version:    23
+Release:    1%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 mkinitcpio=3fef28312965d7cc254b6ac1ea38be16dcb46bf9
+%define sha1 mkinitcpio=4459418eb423b2699e798c4523a59cc07a567a98
 BuildRequires: asciidoc
 BuildRequires: python2-libs
 BuildRequires: python-xml
@@ -46,8 +46,10 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 19-2
--	GA - Bump release of all rpms
+*   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 23-1
+-   Update package version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 19-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 19-1
 -   Updated to new version.
 *   Sat Jul 11 2015 Touseef Liaqat <tliaqat@vmware.com> 18-2
