@@ -3,21 +3,22 @@
 
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
-Version:        1.8.2
+Version:        1.12.1
 Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
-Source0:        numpy-%{version}.tar.gz
-%define sha1    numpy=9f7b889465263be527f615e4adae11446c2e7806
+Source0:        ://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip 
+%define sha1    numpy=50d8a6dc5d95c914119d21b0c047b9761bbccd59 
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  lapack-devel
+BuildRequires:  unzip
 
 Requires:       python2
 Requires:       python2-libs
@@ -63,5 +64,7 @@ python3 setup.py test
 %{_bindir}/f2py3
 
 %changelog
+*   Thu Mar 30 2017 Sarah Choi <sarahc@vmware.com> 1.12.1-1
+-   Upgrade version to 1.12.1
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.2-1
 -   Initial packaging for Photon
