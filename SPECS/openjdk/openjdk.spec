@@ -2,7 +2,7 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.112
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -10,6 +10,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK/OpenJDK-%{version}-x86_64-bin.tar.xz
 %define sha1 OpenJDK=c14a20158e16a8877940cfa6dbdf0900d4099a4a
+Source1:        macros.java
 Requires:       openjre = %{version}-%{release}
 AutoReqProv: 	no
 %description
@@ -49,6 +50,8 @@ Requires:       %{name} = %{version}-%{release}
 %build
 
 %install
+install -vdm755 %{buildroot}%{_rpmconfigdir}/macros.d
+install -m 644 %{SOURCE1} %{buildroot}/%{_rpmconfigdir}/macros.d/
 install -vdm755 %{buildroot}/var/opt/OpenJDK-%{version}-bin 
 mv -v %{_builddir}/OpenJDK-%{version}-x86_64-bin/* %{buildroot}/var/opt/OpenJDK-%{version}-bin/         
 chown -R root:root %{buildroot}/var/opt/OpenJDK-%{version}-bin
@@ -121,6 +124,7 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/bin/unpack200
 /var/opt/OpenJDK-%{version}-bin/lib/amd64/jli/
 /etc/profile.d/java-exports.sh
+%{_rpmconfigdir}/macros.d/macros.java
 
 %files sample
 %defattr(-,root,root)
@@ -136,6 +140,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*       Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
+-       add java rpm macros
 *       Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-1
 -       Update to 1.8.0.112. addresses CVE-2016-5582 CVE-2016-5573
 *       Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.102-1
