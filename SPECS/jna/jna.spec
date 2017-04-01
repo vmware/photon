@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -10,8 +10,12 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
 %define sha1 jna=30a1132f9ca6b3222eccd380a3f4149aa7df3f59
-Requires: openjre >= 1.8.0.112
-BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.6
+
+%define java_macros_version 1.8.0.112-2%{?dist}
+Requires: openjre >= %{java_macros_version}
+BuildRequires: openjre >= %{java_macros_version}
+BuildRequires: openjdk >= %{java_macros_version}
+BuildRequires: apache-ant >= 1.9.6
 
 %define _prefix /var/opt/jna-4.2.1
 
@@ -30,8 +34,8 @@ Sources for JNA
 
 %setup -q
 %build
-ANT_HOME=/var/opt/apache-ant-1.9.6
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.112-bin
+ANT_HOME=%{_ant_home}
+export JAVA_HOME=%{_java_home}
 
 #disabling all tests
 $ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
@@ -39,7 +43,7 @@ $ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*
 
 %install
 
-ANT_HOME=/var/opt/apache-ant-1.9.6
+ANT_HOME=%{_ant_home}
 JNA_DIST_DIR=%{buildroot}%{_prefix}
 
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -65,6 +69,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+*   Fri Mar 31 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-7
+-   use java rpm macros to determine versions
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-6
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
