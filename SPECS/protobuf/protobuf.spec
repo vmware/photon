@@ -1,14 +1,14 @@
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        2.6.1
-Release:        3%{?dist}
+Version:        3.2.0
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=a8f11eced7352edfefa814996ebf086ab3cfbaa0
+%define         sha1 protobuf=2d47c98c7f35d74d475ba0796d345a45c22030fd
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -116,6 +116,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 /usr/lib/python3.5/site-packages/*
 
 %changelog
+*   Wed Mar 31 2017 Rongrong Qiu <rqiu@vmware.com> 3.2.0-1
+-   Upgrade to 3.2.0
 *   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
 -   Build protobuf-python.
 *   Mon Mar 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
