@@ -2,7 +2,7 @@
 
 Summary:        ANother Tool for Language Recognition
 Name:           python-antlrpythonruntime
-Version:        3.1.2
+Version:        3.1.3
 Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.antlr3.org/download/Python/antlr_python_runtime-%{version}.tar.gz
 Source0:        antlr_python_runtime-%{version}.tar.gz
-%define sha1    antlr_python_runtime=c57d4a03f80d157e9c0c1c8cd3038171900a364c
+%define sha1    antlr_python_runtime=dc095863a254cdf9606784dbd6efb43cf56a6804
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -42,5 +42,7 @@ python2 setup.py test
 %{python2_sitelib}/*
 
 %changelog
+*   Wed Mar 29 2017 Rongrong Qiu <rqiu@vmware.com> 3.1.3-1
+-   upgrade to 3.1.3
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-1
 -   Initial packaging for Photon
