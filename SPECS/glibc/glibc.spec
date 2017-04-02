@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.25
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -37,6 +37,14 @@ Group: Applications/System
 Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of glibc.
+
+%package        static
+Summary:        glibc static libraries
+Group:          Applications/System
+Requires:       %{name} = %{version}-%{release}
+
+%description    static
+The glibc-static package contains glibc static libraries.
 
 %package i18n
 Summary: Additional internationalization files for glibc
@@ -197,11 +205,22 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %endif
 %{_includedir}/*
 
+%files static
+%defattr(-,root,root)
+# TODO: Excluding for now to remove dependency on PERL
+# /usr/bin/mtrace
+%ifarch x86_64
+%{_lib64dir}/*.a
+%endif
+%{_includedir}/*
+
 %files -f %{name}.lang lang
 %defattr(-,root,root)
 
 
 %changelog
+*   Thu Mar 30 2017 Danut Moraru <dmoraru@vmware.com> 2.25-2
+-   Added static lib
 *   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-1
 -   Version update
 *   Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 2.24-1
