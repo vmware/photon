@@ -1,5 +1,3 @@
-# ex: set tabstop=4 expandtab shiftwidth=4:
-
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11
@@ -31,6 +29,10 @@ BuildRequires:  openldap >= 2.4
 BuildRequires:  openssl-devel >= 1.0.1
 BuildRequires:  sqlite-devel
 
+%define _likewise_prefix /opt/likewise
+%define _likewise_bin %{_likewise_prefix}/bin
+%define _likewise_sbin %{_likewise_prefix}/sbin
+
 %package devel
 Summary:        Likewise Open (development)
 Group:          Development/Libraries
@@ -55,10 +57,6 @@ export LW_FEATURE_LEVEL="auth"
 export LSA_RPC_SERVERS="yes"
 export LW_DEVICE_PROFILE="photon"
 
-%define _likewise_prefix /opt/likewise
-%define _likewise_bin %{_likewise_prefix}/bin
-%define _likewise_sbin %{_likewise_prefix}/sbin
-
 export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation"
 ../configure  --prefix=/opt/likewise \
              --libdir=/opt/likewise/lib64 \
@@ -77,6 +75,7 @@ install -d $RPM_BUILD_ROOT/var/lib/likewise/db
 install -d $RPM_BUILD_ROOT/var/lib/likewise/rpc
 find %{buildroot} -name '*.in' -delete
 find %{buildroot} -name '*.la' -delete
+find %{buildroot} -name '*.a' -delete
 
 %pre
 #
@@ -119,6 +118,7 @@ case "$1" in
         try_starting_lwregd_svc=false
     fi
 
+    # handle installs when systemd might not be available (containers)
     /bin/systemctl >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         try_starting_lwregd_svc=false
@@ -138,21 +138,21 @@ case "$1" in
         echo "ok"
         for file in %{_likewise_prefix}/share/config/*.reg; do
             echo "Installing settings from $file..."
-            %{_likewise_bindir}/lwregshell import $file
+            %{_likewise_bin}/lwregshell import $file
         done
-        %{_likewise_bindir}/lwsm -q refresh
+        %{_likewise_bin}/lwsm -q refresh
         sleep 2
-        %{_likewise_bindir}/lwsm start lsass
+        %{_likewise_bin}/lwsm start lsass
     else
         started_lwregd=false
         if [ -z "`pidof lwsmd`" ]; then
-            %{_likewise_sbindir}/lwregd &
+            %{_likewise_sbin}/lwregd &
             sleep 5
             started_lwregd=true
         fi
         for file in %{_likewise_prefix}/share/config/*.reg; do
             echo "Installing settings from $file..."
-            %{_likewise_bindir}/lwregshell import $file
+            %{_likewise_bin}/lwregshell import $file
         done
         if [ $started_lwregd = true ]; then
             kill -TERM `pidof lwregd`
@@ -164,8 +164,6 @@ case "$1" in
     2)
     ## Upgrade
 
-    ## chkconfig behaves differently on various updates of RHEL and SUSE
-    ## So, we massage the init script according to the release, for now.
 
     try_starting_lwregd_svc=true
 
@@ -173,6 +171,7 @@ case "$1" in
         try_starting_lwregd_svc=false
     fi
 
+    # handle upgrades when systemd might not be available (containers)
     /bin/systemctl >/dev/null 2>&1
     if [ $? -ne 0 ]; then
         try_starting_lwregd_svc=false
@@ -191,22 +190,22 @@ case "$1" in
 
         for file in %{_likewise_prefix}/share/config/*.reg; do
             echo "Upgrading settings from $file..."
-            %{_likewise_bindir}/lwregshell import $file
+            %{_likewise_bin}/lwregshell import $file
         done
-        %{_likewise_bindir}/lwsm -q refresh
+        %{_likewise_bin}/lwsm -q refresh
         sleep 2
-        %{_likewise_bindir}/lwsm stop lwreg
-        %{_likewise_bindir}/lwsm start lsass
+        %{_likewise_bin}/lwsm stop lwreg
+        %{_likewise_bin}/lwsm start lsass
     else
         started_lwregd=false
         if [ -z "`pidof lwsmd`" ]; then
-            %{_likewise_sbindir}/lwregd &
+            %{_likewise_sbin}/lwregd &
             sleep 5
             started_lwregd=true
         fi
         for file in %{_likewise_prefix}/share/config/*.reg; do
             echo "Upgrading settings from $file..."
-            %{_likewise_bindir}/lwregshell import $file
+            %{_likewise_bin}/lwregshell import $file
         done
         if [ $started_lwregd = true ]; then
             kill -TERM `pidof lwregd`
@@ -228,14 +227,10 @@ if [ -f /etc/gss/mech ]; then
 fi
 
 if [ "$1" = 0 ]; then
-    ## Be paranoid about cleaning up
-    if [ "no" = "no" ]
-    then
-        %{_likewise_bindir}/domainjoin-cli configure --disable pam
-        %{_likewise_bindir}/domainjoin-cli configure --disable nsswitch
-    fi
+    %{_likewise_bin}/domainjoin-cli configure --disable pam
+    %{_likewise_bin}/domainjoin-cli configure --disable nsswitch
 
-    %{_likewise_bindir}/lwsm stop lwreg
+    %{_likewise_bin}/lwsm stop lwreg
 
     /bin/systemctl stop lwsmd.service
 
@@ -278,19 +273,18 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/*
 /etc/likewise/*
 /lib64/libnss_lsass.so.*
+/lib64/security/pam_lsass.so
+/usr/lib64/gss/*.so
+/opt/likewise/lib64/lwsm-loader/*.so
+/opt/likewise/lib64/*.so
 %dir /var/lib/likewise
 %dir /var/lib/likewise/db
 %dir /var/lib/likewise/rpc
 
 %files devel
 %defattr(-,root,root)
-/lib64/security/pam_lsass.so
-/usr/lib64/gss/*.so
-/opt/likewise/lib64/lwsm-loader/*.so
-/opt/likewise/lib64/*.so
 /opt/likewise/include/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
-/opt/likewise/lib64/*.a
 
 %changelog
 *   Wed Mar 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11-1
