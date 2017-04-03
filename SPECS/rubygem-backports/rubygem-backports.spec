@@ -4,14 +4,14 @@
 %global gem_name backports
 
 Name: rubygem-backports
-Version: 3.6.8
-Release: 3%{?dist}
+Version: 3.7.0
+Release: 1%{?dist}
 Summary: Backports of Ruby features for older Ruby
 Group: Development/Languages
 License: MIT
 URL: http://github.com/marcandre/backports
 Source0: https://rubygems.org/gems/backports-%{version}.gem
-%define sha1 backports=5c9dd0d5552d242ee6bb338a9097e85f0a0a45d5
+%define sha1 backports=66c9d715726d3fa2d6dbb818f4d09c652ae7cbc9
 BuildRequires: ruby
 
 %description
@@ -28,6 +28,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+* Mon Apr 3 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.7.0-1
+- Update to latest version
 * Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 3.6.8-3
 - Bump up release number to reflect ruby upgrade
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.8-2
