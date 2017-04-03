@@ -196,7 +196,7 @@ fi
 
 
 %changelog
-*	Wed Mar 22 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-12
+*	Mon Apr 3 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-12
 -       Update requires to use libdb and build to use libdb-devel
 *       Fri Mar 24 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-11
 -       Fixing sendmail upgrade config no replace.
