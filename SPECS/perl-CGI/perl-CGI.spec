@@ -2,13 +2,13 @@
 
 Summary:        Handle Common Gateway Interface requests and responses
 Name:           perl-CGI
-Version:        4.26
-Release:        3%{?dist}
+Version:        4.35
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 Source0:        http://search.cpan.org/CPAN/authors/id/L/LE/LEEJO/CGI-%{version}.tar.gz
 URL:            http://search.cpan.org/dist/CGI
-%define sha1 CGI=fb3bcc43d832e22ca794ae8b81be69820ac52b20
+%define sha1 CGI=2f9c226b7bce80e061da26fc87a12f2eeb7c00c6
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
@@ -69,8 +69,10 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*.3*
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.26-3
--       Modified %check
+*   Mon Apr 3 2017 Robert Qi <qij@vmware.com> 4.35-1
+-   Upgraded to 4.35
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.26-3
+-   Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.26-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.26-1
