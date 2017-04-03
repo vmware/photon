@@ -1,14 +1,14 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
-Version:        1.42.13
-Release:        5%{?dist}
+Version:        1.43.4
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha1    e2fsprogs=77d1412472ac5a67f8954166ec16c37616074c37
+%define sha1    e2fsprogs=f7cf8c82805103b53f89ad5da641e1085281d411
 Requires:       %{name}-libs = %{version}-%{release}
 %description
 The E2fsprogs package contains the utilities for handling
@@ -41,7 +41,6 @@ PKG_CONFIG_PATH=/tools/lib/pkgconfig \
     --disable-libuuid \
     --disable-uuidd \
     --disable-fsck \
-    --disable-silent-rules \
     --enable-symlink-install
 make %{?_smp_mflags}
 %install
@@ -76,33 +75,14 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%{_sbindir}/e4defrag
-%{_sbindir}/filefrag
-%{_sbindir}/e2freefrag
-%{_sbindir}/mklost+found
+%{_sbindir}/*
+
 /lib/libext2fs.so.2.4
+/lib/libext2fs.so.2
 /lib/libe2p.so.2.3
 /lib/libe2p.so.2
-/lib/libext2fs.so.2
-/sbin/e2label
-/sbin/e2image
-/sbin/tune2fs
-/sbin/e2undo
-/sbin/debugfs
-/sbin/e2fsck
-/sbin/fsck.ext3
-/sbin/mkfs.ext4
-/sbin/dumpe2fs
-/sbin/mke2fs
-/sbin/fsck.ext4dev
-/sbin/mkfs.ext2
-/sbin/mkfs.ext4dev
-/sbin/fsck.ext4
-/sbin/badblocks
-/sbin/logsave
-/sbin/resize2fs
-/sbin/fsck.ext2
-/sbin/mkfs.ext3
+
+/sbin/*
 %{_libdir}/libe2p.so
 %{_libdir}/libext2fs.so
 
@@ -140,6 +120,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libext2fs.a
 %{_mandir}/man3/*
 %changelog
+*   Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 1.43.4-1
+-   Updated to version 1.43.4
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-5
 -   Moved man3 to devel subpackage.
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-4
