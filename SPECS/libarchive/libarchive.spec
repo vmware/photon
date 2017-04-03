@@ -1,6 +1,6 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
-Version:    3.2.1
+Version:    3.3.1
 Release:    1%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
@@ -8,7 +8,7 @@ Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
-%define sha1 libarchive=d8c2e3c4028970b0827066b5a5fe5e9cd02c6f47
+%define sha1 libarchive=d5616f81804aba92547629c08a3ccff86c2844ae
 
 %description
 Multi-format archive and compression library
@@ -52,6 +52,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.1-1
+-   Upgrade version to 3.3.1
 *   Tue Sep 27 2016 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-1
 -   Update version to 3.2.1
 *   Thu Sep 22 2016 Anish Swaminathan <anishs@vmware.com> 3.1.2-7

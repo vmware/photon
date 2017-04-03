@@ -1,12 +1,12 @@
 Summary:        POSIX capability Library
 Name:           libcap-ng
-Version:        0.7.7
-Release:        3%{?dist}
+Version:        0.7.8
+Release:        1%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
-%define sha1    libcap-ng=de8ea2c89cb1506a578de7cb032da34c970dd035
+%define sha1    libcap-ng=59a85129dd0d062c14320f6c611696669a1cc0c0
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 Requires:       python2
@@ -59,6 +59,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.8-1
+-   Upgrade version to 0.7.8
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 0.7.7-3
 -   Moved man3 to devel subpackage.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.7-2
