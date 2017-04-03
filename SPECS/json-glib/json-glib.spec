@@ -1,11 +1,11 @@
 Summary:    	Library providing serialization and deserialization support for the JSON format
 Name:       	json-glib
-Version:    	1.0.4
-Release:    	3%{?dist}
+Version:    	1.2.8
+Release:    	1%{?dist}
 License:    	LGPLv2+
 Group:      	Development/Libraries
-Source0:    	http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.0/%{name}-%{version}.tar.xz
-%define sha1 json-glib=efdf5a66d1d8fb504448a40ba2352bbfef301074
+Source0:    	http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.2/%{name}-%{version}.tar.xz
+%define sha1 json-glib=f340a7d4c645bb26ec1b0feccb80346094ee2f05
 URL:        	http://live.gnome.org/JsonGlib
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -25,7 +25,7 @@ BuildRequires:	docbook-xsl
 BuildRequires:	libxslt
 BuildRequires:	docbook-xml
 Requires:	glib
-Provides:	pkgconfig(json-glib-1.0)
+Provides:	pkgconfig(json-glib-1.2)
 
 %description
 JSON-GLib is a library providing serialization and deserialization
@@ -92,13 +92,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/girepository-1.0/Json-1.0.typelib
 
 %changelog
-*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.0.4-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.4-2
--	GA - Bump release of all rpms
-* 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.0.4-1
-- 	Upgrade to 1.0.4
-*	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3
--	Added more requirements for devel subpackage.
-*	Fri Jun 26 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-2
--	Added Provides:	pkgconfig(json-glib-1.0)
+*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.8-1
+-   Updated package to version 1.2.8
+*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.0.4-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.4-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.0.4-1
+-   Upgrade to 1.0.4
+*   Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-3
+-   Added more requirements for devel subpackage.
+*   Fri Jun 26 2015 Alexey Makhalov <amakhalov@vmware.com> 1.0.2-2
+-   Added Provides:	pkgconfig(json-glib-1.0)
