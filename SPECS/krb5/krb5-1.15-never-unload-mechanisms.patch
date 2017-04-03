@@ -1,0 +1,11 @@
+--- a/src/lib/gssapi/mechglue/g_initialize.c	2017-03-02 14:06:02.000000000 -0800
++++ b/src/lib/gssapi/mechglue/g_initialize.c	2017-04-03 11:55:33.241796772 -0700
+@@ -562,8 +562,6 @@
+ 		generic_gss_release_oid(&minor_status, &cf->mech_type);
+ 	if (cf->freeMech)
+ 		zapfree(cf->mech, sizeof(*cf->mech));
+-	if (cf->dl_handle != NULL)
+-		krb5int_close_plugin(cf->dl_handle);
+ 	if (cf->int_mech_type != GSS_C_NO_OID)
+ 		generic_gss_release_oid(&minor_status, &cf->int_mech_type);
+ 
