@@ -1,6 +1,6 @@
 Summary:        vSphere Docker Volume Service
 Name:           docker-volume-vsphere
-Version:        0.11
+Version:        0.12
 Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/docker-volume-vsphere
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    docker-volume-vsphere=79ce62b5a809ab4d3238c4ce4ee9cec24bc6a5b0
+%define sha1    docker-volume-vsphere=3182700280e8f6589c7402b30dc237172af5a249
 
 BuildRequires:  go
 
@@ -20,7 +20,7 @@ vSphere Docker Volume Service enables customers to address persistent storage re
 %build
 cd ..
 mkdir  mkdir -p build/src/github.com/vmware/docker-volume-vsphere
-cp -r docker-volume-vsphere-0.11/* build/src/github.com/vmware/docker-volume-vsphere/.
+cp -r docker-volume-vsphere-0.12/* build/src/github.com/vmware/docker-volume-vsphere/.
 cd build
 mkdir bin
 export GOPATH=`pwd`
@@ -55,5 +55,7 @@ cp ./misc/scripts/install/docker-volume-vsphere.service %{buildroot}/%{_libdir}/
 
 
 %changelog
+*   Wed Mar 29 2017 Chang Lee <changlee@vmware.com> 0.12-1
+-   update to version 0.12
 *   Mon Feb 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.11-1
 -   Initial version
