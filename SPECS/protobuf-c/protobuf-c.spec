@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format - C implementation
 Name:           protobuf-c
 Version:        1.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -35,7 +35,7 @@ developing applications that use protobuf-c.
 %package        static
 Summary:        protobuf-c static lib
 Group:          Development/Libraries
-Requires:       protobuf = %{version}-%{release}
+Requires:       protobuf-c = %{version}-%{release}
 
 %description    static
 The protobuf-c-static package contains static protobuf-c libraries.
@@ -71,5 +71,7 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libprotobuf-c.a
 
 %changelog
+*   Thu Mar 30 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.1-2
+-   Fix protobuf-c-static requires
 *   Sat Mar 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.1-1
 -   Initial packaging for Photon
