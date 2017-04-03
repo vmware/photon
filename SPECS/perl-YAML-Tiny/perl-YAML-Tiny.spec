@@ -1,13 +1,13 @@
 # Got the intial spec from Fedora and modified it
 Summary:        Read/Write YAML files with as little code as possible
 Name:           perl-YAML-Tiny
-Version:        1.69
-Release:        2%{?dist}
+Version:        1.70
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML-Tiny/
 Source0:        http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/YAML-Tiny-%{version}.tar.gz
-%define sha1 YAML-Tiny=36c0e030a610ff81164a39c1ef089fe7d448bdaa
+%define sha1 YAML-Tiny=ece384991fca135995223d9b4444a5ae325acd64
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
@@ -38,6 +38,8 @@ make test
 %{_mandir}/man3/YAML::Tiny.3*
 
 %changelog
+*   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.70-1
+-   Update version to 1.70
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.69-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.69-1

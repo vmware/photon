@@ -1,7 +1,7 @@
 Summary:	XML-Parser perl module
 Name:		XML-Parser
 Version:	2.44
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPL+
 URL:		http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
@@ -20,10 +20,12 @@ perl Makefile.PL --prefix=%{_prefix}
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
-if [ -e %{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod ]; then
-cat %{buildroot}/%{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod >> %{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
+
+%define __perl_version 5.24.1
+if [ -e %{_libdir}/perl5/%{__perl_version}/x86_64-linux-thread-multi/perllocal.pod ]; then
+cat %{buildroot}/%{_libdir}/perl5/%{__perl_version}/x86_64-linux-thread-multi/perllocal.pod >> %{_libdir}/perl5/%{__perl_version}/x86_64-linux-thread-multi/perllocal.pod
 fi
-rm %{buildroot}/%{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
+rm %{buildroot}/%{_libdir}/perl5/%{__perl_version}/x86_64-linux-thread-multi/perllocal.pod
 
 %check
 make %{?_smp_mflags} test
@@ -33,6 +35,8 @@ make %{?_smp_mflags} test
 %{_libdir}/perl5/*
 %{_mandir}/man3/*
 %changelog
+*   Tue Apr 4 2017 Robert Qi <qij@vmware.com> 2.44-3
+-   Update to version 2.44-3 since perl version updated.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.44-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.44-1
