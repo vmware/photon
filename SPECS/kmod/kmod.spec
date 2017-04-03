@@ -1,22 +1,20 @@
 Summary:	Utilities for loading kernel modules
 Name:		kmod
-Version:	21
-Release:	4%{?dist}
+Version:	24
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.kernel.org/pub/linux/utils/kernel/kmod/%{name}-%{version}.tar.xz
-%define sha1 kmod=b2c1a0a1f2979fd29c7b0825ed19254c332246b4
-Patch0:         kmod-21-fix-return-error-code.patch
+%define sha1 kmod=ca506c529cb66ebe12cecb85844ebebf95eb6fa6
 BuildRequires:	xz-devel
 Requires:	xz
 %description
 The Kmod package contains libraries and utilities for loading kernel modules
 %prep
 %setup -q
-%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -51,8 +49,10 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 %{_datadir}/bash-completion/completions/kmod
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 21-4
--	GA - Bump release of all rpms
+*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 24-1
+-   Updated to version 24
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 21-4
+-   GA - Bump release of all rpms
 *   Wed Apr 21 2016 Anish Swaminathan <anishs@vmware.com> 21-3
 -   Add patch for return code fix in error path
 *   Fri Mar 25 2016 Alexey Makhalov <amakhalov@vmware.com> 21-2
