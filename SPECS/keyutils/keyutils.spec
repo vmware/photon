@@ -1,11 +1,11 @@
 Summary:	Linux Key Management Utilities
 Name:		keyutils
-Version:	1.5.9
+Version:	1.5.10
 Release:	1%{?dist}
 License:	GPL-2.0+ and LGPL-2.1+
 URL:		http://people.redhat.com/~dhowells/keyutils/
 Source0:	http://people.redhat.com/~dhowells/keyutils/keyutils-%{version}.tar.bz2
-%define sha1 keyutils=cf040adebe25eb466760f34752f4100fd5acb5e7
+%define sha1 keyutils=c139dc6f86d772dc608e4572d67c6e023a34a783
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -62,5 +62,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man3/*
 
 %changelog
-*	Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.5.9-1
--	Initial build. First version
+*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.5.10-1
+-   Updated to version 1.5.10
+*   Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.5.9-1
+-   Initial build. First version

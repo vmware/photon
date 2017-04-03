@@ -1,15 +1,15 @@
 Summary:	Key table files, console fonts, and keyboard utilities
 Name:		kbd
-Version:	2.0.3
-Release:	2%{?dist}
+Version:	2.0.4
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://ftp.altlinux.org/pub/people/legion/kbd
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.altlinux.org/pub/people/legion/kbd/%{name}-%{version}.tar.xz
-%define sha1 kbd=0a58dc928386f0f9c981fbefd24f05fc0b8226d7
-Patch0:		kbd-2.0.3-backspace-1.patch
+%define sha1 kbd=cf5d45c62d6af70b8b1f210d89193b52f5efb05d
+Patch0:		kbd-2.0.4-backspace-1.patch
 BuildRequires:	check >= 0.9.4
 %description
 The Kbd package contains key-table files, console fonts, and keyboard utilities.
@@ -46,9 +46,11 @@ make %{?_smp_mflags} check
 %{_datarootdir}/unimaps/*
 %{_mandir}/*/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.3-2
--	GA - Bump release of all rpms
+*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 2.0.4-1
+-   Updated to version 2.0.4
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.3-2
+-   GA - Bump release of all rpms
 *   Wed Jan 13 2016 Xiaolin Li <xiaolinl@vmware.com> 2.0.3-1
--	Updated to version 2.0.3
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.0.1-1
--	Initial build. First version
+-   Updated to version 2.0.3
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.0.1-1
+-   Initial build. First version
