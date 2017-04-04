@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.5.3
-Release:        6%{?dist}
+Version:        9.6.2
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,9 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Provides:       %{name}
 
-Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=bd8dcbc8c4882468675dcc93263182a27d4ff201
-Patch0:         CVE-2016-5423.patch
+Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.gz
+%define sha1    postgresql=3159151f2fc74ec3e684ec0dc8949494b608fb3c
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -47,7 +46,6 @@ PostgreSQL server.
 
 %prep
 %setup -q
-%patch0 -p1
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
 ./configure \
@@ -102,6 +100,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/vacuumlo
 %{_datadir}/postgresql/*
 %{_libdir}/libpgcommon.a
+%{_libdir}/libpgfeutils.a
 %{_libdir}/libpgport.a
 %{_libdir}/libpq.a
 %{_libdir}/postgresql/*
@@ -163,6 +162,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
+*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
+-   Upgrade to 9.6.2
 *   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
 -   Applied CVE-2016-5423.patch
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
@@ -185,5 +186,5 @@ rm -rf %{buildroot}/*
 -   Update to version 9.4.4.
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
 -   Exclude /usr/lib/debug
-*   Tue May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
+*   Fri May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
 -   Initial build. First version
