@@ -1,15 +1,14 @@
 Summary:	A utility for generating programs that recognize patterns in text
 Name:		flex
-Version:	2.5.39
-Release:	3%{?dist}
+Version:	2.6.0
+Release:	1%{?dist}
 License:	BSD
 URL:		http://flex.sourceforge.net
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://prdownloads.sourceforge.net/flex/%{name}-%{version}.tar.xz
-%define sha1 flex=415e82bb0dc9b1713fc4802a9db2274cd8d2909a
-Patch0:         CVE-2016-6354.patch
+Source0:	http://prdownloads.sourceforge.net/flex/%{name}-%{version}.tar.gz
+%define sha1 flex=cfe10b5de4893ced356adc437e78018e715818c3
 BuildRequires:	m4
 Requires:	m4
 %description
@@ -27,7 +26,6 @@ flex.
 
 %prep
 %setup -q
-%patch0 -p1
 sed -i -e '/test-bison/d' tests/Makefile.in
 %build
 ./configure \
@@ -70,6 +68,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+*   Tue Apr 04 2017 Chang Lee <changlee@vmware.com> 2.6.0-1
+-   Updated to version 2.6.0
 *       Thu Oct 13 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.39-3
 -       Fixing Security bug CVE-2016-6354.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5.39-2
