@@ -1,9 +1,10 @@
 %{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        1.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://cryptography.io
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -11,6 +12,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
 %define sha1    cryptography=2b5bc62fda71992633f83164b1a74c16a784acdf
+#https://github.com/pyca/cryptography/pull/3278/commits/6779428e804d17cfb9f23a618b38e1089de93bdd
+Patch0:         clear_error_queue_at_startup.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -21,6 +24,10 @@ Requires:       openssl
 Requires:       python-cffi
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-idna
+Requires:       python-pyasn1
+Requires:       python-ipaddress
+Requires:       python-setuptools
 
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
@@ -34,6 +41,9 @@ BuildRequires:  python3-cffi
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cffi
+Requires:       python3-idna
+Requires:       python3-pyasn1
+Requires:       python3-six
 
 %description -n python3-cryptography
 
@@ -41,6 +51,7 @@ Python 3 version.
 
 %prep
 %setup -q -n cryptography-%{version}
+%patch0 -p1
 
 %build
 python setup.py build
@@ -59,6 +70,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Apr 03 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-2
+-   Appy patch Refactor binding initialization to clear error queue at startup.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-1
 -   Updated to version 1.7.2 and added python3 package.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.3-2
