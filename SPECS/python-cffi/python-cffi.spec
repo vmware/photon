@@ -3,7 +3,7 @@
 
 Summary:        Interface for Python to call C code
 Name:           python-cffi
-Version:        1.9.1
+Version:        1.10.0
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
@@ -11,7 +11,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
-%define sha1    cffi=16265a4b305d433fb9089b19278502e904b0cb43
+%define sha1    cffi=8484aba03d1e64367d3110c0e36c1ed052b43f12
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -71,6 +71,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 1.10.0-1
+-   Update to 1.10.0
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.1-1
 -   Updated to version 1.9.1.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-4
