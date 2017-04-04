@@ -1,6 +1,6 @@
 Summary:        Etcd-3.0.9
 Name:           etcd
-Version:        3.0.9
+Version:        3.1.5
 Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/coreos/etcd/releases/download/v%{version}/%{name}-v%{version}-linux-amd64.tar.gz
-%define sha1 etcd=377c411851caa03f58452ad10a1fe10382715a05
+%define sha1 etcd=7b56092e1099cf57f11321788755cafdb2492ef4
 Source1:        etcd.service
 Requires:       shadow
 
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %dir /var/lib/etcd
 
 %changelog
+*   Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 3.1.5-1
+-   Upgraded to version 3.1.5
 *   Fri Sep 2 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.9-1
 -   Upgraded to version 3.0.9
 *   Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 2.3.7-1
