@@ -1,14 +1,14 @@
 Summary:	Provides IPC between GnuPG Components
 Name:		libassuan
-Version:	2.4.2
-Release:	3%{?dist}
+Version:	2.4.3
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/related_software/libassuan/index.html
 Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.gnupg.org/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 libassuan=ac1047f9764fd4a4db7dafe47640643164394db9
+%define sha1 libassuan=27391cf4a820b5350ea789c30661830c9a271518
 Requires:	libgpg-error >= 1.21
 BuildRequires:	libgpg-error-devel >= 1.21
 %description
@@ -35,6 +35,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so*
 %{_datadir}/aclocal/*
 %changelog
+*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.3-1
+-   Upgrade version to 2.4.3
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.4.2-3
 -   BuildRequired libgpg-error-devel.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.2-2

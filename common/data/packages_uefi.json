@@ -1,4 +1,4 @@
 {
-    "packages":["mesos", "haveged", "libxml2", "openldap", "boost", "gawk", "nfs-utils"]
+    "packages":["mesos", "haveged", "libxml2", "openldap", "boost", "gawk", "cloud-utils", "gptfdisk", "nfs-utils"]
 }
 
