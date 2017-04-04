@@ -2,7 +2,7 @@
 Summary:	Sysdig is a universal system visibility tool with native support for containers.
 Name:		sysdig
 Version:	0.10.1
-Release:	3%{?kernelsubrelease}%{?dist}
+Release:	4%{?kernelsubrelease}%{?dist}
 License:	GPLv2	  
 URL:		http://www.sysdig.org/
 Group:		Applications/System	
@@ -15,10 +15,10 @@ BuildRequires:  linux-dev = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:	openssl-devel
 BuildRequires:	curl
 BuildRequires:	zlib-devel
-BuildRequires:	ncurses-devel
+BuildRequires:	ncurses-devel >= 6.0-3
 Requires:   linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:	zlib
-Requires:	ncurses
+Requires:	ncurses >= 6.0-3
 Requires:	openssl
 Requires:	curl
 
@@ -69,6 +69,9 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 0.10.1-4
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 0.10.1-3
 -   Expand uname -r to have release number
 -   Exclude /usr/src

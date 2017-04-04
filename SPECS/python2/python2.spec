@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -18,7 +18,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  expat >= 2.1.0
 BuildRequires:  libffi >= 3.0.13
 BuildRequires:  sqlite-autoconf
-BuildRequires:  ncurses-devel
+BuildRequires:  ncurses-devel >= 6.0-3
 BuildRequires:  readline-devel
 Requires:       bzip2
 Requires:       openssl
@@ -40,7 +40,7 @@ Group: Applications/System
 Requires:   sqlite-autoconf
 Requires:   expat >= 2.1.0
 Requires:   libffi >= 3.0.13
-Requires:   ncurses
+Requires:   ncurses >= 6.0-3
 Requires:   coreutils
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size
@@ -63,7 +63,7 @@ The python-xml package provides the libraries needed for XML manipulation.
 Summary: Python module interface for NCurses Library 
 Group: Applications/System
 Requires: python2-libs = %{version}-%{release}
-Requires: ncurses
+Requires: ncurses >= 6.0-3
 
 %description -n python-curses
 The python-curses package provides interface for ncurses library.
@@ -219,6 +219,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.13-2
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
 *   Wed Mar 22 2017 Divya Thaluru <dthaluru@vmware.com> 2.7.13-1
 -   Updated to version 2.7.13
 *   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.11-9

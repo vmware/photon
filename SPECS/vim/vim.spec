@@ -3,7 +3,7 @@
 Summary:    Text editor
 Name:       vim
 Version:    7.4
-Release:    8%{?dist}
+Release:    9%{?dist}
 License:    Charityware
 URL:        http://www.vim.org
 Group:      Applications/Editors
@@ -14,7 +14,8 @@ Source0:    %{name}-%{version}.tar.bz2
 Patch0:         vim-CVE-2016-1248.patch
 Patch1:         vim-7.4-CVE-2017-5953.patch
 Patch2:         vim-7.4-CVE-2017-6349_CVE-2017-6350.patch
-BuildRequires:  ncurses-devel
+BuildRequires:  ncurses-devel >= 6.0-3
+Requires:  ncurses >= 6.0-3
 Requires:   tcsh
 
 %description
@@ -150,6 +151,9 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 7.4-9
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
 *   Tue Feb 28 2017 Anish Swaminathan <anishs@vmware.com>  7.4-8
 -   Fix for CVE-2017-6349 and CVE-2017-6350
 *   Fri Feb 17 2017 Anish Swaminathan <anishs@vmware.com>  7.4-7

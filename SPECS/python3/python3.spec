@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -12,12 +12,12 @@ Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.t
 Patch0:         cgi3.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
-BuildRequires:  ncurses-devel
+BuildRequires:  ncurses-devel >= 6.0-3
 BuildRequires:  openssl-devel
 BuildRequires:  readline-devel
 BuildRequires:  xz-devel
 Requires:       bzip2
-Requires:       ncurses
+Requires:       ncurses >= 6.0-3
 Requires:       openssl
 Requires:       python3-libs = %{version}-%{release}
 Requires:       readline
@@ -39,12 +39,12 @@ Summary:        The libraries for python runtime
 Group:          Applications/System
 BuildRequires:  expat >= 2.1.0
 BuildRequires:  libffi >= 3.0.13
-BuildRequires:  ncurses-devel
+BuildRequires:  ncurses-devel >= 6.0-3
 BuildRequires:  sqlite-autoconf
 Requires:       coreutils
 Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
-Requires:       ncurses
+Requires:       ncurses >= 6.0-3
 Requires:       sqlite-autoconf
 
 
@@ -187,6 +187,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
 *   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-2
 -   Provides /bin/python3.
 *   Tue Feb 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-1
