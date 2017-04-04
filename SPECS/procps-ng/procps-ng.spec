@@ -1,7 +1,7 @@
 Summary:	Programs for monitoring processes
 Name:		procps-ng
 Version:	3.3.11
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 URL:		http://procps.sourceforge.net/
 Group:		Applications/System
@@ -10,8 +10,8 @@ Distribution: Photon
 Source0:		http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
 %define sha1 procps-ng=1bdca65547df9ed019bd83649b0f8b8eaa017e25
 Patch0:		Fixto-interpret-ascii-sequence.patch
-BuildRequires:	ncurses-devel
-Requires:	ncurses
+BuildRequires:	ncurses-devel >= 6.0-3
+Requires:	ncurses >= 6.0-3
 %description
 The Procps package contains programs for monitoring processes.
 %package	devel
@@ -98,13 +98,16 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %changelog
-*	Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
--	Added patch to interpret ASCII sequence correctly
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
--	GA - Bump release of all rpms
-*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
--	Upgrade version
-*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
--   	Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
--	Initial build. First version
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.3.11-4
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
+*   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
+-   Added patch to interpret ASCII sequence correctly
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
+-   GA - Bump release of all rpms
+*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
+-   Upgrade version
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
+-   Update according to UsrMove.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
+-   Initial build. First version

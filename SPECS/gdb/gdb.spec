@@ -1,7 +1,7 @@
 Summary:	C debugger
 Name:		gdb
 Version:	7.8.2	
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
@@ -11,9 +11,9 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	python2
 Requires:	expat
-Requires:	ncurses
+Requires:	ncurses >= 6.0-3
 BuildRequires:	expat
-BuildRequires:	ncurses-devel
+BuildRequires:	ncurses-devel >= 6.0-3
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
 %description
@@ -59,9 +59,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-3
--	GA - Bump release of all rpms
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 7.8.2-2
--	Handled locale files with macro find_lang
-*	Wed Apr 08 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-1
--	Initial build. First version
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 7.8.2-4
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-3
+-   GA - Bump release of all rpms
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 7.8.2-2
+-   Handled locale files with macro find_lang
+*   Wed Apr 08 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-1
+-   Initial build. First version
