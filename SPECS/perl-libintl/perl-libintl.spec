@@ -1,13 +1,13 @@
 # Got the intial spec from Fedora and modified it
 Summary:	Internationalization library for Perl, compatible with gettext
 Name:		perl-libintl
-Version:	1.24
-Release:	2%{?dist}
+Version:	1.26
+Release:	1%{?dist}
 License:	LGPLv2+
 Group: 		Development/Libraries
 URL: 		http://search.cpan.org/dist/libintl-perl/
 Source: 	http://search.cpan.org/CPAN/authors/id/G/GU/GUIDO/libintl-perl-%{version}.tar.gz
-%define sha1 libintl-perl=904c48a7dde98a6f1a0ff12a2007e604a6b28c22
+%define sha1 libintl-perl=8b0adebe6322d9f8d8ca6c561bac1773ad83bafd
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires: 	perl
@@ -45,6 +45,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*	Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 1.26-1
+-	upgrade for 2.0
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.24-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.24-1
