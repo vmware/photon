@@ -1,12 +1,12 @@
 Name:           python-jsonpatch
-Version:        1.9
-Release:        3%{?dist}
+Version:        1.15
+Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/j/jsonpatch/jsonpatch-%{version}.tar.gz
-Source0:        jsonpatch-%{version}.tar.gz
-%define sha1 jsonpatch=b45d37d581315e423451a9f0ea8dc091b6138254
+Url:		https://pypi.python.org/pypi/jsonpatch
+Source0:        https://pypi.python.org/packages/be/c1/947048a839120acefc13a614280be3289db404901d1a2d49b6310c6d5757/jsonpatch-%{version}.tar.gz
+%define sha1 jsonpatch=a678cb3d2a91fc350c7355361f0d3a0d9808d119
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -38,6 +38,8 @@ python ext_tests.py && python tests.py
 %{_bindir}/jsonpatch
 
 %changelog
+*       Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 1.15-1
+-       Update to 1.15
 *       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 1.9-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9-2
