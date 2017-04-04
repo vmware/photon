@@ -3,7 +3,7 @@
 
 Summary:        Python cryptography library
 Name:           python-cryptography
-Version:        1.7.2
+Version:        1.8.1
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
@@ -11,7 +11,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha1    cryptography=2b5bc62fda71992633f83164b1a74c16a784acdf
+%define sha1    cryptography=d15ffd42ca41260a61bc80cbeccf24e2dbf44253
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -77,6 +77,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 1.8.1-1
+-   Updated to version 1.8.1
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-1
 -   Updated to version 1.7.2 and added python3 package.
 *   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 1.2.3-3
