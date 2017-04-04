@@ -1,12 +1,12 @@
 Summary:	Scripts to bring up network interfaces and legacy utilities
 Name:		initscripts
-Version:	9.65
+Version:	9.70
 License:	GPLv2
 Group:		System Environment/Base
-Release:	2%{?dist}
-URL:		http://fedorahosted.org/releases/i/n/initscripts/
-Source0:	https://fedorahosted.org/releases/i/n/initscripts/initscripts-9.65.tar.bz2
-%define sha1 initscripts=0a231ab94ce7ef050a7c2c35a5183450abe58a39
+Release:	1%{?dist}
+URL:		https://github.com/fedora-sysv/initscripts
+Source0:	https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
+%define sha1 initscripts=6e2ba0946fa2f175f576614d9374ad00266aec66
 Patch0:     service.patch
 Vendor:     	VMware, Inc.
 Distribution:   Photon
@@ -160,6 +160,8 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
+*   Mon Apr 3 2017 Dheeraj Shetty <dheerajs@vmware.com> 9.70-1
+-   Updated to version 9.70
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
 -	GA - Bump release of all rpms
 * Fri Feb 12 2016 Divya Thaluru <dthaluru@vmware.com> 9.65-2
