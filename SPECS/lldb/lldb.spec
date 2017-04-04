@@ -1,7 +1,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        3.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -14,14 +14,14 @@ Patch1:         Remove-MIUtilParse.patch
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
-BuildRequires:  ncurses-devel
+BuildRequires:  ncurses-devel >= 6.0-3
 BuildRequires:  swig
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python2-devel
 Requires:       llvm = %{version}
 Requires:       clang = %{version}
-Requires:       ncurses
+Requires:       ncurses >= 6.0-3
 Requires:       zlib
 Requires:       libxml2
 
@@ -81,5 +81,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.9.1-2
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
 *   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
 -   Initial build.

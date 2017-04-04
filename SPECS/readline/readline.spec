@@ -1,7 +1,7 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
 Version:	6.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
@@ -10,8 +10,8 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
 %define sha1 readline=017b92dc7fd4e636a2b5c9265a77ccc05798c9e1
 Patch:		http://www.linuxfromscratch.org/patches/lfs/development/readline-6.3-upstream_fixes-3.patch
-BuildRequires:	ncurses-devel
-Requires:	ncurses
+BuildRequires:	ncurses-devel >= 6.0-3
+Requires:	ncurses >= 6.0-3
 %description
 The Readline package is a set of libraries that offers command-line
 editing and history capabilities.
@@ -93,11 +93,14 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/libhistory.so
 %{_libdir}/libreadline.so
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.3-4
--	GA - Bump release of all rpms
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 6.3-3
--	Adding ncurses to run time require package
-*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 6.3-2
--   	Update according to UsrMove.
-*	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 6.3-1
--	Initial build.	First version
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3-5
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.3-4
+-   GA - Bump release of all rpms
+*   Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 6.3-3
+-   Adding ncurses to run time require package
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 6.3-2
+-   Update according to UsrMove.
+*   Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 6.3-1
+-   Initial build.	First version

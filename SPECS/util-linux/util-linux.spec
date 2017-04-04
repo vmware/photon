@@ -1,7 +1,7 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
 Version:	2.27.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
@@ -9,7 +9,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	%{name}-%{version}.tar.xz
 %define sha1 util-linux=462bca6320535d39b62216d8609da5531bfef0bb
-BuildRequires:	ncurses-devel
+BuildRequires:	ncurses-devel >= 6.0-3
+Requires:	ncurses >= 6.0-3
 %description
 Utilities for handling file systems, consoles, partitions,
 and messages.
@@ -68,14 +69,17 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.27.1-2
--	GA - Bump release of all rpms
-*   	Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 2.27.1-1
--   	Upgrade version.
-*   	Tue Oct 6 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24.1-3
--   	Disable static, move header files, .so and config files to devel package.
-*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.24.1-2
--   	Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1
--	Initial build. First version
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 2.27.1-3
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.27.1-2
+-   GA - Bump release of all rpms
+*   Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 2.27.1-1
+-   Upgrade version.
+*   Tue Oct 6 2015 Xiaolin Li <xiaolinl@vmware.com> 2.24.1-3
+-   Disable static, move header files, .so and config files to devel package.
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.24.1-2
+-   Update according to UsrMove.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1
+-   Initial build. First version
 

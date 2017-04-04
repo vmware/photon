@@ -1,6 +1,6 @@
 Name:          crash
 Version:       7.1.4
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
@@ -11,9 +11,10 @@ Source:        http://people.redhat.com/anderson/crash-%{version}.tar.gz
 License:       GPL
 BuildRequires: binutils
 BuildRequires: glibc-devel
-BuildRequires: ncurses-devel
+BuildRequires: ncurses-devel >= 6.0-3
 BuildRequires: zlib-devel
 Requires:      binutils
+Requires:      ncurses >= 6.0-3
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -62,9 +63,12 @@ cp -p defs.h %{buildroot}%{_includedir}/crash
 %{_includedir}/crash/*.h
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1.4-2
--	GA - Bump release of all rpms
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 7.1.4-3
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1.4-2
+-   GA - Bump release of all rpms
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1.4-1
 -   Updated to version 7.1.4
-*	Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 7.1.3-1
--	Initial build. First version
+*   Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 7.1.3-1
+-   Initial build. First version

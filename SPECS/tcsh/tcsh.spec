@@ -2,7 +2,7 @@
 Summary:	An enhanced version of csh, the C shell
 Name:		tcsh
 Version:	6.19.00
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 Group:		System Environment/Shells
 Source:		http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.gz
@@ -13,8 +13,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Provides:	csh = %{version}
 Provides:	/bin/tcsh, /bin/csh
-BuildRequires:	ncurses-devel
-Requires:	ncurses
+BuildRequires:	ncurses-devel >= 6.0-3
+Requires:	ncurses >= 6.0-3
 Requires(post): grep
 Requires(postun): coreutils, grep
 
@@ -112,15 +112,18 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
-*	Tue Feb 7 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-5
--	Added /bin/tcsh and /bin/csh entries in /etc/shells
-*	Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-4
--	Fix calloc for gcc 5 optimization
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-3
--	GA - Bump release of all rpms
-*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-2
--   	Fix for upgrade issues
-*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-1
--	Upgrade version
-*	Wed Apr 1 2015 Divya Thaluru <dthaluru@vmware.com> 6.18.01-1
--	Initial build. First version
+*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 6.19.00-6
+-   Use specified version of ncurses wich has long chtype and mmask_t
+    (see ncurses changelog)
+*   Tue Feb 7 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-5
+-   Added /bin/tcsh and /bin/csh entries in /etc/shells
+*   Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-4
+-   Fix calloc for gcc 5 optimization
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-3
+-   GA - Bump release of all rpms
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.19.00-2
+-   Fix for upgrade issues
+*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 6.19.00-1
+-   Upgrade version
+*   Wed Apr 1 2015 Divya Thaluru <dthaluru@vmware.com> 6.18.01-1
+-   Initial build. First version
