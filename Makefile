@@ -69,7 +69,7 @@ clean-install clean-chroot build-updated-packages check
 
 THREADS?=1
 
-all: iso minimal-iso docker-image ostree-host-iso live-iso cloud-image-all src-iso
+all: iso minimal-iso docker-image live-iso cloud-image-all src-iso
 
 micro: micro-iso
 	@:
@@ -128,21 +128,6 @@ minimal-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
                 -f > \
                 $(PHOTON_LOGS_DIR)/installer.log 2>&1
 
-ostree-host-iso: check-tools $(PHOTON_STAGE) ostree-repo
-	@echo "Building Photon OSTree Host ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-        $(PHOTON_INSTALLER) \
-                -i $(PHOTON_STAGE)/photon-ostree-host-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
-                -w $(PHOTON_STAGE)/photon_iso \
-                -l $(PHOTON_STAGE)/LOGS \
-                -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_GENERATED_DATA_DIR)/build_install_options_ostreehost.json \
-                -c $(PHOTON_GENERATED_DATA_DIR)/build_install_options_ostreehost.json \
-                -o $(PHOTON_STAGE)/common/data \
-		-s $(PHOTON_DATA_DIR) \
-                -f > \
-                $(PHOTON_LOGS_DIR)/installer.log 2>&1
-
 live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
 	@echo "Building Photon Minimal LIVE ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
@@ -177,7 +162,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
                 $(PHOTON_RPMCHECK_FLAGS) \
                 -t ${THREADS}
 
-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
+iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon Full ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
@@ -394,14 +379,6 @@ docker-image:
 
 install-docker-image: docker-image
 	sudo docker build -t photon:tdnf .
-
-ostree-repo: $(PHOTON_PACKAGES)
-	@echo "Creating OSTree repo from local PRMs in ostree-repo.tar.gz..."
-	@if [ -f  $(PHOTON_STAGE)/ostree-repo.tar.gz ]; then \
-		echo "ostree-repo.tar.gz already present, not creating again..."; \
-	else \
-		$(SRCROOT)/support/ostree-tools/make-ostree-image.sh $(SRCROOT); \
-	fi
 
 clean: clean-install clean-chroot
 	@echo "Deleting Photon ISO..."

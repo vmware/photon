@@ -22,8 +22,7 @@
         "title" : "3. Photon OSTree Server",
         "file" : "packages_ostree_server.json",
         "visible" : true,
-        "include" : ["minimal"],
-        "additional-files" : ["ostree-repo.tar.gz"]
+        "include" : ["minimal"]
     },
     "appliance" : {
         "title" : "Minimal packages to support appliances.",
