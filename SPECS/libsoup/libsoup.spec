@@ -1,14 +1,14 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
-Version:    2.53.90
-Release:    3%{?dist}
+Version:    2.57.1
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.50/%{name}-%{version}.tar.xz
-%define sha1 libsoup=d8511f0a8a07e4f5125c9354be7d43d62ea55eb3
+Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
+%define sha1 libsoup=a855a98c1d002a4e2bfb7562135265a8df4dad65
 BuildRequires:   glib
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
@@ -88,6 +88,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.57.1-1
+-   Upgrading to version 2.57.1
 *   Fri Nov 18 2016 Alexey Makhalov <amakhalov@vmware.com> 2.53.90-3
 -   Add sqlite-devel build deps
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.53.90-2
