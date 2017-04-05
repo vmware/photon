@@ -1,15 +1,15 @@
-Summary:    A network utility to retrieve files from the Web
-Name:       wget
-Version:    1.18
-Release:    1%{?dist}
-License:    GPLv3+
-URL:        http://www.gnu.org/software/wget/wget.html
-Group:      System Environment/NetworkingPrograms
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
-%define sha1 wget=02d451e658f600ee519c42cbf4d3bfe4e49b6c4f
-Requires:   openssl
+Summary:        A network utility to retrieve files from the Web
+Name:           wget
+Version:        1.19.1
+Release:        1%{?dist}
+License:        GPLv3+
+URL:            http://www.gnu.org/software/wget/wget.html
+Group:          System Environment/NetworkingPrograms
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
+%define sha1    wget=cde25e99c144191644406793cbd1c69c102c6970
+Requires:       openssl
 BuildRequires:  openssl-devel
 %description
 The Wget package contains a utility useful for non-interactive 
@@ -49,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-1
+-   Updated to version 1.19.1.
 *   Tue Nov 29 2016 Anish Swaminathan <anishs@vmware.com>  1.18-1
 -   Upgrade wget versions - fixes CVE-2016-7098
 *   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 1.17.1-3
