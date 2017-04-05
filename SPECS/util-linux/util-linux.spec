@@ -1,14 +1,14 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.27.1
-Release:        5%{?dist}
+Version:        2.29.2
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    %{name}-%{version}.tar.xz
-%define sha1    util-linux=462bca6320535d39b62216d8609da5531bfef0bb
+Source0:        %{name}-%{version}.tar.xz
+%define sha1    util-linux=b488f185e74187a63b55baef9d3f48d5b1780118
 BuildRequires:  ncurses-devel
 %description
 Utilities for handling file systems, consoles, partitions,
@@ -77,6 +77,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.29.2-1
+-   Updated to version 2.29.2.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.27.1-5
 -   Moved man3 to devel subpackage.
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2.27.1-4

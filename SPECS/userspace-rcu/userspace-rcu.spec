@@ -1,20 +1,20 @@
-Summary: user space RCU (read-copy-update)
-Name:    userspace-rcu
-Version: 0.9.1
-Release: 4%{?dist}
-License: LGPLv2+
-URL: http://liburcu.org
-Source: %{name}-%{version}.tar.bz2
-%define sha1 userspace-rcu=ca1b603655c3c5bf5d5b6254117999e3ae5f6751
-Group:      Development/Tools
-Vendor:     VMware, Inc.
-Distribution:  Photon
+Summary:        user space RCU (read-copy-update)
+Name:           userspace-rcu
+Version:        0.9.3
+Release:        1%{?dist}
+License:        LGPLv2+
+URL:            http://liburcu.org
+Source:         %{name}-%{version}.tar.gz
+%define         sha1 userspace-rcu=469163028cc324325fc04188b2c6d266fdad6ed2
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
-BuildRequires: libxml2-devel
-BuildRequires: nss-devel
-BuildRequires: m4
-BuildRequires: elfutils-devel
-BuildRequires: popt-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  nss-devel
+BuildRequires:  m4
+BuildRequires:  elfutils-devel
+BuildRequires:  popt-devel
 
 %description
 This data synchronization library provides read-side access which scales linearly with the number of cores.
@@ -30,9 +30,10 @@ Library files for doing development with userspace-rcu.
 %setup -q
 
 %build
+autoreconf -fiv
 ./configure \
-	--prefix=%{_prefix} \
-	--disable-static
+    --prefix=%{_prefix} \
+    --disable-static
 
 make %{?_smp_mflags}
 
@@ -56,11 +57,13 @@ make %{?_smp_mflags} check
 
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.9.1-4
--       Modified %check
-*       Mon Jul 25 2016 Divya Thaluru <dthaluru@vmware.com> 0.9.1-3
--       Added devel package and removed packaging of debug files
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.9.1-2
--	GA - Bump release of all rpms
-*	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-1
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 0.9.3-1
+-   Updated to version 0.9.3.
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.9.1-4
+-   Modified %check
+*   Mon Jul 25 2016 Divya Thaluru <dthaluru@vmware.com> 0.9.1-3
+-   Added devel package and removed packaging of debug files
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.9.1-2
+-   GA - Bump release of all rpms
+*   Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-1
 -   Initial build.  First version
