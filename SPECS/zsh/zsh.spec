@@ -1,24 +1,18 @@
 # this file is encoded in UTF-8  -*- coding: utf-8 -*-
 
-Summary: Z shell
-Name:    zsh
-Version: 5.2
-Release: 1%{?dist}
-License: MIT
-URL:     http://zsh.sourceforge.net/
-Group:   System Environment/Shells
-Vendor:	 VMware, Inc.
+Summary:      Z shell
+Name:         zsh
+Version:      5.3.1
+Release:      1%{?dist}
+License:      MIT
+URL:          http://zsh.sourceforge.net/
+Group:        System Environment/Shells
+Vendor:       VMware, Inc.
 Distribution: Photon
-Source0: http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha1 zsh=a93d034fcaa470bf8557fc11a9d0e86300325936
-Source1: zprofile.rhs
-Source2: zshrc
-
-# Fix to a minor VCS_INFO bug from http://www.zsh.org/mla/users/2016/msg00008.html
-Patch0: zsh-5.2-vcs_info.patch
-
-# prevent zsh from crashing when printing the "out of memory" message (#1300958)
-Patch1: zsh-5.2-oom-fatal-error.patch
+Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
+%define sha1  zsh=ec2a98c080f213c1c6c465c0c64662b5eae6818f
+Source1:      zprofile.rhs
+Source2:      zshrc
 
 BuildRequires: coreutils
 BuildRequires: tar
@@ -64,8 +58,6 @@ This package contains the Zsh manual in html format.
 %prep
 
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 %build
 # make loading of module's dependencies work again (#1277996)
@@ -153,5 +145,7 @@ fi
 %doc Doc/*.html
 
 %changelog
-* Sun Jul 24 2016 Ivan Porto Carrero <icarrero@vmware.com> - 5.2-1
-- Initial zsh for photon os
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.3.1-1
+-   Updated to version 5.3.1.
+*   Sun Jul 24 2016 Ivan Porto Carrero <icarrero@vmware.com> - 5.2-1
+-   Initial zsh for photon os
