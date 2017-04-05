@@ -1,38 +1,38 @@
-Summary:	Programs for compressing and decompressing files
-Name:		xz
-Version:	5.2.2
-Release:	4%{?dist}
-URL:		http://tukaani.org/xz
-License:	GPLv2+ and GPLv3+ and LGPLv2+
-Group:		Applications/File
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://tukaani.org/xz/%{name}-%{version}.tar.xz
-%define sha1 xz=72c567d3263345844191a7e618779b179d1f49e0
+Summary:        Programs for compressing and decompressing files
+Name:           xz
+Version:        5.2.3
+Release:        1%{?dist}
+URL:            http://tukaani.org/xz
+License:        GPLv2+ and GPLv3+ and LGPLv2+
+Group:          Applications/File
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://tukaani.org/xz/%{name}-%{version}.tar.xz
+%define sha1    xz=a2975d12e0905daec48ec87c0098602e0669d195
 %description
 The Xz package contains programs for compressing and
 decompressing files
 
 %package lang
 Summary: Additional language files for xz
-Group:		Applications/File
+Group:      Applications/File
 Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of xz.
 
-%package	devel
-Summary:	Header and development files for xz
-Requires:	%{name} = %{version}
-%description	devel
+%package    devel
+Summary:    Header and development files for xz
+Requires:   %{name} = %{version}
+%description    devel
 It contains the libraries and header files to create applications 
 
 %prep
 %setup -q
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--docdir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --docdir=%{_defaultdocdir}/%{name}-%{version} \
+    --disable-silent-rules
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install
@@ -44,8 +44,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %check
 make  %{?_smp_mflags}  check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -72,8 +72,7 @@ make  %{?_smp_mflags}  check
 %{_bindir}/lzmainfo
 %{_bindir}/xzgrep
 %{_bindir}/xzdec
-%{_libdir}/liblzma.so.5.2.2
-%{_libdir}/liblzma.so.5
+%{_libdir}/liblzma.so.*
 %{_mandir}/man1/*
 
 %files devel
@@ -88,6 +87,8 @@ make  %{?_smp_mflags}  check
 %defattr(-,root,root)
 
 %changelog
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.3-1
+-   Updated to version 5.2.3.
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 5.2.2-4
 -   Added -lang subpackage
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 5.2.2-3
