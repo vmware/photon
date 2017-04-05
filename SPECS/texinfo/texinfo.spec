@@ -1,14 +1,14 @@
-Summary:	Reading, writing, and converting info pages
-Name:		texinfo
-Version:	6.1
-Release:	4%{?dist}
-License:	GPLv3+
-URL:		http://ftp.gnu.org/gnu/texinfo/texinfo-6.1.tar.xz
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	%{name}-%{version}.tar.xz
-%define sha1 texinfo=d39c2e35ddb0aff6ebdd323ce53729bd215534fa
+Summary:        Reading, writing, and converting info pages
+Name:           texinfo
+Version:        6.3
+Release:        1%{?dist}
+License:        GPLv3+
+URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.xz
+%define sha1    texinfo=64568f2791d1309aaccc22e63758458fd249ec8b
 %description
 The Texinfo package contains programs for reading, writing,
 and converting info pages.
@@ -16,8 +16,8 @@ and converting info pages.
 %setup -q
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -44,17 +44,19 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 6.1-4
--       Modified %check
-*	Wed Jun 27 2016 Divya Thaluru <dthaluru@vmware.com> 6.1-3
--	Removed packaging of debug files
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.1-2
--	GA - Bump release of all rpms
-*       Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 6.1-1
--       Updated to version 6.1
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-3
--	Handled locale files with macro find_lang
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 5.2-2
--	Removing perl-libintl package from run-time required packages
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2-1
--	Upgrade version
+*   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.3-1
+-   Updated to version 6.3.
+*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 6.1-4
+-   Modified %check
+*   Wed Jun 27 2016 Divya Thaluru <dthaluru@vmware.com> 6.1-3
+-   Removed packaging of debug files
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.1-2
+-   GA - Bump release of all rpms
+*   Mon Feb 22 2016 Xiaolin Li <xiaolinl@vmware.com> 6.1-1
+-   Updated to version 6.1
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-3
+-   Handled locale files with macro find_lang
+*   Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 5.2-2
+-   Removing perl-libintl package from run-time required packages
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2-1
+-   Upgrade version

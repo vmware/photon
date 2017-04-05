@@ -2,13 +2,13 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python-lxml
-Version:        3.5.0b1
-Release:        4%{?dist}
+Version:        3.7.3
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
-Source0:        https://github.com/lxml/lxml/archive/lxml-%{version}.tar.gz
-%define         sha1 lxml=59763f575c589069b4477b737129a0430df68252
+Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464f71783655f39a41f218293c1c590d54eb82/lxml-%{version}.tar.gz
+%define         sha1 lxml=bce8b3101ed0de7440f00d7960a6a7a46ce50433
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python2-devel
@@ -39,7 +39,7 @@ Requires:       python3-libs
 Python 3 version.
 
 %prep
-%setup -q -n lxml-lxml-%{version}
+%setup -q -n lxml-%{version}
 
 %build
 %{__python} setup.py build
@@ -58,16 +58,18 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{python_sitearch}/lxml/*
-%{python_sitearch}/lxml-3.5.0b1-py2.7.egg-info
+%{python_sitearch}/lxml-%{version}-py2.7.egg-info
 
 %files -n python3-lxml
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 3.7.3-1
+-   Update to 3.7.3
 *   Wed Feb 08 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.0b1-4
 -   Added python3 site-packages.
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.5.0b1-3
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.5.0b1-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.0b1-2
 -   GA - Bump release of all rpms
