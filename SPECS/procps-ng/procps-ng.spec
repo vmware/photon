@@ -1,15 +1,14 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
-Version:        3.3.11
-Release:        5%{?dist}
+Version:        3.3.12
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://procps.sourceforge.net/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1    procps-ng=1bdca65547df9ed019bd83649b0f8b8eaa017e25
-Patch0:         Fixto-interpret-ascii-sequence.patch
+%define sha1    procps-ng=82c0745f150f1385ca01fe7d24f05f74e31c94c6
 BuildRequires:  ncurses-devel
 Requires:       ncurses
 %description
@@ -21,7 +20,6 @@ Requires:   %{name} = %{version}
 It contains the libraries and header files to create applications 
 %prep
 %setup -q
-%patch0 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -64,26 +62,11 @@ make %{?_smp_mflags} check
 /bin/pkill
 %{_sbindir}/pidof
 %_datadir/locale/*
-%{_docdir}/procps-ng-3.3.11/FAQ
-%{_docdir}/procps-ng-3.3.11/bugs.md
-%{_mandir}/man8/vmstat.8.gz
-%{_mandir}/man8/sysctl.8.gz
-%{_mandir}/man1/slabtop.1.gz
-%{_mandir}/man1/free.1.gz
-%{_mandir}/man1/pmap.1.gz
-%{_mandir}/man1/pwdx.1.gz
-%{_mandir}/man1/tload.1.gz
-%{_mandir}/man1/top.1.gz
-%{_mandir}/man1/pgrep.1.gz
-%{_mandir}/man1/uptime.1.gz
-%{_mandir}/man1/pkill.1.gz
-%{_mandir}/man1/pidof.1.gz
-%{_mandir}/man1/w.1.gz
-%{_mandir}/man1/watch.1.gz
-%{_mandir}/man1/ps.1.gz
-%{_mandir}/man5/sysctl.conf.5.gz
-%{_libdir}/libprocps.so.5
-%{_libdir}/libprocps.so.5.0.0
+%{_docdir}/procps-ng-*/*
+%{_mandir}/man8/*
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_libdir}/libprocps.so.*
 /sbin/sysctl
 %files devel
 %{_includedir}/proc/sig.h
@@ -102,6 +85,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libprocps.so
 %{_mandir}/man3/*
 %changelog
+*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 3.3.12-1
+-   Upgrade to 3.3.12
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.11-5
 -   Moved man3 to devel subpackage.
 *   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.3.11-4
