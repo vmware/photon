@@ -1,14 +1,14 @@
 Summary:	Contains programs for manipulating text files
 Name:		gawk
-Version:	4.1.3
-Release:	4%{?dist}
+Version:	4.1.4
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gawk
 Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/gawk/%{name}-%{version}.tar.xz
-%define sha1 gawk=76b0acbbdeaa0e58466675c5faf68895eedd8306
+%define sha1 gawk=d67e00e2f6178e9cbd2c0ba923ae157bc0b3b570
 Provides:	/bin/awk
 Provides:	/bin/gawk
 Provides:	awk
@@ -48,6 +48,8 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 4.1.4-1
+-   Upgrade to version 4.1.4
 *   Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.1.3-4
 -   Bump up for depending on readline 7.0
 *   Sun Dec 18 2016 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
