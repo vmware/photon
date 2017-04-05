@@ -1,11 +1,11 @@
 Summary:	A fast and lightweight key/value database library by Google
 Name:		leveldb
-Version:	1.19
-Release:	2%{?dist}
+Version:	1.20
+Release:	1%{?dist}
 License:	BSD
 URL:		https://github.com/google/leveldb
 Source0:	https://github.com/google/leveldb/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 leveldb=864b45b4a8d1ad400b9115ff6d3c9fb1f79be82b
+%define sha1 leveldb=df11440c30deed5987263730180225db98de9f57
 Group:		Development/Libraries/C and C++
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -49,6 +49,8 @@ make check
 %{_libdir}/libleveldb.a
 
 %changelog
+*	Thu Mar 30 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-1
+-	Updated to version 1.20
 *	Wed Dec 21 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-2
 -	Fixed parallel build error
 *	Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-1

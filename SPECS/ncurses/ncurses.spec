@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -48,6 +48,9 @@ ln -s ../configure .
 	--without-debug \
 	--enable-pc-files \
 	--enable-widec \
+	--disable-lp64 \
+	--with-chtype='long' \
+	--with-mmask-t='long' \
 	--disable-silent-rules
 make %{?_smp_mflags}
 popd
@@ -61,6 +64,9 @@ ln -s ../configure .
 	--without-debug \
 	--enable-pc-files \
 	--enable-widec \
+	--disable-lp64 \
+	--with-chtype='long' \
+	--with-mmask-t='long' \
 	--disable-silent-rules \
 	--with-abi-version=5
 make %{?_smp_mflags}
@@ -164,6 +170,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Wed Mar 29 2017 Alexey Makhalov <amakhalov@vmware.com> 6.0-6
+-   --with-chtype=long --with-mmask-t=long to avoid type clashes (1838226)
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 6.0-5
 -   Add -terminfo subpackage. Main package carries only 'linux' terminfo
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.0-4

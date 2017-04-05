@@ -1,13 +1,13 @@
 Summary:       Jansson json parser
 Name:          jansson
-Version:       2.9
+Version:       2.10
 Release:       1%{?dist}
 Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 License:       MIT
 URL:           http://www.digip.org/jansson
 Source0:       http://www.digip.org/jansson/releases/%{name}-%{version}.tar.gz
-%define sha1 jansson=d843b7f0b8a01c42c9caab9394120fdb53ada070
+%define sha1 jansson=ab79e567c23bca79c8d310084bbdff685b0a9cb7
 Distribution:  Photon
 
 %description
@@ -54,5 +54,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*  Thu Mar 30 2017 Divya Thaluru <dthaluru@vmware.com> 2.10-1
+-  Updated to version 2.10
 *  Thu Jan 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9-1
 -  Initial

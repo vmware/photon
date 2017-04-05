@@ -1,27 +1,27 @@
-Summary:	Java Native Access
-Name:		jna
-Version:	4.2.1
-Release:	6%{?dist}
-License:	Apache
-URL:		http://github.com/twall/jna
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        Java Native Access
+Name:           jna
+Version:        4.4.0
+Release:        1%{?dist}
+License:        Apache
+URL:            http://github.com/twall/jna
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      x86_64
-Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
-%define sha1 jna=30a1132f9ca6b3222eccd380a3f4149aa7df3f59
-Requires: openjre >= 1.8.0.112
-BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.6
+Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
+%define sha1 jna=d9b54e98393a696f458468bc8f3167f701a9ea9f
+Requires:       openjre >= 1.8.0.112
+BuildRequires:  openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.6
 
-%define _prefix /var/opt/jna-4.2.1
+%define _prefix /var/opt/jna-4.4.0
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
 
 %package devel
-Summary: Sources for JNA
-Group: Development/Libraries
-Requires: jna = %{version}-%{release}
+Summary:    Sources for JNA
+Group:      Development/Libraries
+Requires:   jna = %{version}-%{release}
 
 %description devel
 Sources for JNA
@@ -63,8 +63,11 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/doc.zip
 %{_prefix}/*javadoc.jar
 %{_prefix}/*sources.jar
+%{_prefix}/*.aar
 
 %changelog
+*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-1
+-   Updated package to version 4.4.0
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-6
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
