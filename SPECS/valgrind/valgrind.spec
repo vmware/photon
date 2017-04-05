@@ -1,15 +1,15 @@
 %global security_hardening none
-Summary:	Memory Management Debugger.
-Name:		valgrind
-Version:	3.11.0
-Release:	1%{?dist}
-License:	GPLv2+
-URL:		http://valgrind.org
-Group:		Development/Debuggers
+Summary:        Memory Management Debugger.
+Name:           valgrind
+Version:        3.12.0
+Release:        1%{?dist}
+License:        GPLv2+
+URL:            http://valgrind.org
+Group:          Development/Debuggers
 Source0:        http://valgrind.org/downloads/%{name}-%{version}.tar.bz2
-%define sha1 valgrind=340757e91d9e83591158fe8bb985c6b11bc53de5
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha1    valgrind=7a6878bf998c60d1e377a4f22ebece8d9305bda4
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  pkg-config
 
 %description
@@ -42,5 +42,7 @@ make %{?_smp_mflags} -k check
 %{_datadir}/doc/valgrind/*
 
 %changelog
-*       Fri Aug 05 2016 Kumar Kaushik <kaushikk@vmware.com> 3.11.0-1
--       Initial Build.
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.12.0-1
+-   Updated to version 3.12.0.
+*   Fri Aug 05 2016 Kumar Kaushik <kaushikk@vmware.com> 3.11.0-1
+-   Initial Build.
