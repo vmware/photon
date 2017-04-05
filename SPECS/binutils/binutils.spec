@@ -1,7 +1,7 @@
 Summary:    Contains a linker, an assembler, and other tools
 Name:       binutils
 Version:    2.25.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2+
 URL:        http://www.gnu.org/software/binutils
 Group:      System Environment/Base
@@ -11,6 +11,7 @@ Source0:    http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
 %define sha1 binutils=1d597ae063e3947a5f61e23ceda8aebf78405fcd
 Patch0:     http://www.linuxfromscratch.org/patches/downloads/binutils/binutils-2.25.1-gold_export_symbols-1.patch
 Patch1:     binutils-CVE-2014-9939.patch
+Patch2:     binutils-CVE-2017-6969.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -24,6 +25,7 @@ for handling compiled objects.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 rm -fv etc/standards.info
 sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
 %build
@@ -170,6 +172,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Tue Apr 04 2017 Anish Swaminathan <anishs@vmware.com> 2.25.1-4
+-   Apply patch for CVE-2017-6969
 *   Tue Apr 04 2017 Anish Swaminathan <anishs@vmware.com> 2.25.1-3
 -   Apply patch for CVE-2014-9939
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25.1-2
