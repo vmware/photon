@@ -1,11 +1,11 @@
 Summary:        Libsolv-0.6.19
 Name:           libsolv
-Version:        0.6.19
-Release:        4%{?dist}
+Version:        0.6.26
+Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha1    libsolv=2066529e5a95aac15a79863bb937bb159b05cffa
+%define sha1    libsolv=7699af00e648bf3e631246559c48ceb7f3f544b9
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -59,6 +59,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com>  0.6.26-1
+-   Upgrade to 0.6.26
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.19-4
 -   Added -devel subpackage.
 *   Thu Oct 27 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-3
