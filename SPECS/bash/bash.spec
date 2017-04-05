@@ -1,19 +1,20 @@
-Summary:	Bourne-Again SHell
-Name:		bash
-Version:	4.3.30
-Release:	7%{?dist}
-License:	GPLv3
-URL:		http://www.gnu.org/software/bash/
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
+Summary:  Bourne-Again SHell
+Name:   bash
+Version:  4.3.30
+Release:  8%{?dist}
+License:  GPLv3
+URL:    http://www.gnu.org/software/bash/
+Group:    System Environment/Base
+Vendor:   VMware, Inc.
 Distribution: Photon
-Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
+Source0:  http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha1 bash=33b1bcc5dca1b72f28b2baeca6efa0d422097964
 Patch0:   http://www.linuxfromscratch.org/patches/downloads/bash/bash-4.3.30-upstream_fixes-2.patch
 Patch1:   fix-save_bash_input-segfault.patch
 Patch2:   bash-4.3.patch
-Provides:	/bin/sh
-Provides:	/bin/bash
+Patch3:   bash-CVE-2016-7543.patch
+Provides: /bin/sh
+Provides: /bin/bash
 %description
 The package contains the Bourne-Again SHell
 
@@ -29,13 +30,14 @@ These are the additional language files of bash.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--bindir=/bin \
-	--htmldir=%{_defaultdocdir}/%{name}-%{version} \
-	--without-bash-malloc \
-	--with-installed-readline 
+  --prefix=%{_prefix} \
+  --bindir=/bin \
+  --htmldir=%{_defaultdocdir}/%{name}-%{version} \
+  --without-bash-malloc \
+  --with-installed-readline 
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -276,14 +278,16 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Tue Apr 04 2017 Anish Swaminathan <anishs@vmware.com> 4.3.30-8
+-   Apply patch for CVE-2016-7543
 *   Tue Feb 7 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-7
 -   Added /usr/bin/bash and /bin/bash entries in /etc/shells
 *   Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-6
 -   Modified bash entry in /etc/shells
 *   Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-5
 -   Added bash entry to /etc/shells
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
+-   GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.3.30-3
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
@@ -293,10 +297,10 @@ fi
 -   Updated to version 4.3.30
 *   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
 -   Adding post unstall section.
-*	Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
--	Fix segfault in save_bash_input.
-*	Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
--	/etc/profile.d permission fix. Pack /etc files into rpm
-*	Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
--	Initial version
+*   Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
+-   Fix segfault in save_bash_input.
+*   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
+-   /etc/profile.d permission fix. Pack /etc files into rpm
+*   Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
+-   Initial version
 
