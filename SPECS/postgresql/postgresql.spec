@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.5.3
-Release:        4%{?dist}
+Version:        9.5.4
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -10,8 +10,7 @@ Distribution:   Photon
 Provides:   %{name}
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1 postgresql=bd8dcbc8c4882468675dcc93263182a27d4ff201
-Patch0:         CVE-2016-5423.patch
+%define sha1 postgresql=bdbbecf691354a689c599631256d41eaa8824c66
 # Common libraries needed
 BuildRequires:  krb5
 BuildRequires:  libxml2-devel
@@ -47,7 +46,6 @@ PostgreSQL server.
 
 %prep
 %setup -q
-%patch0 -p1
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
 ./configure \
@@ -159,6 +157,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-1
+-   Updated to version 9.5.4.
 *   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-4
 -   Applied CVE-2016-5423.patch
 *   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
@@ -167,12 +167,12 @@ rm -rf %{buildroot}/*
 -   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
 -   Updated to version 9.5.3
-*       Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
--       Updated to version 9.5.2
-*       Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
--       Updated to version 9.5.1
-*       Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
--       Updated to version 9.5.0
+*   Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
+-   Updated to version 9.5.2
+*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
+-   Updated to version 9.5.1
+*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
+-   Updated to version 9.5.0
 *   Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
 -   Update to version 9.4.4.
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
