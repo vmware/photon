@@ -1,14 +1,14 @@
-Summary:    Utilities for managing the XFS filesystem
-Name:       xfsprogs
-Version:    4.9.0
-Release:    1%{?dist}
-License:    GPL+ and LGPLv2+
-URL:        http://oss.sgi.com/projects/xfs/
-Group:      System Environment/Base
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.gz
-%define sha1 xfsprogs=6d6dcf7f0bbf0e0104fb47af0cba1647817cf6e8
+Summary:        Utilities for managing the XFS filesystem
+Name:           xfsprogs
+Version:        4.10.0
+Release:        1%{?dist}
+License:        GPL+ and LGPLv2+
+URL:            http://oss.sgi.com/projects/xfs/
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://kernel.org/pub/linux/utils/fs/xfs/xfsprogs/%{name}-%{version}.tar.xz
+%define sha1    xfsprogs=cd6750ea88133092815aad37fad993c17a80f9c3
 BuildRequires:  gettext
 BuildRequires:  readline-devel
 
@@ -81,5 +81,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 4.10.0-1
+-   Updated to version 4.10.0.
 *   Fri Jan 6 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.0-1
 -   Initial build.  First version

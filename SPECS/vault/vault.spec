@@ -1,17 +1,17 @@
-Summary:	Vault secrets management
-Name:		vault
-Version:	0.6.0
-Release:	1%{?dist}
-License:	Mozilla Public License, version 2.0
-URL:		https://www.vaultproject.io/
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0: https://releases.hashicorp.com/%{name}/%{version}/%{name}_%{version}_linux_amd64.zip
-%define sha1 vault=ec1115ba639870a63460884a59b44c77b0c71221
-Source1:	vault.service
+Summary:        Vault secrets management
+Name:           vault
+Version:        0.7.0
+Release:        1%{?dist}
+License:        Mozilla Public License, version 2.0
+URL:            https://www.vaultproject.io/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://releases.hashicorp.com/%{name}/%{version}/%{name}_%{version}_linux_amd64.zip
+%define sha1    vault=89cf86963c5d6c005b4dce0205c739c72dfdd59b
+Source1:        vault.service
 Source2:        vault.hcl
-Requires:	shadow
+Requires:       shadow
 Requires:       consul >= 0.6.4
 BuildRequires:  unzip
 
@@ -36,11 +36,11 @@ cp %{SOURCE1} %{buildroot}/usr/lib/systemd/system
 cp %{SOURCE2} %{buildroot}%{_sysconfdir}/vault.d/
 install -vdm755 %{buildroot}/var/lib/vault
 
-%post	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 setcap cap_ipc_lock=+ep /usr/bin/%{name}
 %systemd_post vault.service
 
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %systemd_postun_with_restart vault.service
 
 %preun
@@ -57,5 +57,7 @@ rm -rf %{buildroot}/*
 %dir /var/lib/%{name}
 
 %changelog
-*	Sun Jul 24 2016 Ivan Porto Carrero <icarrero@vmware.com> 0.6.0-1
--	Initial build.	First version
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.0-1
+-   Updated to version 0.7.0.
+*   Sun Jul 24 2016 Ivan Porto Carrero <icarrero@vmware.com> 0.6.0-1
+-   Initial build.  First version
