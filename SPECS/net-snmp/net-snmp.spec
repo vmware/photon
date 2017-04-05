@@ -2,7 +2,7 @@
 Summary:	Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6. 
 Name:		net-snmp   
 Version:	5.7.3
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD (like)  
 URL:		http://net-snmp.sourceforge.net/
 Group:		Productivity/Networking/Other
@@ -11,6 +11,8 @@ Distribution:	Photon
 Source0:	http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 net-snmp=97dc25077257680815de44e34128d365c76bd839
 Patch1: 	net-snmp-5.7.2-systemd.patch
+Patch2:         net-snmp-remove-u64-typedef.patch
+Patch3:         net-snmp-fix-perl-module-compilation.spec
 BuildRequires:	openssl-devel perl systemd
 Requires:	perl systemd
 %description
@@ -27,6 +29,8 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 %prep
 %setup -q
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 ./configure --prefix=%{_prefix} \
@@ -115,6 +119,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
 
 %changelog
+*	Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.7.3-6
+-	Patch to remove U64 typedef
 *       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 5.7.3-5
 -       Modified %check
 *       Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 5.7.3-4
