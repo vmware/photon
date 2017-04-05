@@ -1,36 +1,38 @@
-Summary:	Contains a linker, an assembler, and other tools
-Name:		binutils
-Version:	2.25.1
-Release:	2%{?dist}
-License:	GPLv2+
-URL:		http://www.gnu.org/software/binutils
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
+Summary:    Contains a linker, an assembler, and other tools
+Name:       binutils
+Version:    2.25.1
+Release:    3%{?dist}
+License:    GPLv2+
+URL:        http://www.gnu.org/software/binutils
+Group:      System Environment/Base
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:    http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
 %define sha1 binutils=1d597ae063e3947a5f61e23ceda8aebf78405fcd
-Patch0:		http://www.linuxfromscratch.org/patches/downloads/binutils/binutils-2.25.1-gold_export_symbols-1.patch
+Patch0:     http://www.linuxfromscratch.org/patches/downloads/binutils/binutils-2.25.1-gold_export_symbols-1.patch
+Patch1:     binutils-CVE-2014-9939.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
-%package	devel
-Summary:	Header and development files for binutils
-Requires:	%{name} = %{version}
-%description	devel
+%package    devel
+Summary:    Header and development files for binutils
+Requires:   %{name} = %{version}
+%description    devel
 It contains the libraries and header files to create applications 
 for handling compiled objects.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 rm -fv etc/standards.info
 sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
 %build
 install -vdm 755 ../binutils-build
 cd ../binutils-build
 ../%{name}-%{version}/configure \
-	--prefix=%{_prefix} \
-	--enable-shared \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --enable-shared \
+    --disable-silent-rules
 make %{?_smp_mflags} tooldir=%{_prefix}
 %install
 pushd ../binutils-build
@@ -43,8 +45,8 @@ popd
 %check
 cd ../binutils-build
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/gprof
@@ -168,13 +170,15 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libopcodes.so
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25.1-2
--	GA - Bump release of all rpms
+*   Tue Apr 04 2017 Anish Swaminathan <anishs@vmware.com> 2.25.1-3
+-   Apply patch for CVE-2014-9939
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25.1-2
+-   GA - Bump release of all rpms
 *   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.25.1-1
 -   Updated to version 2.25.1
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.25-2
--	Handled locale files with macro find_lang
-*	Mon Apr 6 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25-1
--	Updated to 2.25
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24-1
--	Initial build. First version
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.25-2
+-   Handled locale files with macro find_lang
+*   Mon Apr 6 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25-1
+-   Updated to 2.25
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24-1
+-   Initial build. First version
