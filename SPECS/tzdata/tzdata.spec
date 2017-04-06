@@ -1,19 +1,20 @@
-Summary:    Time zone data
-Name:       tzdata
-Version:    2016h
-Release:    2%{?dist}
-URL:        http://www.iana.org/time-zones
-License:    Public Domain
-Group:      Applications/System
-Vendor:     VMware, Inc.
+Summary:        Time zone data
+Name:           tzdata
+Version:        2017b
+Release:        1%{?dist}
+URL:            http://www.iana.org/time-zones
+License:        Public Domain
+Group:          Applications/System
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha1 tzdata=2a43fc1665aab340d8d6505dff9f57b270b5dda2
-BuildArch:  noarch
+Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
+%define sha1    tzdata=0f13bbb641f5742796609d3484006fe01fa654f1
+BuildArch:      noarch
+
 %description
 Sources for time zone and daylight saving time data
-%define sha1 tzdata=0fe77c8cca50b5f20d73e9c2a5b4fadca34c1504
 %define blddir      %{name}-%{version}
+
 %prep
 rm -rf %{blddir}
 install -vdm 755 %{blddir}
@@ -53,6 +54,8 @@ fi
 %{_datadir}/*
 
 %changelog
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2017b-1
+-   Updated to version 2017b.
 *   Wed Dec 14 2016 Anish Swaminathan <anishs@vmware.com> 2016h-2
 -   Preserve /etc/localtime symlink over upgrade
 *   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 2016h-1

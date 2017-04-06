@@ -1,6 +1,6 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.6.0
+Version:        1.6.1
 Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
@@ -8,7 +8,7 @@ License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1 unbound=9b7606b016b447dc837efc108cee94f3fecf4ede
+%define sha1    unbound=41369fcfd37844b02b7293b37ec78e69f0db34c7
 Source1:        %{name}.service
 Requires:       shadow
 Requires:       systemd
@@ -17,16 +17,16 @@ BuildRequires:  systemd
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
 
-%package	devel
-Summary:	unbound development libs and headers
-Group:		Development/Libraries
+%package    devel
+Summary:    unbound development libs and headers
+Group:      Development/Libraries
 
 %description devel
 Development files for unbound dns server
 
-%package	docs
-Summary:	unbound docs
-Group:		Documentation
+%package    docs
+Summary:    unbound docs
+Group:      Documentation
 
 %description docs
 unbound dns server docs
@@ -81,5 +81,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.6.1-1
+-   Updated to version 1.6.1
 *  Fri Jan 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-1
 -  Initial
