@@ -1,21 +1,30 @@
 Summary: Download, build, install, upgrade, and uninstall Python packages
 Name: python-setuptools
-Version: 21.0.0
-Release: 3%{?dist}
+Version: 34.3.3
+Release: 1%{?dist}
 License: Python or ZPLv2.0
 Group: Development/Languages
 URL: https://pypi.python.org/pypi/setuptools
 
-Source0: https://pypi.python.org/packages/source/s/setuptools/setuptools-%{version}.tar.gz
-%define sha1 setuptools=38f9bd98b2c36bd4bae64ea06495e35e43b09b43
+Source0: https://pypi.python.org/packages/d5/b7/e52b7dccd3f91eec858309dcd931c1387bf70b6d458c86a9bfcb50134fbd/setuptools-%{version}.zip
+%define sha1 setuptools=0cc980f018b539f1f87ef3e09849e5f4d1bd9a5d
 
 BuildArch: noarch
 
 BuildRequires: python2
 BuildRequires: python2-libs
+BuildRequires: unzip
+BuildRequires: python-six
+BuildRequires: python-packaging
+BuildRequires: python-appdirs
+BuildRequires: python-pyparsing
 
 Requires: python2
 Requires: python2-libs
+Requires: python-six
+Requires: python-packaging
+Requires: python-appdirs
+Requires: python-pyparsing
 
 %description
 setuptools is a collection of enhancements to the Python distutils that allow
@@ -49,6 +58,8 @@ chmod +x %{buildroot}%{python_sitelib}/setuptools/command/easy_install.py
 %{python_sitelib}/*
 
 %changelog
+*       Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 34.3.3-1
+-       Upgrade to 34.3.3
 *       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 21.0.0-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 21.0.0-2
