@@ -1,0 +1,63 @@
+%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
+Name:           python-appdirs
+Version:        1.4.3
+Release:        1%{?dist}
+Summary:        Python 2 and 3 compatibility utilities
+License:        MIT
+Group:          Development/Languages/Python
+Url:            https://pypi.python.org/pypi/appdirs
+Source0:        https://pypi.python.org/packages/48/69/d87c60746b393309ca30761f8e2b49473d43450b150cb08f3c6df5c11be5/appdirs-%{version}.tar.gz
+%define sha1    appdirs=9ad09395ed489ad66e9688e49087ce1814c64276
+
+BuildRequires:  python2
+BuildRequires:  python2-libs
+
+Requires:       python2
+Requires:       python2-libs
+
+BuildArch:      noarch
+
+%description
+A small Python module for determining appropriate platform-specific dirs, e.g. a "user data dir".
+
+%package -n     python3-appdirs
+Summary:        python-appdirs
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+Requires:       python3
+Requires:       python3-libs
+
+%description -n python3-appdirs
+
+Python 3 version.
+
+%prep
+%setup -n appdirs-%{version}
+
+%build
+python setup.py build
+python3 setup.py build
+
+%install
+python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+
+%check
+easy_install py
+%{__python} test_appdirs.py
+python3 test_appdirs.py
+
+%files
+%defattr(-,root,root,-)
+%{python_sitelib}/*
+
+%files -n python3-appdirs
+%defattr(-,root,root,-)
+%{python3_sitelib}/*
+
+%changelog
+*   Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 1.4.3-1
+-   Create appdirs 1.4.3
