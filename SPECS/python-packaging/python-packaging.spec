@@ -4,7 +4,7 @@
 Summary:        Core utilities for Python packages
 Name:           python-packaging
 Version:        16.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
@@ -15,7 +15,6 @@ Source0:        pypi.python.org/packages/source/p/packaging/packaging-%{version}
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
@@ -66,5 +65,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 16.8-2
+-   Remove python-setuptools from BuildRequires
 *   Tue Apr 04 2017 Xiaolin Li <xiaolinl@vmware.com> 16.8-1
 -   Initial packaging for Photon
