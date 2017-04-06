@@ -1,11 +1,11 @@
 Summary:	The Berkley DB database library for C
 Name:		libdb
-Version:	5.3.28
+Version:	6.2.23
 Release:	1%{?dist}
 License:	BSD and LGPLv2 and Sleepycat
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
-%define sha1 db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
+%define sha1 db=646c57b99799dc300207976e2270cdaca1a2f198
 Group:		System/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -65,5 +65,7 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*	Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 6.2.23-1
+-	Update to version 6.2.23
 *	Thu Oct 27 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.28-1
 -	Initial build. First version
