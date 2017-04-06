@@ -3,7 +3,7 @@
 
 Name:           python-netaddr
 Version:        0.7.19
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
