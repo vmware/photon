@@ -1,6 +1,6 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	3.2.4
+Version:	3.2.8
 Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
@@ -8,7 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=f0fe685cbfdb8c2d8c74613ad8a5a5f33fba40c9
+%define sha1 redis=6780d1abb66f33a97aad0edbe020403d0a15b67f
 BuildRequires:  gcc
 BuildRequires:  make
 
@@ -44,5 +44,7 @@ install -D -m 0755 utils/redis_init_script %{buildroot}%{_sysconfdir}/init.d/%{n
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/%{name}/redis.conf
 
 %changelog
+*       Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-1
+-       Updating to latest version
 *	Mon Oct 3 2016 Dheeraj Shetty <dheerajs@vmware.com> 3.2.4-1
 -	initial version

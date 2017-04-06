@@ -1,6 +1,6 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.6.6
+Version:       3.6.9
 Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
@@ -9,7 +9,7 @@ License:       MPLv1.1
 URL:           http://www.rabbitmq.com
 BuildArch:     x86_64
 Source0:       %{name}-%{version}.tar.xz
-%define sha1 rabbitmq=fc6dbb566981e7810c14fe04521bed2acc3f85ca
+%define sha1 rabbitmq=559372baa7df9ebf853f3cbf2a15a1fc14cd38ee
 Source1:       rabbitmq.config
 Source2:       rabbitmq-server.service
 Requires:      erlang
@@ -74,5 +74,7 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.9-1
+- Updating package to the latest
 * Mon Dec 12 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.6-1
 - Initial.
