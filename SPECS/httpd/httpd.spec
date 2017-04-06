@@ -1,16 +1,16 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.18
-Release:        8%{?dist}
+Version:        2.4.25
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/httpd/%{name}-%{version}.tar.bz2
-%define sha1    httpd=271a129f2f04e3aa694e5c2091df9b707bf8ef80
-Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.18-blfs_layout-1.patch
-Patch1:         httpd-2.4.18-CVE-2016-5387.patch
+%define sha1    httpd=bd6d138c31c109297da2346c6e7b93b9283993d2
+Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.25-blfs_layout-1.patch
+Patch1:         httpd-uncomment-ServerName.patch
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -54,6 +54,7 @@ The httpd-tools of httpd.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+
 %build
 ./configure --prefix=%{_sysconfdir}/httpd \
             --exec-prefix=%{_prefix} \
@@ -174,6 +175,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1
+-   Updated to version 2.4.25
 *   Tue Dec 27 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-8
 -   BuildRequires lua, Requires lua.
 *   Wed Dec 21 2016 Anish Swaminathan <anishs@vmware.com>  2.4.18-7
