@@ -1,11 +1,11 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
-Version:        1.2.10
-Release:        2%{?dist}
+Version:        1.2.14
+Release:        1%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    openscap=d75375b87afa7032de659ee36258caf2bc6a2b7f
+%define sha1    openscap=6c2f4ff0bbbd6b80e6c99f15a2e0d052a1f9afe1
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -95,6 +95,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/python2.7/*
 
 %changelog
+*   Mon Mar 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.14-1
+-   Update to latest version.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-2
 -   BuildRequires curl-devel.
 *   Tue Sep 6 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-1
