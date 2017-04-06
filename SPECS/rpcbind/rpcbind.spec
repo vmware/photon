@@ -1,16 +1,15 @@
 Summary:        RPC program number mapper
 Name:           rpcbind
-Version:        0.2.3
-Release:        9%{?dist}
+Version:        0.2.4
+Release:        1%{?dist}
 License:        BSD
 URL:            http://nfsv4.bullopensource.org
 Group:          Applications/Daemons
 Source0:        http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
-%define sha1 rpcbind=e79974a99d09b6d6fff9d86bf00225dc33723ce2
+%define sha1 rpcbind=8a6045dd3397e9f71bf3a7c9d269e255cca537bd
 Source1:        rpcbind.service
 Source2:        rpcbind.socket
 Source3:        rpcbind.sysconfig
-Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/rpcbind-0.2.3-tirpc_fix-1.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libtirpc-devel
@@ -23,7 +22,6 @@ Requires:       coreutils
 The rpcbind program is a replacement for portmap. It is required for import or export of Network File System (NFS) shared directories. The rpcbind utility is a server that converts RPC program numbers into universal addresses
 %prep
 %setup -q
-%patch0 -p1
 %build
 sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
 ./configure --prefix=%{_prefix}      \
@@ -84,6 +82,8 @@ fi
 %clean
 rm -rf %{buildroot}/*
 %changelog
+*   Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.2.4-1
+-   Updating to latest version
 *   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-9
 -   add shadow and coreutils to requires
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  0.2.3-8
