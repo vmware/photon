@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -19,8 +19,9 @@ BuildRequires: openjdk >= 1.8.0.45
 The Ant Contrib project is a collection of tasks for Apache Ant.
 
 %prep
-
 %setup -n %{name}
+find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
+
 %build
 ANT_HOME=/var/opt/apache-ant-1.9.6
 export JAVA_HOME=/var/opt/OpenJDK-1.8.0.112-bin
@@ -38,6 +39,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wi
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Fri Apr 07 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-10
+-   Removed prebuilt binaries from source tar ball
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0b3-9
 -   Updated JAVA_HOME path to point to latest.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0b3-8
