@@ -1,24 +1,26 @@
-Summary:        Etcd-3.0.9
+Summary:        Etcd-3.1.5
 Name:           etcd
-Version:        3.0.9
+Version:        3.1.5
 Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/coreos/etcd/releases/download/v%{version}/%{name}-v%{version}-linux-amd64.tar.gz
-%define sha1 etcd=377c411851caa03f58452ad10a1fe10382715a05
+Source0:        %{name}-%{version}.tar.gz
+%define sha1 etcd=a020efbd8bc7777e77b960b461886d26b2cedecd
 Source1:        etcd.service
+BuildRequires:  go >= 1.7
 Requires:       shadow
 
 %description
 A highly-available key value store for shared configuration and service discovery.
 
 %prep
-%setup -qn %{name}-v%{version}-linux-amd64
+%setup -q
 
 %build
+./build
 
 %install
 install -vdm755 %{buildroot}%{_bindir}
@@ -28,10 +30,11 @@ install -vdm755 %{buildroot}/lib/systemd/system
 chown -R root:root %{buildroot}%{_bindir}
 chown -R root:root %{buildroot}/%{_docdir}/%{name}-%{version}
 
-mv %{_builddir}/%{name}-v%{version}-linux-amd64/etcd %{buildroot}%{_bindir}/
-mv %{_builddir}/%{name}-v%{version}-linux-amd64/etcdctl %{buildroot}%{_bindir}/
-mv %{_builddir}/%{name}-v%{version}-linux-amd64/README.md %{buildroot}/%{_docdir}/%{name}-%{version}/
-mv %{_builddir}/%{name}-v%{version}-linux-amd64/README-etcdctl.md %{buildroot}/%{_docdir}/%{name}-%{version}/
+mv %{_builddir}/%{name}-%{version}/bin/etcd %{buildroot}%{_bindir}/
+mv %{_builddir}/%{name}-%{version}/bin/etcdctl %{buildroot}%{_bindir}/
+mv %{_builddir}/%{name}-%{version}/README.md %{buildroot}/%{_docdir}/%{name}-%{version}/
+mv %{_builddir}/%{name}-%{version}/etcdctl/README.md %{buildroot}/%{_docdir}/%{name}-%{version}/README-etcdctl.md
+mv %{_builddir}/%{name}-%{version}/etcdctl/READMEv2.md %{buildroot}/%{_docdir}/%{name}-%{version}/READMEv2-etcdctl.md
 
 cp %{SOURCE1} %{buildroot}/lib/systemd/system
 install -vdm755 %{buildroot}/var/lib/etcd
@@ -50,6 +53,8 @@ rm -rf %{buildroot}/*
 %dir /var/lib/etcd
 
 %changelog
+*   Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 3.1.5-1
+-   Upgraded to version 3.1.5, build from sources
 *   Fri Sep 2 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.9-1
 -   Upgraded to version 3.0.9
 *   Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 2.3.7-1
