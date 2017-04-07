@@ -280,7 +280,7 @@
         <package id="sed-lang"
                  spec="sed"/>
         <package id="shadow"/>
-        <package id="sqlite-autoconf"/>
+        <package id="sqlite"/>
         <package id="sudo"/>
         <package id="swig"/>
         <package id="systemd"/>
@@ -382,7 +382,7 @@
         <pkgref id="rpm"/>
         <pkgref id="sed"/>
         <pkgref id="shadow"/>
-        <pkgref id="sqlite-autoconf"/>
+        <pkgref id="sqlite"/>
         <pkgref id="systemd"/>
         <pkgref id="tar"/>
         <pkgref id="texinfo"/>
@@ -447,7 +447,7 @@
         <pkgref id="readline"/>
         <pkgref id="rpm"/>
         <pkgref id="shadow"/>
-        <pkgref id="sqlite-autoconf"/>
+        <pkgref id="sqlite"/>
         <pkgref id="systemd"/>
         <pkgref id="tdnf"/>
         <pkgref id="util-linux"/>
@@ -533,7 +533,7 @@
         <pkgref id="rpm"/>
         <pkgref id="sed"/>
         <pkgref id="shadow"/>
-        <pkgref id="sqlite-autoconf"/>
+        <pkgref id="sqlite"/>
         <pkgref id="systemd"/>
         <pkgref id="tdnf"/>
         <pkgref id="util-linux"/>
