@@ -1,11 +1,11 @@
 Summary:	Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:		libvirt
-Version:	3.0.0
+Version:	3.2.0
 Release:	1%{?dist}
 License:	LGPL
 URL:		http://libvirt.org/
 Source0:	http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha1 libvirt=8a38fd5a0538a8ac05c8e4722bc4015c51237be0
+%define sha1 libvirt=47d4b443fdf1e268589529018c436bbc4b413a7c
 Group:		Virtualization/Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -72,15 +72,20 @@ find %{buildroot} -name '*.la' -delete
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-/etc/libvirt/*
-/etc/logrotate.d/libvirtd*
-/etc/sasl2/libvirt.conf
-%{_sysconfdir}/*
 %{_libdir}/libvirt*.so.*
+%{_libdir}/libvirt/storage-backend/*
 %{_libdir}/sysctl.d/60-libvirtd.conf
 %{_libdir}/systemd/system/*
 /usr/libexec/libvirt*
 %{_sbindir}/*
+
+%config(noreplace)%{_sysconfdir}/sasl2/libvirt.conf
+%config(noreplace)%{_sysconfdir}/libvirt/*.conf
+%{_sysconfdir}/libvirt/nwfilter/*
+%{_sysconfdir}/libvirt/qemu/*
+%{_sysconfdir}/logrotate.d/*
+%{_sysconfdir}/sysconfig/*
+%{_bindir}/*
 
 %files devel
 %{_includedir}/libvirt/*
@@ -88,15 +93,18 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libvirt/connection-driver/*.so
 %{_libdir}/libvirt/lock-driver/*.so
 %{_libdir}/pkgconfig/libvirt*
+%{_libdir}/libvirt/storage-backend/*
 
 %files docs
 /usr/share/augeas/lenses/*
-/usr/share/doc/libvirt-3.0.0/*
+/usr/share/doc/%{name}-%{version}/*
 /usr/share/gtk-doc/*
 /usr/share/libvirt/*
 /usr/share/locale/*
 %{_mandir}/*
 
 %changelog
+*    Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
+-    Upgrading version to 3.2.0
 *    Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
 -    Initial version of libvirt package for Photon.
