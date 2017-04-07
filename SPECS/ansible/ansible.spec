@@ -1,6 +1,6 @@
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.1.1.0
+Version:        2.2.2.0
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -8,7 +8,8 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 ansible=f596a7950ebe839eaf650643e9afeb8c1307817a
+%define sha1 ansible=8ff8f39d8d65751e902ab26f06fee7b61b68f056
+
 
 BuildArch:      noarch
 
@@ -39,5 +40,7 @@ Ansible is a radically simple IT automation system. It handles configuration-man
 %{python_sitelib}/*
 
 %changelog
+*   Thu Apr 6 2017 Alexey Makhalov <amakhalov@vmware.com> 2.2.2.0-1
+-   Version update
 *   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.1.1.0-1
 -   Initial build. First version
