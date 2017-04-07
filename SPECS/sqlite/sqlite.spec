@@ -1,16 +1,16 @@
-%define sourcever 3110000
+%define sourcever 3180000
 Summary:	A portable, high level programming interface to various calling conventions
-Name:		sqlite-autoconf
-Version:	3.11.0
-Release:	4%{?dist}
+Name:		sqlite
+Version:	3.18.0
+Release:	1%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:	http://sqlite.org/2016/%{name}-3110000.tar.gz
-%define sha1 sqlite-autoconf=e2d300e4b24af5ecd67a1396488893fa44864e36
-Obsoletes:	libsqlite
+Source0:	http://sqlite.org/2016/%{name}-autoconf-3180000.tar.gz
+%define sha1 sqlite=74559194e1dd9b9d577cac001c0e9d370856671b
+Obsoletes:	sqlite-autoconf
 Requires:	sqlite-libs = %{version}-%{release}
 Provides:	sqlite3
 %description
@@ -18,23 +18,24 @@ This package contains most of the static files that comprise the
 www.sqlite.org website including all of the SQL Syntax and the 
 C/C++ interface specs and other miscellaneous documentation.
 
-%package -n sqlite-devel
+%package devel
 Summary:	sqlite3 link library & header files
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-%description -n sqlite-devel
+%description devel
 The sqlite devel package include the needed library link and
 header files for development.
 
-%package -n sqlite-libs
+%package libs
 Summary:	sqlite3 library
 Group:		Libraries
 Provides:	pkgconfig(sqlite3)
-%description -n sqlite-libs
+Obsoletes:	libsqlite
+%description libs
 The sqlite3 library.
 
 %prep
-%setup -q -n %{name}-%{sourcever}
+%setup -q -n %{name}-autoconf-%{sourcever}
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -58,10 +59,10 @@ rm -rf %{buildroot}/%{_infodir}
 %check
 make %{?_smp_mflags} check
 
-%post -n sqlite-libs
+%post libs
 /sbin/ldconfig
 
-%postun	-n sqlite-libs
+%postun	libs
 /sbin/ldconfig
 
 %clean
@@ -72,18 +73,21 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 
-%files -n sqlite-devel
+%files devel
 %defattr(-,root,root)
 %{_libdir}/libsqlite3.so
 %{_libdir}/libsqlite3.so.0
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 
-%files -n sqlite-libs
+%files libs
 %defattr(-,root,root)
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 3.18.0-1
+-   Version update
+-   Package rename: sqlite-autoconf -> sqlite
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.11.0-4
 -   Added -devel and -libs subpackages
 *   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.11.0-3

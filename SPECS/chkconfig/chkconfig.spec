@@ -1,17 +1,16 @@
 Summary: A system tool for maintaining the /etc/rc*.d hierarchy
 Name: chkconfig
-Version: 1.5
-Release: 7%{?dist}
+Version: 1.8
+Release: 1%{?dist}
 License: GPLv2
 Group: System Environment/Base
 URL: https://git.fedorahosted.org/git/chkconfig.git
-Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.bz2
+Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
+%define sha1 chkconfig=cb9c346804dddcc91c8932f0f7f445c4d3f81a81
 Patch0:chkconfig-shortopt.patch
 Patch1:print-service-on-off.patch
 Patch2:ignore-priorities.patch
 Patch3:chkconfig-runlevel.patch
-Patch4:chkconfig-systemctl-pingpong-fix.patch
-%define sha1 chkconfig=19a15a6690788686cc173b0d0626eaae01bec0c1
 Requires: libselinux
 Requires: libsepol
 Requires: newt
@@ -42,12 +41,11 @@ specify a runlevel or runlevels on the command line (see the man
 page), ntsysv configures the current runlevel (5 if you're using X).
 
 %prep
-%setup -q
+%setup -q -n %{name}-%{name}-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 %build
 
 make RPM_OPT_FLAGS="$RPM_OPT_FLAGS" LDFLAGS="$RPM_LD_FLAGS" %{?_smp_mflags}
@@ -95,6 +93,8 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8-1
+- Version update
 * Mon Oct 31 2016 Anish Swaminathan <anishs@vmware.com> 1.5-7
 - Chkconfig patch to fix interaction with systemd
 * Tue Sep 13 2016 Anish Swaminathan <anishs@vmware.com> 1.5-6
