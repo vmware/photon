@@ -1,16 +1,17 @@
---- a/chkconfig.c	2015-12-01 18:23:52.047031136 +0000
-+++ b/chkconfig.c	2015-12-01 19:01:41.428995360 +0000
-@@ -837,17 +837,29 @@
+--- a/chkconfig.c	2017-04-07 10:52:18.641601093 -0700
++++ b/chkconfig.c	2017-04-07 10:58:18.657338958 -0700
+@@ -839,17 +839,29 @@
  		}
  	    }
  	    rc = readServiceInfo(name, type, &s, 0);
 -	    if (rc)
+-	       return 1;
 +	    if (rc) {
 +               fprintf(stderr, "%s: unknown service\n", name);
- 	       return 1;
++ 	       return 1;
 +            }
  	    if (s.type == TYPE_XINETD) {
- 	       if (isOn("xinetd",level))
+ 	       if (isXinetdEnabled())
  		       return !s.levels;
  	       else
  		       return 1;
