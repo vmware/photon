@@ -1,6 +1,9 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Name:           python-jsonpatch
 Version:        1.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -19,28 +22,56 @@ BuildArch:      noarch
 %description
 Library to apply JSON Patches according to RFC 6902.
 
+%package -n     python3-jsonpatch
+Summary:        python-jsonpatch
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+
+Requires:       python3-jsonpointer
+
+%description -n python3-jsonpatch
+
 %prep
 %setup -n jsonpatch-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
-python setup.py build
+python2 setup.py build
+pushd ../p3dir
+python3 setup.py build
+popd
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+pushd ../p3dir
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+popd
 
 %check
-python ext_tests.py && python tests.py
+python2 ext_tests.py && python2 tests.py
+pushd ../p3dir
+python3 ext_tests.py && python3 tests.py
+popd
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
+%{_bindir}/jsondiff
+%{_bindir}/jsonpatch
+
+%files -n python3-jsonpatch
+%defattr(-,root,root)
+%{python3_sitelib}/*
 %{_bindir}/jsondiff
 %{_bindir}/jsonpatch
 
 %changelog
+*       Thu Apr 06 2017 Sarah Choi <sarahc@vmware.com> 1.15-2
+-       support python3
 *       Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 1.15-1
 -       Update to 1.15
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 1.9-3
+*       Tue Oct 04 2016 ChangLee <changlee@vmware.com> 1.9-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9-2
 -	GA - Bump release of all rpms
