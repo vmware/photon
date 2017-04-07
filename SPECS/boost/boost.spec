@@ -1,14 +1,14 @@
 Summary:	Boost 
 Name:		boost
-Version:	1.60.0
-Release:	3%{?dist}
+Version:	1.63.0
+Release:	1%{?dist}
 License:	Boost Software License V1
 URL:		http://www.boost.org/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://downloads.sourceforge.net/boost/boost_1_60_0.tar.bz2
-%define sha1 boost=7f56ab507d3258610391b47fef6b11635861175a
+Source0:	http://downloads.sourceforge.net/boost/boost_1_63_0.tar.bz2
+%define sha1 boost=9f1dd4fa364a3e3156a77dc17aa562ef06404ff6
 BuildRequires:	bzip2-devel
 
 %description
@@ -33,7 +33,7 @@ Requires:       %{name} = %{version}-%{release}
 The boost-static package contains boost static libraries.
 
 %prep
-%setup -qn boost_1_60_0
+%setup -qn boost_1_63_0
 
 %build
 ./bootstrap.sh --prefix=%{buildroot}%{_prefix}
@@ -62,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libboost_*.a
 
 %changelog
+*   Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 1.63.0-1
+-   Upgraded to version 1.63.0
 *   Wed Mar 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.60.0-3
 -   Build static libs in additon to shared.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.60.0-2
