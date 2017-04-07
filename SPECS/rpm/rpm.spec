@@ -3,22 +3,20 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.11.2
-Release:        20%{?dist}
+Version:        4.13.0.1
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
-%define sha1    rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
+Source0:        http://rpm.org/releases/rpm-4.13.x/%{name}-%{version}.tar.bz2
+%define sha1    rpm-4.13.0.1=9566f95f38fcb214e439c552f378c2f64ba0aff9
 Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:        macros
 Source3:        brp-strip-debug-symbols
 Source4:        brp-strip-unneeded
-Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
-Patch1:         rpm-4.11.2-cve-2014-8118.patch
 Requires:       bash
 Requires:       rpm-libs = %{version}-%{release}
 BuildRequires:  python2
@@ -87,8 +85,6 @@ Python3 rpm.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 %setup -q -T -D -a 1
 mv db-5.3.28 db
 %build
@@ -263,6 +259,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Thu Apr 06 2017 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.1-1
+-    Updating to latest version.
 *    Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20
 -    Added python3 packages and moved python2 site packages from devel to python-rpm.
 *    Mon Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
