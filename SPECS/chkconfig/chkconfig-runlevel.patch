@@ -1,7 +1,7 @@
-diff -aur chkconfig-1.5/leveldb.c chkconfig-1.5-new/leveldb.c
---- chkconfig-1.5/leveldb.c	2015-06-01 05:07:44.000000000 -0700
-+++ chkconfig-1.5-new/leveldb.c	2016-09-12 22:17:35.241508327 -0700
-@@ -674,23 +674,8 @@
+diff -aur chkconfig-1.9/leveldb.c chkconfig-1.9-new/leveldb.c
+--- chkconfig-1.9/leveldb.c	2015-06-01 05:07:44.000000000 -0700
++++ chkconfig-1.9-new/leveldb.c	2017-04-06 22:17:35.241508327 -0700
+@@ -687,23 +687,8 @@
  
  /* returns -1 on error */
  int currentRunlevel(void) {
