@@ -1,11 +1,11 @@
 Summary:        XML-XPath perl module
 Name:           XML-XPath
-Version:        1.37
+Version:        1.40
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:        https://cpan.metacpan.org/authors/id/M/MA/MANWAR/%{name}-%{version}.tar.gz
-%define sha1 XML-XPath=8cedbb3073e064f6c827697aad5539f26147a4f5
+%define sha1 XML-XPath=a373c9d071a6c675c77320a905053baa5e7a99ff
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -31,5 +31,7 @@ make %{?_smp_mflags} -k test
 %{_mandir}/man3/*
 %{_mandir}/man1/*
 %changelog
+*   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 1.40-1
+-   Version update
 *   Tue Sep 6 2016 Xiaolin Li <xiaolinl@vmware.com> 1.37-1
 -   Initial build. First version

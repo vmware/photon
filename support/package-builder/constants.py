@@ -78,7 +78,7 @@ class constants(object):
         "lua",
         "popt",
         "nspr",
-        "sqlite-autoconf",
+        "sqlite",
         "nss",
         "elfutils",
         "expat",
@@ -154,7 +154,7 @@ class constants(object):
         "popt",
         "popt-devel",
         "nspr",
-        "sqlite-autoconf",
+        "sqlite",
         "sqlite-libs",
         "nss",
         "nss-devel",
@@ -190,6 +190,7 @@ class constants(object):
     listOfRPMsProvidedAfterBuild=[
         "util-linux-devel",
         "flex-devel",
+        "sqlite",
         "sqlite-libs",
         "rpm-libs"]
 
@@ -225,6 +226,7 @@ class constants(object):
         "openssl-devel",
         "net-tools",
         "less",
+        "iana-etc",
         "yum-metadata-parser",
         "yum",
         "rpm-devel",
