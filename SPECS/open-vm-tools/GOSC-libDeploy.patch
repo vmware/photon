@@ -1,9 +1,8 @@
-diff -ru open-vm-tools-stable-10.1.5/open-vm-tools/libDeployPkg/linuxDeployment.c open-vm-tools-stable-10.1.5-modified/open-vm-tools/libDeployPkg/linuxDeployment.c
---- open-vm-tools-stable-10.1.5/open-vm-tools/libDeployPkg/linuxDeployment.c	2017-02-24 14:15:37.000000000 -0800
-+++ open-vm-tools-stable-10.1.5-modified/open-vm-tools/libDeployPkg/linuxDeployment.c	2017-03-03 15:55:49.921709009 -0800
-@@ -558,13 +558,17 @@
+--- open-vm-tools-10.1.5-5055683/libDeployPkg/linuxDeployment.c 2017-04-06 19:19:36.000010000 -0700
++++ open-vm-tools-10.1.5-5055683-modified/libDeployPkg/linuxDeployment.c        2017-04-06 19:14:38.000403000 -0700
+@@ -580,13 +580,17 @@
     close(fd);
- 
+
     // Create space and copy the command
 -   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH);
 +   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH + 1);
@@ -11,7 +10,7 @@ diff -ru open-vm-tools-stable-10.1.5/open-vm-tools/libDeployPkg/linuxDeployment.
        SetDeployError("Error allocating memory.");
        return FALSE;
     }
- 
+
 -   memcpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
 +   // will pad with '\0' if necessary
 +   strncpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
@@ -20,23 +19,24 @@ diff -ru open-vm-tools-stable-10.1.5/open-vm-tools/libDeployPkg/linuxDeployment.
 +
     *archiveType = hdr.payloadType;
     *flags = hdr.reserved;
- 
-@@ -1042,6 +1046,18 @@
+
+@@ -1074,6 +1078,20 @@
        free(command);
-       deployStatus =  CloudInitSetup(EXTRACTPATH);
+       deployStatus =  CloudInitSetup(tmpDirPath);
     } else {
 +      if ((strstr(command, "scripts/Customize.pl") != NULL) || (strstr(command, "scripts/customize.sh") != NULL)) {
 +          free (command);
 +          const char* PHOTON_OS_LAUNCH_COMMAND = "/bin/bash /usr/share/open-vm-tools/GOSC/gosc-scripts/imc-shell/imgcust-scripts/customize.sh /tmp/.vmware/linux/deploy/cust.cfg";
 +
 +          // The command will be parsed alter and can be of arbitrary length
-+          command = strdup(PHOTON_OS_LAUNCH_COMMAND);
++          command = StrUtil_ReplaceAll(PHOTON_OS_LAUNCH_COMMAND, TMP_PATH_VAR, tmpDirPath);
 +          if (!command) {
 +             SetDeployError("Error allocating memory.");
 +             return DEPLOY_ERROR;
 +          }
 +          _DeployPkg_SkipReboot(true);
 +      }
-       // Run the deployment command
-       sLog(log_info, "Launching deployment %s.  \n", command);
++      // Run the deployment command
++      sLog(log_info, "Launching deployment %s.  \n", command);
        deploymentResult = ForkExecAndWaitCommand(command);
+       free(command);
