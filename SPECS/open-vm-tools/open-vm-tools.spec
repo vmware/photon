@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -13,11 +13,12 @@ Source1:        gosc-scripts-1.0.tar.gz
 %define sha1 gosc-scripts-1.0=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
-Patch0:         GOSC-libDeploy.patch
+Patch0:         open-vm-tools-tmp-race.patch
 Patch1:         IPv6Support.patch
 Patch2:         hostnameReCustomizationFix.patch
 Patch3:         PureIPv6-hosts.patch
 Patch4:         open-vm-tools-sysmacros.patch
+Patch5:         GOSC-libDeploy.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -41,11 +42,12 @@ VmWare virtualization user mode tools
 %prep
 %setup -q -n %{name}-stable-%{version}/%{name}
 %setup -a 1 -n %{name}-stable-%{version}/%{name}
-%patch0 -p2
+%patch0 -p0
 %patch1 -p0
 %patch2 -p0
 %patch3 -p0
 %patch4 -p1
+%patch5 -p1
 %build
 touch ChangeLog
 autoreconf -i
@@ -103,26 +105,28 @@ fi
 
 
 %changelog
-*   Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 10.1.5-2
--   Added *-sysmacros.patch to fix build issue with glibc-2.25
-*   Fri Mar 03 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-1
--   Updating version to 10.1.5
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 10.1.0-2
--   BuildRequires Linux-PAM-devel
-*   Mon Nov 21 2016 Kumar Kaushik <kaushikk@vmware.com> 10.1.0-1
--   Updating version to 10.1.0
-*   Wed Oct 05 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-14
--   Adding proper entry to /etc/hosts for IPv6.
-*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 10.0.5-13
--   Modified %check
-*   Thu Jun 23 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-12
--   Avoiding recustomization of hostname, bug#1678537.
-*   Mon Jun 13 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-11
--   Adding IPv6 Support for VCHA in customization.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 10.0.5-10
--   GA - Bump release of all rpms
-*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-9
--   Edit scriptlets.
+*       Fri Apr 07 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-3
+-       Applying tmp race condition patch, PR #1733669
+*       Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 10.1.5-2
+-       Added *-sysmacros.patch to fix build issue with glibc-2.25
+*       Fri Mar 03 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-1
+-       Updating version to 10.1.5
+*       Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 10.1.0-2
+-       BuildRequires Linux-PAM-devel
+*       Mon Nov 21 2016 Kumar Kaushik <kaushikk@vmware.com> 10.1.0-1
+-       Updating version to 10.1.0
+*       Wed Oct 05 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-14
+-       Adding proper entry to /etc/hosts for IPv6.
+*       Tue Oct 04 2016 ChangLee <changLee@vmware.com> 10.0.5-13
+-       Modified %check
+*       Thu Jun 23 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-12
+-       Avoiding recustomization of hostname, bug#1678537.
+*       Mon Jun 13 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-11
+-       Adding IPv6 Support for VCHA in customization.
+*       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 10.0.5-10
+-       GA - Bump release of all rpms
+*       Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 10.0.5-9
+-       Edit scriptlets.
 *       Fri Apr 29 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-8
 -       Combining all GOSC scripts patches and fixing bug#1648133.
 *       Tue Apr 19 2016 Kumar Kaushik <kaushikk@vmware.com> 10.0.5-7
