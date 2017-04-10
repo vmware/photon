@@ -1,7 +1,7 @@
 Summary:        Docker
 Name:           docker
 Version:        1.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -25,6 +25,7 @@ BuildRequires:  go
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 Requires:       systemd
+Requires:       device-mapper-devel
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
@@ -96,6 +97,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/bash-completion/completions/docker
 
 %changelog
+*   Mon Apr 10 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-2
+-   Adding device mapper dynamic binary dependency.
 *   Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-1
 -   Building docker from source.
 *   Fri Jan 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.6-1
