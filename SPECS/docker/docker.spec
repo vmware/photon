@@ -1,75 +1,33 @@
 Summary:        Docker
 Name:           docker
-Version:        1.13.1
+Version:        1.12.6
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/docker/docker/archive/%{name}-%{version}.tar.gz
-%define sha1 docker=8a39c44c9e665495484fd86fbefdfbc9ab9d815d 
-Source1:        https://github.com/docker/containerd/archive/containerd-0.2.5.tar.gz
-%define sha1 containerd=aaf6fd1c5176b8575af1d8edf82af3d733528451
-Source2:        https://github.com/opencontainers/runc/archive/runc-1.0.0-rc3.tar.gz
-%define sha1 runc=57d56045794ea107b76d21d105c697b76ba93fb7
-Source3:        docker.service
-Source4:        docker-containerd.service
-Source5:        docker-completion.bash
-BuildRequires:  glibc
-BuildRequires:  systemd-devel
-BuildRequires:  device-mapper-devel
-BuildRequires:  glibc-devel
-BuildRequires:  btrfs-progs-devel
-BuildRequires:  go
-BuildRequires:  libseccomp
-BuildRequires:  libseccomp-devel
+Source0:        https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz 
+%define sha1 docker=53e47bc1c888279753c474c7c75c4e6756422165
+Source1:        docker.service
+Source2:        docker-containerd.service
+Source3:        docker-completion.bash
+BuildRequires:  systemd
 Requires:       systemd
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
 %prep
-%setup -q
-%setup -T -D -a 1
-%setup -T -D -a 2
-
+%setup -qn docker
 %build
-
-export AUTO_GOPATH=1
-export DOCKER_BUILDTAGS='exclude_graphdriver_aufs'
-export DOCKER_GITCOMMIT="092cba3"
-
-./hack/make.sh dynbinary
-
-mkdir -p /usr/share/gocode/src/github.com/docker/
-cd /usr/share/gocode/src/github.com/docker/
-mv /usr/src/photon/BUILD/docker-1.13.1/containerd-0.2.5 .
-mv containerd-0.2.5 containerd
-cd containerd
-
-make
-
-mkdir -p /usr/share/gocode/src/github.com/opencontainers/
-cd /usr/share/gocode/src/github.com/opencontainers/
-mv /usr/src/photon/BUILD/docker-1.13.1/runc-1.0.0-rc3 .
-mv runc-1.0.0-rc3 runc
-cd runc
-make
-
-
 %install
 install -vdm755 %{buildroot}/usr/bin
-mv -v %{_builddir}/%{name}-%{version}/bundles/latest/dynbinary-client/%{name}-%{version} %{buildroot}/usr/bin/%{name}
-mv -v %{_builddir}/%{name}-%{version}/bundles/latest/dynbinary-daemon/%{name}d-%{version} %{buildroot}/usr/bin/%{name}d
-mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/containerd %{buildroot}/usr/bin/%{name}-containerd
-mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/containerd-shim %{buildroot}/usr/bin/%{name}-containerd-shim
-mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/ctr %{buildroot}/usr/bin/%{name}-containerd-ctr
-mv -v /usr/share/gocode/src/github.com/opencontainers/runc %{buildroot}/usr/bin/%{name}-runc
+mv -v %{_builddir}/%{name}/* %{buildroot}/usr/bin/
 install -vd %{buildroot}/lib/systemd/system
-cp %{SOURCE3} %{buildroot}/lib/systemd/system/docker.service
-cp %{SOURCE4} %{buildroot}/lib/systemd/system/docker-containerd.service
+cp %{SOURCE1} %{buildroot}/lib/systemd/system/docker.service
+cp %{SOURCE2} %{buildroot}/lib/systemd/system/docker-containerd.service
 install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
-install -m 0644 %{SOURCE5} %{buildroot}%{_datadir}/bash-completion/completions/docker
+install -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/bash-completion/completions/docker
 
 %{_fixperms} %{buildroot}/*
 
@@ -96,8 +54,6 @@ rm -rf %{buildroot}/*
 %{_datadir}/bash-completion/completions/docker
 
 %changelog
-*   Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-1
--   Building docker from source.
 *   Fri Jan 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.6-1
 -   Upgraded to version 1.12.6
 *   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-1
@@ -135,5 +91,5 @@ rm -rf %{buildroot}/*
 -   Update according to UsrMove.
 *   Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
 -   Updated to version 1.6
-*   Wed Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
+*   Mon Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
 -   Initial build. First version
