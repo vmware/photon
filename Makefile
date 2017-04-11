@@ -365,6 +365,7 @@ generate-dep-lists:
 	done
 
 docker-image:
+	createrepo $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
 		-it \
