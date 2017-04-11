@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.54
+Version:       4.4.60
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=78765ce1cc4eb91bb984c0a8105602592ed56cd5
+%define sha1 linux=bda879f0b29a34e063c9ec870256a0b5504fb5cc
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -35,6 +35,14 @@ Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
+#fixes CVE-2017-7294
+Patch23:        vmwgfx-fix-integer-overflow-in-vmw_surface_define_ioctl.patch
+#fixes CVE-2017-7308
+Patch24:        net-v2-1-3-net-packet-fix-overflow-in-check-for-priv-area-size.patch
+Patch25:        net-v2-2-3-net-packet-fix-overflow-in-check-for-tp_frame_nr.patch
+Patch26:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
+#fixes CVE-2017-7346
+Patch27:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -93,6 +101,11 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
 
 %build
 # patch vmw_balloon driver
@@ -181,6 +194,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Apr 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.60-1
+-   Fix CVE-2017-7184, CVE-2017-7187, CVE-2017-7294,
+    CVE-2017-7308 and CVE-2017-7346
 *   Wed Mar 15 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.54-1
 -   Update to linux-4.4.54 to fix CVE-2017-6346 and CVE-2017-6347
 *   Tue Feb 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.51-2
