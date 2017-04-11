@@ -1,14 +1,14 @@
 Summary:        Compression and decompression routines
 Name:           zlib
-Version:        1.2.8
-Release:        5%{?dist}
+Version:        1.2.11
+Release:        1%{?dist}
 URL:            http://www.zlib.net/
 License:        zlib
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.zlib.net/%{name}-%{version}.tar.xz
-%define sha1    zlib=b598beb7acc96347cbd1020b71aef7871d374677
+%define sha1    zlib=e1cb0d5c92da8e9a8c2635dfa249c341dfd00322
 %description
 Compression and decompression routines
 %package    devel
@@ -35,8 +35,7 @@ make  %{?_smp_mflags} check
 %postun -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
-%{_libdir}/libz.so.1
-%{_libdir}/libz.so.1.2.8
+%{_libdir}/libz.so.*
 
 %files devel
 %{_includedir}/zconf.h
@@ -47,6 +46,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/man3/zlib.3.gz
 
 %changelog
+*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.11-1
+-   Updated to version 1.2.11.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.8-5
 -   Moved man3 to devel subpackage.
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.2.8-4
