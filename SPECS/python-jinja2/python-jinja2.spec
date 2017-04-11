@@ -1,6 +1,11 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_version: %define python2_version %(python2 -c "import sys; sys.stdout.write(sys.version[:3])")}
+%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
+
 Name:           python-jinja2
 Version:        2.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
@@ -21,28 +26,61 @@ Jinja2 is a template engine written in pure Python.  It provides a Django
 inspired non-XML syntax but supports inline expressions and an optional
 sandboxed environment.
 
+%package -n     python3-jinja2
+Summary:        python-jinja2
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+
+Requires:       python3
+Requires:       python3-libs
+
+%description -n python3-jinja2
+Python 3 version.
+
 %prep
 %setup -q -n Jinja2-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
-python setup.py build
+python2 setup.py build
 sed -i 's/\r$//' LICENSE # Fix wrong EOL encoding
+pushd ../p3dir
+python3 setup.py build
+sed -i 's/\r$//' LICENSE # Fix wrong EOL encoding
+popd
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+pushd ../p3dir
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+popd
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+pushd ../p3dir
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+popd
 
 %files
 %defattr(-,root,root)
 %doc AUTHORS CHANGES
 %license LICENSE
-%{python_sitelib}/jinja2
-%exclude %{python_sitelib}/*/*.py
-%{python_sitelib}/Jinja2-%{version}-py%{python_version}.egg-info
+%{python2_sitelib}/jinja2
+%exclude %{python2_sitelib}/*/*.py
+%{python2_sitelib}/Jinja2-%{version}-py%{python2_version}.egg-info
+
+%files -n python3-jinja2
+%defattr(-,root,root)
+%doc AUTHORS CHANGES
+%license LICENSE
+%{python3_sitelib}/jinja2
+%exclude %{python3_sitelib}/*/*.py
+%{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+*   Mon Apr 10 2017 Sarah Choi <sarahc@vmware.com> 2.9.5-2
+-   Supoort python3
 *   Mon Mar 27 2017 Sarah Choi <sarahc@vmware.com> 2.9.5-1
 -   Upgrade version to 2.9.5 
 *   Tue Dec 13 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.8-1

@@ -1,7 +1,10 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary: Download, build, install, upgrade, and uninstall Python packages
 Name: python-setuptools
 Version: 34.3.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: Python or ZPLv2.0
 Group: Development/Languages
 URL: https://pypi.python.org/pypi/setuptools
@@ -30,24 +33,58 @@ Requires: python-pyparsing
 setuptools is a collection of enhancements to the Python distutils that allow
 you to more easily build and distribute Python packages, especially ones that
 have dependencies on other packages.
+%package -n     python3-setuptools
+Summary:        python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-six
+BuildRequires:  python3-packaging
+BuildRequires:  python3-appdirs
+BuildRequires:  python3-pyparsing
+
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-six
+Requires:       python3-packaging
+Requires:       python3-appdirs
+Requires:       python3-pyparsing
+
+%description -n python3-setuptools
+Python 3 version.
 
 %prep
 %setup -n setuptools-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
-%{__python} setup.py build
+python2 setup.py build
+pushd ../p3dir
+python3 setup.py build
+popd
 
 %install
 %{__rm} -rf %{buildroot}
-%{__python} setup.py install -O1 --skip-build \
+python2 setup.py install -O1 --skip-build \
     --root "%{buildroot}" \
     --single-version-externally-managed
-find %{buildroot}%{python_sitelib} -name '*.exe' | xargs rm -f
-find %{buildroot}%{python_sitelib} -name '*.txt' | xargs chmod -x
-chmod +x %{buildroot}%{python_sitelib}/setuptools/command/easy_install.py
+find %{buildroot}%{python2_sitelib} -name '*.exe' | xargs rm -f
+find %{buildroot}%{python2_sitelib} -name '*.txt' | xargs chmod -x
+chmod +x %{buildroot}%{python2_sitelib}/setuptools/command/easy_install.py
+pushd ../p3dir
+python3 setup.py install -O1 --skip-build \
+    --root "%{buildroot}" \
+    --single-version-externally-managed
+find %{buildroot}%{python3_sitelib} -name '*.exe' | xargs rm -f
+find %{buildroot}%{python3_sitelib} -name '*.txt' | xargs chmod -x
+chmod +x %{buildroot}%{python3_sitelib}/setuptools/command/easy_install.py
+popd
 
 %check
-%{__python} setup.py test
+python2 setup.py test
+pushd ../p3dir
+python3 setup.py test
+popd
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -55,9 +92,16 @@ chmod +x %{buildroot}%{python_sitelib}/setuptools/command/easy_install.py
 %files
 %defattr(-, root, root)
 %{_bindir}/*
-%{python_sitelib}/*
+%{python2_sitelib}/*
+
+%files -n python3-setuptools
+%defattr(-, root, root)
+%{_bindir}/*
+%{python3_sitelib}/*
 
 %changelog
+*       Tue Apr 11 2017 Sarah Choi <sarahc@vmware.com> 34.3.3-2
+-       Support python3
 *       Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 34.3.3-1
 -       Upgrade to 34.3.3
 *       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 21.0.0-3
