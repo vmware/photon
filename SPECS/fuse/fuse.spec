@@ -1,14 +1,15 @@
 Summary:	File System in Userspace (FUSE) utilities
 Name:           fuse
-Version:        2.9.5
-Release:        2%{?dist}
+Version:        3.0.1
+Release:        1%{?dist}
 License:        GPL+
 Url:		http://fuse.sourceforge.net/
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        https://github.com/libfuse/libfuse/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 fuse=bf71181cdc25f65e5757a8a14d352296722de2e3
+%define sha1 fuse=9362ce52c17c2865ba47f9d4fcb9f054c38bd1fc
+
 %description
 With FUSE it is possible to implement a fully functional filesystem in a
 userspace program. 
@@ -31,9 +32,9 @@ mkdir -p %{buildroot}%{_libdir}/%{name}
 make install \
 	prefix=%{buildroot}%{_prefix}
 
-install -v -m755 -d /usr/share/doc/fuse-2.9.5 &&
-install -v -m644    doc/{how-fuse-works,kernel.txt} \
-                    /usr/share/doc/fuse-2.9.5
+install -v -m755 -d /usr/share/doc/%{name}-%{version} &&
+install -v -m644    doc/kernel.txt \
+                    /usr/share/doc/%{name}-%{version}
 
 %files 
 %defattr(-, root, root)
@@ -44,13 +45,16 @@ install -v -m644    doc/{how-fuse-works,kernel.txt} \
 %{_datadir}/man/*
 
 %files devel
-%doc ChangeLog 
 %{_libdir}/*.la
-%{_prefix}/lib/libfuse.so
+%{_libdir}/pkgconfig/*
+%{_prefix}/lib/libfuse3.so
 %{_prefix}/include/*
-%{_prefix}/bin/fusermount
+%{_prefix}/bin/fusermount3
+%{_prefix}/sbin/mount.fuse3
 
 %changelog
+*	Wed Apr 12 2017 Danut Moraru <dmoraru@vmware.com> 3.0.1-1
+-	Upgrade to 3.0.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.5-2
 -	GA - Bump release of all rpms
 *   Tue Jan 26 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.5-1
