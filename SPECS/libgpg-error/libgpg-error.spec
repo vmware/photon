@@ -1,13 +1,12 @@
-
 Summary:      	libgpg-error
 Name:         	libgpg-error
-Version:      	1.21
-Release:      	3%{?dist}
+Version:      	1.27
+Release:      	1%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/
 Group:		Development/Libraries
 Source0:	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/%{name}-%{version}.tar.bz2
-%define sha1 libgpg-error=ef1dfb2f8761f019091180596e9e638d8cc37513
+%define sha1 libgpg-error=a428758999ff573e62d06892e3d2c0b0f335787c
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -66,12 +65,15 @@ echo %{_libdir}
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/gpg-error.h
+%{_includedir}/*
+%{_datadir}/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*	Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.27-1
+-	Upgraded to new version 1.27
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.21-3
 -   Added -lang subpackage
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
@@ -82,3 +84,4 @@ echo %{_libdir}
 -   Handled locale files with macro find_lang
 *   Tue Dec 30 2014 Priyesh Padmavilasom <ppadmavilasom@vmware.com>
 -   initial specfile.
+
