@@ -1,11 +1,11 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
-Version:	1.6.5
-Release:	3%{?dist}
+Version:	1.7.6
+Release:	1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
-Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.gz
-%define sha1 libgcrypt=765370d9ee9e858c257dc06c3f0621bda8acaf69
+Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
+%define sha1 libgcrypt=d2b9e0f413064cfc67188f80d3cbda887c755a62
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
@@ -50,6 +50,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*.h
 %{_libdir}/*.so
 %changelog
+*	Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.6-1
+-	Udpated to version 1.7.6 
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.6.5-3
 -   Required libgpg-error-devel.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.5-2
@@ -58,4 +60,3 @@ make %{?_smp_mflags} check
 -   Upgrade to 1.6.5
 *   Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.3-1
 -   Initial build. First version
-
