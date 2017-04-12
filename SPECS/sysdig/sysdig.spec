@@ -1,22 +1,22 @@
 %global security_hardening none
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
-Version:        0.10.1
-Release:        6%{?kernelsubrelease}%{?dist}
+Version:        0.15.1
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha1    sysdig=272b95ad02be4d194bba66d360ff935084d9c842
-Patch0:         sysdig_for_4.9.2.patch
+%define sha1    sysdig=5b1a7a4978315176412989b5400572d849691917
 BuildRequires:  cmake 
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  ncurses-devel
+BuildRequires:  wget
 Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
 Requires:       ncurses
@@ -28,7 +28,6 @@ Requires:       curl
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 # fix for linux-4.9
@@ -75,6 +74,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.15.1-1
+-   Update to version 0.15.1
 *   Wed Jan 11 2017 Alexey Makhalov <amakhalov@vmware.com> 0.10.1-6
 -   Fix building for linux-4.9.2
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.10.1-5
