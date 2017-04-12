@@ -1,17 +1,17 @@
 Summary:	C debugger
 Name:		gdb
 Version:	7.12.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 %define sha1 gdb=ef77c5345d6f9fdcdf7a5d8503301242b701936e
-Source1:        http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz
-%define sha1 tcl=9bc452eec453c2ed37625874b9011563db687b07
+Source1:        https://sourceforge.net/projects/tcl/files/Tcl/8.6.6/tcl8.6.6-src.tar.gz
+%define sha1 tcl=169dd1589cad62c9fac4257c113db245da502cd0
 Source2:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
 %define sha1 expect=e634992cab35b7c6931e1f21fbb8f74d464bd496
-Source3:         https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz
-%define sha1 dejagnu=d81288e7d7bd38e74b7fee8e570ebfa8c21508d9
+Source3:         https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.6.tar.gz
+%define sha1 dejagnu=03a40e5bf964383af3fb56a07cc7605cb9aaab97
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -22,10 +22,12 @@ BuildRequires:	expat
 BuildRequires:	ncurses-devel
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
+
 %description
 GDB, the GNU Project debugger, allows you to see what is going on 
 `inside' another program while it executes -- or what 
 another program was doing at the moment it crashed. 
+
 %prep
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
@@ -36,6 +38,7 @@ tar xf %{SOURCE3} --no-same-owner
 ./configure \
 	--prefix=%{_prefix}
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -55,7 +58,7 @@ rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
 %find_lang %{name} --all-name
 
 %check
-pushd tcl8.5.14/unix
+pushd tcl8.6.6/unix
 ./configure --enable-threads --prefix=/usr
 make
 make install
@@ -68,7 +71,7 @@ make install
 ln -svf expect5.45/libexpect5.45.so /usr/lib
 popd
 
-pushd dejagnu-1.5.3
+pushd dejagnu-1.6
 ./configure --prefix=/usr
 make
 make install 
@@ -90,6 +93,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 7.12.1-2
+-   Upgrade gdb to 7.12.1, tcl to 8.6.6, dejagnu to 1.6
 *   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-1
 -   Version update
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-3
