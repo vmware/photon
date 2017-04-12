@@ -1,0 +1,28 @@
+diff -dupr a/client/api.c b/client/api.c
+--- a/client/api.c	2016-11-06 00:14:07.000000000 -0700
++++ b/client/api.c	2017-04-13 15:16:41.252822045 -0700
+@@ -155,7 +155,7 @@ TDNFCheckLocalPackages(
+     }
+     fprintf(stdout, "Checking all packages from: %s\n", pszLocalPath);
+ 
+-    hSack = hy_sack_create(NULL, NULL, NULL, 0);
++    hSack = hy_sack_create(NULL, NULL, NULL, NULL, 0);
+     if(!hSack)
+     {
+         dwError = ERROR_TDNF_INVALID_PARAMETER;
+diff -dupr a/client/init.c b/client/init.c
+--- a/client/init.c	2016-11-06 00:14:07.000000000 -0700
++++ b/client/init.c	2017-04-13 15:18:01.770525354 -0700
+@@ -69,7 +69,11 @@ TDNFInitSack(
+ 
+     pszHawkeyCacheDir = pTdnf->pConf->pszCacheDir;
+ 
+-    hSack = hy_sack_create(pszHawkeyCacheDir, NULL, pTdnf->pArgs->pszInstallRoot, 0);
++    hSack = hy_sack_create(pszHawkeyCacheDir,
++                           NULL,
++                           pTdnf->pArgs->pszInstallRoot,
++                           NULL,
++                           0);
+     if(!hSack)
+     {
+         dwError = ERROR_TDNF_INVALID_PARAMETER;
