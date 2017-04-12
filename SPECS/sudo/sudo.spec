@@ -1,37 +1,39 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.8.18p1
-Release:        3%{?dist}
+Version:        1.8.19p2
+Release:        1%{?dist}
 License:        ISC
-URL:            https://www.kernel.org/pub/linux/libs/pam/
+URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    sudo=2df9c1f68b1101aa600ef428bccda1b4a3090ff3
+%define sha1    sudo=78868ef825e7b6db246d99160ec16fd4e4c93f3f
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 Requires:       Linux-PAM
 Requires:       shadow
+
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users) 
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
 %setup -q
-%build
 
+%build
 ./configure \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libexecdir=%{_libdir} \
-        --docdir=%{_docdir}/%{name}-%{version} \
-    --with-all-insults         \
-        --with-env-editor          \
-    --with-pam                 \
-        --with-passprompt="[sudo] password for %p"
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --with-all-insults \
+    --with-env-editor \
+    --with-pam \
+    --with-passprompt="[sudo] password for %p"
 
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot}
@@ -63,9 +65,12 @@ make %{?_smp_mflags} check
 if [ $1 -eq 1 ] ; then
   getent group wheel > /dev/null || groupadd wheel
 fi
+
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %attr(0440,root,root) %config(noreplace) %{_sysconfdir}/sudoers
@@ -80,7 +85,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
+
 %changelog
+*   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.19p2-1
+-   Update to version 1.8.19p2
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.18p1-3
 -   BuildRequires Linux-PAM-devel
 *   Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.8.18p1-2

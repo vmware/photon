@@ -7,15 +7,15 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       3.0
-Release:       4%{?dist}
+Version:       3.1
+Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=5ef3a2d9945b0f6bae0061e33811e25e5138f5b7
+%define sha1 systemtap=2927ee7e780b45e47d770798f80dfd5be62e095d
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -29,6 +29,7 @@ BuildRequires: libstdc++-devel
 BuildRequires: libtirpc-devel
 BuildRequires: libxml2-devel
 BuildRequires: perl
+BuildRequires: python-setuptools
 BuildRequires: nss
 %if %with_boost 
 BuildRequires: boost-devel
@@ -66,6 +67,13 @@ Requires:      initscripts
 
 %description initscript
 Initscript for Systemtap scripts.
+
+%package python
+Group:         System/Tools
+Summary:       Python interface for systemtap
+
+%description python
+This packages has the python interface to systemtap
 
 %package runtime
 Group:         System/Tools
@@ -134,7 +142,7 @@ make
 [ "%{buildroot}" != / ] && rm -rf ""
 %makeinstall
 
-mv %{buildroot}%{_datadir}/doc/systemtap/examples examples
+mv %{buildroot}%{_datadir}/systemtap/examples examples
 
 find examples -type f -name '*.stp' -print0 | xargs -0 sed -i -r -e '1s@^#!.+stap@#!%{_bindir}/stap@'
 
@@ -154,10 +162,10 @@ mkdir -p %{buildroot}%{_localstatedir}/run/systemtap
 
 %if %with_docs
 mkdir docs.installed
-mv %{buildroot}%{_datadir}/doc/systemtap/*.pdf docs.installed/
-mv %{buildroot}%{_datadir}/doc/systemtap/tapsets docs.installed/
+mv %{buildroot}%{_datadir}/systemtap/*.pdf docs.installed/
+mv %{buildroot}%{_datadir}/systemtap/tapsets docs.installed/
 %if %with_publican
-mv %{buildroot}%{_datadir}/doc/systemtap/SystemTap_Beginners_Guide docs.installed/
+mv %{buildroot}%{_datadir}/systemtap/SystemTap_Beginners_Guide docs.installed/
 %endif
 %endif
 
@@ -296,6 +304,11 @@ fi
 %dir %{_localstatedir}/cache/systemtap
 %dir %{_localstatedir}/run/systemtap
 
+%files python
+%defattr(-,root,root)
+/usr/lib/python2.7/site-packages/*
+/usr/libexec/systemtap/python/stap-resolve-module-function.py
+
 %files runtime
 %defattr(-,root,root)
 %attr(4111,root,root) %{_bindir}/staprun
@@ -333,11 +346,13 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1-1
+-   Update to version 3.1
 *   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4
 -   add shadow to requires
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.0-3
 -   Use sqlite-{devel,libs}
-*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.0-2
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.0-2
 -   Modified %check
 *   Fri Jul 22 2016 Divya Thaluru <dthaluru@vmware.com> 3.0-1 
 -   Updated version to 3.0

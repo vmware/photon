@@ -1,6 +1,6 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
-Version:        11.4.2
+Version:        11.4.3
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
@@ -8,7 +8,7 @@ Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha1    sysstat=84ac7feba76049f201e203c7ce0cc750479a9d43
+%define sha1    sysstat=805002b2bef00cd9ab44c5037d09b29cb71a17f8
 BuildRequires:  cronie
 Requires:       cronie
 %description
@@ -51,6 +51,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 11.4.3-1
+-   Update to version 11.4.3
 *   Thu Jan 05 2017 Xiaolin Li <xiaolinl@vmware.com> 11.4.2-1
 -   Updated to version 11.4.2 and enable install cron.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 11.2.0-3
