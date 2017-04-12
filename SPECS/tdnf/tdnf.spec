@@ -19,6 +19,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  librepo-devel
 Source0:    %{name}-%{version}.tar.gz
+Patch0:     hy_sack_create.patch
 %define sha1 tdnf=15544a87ea01d6215fed35bd2d1299776f7daca1
 
 %description
@@ -35,6 +36,7 @@ Development files for tdnf
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 autoreconf -i
