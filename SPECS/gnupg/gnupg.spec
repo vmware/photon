@@ -1,24 +1,26 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
-Version:	2.0.30
+Version:	2.1.20
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
 Source0:        https://gnupg.org/ftp/gcrypt/gnupg/%{name}-%{version}.tar.bz2
-%define sha1 gnupg=a9f024588c356a55e2fd413574bfb55b2e18794a
+%define sha1 gnupg=500ddae8e4225ae2e300934090f9b9a427b8def1
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	zlib-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
-BuildRequires:  pth
-BuildRequires:  pth-devel
+BuildRequires:  npth
+BuildRequires:  npth-devel
 BuildRequires:  libassuan
 BuildRequires:  libksba >= 1.0.7
+BuildRequires:  libgcrypt >= 1.7.0
 BuildRequires:  libgcrypt-devel
+BuildRequires:  libgpg-error >= 1.24
 Requires:       libksba
-Requires:       pth
+Requires:       npth
 Requires:       libassuan
 Provides:       gpg
 
@@ -32,6 +34,7 @@ a command line tool with features for easy integration with other applications.
 
 %prep
 %setup -q -n %{name}-%{version}
+
 %build
 ./configure --prefix=%{_prefix}      \
             --sysconfdir=%{_sysconfdir} \
@@ -54,5 +57,7 @@ make DESTDIR=%{buildroot} install
 %exclude /usr/share/doc/*
 
 %changelog
+*       Tue Apr 11 2017 Danut Moraru <dmoraru@vmware.com> 2.1.20-1
+-       Update to 2.1.20
 *       Wed Jul 27 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.30-1
 -       Initial Build.
