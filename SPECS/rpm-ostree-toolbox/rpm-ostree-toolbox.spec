@@ -1,14 +1,14 @@
 Summary: 	Extra tools for rpm-ostree
 Name: 		rpm-ostree-toolbox
-Version: 	2015.12
-Release: 	4%{?dist}
+Version: 	2016.4
+Release: 	1%{?dist}
 #VCS: https://github.com/cgwalters/rpm-ostree-toolbox
 # This tarball is generated via "make -C packaging -f Makefile.dist-packaging dist-snapshot"
 # which is really just a wrapper for "git archive".
 # It doesn't follow the Github guidelines because they only work for
 # github; the infrastructure above is generic for any git repository.
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 rpm-ostree-toolbox=6dd8680d90992942f775596c98d6dfbd9465e47f
+%define sha1 rpm-ostree-toolbox=2c60816e5ea2ab56dcc9008018c7bbdc5d7540d0
 License: 	LGPLv2+
 URL: 		https://github.com/cgwalters/rpm-ostree-toolbox
 Vendor:		VMware, Inc.
@@ -82,6 +82,8 @@ fi
 %attr(0755,rpmostreecompose,rpmostreecompose) %{_localstatedir}/lib/%{name}
 
 %changelog
+*   Wed Apr 12 2017 Siju Maliakkal <smaliakkal@vmware.com> 2016.4-1
+-   Updated to latest version   
 *       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2015.12-4
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.12-3
