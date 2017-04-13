@@ -1,19 +1,20 @@
 Summary:	C++ interface to the glib
 Name:		glibmm
-Version:	2.48.1
-Release:	2%{?dist}
+Version:	2.53.1
+Release:	1%{?dist}
 License:	LGPLv2+
-URL:		http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.46/glibmm-2.46.3.tar.xz
+URL:		http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.46/%{name}-%{version}.tar.xz
-%define sha1 glibmm=41e4d148da88e458889044421e31b1eaa35d8b0b
+Source0:	http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.53/%{name}-%{version}.tar.xz
+%define sha1 glibmm=5b7e6c932b6ddece79a2fb9c88abee152325035a
 BuildRequires:	python2 >= 2.7
-BuildRequires:	libsigc++
+BuildRequires:	libsigc++ >= 2.99.5
 BuildRequires:	glib-devel glib-schemas
-Requires:	libsigc++
-Requires:	glib
+Requires:	libsigc++ >= 2.99.5
+Requires:	glib >= 2.50.0
+Requires:	gobject-introspection >= 1.50.0
 Requires:	XML-Parser
 
 %description
@@ -48,17 +49,19 @@ make  %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/glibmm-2.4/proc/*
+%{_libdir}/glibmm-2.54/proc/*
 %files devel 
 %defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.la
-%{_libdir}/glibmm-2.4/include/*
-%{_libdir}/giomm-2.4/include/*
+%{_libdir}/glibmm-2.54/include/*
+%{_libdir}/giomm-2.54/include/*
 %{_includedir}/*
 %{_datadir}/*
 
 %changelog
+*   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.53.1-1
+-   Update to version 2.53.1
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.48.1-2
 -   Modified %check
 *   Tue Sep 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.48.1-1
@@ -73,5 +76,5 @@ make  %{?_smp_mflags} check
 	Created devel subpackage. Added Summary.
 *	Tue Jun 23 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
 	Added glib-schemas to build requirements.
-*	Thu Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.42.0-1
+*	Fri Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.42.0-1
 	Initial version
