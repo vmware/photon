@@ -1,33 +1,86 @@
 Summary:        Docker
 Name:           docker
-Version:        1.12.6
+Version:        1.13.1
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://get.docker.com/builds/Linux/x86_64/%{name}-%{version}.tgz 
-%define sha1 docker=53e47bc1c888279753c474c7c75c4e6756422165
-Source1:        docker.service
-Source2:        docker-containerd.service
-Source3:        docker-completion.bash
+Source0:        https://github.com/docker/docker/archive/%{name}-%{version}.tar.gz
+%define sha1 docker=8a39c44c9e665495484fd86fbefdfbc9ab9d815d 
+Source1:        https://github.com/docker/containerd/archive/containerd-0.2.5.tar.gz
+%define sha1 containerd=aaf6fd1c5176b8575af1d8edf82af3d733528451
+Source2:        https://github.com/opencontainers/runc/archive/runc-1.0.0-rc2.tar.gz
+%define sha1 runc=27ab28ba1c81c4f2f62ed11601f8e3a2fafd229f
+Source3:        https://github.com/docker/libnetwork/archive/docker-libnetwork-master-0.8.1.tar.gz
+%define sha1 docker-libnetwork-master=231c59f72a17f5e3f33e75e1efa164623e1852d8
+Source4:        docker.service
+Source5:        docker-containerd.service
+Source6:        docker-completion.bash
+
 BuildRequires:  systemd
+BuildRequires:  device-mapper-devel
+BuildRequires:  btrfs-progs-devel
+BuildRequires:  libseccomp
+BuildRequires:  libseccomp-devel
+Requires:       libgcc
+Requires:       glibc
+Requires:       libseccomp
 Requires:       systemd
+Requires:       device-mapper-libs
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
 %prep
-%setup -qn docker
+%setup -q
+%setup -T -D -a 1
+%setup -T -D -a 2
+%setup -T -D -a 3
+
 %build
+
+export AUTO_GOPATH=1
+export DOCKER_BUILDTAGS='exclude_graphdriver_aufs'
+export DOCKER_GITCOMMIT="092cba3"
+
+./hack/make.sh dynbinary
+
+mkdir -p /usr/share/gocode/src/github.com/docker/
+cd /usr/share/gocode/src/github.com/docker/
+mv /usr/src/photon/BUILD/docker-1.13.1/containerd-0.2.5 .
+mv containerd-0.2.5 containerd
+cd containerd
+
+make
+
+mkdir -p /usr/share/gocode/src/github.com/opencontainers/
+cd /usr/share/gocode/src/github.com/opencontainers/
+mv /usr/src/photon/BUILD/docker-1.13.1/runc-1.0.0-rc2 .
+mv runc-1.0.0-rc2 runc
+cd runc
+make BUILDTAGS='seccomp'
+
+cd /usr/share/gocode/src/github.com/docker/
+mv /usr/src/photon/BUILD/docker-1.13.1/libnetwork-master/ .
+mv libnetwork-master libnetwork
+cd libnetwork
+go build -ldflags="-linkmode=external" -o docker-proxy github.com/docker/libnetwork/cmd/proxy
+
 %install
 install -vdm755 %{buildroot}/usr/bin
-mv -v %{_builddir}/%{name}/* %{buildroot}/usr/bin/
+mv -v %{_builddir}/%{name}-%{version}/bundles/latest/dynbinary-client/%{name}-%{version} %{buildroot}/usr/bin/%{name}
+mv -v %{_builddir}/%{name}-%{version}/bundles/latest/dynbinary-daemon/%{name}d-%{version} %{buildroot}/usr/bin/%{name}d
+mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/containerd %{buildroot}/usr/bin/%{name}-containerd
+mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/containerd-shim %{buildroot}/usr/bin/%{name}-containerd-shim
+mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/ctr %{buildroot}/usr/bin/%{name}-containerd-ctr
+mv -v /usr/share/gocode/src/github.com/opencontainers/runc/runc %{buildroot}/usr/bin/%{name}-runc
+mv -v /usr/share/gocode/src/github.com/docker/libnetwork/docker-proxy %{buildroot}/usr/bin/%{name}-proxy
 install -vd %{buildroot}/lib/systemd/system
-cp %{SOURCE1} %{buildroot}/lib/systemd/system/docker.service
-cp %{SOURCE2} %{buildroot}/lib/systemd/system/docker-containerd.service
+cp %{SOURCE4} %{buildroot}/lib/systemd/system/docker.service
+cp %{SOURCE5} %{buildroot}/lib/systemd/system/docker-containerd.service
 install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
-install -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/bash-completion/completions/docker
+install -m 0644 %{SOURCE6} %{buildroot}%{_datadir}/bash-completion/completions/docker
 
 %{_fixperms} %{buildroot}/*
 %check
@@ -48,14 +101,24 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%{_bindir}
-/lib/systemd/system/docker.service
 /lib/systemd/system/docker-containerd.service
-%{_datadir}/bash-completion/completions/docker
+/lib/systemd/system/docker.service
+/usr/bin
+/usr/bin/docker
+/usr/bin/docker-containerd
+/usr/bin/docker-containerd-ctr
+/usr/bin/docker-containerd-shim
+/usr/bin/docker-proxy
+/usr/bin/docker-runc
+/usr/bin/dockerd
+/usr/share/bash-completion/completions/docker
 
 %changelog
+*   Tue Apr 11 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-1
+-   Building docker from source.
 *   Fri Jan 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.6-1
 -   Upgraded to version 1.12.6
 *   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-1
@@ -93,5 +156,5 @@ rm -rf %{buildroot}/*
 -   Update according to UsrMove.
 *   Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
 -   Updated to version 1.6
-*   Mon Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
+*   Wed Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
 -   Initial build. First version
