@@ -1,14 +1,14 @@
 Summary:    Ruby
 Name:       ruby
-Version:    2.4.0
+Version:    2.4.1
 Release:    1%{?dist}
 License:    BSDL
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution: Photon
-Source0:    http://cache.ruby-lang.org/pub/ruby/%{version}/%{name}-%{version}.tar.gz
-%define sha1 ruby=d44a3c50a0e742341ed3033d5db79d865151a4f4
+Source0:    http://cache.ruby-lang.org/pub/ruby/%{name}-%{version}.tar.gz
+%define sha1 ruby=47909a0f77ea900573f027d27746960ad6d07d15
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -49,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Thu Apr 13 2017 Siju Maliakkal <smaliakkal@vmware.com> 2.4.1-1
+-   Update to latest 2.4.1
 *   Wed Jan 18 2017 Anish Swaminathan <anishs@vmware.com> 2.4.0-1
 -   Update to 2.4.0 - Fixes CVE-2016-2339
 *   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2.3.0-4
