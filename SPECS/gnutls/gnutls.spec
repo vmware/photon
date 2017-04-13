@@ -1,12 +1,11 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.4.11
-Release:        4%{?dist}
+Version:        3.5.10
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
-Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.4/%{name}-%{version}.tar.xz
-%define sha1    gnutls=55f73d1ea2b3335fea514fad6faa1e72006ae9f9
-Patch0:         gnutls_3.4.11_default_priority.patch
+Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
+%define sha1    gnutls=4a8afbda93d48e4cdbcb562a420e0f4e9f3361e9
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,6 +20,7 @@ Requires:       libtasn1
 Requires:       openssl
 Requires:       ca-certificates
 Requires:       gmp
+
 %description
 GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them. It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509, PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
 
@@ -36,7 +36,7 @@ developing applications that use gnutls.
 
 %prep
 %setup -q
-%patch0 -p1
+
 %build
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
@@ -45,9 +45,11 @@ developing applications that use gnutls.
     --prefix=%{_prefix} \
     --without-p11-kit \
     --disable-openssl-compatibility \
+    --with-included-unistring \
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_infodir}/*
@@ -68,6 +70,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_datadir}/locale/*
+%{_docdir}/gnutls/*.png
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/%{name}/*.h
@@ -76,6 +80,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 3.5.10-1
+-   Update to version 3.5.10
 *   Sun Dec 18 2016 Alexey Makhalov <amakhalov@vmware.com> 3.4.11-4
 -   configure to use default trust store file
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-3
