@@ -1,14 +1,14 @@
 Summary:    Glib networking modules
 Name:       glib-networking
-Version:    2.46.1
-Release:    3%{?dist}
+Version:    2.50.0
+Release:    1%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/glib-networking
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.46/%{name}-%{version}.tar.xz
-%define sha1 glib-networking=5e44eb1227eef11eeea8b003207611fa4d3b1fa1
+Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.50/%{name}-%{version}.tar.xz
+%define sha1 glib-networking=d8f6a52fd977acc0ff32fe3152ad4cb3f699c053
 BuildRequires:	nettle-devel
 BuildRequires:	autogen-libopts-devel
 BuildRequires:	libtasn1-devel
@@ -20,8 +20,7 @@ BuildRequires:  glib
 BuildRequires:  glib-devel
 BuildRequires:  glib-schemas
 Requires:	nettle
-#Requires:	autogen-libopts
-Requires:   gnutls
+Requires:	gnutls
 Requires:	libtasn1
 Requires:	openssl
 Requires:	ca-certificates
@@ -66,6 +65,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*	Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.50.0-1
+-	Updated to version 2.50.0 
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.46.1-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.46.1-2
