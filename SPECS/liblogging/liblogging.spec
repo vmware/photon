@@ -1,11 +1,11 @@
 Summary:	Logging Libraries
 Name:		liblogging
-Version:	1.0.5
-Release:	2%{?dist}
+Version:	1.0.6
+Release:	1%{?dist}
 License: 	BSD
 URL:     	http://www.liblogging.org/
 Source0: 	http://download.rsyslog.com/liblogging/liblogging-%{version}.tar.gz
-%define sha1 liblogging=e202bf9412747ecd384678e8b3024a4646d45c2f
+%define sha1 liblogging=f07012fc8bd74e0c7bdcacaa772828639d1a9657
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -55,6 +55,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/liblogging/*.h
 %changelog
+*	Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.6-1
+-	Updated to version 1.0.6
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.5-2
 -	GA - Bump release of all rpms
 *	Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.5-1
