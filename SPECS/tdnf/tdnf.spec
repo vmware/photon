@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        VMware
@@ -94,6 +94,8 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
     %{_libdir}/pkgconfig/tdnf.pc
 
 %changelog
+*   Fri Apr 14 2017 Dheerajs Shetty <dheerajs@vmware.com> 1.1.0-3
+-   Adding a patch to compile with latest hawkey version
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-2
 -   BuildRequires libsolv-devel.
 *   Thu Dec 08 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-1
