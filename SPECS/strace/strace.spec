@@ -1,14 +1,14 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
-Version:	4.11
-Release:	3%{?dist}
+Version:	4.16
+Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceforge.net/p/strace/code/ci/master/tree/
 Group:		Development/Debuggers
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/project/strace/strace/%{version}/%{name}-%{version}.tar.xz
-%define sha1 strace=8fd717dc3c51b69fde51ce0bdb066404a678363c
+%define sha1 strace=b780a8cd2e60ea836cfd3468e0f81623a346d180
 BuildRequires:	libacl-devel, libaio-devel
 %global __requires_exclude ^/usr/bin/perl$
 
@@ -18,8 +18,8 @@ all the arugments and return values from the system calls. This is useful in deb
 
 %prep
 %setup -q
-%build
 
+%build
 ./configure \
 	--prefix=%{_prefix} \
 
@@ -39,7 +39,10 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/man1/*
+
 %changelog
+*	Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.16-1
+-	Update to version 4.16
 *	Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11-3
 -	Exclude perl dependency
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11-2
