@@ -1,19 +1,7 @@
-diff -ru cloud-init-0.7.6/cloudinit/config/cc_growpart.py cloud-init-0.7.6-modified/cloudinit/config/cc_growpart.py
---- cloud-init-0.7.6/cloudinit/config/cc_growpart.py	2014-10-10 08:26:25.000000000 -0700
-+++ cloud-init-0.7.6-modified/cloudinit/config/cc_growpart.py	2017-03-29 17:12:40.059392874 -0700
-@@ -276,7 +276,7 @@
-             log.debug("use ignore_growroot_disabled to ignore")
-             return
- 
--    devices = util.get_cfg_option_list(cfg, "devices", ["/"])
-+    devices = util.get_cfg_option_list(mycfg, "devices", ["/"])
-     if not len(devices):
-         log.debug("growpart: empty device list")
-         return
-diff -ru cloud-init-0.7.6/cloudinit/config/cc_resizefs.py cloud-init-0.7.6-modified/cloudinit/config/cc_resizefs.py
---- cloud-init-0.7.6/cloudinit/config/cc_resizefs.py	2014-10-10 08:26:25.000000000 -0700
-+++ cloud-init-0.7.6-modified/cloudinit/config/cc_resizefs.py	2017-03-29 17:00:59.965405389 -0700
-@@ -71,6 +71,8 @@
+diff -rup cloud-init-0.7.9/cloudinit/config/cc_resizefs.py cloud-init-0.7.9-new/cloudinit/config/cc_resizefs.py
+--- cloud-init-0.7.9/cloudinit/config/cc_resizefs.py	2016-12-23 08:37:45.000000000 -0800
++++ cloud-init-0.7.9-new/cloudinit/config/cc_resizefs.py	2017-04-13 17:33:14.508595806 -0700
+@@ -86,6 +86,8 @@ def rootdev_from_cmdline(cmdline):
          return "/dev/disk/by-label/" + found[len("LABEL="):]
      if found.startswith("UUID="):
          return "/dev/disk/by-uuid/" + found[len("UUID="):]
