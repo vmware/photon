@@ -4,13 +4,13 @@
 
 Summary:        Repodata downloading library
 Name:           librepo
-Version:        1.7.17
-Release:        6%{?dist}
+Version:        1.7.20
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/Tojaj/librepo/
 Group:          System Environment/Libraries
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    librepo=e96b735393cd830caca49fe3bf7da767f22d8a8a
+%define sha1    librepo=8aff436081320acf50b8d32a9982d02062e56bd6
 Source1:        pygpgme-0.3.tar.gz
 %define sha1    pygpgme=f8df35bd2705ac2e1642209fba732e6a42d03fd4
 Vendor:         VMware, Inc.
@@ -86,6 +86,8 @@ PYTHONPATH=`readlink -f ./librepo/python/python2/` nosetests -s -v tests/python/
 %{_includedir}/librepo/*.h
 
 %changelog
+*   Thu Apr 20 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.20-1
+-   Updated to version 1.7.20
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.17-6
 -   Requires expat-libs, expat-devel and curl-libs.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.17-5
