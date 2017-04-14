@@ -1,0 +1,220 @@
+diff --git a/vmdir/tools/test/circularbuffer/Makefile.am b/vmdir/tools/test/circularbuffer/Makefile.am
+index 5ef79e7..043faa8 100644
+--- a/vmdir/tools/test/circularbuffer/Makefile.am
++++ b/vmdir/tools/test/circularbuffer/Makefile.am
+@@ -24,4 +24,5 @@ circularbuffertest_LDADD = \
+     @LDAP_LIBS@
+ 
+ circularbuffertest_LDFLAGS = \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/test/registry/Makefile.am b/vmdir/tools/test/registry/Makefile.am
+index 6284ad2..c3556ab 100644
+--- a/vmdir/tools/test/registry/Makefile.am
++++ b/vmdir/tools/test/registry/Makefile.am
+@@ -24,4 +24,5 @@ registrytest_LDADD = \
+     @LDAP_LIBS@
+ 
+ registrytest_LDFLAGS = \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/test/vmdirclienttest/Makefile.am b/vmdir/tools/test/vmdirclienttest/Makefile.am
+index 088aec9..9471fc9 100644
+--- a/vmdir/tools/test/vmdirclienttest/Makefile.am
++++ b/vmdir/tools/test/vmdirclienttest/Makefile.am
+@@ -31,4 +31,5 @@ vmdirclienttest_LDADD = \
+ 
+ vmdirclienttest_LDFLAGS = \
+     @DCERPC_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcaclmgr/Makefile.am b/vmdir/tools/vdcaclmgr/Makefile.am
+index 1f8b8f7..17916e8 100644
+--- a/vmdir/tools/vdcaclmgr/Makefile.am
++++ b/vmdir/tools/vdcaclmgr/Makefile.am
+@@ -30,4 +30,5 @@ vdcaclmgr_LDADD = \
+ 
+ vdcaclmgr_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcadmintool/Makefile.am b/vmdir/tools/vdcadmintool/Makefile.am
+index 549ca58..7d29562 100644
+--- a/vmdir/tools/vdcadmintool/Makefile.am
++++ b/vmdir/tools/vdcadmintool/Makefile.am
+@@ -32,4 +32,5 @@ vdcadmintool_LDADD = \
+ 
+ vdcadmintool_LDFLAGS = \
+     @DCERPC_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcpass/Makefile.am b/vmdir/tools/vdcpass/Makefile.am
+index 51a3829..d2e1a3a 100644
+--- a/vmdir/tools/vdcpass/Makefile.am
++++ b/vmdir/tools/vdcpass/Makefile.am
+@@ -26,5 +26,6 @@ vdcpass_LDADD = \
+ 
+ vdcpass_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+
+diff --git a/vmdir/tools/vdcpromo/Makefile.am b/vmdir/tools/vdcpromo/Makefile.am
+index 11ac998..ffafa0f 100644
+--- a/vmdir/tools/vdcpromo/Makefile.am
++++ b/vmdir/tools/vdcpromo/Makefile.am
+@@ -29,4 +29,5 @@ vdcpromo_LDADD = \
+ vdcpromo_LDFLAGS = \
+     @DCERPC_LDFLAGS@ \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcrepadmin/Makefile.am b/vmdir/tools/vdcrepadmin/Makefile.am
+index c88e77f..6e04121 100644
+--- a/vmdir/tools/vdcrepadmin/Makefile.am
++++ b/vmdir/tools/vdcrepadmin/Makefile.am
+@@ -27,4 +27,5 @@ vdcrepadmin_LDADD = \
+ 
+ vdcrepadmin_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcsetupldu/Makefile.am b/vmdir/tools/vdcsetupldu/Makefile.am
+index d9cf961..6923915 100644
+--- a/vmdir/tools/vdcsetupldu/Makefile.am
++++ b/vmdir/tools/vdcsetupldu/Makefile.am
+@@ -26,5 +26,6 @@ vdcsetupldu_LDADD = \
+ 
+ vdcsetupldu_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+
+diff --git a/vmdir/tools/vdcbackup/Makefile.am b/vmdir/tools/vdcbackup/Makefile.am
+index 5d58b3e..1c55860 100644
+--- a/vmdir/tools/vdcbackup/Makefile.am
++++ b/vmdir/tools/vdcbackup/Makefile.am
+@@ -15,4 +15,5 @@ vdcbackup_LDADD = \
+     $(top_builddir)/client/libvmdirclient.la
+ 
+ vdcbackup_LDFLAGS = \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcsrp/Makefile.am b/vmdir/tools/vdcsrp/Makefile.am
+index cbe0980..c4deac7 100644
+--- a/vmdir/tools/vdcsrp/Makefile.am
++++ b/vmdir/tools/vdcsrp/Makefile.am
+@@ -26,5 +26,5 @@ vdcsrp_LDADD = \
+ 
+ vdcsrp_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
+-
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcupgrade/Makefile.am b/vmdir/tools/vdcupgrade/Makefile.am
+index 279724e..2f851f3 100644
+--- a/vmdir/tools/vdcupgrade/Makefile.am
++++ b/vmdir/tools/vdcupgrade/Makefile.am
+@@ -27,4 +27,5 @@ vdcupgrade_LDADD = \
+ 
+ vdcupgrade_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcleavefed/Makefile.am b/vmdir/tools/vdcleavefed/Makefile.a
+m
+index 6c3322a..32c8535 100644
+--- a/vmdir/tools/vdcleavefed/Makefile.am
++++ b/vmdir/tools/vdcleavefed/Makefile.am
+@@ -26,4 +26,5 @@ vdcleavefed_LDADD = \
+ 
+ vdcleavefed_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcresetMachineActCred/Makefile.am b/vmdir/tools/vdcresetMac
+hineActCred/Makefile.am
+index b59b742..a87e2bb 100644
+--- a/vmdir/tools/vdcresetMachineActCred/Makefile.am
++++ b/vmdir/tools/vdcresetMachineActCred/Makefile.am
+@@ -27,4 +27,5 @@ vdcresetMachineActCred_LDADD = \
+ 
+ vdcresetMachineActCred_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/tools/vdcschema/Makefile.am b/vmdir/tools/vdcschema/Makefile.am
+index 6fc35fd..e573a36 100644
+--- a/vmdir/tools/vdcschema/Makefile.am
++++ b/vmdir/tools/vdcschema/Makefile.am
+@@ -32,4 +32,5 @@ vdcschema_LDADD = \
+ 
+ vdcschema_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/testing/test_runner/Makefile.am b/vmdir/testing/test_runner/Makefile.am
+index fc93c51..6748005 100644
+--- a/vmdir/testing/test_runner/Makefile.am
++++ b/vmdir/testing/test_runner/Makefile.am
+@@ -26,4 +26,5 @@ vmdir_test_runner_LDADD = \
+ 
+ vmdir_test_runner_LDFLAGS = \
+     @OPENSSL_LDFLAGS@ \
+-    @LW_LDFLAGS@
++    @LW_LDFLAGS@ \
++    -ldl
+diff --git a/vmdir/gssapi-plugins/ntlm/gssapi_ntlm.h b/vmdir/gssapi-plugins/ntlm/gssapi_ntlm.h
+index 2021e6f..41e2be6 100644
+--- a/vmdir/gssapi-plugins/ntlm/gssapi_ntlm.h
++++ b/vmdir/gssapi-plugins/ntlm/gssapi_ntlm.h
+@@ -44,7 +44,7 @@ extern "C" {
+ /* Reserved static storage for GSS_oids.  See rfc 1964 for more details. */
+ 
+ /* 2.1.1. Kerberos Principal Name Form: */
+-GSS_DLLIMP extern const gss_OID_desc * const GSS_KRB5_NT_PRINCIPAL_NAME;
++GSS_DLLIMP extern const gss_OID const GSS_KRB5_NT_PRINCIPAL_NAME;
+ /* This name form shall be represented by the Object Identifier {iso(1)
+  * member-body(2) United States(840) mit(113554) infosys(1) gssapi(2)
+  * krb5(2) krb5_name(1)}.  The recommended symbolic name for this type
+diff --git a/vmdir/gssapi-plugins/srp/gssapi_srp.h b/vmdir/gssapi-plugins/srp/gssapi_srp.h
+index 83099c7..4196061 100644
+--- a/vmdir/gssapi-plugins/srp/gssapi_srp.h
++++ b/vmdir/gssapi-plugins/srp/gssapi_srp.h
+@@ -44,7 +44,7 @@ extern "C" {
+ /* Reserved static storage for GSS_oids.  See rfc 1964 for more details. */
+ 
+ /* 2.1.1. Kerberos Principal Name Form: */
+-GSS_DLLIMP extern const gss_OID_desc * const GSS_KRB5_NT_PRINCIPAL_NAME;
++GSS_DLLIMP extern const gss_OID const GSS_KRB5_NT_PRINCIPAL_NAME;
+ /* This name form shall be represented by the Object Identifier {iso(1)
+  * member-body(2) United States(840) mit(113554) infosys(1) gssapi(2)
+  * krb5(2) krb5_name(1)}.  The recommended symbolic name for this type
+diff --git a/vmdir/gssapi-plugins/unix/gssapi_unix.h b/vmdir/gssapi-plugins/unix/gssapi_unix.h
+index 8bfc492..1a3525e 100644
+--- a/vmdir/gssapi-plugins/unix/gssapi_unix.h
++++ b/vmdir/gssapi-plugins/unix/gssapi_unix.h
+@@ -64,7 +64,7 @@ extern "C" {
+ /* Reserved static storage for GSS_oids.  See rfc 1964 for more details. */
+ 
+ /* 2.1.1. Kerberos Principal Name Form: */
+-GSS_DLLIMP extern const gss_OID_desc * const GSS_KRB5_NT_PRINCIPAL_NAME;
++GSS_DLLIMP extern const gss_OID const GSS_KRB5_NT_PRINCIPAL_NAME;
+ /* This name form shall be represented by the Object Identifier {iso(1)
+  * member-body(2) United States(840) mit(113554) infosys(1) gssapi(2)
+  * krb5(2) krb5_name(1)}.  The recommended symbolic name for this type
