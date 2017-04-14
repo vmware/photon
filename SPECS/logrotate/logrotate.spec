@@ -1,11 +1,11 @@
 Summary:	Logrotate
 Name:		logrotate
-Version:	3.9.1
-Release:	3%{?dist}
+Version:	3.11.0
+Release:	1%{?dist}
 License:	GPL+
-URL:		https://fedorahosted.org/logrotate
-Source0:	https://fedorahosted.org/releases/l/o/logrotate/%{name}-%{version}.tar.gz
-%define sha1 logrotate=7ba734cd1ffa7198b66edc4bca17a28ea8999386
+URL:		https://github.com/logrotate/logrotate/
+Source0:	https://github.com/logrotate/logrotate/archive/%{name}-%{version}.tar.gz
+%define sha1 logrotate=baeb2676edbfffb04a567e5b1a61e4e19cfc50f4
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -42,6 +42,8 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 %{_mandir}/man8/logrotate.8.gz
 /var/lib/logrotate/logrotate.status
 %changelog
+*       Fri Apr 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.11.0-1
+-       Updating version to 3.11.0
 *	Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.9.1-3
 -	Compilation for gcc 6.3
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.9.1-2
