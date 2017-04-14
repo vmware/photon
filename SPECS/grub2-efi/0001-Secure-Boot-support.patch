@@ -1,22 +1,29 @@
-From a64179016df64b72cc956fd6085ca3ed1a41baac Mon Sep 17 00:00:00 2001
-From: Matthew Garrett <mjg@redhat.com>
+From 0982e048621339e212fda782ed10ff1ca09eb8d2 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 10 Jul 2012 11:58:52 -0400
-Subject: [PATCH 20/90] Add support for linuxefi
+Subject: [PATCH] Secure Boot support
 
+New commands: linuxefi, initrdefi
+If running under secure boot use linuxefi loader only and linux
+command is fallback to linuxefi.
+Forbid dl file loading (insmod and similar) when secure boot is enabled.
 ---
  grub-core/Makefile.core.def       |   8 +
+ grub-core/kern/dl.c               |  21 +++
+ grub-core/kern/efi/efi.c          |  30 +++
  grub-core/kern/efi/mm.c           |  32 ++++
- grub-core/loader/i386/efi/linux.c | 371 ++++++++++++++++++++++++++++++++++++++
- include/grub/efi/efi.h            |   3 +
+ grub-core/loader/i386/efi/linux.c | 386 ++++++++++++++++++++++++++++++++++++++
+ grub-core/loader/i386/linux.c     |  44 +++++
+ include/grub/efi/efi.h            |   4 +
  include/grub/i386/linux.h         |   1 +
- 5 files changed, 415 insertions(+)
+ 8 files changed, 526 insertions(+)
  create mode 100644 grub-core/loader/i386/efi/linux.c
 
 diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
-index f8d4634..de8c9df 100644
+index 2dfa22a..68e47a7 100644
 --- a/grub-core/Makefile.core.def
 +++ b/grub-core/Makefile.core.def
-@@ -1732,6 +1732,14 @@ module = {
+@@ -1734,6 +1734,14 @@ module = {
  };
  
  module = {
@@ -31,6 +38,86 @@ index f8d4634..de8c9df 100644
    name = chain;
    efi = loader/efi/chainloader.c;
    i386_pc = loader/i386/pc/chainloader.c;
+diff --git a/grub-core/kern/dl.c b/grub-core/kern/dl.c
+index e394cd9..04e804d 100644
+--- a/grub-core/kern/dl.c
++++ b/grub-core/kern/dl.c
+@@ -38,6 +38,14 @@
+ #define GRUB_MODULES_MACHINE_READONLY
+ #endif
+ 
++#ifdef GRUB_MACHINE_EMU
++#include <sys/mman.h>
++#endif
++
++#ifdef GRUB_MACHINE_EFI
++#include <grub/efi/efi.h>
++#endif
++
+ 
+ 
+ #pragma GCC diagnostic ignored "-Wcast-align"
+@@ -686,6 +694,19 @@ grub_dl_load_file (const char *filename)
+   void *core = 0;
+   grub_dl_t mod = 0;
+ 
++#ifdef GRUB_MACHINE_EFI
++  if (grub_efi_secure_boot ())
++    {
++#if 0
++      /* This is an error, but grub2-mkconfig still generates a pile of
++       * insmod commands, so emitting it would be mostly just obnoxious. */
++      grub_error (GRUB_ERR_ACCESS_DENIED,
++		  "Secure Boot forbids loading module from %s", filename);
++#endif
++      return 0;
++    }
++#endif
++
+   grub_boot_time ("Loading module %s", filename);
+ 
+   file = grub_file_open (filename);
+diff --git a/grub-core/kern/efi/efi.c b/grub-core/kern/efi/efi.c
+index d467785..270eba8 100644
+--- a/grub-core/kern/efi/efi.c
++++ b/grub-core/kern/efi/efi.c
+@@ -264,6 +264,36 @@ grub_efi_get_variable (const char *var, const grub_efi_guid_t *guid,
+   return NULL;
+ }
+ 
++grub_efi_boolean_t
++grub_efi_secure_boot (void)
++{
++  grub_efi_guid_t efi_var_guid = GRUB_EFI_GLOBAL_VARIABLE_GUID;
++  grub_size_t datasize;
++  char *secure_boot = NULL;
++  char *setup_mode = NULL;
++  grub_efi_boolean_t ret = 0;
++
++  secure_boot = grub_efi_get_variable("SecureBoot", &efi_var_guid, &datasize);
++
++  if (datasize != 1 || !secure_boot)
++    goto out;
++
++  setup_mode = grub_efi_get_variable("SetupMode", &efi_var_guid, &datasize);
++
++  if (datasize != 1 || !setup_mode)
++    goto out;
++
++  if (*secure_boot && !*setup_mode)
++    ret = 1;
++
++  grub_dprintf ("secureboot", "secure_boot = %d, setup_mode = %d\n",
++    *secure_boot, *setup_mode);
++ out:
++  grub_free (secure_boot);
++  grub_free (setup_mode);
++  return ret;
++}
++
+ #pragma GCC diagnostic ignored "-Wcast-align"
+ 
+ /* Search the mods section from the PE32/PE32+ image. This code uses
 diff --git a/grub-core/kern/efi/mm.c b/grub-core/kern/efi/mm.c
 index 20a47aa..efb15cc 100644
 --- a/grub-core/kern/efi/mm.c
@@ -76,10 +163,10 @@ index 20a47aa..efb15cc 100644
  grub_efi_allocate_pages (grub_efi_physical_address_t address,
 diff --git a/grub-core/loader/i386/efi/linux.c b/grub-core/loader/i386/efi/linux.c
 new file mode 100644
-index 0000000..b79e632
+index 0000000..6d23063
 --- /dev/null
 +++ b/grub-core/loader/i386/efi/linux.c
-@@ -0,0 +1,371 @@
+@@ -0,0 +1,386 @@
 +/*
 + *  GRUB  --  GRand Unified Bootloader
 + *  Copyright (C) 2012  Free Software Foundation, Inc.
@@ -101,6 +188,7 @@ index 0000000..b79e632
 +#include <grub/loader.h>
 +#include <grub/file.h>
 +#include <grub/err.h>
++#include <grub/misc.h>
 +#include <grub/types.h>
 +#include <grub/mm.h>
 +#include <grub/cpu/linux.h>
@@ -136,14 +224,27 @@ index 0000000..b79e632
 +{
 +  grub_efi_guid_t guid = SHIM_LOCK_GUID;
 +  grub_efi_shim_lock_t *shim_lock;
++  grub_efi_status_t status;
 +
++  grub_dprintf ("linuxefi", "Locating shim protocol\n");
 +  shim_lock = grub_efi_locate_protocol(&guid, NULL);
 +
 +  if (!shim_lock)
-+    return 1;
++    {
++      grub_dprintf ("linuxefi", "shim not available\n");
++      return 0;
++    }
 +
-+  if (shim_lock->verify(data, size) == GRUB_EFI_SUCCESS)
-+    return 1;
++  grub_dprintf ("linuxefi", "Asking shim to verify kernel signature\n");
++  status = shim_lock->verify(data, size);
++  if (status == GRUB_EFI_SUCCESS)
++    {
++      grub_dprintf ("linuxefi", "Kernel signature verification passed\n");
++      return 1;
++    }
++
++  grub_dprintf ("linuxefi", "Kernel signature verification failed (0x%lx)\n",
++		(unsigned long) status);
 +
 +  return 0;
 +}
@@ -270,6 +371,7 @@ index 0000000..b79e632
 +  struct linux_kernel_header lh;
 +  grub_ssize_t len, start, filelen;
 +  void *kernel;
++  grub_err_t fail_errno;
 +
 +  grub_dl_ref (my_mod);
 +
@@ -301,7 +403,7 @@ index 0000000..b79e632
 +
 +  if (! grub_linuxefi_secure_validate (kernel, filelen))
 +    {
-+      grub_error (GRUB_ERR_INVALID_COMMAND, N_("%s has invalid signature"), argv[0]);
++      grub_error (GRUB_ERR_ACCESS_DENIED, N_("%s has invalid signature"), argv[0]);
 +      grub_free (kernel);
 +      goto fail;
 +    }
@@ -411,11 +513,11 @@ index 0000000..b79e632
 +  params->type_of_loader = 0x21;
 +
 + fail:
-+
++  fail_errno = grub_errno;
 +  if (file)
 +    grub_file_close (file);
 +
-+  if (grub_errno != GRUB_ERR_NONE)
++  if (fail_errno != GRUB_ERR_NONE)
 +    {
 +      grub_dl_unref (my_mod);
 +      loaded = 0;
@@ -430,7 +532,7 @@ index 0000000..b79e632
 +  if (params && !loaded)
 +    grub_efi_free_pages((grub_efi_physical_address_t)params, BYTES_TO_PAGES(16384));
 +
-+  return grub_errno;
++  return fail_errno;
 +}
 +
 +static grub_command_t cmd_linux, cmd_initrd;
@@ -451,8 +553,77 @@ index 0000000..b79e632
 +  grub_unregister_command (cmd_linux);
 +  grub_unregister_command (cmd_initrd);
 +}
+diff --git a/grub-core/loader/i386/linux.c b/grub-core/loader/i386/linux.c
+index b15b8cc..845a5c9 100644
+--- a/grub-core/loader/i386/linux.c
++++ b/grub-core/loader/i386/linux.c
+@@ -75,6 +75,8 @@ static grub_size_t maximal_cmdline_size;
+ static struct linux_kernel_params linux_params;
+ static char *linux_cmdline;
+ #ifdef GRUB_MACHINE_EFI
++static int using_linuxefi;
++static grub_command_t initrdefi_cmd;
+ static grub_efi_uintn_t efi_mmap_size;
+ #else
+ static const grub_size_t efi_mmap_size = 0;
+@@ -689,6 +691,42 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+ 
+   grub_dl_ref (my_mod);
+ 
++#ifdef GRUB_MACHINE_EFI
++  using_linuxefi = 0;
++  if (grub_efi_secure_boot ())
++    {
++      /* Try linuxefi first, which will require a successful signature check
++	 and then hand over to the kernel without calling ExitBootServices.
++	 If that fails, however, fall back to calling ExitBootServices
++	 ourselves and then booting an unsigned kernel.  */
++      grub_dl_t mod;
++      grub_command_t linuxefi_cmd;
++
++      grub_dprintf ("linux", "Secure Boot enabled: trying linuxefi\n");
++
++      mod = grub_dl_load ("linuxefi");
++      if (mod)
++	{
++	  grub_dl_ref (mod);
++	  linuxefi_cmd = grub_command_find ("linuxefi");
++	  initrdefi_cmd = grub_command_find ("initrdefi");
++	  if (linuxefi_cmd && initrdefi_cmd)
++	    {
++	      (linuxefi_cmd->func) (linuxefi_cmd, argc, argv);
++	      if (grub_errno == GRUB_ERR_NONE)
++		{
++		  grub_dprintf ("linux", "Handing off to linuxefi\n");
++		  using_linuxefi = 1;
++		  return GRUB_ERR_NONE;
++		}
++	      grub_dprintf ("linux", "linuxefi failed (%d)\n", grub_errno);
++	      grub_errno = GRUB_ERR_ACCESS_DENIED;
++	    }
++	}
++      goto fail;
++    }
++#endif
++
+   if (argc == 0)
+     {
+       grub_error (GRUB_ERR_BAD_ARGUMENT, N_("filename expected"));
+@@ -1051,6 +1089,12 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
+   grub_err_t err;
+   struct grub_linux_initrd_context initrd_ctx = { 0, 0, 0 };
+ 
++#ifdef GRUB_MACHINE_EFI
++  /* If we're using linuxefi, just forward to initrdefi.  */
++  if (using_linuxefi && initrdefi_cmd)
++    return (initrdefi_cmd->func) (initrdefi_cmd, argc, argv);
++#endif
++
+   if (argc == 0)
+     {
+       grub_error (GRUB_ERR_BAD_ARGUMENT, N_("filename expected"));
 diff --git a/include/grub/efi/efi.h b/include/grub/efi/efi.h
-index 0e6fd86..9a2da0e 100644
+index e9c601f..62a3d97 100644
 --- a/include/grub/efi/efi.h
 +++ b/include/grub/efi/efi.h
 @@ -40,6 +40,9 @@ void EXPORT_FUNC(grub_efi_stall) (grub_efi_uintn_t microseconds);
@@ -465,6 +636,14 @@ index 0e6fd86..9a2da0e 100644
  void EXPORT_FUNC(grub_efi_free_pages) (grub_efi_physical_address_t address,
  				       grub_efi_uintn_t pages);
  int
+@@ -73,6 +76,7 @@ EXPORT_FUNC (grub_efi_set_variable) (const char *var,
+ 				     const grub_efi_guid_t *guid,
+ 				     void *data,
+ 				     grub_size_t datasize);
++grub_efi_boolean_t EXPORT_FUNC (grub_efi_secure_boot) (void);
+ int
+ EXPORT_FUNC (grub_efi_compare_device_paths) (const grub_efi_device_path_t *dp1,
+ 					     const grub_efi_device_path_t *dp2);
 diff --git a/include/grub/i386/linux.h b/include/grub/i386/linux.h
 index da0ca3b..fc36bda 100644
 --- a/include/grub/i386/linux.h
@@ -478,5 +657,5 @@ index da0ca3b..fc36bda 100644
  
  /* Boot parameters for Linux based on 2.6.12. This is used by the setup
 -- 
-2.9.3
+2.8.1
 
