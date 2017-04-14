@@ -3,18 +3,15 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2-efi
 Version:    2.02
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~beta3.tar.xz
-%define sha1 grub=14a1f9239a9c974957e835dc706fc6a1e4819c83
-Patch0:     0020-Add-support-for-linuxefi.patch
-Patch1:     0022-Don-t-allow-insmod-when-secure-boot-is-enabled.patch
-Patch2:     linuxefi_require_shim.patch
-Patch3:     linuxefi_non_sb_fallback.patch
+Source0:    http://alpha.gnu.org/gnu/grub/grub-2.02~rc2.tar.xz
+%define sha1 grub=4f6f3719fd7dbb0449a58547c1b08c9801337663
+Patch0:     0001-Secure-Boot-support.patch
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
@@ -32,11 +29,8 @@ These are the additional language files of grub.
 
 
 %prep
-%setup -qn grub-2.02~beta3
+%setup -qn grub-2.02~rc2
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 %build
 ./autogen.sh
 ./configure \
@@ -90,6 +84,9 @@ rm -rf %{buildroot}%{_infodir}
 /usr/share/locale/*
 
 %changelog
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com>  2.02-7
+-   Version update to 2.02~rc2
+-   SecureBoot hardening: forbid unsigned vmlinuz image
 *   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com>  2.02-6
 -   Version update to 2.02~beta3
 -   SecureBoot support
