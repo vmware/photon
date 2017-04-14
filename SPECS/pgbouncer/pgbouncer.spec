@@ -13,7 +13,9 @@ BuildRequires:  libevent-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
 BuildRequires:  pkg-config
-
+Requires:		libevent
+Requires:		openssl
+Requires:		shaddow
 %description
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 
