@@ -1,7 +1,10 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -32,6 +35,14 @@ Requires:   python2-libs
 %description python
 The libxml2 python module
 
+%package -n     python3-libxml2
+Summary:        Python 3 bindings for libxml2.
+Group:          Development/Libraries
+BuildRequires:  python3-devel
+Requires:       python3
+
+%description -n python3-libxml2
+Python3 libxml2.
 
 %package devel
 Summary:    Libraries and header files for libxml
@@ -58,11 +69,22 @@ sed \
     --disable-static \
     --with-history
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
+
+make clean
+./configure \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --disable-static \
+    --with-python=/usr/bin/python3.5
+make %{?_smp_mflags}
+make install DESTDIR=%{buildroot}
 
 %check
 make %{?_smp_mflags} check
@@ -84,7 +106,11 @@ rm -rf %{buildroot}/*
 
 %files python
 %defattr(-,root,root)
-%{_libdir}/python*
+%{python2_sitelib}/*
+
+%files -n python3-libxml2
+%defattr(-,root,root)
+%{python3_sitelib}/*
 
 %files devel
 %defattr(-,root,root)
@@ -95,6 +121,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Thu Apr 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-6
+-   Added python3-libxml2 package.
 *   Tue Jan 3 2017 Alexey Makhalov <amakhalov@vmware.com> 2.9.4-5
 -   Fix for CVE-2016-9318
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-4
