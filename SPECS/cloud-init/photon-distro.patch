@@ -23,7 +23,9 @@
 +class Distro(distros.Distro):
 +    hostname_conf_fn = "/etc/hostname"
 +    locale_conf_fn = "/etc/default/locale"
-+    network_conf_fn = "/etc/network/interfaces"
++    network_conf_dir = "/etc/systemd/network/"
++    resolve_conf_fn = "/etc/resolv.conf"
++    init_cmd = ['systemctl']  # init scripts
 +
 +    def __init__(self, name, cfg, paths):
 +        distros.Distro.__init__(self, name, cfg, paths)
@@ -51,18 +53,81 @@
 +        self.package_command('install', pkgs=pkglist)
 +
 +    def _write_network(self, settings):
-+        util.write_file(self.network_conf_fn, settings)
-+        return ['all']
++        entries = net_util.translate_network(settings)
++        LOG.debug("Translated ubuntu style network settings %s into %s",
++                  settings, entries)
++        dev_names = entries.keys()
++        dev_index = 10;
++        # Format for systemd
++        for (dev, info) in entries.items():
++            if dev == 'lo':
++                continue
++            nameservers = []
++            net_fn = self.network_conf_dir + str(dev_index) + '-' + dev + '.network'
++            dhcp_enabled = 'no'
++            if info.get('bootproto') == 'dhcp':
++                dhcp_enabled = 'yes'        
++            net_cfg = {
++                'Name': dev,
++                'DHCP': dhcp_enabled,
++                'Address': "%s/%s" % (info.get('address'),
++                                          info.get('netmask')),
++                'MACAddress': info.get('hwaddress'),
++                'Gateway': info.get('gateway'),
++                'DNS': str(tuple(info.get('dns-nameservers'))).replace(',', '')
++            }
++            if info.get('auto'):
++                self._write_interface_file(net_fn, net_cfg)
++            if 'dns-nameservers' in info:
++                nameservers.extend(info['dns-nameservers'])
++            dev_index = dev_index + 1;
++
++        if nameservers:
++            util.write_file(self.resolve_conf_fn,
++                            convert_resolv_conf(nameservers))
++
++        return dev_names
++
++    def _write_interface_file(self, net_fn, net_cfg):
++        if not net_cfg['Name']:
++            return
++        content = "[Match]\n"
++        content += "Name=%s\n" % (net_cfg['Name'])
++        if net_cfg['MACAddress']:
++            content += "MACAddress=%s\n" % (net_cfg['MACAddress'])
++        content += "[Network]\n"
++        if net_cfg['DHCP'] == 'yes':
++            content += "DHCP=%s\n" % (net_cfg['DHCP'])
++        else:
++            if net_cfg['Address']:
++                content += "Address=%s\n" % (net_cfg['Address'])
++            if net_cfg['Gateway']:
++                content += "Gateway=%s\n" % (net_cfg['Gateway'])
++        try:
++            tf = tempfile.NamedTemporaryFile(dir=os.path.dirname(net_fn),
++                                         delete=False, mode="wb")
++            tf.write(content)
++            tf.close()
++            os.chmod(tf.name, 0o644)
++            os.rename(tf.name, net_fn)
++        except Exception as e:
++            if tf is not None:
++                os.unlink(tf.name)
++            raise e
++
 +
 +    def _bring_up_interfaces(self, device_names):
-+        use_all = False
-+        for d in device_names:
-+            if d == 'all':
-+                use_all = True
-+        if use_all:
-+            return distros.Distro._bring_up_interface(self, '--all')
-+        else:
-+            return distros.Distro._bring_up_interfaces(self, device_names)
++        cmd = ['systemctl', 'restart', 'systemd-networkd']
++        LOG.debug("Attempting to run bring up interfaces using command %s",
++                  cmd)
++        try:
++            (_out, err) = util.subp(cmd)
++            if len(err):
++                LOG.warn("Running %s resulted in stderr output: %s", cmd, err)
++            return True
++        except util.ProcessExecutionError:
++            util.logexc(LOG, "Running network bringup command %s failed", cmd)
++            return False
 +
 +    def _select_hostname(self, hostname, fqdn):
 +        # Prefer the short hostname over the long
@@ -136,4 +201,10 @@
 +        self._runner.run("update-sources", self.package_command,
 +                         ["makecache"], freq=PER_INSTANCE)
 +
-
++def convert_resolv_conf(settings):
++    """Returns a settings string formatted for resolv.conf."""
++    result = ''
++    if isinstance(settings, list):
++        for ns in settings:
++            result = result + 'nameserver %s\n' % ns
++    return result
