@@ -1,21 +1,18 @@
 Name:           cloud-init
-Version:        0.7.6
-Release:        16%{?dist}
+Version:        0.7.9
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=9af02f68d68abce91463bec22b17964d1618e1da
+%define sha1 cloud-init=3b4345267e72e28b877e2e3f0735c1f672674cfc
 Source1:        cloud-photon.cfg
 
 Patch0:         photon-distro.patch
-Patch1:         cloud-init-log.patch
-Patch2:         vca-admin-pwd.patch
-Patch3:         remove-netstat.patch
-Patch4:         distro-systemctl.patch
-Patch5:         photon-hosts-template.patch
-Patch6:         resizePartitionUUID.patch
+Patch1:         vca-admin-pwd.patch
+Patch2:         photon-hosts-template.patch
+Patch3:         resizePartitionUUID.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -44,9 +41,6 @@ ssh keys and to let the user run various scripts.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -126,7 +120,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %license LICENSE
-%{_sysconfdir}/cloud/*
+%doc %{_sysconfdir}/cloud/cloud.cfg.d/README
+%dir %{_sysconfdir}/cloud/templates
+%config(noreplace) %{_sysconfdir}/cloud/templates/*
+%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
+%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
+%{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
+%{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
+/lib/systemd/system-generators/cloud-init-generator
+/lib/udev/rules.d/66-azure-ephemeral.rules
 /lib/systemd/system/*
 %{_docdir}/cloud-init/*
 %{_libdir}/cloud-init/*
@@ -136,6 +138,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu Apr 13 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-1
+-   Upgraded to version 0.7.9
 *   Wed Mar 29 2017 Kumar Kaushik <kaushikk@vmware.com>  0.7.6-16
 -   Adding support for disk partition and resize fs
 *   Thu Dec 15 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-15
