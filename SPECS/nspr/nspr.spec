@@ -1,22 +1,25 @@
 Summary:	Platform-neutral API
 Name:		nspr
-Version:	4.12
-Release:	2%{?dist}
+Version:	4.13.1
+Release:	1%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.mozilla.org/pub/mozilla.org/%{name}/releases/v%{version}/src/%{name}-%{version}.tar.gz
-%define sha1 nspr=14fb67a0e686a5c662f92e7f59dfd10053f327dd
+%define sha1 nspr=ec6660257d41267a0e6ee25812e9012cb9ddd274
+
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
 for system level and libc like functions.
+
 %prep
 %setup -q
 cd nspr
 sed -ri 's#^(RELEASE_BINS =).*#\1#' pr/src/misc/Makefile.in
 sed -i 's#$(LIBRARY) ##' config/rules.mk
+
 %build
 cd nspr
 ./configure \
@@ -26,12 +29,17 @@ cd nspr
 	--with-pthreads \
 	$([ $(uname -m) = x86_64 ] && echo --enable-64bit) \
 	--disable-silent-rules
+
 make %{?_smp_mflags}
+
 %install
 cd nspr
 make DESTDIR=%{buildroot} install
+
 %post	-p /sbin/ldconfig
+
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -39,7 +47,10 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_datarootdir}/aclocal/*
+
 %changelog
+*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.1-1
+-	Update to 4.13.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.12-2
 -	GA - Bump release of all rpms
 *       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 4.12-1

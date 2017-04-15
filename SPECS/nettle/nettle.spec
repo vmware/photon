@@ -1,11 +1,11 @@
 Summary:	Low level cryptographic libraries
 Name:		nettle
-Version:	3.2
-Release:	3%{?dist}
+Version:	3.3
+Release:	1%{?dist}
 License:	LGPLv3+ or GPLv2+
 URL:            http://www.lysator.liu.se/~nisse/nettle/
 Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 nettle=b2eb5b36e65a8d3ed60ff81ec897044dead6dae0
+%define sha1 nettle=bf2b4d3a41192ff6177936d7bc3bee4cebeb86c4
 Group: 		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -36,7 +36,9 @@ developing applications that use nettle.
 %build
 ./configure \
 	--prefix=%{_prefix} \
-	--enable-shared
+	--enable-shared \
+        --disable-static
+
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -46,18 +48,23 @@ rm %{buildroot}%{_infodir}/*
 make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
+
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_bindir}/*
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/nettle/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/*.a
+
 %changelog
+*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3-1
+-	Update to 3.3
 *       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.2-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-2

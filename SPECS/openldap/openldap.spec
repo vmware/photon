@@ -1,22 +1,23 @@
 %global _default_patch_fuzz 2
 Summary:	OpenLdap-2.4.43
 Name:		openldap
-Version:	2.4.43
-Release:	3%{?dist}
+Version:	2.4.44
+Release:	1%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=3b52924df2f45e81f25ecbe37551bc837d090cfa
-Patch0:		openldap-2.4.43-consolidated-1.patch
+%define sha1 openldap=016a738d050a68d388602a74b5e991035cdba149
+Patch0:		openldap-2.4.44-consolidated-2.patch
 Patch2:		openldap-2.4.40-gssapi-1.patch
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
 BuildRequires:	groff
 BuildRequires:	e2fsprogs-devel
+
 %description
 OpenLDAP is an open source suite of LDAP (Lightweight Directory Access
 Protocol) applications and development tools. LDAP is a set of
@@ -25,6 +26,7 @@ information, but other information is possible) over the Internet,
 similar to the way DNS (Domain Name System) information is propagated
 over the Internet. The openldap package contains configuration files,
 libraries, and documentation for OpenLDAP.
+
 %prep
 %setup -q
 %patch2 -p1
@@ -58,9 +60,12 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 make %{?_smp_mflags} test
 
 %post	-p /sbin/ldconfig
+
 %postun	-p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -73,6 +78,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
+-	Update to 2.4.44
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
