@@ -87,6 +87,12 @@ void createroot(char *src, int console, char *helper, char *bind) {
   bindnode("/dev/zero", "dev/zero");
   symlink("pts/ptmx", "dev/ptmx");
 
+  mkdir("run/shm" , 0777);
+  if (mount("tmpfs", "run/shm", "tmpfs", 0, "mode=0777") < 0)
+    error(1, 0, "Failed to mount /run/shm tmpfs in new root filesystem");
+  symlink("/run/shm", "dev/shm");
+
+
   while ((bind = binditem(bind, &bindsrc, &binddst)))
     bindnode(bindsrc, binddst);
 

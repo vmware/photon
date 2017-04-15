@@ -9,7 +9,7 @@ Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar
 %define sha1    dbus=e0d10e8b4494383c7e366ac80a942ba45a705a96
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  expat
+BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
 BuildRequires:  xz-devel
 Requires:       expat

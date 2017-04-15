@@ -12,7 +12,7 @@ Source0:	https://www.freedesktop.org/software/fontconfig/release/%{name}-%{versi
 Patch0:		0001-Avoid-conflicts-with-integer-width-macros-from-TS-18.patch
 BuildRequires:	freetype2-devel
 BuildRequires:	libxml2
-BuildRequires:	expat
+BuildRequires:	expat-devel
 Provides:	pkgconfig(fontconfig)
 %description
 Fontconfig can discover new fonts when installed automatically, removing a common source of configuration problems, perform font name substitution, so that appropriate alternative fonts can be selected if fonts are missing, identify the set of fonts required to completely cover a set of languages.

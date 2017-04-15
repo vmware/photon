@@ -1,7 +1,7 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.40
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
@@ -14,17 +14,24 @@ BuildRequires:  readline-devel
 Requires:       libgcc
 Requires:		readline
 Requires:       libstdc++
+Requires:       pcre-libs = %{version}-%{release}
 %description
 The PCRE package contains Perl Compatible Regular Expression libraries. These are useful for implementing regular expression pattern matching using the same syntax and semantics as Perl 5.
 
 %package        devel
 Group:          Development/Libraries
 Summary:        Headers and static lib for pcre development
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 Provides:       pkgconfig(libpcre)
 %description    devel
 Install this package if you want do compile applications using the pcre
 library.
+
+%package libs
+Summary: Libraries for pcre
+Group:      System Environment/Libraries
+%description libs
+This package contains minimal set of shared pcre libraries.
 
 %prep
 %setup -q
@@ -57,6 +64,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/pcregrep.1*
 %{_mandir}/man1/pcretest.1*
 %{_libdir}/*.so.*
+%exclude %{_libdir}/libpcre.so.*
 
 %files devel
 %defattr(-, root, root)
@@ -69,7 +77,14 @@ make %{?_smp_mflags} check
 %{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
+
+%files libs
+%defattr(-, root, root)
+%{_libdir}/libpcre.so.*
+
 %changelog
+*   Fri Apr 23 2017 Alexey Makhalov <amakhalov@vmware.com> 8.40-2
+-   Added -libs subpackage
 *   Mon Apr 03 2017 Robert Qi <qij@vmware.com> 8.40-1
 -   Update to 8.40
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 8.39-2
