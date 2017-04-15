@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.6.1
-Release:        2%{?dist}
+Version:        2.7.0
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=2865fe03b3906b5aea984102c4b65772b5dd7450
+%define sha1 openvswitch=0f324ccfe52ae84a2b102a7f2db1411f4debacf6
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -66,7 +66,8 @@ It contains the documentation and manpages for openvswitch.
         --sysconfdir=/etc \
         --localstatedir=/var \
         --enable-ssl \
-        --enable-shared
+        --enable-shared \
+        --disable-static
 
 make %{_smp_mflags}
 
@@ -112,32 +113,35 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sbindir}/ovsdb-server
 %{_libdir}/systemd/system/openvswitch.service
 %{_libdir}/lib*
-/etc/bash_completion.d/ovs-*-bashcomp.bash
-/usr/share/openvswitch/*.ovsschema
-/usr/share/openvswitch/bugtool-plugins/*
-/usr/share/openvswitch/python/*
-/usr/share/openvswitch/scripts/ovs-*
-/usr/share/openvswitch/scripts/ovn-*
+%{_sysconfdir}/bash_completion.d/ovs-*-bashcomp.bash
+%{_datadir}/openvswitch/*.ovsschema
+%{_datadir}/openvswitch/bugtool-plugins/*
+%{_datadir}/openvswitch/python/*
+%{_datadir}/openvswitch/scripts/ovs-*
+%{_datadir}/openvswitch/scripts/ovn-*
+%{_datadir}/openvswitch/scripts/ovndb-servers.ocf
 
 %files devel
 %{_includedir}/ovn/*.h
 %{_includedir}/openflow/*.h
 %{_includedir}/openvswitch/*.h
-%{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
 %files doc
-/usr/share/man/man1/ovs-*.1.gz
-/usr/share/man/man1/ovsdb-*.1.gz
-/usr/share/man/man5/ovs-vswitchd.conf.db.5.gz
-/usr/share/man/man5/ovn-*.5.gz
-/usr/share/man/man5/vtep.5.gz
-/usr/share/man/man7/ovn-architecture.7.gz
-/usr/share/man/man8/ovs-*.8.gz
-/usr/share/man/man8/ovn-*.8.gz
-/usr/share/man/man8/vtep-ctl.8.gz
+%{_mandir}/man1/ovs-*.1.gz
+%{_mandir}/man1/ovsdb-*.1.gz
+%{_mandir}/man5/ovs-vswitchd.conf.db.5.gz
+%{_mandir}/man5/ovn-*.5.gz
+%{_mandir}/man5/vtep.5.gz
+%{_mandir}/man7/ovn-architecture.7.gz
+%{_mandir}/man7/ovs-fields.7.gz
+%{_mandir}/man8/ovs-*.8.gz
+%{_mandir}/man8/ovn-*.8.gz
+%{_mandir}/man8/vtep-ctl.8.gz
 
 %changelog
+*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.0-1
+-	Update to 2.7.0
 *	Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
 -	Build ovs shared library
 *	Wed Nov 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-1

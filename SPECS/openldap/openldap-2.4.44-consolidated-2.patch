@@ -3,6 +3,11 @@ Date:                    2012-03-26
 Initial Package Version: 2.4.40
 Upstream Status:         BLFS Specific
 Origin:                  Armin K. <krejzi at email dot com> and Debian 
+Comment:                 Rediffed by Fernando de Oliveira <famobr at yahoo dot
+                         com dot br> for version 2.4.44 - 2016.02.06
+                         Rediffed by Pierre Labastie <pierre dot labastie at
+                         neuf dot fr> to add mdb backend and slapd.ldif. See
+                         ticket #7394 - 2016.02.24
 Description:             Consolidate earlier patches to:
  1. Update various installation options, such as ldap database path, 
     configuration file options, slapd install location, etc.
@@ -287,105 +292,72 @@ diff -Naur openldap-2.4.40.orig/servers/slapd/Makefile.in openldap-2.4.40/server
 +		$(LN_S) -f $(DESTDIR)$(sbindir)/slapd$(EXEEXT) $(DESTDIR)$(sbindir)/$$i$(EXEEXT); \
  	done
  
-diff -Naur openldap-2.4.40.orig/servers/slapd/slapd.conf openldap-2.4.40/servers/slapd/slapd.conf
---- openldap-2.4.40.orig/servers/slapd/slapd.conf	2014-09-18 20:48:49.000000000 -0500
-+++ openldap-2.4.40/servers/slapd/slapd.conf	2015-03-26 16:12:59.380911754 -0500
-@@ -2,43 +2,41 @@
- # See slapd.conf(5) for details on configuration options.
- # This file should NOT be world readable.
- #
--include		%SYSCONFDIR%/schema/core.schema
-+include %SYSCONFDIR%/schema/core.schema
- 
- # Define global ACLs to disable default read access.
- 
- # Do not enable referrals until AFTER you have a working directory
+diff -Naur openldap-2.4.44.orig/servers/slapd/slapd.conf openldap-2.4.44/servers/slapd/slapd.conf
+--- openldap-2.4.44.orig/servers/slapd/slapd.conf	2016-02-06 00:57:45.000000000 +0100
++++ openldap-2.4.44/servers/slapd/slapd.conf	2016-02-22 23:01:47.681372594 +0100
+@@ -10,12 +10,12 @@
  # service AND an understanding of referrals.
--#referral	ldap://root.openldap.org
-+#referral   ldap://root.openldap.org
+ #referral	ldap://root.openldap.org
  
 -pidfile		%LOCALSTATEDIR%/run/slapd.pid
 -argsfile	%LOCALSTATEDIR%/run/slapd.args
-+pidfile  %LOCALSTATEDIR%/run/openldap/slapd.pid
-+argsfile %LOCALSTATEDIR%/run/openldap/slapd.args
++pidfile		%LOCALSTATEDIR%/run/openldap/slapd.pid
++argsfile	%LOCALSTATEDIR%/run/openldap/slapd.args
  
  # Load dynamic backend modules:
 -# modulepath	%MODULEDIR%
--# moduleload	back_bdb.la
--# moduleload	back_hdb.la
--# moduleload	back_ldap.la
-+modulepath %MODULEDIR%
-+#moduleload back_bdb
+-# moduleload	back_mdb.la
++modulepath	%MODULEDIR%
++moduleload	back_mdb.la
+ # moduleload	back_ldap.la
  
  # Sample security restrictions
--#	Require integrity protection (prevent hijacking)
--#	Require 112-bit (3DES or better) encryption for updates
--#	Require 63-bit encryption for simple bind
-+#  Require integrity protection (prevent hijacking)
-+#  Require 112-bit (3DES or better) encryption for updates
-+#  Require 63-bit encryption for simple bind
- # security ssf=1 update_ssf=112 simple_bind=64
- 
- # Sample access control policy:
--#	Root DSE: allow anyone to read it
--#	Subschema (sub)entry DSE: allow anyone to read it
--#	Other DSEs:
--#		Allow self write access
--#		Allow authenticated users read access
--#		Allow anonymous users to authenticate
--#	Directives needed to implement policy:
-+#  Root DSE: allow anyone to read it
-+#  Subschema (sub)entry DSE: allow anyone to read it
-+#  Other DSEs:
-+#     Allow self write access
-+#     Allow authenticated users read access
-+#     Allow anonymous users to authenticate
-+#  Directives needed to implement policy:
- # access to dn.base="" by * read
- # access to dn.base="cn=Subschema" by * read
- # access to *
--#	by self write
--#	by users read
--#	by anonymous auth
-+#  by self write
-+#  by users read
-+#  by anonymous auth
- #
- # if no access controls are present, the default policy
- # allows anyone and everyone to read anything but restricts
-@@ -46,20 +44,26 @@
- #
- # rootdn can always read and write EVERYTHING!
- 
-+# Specific Backend Directives for mdb:
-+backend mdb
-+
- #######################################################################
- # BDB database definitions
- #######################################################################
- 
--database	bdb
--suffix		"dc=my-domain,dc=com"
--rootdn		"cn=Manager,dc=my-domain,dc=com"
-+database mdb
-+suffix   "dc=my-domain,dc=com"
-+#rootdn   "cn=Manager,dc=my-domain,dc=com"
-+
- # Cleartext passwords, especially for the rootdn, should
- # be avoid.  See slappasswd(8) and slapd.conf(5) for details.
- # Use of strong authentication encouraged.
--rootpw		secret
-+#rootpw     secret
-+
+@@ -60,6 +60,6 @@
  # The database directory MUST exist prior to running slapd AND 
  # should only be accessible by the slapd and slap tools.
  # Mode 700 recommended.
 -directory	%LOCALSTATEDIR%/openldap-data
-+directory %LOCALSTATEDIR%/lib/openldap
-+
++directory	%LOCALSTATEDIR%/lib/openldap
  # Indices to maintain
--index	objectClass	eq
-+index objectClass eq
+ index	objectClass	eq
+diff -Naur openldap-2.4.44.orig/servers/slapd/slapd.ldif openldap-2.4.44/servers/slapd/slapd.ldif
+--- openldap-2.4.44.orig/servers/slapd/slapd.ldif	2016-02-06 00:57:45.000000000 +0100
++++ openldap-2.4.44/servers/slapd/slapd.ldif	2016-02-22 22:59:57.824364446 +0100
+@@ -9,8 +9,8 @@
+ #
+ # Define global ACLs to disable default read access.
+ #
+-olcArgsFile: %LOCALSTATEDIR%/run/slapd.args
+-olcPidFile: %LOCALSTATEDIR%/run/slapd.pid
++olcArgsFile: %LOCALSTATEDIR%/run/openldap/slapd.args
++olcPidFile: %LOCALSTATEDIR%/run/openldap/slapd.pid
+ #
+ # Do not enable referrals until AFTER you have a working directory
+ # service AND an understanding of referrals.
+@@ -26,10 +26,11 @@
+ #
+ # Load dynamic backend modules:
+ #
+-#dn: cn=module,cn=config
+-#objectClass: olcModuleList
+-#cn: module
+-#olcModulepath:	%MODULEDIR%
++dn: cn=module,cn=config
++objectClass: olcModuleList
++cn: module
++olcModulepath:	%MODULEDIR%
++olcModuleload: back_mdb.la
+ #olcModuleload:	back_bdb.la
+ #olcModuleload:	back_hdb.la
+ #olcModuleload:	back_ldap.la
+@@ -90,6 +91,6 @@
+ # The database directory MUST exist prior to running slapd AND 
+ # should only be accessible by the slapd and slap tools.
+ # Mode 700 recommended.
+-olcDbDirectory:	%LOCALSTATEDIR%/openldap-data
++olcDbDirectory:	%LOCALSTATEDIR%/lib/openldap
+ # Indices to maintain
+ olcDbIndex: objectClass eq
 diff -Naur openldap-2.4.40.orig/servers/slapd/slapi/Makefile.in openldap-2.4.40/servers/slapd/slapi/Makefile.in
 --- openldap-2.4.40.orig/servers/slapd/slapi/Makefile.in	2014-09-18 20:48:49.000000000 -0500
 +++ openldap-2.4.40/servers/slapd/slapi/Makefile.in	2015-03-26 15:36:59.639463969 -0500
