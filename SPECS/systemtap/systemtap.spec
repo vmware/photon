@@ -22,7 +22,7 @@ BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
 BuildRequires: elfutils-libelf-devel
 BuildRequires: libgcc
-BuildRequires: nspr
+BuildRequires: nspr-devel
 BuildRequires: nss-devel
 BuildRequires: sqlite-devel
 BuildRequires: libstdc++-devel
