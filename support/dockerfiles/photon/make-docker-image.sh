@@ -36,7 +36,7 @@ mkdir $TEMP_CHROOT
 
 rpm --root $TEMP_CHROOT/ --initdb
 
-tdnf --installroot $TEMP_CHROOT/ install -y bash coreutils filesystem findutils glibc grep photon-release photon-repos tdnf util-linux vim which
+tdnf --installroot $TEMP_CHROOT/ install -y filesystem bash coreutils photon-release photon-repos tdnf
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
@@ -46,6 +46,8 @@ rm -rf usr/src/
 rm -rf home/*
 # rm -rf var/lib/yum/*
 rm -rf var/log/*
+# set TERM to linux due to stripped terminfo
+echo "export TERM=linux" >> etc/bash.bashrc
 
 #find var/cache/tdnf/photon/rpms -type f -name "*.rpm" -exec rm {} \;
 tdnf install -y tar

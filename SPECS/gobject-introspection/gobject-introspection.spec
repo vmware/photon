@@ -16,7 +16,7 @@ BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  glib-devel
-BuildRequires:  libffi
+BuildRequires:  libffi-devel
 BuildRequires:	go
 Requires:	libffi
 Requires:	glib

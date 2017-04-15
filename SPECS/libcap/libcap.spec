@@ -1,7 +1,7 @@
 Summary:		Libcap
 Name:			libcap
 Version:		2.25
-Release:		5%{?dist}
+Release:		6%{?dist}
 License:		GPLv2+
 URL:			https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:		https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
@@ -9,8 +9,6 @@ Source0:		https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{n
 Group:			System Environment/Security
 Vendor:			VMware, Inc.
 Distribution:	Photon
-Requires:		attr
-BuildRequires:	attr-devel
 %description
 The libcap package implements the user-space interfaces to the POSIX 1003.1e capabilities available 
 in Linux kernels. These capabilities are a partitioning of the all powerful root privilege 
@@ -52,6 +50,8 @@ cd progs
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-6
+-   Remove attr deps.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.25-5
 -   Moved man3 to devel subpackage.
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.25-4

@@ -12,7 +12,6 @@ Distribution:	Photon
 BuildRequires:	gnutls-devel
 BuildRequires:	autogen
 Requires:	gnutls
-Requires:	gmp
 %description
 Librelp is an easy to use library for the RELP protocol. RELP (stands
 for Reliable Event Logging Protocol) is a general-purpose, extensible
