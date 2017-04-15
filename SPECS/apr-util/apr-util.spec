@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.5.4
-Release:    8%{?dist}
+Release:    9%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -15,8 +15,10 @@ BuildRequires:   apr-devel
 BuildRequires:   sqlite-devel
 BuildRequires:   openssl-devel
 BuildRequires:   nss-devel
+BuildRequires:   expat-devel
 Requires:   apr
 Requires:   openssl
+Requires:   expat
 %description
 The Apache Portable Runtime Utility Library.
 
@@ -24,7 +26,8 @@ The Apache Portable Runtime Utility Library.
 Group: Development/Libraries
 Summary: APR utility library development kit
 Requires: apr-devel
-Requires: %{name} = %{version}
+Requires: expat-devel
+Requires: %{name} = %{version}-%{release}
 %description devel
 This package provides the support files which can be used to 
 build applications using the APR utility library.
@@ -115,6 +118,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+*   Tue Apr 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.5.4-9
+-   Add expat-devel build deps otherwise it builds expat from its source tree
 *   Fri Nov 18 2016 Alexey Makhalov <amakhalov@vmware.com> 1.5.4-8
 -   Add sqlite-devel build deps
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.4-7

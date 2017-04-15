@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
 Version:	3.2.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
@@ -20,6 +20,13 @@ Provides:	pkgconfig(libffi)
 The libffi library provides a portable, high level programming interface
 to various calling conventions. This allows a programmer to call any 
 function specified by a call interface description at run time.
+
+%package    devel
+Summary:    Header and development files for libffi
+Requires:   %{name} = %{version}-%{release}
+%description    devel
+It contains the libraries and header files to create applications 
+
 %prep
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
@@ -74,6 +81,7 @@ make %{?_smp_mflags} check
 %postun	-p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %ifarch x86_64
@@ -81,16 +89,22 @@ rm -rf %{buildroot}/*
 %else
 %{_libdir}/*.so*
 %endif
+
+%files devel
+%defattr(-,root,root)
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_datarootdir}/licenses/libffi/LICENSE
 %{_mandir}/man3/*
+
 %changelog
-*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 3.2.1-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.1-2
--	GA - Bump release of all rpms
-* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
-- 	Updated to version 3.2.1
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.1-1
--	Initial build.	First version
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-4
+-   Added -devel subpackage
+*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 3.2.1-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.1-2
+-   GA - Bump release of all rpms
+*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
+-   Updated to version 3.2.1
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.1-1
+-   Initial build.	First version

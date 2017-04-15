@@ -16,7 +16,7 @@ BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  glib-devel
-BuildRequires:  libffi
+BuildRequires:  libffi-devel
 BuildRequires:	go
 Requires:	libffi
 Requires:	glib
@@ -29,7 +29,7 @@ things.
 %package python
 Summary:    Python package for handling GObject introspection data
 Group:      Development/Languages
-Requires:   gobject-introspection
+Requires:   %{name} = %{version}-%{release}
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
 BuildRequires:  python-xml
@@ -41,7 +41,8 @@ data from Python.
 %package devel
 Summary:    Libraries and headers for gobject-introspection
 Group:      Development/Libraries
-Requires:   gobject-introspection
+Requires:   %{name} = %{version}-%{release}
+Requires:   libffi-devel
 Requires:   glib-devel
 Requires:   python2
 Requires:   python2-devel

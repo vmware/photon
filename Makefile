@@ -314,8 +314,7 @@ sources:
 
 sources-cached:
 	@echo "Using cached SOURCES..."
-	@$(MKDIR) -p $(PHOTON_SRCS_DIR) && \
-	 $(CP) -rf $(PHOTON_SOURCES_PATH)/* $(PHOTON_SRCS_DIR)/
+	@ln -sf $(PHOTON_SOURCES_PATH) $(PHOTON_SRCS_DIR)
 
 publish-rpms:
 	@echo "Pulling publish rpms from bintray..."
