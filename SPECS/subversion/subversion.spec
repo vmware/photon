@@ -16,7 +16,7 @@ BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  libtool
-BuildRequires:  expat
+BuildRequires:  expat-devel
 
 %description
 The Apache version control system.
