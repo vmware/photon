@@ -18,7 +18,7 @@ BuildRequires:  apr
 BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
 BuildRequires:  openldap
-BuildRequires:  expat
+BuildRequires:  expat-devel
 BuildRequires:  lua-devel
 Requires:       pcre
 Requires:       apr-util
