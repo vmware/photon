@@ -6,6 +6,6 @@
  		// First entry should be __.PKGDEF.
 -		if name != "__.PKGDEF" {
 +		if name != "__.PKGDEF" && name != "__.PKGDEF/"  {
- 			err = errors.New("go archive is missing __.PKGDEF")
+ 			err = fmt.Errorf("go archive is missing __.PKGDEF")
  			return
  		}
