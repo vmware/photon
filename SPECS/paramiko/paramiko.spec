@@ -2,15 +2,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python SSH module
 Name:           paramiko
-Version:        1.16.0
-Release:        4%{?dist}
+Version:        2.1.2
+Release:        1%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://www.paramiko.org/
 Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
-%define         sha1 paramiko=adf3afcc9e5a3f299a20639771f587a803924443
+%define         sha1 paramiko=8802efc2f4b23f83c677885d9210e359fc20133c
 
 BuildArch:      noarch
 
@@ -75,6 +75,8 @@ python3   test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-1
+-   Update to 2.1.2
 *   Mon Feb 27 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16.0-4
 -   Added python3 site-packages.
 *   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 1.16.0-3
