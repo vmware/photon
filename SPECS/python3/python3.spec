@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -38,8 +38,8 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-BuildRequires:  expat >= 2.1.0
-BuildRequires:  libffi >= 3.0.13
+BuildRequires:  expat-devel >= 2.1.0
+BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  ncurses-devel
 BuildRequires:  sqlite-devel
 Requires:       coreutils
@@ -58,6 +58,7 @@ provides the libraries needed for python 3 applications.
 Summary: The libraries and header files needed for Python development.
 Group: Development/Libraries
 Requires: python3 = %{version}-%{release}
+Requires: expat-devel >= 2.1.0
 # Needed here because of the migration of Makefile from -devel to the main
 # package
 Conflicts: python3 < %{version}-%{release}
@@ -189,6 +190,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
+-   Python3-devel requires expat-devel.
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-2
 -   Provides /bin/python3.
 *   Tue Feb 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-1
