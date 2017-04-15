@@ -18,7 +18,7 @@ Distribution:	Photon
 Requires:	python2
 Requires:	expat
 Requires:	ncurses
-BuildRequires:	expat
+BuildRequires:	expat-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs

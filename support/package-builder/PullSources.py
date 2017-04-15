@@ -34,6 +34,8 @@ def get(source, sha1, sourcesPath, configs):
         if sha1 == getFileHash(sourcePath[0]):
             # Use file from sourcesPath
             return
+        else:
+            print 'sha1 of %s does not match. %s vs %s' % (sourcePath[0], sha1, getFileHash(sourcePath[0]))
     configFiles=configs.split(":")
     for config in configFiles:
         p = pullSources(config)
