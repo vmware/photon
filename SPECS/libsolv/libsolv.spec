@@ -1,7 +1,7 @@
 Summary:        Libsolv-0.6.19
 Name:           libsolv
 Version:        0.6.26
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -10,11 +10,11 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Requires:       libdb
-Requires:       expat
+Requires:       expat-libs
 BuildRequires:  libdb-devel
 BuildRequires:  cmake
 BuildRequires:  rpm-devel
-BuildRequires:  expat
+BuildRequires:  expat-devel
 %description
 Libsolv is a free package management library, using SAT technology to solve requests. 
 It supports debian, rpm, archlinux and haiku style distributions.
@@ -22,7 +22,7 @@ It supports debian, rpm, archlinux and haiku style distributions.
 %package devel
 Summary:        Development headers for libsolv
 Requires:       %{name} = %{version}-%{release}
-
+Requires:  expat-devel
 %description devel
 The libsolv-devel package contains libraries, header files and documentation
 for developing applications that use libsolv.
@@ -59,6 +59,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.26-2
+-   Requires expat-libs and expat-devel.
 *   Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com>  0.6.26-1
 -   Upgrade to 0.6.26
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.19-4

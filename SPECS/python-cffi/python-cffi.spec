@@ -17,7 +17,7 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-BuildRequires:  libffi
+BuildRequires:  libffi-devel
 BuildRequires:  python-pycparser
 Requires:       python2
 Requires:       python2-libs

@@ -12,7 +12,7 @@ Distribution:	Photon
 BuildRequires:	libltdl-devel
 BuildRequires:	libunistring-devel
 BuildRequires:	gc-devel
-BuildRequires:	libffi
+BuildRequires:	libffi-devel
 Requires:	libltdl
 Requires:	libunistring
 Requires:	gc
