@@ -5,7 +5,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.7.17
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/Tojaj/librepo/
 Group:          System Environment/Libraries
@@ -15,15 +15,15 @@ Source1:        pygpgme-0.3.tar.gz
 %define sha1    pygpgme=f8df35bd2705ac2e1642209fba732e6a42d03fd4
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Requires:       curl, gpgme, libassuan, libgpg-error
-Requires:       expat
+Requires:       curl-libs, gpgme, libassuan, libgpg-error
+Requires:       expat-libs
 Requires:       glib
 Requires:       openssl
 
 BuildRequires:  cmake
 BuildRequires:  glib-devel
 BuildRequires:  check
-BuildRequires:  expat
+BuildRequires:  expat-devel
 BuildRequires:  curl-devel
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
@@ -86,11 +86,13 @@ PYTHONPATH=`readlink -f ./librepo/python/python2/` nosetests -s -v tests/python/
 %{_includedir}/librepo/*.h
 
 %changelog
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.1-5
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.17-6
+-   librepo requires expat-libs and curl-libs.
+*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.17-5
 -   BuildRequires curl-devel.
-*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.7.1-4
+*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.7.17-4
 -   BuildRequired attr-devel.
-*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.7.1-3
+*   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.7.17-3
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.17-2
 -   GA - Bump release of all rpms

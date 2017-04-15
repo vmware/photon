@@ -1,7 +1,7 @@
 Summary:  Certificate Authority certificates 
 Name:   ca-certificates
 Version:  20170406
-Release:  1%{?dist}
+Release:  2%{?dist}
 License:  Custom
 URL:    http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
 Group:    System Environment/Security
@@ -10,6 +10,7 @@ Distribution: Photon
 Source0:  certdata.txt
 Requires:   openssl
 BuildRequires:  openssl
+Requires:   ca-certificates-pki = %{version}-%{release}
 Provides:       ca-certificates-mozilla
 %description
 The Public Key Inrastructure is used for many security issues in a
@@ -19,6 +20,12 @@ certificates loaded by this section are from the list on the Mozilla
 version control system and formats it into a form used by 
 OpenSSL-1.0.1e. The certificates can also be used by other applications
 either directly of indirectly through openssl.
+%package pki
+Summary:  Certificate Authority certificates (pki tls certs)
+Group:    System Environment/Security
+%description pki
+Certificate Authority certificates (pki tls certs)
+
 %prep -p exit
 %build
 [ %{builddir} != "/"] && rm -rf %{builddir}/*
@@ -226,12 +233,16 @@ exit 0
 %clean
 %files
 %defattr(-,root,root)
-/etc/pki/tls/certs/ca-bundle.crt
 /etc/ssl/certs/*
 /bin/make-ca.sh
 /bin/remove-expired-certs.sh
 /bin/make-cert.pl
+%files pki
+%defattr(-,root,root)
+/etc/pki/tls/certs/ca-bundle.crt
 %changelog
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 20170406-2
+- Added -pki subpackage
 * Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com> 20170406-1
 - Updating mozilla certdata.txt to latest revision
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 20160109-5
