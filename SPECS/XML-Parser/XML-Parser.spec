@@ -9,7 +9,7 @@ Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.t
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires:	expat
+BuildRequires:	expat-devel
 Requires:	expat
 %description
 The XML::Parser module is a Perl extension interface to James Clark's XML parser, expat

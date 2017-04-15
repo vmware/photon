@@ -21,7 +21,7 @@ BuildRequires:  rpm
 BuildRequires:	autoconf
 BuildRequires:	which
 BuildRequires:	pcre-devel
-BuildRequires:	libffi
+BuildRequires:	libffi-devel
 BuildRequires:	python2
 BuildRequires:	python2-libs
 BuildRequires:	gobject-introspection-devel
