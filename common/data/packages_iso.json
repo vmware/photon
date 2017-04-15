@@ -5,5 +5,5 @@
                   "libffi","expat","linux","cpio","Linux-PAM","attr","libcap", "systemd","dbus",
                   "gzip", "sqlite","nspr","nss","popt","lua","rpm","gptfdisk","tar", "librepo",
                   "hawkey", "python2","python2-libs","pcre","glib", "tdnf", "python-requests",
-                  "grub2", "grub2-efi", "efibootmgr", "efivar","dracut", "curl", "dosfstools"]
+                  "grub2", "grub2-efi", "efibootmgr", "efivar","dracut", "curl", "ostree", "dosfstools"]
 }
