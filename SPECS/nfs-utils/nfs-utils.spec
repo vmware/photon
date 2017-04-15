@@ -1,12 +1,12 @@
 Summary:    NFS client utils
 Name:       nfs-utils
-Version:    1.3.3
-Release:    6%{?dist}
+Version:    2.1.1
+Release:    1%{?dist}
 License:    GPLv2+
 URL:        http://sourceforge.net/projects/nfs
 Group:      Applications/Nfs-utils-client
 Source0:    http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.bz2
-%define sha1 nfs-utils=7c561e6a22a626aed93766bdb0c34e9a4e77b9e7
+%define sha1 nfs-utils=8f86ffef3bfc954f3ef9aee805b35cdca3802b14
 Source1:    nfs-client.service
 Source2:    nfs-client.target
 Source3:    rpc-statd.service
@@ -28,13 +28,16 @@ The nfs-utils package contains simple nfs client service
 %setup -q -n %{name}-%{version}
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
+
 %build
 ./configure --prefix=%{_prefix}          \
             --sysconfdir=%{_sysconfdir}      \
             --enable-libmount-mount \
             --without-tcp-wrappers \
             --disable-nfsv4        \
-            --disable-gss
+            --disable-gss \
+            --disable-static
+
 make
 %install
 make DESTDIR=%{buildroot} install
@@ -66,6 +69,8 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.1-1
+-   Update to 2.1.1
 *   Fri Dec 16 2016 Nick Shi <nshi@vmware.com> 1.3.3-6
 -   Requires rpcbind.socket upon starting rpc-statd service (bug 1668405)
 *   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.3-5
