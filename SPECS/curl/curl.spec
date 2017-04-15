@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.51.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -17,6 +17,7 @@ Requires:       ca-certificates
 Requires:       openssl
 Requires:       krb5
 Requires:       libssh2
+Requires:       curl-libs = %{version}-%{release}
 %description
 The cURL package contains an utility and a library used for 
 transferring files with URL syntax to any of the following 
@@ -30,6 +31,13 @@ Summary:    Libraries and header files for curl
 Requires:   %{name} = %{version}-%{release}
 %description devel
 Static libraries and header files for the support library for curl
+
+%package libs
+Summary: Libraries for curl
+Group:      System Environment/Libraries
+Requires:       ca-certificates-pki
+%description libs
+This package contains minimal set of shared curl libraries.
 
 %prep
 %setup -q
@@ -66,7 +74,6 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so.*
 %{_mandir}/man1/*
 
 %files devel
@@ -78,8 +85,12 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 
+%files libs
+%{_libdir}/libcurl.so.*
 
 %changelog
+*   Fri Apr 23 2017 Alexey Makhalov <amakhalov@vmware.com> 7.51.0-5
+-   Added -libs subpackage
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 7.51.0-4
 -   Added -devel subpackage.
 *   Wed Nov 30 2016 Xiaolin Li <xiaolinl@vmware.com> 7.51.0-3

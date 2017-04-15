@@ -1,7 +1,7 @@
 Summary:	Security client
 Name:		nss
 Version:	3.25
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
 Group:		Applications/System
@@ -10,10 +10,9 @@ Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 nss=ffa55041a7904bb43afbc6821f479819d9802abf
 Patch:		nss-3.25-standalone-1.patch
-Requires:	nspr
-BuildRequires:	nspr
+BuildRequires:	nspr-devel
 BuildRequires:	sqlite-devel
-Requires:	sqlite-libs
+Requires:       nss-libs = %{version}-%{release}
 
 %description
  The Network Security Services (NSS) package is a set of libraries
@@ -30,6 +29,14 @@ Group: Development/Libraries
 Requires: nss = %{version}-%{release}
 %description devel
 Header files for doing development with Network Security Services.
+
+%package libs
+Summary: Libraries for Network Security Services
+Group:      System Environment/Libraries
+Requires:	sqlite-libs
+Requires:	nspr
+%description libs
+This package contains minimal set of shared nss libraries.
 
 %prep
 %setup -q
@@ -69,27 +76,38 @@ HOST=localhost DOMSUF=localdomain
 %{_bindir}/*
 %{_libdir}/*.chk
 %{_libdir}/*.so
+%exclude %{_libdir}/libfreeblpriv3.so
+%exclude %{_libdir}/libnss3.so
+%exclude %{_libdir}/libnssutil3.so
+%exclude %{_libdir}/libsoftokn3.so
 
 %files devel
 %{_includedir}/*
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
+%files libs
+%{_libdir}/libfreeblpriv3.so
+%{_libdir}/libnss3.so
+%{_libdir}/libnssutil3.so
+%{_libdir}/libsoftokn3.so
 
 %changelog
-*	Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
--	Use sqlite-libs as runtime dependency
-*       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
--       Modified %check
-*       Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
--       Upgrade to 3.25
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2
--	GA - Bump release of all rpms
-* 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
-- 	Updated to version 3.21
-*       Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2
--       Version update. Firefox requirement.
-*	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19-1
--	Version update. Firefox requirement.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.15.4-1
--	Initial build. First version
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.25-4
+-   Added libs subpackage to reduce tdnf dependent tree
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
+-   Use sqlite-libs as runtime dependency
+*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
+-   Modified %check
+*   Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
+-   Upgrade to 3.25
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2
+-   GA - Bump release of all rpms
+*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
+-   Updated to version 3.21
+*   Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2
+-   Version update. Firefox requirement.
+*   Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19-1
+-   Version update. Firefox requirement.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.15.4-1
+-   Initial build. First version

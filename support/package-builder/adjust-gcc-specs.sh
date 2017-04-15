@@ -22,7 +22,7 @@ cat <<EOF > `dirname $(gcc --print-libgcc-file-name)`/../specs
 
 # sec hardening flags require shared libgcc_s during linking.
 *libgcc:
-+ -lgcc_s
++ --as-needed -lgcc_s --no-as-needed
 
 # replace default startfile rules to use crt that PIE code requires.
 *startfile:

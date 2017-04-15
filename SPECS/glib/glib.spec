@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.48.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.46/%{name}-%{version}.tar.xz
 Group:		Applications/System
@@ -10,10 +10,10 @@ Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.46/%{name}-%{version}.tar.xz
 %define sha1 glib=f05c43cedfd113a047e7a90d694dd17eeea2d12b
 BuildRequires:	pcre-devel
-BuildRequires:	libffi
+BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
 BuildRequires:	cmake
-Requires:	pcre
+Requires:	pcre-libs
 Requires:	libffi
 Provides:	pkgconfig(glib-2.0)
 Provides:	pkgconfig(gmodule-2.0)
@@ -87,21 +87,23 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.48.2-3
+-   Requires pcre-libs, BuildRequires libffi-devel.
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.48.2-2
 -   Modified %check
 *   Tue Sep 06 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.48.2-1
 -   Updated to version 2.48.2-1
-*	Thu Aug 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-3
--	Update glib require for devel to use the same version and release
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-2
--	GA - Bump release of all rpms
+*   Thu Aug 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-3
+-   Update glib require for devel to use the same version and release
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-2
+-   GA - Bump release of all rpms
 *   Thu Apr 14 2016	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.6-1
     Updated to version 2.47.6
-* 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.46.2-1
+*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.46.2-1
 -   Updated to version 2.46.2
-*	Fri Jun 12 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-3
--	Added glib-schemas package
-*	Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
--	Added more 'Provides: pkgconfig(...)' for base package
-*	Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 2.42.0-1
-	Initial version
+*   Fri Jun 12 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-3
+-   Added glib-schemas package
+*   Thu Jun 11 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-2
+-   Added more 'Provides: pkgconfig(...)' for base package
+*   Thu Nov 06 2014 Sharath George <sharathg@vmware.com> 2.42.0-1
+-   Initial version
