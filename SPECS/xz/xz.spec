@@ -1,7 +1,7 @@
 Summary:        Programs for compressing and decompressing files
 Name:           xz
 Version:        5.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://tukaani.org/xz
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Applications/File
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://tukaani.org/xz/%{name}-%{version}.tar.xz
 %define sha1    xz=a2975d12e0905daec48ec87c0098602e0669d195
+Requires:       xz-libs = %{version}-%{release}
 %description
 The Xz package contains programs for compressing and
 decompressing files
@@ -22,9 +23,15 @@ These are the additional language files of xz.
 
 %package    devel
 Summary:    Header and development files for xz
-Requires:   %{name} = %{version}
+Requires:   %{name} = %{version}-%{release<F2>}
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
+
+%package libs
+Summary: Libraries for xz
+Group:      System Environment/Libraries
+%description libs
+This package contains minimal set of shared xz libraries.
 
 %prep
 %setup -q
@@ -72,7 +79,6 @@ make  %{?_smp_mflags}  check
 %{_bindir}/lzmainfo
 %{_bindir}/xzgrep
 %{_bindir}/xzdec
-%{_libdir}/liblzma.so.*
 %{_mandir}/man1/*
 
 %files devel
@@ -83,10 +89,15 @@ make  %{?_smp_mflags}  check
 %{_libdir}/liblzma.so
 %{_defaultdocdir}/%{name}-%{version}/*
 
+%files libs
+%{_libdir}/liblzma.so.*
+
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Fri Apr 23 2017 Alexey Makhalov <amakhalov@vmware.com> 5.2.3-2
+-   Added -libs subpackage
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.3-1
 -   Updated to version 5.2.3.
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 5.2.2-4

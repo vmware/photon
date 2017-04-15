@@ -16,8 +16,8 @@ Patch3:         python2-support-photon-platform.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
-BuildRequires:  expat >= 2.1.0
-BuildRequires:  libffi >= 3.0.13
+BuildRequires:  expat-devel >= 2.1.0
+BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
