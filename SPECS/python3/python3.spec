@@ -38,7 +38,7 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary: The libraries for python runtime
 Group: Applications/System
-BuildRequires:  expat >= 2.1.0
+BuildRequires:  expat-devel >= 2.1.0
 BuildRequires:  libffi >= 3.0.13
 BuildRequires:  ncurses-devel
 BuildRequires:  sqlite-devel
