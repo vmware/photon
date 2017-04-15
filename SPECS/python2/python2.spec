@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -16,8 +16,8 @@ Patch3:         python2-support-photon-platform.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
-BuildRequires:  expat >= 2.1.0
-BuildRequires:  libffi >= 3.0.13
+BuildRequires:  expat-devel >= 2.1.0
+BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
@@ -73,6 +73,7 @@ The python-curses package provides interface for ncurses library.
 Summary: The libraries and header files needed for Python development.
 Group: Development/Libraries
 Requires: python2 = %{version}-%{release}
+Requires: expat-devel >= 2.1.0
 # Needed here because of the migration of Makefile from -devel to the main
 # package
 Conflicts: python2 < %{version}-%{release}
@@ -219,6 +220,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.13-3
+-   Python2-devel requires expat-devel.
 *   Fri Mar 24 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-2
 -   Provides /bin/python2.
 *   Wed Mar 22 2017 Divya Thaluru <dthaluru@vmware.com> 2.7.13-1
