@@ -1,21 +1,26 @@
 Summary:	Tools and libraries to manipulate EFI variables
 Name:		efivar
-Version:	0.20
-Release:	3%{?dist}
+Version:	31
+Release:	1%{?dist}
 License:	GPLv2
 URL:		https://github.com/rhinstaller/efivar/
 Group:		System Environment/System Utilities
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	https://github.com/rhinstaller/efivar/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 efivar=a66a6d00b59bffe07cbdfc98c727d749157d4140
-Patch0:     workaround-rename-of-linux-nvme.h.patch
+%define sha1 efivar=ae5b4c3aeb29fe0ef5212142b0a21d6f003dd266
 BuildRequires: popt-devel
 %description
 efivar provides a simle CLI to the UEFI variable facility
+
+%package    devel
+Summary:    Header and development files for efivar
+Requires:   %{name} = %{version}-%{release}
+%description    devel
+It contains the libraries and header files to create applications
+
 %prep
 %setup -q
-%patch0 -p1
 %build
 make %{?_smp_mflags} PREFIX=%{_prefix} \
     libdir=%{_libdir} \
@@ -31,16 +36,26 @@ make %{?_smp_mflags} test
 
 %clean
 rm -rf %{buildroot}/*
+
 %files 
 %defattr(-,root,root)
 %{_bindir}/*
-%{_lib64dir}/*
+%{_lib64dir}/*.so.*
+%{_mandir}/man1/*
+
+%files devel
+%defattr(-,root,root)
 %{_includedir}/*
-%{_datadir}/*
+%{_lib64dir}/*.so
+%{_lib64dir}/pkgconfig/*
+%{_mandir}/man3/*
+
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.20-3
--	GA - Bump release of all rpms
-*	Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 0.20-2
--	Fix build for linux 4.4.
-*	Mon Jul 6 2015 Sharath George <sharathg@vmware.com> 0.20-1
--	Initial build.	First version
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 31-1
+-   Version update. Added -devel subpackage.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.20-3
+-   GA - Bump release of all rpms
+*   Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 0.20-2
+-   Fix build for linux 4.4.
+*   Mon Jul 6 2015 Sharath George <sharathg@vmware.com> 0.20-1
+-   Initial build.	First version

@@ -1,14 +1,14 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
-Version:        1.2.1
-Release:        5%{?dist}
+Version:        1.3.0
+Release:        1%{?dist}
 License:        BSD and GPLv2+
 URL:            https://www.kernel.org/pub/linux/libs/pam/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://linux-pam.org/library/%{name}-%{version}.tar.bz2
-%define sha1    Linux-PAM=3620ab5f5e02272825c426622761a19a1a2facca
+%define sha1    Linux-PAM=e956252e81d824c35a60c9b50919ca0767f8a8ec
 BuildRequires:  cracklib-devel
 Requires:       cracklib
 %description
@@ -18,7 +18,7 @@ enable the local system administrator to choose how applications authenticate us
 %package lang
 Summary: Additional language files for Linux-PAM
 Group: System Environment/Base
-Requires: Linux-PAM >= 1.2.1
+Requires:       %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of Linux-PAM.
 
@@ -81,7 +81,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-%{_docdir}/%{name}-%{version}/*
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
@@ -90,8 +89,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/*
 %{_mandir}/man3/*
+%{_docdir}/%{name}-%{version}/*
 
 %changelog
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-1
+-   Version update.
 *   Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-5
 -   Added pam_unix_auth.so, pam_unix_acct.so, pam_unix_passwd.so,
 -   and pam_unix_session.so.
