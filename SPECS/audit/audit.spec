@@ -1,9 +1,9 @@
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        2.5
-Release:        7%{?dist}
+Version:        2.7.5
+Release:        1%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    audit=b684a8dca31776a4184044733cd5fd4b1b652298
+%define sha1    audit=7aaae7ea80f2280b25f243916e8d18b7338b5f53
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
@@ -57,7 +57,8 @@ The libraries and header files needed for audit development.
     --with-aarch64 \
         --enable-zos-remote \
     --with-golang \
-    --enable-systemd
+    --enable-systemd \
+    --disable-static
 
 make %{?_smp_mflags}
 
@@ -86,10 +87,7 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/*.a
-%{_libdir}/*.la
 %{_libdir}/python*/*
-%{_libdir}/golang/*
 %{_libdir}/systemd/system/auditd.service
 %{_libexecdir}/*
 %{_mandir}/man5/*
@@ -104,6 +102,7 @@ make %{?_smp_mflags} check
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/auditd.conf
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/rules.d/audit.rules
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audit.rules
+%ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audit-stop.rules
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/audispd.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/syslog.conf
@@ -112,16 +111,20 @@ make %{?_smp_mflags} check
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/audisp-remote.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/au-remote.conf
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/libaudit.conf
-/usr/share/aclocal/audit.m4
 
 %files devel
 %defattr(-,root,root)
 %{_libdir}/*.so
+%{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
+%{_libdir}/golang/*
 %{_includedir}/*.h
 %{_mandir}/man3/*
+/usr/share/aclocal/audit.m4
 
 %changelog
+*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.5-1
+-   Version update.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-7
 -   Moved man3 to devel subpackage.
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.5-6
