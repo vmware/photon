@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.11.2
-Release:        20%{?dist}
+Release:        21%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -12,8 +12,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
 %define sha1    rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
-Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
-%define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:        macros
 Source3:        brp-strip-debug-symbols
 Source4:        brp-strip-unneeded
@@ -29,6 +27,7 @@ BuildRequires:  nss-devel
 BuildRequires:  elfutils-devel
 BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
+BuildRequires:  libdb-devel = 5.3.28
 
 %description
 RPM package manager
@@ -51,6 +50,7 @@ Requires:       zlib
 Requires:       bzip2
 Requires:       elfutils-libelf
 Requires:       xz
+Requires:       libdb = 5.3.28
 %description    libs
 Shared libraries librpm and librpmio
 
@@ -89,8 +89,6 @@ Python3 rpm.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%setup -q -T -D -a 1
-mv db-5.3.28 db
 %build
 ./autogen.sh --noconfigure
 ./configure \
@@ -114,7 +112,9 @@ mv db-5.3.28 db
         --enable-python \
         --with-cap \
         --without-lua \
-        --disable-silent-rules
+        --disable-silent-rules \
+        --with-external-db=yes
+
 make %{?_smp_mflags}
 
 pushd python
@@ -263,6 +263,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Mon Apr 17 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-21
+-    Built with system libdb.
 *    Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20
 -    Added python3 packages and moved python2 site packages from devel to python-rpm.
 *    Mon Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
