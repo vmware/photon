@@ -23,16 +23,16 @@ grub_efi_install()
     then
          BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
     else
-         BOOT_PARTITION=${HDD}2
+         BOOT_PARTITION=${HDD}1
     fi
-    mkfs.vfat $BOOT_PARTITION
+    mkfs.fat $BOOT_PARTITION
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
     grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
     rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
     cp EFI/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
     mkdir -p $BUILDROOT/boot/efi/boot/grub2
-    echo "configfile (hd0,gpt1)/boot/grub2/grub.cfg" > $BUILDROOT/boot/efi/boot/grub2/grub.cfg
+    echo "configfile (hd0,gpt2)/boot/grub2/grub.cfg" > $BUILDROOT/boot/efi/boot/grub2/grub.cfg
     umount $BUILDROOT/boot/efi
 }
 

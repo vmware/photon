@@ -44,9 +44,15 @@ def partition_disk(disk, partitions):
     # Partitioning the disk
     extensible_partition = None
     partitions_count = len(partitions)
-    partition_number = 1
+    partition_number = 2
+    # Add part size and grub flags
+    grub_flag = ':ef02'
+    part_size = '+2M'
+    if os.path.isdir("/sys/firmware/efi"):
+        grub_flag = ':ef00'
+        part_size = '+3M'
     # Adding the bios partition
-    partition_cmd = ['sgdisk', '-n', `partitions_count + 1` + ':-2M:']
+    partition_cmd = ['sgdisk', '-n 1::' + part_size]
     # Adding the known size partitions
     for partition in partitions:
         if partition['size'] == 0:
@@ -75,12 +81,7 @@ def partition_disk(disk, partitions):
         log(LOG_ERROR, "Faild partition disk, command: {0}". format(partition_cmd))
         return None
 
-    # Add the grub flags
-    grub_flag = ':ef02'
-    if os.path.isdir("/sys/firmware/efi"):
-        grub_flag = ':ef00'
-
-    process = subprocess.Popen(['sgdisk', '-t' + `partitions_count + 1` + grub_flag, disk], stdout = output)
+    process = subprocess.Popen(['sgdisk', '-t1' + grub_flag, disk], stdout = output)
     retval = process.wait()
     if retval != 0:
         log(LOG_ERROR, "Failed to setup grub partition")
@@ -117,7 +118,6 @@ def partition_disk(disk, partitions):
         partitions_data['bootdirectory'] = '/boot/'
 
     partitions.sort(lambda p1,p2: partition_compare(p1, p2))
-	
     return partitions_data
 
 def replace_string_in_file(filename,  search_string,  replace_string):
