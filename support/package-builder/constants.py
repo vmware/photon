@@ -13,6 +13,7 @@ class constants(object):
     specData=None
     buildRootPath="/mnt"
     prevPublishRPMRepo=""
+    prevPublishXRPMRepo=""
     pullsourcesConfig=""
     buildPatch=False
     inputRPMSPath=""
@@ -193,6 +194,47 @@ class constants(object):
         "cpio",
         "go"]
 
+    # List of X library RPMS that will be installed in a chroot prior to build openjdk & openjre package. 
+    listToolChainXRPMsToInstall=[
+        "glib-devel",
+        "icu-devel",
+	"openjdk",
+	"openjre",
+        "icu",
+        "harfbuzz",
+        "harfbuzz-devel",
+        "freetype2",
+        "freetype2-devel",
+        "alsa-lib",
+        "alsa-lib-devel",
+        "xcb-proto",
+        "libXdmcp-devel",
+        "libXau-devel",
+        "util-macros",
+        "xtrans",
+        "libxcb-devel",
+        "fontconfig-devel",
+        "proto",
+        "libXdmcp",
+        "libxcb",
+        "libXau",
+        "fontconfig",
+        "xtrans-devel",
+        "libX11",
+        "libX11-devel",
+        "libXext",
+        "libXext-devel",
+        "libICE-devel",
+        "libSM",
+        "libICE",
+        "libSM-devel",
+        "libXt",
+        "libXmu",
+        "libXt-devel",
+        "libXmu-devel",
+        "libXrender",
+        "libXrender-devel"
+	]
     # List of RPMs which are not published. They will be created during the
     # build process
     listOfRPMsProvidedAfterBuild=[
@@ -266,7 +308,8 @@ class constants(object):
         constants.sourceRpmPath = options.sourceRpmPath
         constants.topDirPath = options.topDirPath
         constants.logPath = options.logPath
-        constants.prevPublishRPMRepo=options.publishRPMSPath
+        constants.prevPublishRPMRepo = options.publishRPMSPath
+        constants.prevPublishXRPMRepo = options.publishXRPMSPath
         constants.buildRootPath=options.buildRootPath
         constants.specData = SerializableSpecObjectsUtils(constants.logPath)
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
