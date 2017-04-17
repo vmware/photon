@@ -3,12 +3,13 @@
 Summary:	A password strength-checking library.
 Name:		cracklib
 Version:	2.9.6
-Release:	2%{?dist}
+Release:	3%{?dist}
 Group:		System Environment/Libraries
 Source:		cracklib-%{version}.tar.gz
 %define sha1 cracklib-2.9.6=9199e7b8830717565a844430653f5a90a04fcd65
-Source1:    cracklib-words-20080507.gz
-%define sha1 cracklib-words=e0cea03e505e709b15b8b950d56cb493166607da
+Source1:    cracklib-words-%{version}.gz
+%define sha1 cracklib-words=b0739c990431a0971545dff347b50f922604c1cd
+Patch0:		CVE-2016-6318.patch
 URL:		http://sourceforge.net/projects/cracklib/
 License:	GPL
 Vendor:     VMware, Inc.
@@ -83,6 +84,7 @@ The CrackLib language pack.
 %prep
 
 %setup -q -n cracklib-%{version}
+%patch0 -p1
 chmod -R og+rX .
 mkdir -p dicts
 install %{SOURCE1} dicts/
@@ -108,7 +110,9 @@ util/cracklib-format dicts/cracklib* | util/cracklib-packer $RPM_BUILD_ROOT/%{_d
 rm -f $RPM_BUILD_ROOT/%{_datadir}/cracklib/cracklib-small
 ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
 ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
-ln -sf %{_datadir}/cracklib/pw_dict.pwd $RPM_BUILD_ROOT/usr/lib/cracklib_dict.pwd
+ln -sf ../..%{_datadir}/cracklib/pw_dict.pwd $RPM_BUILD_ROOT/usr/lib/cracklib_dict.pwd
+ln -sf ../..%{_datadir}/cracklib/pw_dict.pwi $RPM_BUILD_ROOT/usr/lib/cracklib_dict.pwi
+ln -sf ../..%{_datadir}/cracklib/pw_dict.hwm $RPM_BUILD_ROOT/usr/lib/cracklib_dict.hwm
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -122,8 +126,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc README README-DAWG doc
 %{_datadir}/cracklib/cracklib.magic
 %{_libdir}/libcrack.so.*
-%{_libdir}/cracklib_dict.pwd
-%{_datadir}/cracklib/pw_dict.pwd
 
 %files devel
 %defattr(-,root,root)
@@ -139,13 +141,20 @@ rm -rf $RPM_BUILD_ROOT
 %files dicts
 %defattr(-,root,root)
 %{_sbindir}/*
-%{_datadir}/cracklib/pw_dict*
+%{_libdir}/cracklib_dict.pwd
+%{_libdir}/cracklib_dict.pwi
+%{_libdir}/cracklib_dict.hwm
+%{_datadir}/cracklib/pw_dict.pwd
+%{_datadir}/cracklib/pw_dict.pwi
+%{_datadir}/cracklib/pw_dict.hwm
 
 %files lang
 %defattr(-,root,root)
 %{_datadir}/locale/*
 
 %changelog
+*	Sat Apr 15 2017 Bo Gan <ganb@vmware.com> 2.9.6-3
+-	Fix CVE-2016-6318
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.6-2
 -	GA - Bump release of all rpms
 * 	Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
