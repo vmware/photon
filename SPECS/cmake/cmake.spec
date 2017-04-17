@@ -1,11 +1,11 @@
-Summary:	Cmake-3.4.3
+Summary:	Cmake-3.8.0
 Name:		cmake
-Version:	3.4.3
-Release:	3%{?dist}
+Version:	3.8.0
+Release:	1%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
-Source0:	http://www.cmake.org/files/v3.4/%{name}-%{version}.tar.gz
-%define sha1 cmake=49e4f05d46d4752e514b19ba36bf97d20a7da66a
+Source0:	http://www.cmake.org/files/v3.8/%{name}-%{version}.tar.gz
+%define sha1 cmake=660ec06a46b46dc5d675371a2256ec739f8bb8b7
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -33,6 +33,8 @@ make  %{?_smp_mflags} test
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
 %changelog
+*       Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  3.8.0-1
+-       Upgrade to 3.8.0
 *       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 3.4.3-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-2
