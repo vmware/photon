@@ -1,18 +1,29 @@
 %define _use_internal_dependency_generator 0
+%global security_hardening none
 Summary:	OpenJDK 
 Name:		openjdk
-Version:	1.8.0.112
-Release:	2%{?dist}
+Version:	1.8.0.121
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK/OpenJDK-%{version}-x86_64-bin.tar.xz
-%define sha1 OpenJDK=c14a20158e16a8877940cfa6dbdf0900d4099a4a
-Source1:        macros.java
+Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK/openjdk-%{version}.tar.gz
+%define sha1 openjdk=7170f11ba392b4176b6223efdf692c0795f0de1b
+Source1:    macros.java
+Patch0:		linker-error-fix.patch
+Patch1:		make-4.x-options.patch
+Patch2:		Fix-memory-leak.patch
+Patch3:		fix-available-processors.patch
+BuildRequires:  pcre-devel
+BuildRequires:	which
+BuildRequires:	zip
+BuildRequires:	unzip
+BuildRequires:  zlib-devel
 Requires:       openjre = %{version}-%{release}
 AutoReqProv: 	no
+%define bootstrapjdkversion 1.8.0.112
 %description
 The OpenJDK package installs java class library and javac java compiler. 
 
@@ -46,22 +57,61 @@ This package provides the runtime library class sources.
 Requires:       %{name} = %{version}-%{release}
 
 %prep -p exit
-%setup -qn OpenJDK-%{version}-x86_64-bin
+%setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+
 %build
+chmod a+x ./configure
+./configure \
+	FREETYPE_NOT_NEEDED=yes \
+	CUPS_NOT_NEEDED=yes \
+	--with-target-bits=64 \
+	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
+	--enable-headful=no \
+	--with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
+	--with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+	--with-stdc++lib=dynamic
+
+make \
+    DEBUG_BINARIES=true \
+    BUILD_HEADLESS_ONLY=yes \
+    OPENJDK_TARGET_OS=linux \
+    JAVAC_FLAGS=-g \
+    STRIP_POLICY=no_strip \
+    DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
+    CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre \
+    POST_STRIP_CMD="" \
+    LOG=trace \
+    SCTP_WERROR=
 
 %install
+make DESTDIR=%{buildroot} install \
+	BUILD_HEADLESS_ONLY=yes \
+	OPENJDK_TARGET_OS=linux \
+	DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
+	CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre
+
+install -vdm755 %{buildroot}/var/opt/OpenJDK-%{version}-bin
+chown -R root:root %{buildroot}/var/opt/OpenJDK-%{version}-bin
+mkdir -p %{buildroot}/etc/profile.d
 install -vdm755 %{buildroot}%{_rpmconfigdir}/macros.d
 install -m 644 %{SOURCE1} %{buildroot}/%{_rpmconfigdir}/macros.d/
-install -vdm755 %{buildroot}/var/opt/OpenJDK-%{version}-bin 
-mv -v %{_builddir}/OpenJDK-%{version}-x86_64-bin/* %{buildroot}/var/opt/OpenJDK-%{version}-bin/         
-chown -R root:root %{buildroot}/var/opt/OpenJDK-%{version}-bin
 install -vdm644 %{buildroot}/etc/profile.d
+mv /usr/local/jvm/openjdk-1.8.0-internal/* %{buildroot}/var/opt/OpenJDK-%{version}-bin/
 
 cat >> %{buildroot}/etc/profile.d/java-exports.sh <<- "EOF"
 export CLASSPATH=.:/usr/share/java
 export JAVA_HOME=/var/opt/OpenJDK-%{version}-bin
 export PATH="$PATH:/var/opt/OpenJDK-%{version}-bin/bin:/var/opt/OpenJDK-%{version}-bin/jre/bin"
 EOF
+
+chmod a+x %{buildroot}/etc/profile.d/java-exports.sh
+
+%post
+source /etc/profile.d/java-exports.sh
 
 %clean
 rm -rf %{buildroot}/*
@@ -74,7 +124,6 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/THIRD_PARTY_README
 /var/opt/OpenJDK-%{version}-bin/lib
 /var/opt/OpenJDK-%{version}-bin/include/
-/var/opt/OpenJDK-%{version}-bin/bin/appletviewer
 /var/opt/OpenJDK-%{version}-bin/bin/extcheck
 /var/opt/OpenJDK-%{version}-bin/bin/idlj
 /var/opt/OpenJDK-%{version}-bin/bin/jar
@@ -98,7 +147,6 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/bin/jstack
 /var/opt/OpenJDK-%{version}-bin/bin/jstat
 /var/opt/OpenJDK-%{version}-bin/bin/jstatd
-/var/opt/OpenJDK-%{version}-bin/bin/mkcacerts
 /var/opt/OpenJDK-%{version}-bin/bin/native2ascii
 /var/opt/OpenJDK-%{version}-bin/bin/rmic
 /var/opt/OpenJDK-%{version}-bin/bin/schemagen
@@ -116,7 +164,6 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/bin/keytool
 /var/opt/OpenJDK-%{version}-bin/bin/orbd
 /var/opt/OpenJDK-%{version}-bin/bin/pack200
-/var/opt/OpenJDK-%{version}-bin/bin/policytool
 /var/opt/OpenJDK-%{version}-bin/bin/rmid
 /var/opt/OpenJDK-%{version}-bin/bin/rmiregistry
 /var/opt/OpenJDK-%{version}-bin/bin/servertool
@@ -140,6 +187,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*	Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.121-1
+-	Upgraded to version 1.8.0.121 and building Java from sources
 *       Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
 -       add java rpm macros
 *       Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-1
