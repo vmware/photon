@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.9.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -86,12 +86,14 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/man3/*:SVN:*
 %exclude %{perl_sitelib}/Git/SVN
 %exclude %{perl_sitelib}/Git/SVN.pm
-%exclude /usr/lib/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
+%exclude /usr/lib/perl5/5.24.1/x86_64-linux-thread-multi/perllocal.pod
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Tue Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
+-   Update since perl version got updated.
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.9.3-1
 -   Updated to version 2.9.3
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.8.1-7
