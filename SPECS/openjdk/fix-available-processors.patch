@@ -1,0 +1,179 @@
+--- openjdk/hotspot/src/os/linux/vm/globals_linux.hpp
++++ openjdk/hotspot/src/os/linux/vm/globals_linux.hpp
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2005, 2016, Oracle and/or its affiliates. All rights reserved.
+  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+  *
+  * This code is free software; you can redistribute it and/or modify it
+@@ -47,7 +47,10 @@
+           "Load DLLs with executable-stack attribute in the VM Thread") \
+                                                                         \
+   product(bool, UseSHM, false,                                          \
+-          "Use SYSV shared memory for large pages")
++          "Use SYSV shared memory for large pages")                     \
++                                                                        \
++  diagnostic(bool, PrintActiveCpus, false,                              \
++          "Print the number of CPUs detected in os::active_processor_count")
+ 
+ //
+ // Defines Linux-specific default values. The flags are available on all
+--- openjdk/hotspot/src/os/linux/vm/os_linux.cpp
++++ openjdk/hotspot/src/os/linux/vm/os_linux.cpp
+@@ -5027,12 +5035,42 @@
+   }
+ };
+ 
++static int os_cpu_count(const cpu_set_t* cpus) {
++  int count = 0;
++  // only look up to the number of configured processors
++  for (int i = 0; i < os::processor_count(); i++) {
++    if (CPU_ISSET(i, cpus)) {
++      count++;
++    }
++  }
++  return count;
++}
++
++// Get the current number of available processors for this process.
++// This value can change at any time during a process's lifetime.
++// sched_getaffinity gives an accurate answer as it accounts for cpusets.
++// If anything goes wrong we fallback to returning the number of online
++// processors - which can be greater than the number available to the process.
+ int os::active_processor_count() {
+-  // Linux doesn't yet have a (official) notion of processor sets,
+-  // so just return the number of online processors.
+-  int online_cpus = ::sysconf(_SC_NPROCESSORS_ONLN);
+-  assert(online_cpus > 0 && online_cpus <= processor_count(), "sanity check");
+-  return online_cpus;
++  cpu_set_t cpus;  // can represent at most 1024 (CPU_SETSIZE) processors
++  int cpus_size = sizeof(cpu_set_t);
++  int cpu_count = 0;
++
++  // pid 0 means the current thread - which we have to assume represents the process
++  if (sched_getaffinity(0, cpus_size, &cpus) == 0) {
++    cpu_count = os_cpu_count(&cpus);
++    if (PrintActiveCpus) {
++      tty->print_cr("active_processor_count: sched_getaffinity processor count: %d", cpu_count);
++    }
++  }
++  else {
++    cpu_count = ::sysconf(_SC_NPROCESSORS_ONLN);
++    warning("sched_getaffinity failed (%s)- using online processor count (%d) "
++            "which may exceed available processors", strerror(errno), cpu_count);
++  }
++
++  assert(cpu_count > 0 && cpu_count <= processor_count(), "sanity check");
++  return cpu_count;
+ }
+ 
+ void os::set_native_thread_name(const char *name) {
+new file mode 100644
+--- /dev/null
++++ openjdk/hotspot/test/runtime/os/AvailableProcessors.java
+@@ -0,0 +1,103 @@
++/*
++ * Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
++ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
++ *
++ * This code is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 only, as
++ * published by the Free Software Foundation.
++ *
++ * This code is distributed in the hope that it will be useful, but WITHOUT
++ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++ * version 2 for more details (a copy is included in the LICENSE file that
++ * accompanied this code).
++ *
++ * You should have received a copy of the GNU General Public License version
++ * 2 along with this work; if not, write to the Free Software Foundation,
++ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
++ *
++ * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
++ * or visit www.oracle.com if you need additional information or have any
++ * questions.
++ */
++import java.io.File;
++import com.oracle.java.testlibrary.ProcessTools;
++import com.oracle.java.testlibrary.OutputAnalyzer;
++import java.util.ArrayList;
++
++/*
++ * @test
++ * @bug 6515172
++ * @summary Check that availableProcessors reports the correct value when running in a cpuset on linux
++ * @requires os.family == "linux"
++ * @library /testlibrary
++ * @build com.oracle.java.testlibrary.*
++ * @run driver AvailableProcessors
++ */
++public class AvailableProcessors {
++
++    static final String SUCCESS_STRING = "Found expected processors: ";
++
++    public static void main(String[] args) throws Throwable {
++        if (args.length > 0)
++            checkProcessors(Integer.parseInt(args[0]));
++        else {
++            // run ourselves under different cpu configurations
++            // using the taskset command
++            String taskset;
++            final String taskset1 = "/bin/taskset";
++            final String taskset2 = "/usr/bin/taskset";
++            if (new File(taskset1).exists())
++                taskset = taskset1;
++            else if (new File(taskset2).exists())
++                taskset = taskset2;
++            else {
++                System.out.println("Skipping test: could not find taskset command");
++                return;
++            }
++
++            int available = Runtime.getRuntime().availableProcessors();
++
++            if (available == 1) {
++                System.out.println("Skipping test: only one processor available");
++                return;
++            }
++
++            // Get the java command we want to execute
++            // Enable logging for easier failure diagnosis
++            ProcessBuilder master =
++                    ProcessTools.createJavaProcessBuilder(false,
++                                                          "-XX:+UnlockDiagnosticVMOptions",
++                                                          "-XX:+PrintActiveCpus",
++                                                          "AvailableProcessors");
++
++            int[] expected = new int[] { 1, available/2, available-1, available };
++
++            for (int i : expected) {
++                System.out.println("Testing for " + i + " processors ...");
++                int max = i - 1;
++                ArrayList<String> cmdline = new ArrayList<>(master.command());
++                // prepend taskset command
++                cmdline.add(0, "0-" + max);
++                cmdline.add(0, "-c");
++                cmdline.add(0, taskset);
++                // append expected processor count
++                cmdline.add(String.valueOf(i));
++                ProcessBuilder pb = new ProcessBuilder(cmdline);
++                System.out.println("Final command line: " +
++                                   ProcessTools.getCommandLine(pb));
++                OutputAnalyzer output = ProcessTools.executeProcess(pb);
++                output.shouldContain(SUCCESS_STRING);
++            }
++        }
++    }
++
++    static void checkProcessors(int expected) {
++        int available = Runtime.getRuntime().availableProcessors();
++        if (available != expected)
++            throw new Error("Expected " + expected + " processors, but found "
++                            + available);
++        else
++            System.out.println(SUCCESS_STRING + available);
++    }
++}
+
