@@ -23,7 +23,7 @@ class PackageBuilder(object):
         self.listBuildOptionPackages=listBuildOptionPackages
         self.pkgBuildOptionFile=pkgBuildOptionFile
 
-    def prepareBuildRoot(self,chrootName):
+    def prepareBuildRoot(self,chrootName, packageName):
         chrootID=None
         try:
             chrUtils = ChrootUtils(self.logName,self.logPath)
@@ -32,7 +32,7 @@ class PackageBuilder(object):
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
-            tUtils.installToolChainRPMS(chrootID)
+            tUtils.installToolChainRPMS(chrootID, packageName)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)
@@ -99,7 +99,7 @@ class PackageBuilder(object):
         chrootName="build-"+package
         chrootID=None
         try:
-            chrootID = self.prepareBuildRoot(chrootName)
+            chrootID = self.prepareBuildRoot(chrootName, package)
             destLogPath=constants.logPath+"/build-"+package
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()
