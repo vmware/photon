@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
-Version:	1.9.6
-Release:	5%{?dist}
+Version:	1.10.1
+Release:	1%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-ant=de7c2287bca23fc32007b28e56c28f330cf7be26
+%define sha1 apache-ant=86958f1b11b74dcc31ce0514a25af5307903d52a
 Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
@@ -66,6 +66,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_prefix}/maven-ant-tasks/*
 
 %changelog
+*   Mon Apr 17 2017 Chang Lee <changlee@vmware.com> 1.10.1-1
+-   Updated Apache Ant to 1.10.1
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-5
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-4
