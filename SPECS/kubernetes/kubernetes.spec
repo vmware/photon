@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.6.0
+Version:        1.6.1
 Release:        1%{?dist}
 License:        ASL 2.0
-URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
-Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=051b58b8be9e88fe407904a88dc01e2fb1edbab0
+URL:            https://github.com/kubernetes/kubernetes
+Source0:        https://github.com/kubernetes/kubernetes/archive/v%{version}/%{name}-%{version}.tar.gz
+%define sha1    kubernetes-v%{version}.tar.gz=feb6efdc4a78017c300e927ca3a99e4187c5a10c
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Group:          Development/Tools
@@ -106,6 +106,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Tue Apr 18 2017 Divya Thaluru <dthaluru@vmware.com> 1.6.1-1
+-   Upgraded to version 1.6.1
 *   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-1
 -   Build kubernetes 1.6.0 from source.
 *   Mon Feb 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.5.2-3
