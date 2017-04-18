@@ -1,12 +1,12 @@
 Name:           PyYAML
-Version:        3.11
-Release:        2%{?dist}
+Version:        3.12
+Release:        1%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
-%define sha1 PyYAML=1a2d5df8b31124573efb9598ec6d54767f3c4cd4
+%define sha1 PyYAML=cb7fd3e58c129494ee86e41baedfec69eb7dafbe
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -55,6 +55,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*       Tue Apr 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.12-1
+-       Updated version to 3.12
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11-2
 -	GA - Bump release of all rpms
 * Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
