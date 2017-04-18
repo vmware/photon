@@ -18,8 +18,6 @@ BuildRequires:	pkg-config
 BuildRequires:	kmod
 BuildRequires:	systemd-devel
 BuildRequires:	json-c-devel
-Requires:	ndctl-devel
-Requires:	daxctl-devel
 
 %description
 Utility library for managing the "libnvdimm" subsystem.  The "libnvdimm"
