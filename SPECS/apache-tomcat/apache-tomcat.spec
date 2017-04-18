@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -57,6 +57,11 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
+%dir %{_prefix}
+%dir %{_bindir}
+%dir %{_libdir}
+%dir %{_confdir}
+%dir %{_webappsdir}
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
 %{_bindir}/*
@@ -65,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*   Tue Apr 18 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.13-2
+-   Added logic to package directories
 *   Mon Apr 10 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.13-1
 -   Upgraded to version 8.5.13 and also added logic to build binaries from source
 *   Tue Nov 22 2016 Anish Swaminathan <anishs@vmware.com> 8.5.8-1
