@@ -1,7 +1,7 @@
 Summary:	Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:		ndctl
 Version:	56
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 Url:		https://github.com/pmem/ndctl
@@ -18,8 +18,6 @@ BuildRequires:	pkg-config
 BuildRequires:	kmod
 BuildRequires:	systemd-devel
 BuildRequires:	json-c-devel
-Requires:	ndctl-devel
-Requires:	daxctl-devel
 
 %description
 Utility library for managing the "libnvdimm" subsystem.  The "libnvdimm"
@@ -109,5 +107,7 @@ make check
 %{_libdir}/pkgconfig/libdaxctl.pc
 
 %changelog
+*   Mon Apr 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 56-2
+-   Removing the Requires section
 *   Thu Apr 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 56-1
 -   Initial build.  First version
