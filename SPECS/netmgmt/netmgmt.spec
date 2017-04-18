@@ -1,12 +1,13 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.1.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
 URL:           http://www.vmware.com
 Source0:       %{name}-%{version}.tar.gz
+Patch0:        netmgmt-1.1.0-2.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: check >= 0.9.4
@@ -39,6 +40,7 @@ header files and libraries for netmgmt cli
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 autoreconf -mif
@@ -79,6 +81,8 @@ make %{?_smp_mflags} -k check
 # %doc ChangeLog README COPYING
 
 %changelog
+*    Tue  Apr 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-2
+-    Add query cfg filename API, remove fw_rule API, misc cleanup.
 *    Fri  Mar 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-1
 -    Update netmgmt to v1.1.0
 *    Thu  Oct 27 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.4-3
