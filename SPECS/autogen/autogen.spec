@@ -1,11 +1,11 @@
 Summary:	The Automated Text and Program Generation Tool
 Name:		autogen
-Version:	5.18.7
-Release:	2%{?dist}
+Version:	5.18.12
+Release:	1%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/autogen/
 Source0:        ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
-%define sha1 autogen=0fe4466094d4b583c3a45b234987f9850fd84f83
+%define sha1 autogen=6b88bb1e3d3e789d721d0000d2aff963eff60bab
 Group:		System Environment/Tools
 Vendor:		VMware, Inc.
 BuildRequires:	guile-devel
@@ -77,6 +77,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.la
 
 %changelog
+*       Tue Apr 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.18.12-1
+-       Updated version to 5.18.12
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.18.7-2
 -	GA - Bump release of all rpms
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 5.18.7-1
