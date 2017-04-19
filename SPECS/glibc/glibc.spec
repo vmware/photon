@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -26,6 +26,16 @@ Patch6:		glibc-fix-CVE-2014-9761-2.patch
 Patch7:		glibc-fix-CVE-2014-9761-3.patch
 Patch8:		glibc-fix-CVE-2014-9761-4.patch
 Patch9:		pthread_create-fix-use-after-free.patch
+# Fixes CVE-2016-3075
+Patch10:        CVE-2016-3075-Stack-overflow-in-_nss_dns_getnetbynam.patch
+# Fixes CVE-2016-3706
+Patch11:        CVE-2016-3706-getaddrinfo-stack-overflow-in-hostent-.patch
+# It allows to apply CVE-2016-1234 patch
+Patch12:        glob-Simplify-the-interface-for-the-GLOB_ALTDIRFUNC-.patch
+# Fixes CVE-2016-1234
+Patch13:        CVE-2016-1234-glob-Do-not-copy-d_name-field-of-struc.patch
+# Fixed CVE-2016-4429
+Patch14:        CVE-2016-4429-sunrpc-Do-not-use-alloca-in-clntudp_ca.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -61,6 +71,11 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -191,38 +206,40 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
-*	Wed Sep 28 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-9
--	Added pthread_create-fix-use-after-free.patch
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-8
--	GA - Bump release of all rpms
-*	Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-7
--	Added patch for CVE-2014-9761
-* 	Mon Mar 21 2016 Alexey Makhalov <amakhalov@vmware.com>  2.22-6
-- 	Security hardening: nonow
-* 	Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  2.22-5
-- 	Change conf file qualifiers
-* 	Fri Mar 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  2.22-4
-- 	Added patch for res_qeury assertion with bad dns config
--       Details: https://sourceware.org/bugzilla/show_bug.cgi?id=19791
-* 	Tue Feb 16 2016 Anish Swaminathan <anishs@vmware.com>  2.22-3
-- 	Added patch for CVE-2015-7547
-* 	Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  2.22-2
-- 	Added patch for bindresvport blacklist
-* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.22-1
-- 	Updated to version 2.22
-*	Tue Dec 1 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-8
--       Disabling rpm debug package and stripping the libraries
-*	Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-7
--	Adding patch to close nss files database
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.19-6
--	Handled locale files with macro find_lang
-*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.19-5
-        Adding postun section for ldconfig.
-*	Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.19-4
-	Support glibc building against current rpm version.
-*	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-3
--	Packing locale-gen scripts
-*   	Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19-2
--   	Update according to UsrMove.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.19-1
--	Initial build. First version
+*   Tue Apr 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.22-10
+-   Fix CVE-2016-3075, CVE-2016-3706, CVE-2016-1234 and CVE-2016-4429
+*   Wed Sep 28 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-9
+-   Added pthread_create-fix-use-after-free.patch
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-8
+-   GA - Bump release of all rpms
+*   Mon May 23 2016 Divya Thaluru <dthaluru@vmware.com> 2.22-7
+-   Added patch for CVE-2014-9761
+*   Mon Mar 21 2016 Alexey Makhalov <amakhalov@vmware.com>  2.22-6
+-   Security hardening: nonow
+*   Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  2.22-5
+-   Change conf file qualifiers
+*   Fri Mar 11 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  2.22-4
+-   Added patch for res_qeury assertion with bad dns config
+-   Details: https://sourceware.org/bugzilla/show_bug.cgi?id=19791
+*   Tue Feb 16 2016 Anish Swaminathan <anishs@vmware.com>  2.22-3
+-   Added patch for CVE-2015-7547
+*   Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  2.22-2
+-   Added patch for bindresvport blacklist
+*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.22-1
+-   Updated to version 2.22
+*   Tue Dec 1 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-8
+-   Disabling rpm debug package and stripping the libraries
+*   Wed Nov 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-7
+-   Adding patch to close nss files database
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.19-6
+-   Handled locale files with macro find_lang
+*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 2.19-5
+-   Adding postun section for ldconfig.
+*   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 2.19-4
+-   Support glibc building against current rpm version.
+*   Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 2.19-3
+-   Packing locale-gen scripts
+*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 2.19-2
+-   Update according to UsrMove.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.19-1
+-   Initial build. First version
