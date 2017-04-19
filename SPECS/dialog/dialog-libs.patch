@@ -5,8 +5,8 @@ diff -up dialog-1.2-20130902/makefile.in.libs dialog-1.2-20130902/makefile.in
  $(OBJECTS) : $(srcdir)/dialog.h $(srcdir)/dlg_keys.h dlg_config.h VERSION
  
  $(PROG)$x : $(LIB) dialog$o @INTLDIR_MAKE@ @INTLLIBS@
--	$(LINK) -o $@ dialog$o -L. -l@PACKAGE@ $(LDFLAGS) $(LIBS)
-+	$(LINK) -o $@ dialog$o -L. -l@PACKAGE@ $(LDFLAGS)
+-	$(LINK) -o $@ dialog$o -L. -l@PACKAGE@ $(CFLAGS) $(LDFLAGS) $(LIBS)
++	$(LINK) -o $@ dialog$o -L. -l@PACKAGE@ $(CFLAGS) $(LDFLAGS)
  
  clean	\
  distclean \
