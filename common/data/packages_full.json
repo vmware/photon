@@ -145,7 +145,6 @@
         "syslog-ng",
         "zookeeper",
         "fuse",
-        "fleet",
         "nss-altfiles",
         "apache-maven",
         "subversion",
