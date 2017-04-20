@@ -1,9 +1,10 @@
 === added file './cloudinit/distros/photon.py'
 --- ./cloudinit/distros/photon.py	1970-01-01 00:00:00 +0000
-+++ ./cloudinit/distros/photon.py	2015-03-06 01:28:00 +0000
-@@ -0,0 +1,134 @@
++++ ./cloudinit/distros/photon.py	2017-04-17 01:28:00 +0000
+@@ -0,0 +1,299 @@
 +# vi: ts=4 expandtab
 +#
++# Copyright (C) 2017 VMware Inc.
 +#    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 +#
 +
@@ -13,7 +14,7 @@
 +from cloudinit import helpers
 +from cloudinit import log as logging
 +from cloudinit import util
-+
++from cloudinit.distros import net_util
 +from cloudinit.distros.parsers.hostname import HostnameConf
 +
 +from cloudinit.settings import PER_INSTANCE
@@ -23,7 +24,9 @@
 +class Distro(distros.Distro):
 +    hostname_conf_fn = "/etc/hostname"
 +    locale_conf_fn = "/etc/default/locale"
-+    network_conf_fn = "/etc/network/interfaces"
++    network_conf_dir = "/etc/systemd/network/"
++    resolve_conf_fn = "/etc/resolv.conf"
++    init_cmd = ['systemctl']  # init scripts
 +
 +    def __init__(self, name, cfg, paths):
 +        distros.Distro.__init__(self, name, cfg, paths)
@@ -51,18 +54,113 @@
 +        self.package_command('install', pkgs=pkglist)
 +
 +    def _write_network(self, settings):
-+        util.write_file(self.network_conf_fn, settings)
-+        return ['all']
++        entries = net_util.translate_network(settings)
++        LOG.debug("Translated ubuntu style network settings %s into %s",
++                  settings, entries)
++        route_entries = []
++        route_entries = translate_routes(settings)
++        dev_names = entries.keys()
++        dev_index = 10;
++        nameservers = []
++        searchdomains = []
++        # Format for systemd
++        for (dev, info) in entries.items():
++            if dev == 'lo':
++                continue
++            net_fn = self.network_conf_dir + str(dev_index) + '-' + dev + '.network'
++            dhcp_enabled = 'no'
++            if info.get('bootproto') == 'dhcp':
++                dhcp_enabled = 'yes'        
++            net_cfg = {
++                'Name': dev,
++                'DHCP': dhcp_enabled,
++            }
++            if info.get('hwaddress'):
++                net_cfg['MACAddress'] = info.get('hwaddress')
++            if info.get('address'):
++                net_cfg['Address'] = "%s" % (info.get('address'))
++                if info.get('netmask'):
++                    net_cfg['Address'] += "/%s" % (info.get('netmask'))
++            if info.get('gateway'):
++                net_cfg['Gateway'] = info.get('gateway')
++            if info.get('dns-nameservers'):
++                net_cfg['DNS'] = str(tuple(info.get('dns-nameservers'))).replace(',', '')
++            if info.get('dns-search'):
++                net_cfg['Domains'] = str(tuple(info.get('dns-search'))).replace(',', '')
++            route_entry = []
++            if dev in route_entries:
++                route_entry = route_entries[dev]
++                route_index = 0
++                found = True
++                while found:
++                    route_name = 'routes.' + str(route_index)
++                    if route_name in route_entries[dev]:
++                        val = str(tuple(route_entries[dev][route_name])).replace(',', '')
++                        if val:
++                            net_cfg[route_name] = val
++                    else:
++                        found = False
++                    route_index += 1
++
++            if info.get('auto'):
++                self._write_interface_file(net_fn, net_cfg, route_entry)
++            if 'dns-nameservers' in info:
++                nameservers.extend(info['dns-nameservers'])
++            if 'dns-search' in info:
++                searchdomains.extend(info['dns-search'])
++            dev_index = dev_index + 1;
++
++        if nameservers or searchdomains:
++            util.write_file(self.resolve_conf_fn,
++                            convert_resolv_conf(nameservers, searchdomains))
++
++        return dev_names
++
++    def _write_interface_file(self, net_fn, net_cfg, route_entry):
++        if not net_cfg['Name']:
++            return
++        content = "[Match]\n"
++        content += "Name=%s\n" % (net_cfg['Name'])
++        if 'MACAddress' in net_cfg:
++            content += "MACAddress=%s\n" % (net_cfg['MACAddress'])
++        content += "[Network]\n"
++        if 'DHCP' in net_cfg and net_cfg['DHCP'] == 'yes':
++            content += "DHCP=%s\n" % (net_cfg['DHCP'])
++        else:
++            if 'Address' in net_cfg:
++                content += "Address=%s\n" % (net_cfg['Address'])
++            if 'Gateway' in net_cfg:
++                content += "Gateway=%s\n" % (net_cfg['Gateway'])
++            route_index = 0
++            found = True
++            if route_entry:
++                while found:
++                    route_name = 'routes.' + str(route_index)
++                    if route_name in route_entry:
++                        content += "[Route]\n"
++                        if len(route_entry[route_name]) != 2:
++                            continue
++                        content += "Gateway=%s\n" % (route_entry[route_name][0])
++                        content += "Destination=%s\n" % (route_entry[route_name][1])
++                    else:
++                        found = False
++                    route_index += 1
++
++        util.write_file(net_fn, content)
++
 +
 +    def _bring_up_interfaces(self, device_names):
-+        use_all = False
-+        for d in device_names:
-+            if d == 'all':
-+                use_all = True
-+        if use_all:
-+            return distros.Distro._bring_up_interface(self, '--all')
-+        else:
-+            return distros.Distro._bring_up_interfaces(self, device_names)
++        cmd = ['systemctl', 'restart', 'systemd-networkd', 'systemd-resolved']
++        LOG.debug("Attempting to run bring up interfaces using command %s",
++                  cmd)
++        try:
++            (_out, err) = util.subp(cmd)
++            if len(err):
++                LOG.warn("Running %s resulted in stderr output: %s", cmd, err)
++            return True
++        except util.ProcessExecutionError:
++            util.logexc(LOG, "Running network bringup command %s failed", cmd)
++            return False
 +
 +    def _select_hostname(self, hostname, fqdn):
 +        # Prefer the short hostname over the long
@@ -136,4 +234,70 @@
 +        self._runner.run("update-sources", self.package_command,
 +                         ["makecache"], freq=PER_INSTANCE)
 +
-
++def convert_resolv_conf(nameservers, searchdomains):
++    """Returns a string formatted for resolv.conf."""
++    result = ''
++    if isinstance(nameservers, list):
++        for ns in nameservers:
++            result = result + 'nameserver %s\n' % ns
++    if isinstance(searchdomains, list):
++        for sd in searchdomains:
++            result = result + 'search %s\n' % sd
++    return result
++
++def translate_routes(settings):
++    entries = []
++    for line in settings.splitlines():
++        line = line.strip()
++        if not line or line.startswith("#"):
++            continue
++        split_up = line.split(None, 1)
++        if len(split_up) <= 1:
++            continue
++        entries.append(split_up)
++    consume = {}
++    ifaces = []
++    for (cmd, args) in entries:
++        if cmd == 'iface':
++            if consume:
++                ifaces.append(consume)
++                consume = {}
++            consume[cmd] = args
++        else:
++            consume[cmd] = args
++
++    absorb = False
++    for (cmd, args) in consume.items():
++        if cmd == 'iface':
++            absorb = True
++    if absorb:
++        ifaces.append(consume)
++    out_ifaces = {}
++    for info in ifaces:
++        if 'iface' not in info:
++            continue
++        iface_details = info['iface'].split(None)
++        dev_name = None
++        if len(iface_details) >= 1:
++            dev = iface_details[0].strip().lower()
++            if dev:
++                dev_name = dev
++        if not dev_name:
++            continue
++        route_info = {}
++        route_index = 0
++        found = True
++        while found:
++            route_name = 'routes.' + str(route_index)
++            if route_name in info:
++                val = info[route_name].split()
++                if val:
++                    route_info[route_name] = val
++            else:
++                found = False
++            route_index += 1
++        if dev_name in out_ifaces:
++            out_ifaces[dev_name].update(route_info)
++        else:
++            out_ifaces[dev_name] = route_info
++    return out_ifaces

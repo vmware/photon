@@ -1,8 +1,7 @@
-
 Summary:	SELinux library and simple utilities
 Name:		libselinux
 Version:	2.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Public Domain
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}-rc1.tar.gz
@@ -13,7 +12,7 @@ Distribution:	Photon
 BuildRequires:	libsepol-devel
 BuildRequires:	pcre-devel, swig
 BuildRequires:	python2-devel, python2-libs
-Requires:	pcre
+Requires:	pcre-libs
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -112,9 +111,11 @@ rm -rf %{buildroot}
 %{python_sitearch}/selinux/*
 
 %changelog
+*       Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 2.5-3
+-       Remove pcre requires and add requires on pcre-libs
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
 -	GA - Bump release of all rpms
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
--   Updated to version 2.5
+*       Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
+-       Updated to version 2.5
 *	Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
 -	Initial build.	First version
