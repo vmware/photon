@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.25
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -75,7 +75,6 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
-
 install -vdm755 %{buildroot}/usr/lib/systemd/system
 install -vdm755 %{buildroot}/etc/httpd/logs
 
@@ -175,6 +174,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
+-   Fixing httpd.pid file write issue
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1
 -   Updated to version 2.4.25
 *   Tue Dec 27 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-8
