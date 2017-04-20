@@ -1,6 +1,6 @@
 Summary:	fuse filesystem to access remote ssh servers
 Name:           sshfs
-Version:        2.8
+Version:        2.9
 Release:        1%{?dist}
 License:        GPLv2
 Url:		https://github.com/libfuse/sshfs
@@ -12,7 +12,7 @@ Requires:	fuse >= 2.3
 Requires:	glib >= 2.0
 BuildRequires:	glib-devel >= 2.0
 BuildRequires:  fuse-devel >= 2.3
-%define sha1 sshfs=2b792aa5b3a45e0c3fe65c44bd9da8f64a690830
+%define sha1 sshfs=57d2d600c0cdf7cb48a8cd0dbcdcfd99309fb04b
 %description
 This is a usermode fuse client to mount remote filesystems through SSH File Transfer Protocol.
 
@@ -33,6 +33,8 @@ make install prefix=%{buildroot}%{_prefix}
 
 
 %changelog
+*	Mon Apr 17 2017 Danut Moraru <dmoraru@vmware.com> 2.9-1
+-	Updated to version 2.9
 *	Fri Nov 04 2016 Sharath George <sharathg@vmware.com> 2.8-1
 -	Initial commit.
 
