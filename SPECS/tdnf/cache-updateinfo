@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec > /var/cache/tdnf/cached-updateinfo.txt
+
+tdnf -qC updateinfo
