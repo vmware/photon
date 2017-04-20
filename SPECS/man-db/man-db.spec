@@ -1,14 +1,14 @@
 Summary:	Programs for finding and viewing man pages
 Name:		man-db
-Version:	2.7.5
-Release:	5%{?dist}
+Version:	2.7.6
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.nongnu.org/man-db
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:		%{name}-%{version}.tar.gz
-%define sha1 man-db=dbd822f8c6743da9fad95e0bac919b8f844d9264
+Source0:		%{name}-%{version}.tar.xz
+%define sha1 man-db=919dcb34d604faac9b18a38ead07f457d0dab501
 Requires:	libpipeline
 Requires:	gdbm
 Requires:	xz
@@ -18,10 +18,12 @@ BuildRequires:	libpipeline
 BuildRequires:	gdbm
 BuildRequires:	xz
 BuildRequires: 	groff
+
 %description
 The Man-DB package contains programs for finding and viewing man pages.
+
 %prep
-%setup -q
+%setup -qn %{name}-%{version}.1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -32,7 +34,9 @@ The Man-DB package contains programs for finding and viewing man pages.
 	--with-vgrind=%{_bindir}/vgrind \
 	--with-grap=%{_bindir}/grap \
 	--disable-silent-rules
+
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
@@ -42,7 +46,6 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 make %{?_smp_mflags} check
 
 %pre
-
 getent group man >/dev/null || groupadd -r man
 getent passwd man >/dev/null || useradd -c "man" -d /var/cache/man -g man \
         -s /bin/false -M -r man
@@ -66,7 +69,10 @@ fi
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %{_libdir}/tmpfiles.d/man-db.conf
+
 %changelog
+*       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 2.7.6-1
+-       Update package version
 *       Mon Oct 03 2016 ChangLee <changlee@vmware.com> 2.7.5-5
 -       Modified check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.5-4
