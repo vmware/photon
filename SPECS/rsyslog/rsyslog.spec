@@ -1,11 +1,11 @@
 Summary:    Rocket-fast system for log processing
 Name:       rsyslog
-Version:    8.15.0
-Release:    7%{?dist}
+Version:    8.26.0
+Release:    1%{?dist}
 License:    GPLv3+ and ASL 2.0
 URL:        http://www.rsyslog.com/
 Source0:    http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1 rsyslog=e1d5ff63c96bce9945dc65581c8e195950256d3c
+%define sha1 rsyslog=9c5e253fbf1c6992ac5d1eefe17587d4da2cdbfd
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Group:      System Environment/Base
@@ -13,7 +13,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  systemd-devel
 BuildRequires:  libestr-devel
-BuildRequires:  json-c-devel
+BuildRequires:  libfastjson-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  liblogging-devel
 BuildRequires:  librelp-devel
@@ -22,7 +22,7 @@ BuildRequires:  gnutls-devel
 Requires:       gnutls
 Requires:   systemd
 Requires:   libestr
-Requires:   json-c
+Requires:   libfastjson-devel
 Requires:   libgcrypt
 Requires:   liblogging
 Requires:   librelp
@@ -75,6 +75,8 @@ make %{?_smp_mflags} check
 %{_libdir}/systemd/system/rsyslog.service
 %{_sysconfdir}/systemd/journald.conf.d/*
 %changelog
+*       Thu  Apr 20 2017 Siju Maliakkal <smaliakkal@vmware.com>  8.26.0-1
+-       Update to latest
 *       Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  8.15.0-7
 -       Change systemd dependency
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 8.15.0-6
