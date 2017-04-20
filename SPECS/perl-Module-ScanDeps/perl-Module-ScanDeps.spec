@@ -1,12 +1,12 @@
 # Got the intial spec from Fedora and modified it
 Summary:        Recursively scan Perl code for dependencies
 Name:           perl-Module-ScanDeps
-Version:        1.18
-Release:        3%{?dist}
+Version:        1.23
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
-Source0:        http://search.cpan.org/CPAN/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz 
-%define sha1 Module-ScanDeps=f12767be803f28e685be29e6bc9430361179de09
+Source0:        http://search.cpan.org/CPAN/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz
+%define sha1 Module-ScanDeps=d51bbe45b27a7bdeee7b8d88dddfa30dcb42330f
 URL:            http://search.cpan.org/dist/Module-ScanDeps/
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -23,7 +23,7 @@ Test/More.pm).  The values are hash references.
 %setup -q -n Module-ScanDeps-%{version}
 
 %build
-perl Makefile.PL INSTALLDIRS=vendor
+perl Makefile.PL INSTALLDIRS=vendor NO_PACKLIST=1
 make %{?_smp_mflags}
 
 %install
@@ -44,8 +44,10 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.18-3
--       Modified %check
+*   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.23-1
+-   Update version to 1.23
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.18-3
+-   Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.18-2
 -	GA - Bump release of all rpms
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.18-1

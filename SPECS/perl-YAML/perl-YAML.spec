@@ -1,13 +1,13 @@
 # Got the intial spec from Fedora and modified it
 Summary:        YAML Ain't Markup Language (tm)
 Name:           perl-YAML
-Version:        1.15
-Release:        3%{?dist}
+Version:        1.23
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/YAML/
 Source0:        http://search.cpan.org/CPAN/authors/id/I/IN/INGY/YAML-%{version}.tar.gz
-%define sha1 YAML=c297e548f0398f2cbd93ce593be083517538f5f5
+%define sha1 YAML=2071a4bf5ec67daed81148d3671a3f8022bc04f2
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
@@ -83,8 +83,10 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/YAML::Types.3*
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.15-3
--       Modified %check
+*   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.23-1
+-   Update version to 1.23
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.15-3
+-   Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.15-2
 -	GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.15-1
