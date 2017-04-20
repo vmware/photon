@@ -1,7 +1,7 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.7.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
@@ -13,6 +13,8 @@ BuildRequires:  libevent-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
 BuildRequires:  pkg-config
+Requires:		libevent
+Requires:		openssl
 
 %description
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
@@ -85,6 +87,8 @@ fi
 /var/run/pgbouncer
 
 %changelog
+*	Thu	Apr 20	2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
+-	Updated the requires + release bump for building with new libevent
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3
 -	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 1.7.2-2
