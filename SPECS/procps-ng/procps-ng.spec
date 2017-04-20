@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        3.3.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://procps.sourceforge.net/
 Group:          Applications/System
@@ -18,6 +18,14 @@ Summary:    Header and development files for procps-ng
 Requires:   %{name} = %{version}
 %description    devel
 It contains the libraries and header files to create applications 
+
+%package lang
+Summary: Additional language files for procps-ng
+Group:   Applications/Databases
+Requires: %{name} = %{version}-%{release}
+%description lang
+These are the additional language files of procps-ng
+
 %prep
 %setup -q
 %build
@@ -38,6 +46,7 @@ ln -sfv ../..%{_lib}/$(readlink %{buildroot}/%{_libdir}/libprocps.so) %{buildroo
 install -vdm 755 %{buildroot}/%{_sbindir}
 ln -s %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
 find %{buildroot} -name '*.la' -delete
+%find_lang %{name}
 
 %check
 make %{?_smp_mflags} check
@@ -84,7 +93,13 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libprocps.pc
 %{_libdir}/libprocps.so
 %{_mandir}/man3/*
+
+%files lang -f %{name}.lang
+%defattr(-,root,root)
+
 %changelog
+*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 3.3.12-2
+-   Add lang package.
 *   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 3.3.12-1
 -   Upgrade to 3.3.12
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.11-5
