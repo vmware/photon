@@ -1,11 +1,11 @@
 Summary:	RELP Library
 Name:		librelp
-Version:	1.2.9
-Release:	2%{?dist}
+Version:	1.2.13
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha1 librelp=d8b61789a2775bbff08c1ac05b658a52afa4d729
+%define sha1 librelp=c54fd06bed925f125d020575399a36fb56bb7838
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -48,6 +48,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Tue Apr 11 2017 Harish Uday Kumar <hudaiyakumar@vmware.com> 1.2.13-1
+-	Updated to version 1.2.13-1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.9-2
 -	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.2.9-1
