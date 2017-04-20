@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.25
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -174,6 +174,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Apr 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
+-   Fixing httpd.pid file write issue
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1
 -   Updated to version 2.4.25
 *   Wed Dec 21 2016 Anish Swaminathan <anishs@vmware.com>  2.4.18-6
