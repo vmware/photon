@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        VMware
@@ -22,6 +22,10 @@ BuildRequires:  librepo-devel
 Source0:    %{name}-%{version}.tar.gz
 Patch0:     hy_sack_create.patch
 %define sha1 tdnf=15544a87ea01d6215fed35bd2d1299776f7daca1
+Source1:    cache-updateinfo
+Source2:    cache-updateinfo.service
+Source3:    cache-updateinfo.timer
+Source4:    updateinfo.sh
 
 %description
 tdnf is a yum/dnf equivalent
@@ -48,6 +52,10 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}/var/cache/tdnf
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
+install -v -D -m 0755 %{SOURCE1} %{buildroot}%{_bindir}/tdnf-cache-updateinfo
+install -v -D -m 0644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.service
+install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
+install -v -D -m 0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
 
 # Pre-install
 %pre
@@ -63,11 +71,30 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
 
     /sbin/ldconfig
 
+%triggerin -- motd
+[ $2 -eq 1 ] || exit 0
+if [ $1 -eq 1 ]; then
+    echo "detected install of tdnf/motd, enabling tdnf-cache-updateinfo.timer"
+    systemctl enable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+    systemctl start tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+elif [ $1 -eq 2 ]; then
+    echo "detected upgrade of tdnf, daemon-reload"
+    systemctl daemon-reload >/dev/null 2>&1 || :
+fi
+
+
 # Pre-uninstall
 %preun
 
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
+
+%triggerun -- motd
+[ $1 -eq 1 ] && [ $2 -eq 1 ] && exit 0
+echo "detected uninstall of tdnf/motd, disabling tdnf-cache-updateinfo.timer"
+systemctl --no-reload disable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+systemctl stop tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+rm -rf /var/cache/tdnf/cached-updateinfo.txt
 
 # Post-uninstall
 %postun
@@ -77,12 +104,21 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
 
+%triggerpostun -- motd
+[ $1 -eq 1 ] && [ $2 -eq 1 ] || exit 0
+echo "detected upgrade of tdnf/motd, restarting tdnf-cache-updateinfo.timer"
+systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+
 %files
     %defattr(-,root,root,0755)
     %{_bindir}/tdnf
     %{_bindir}/tyum
+    %{_bindir}/tdnf-cache-updateinfo
     %{_libdir}/*.so.*
     %config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
+    %config %{_libdir}/systemd/system/tdnf-cache-updateinfo.service
+    %config(noreplace) %{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
+    %config %{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
     %dir /var/cache/tdnf
 
 %files devel
@@ -95,6 +131,8 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
     %{_libdir}/pkgconfig/tdnf.pc
 
 %changelog
+*   Thu Apr 20 2017 Bo Gan <ganb@vmware.com> 1.1.0-4
+-   motd hooks/triggers for updateinfo notification
 *   Fri Apr 14 2017 Dheerajs Shetty <dheerajs@vmware.com> 1.1.0-3
 -   Adding a patch to compile with latest hawkey version
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-2
