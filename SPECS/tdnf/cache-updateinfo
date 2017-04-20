@@ -1,0 +1,5 @@
+#!/bin/sh
+
+exec > /var/run/tdnf-updateinfo.txt
+
+tdnf -qC updateinfo
