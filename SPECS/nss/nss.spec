@@ -1,15 +1,15 @@
 Summary:	Security client
 Name:		nss
-Version:	3.25
-Release:	3%{?dist}
+Version:	3.30.1
+Release:	1%{?dist}
 License:	MPLv2.0
-URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
+URL:		https://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_3_30_1_RTM/src/%{name}-%{version}.tar.gz
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 nss=ffa55041a7904bb43afbc6821f479819d9802abf
-Patch:		nss-3.25-standalone-1.patch
+%define sha1 nss=3e1207b1293605435106148aa8e7205b37aeae74
+Patch:		nss-3.30.1-standalone-1.patch
 Requires:	nspr
 BuildRequires:	nspr
 BuildRequires:	sqlite-devel
@@ -77,6 +77,8 @@ HOST=localhost DOMSUF=localdomain
 
 
 %changelog
+*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.30.1-1
+-	Update to 3.30.1
 *	Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
 -	Use sqlite-libs as runtime dependency
 *       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2

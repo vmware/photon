@@ -1,15 +1,15 @@
 Summary:	An interpreted language that may be embedded into an application to make the application extensible.
 Name:		slang
-Version:	2.3.0
-Release:	3%{?dist}
+Version:	2.3.1a
+Release:	1%{?dist}
 License:	GNU General Public License
 URL:		http://www.jedsoft.org/slang/index.html
 Group:		Development/Languages
-Source0:	http://www.jedsoft.org/releases/slang/old/%{name}-%{version}.tar.bz2
-%define sha1 slang=6e26e90307d4569e5feef195648c0858ba27f7ac
+Source0:	http://www.jedsoft.org/releases/%{name}/old/%{name}-%{version}.tar.bz2
+%define sha1 slang=a8ea7f1b5736160a94efb67b137a0f5b9916bdf2
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires: readline-devel
+BuildRequires:	readline-devel
 
 %description
 S-Lang is a multi-platform programmer's library designed to allow a developer to create robust multi-platform software. It provides facilities required by interactive applications such as display/screen management, keyboard input, keymaps, and so on. The most exciting feature of the library is the slang interpreter that may be easily embedded into a program to make it extensible. While the emphasis has always been on the embedded nature of the interpreter, it may also be used in a stand-alone fashion through the use of slsh, which is part of the S-Lang distribution.
@@ -35,11 +35,11 @@ It contains the libraries and header files to create applications
 make -j1
 
 %install
-make DESTDIR=%{buildroot} install_doc_dir=%{_docdir}/slang-2.3.0   \
-     SLSH_DOC_DIR=%{_docdir}/slang-2.3.0/slsh \
+make DESTDIR=%{buildroot} install_doc_dir=%{_docdir}/slang-%{version}   \
+     SLSH_DOC_DIR=%{_docdir}/slang-%{version}/slsh \
      install-all
 
-chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.3.0 \
+chmod -v 755 %{buildroot}%{_libdir}/libslang.so.2.3.1 \
              %{buildroot}%{_libdir}/slang/v2/modules/*.so
 
 %check
@@ -59,9 +59,10 @@ make %{?_smp_mflags} check
 %{_libdir}/libslang.so
 %{_libdir}/pkgconfig/*.pc
 
-
 %changelog
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 2.3.0-3
+*       Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.3.1a-1
+-       Update to version 2.3.1a
+*       Tue Oct 04 2016 ChangLee <changlee@vmware.com> 2.3.0-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.0-2
 -	GA - Bump release of all rpms

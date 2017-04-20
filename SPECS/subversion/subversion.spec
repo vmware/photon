@@ -1,14 +1,14 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.9.4
-Release:        2%{?dist}
+Version:        1.9.5
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    subversion=bc7d51fdda43bea01e1272dfe9d23d0a9d6cd11c
+%define sha1    subversion=8bd6a44a1aed30c4c6b6b068488dafb44eaa6adf
 Requires:       apr
 Requires:       apr-util
 BuildRequires:  apr-devel
@@ -29,6 +29,7 @@ Requires:   %{name} = %{version}
 
 %prep
 %setup -q
+
 %build
 ./configure --prefix=%{_prefix}         \
         --disable-static                \
@@ -58,6 +59,8 @@ make  %{?_smp_mflags} check
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.5-1
+-   Update to version 1.9.5
 *   Tue Dec 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-2
 -   Moved pkgconfig/*.pc to devel subpackage.
 *   Wed Nov 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.4-1

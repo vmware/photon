@@ -5,6 +5,7 @@
 #    Author: Touseef Liaqat <tliaqat@vmware.com>
 
 from installer import Installer
+from ostreeinstaller import OstreeInstaller
 from ostreeserverinstaller import OstreeServerInstaller
 
 class InstallerContainer(object):
@@ -19,7 +20,9 @@ class InstallerContainer(object):
 
     def install(self, params):
         installer = None
-        if self.install_config['type'] == "ostree_server":
+        if self.install_config['type'] == "ostree_host":
+            installer = OstreeInstaller(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path, self.ks_config)
+        elif self.install_config['type'] == "ostree_server":
             installer = OstreeServerInstaller(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path, self.ks_config)
         else:
             installer = Installer(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path, self.ks_config)

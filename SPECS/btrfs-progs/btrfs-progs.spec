@@ -1,26 +1,26 @@
-Name:		btrfs-progs
-Version:	4.4
-Release:	3%{?dist}
-Summary:	Userspace programs for btrfs
-Group:		System Environment/Base
-License:	GPLv2+
-URL:		http://btrfs.wiki.kernel.org/index.php/Main_Page
-Source0:	https://www.kernel.org/pub/linux/kernel/people/kdave/%{name}/%{name}-v%{version}.tar.gz
-%define sha1 btrfs-progs=392dfb225fccec466e1fc95477f8ef25e24ba028
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	lzo-devel
-BuildRequires:	e2fsprogs-devel,libacl-devel
-Requires:	e2fsprogs, lzo
+Name:       btrfs-progs
+Version:    4.10.2
+Release:    1%{?dist}
+Summary:    Userspace programs for btrfs
+Group:      System Environment/Base
+License:    GPLv2+
+URL:        http://btrfs.wiki.kernel.org/index.php/Main_Page
+Source0:    https://www.kernel.org/pub/linux/kernel/people/kdave/%{name}/%{name}-v%{version}.tar.xz
+%define sha1 btrfs-progs=c75d4ca843232a0da44e9a05aa073435ad9e4fdd
+Vendor:     VMware, Inc.
+Distribution:   Photon
+BuildRequires:  lzo-devel
+BuildRequires:  e2fsprogs-devel,libacl-devel
+Requires:   e2fsprogs, lzo
 
 %description
 The btrfs-progs package provides all the userspace programs needed to create,
 check, modify and correct any inconsistencies in the btrfs filesystem.
 
 %package devel
-Summary:	btrfs filesystem-specific libraries and headers
-Group:		Development/Libraries
-Requires:	btrfs-progs = %{version}-%{release}
+Summary:    btrfs filesystem-specific libraries and headers
+Group:      Development/Libraries
+Requires:   btrfs-progs = %{version}-%{release}
 
 %description devel
 btrfs-progs-devel contains the libraries and header files needed to
@@ -59,7 +59,6 @@ rm -rf %{buildroot}
 %{_sbindir}/btrfs-map-logical
 %{_sbindir}/btrfs-zero-log
 %{_sbindir}/btrfs-find-root
-%{_sbindir}/btrfs-show-super
 %{_sbindir}/btrfs-select-super
 
 %files devel
@@ -68,11 +67,13 @@ rm -rf %{buildroot}
 %{_libdir}/libbtrfs.a
 
 %changelog
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.4-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4-2
--	GA - Bump release of all rpms
-* 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.4-1
-- 	Upgrade to 4.4
-* 	Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1
-- 	Initial version
+*   Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  4.10.2-1
+-   Upgrade to 4.10.2
+*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.4-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  4.4-1
+-   Upgrade to 4.4
+*   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1
+-   Initial version

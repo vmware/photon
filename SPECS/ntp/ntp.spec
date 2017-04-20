@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -69,7 +69,7 @@ popd
 
 cat > %{buildroot}/etc/ntp.conf <<- "EOF"
 tinker panic 0
-restrict default kod nomodify notrap nopeer
+restrict default kod nomodify notrap nopeer noquery
 restrict 127.0.0.1
 restrict -6 ::1
 driftfile /var/lib/ntp/drift/ntp.drift
@@ -138,6 +138,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Mon Apr 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.8p10-2
+-   add noquery to conf
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 4.2.8p10-1
 -   Upgrade version to 4.2.8p10 - fix for CVE-2017-6458, CVE-2017-6460
 *   Tue Jan 24 2017 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p9-1

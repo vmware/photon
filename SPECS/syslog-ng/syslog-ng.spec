@@ -1,24 +1,28 @@
 Summary:	Next generation system logger facilty
 Name:		syslog-ng
-Version:	3.6.4
-Release:	6%{?dist}
+Version:	3.9.1
+Release:	1%{?dist}
 License:	GPL + LGPL
-URL:		https://www.balabit.com/network-security/syslog-ng/opensource-logging-system
+URL:		https://syslog-ng.org/
 Group:		System Environment/Daemons
-Vendor:		VMware, Inc.
+Vendor: 	VMware, Inc.
 Distribution: 	Photon
-Source0:	http://my.balabit.com/downloads/syslog-ng/open-source-edition/%{version}/source/%{name}_%{version}.tar.gz
-%define sha1 syslog-ng=53b14cae037a5ca996fd7b67cf16d29970afedf9
-Source1:        60-syslog-ng-journald.conf
+Source0:	https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha1 syslog-ng=1ca437393d8895654452bef8ac0b996fe73284f8
+Source1:	60-syslog-ng-journald.conf
 Requires:	glib
+Requires:	json-glib
+Requires:	json-c
 Requires:   	eventlog
 Requires:	python2
 Requires:	systemd
 BuildRequires:	eventlog
 BuildRequires:	glib-devel
+BuildRequires:	json-glib-devel
+BuildRequires:	json-c-devel
 BuildRequires:	python2-libs
 BuildRequires:	python2-devel
-BuildRequires:	systemd
+BuildRequires:	systemd-devel
 
 %description
  The syslog-ng application is a flexible and highly scalable
@@ -29,12 +33,19 @@ BuildRequires:	systemd
 %package	devel
 Summary:	Header and development files for syslog-ng
 Requires:	%{name} = %{version}
-%description    devel
+%description	devel
  syslog-ng-devel package contains header files, pkfconfig files, and libraries
  needed to build applications using syslog-ng APIs.
 
+%package	python
+Summary:	python interface for syslog-ng
+Requires:	%{name} = %{version}
+%description	python
+ This packages has the python interface to syslog-ng
+
 %prep
 %setup -q
+
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -42,27 +53,21 @@ Requires:	%{name} = %{version}
 	--disable-silent-rules \
 	--prefix=%{_prefix} \
 	--bindir=%{_bindir} \
+	--includedir=%{_includedir} \
 	--libdir=%{_libdir} \
 	--sysconfdir=/etc/syslog-ng \
+	--enable-systemd \
+	--with-systemdsystemunitdir=%{_libdir}/systemd/system \
+	--enable-json=yes \
+	--with-jsonc=system \
+	--disable-java \
+	--disable-redis \
         PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
-mkdir -p %{buildroot}/etc/systemd/system/
-cat << EOF >> %{buildroot}/etc/systemd/system/syslog-ng.service
-[Unit]
-Description=Next generation system logger facility
-
-[Service]
-Type=forking
-ExecStart=/usr/sbin/syslog-ng
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
 find %{buildroot} -name "*.la" -exec rm -f {} \;
 rm %{buildroot}/%{_libdir}/pkgconfig/syslog-ng-test.pc
 rm %{buildroot}/%{_libdir}/syslog-ng/libtest/libsyslog-ng-test.a
@@ -93,53 +98,48 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/syslog-ng/syslog-ng.conf
 %config(noreplace) %{_sysconfdir}/syslog-ng/scl.conf
-%{_sysconfdir}/systemd/system/syslog-ng.service
+%{_sysconfdir}/systemd/journald.conf.d/*
+%{_libdir}/systemd/system/syslog-ng.service
 /usr/bin/*
-/usr/lib/libsyslog-ng*
-/usr/lib/syslog-ng/lib*.so
 /usr/sbin/syslog-ng
 /usr/sbin/syslog-ng-ctl
-/usr/share/include/scl/*
-/usr/share/tools/*
-/usr/share/man/*
-%{_sysconfdir}/systemd/journald.conf.d/*
+%{_libdir}/libsyslog-ng-3.9.so.*
+%{_libdir}/syslog-ng/lib*.so
+/usr/share/syslog-ng/*
 
 %files devel
-/usr/include/syslog-ng/*.h
-/usr/include/syslog-ng/compat/*.h
-/usr/include/syslog-ng/control/*.h
-/usr/include/syslog-ng/filter/*.h
-/usr/include/syslog-ng/ivykis/*.h
-/usr/include/syslog-ng/libtest/*.h
-/usr/include/syslog-ng/logproto/*.h
-/usr/include/syslog-ng/parser/*.h
-/usr/include/syslog-ng/rewrite/*.h
-/usr/include/syslog-ng/stats/*.h
-/usr/include/syslog-ng/template/*.h
-/usr/include/syslog-ng/transport/*.h
-/usr/lib/pkgconfig/syslog-ng.pc
+%defattr(-,root,root)
+%{_includedir}/syslog-ng/*
+%{_libdir}/libsyslog-ng.so
+%{_libdir}/libsyslog-ng-native-connector.a
+%{_libdir}/pkgconfig/*
+
+%files python
+%defattr(-,root,root)
+/usr/lib/python2.7/site-packages/*
 
 %changelog
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 3.6.4-6
--       Modified %check
+*   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.9.1-1
+-   Update to version 3.9.1
+*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.6.4-6
+-   Modified %check
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  3.6.4-5
--   Fixed logic to restart the active services after upgrade 
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.4-4
--	GA - Bump release of all rpms
-*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  3.6.4-3
--   	Fix for upgrade issues
-*   	Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  3.6.4-2
--   	Add journald conf file.
-*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.6.4-1
--   	Upgrade version.
-*       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.6.2-5
--       Change config file attributes.
-*       Wed Dec 09 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.6.2-4
--       Moving files from devel rpm to the main package.
-*       Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.6.2-3
--       Adding preun section.
-*	Sat Jul 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-2
--	Split headers and unshared libs over to devel package.
-*	Thu Jun 4 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-1
--	Add syslog-ng support to photon.
-
+-   Fixed logic to restart the active services after upgrade
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.4-4
+-   GA - Bump release of all rpms
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  3.6.4-3
+-   Fix for upgrade issues
+*   Wed Feb 17 2016 Anish Swaminathan <anishs@vmware.com>  3.6.4-2
+-   Add journald conf file.
+*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.6.4-1
+-   Upgrade version.
+*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  3.6.2-5
+-   Change config file attributes.
+*   Wed Dec 09 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.6.2-4
+-   Moving files from devel rpm to the main package.
+*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.6.2-3
+-   Adding preun section.
+*   Sat Jul 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-2
+-   Split headers and unshared libs over to devel package.
+*   Thu Jun 4 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.6.2-1
+-   Add syslog-ng support to photon.

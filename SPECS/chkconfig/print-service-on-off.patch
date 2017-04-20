@@ -1,6 +1,7 @@
---- a/chkconfig.c	2015-12-01 18:23:52.047031136 +0000
-+++ b/chkconfig.c	2015-12-01 19:01:41.428995360 +0000
-@@ -837,17 +837,29 @@
+diff -rup chkconfig-1.9/chkconfig.c chkconfig-1.9-new/chkconfig.c
+--- chkconfig-1.9/chkconfig.c	2017-04-07 15:34:37.692467316 -0700
++++ chkconfig-1.9-new/chkconfig.c	2017-04-07 15:39:56.900460105 -0700
+@@ -841,17 +841,29 @@ int main(int argc, const char ** argv) {
  		}
  	    }
  	    rc = readServiceInfo(name, type, &s, 0);
@@ -10,7 +11,7 @@
  	       return 1;
 +            }
  	    if (s.type == TYPE_XINETD) {
- 	       if (isOn("xinetd",level))
+ 	       if (isXinetdEnabled())
  		       return !s.levels;
  	       else
  		       return 1;

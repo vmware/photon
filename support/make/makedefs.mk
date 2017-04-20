@@ -52,7 +52,7 @@ PHOTON_PACKER_TEMPLATES=$(SRCROOT)/support/packer-templates
 
 PHOTON_CHROOT_PATH:=$(PHOTON_STAGE)/photonroot
 PHOTON_FS_ROOT=/usr/src/photon
-PHOTON_DIST_TAG?=.ph1
+PHOTON_DIST_TAG?=.ph2
 PHOTON_INPUT_RPMS_DIR?=$(SRCROOT)/inputRPMS
 
 PHOTON_BUILD_NUMBER=$(shell git rev-parse --short HEAD)

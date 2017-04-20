@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -65,6 +65,17 @@ Requires:       protobuf = %{version}-%{release}
 %description    python3
 This contains protobuf python3 libraries.
 
+%package        java
+Summary:        protobuf java
+Group:          Development/Libraries
+BuildRequires:  openjre >= 1.8.0.45
+BuildRequires:  openjdk >= 1.8.0.45
+BuildRequires:  apache-maven >= 3.3.3
+Requires:       openjre >= 1.8.0.45
+
+%description    java
+This contains protobuf java package.
+
 %prep
 %setup
 autoreconf -iv
@@ -72,15 +83,26 @@ autoreconf -iv
 %build
 %configure --disable-silent-rules
 make %{?_smp_mflags}
-cd python
+pushd python
 python setup.py build
 python3 setup.py build
+popd
+pushd java
+mvn package
+popd
 
 %install
 make DESTDIR=%{buildroot} install
-cd python
+pushd python
 python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+popd
+pushd java
+mvn install
+install -vdm755 %{buildroot}%{_libdir}/java/protobuf
+install -vm644 core/target/protobuf-java-3.2.0.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 util/target/protobuf-java-util-3.2.0.jar %{buildroot}%{_libdir}/java/protobuf
+popd
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -110,13 +132,18 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_libdir}/libprotoc.a
 
 %files python
-/usr/lib/python2.7/site-packages/*
+%{_libdir}/python2.7/site-packages/*
 
 %files python3
-/usr/lib/python3.5/site-packages/*
+%{_libdir}/python3.5/site-packages/*
+
+%files java
+%{_libdir}/java/protobuf/*.jar
 
 %changelog
-*   Wed Mar 31 2017 Rongrong Qiu <rqiu@vmware.com> 3.2.0-1
+*   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.2.0-2
+-   Build protobuf-java.
+*   Fri Mar 31 2017 Rongrong Qiu <rqiu@vmware.com> 3.2.0-1
 -   Upgrade to 3.2.0
 *   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
 -   Build protobuf-python.

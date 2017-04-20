@@ -4,21 +4,23 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        VMware
 Url:            http://www.vmware.com
 Group:          Applications/RPM
-Requires:       hawkey, librepo, rpm-libs
+Requires:       hawkey >= 2017.1
+Requires:       librepo, rpm-libs
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  glib-devel
-BuildRequires:  hawkey-devel
+BuildRequires:  hawkey-devel >= 2017.1
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  librepo-devel
 Source0:    %{name}-%{version}.tar.gz
+Patch0:     hy_sack_create.patch
 %define sha1 tdnf=15544a87ea01d6215fed35bd2d1299776f7daca1
 
 %description
@@ -35,6 +37,7 @@ Development files for tdnf
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 autoreconf -i
@@ -92,6 +95,8 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
     %{_libdir}/pkgconfig/tdnf.pc
 
 %changelog
+*   Fri Apr 14 2017 Dheerajs Shetty <dheerajs@vmware.com> 1.1.0-3
+-   Adding a patch to compile with latest hawkey version
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-2
 -   BuildRequires libsolv-devel.
 *   Thu Dec 08 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-1

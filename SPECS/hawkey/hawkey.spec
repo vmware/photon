@@ -1,11 +1,11 @@
 Summary:        Hawkey
 Name:           hawkey
-Version:        2014.1
-Release:        6%{?dist}
+Version:        2017.1
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
 Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
-%define sha1    hawkey=4caad007e243d0fa3f4c2912bd393cc6b326b272
+%define sha1    hawkey=864e83a84f2e2fec24370a3421401c45c900c104
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -34,6 +34,10 @@ Summary:    Python 2 bindings for the hawkey library
 Group:      Development/Languages
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
+BuildRequires:  python-pip
+BuildRequires:  python-requests
+BuildRequires:  python-setuptools
+BuildRequires:  python-sphinx
 Requires:   %{name} = %{version}-%{release}
 Requires:   python2
 
@@ -41,7 +45,8 @@ Requires:   python2
 Python 2 bindings for the hawkey library.
 
 %prep
-%setup -qn %{name}
+%setup -qn hawkey-hawkey-0.6.4-1
+sed -i 's/ADD_SUBDIRECTORY (doc)//' CMakeLists.txt
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix}
@@ -71,6 +76,8 @@ tests/test_main tests/repos/
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Wed Apr 05 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.1-1
+-   Upgrading to version 2017.1 which is 0.6.4-1.
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 2014.1-6
 -   BuildRequires libsolv-devel.
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2014.1-5

@@ -1,6 +1,6 @@
 Name:           python-pip
 Version:        9.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
@@ -15,6 +15,7 @@ BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-setuptools
 
 %description
 The PyPA recommended tool for installing Python packages.
@@ -39,6 +40,8 @@ easy_install freezegun
 %{_bindir}/*
 
 %changelog
+*   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 9.0.1-2
+-   Added python-setuptools to requires.
 *   Thu Mar 30 2017 Sarah Choi <sarahc@vmware.com> 9.0.1-1
 -   Upgrade version to 9.0.1
 *   Fri Sep 2 2016 Xiaolin Li <xiaolinl@vmware.com> 8.1.2-1

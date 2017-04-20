@@ -1,11 +1,11 @@
 Summary:        A library providing GObject bindings for libudev
 Name:           libgudev
-Version:        230
-Release:        4%{?dist}
+Version:        231
+Release:        1%{?dist}
 License:        LGPL2.1
 URL:            https://git.gnome.org/browse/libgudev/
 Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
-%define sha1 libgudev=2f39afc6a9cde5138140d1b03fa438b8f4f59ca0
+%define sha1 libgudev=b48d867a488ebfca8cf2bec12e112bac9f3bf122
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 BuildRequires:  glib >= 2.22.0
@@ -34,11 +34,11 @@ libgudev-devel package contains header files for building gudev applications.
 
 %prep
 %setup -q
-./autogen.sh
 
 %build
 ./configure \
-        --prefix=%{_prefix}
+        --prefix=%{_prefix} \
+		--disable-umockdev
 make %{?_smp_mflags}
 
 %install
@@ -66,6 +66,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
+*	Mon Apr 10 2017 Harish Udaiya kumar <hudaiyakumar@vmware.com> 231-1
+-	Updated to version 231-1. 
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  230-4
 -   Change systemd dependency
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 230-3

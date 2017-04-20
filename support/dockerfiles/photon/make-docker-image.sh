@@ -35,11 +35,7 @@ rm -rf $TEMP_CHROOT
 mkdir $TEMP_CHROOT
 
 rpm --root $TEMP_CHROOT/ --initdb
-# TODO: remove this line after updating photon-build image with new
-# versions of sqlite and rpm with -libs subpackages
-tdnf upgrade -y -v sqlite rpm
 
-tdnf upgrade -y tdnf
 tdnf --installroot $TEMP_CHROOT/ install -y bash coreutils filesystem findutils glibc grep photon-release photon-repos tdnf util-linux vim which
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*

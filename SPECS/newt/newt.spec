@@ -1,17 +1,18 @@
 Summary:	A library for text mode user interfaces
 Name:		newt
-Version:	0.52.18
-Release:	3%{?dist}
+Version:	0.52.20
+Release:	1%{?dist}
 License:	GNU Library General Public License
 URL:		https://admin.fedoraproject.org/pkgdb/package/newt/
 Group:		Development/Languages
 Source0:	https://fedorahosted.org/releases/n/e/newt/%{name}-%{version}.tar.gz
-%define sha1 newt=2992c926bd3699ff0d6fd7549d4a8a018e3ac8fd  
+%define sha1 newt=aec1a633abe595eadb55e568b759e7188d2a6766
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires: slang
 BuildRequires: slang-devel
 BuildRequires: popt-devel
+
 %description
 
 Newt is a programming library for color text mode, widget based user
@@ -23,7 +24,7 @@ shared library needed by programs built with newt, as well as a
 slang library.
 
 %package	devel
-Summary:	Header and development files for ncurses
+Summary:	Header and development files for newt
 Requires:	%{name} = %{version}
 
 %description	devel
@@ -31,11 +32,18 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q -n %{name}-%{version}
+
 %build
-./configure --prefix=/usr --with-gpm-support --without-python
+./configure --prefix=/usr \
+            --with-gpm-support \
+            --without-python \
+            --disable-static
+
 make
 %install
 make DESTDIR=%{buildroot} install
+find %{buildroot} -name '*.la' -delete
+find %{buildroot} -name '*.a' -delete
 
 %check
 make %{?_smp_mflags} test
@@ -49,11 +57,12 @@ make %{?_smp_mflags} test
 
 %files devel
 %{_includedir}/*
-%{_libdir}/*.a
 %{_libdir}/libnewt.so
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.20-1
+-	Update to 0.52.20
 *       Mon Oct 04 2016 ChangLee <changLee@vmware.com> 0.52.18-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.52.18-2
