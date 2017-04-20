@@ -1,7 +1,7 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
 Version:	4.3.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
@@ -48,20 +48,20 @@ CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
         -D_PATH_DHCLIENT_CONF='\"/etc/dhcp/dhclient.conf\"'"        \
 ./configure \
-	--prefix=%{_prefix} \
-	--sysconfdir=/etc/dhcp                                  \
-        --localstatedir=/var                                    \
-        --with-srv-lease-file=/var/lib/dhcpd/dhcpd.leases       \
-        --with-srv6-lease-file=/var/lib/dhcpd/dhcpd6.leases     \
-        --with-cli-lease-file=/var/lib/dhclient/dhclient.leases \
-        --with-cli6-lease-file=/var/lib/dhclient/dhclient6.leases \
-	--with-srv-pid-file=%{_localstatedir}/run/dhcpd.pid \
-	--with-srv6-pid-file=%{_localstatedir}/run/dhcpd6.pid \
-    	--with-cli-pid-file=%{_localstatedir}/run/dhclient.pid \
-    	--with-cli6-pid-file=%{_localstatedir}/run/dhclient6.pid \
-    	--with-relay-pid-file=%{_localstatedir}/run/dhcrelay.pid \
-    	--enable-log-pid \
-	--enable-paranoia --enable-early-chroot
+    --prefix=%{_prefix} \
+    --sysconfdir=/etc/dhcp                                  \
+    --localstatedir=/var                                    \
+    --with-srv-lease-file=/var/lib/dhcpd/dhcpd.leases       \
+    --with-srv6-lease-file=/var/lib/dhcpd/dhcpd6.leases     \
+    --with-cli-lease-file=/var/lib/dhclient/dhclient.leases \
+    --with-cli6-lease-file=/var/lib/dhclient/dhclient6.leases \
+    --with-srv-pid-file=%{_localstatedir}/run/dhcpd.pid \
+    --with-srv6-pid-file=%{_localstatedir}/run/dhcpd6.pid \
+    --with-cli-pid-file=%{_localstatedir}/run/dhclient.pid \
+    --with-cli6-pid-file=%{_localstatedir}/run/dhclient6.pid \
+    --with-relay-pid-file=%{_localstatedir}/run/dhcrelay.pid \
+    --enable-log-pid \
+    --enable-paranoia --enable-early-chroot
 
 make 
 %install
@@ -102,9 +102,20 @@ ExecStart=/usr/sbin/dhcpd -f --no-pid $DHCPD_OPTS
 WantedBy=multi-user.target
 EOF
 
-install -v -dm 755 %{buildroot}/var/lib/dhclient
-install -v -dm 755 %{buildroot}/etc/default
-touch %{buildroot}/etc/default/dhcpd
+install -v -dm 755 %{buildroot}%{_localstatedir}/lib/dhclient
+install -v -dm 755 %{buildroot}%{_sysconfdir}/default
+cat > %{buildroot}%{_sysconfdir}/default/dhcpd << "EOF"
+DHCPD_OPTS=
+EOF
+
+mkdir -p %{buildroot}%{_sysconfdir}/dhcp
+touch %{buildroot}%{_sysconfdir}/dhcp/dhcpd.conf
+touch %{buildroot}%{_sysconfdir}/dhcp/dhcpd6.conf
+
+mkdir -p %{buildroot}%{_localstatedir}/lib/dhcpd/
+touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd.leases
+touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd6.leases
+mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 
 %check
 pushd %{_builddir}/%{name}-%{version}-P1/bind
@@ -134,8 +145,14 @@ make %{?_smp_mflags} check
 
 %files server
 %defattr(-,root,root)
-/etc/dhcp/dhcpd.conf.example
-/etc/default/dhcpd
+%dir %{_sysconfdir}/dhcp
+%dir %{_localstatedir}/lib/dhcpd
+%{_sysconfdir}/dhcp/dhcpd.conf.example
+%config(noreplace) %{_sysconfdir}/default/dhcpd
+%config(noreplace) %{_sysconfdir}/dhcp/dhcpd.conf
+%config(noreplace) %{_sysconfdir}/dhcp/dhcpd6.conf
+%config(noreplace) %{_localstatedir}/lib/dhcpd/dhcpd.leases
+%config(noreplace) %{_localstatedir}/lib/dhcpd/dhcpd6.leases
 %{_bindir}/omshell
 %{_sbindir}/dhcpd
 %{_sbindir}/dhcrelay
@@ -151,17 +168,20 @@ make %{?_smp_mflags} check
 
 %files client
 %defattr(-,root,root)
-/etc/dhcp/dhclient.conf.example
-/etc/dhcp/dhclient.conf
+%dir %{_sysconfdir}/dhcp
+%{_sysconfdir}/dhcp/dhclient.conf.example
+%config(noreplace) %{_sysconfdir}/dhcp/dhclient.conf
 %{_sbindir}/dhclient
 %{_sbindir}/dhclient-script
-%dir /var/lib/dhclient
+%dir %{_localstatedir}/lib/dhclient
 %{_mandir}/man5/dhclient.conf.5.gz
 %{_mandir}/man5/dhclient.leases.5.gz
 %{_mandir}/man8/dhclient-script.8.gz
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+*   Thu Apr 20 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.5-3
+-   Added default dhcp configuration and lease files
 *   Wed Dec 7 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.5-2
 -   Added configuration file for dhcp service
 *   Mon Nov 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.3.5-1
