@@ -1,0 +1,8 @@
+[Unit]
+Description=Run tdnf-cache-updateinfo.service daily
+
+[Timer]
+OnCalendar=*-*-* 00:00:00
+
+[Install]
+WantedBy=multi-user.target
