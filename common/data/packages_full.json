@@ -191,6 +191,7 @@
         "c-ares",
         "dnsmasq",
         "ddclient",
-        "netmgmt"
+        "netmgmt",
+        "motd"
     ]
 }
