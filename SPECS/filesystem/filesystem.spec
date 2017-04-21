@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -46,7 +46,7 @@ ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib
 %ifarch x86_64
 	ln -svfn usr/lib %{buildroot}/lib64
 	ln -svfn lib %{buildroot}/usr/lib64
-	ln -svfn ../lib %{buildroot}/usr/local/lib64
+	ln -svfn lib %{buildroot}/usr/local/lib64
         ln -svfn lib %{buildroot}/usr/lib/debug/lib64
         ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib64
 
@@ -554,6 +554,8 @@ EOF
 /usr/lib/debug/usr/lib64
 %endif
 %changelog
+*   Thu Apr 20 2017 Bo Gan <ganb@vmware.com> 1.0-12
+-   Fix /usr/local/lib64 symlink
 *   Wed Mar 08 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0-11
 -   Create default DHCP net config in 99-dhcp-en.network instead of 10-dhcp-en.network
 *   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-10
