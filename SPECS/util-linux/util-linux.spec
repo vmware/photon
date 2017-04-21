@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.29.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    util-linux=b488f185e74187a63b55baef9d3f48d5b1780118
 BuildRequires:  ncurses-devel
+Requires: %{name}-libs = %{version}-%{release}
 %description
 Utilities for handling file systems, consoles, partitions,
 and messages.
@@ -17,16 +18,22 @@ and messages.
 %package lang
 Summary: Additional language files for util-linux
 Group: Applications/System
-Requires: util-linux >= 2.24.1
+Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of util-linux.
 
 %package devel
 Summary: Header and library files for util-linux
 Group: Development/Libraries
-Requires: util-linux >= 2.24.1
+Requires: %{name} = %{version}-%{release}
 %description devel
 These are the header and library files of util-linux.
+
+%package libs
+Summary: library files for util-linux
+Group: Development/Libraries
+%description libs
+These are library files of util-linux.
 
 %prep
 %setup -q
@@ -56,7 +63,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %defattr(-,root,root)
 %dir %{_sharedstatedir}/hwclock
 /bin/*
-/lib/*.so.*
+/lib/libfdisk.so.*
+/lib/libsmartcols.so.*
 /sbin/*
 %{_bindir}/*
 %{_sbindir}/*
@@ -65,6 +73,12 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_mandir}/man8/*
 %{_datadir}/bash-completion/completions/*
 %{_datadir}/doc/util-linux/getopt/*
+
+%files libs
+%defattr(-,root,root)
+/lib/libblkid.so.*
+/lib/libmount.so.*
+/lib/libuuid.so.*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
@@ -77,6 +91,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29.2-2
+-   Added -libs subpackage to strip docker image.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.29.2-1
 -   Updated to version 2.29.2.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.27.1-5
