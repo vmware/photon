@@ -36,7 +36,7 @@ mkdir $TEMP_CHROOT
 
 rpm --root $TEMP_CHROOT/ --initdb
 
-tdnf --installroot $TEMP_CHROOT/ install -y filesystem bash coreutils photon-release photon-repos tdnf
+tdnf --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
