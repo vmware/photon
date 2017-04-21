@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -543,8 +543,8 @@ EOF
 %attr(664,root,utmp)	/var/log/lastlog
 %attr(600,root,root)	/var/log/btmp
 /var/lock
-%ghost /var/run
-/var/run/lock
+/var/run
+
 #	Symlinks for AMD64
 %ifarch x86_64
 /lib64
@@ -554,6 +554,8 @@ EOF
 /usr/lib/debug/usr/lib64
 %endif
 %changelog
+*   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-12
+-   make /var/run symlink to /run and keep it in rpm
 *   Wed Mar 08 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0-11
 -   Create default DHCP net config in 99-dhcp-en.network instead of 10-dhcp-en.network
 *   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-10
