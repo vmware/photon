@@ -1,7 +1,7 @@
 Summary:	High-Level Crypto API
 Name:		gpgme
 Version:	1.9.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:		System Environment/Security
@@ -33,6 +33,8 @@ Static libraries and header files from GPGME, GnuPG Made Easy.
 ./configure \
 	--prefix=%{_prefix} \
  	--disable-fd-passing \
+	--disable-static \
+	--enable-languages=cl \
         --disable-gpgsm-test
 make %{?_smp_mflags}
 
@@ -51,21 +53,18 @@ cd tests && make check-TESTS
 %files 
 %defattr(-,root,root)
 %{_libdir}/*.so.*
-%{_datadir}/common-lisp/source/gpgme/*.lisp
-%{_datadir}/common-lisp/source/gpgme/gpgme.asd
 
 %files devel
 %defattr(-,root,root)
 %{_bindir}/*
 %{_includedir}/*.h
-%{_includedir}/gpgme++/*.h
-%{_includedir}/gpgme++/interfaces/*.h
 %{_libdir}/*.so*
-%{_libdir}/cmake/Gpgmepp/*
 %{_datadir}/aclocal/*
 %{_datadir}/common-lisp/source/gpgme/*
 
 %changelog
+*   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 1.9.0-2
+-   Disabe C++ bindings
 *   Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 1.9.0-1
 -   Update to version 1.9.0
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.6.0-3
