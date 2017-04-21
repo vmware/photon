@@ -57,9 +57,11 @@ def partition_disk(disk, partitions):
             extensible_partition = partition
         else:
             partition_cmd.extend(['-n', '{}::+{}M'.format(partition_number, partition['size'])])
-        
-        partition['partition_number'] = partition_number 
-        partition['path'] = disk + `partition_number`
+        partition['partition_number'] = partition_number
+        prefix = ''
+        if 'nvme' in disk:
+            prefix = 'p'
+        partition['path'] = disk + prefix + `partition_number`
         partition_number = partition_number + 1
 
     # Adding the last extendible partition
@@ -113,7 +115,7 @@ def partition_disk(disk, partitions):
         partitions_data['bootdirectory'] = '/boot/'
 
     partitions.sort(lambda p1,p2: partition_compare(p1, p2))
-	
+
     return partitions_data
 
 def replace_string_in_file(filename,  search_string,  replace_string):
