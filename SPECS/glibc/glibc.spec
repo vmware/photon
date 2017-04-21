@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.25
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -44,6 +44,27 @@ Group: Applications/System
 Requires: %{name} = %{version}-%{release}
 %description i18n
 These are the additional internationalization files of glibc.
+
+%package iconv
+Summary: gconv modules for glibc
+Group: Applications/System
+Requires: %{name} = %{version}-%{release}
+%description iconv
+These is gconv modules for iconv() and iconv tools.
+
+%package tools
+Summary: tools for glibc
+Group: Applications/System
+Requires: %{name} = %{version}-%{release}
+%description tools
+Extra tools for glibc.
+
+%package nscd
+Summary: Name Service Cache Daemon
+Group: Applications/System
+Requires: %{name} = %{version}-%{release}
+%description nscd
+Name Service Cache Daemon
 
 %prep
 %setup -q
@@ -140,17 +161,19 @@ mkdir -p %{buildroot}/usr/lib/locale
 I18NPATH=. GCONV_PATH=../../glibc-build/iconvdata LC_ALL=C ../../glibc-build/locale/localedef --no-archive --prefix=%{buildroot} -A ../intl/locale.alias -i locales/en_US -c -f charmaps/UTF-8 en_US.UTF-8
 mv %{buildroot}/usr/lib/locale/en_US.utf8 %{buildroot}/usr/lib/locale/en_US.UTF-8
 popd
+# to do not depend on /bin/bash
+sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}/usr/bin/ldd
+sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
 
 %post
-printf "Creating ldconfig cache\n";/sbin/ldconfig
+/sbin/ldconfig
 
 %postun
 /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
-%dir %{_localstatedir}/cache/nscd
 %{_libdir}/locale/*
 %dir %{_sysconfdir}/ld.so.conf.d
 %config(noreplace) %{_sysconfdir}/nsswitch.conf
@@ -158,25 +181,55 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 %config(noreplace) %{_sysconfdir}/rpc
 %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
 %config %{_sysconfdir}/locale-gen.conf
-%config(noreplace) %{_sysconfdir}/nscd.conf
-%ifarch x86_64
 /lib64/*
-%{_lib64dir}/gconv/*
-%{_lib64dir}/audit/*
+%exclude /lib64/libpcprofile.so
 %{_lib64dir}/*.so
-%else
-%{_lib}/*
-%endif
-/sbin/*
+/sbin/ldconfig
+/sbin/locale-gen.sh
 %{_bindir}/*
 %{_libexecdir}/*
-%{_sbindir}/*
 %{_datadir}/i18n/charmaps/UTF-8.gz
 %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %{_datadir}/i18n/locales/en_US
 %{_datarootdir}/locale/locale.alias
-%{_localstatedir}/lib/nss_db/Makefile
+%exclude %{_localstatedir}/lib/nss_db/Makefile
+%exclude /usr/bin/catchsegv
+%exclude /usr/bin/iconv
 %exclude /usr/bin/mtrace
+%exclude /usr/bin/pcprofiledump
+%exclude /usr/bin/pldd
+%exclude /usr/bin/rpcgen
+%exclude /usr/bin/sotruss
+%exclude /usr/bin/sprof
+%exclude /usr/bin/xtrace
+
+%files iconv
+%defattr(-,root,root)
+%{_lib64dir}/gconv/*
+/usr/bin/iconv
+/usr/sbin/iconvconfig
+
+%files tools
+%defattr(-,root,root)
+/usr/bin/catchsegv
+/usr/bin/mtrace
+/usr/bin/pcprofiledump
+/usr/bin/pldd
+/usr/bin/rpcgen
+/usr/bin/sotruss
+/usr/bin/sprof
+/usr/bin/xtrace
+/usr/sbin/zdump
+/usr/sbin/zic
+/sbin/sln
+%{_lib64dir}/audit/*
+/lib64/libpcprofile.so
+
+%files nscd
+%defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/nscd.conf
+/usr/sbin/nscd
+%dir %{_localstatedir}/cache/nscd
 
 %files i18n
 %defattr(-,root,root)
@@ -202,6 +255,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-2
+-   Added -iconv -tools and -nscd subpackages
 *   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-1
 -   Version update
 *   Wed Dec 14 2016 Alexey Makhalov <amakhalov@vmware.com> 2.24-1
