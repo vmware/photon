@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.60
+Version:    	4.4.62
 Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=bda879f0b29a34e063c9ec870256a0b5504fb5cc
+%define sha1 linux=7934e927d796ff7e47232bf0d2e3317a0af2f724
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -30,14 +30,15 @@ Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 Patch16:        net-9p-vsock.patch
-#fixes CVE-2017-7294
-Patch17:        vmwgfx-fix-integer-overflow-in-vmw_surface_define_ioctl.patch
 #fixes CVE-2017-7308
-Patch18:        net-v2-1-3-net-packet-fix-overflow-in-check-for-priv-area-size.patch
-Patch19:        net-v2-2-3-net-packet-fix-overflow-in-check-for-tp_frame_nr.patch
-Patch20:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
+Patch17:        net-v2-2-3-net-packet-fix-overflow-in-check-for-tp_frame_nr.patch
+Patch18:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
 #fixes CVE-2017-7346
-Patch21:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
+Patch19:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
+#fixes CVE-2017-2671
+Patch20:        ping-implement-proper-locking.patch
+#fixes CVE-2017-7618
+Patch21:        crypto-ahash-Fix-EINPROGRESS-notification-callback.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -236,6 +237,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.62-1
+-   Fix CVE-2017-2671 and CVE-2017-7618
 *   Mon Apr 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.60-1
 -   Fix CVE-2017-7184, CVE-2017-7187, CVE-2017-7294,
     CVE-2017-7308 and CVE-2017-7346
