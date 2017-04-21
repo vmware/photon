@@ -1,7 +1,7 @@
 Summary:        Libsolv-0.6.19
 Name:           libsolv
 Version:        0.6.26
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -32,7 +32,9 @@ for developing applications that use libsolv.
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DRPM5=ON
+    -DRPM5=ON \
+    -DENABLE_RPMDB=ON \
+    -DENABLE_COMPLEX_DEPS=ON
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -59,6 +61,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.26-2
+-   update libdb make config
 *   Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com>  0.6.26-1
 -   Upgrade to 0.6.26
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.19-4
