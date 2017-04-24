@@ -1,7 +1,7 @@
 Summary:        Docker
 Name:           docker
 Version:        1.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -92,11 +92,20 @@ install -m 0644 %{SOURCE6} %{buildroot}%{_datadir}/bash-completion/completions/d
 %post
 /sbin/ldconfig
 
+if [ $1 -eq 1 ] ; then
+  groupadd docker
+  useradd -g docker photon-docker
+fi
+
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart docker-containerd.service
 %systemd_postun_with_restart docker.service
 
+if [ $1 -eq 0 ] ; then
+  userdel photon-docker
+  groupdel docker
+fi
 
 %clean
 rm -rf %{buildroot}/*
@@ -116,6 +125,8 @@ rm -rf %{buildroot}/*
 /usr/share/bash-completion/completions/docker
 
 %changelog
+*   Mon Apr 24 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-2
+-   Adding docker group for non-sudo users, GitHub issue # 207.
 *   Tue Apr 11 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-1
 -   Building docker from source.
 *   Fri Jan 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.6-1
