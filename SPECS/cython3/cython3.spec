@@ -1,13 +1,13 @@
 %define python3_sitearch /usr/lib/python3.5/site-packages
 Summary:        C extensions for Python
 Name:           cython3
-Version:        0.23.4
+Version:        0.25.2
 Release:        1%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
 Source0:        http://cython.org/release/Cython-%{version}.tar.gz
-%define sha1 Cython=fc574c5050cd5a8e34435432e2a4a693353ed807
+%define sha1 Cython=e73f5afe89792df3467cc7bccd29fc01467fc28b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	python3
@@ -49,5 +49,7 @@ rm -rf %{buildroot}
 %{python3_sitearch}/__pycache__/*
 
 %changelog
+*       Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 0.25.2-1
+-       Update to 0.25.2
 * 	Fri Jan 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.23.4-1
 - 	Initial build.
