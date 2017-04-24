@@ -15,12 +15,12 @@ class Device(object):
 
     @staticmethod
     def refresh_devices():
-        devices_list = subprocess.check_output(['lsblk', '-S', '-I', '8', '-n', '--output', 'NAME,SIZE,MODEL'], stderr=open(os.devnull, 'w'))
+        devices_list = subprocess.check_output(['lsblk', '-d', '-I', '8,259', '-n', '--output', 'NAME,SIZE,MODEL'], stderr=open(os.devnull, 'w'))
         return Device.wrap_devices_from_list(devices_list)
 
     @staticmethod
     def refresh_devices_bytes():
-        devices_list = subprocess.check_output(['lsblk', '-S', '--bytes', '-I', '8', '-n', '--output', 'NAME,SIZE,MODEL'], stderr=open(os.devnull, 'w'))
+        devices_list = subprocess.check_output(['lsblk', '-d', '--bytes', '-I', '8,259', '-n', '--output', 'NAME,SIZE,MODEL'], stderr=open(os.devnull, 'w'))
         return Device.wrap_devices_from_list(devices_list)
 
     @staticmethod

@@ -57,10 +57,12 @@ def partition_disk(disk, partitions):
             extensible_partition = partition
         else:
             partition_cmd.extend(['-n', '{}::+{}M'.format(partition_number, partition['size'])])
-        
-        partition['partition_number'] = partition_number 
-        partition['path'] = disk + `partition_number`
-        partition_number = partition_number + 1
+
+        partition['partition_number'] = partition_number
+        prefix = ''
+        if 'nvme' in disk:
+            prefix = 'p'
+        partition['path'] = disk + prefix + `partition_number`
 
     # Adding the last extendible partition
     if extensible_partition:

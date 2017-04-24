@@ -158,7 +158,7 @@ diff -Naur httpd-2.4.10.orig/include/ap_config_layout.h.in httpd-2.4.10/include/
  #define DEFAULT_REL_LOGFILEDIR "@rel_logfiledir@"
  #define DEFAULT_EXP_PROXYCACHEDIR "@exp_proxycachedir@"
  #define DEFAULT_REL_PROXYCACHEDIR "@rel_proxycachedir@"
-+#define DEFAULT_PIDLOG "/var/run/httpd/httpd.pid"
++#define DEFAULT_PIDLOG "/var/run/httpd.pid"
  
  #endif /* AP_CONFIG_LAYOUT_H */
 diff -Naur httpd-2.4.10.orig/include/httpd.h httpd-2.4.10/include/httpd.h

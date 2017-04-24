@@ -1,9 +1,9 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2015.7
-Release:        10%{?dist}
+Version:        2017.4
+Release:        1%{?dist}
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
-%define sha1    ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
+%define sha1    ostree=eb3546c552849ace2f4e3701bc0b826611f569cc
 Source1:        91-ostree.preset
 License:        LGPLv2+
 URL:            http://live.gnome.org/OSTree
@@ -17,6 +17,7 @@ BuildRequires:  gtk-doc
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  libsoup-devel
 BuildRequires:  autogen
+Requires:       fuse
 Requires:       libgsystem
 Requires:       gpgme
 Requires:       libassuan
@@ -28,6 +29,7 @@ Requires:       dracut
 Requires:       dracut-tools
 Requires:       libarchive
 BuildRequires:  attr-devel
+BuildRequires:  fuse-devel
 BuildRequires:  libgpg-error-devel
 BuildRequires:  python2-libs
 BuildRequires:  python2
@@ -63,7 +65,7 @@ The %{name}-devel package includes the header files for the %{name} library
 
 %prep
 %setup -n %{name}-%{version}
-(git clone git://git.gnome.org/libglnx libglnx  && cd libglnx && git checkout 900b25f)
+(git clone git://git.gnome.org/libglnx libglnx  && cd libglnx && git checkout 602fdd9)
 (git clone https://github.com/mendsley/bsdiff bsdiff && cd bsdiff && git checkout 1edf9f6)
 
 %build
@@ -104,8 +106,8 @@ rm -rf %{buildroot}
 %files
 %doc COPYING README.md
 %{_bindir}/ostree
+%{_bindir}/rofiles-fuse
 %{_libdir}/*.so.1*
-%{_sbindir}/*
 %{_mandir}/man*/*.gz
 %{_prefix}/lib/systemd/system-preset/91-ostree.preset
 %{_prefix}/lib/systemd/system/ostree*.service
@@ -116,19 +118,25 @@ rm -rf %{buildroot}
 %{_sysconfdir}/ostree-mkinitcpio.conf
 %dir %{_sysconfdir}/ostree/remotes.d
 %{_libdir}/girepository-*/OSTree-*.typelib
-%{_libexecdir}/ostree/grub2*
+%{_libexecdir}/libostree/grub2*
 %{_libdir}/initcpio/*
-%{_libdir}/lib*.so
-%dir %{_datadir}/gtk-doc/html/ostree
+%{_libdir}/ostree/ostree-prepare-root
+%{_libdir}/ostree/ostree-remount
+%exclude %{_libexecdir}/libostree/ostree-trivial-httpd
+
 
 %files devel
 %{_includedir}/*
+%{_libdir}/lib*.so
 %{_libdir}/pkgconfig/*
+%dir %{_datadir}/gtk-doc/html/ostree
 %{_datadir}/gtk-doc/html/ostree/*
 %{_datadir}/ostree/*
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Mon Apr 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2017.4-1
+-   Update to 2017.4
 *   Wed Feb 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2015.7-10
 -   libglnx: checkout commit 900b25f.
 -   bsdiff:  checkout commit 1edf9f6.

@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.1.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -19,6 +19,7 @@ Patch2:         hostnameReCustomizationFix.patch
 Patch3:         PureIPv6-hosts.patch
 Patch4:         open-vm-tools-sysmacros.patch
 Patch5:         GOSC-libDeploy.patch
+Patch6:         timezoneCust.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -48,6 +49,7 @@ VmWare virtualization user mode tools
 %patch3 -p0
 %patch4 -p1
 %patch5 -p1
+%patch6 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -105,6 +107,8 @@ fi
 
 
 %changelog
+*       Thu Apr 20 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-4
+-       Timezone customization, PR # 1684889
 *       Fri Apr 07 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-3
 -       Applying tmp race condition patch, PR #1733669
 *       Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 10.1.5-2

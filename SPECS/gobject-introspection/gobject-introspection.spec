@@ -2,13 +2,13 @@
 
 Name:       	gobject-introspection
 Summary:    	Introspection system for GObject-based libraries
-Version:    	1.46.0
-Release:    	3%{?dist}
+Version:    	1.52.1
+Release:    	1%{?dist}
 Group:      	Development/Libraries
 License:    	GPLv2+, LGPLv2+, MIT
 URL:        	http://live.gnome.org/GObjectIntrospection
-Source0:    	%{name}-%{version}.tar.xz
-%define sha1 gobject-introspection=ca4842479b119da1c8d3fbf5006adcc46920ce72
+Source0:    	http://ftp.gnome.org/pub/GNOME/sources/gobject-introspection/1.52/%{name}-%{version}.tar.xz
+%define sha1 gobject-introspection=2a0c86bd23d27df0588b79404cfc5619ed6171e8
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  gettext
@@ -16,10 +16,10 @@ BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  glib-devel
-BuildRequires:  libffi
+BuildRequires:  libffi-devel
 BuildRequires:	go
 Requires:	libffi
-Requires:	glib
+Requires:	glib >= 2.52.1
 %description
 GObject Introspection can scan C header and source files in order to
 generate introspection "typelib" files.  It also provides an API to examine
@@ -29,7 +29,7 @@ things.
 %package python
 Summary:    Python package for handling GObject introspection data
 Group:      Development/Languages
-Requires:   gobject-introspection
+Requires:   %{name} = %{version}-%{release}
 BuildRequires:	python2-devel
 BuildRequires:	python2-libs
 BuildRequires:  python-xml
@@ -41,7 +41,8 @@ data from Python.
 %package devel
 Summary:    Libraries and headers for gobject-introspection
 Group:      Development/Libraries
-Requires:   gobject-introspection
+Requires:   %{name} = %{version}-%{release}
+Requires:   libffi-devel
 Requires:   glib-devel
 Requires:   python2
 Requires:   python2-devel
@@ -102,6 +103,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*	Wed Apr 12 2017 Danut Moraru <dmoraru@vmware.com> 1.52.1-1
+-	Updated to version 1.52.1
 *       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.46.0-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.46.0-2
