@@ -24,7 +24,9 @@ from actionresult import ActionResult
 from __builtin__ import isinstance
 
 class Installer(object):
-    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
+    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False,
+                 rpm_path = "../stage/RPMS", log_path = "../stage/LOGS",
+                 ks_config = None):
         self.install_config = install_config
         self.ks_config = ks_config
         self.iso_installer = iso_installer
@@ -151,13 +153,33 @@ class Installer(object):
             # install grub
             try:
                 if self.install_config['boot'] == 'bios':
-                    process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root'], self.install_config['disk']['boot'], self.install_config['disk']['bootdirectory']], stdout=self.output)
+                    process = subprocess.Popen(
+                                  [self.setup_grub_command, '-w', self.photon_root,
+                                  "bios", self.install_config['disk']['disk'],
+                                  self.install_config['disk']['root'],
+                                  self.install_config['disk']['boot'],
+                                  self.install_config['disk']['bootdirectory'],
+                                  str(self.install_config['disk']['boot_partition_number'])],
+                                  stdout=self.output)
                 elif self.install_config['boot'] == 'efi':
-                    process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "efi", self.install_config['disk']['disk'], self.install_config['disk']['root'], self.install_config['disk']['boot'], self.install_config['disk']['bootdirectory']], stdout=self.output)
+                    process = subprocess.Popen(
+                                  [self.setup_grub_command, '-w', self.photon_root,
+                                  "efi", self.install_config['disk']['disk'],
+                                  self.install_config['disk']['root'],
+                                  self.install_config['disk']['boot'],
+                                  self.install_config['disk']['bootdirectory'],
+                                  str(self.install_config['disk']['boot_partition_number'])],
+                                  stdout=self.output)
             except:
                 #install bios if variable is not set.
-                process = subprocess.Popen([self.setup_grub_command, '-w', self.photon_root, "bios", self.install_config['disk']['disk'], self.install_config['disk']['root'], self.install_config['disk']['boot'], self.install_config['disk']['bootdirectory']], stdout=self.output)
-
+                process = subprocess.Popen(
+                              [self.setup_grub_command, '-w', self.photon_root,
+                              "bios", self.install_config['disk']['disk'],
+                              self.install_config['disk']['root'],
+                              self.install_config['disk']['boot'],
+                              self.install_config['disk']['bootdirectory'],
+                              str(self.install_config['disk']['boot_partition_number'])],
+                              stdout=self.output)
             retval = process.wait()
 
             self.update_fstab()
