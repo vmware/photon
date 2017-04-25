@@ -1,14 +1,14 @@
 Summary:	Archiving program
 Name:		tar
-Version:	1.28
-Release:	2%{?dist}
+Version:	1.29
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
 Vendor:		VMware, Inc.
-Distribution: Photon
+Distribution: 	Photon
 Source0:	tar/%{name}-%{version}.tar.xz
-%define sha1 tar=40f3470a96b80749531fe48dbba99e43b6dfa7d3
+%define sha1 tar=03851c34c90f0656177f2dd375cd61bd1204c51d
 %description
 Contains GNU archiving program
 %prep
@@ -35,6 +35,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.29-1
+-	Update to version 1.29 to fix CVE-2016-6321
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.28-2
 -	GA - Bump release of all rpms
 *	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.28-1
