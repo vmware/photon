@@ -11,9 +11,14 @@ Distribution:   Photon
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
 %define sha1 openvswitch=2865fe03b3906b5aea984102c4b65772b5dd7450
 
+%global kernelver 4.4.60-1.ph1
+
 BuildRequires:  gcc >= 4.0.0
+BuildRequires:  kmod
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
+BuildRequires:  linux
+BuildRequires:  linux-dev
 BuildRequires:  make
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
@@ -54,6 +59,13 @@ Requires:       %{name} = %{version}-%{release}
 %description    doc
 It contains the documentation and manpages for openvswitch.
 
+%package -n     kmod-%{name}
+Summary:        Open vSwitch kernel modules
+Group:          Development/Libraries
+
+%description -n kmod-%{name}
+This package provides openvswitch kernel modules.
+
 %prep
 %setup -q
 
@@ -66,13 +78,27 @@ It contains the documentation and manpages for openvswitch.
         --sysconfdir=/etc \
         --localstatedir=/var \
         --enable-ssl \
-        --enable-shared
-
+        --enable-shared \
+        --with-linux=/usr/lib/modules/%{kernelver}/build 'CFLAGS=-O2 -g'
 make %{_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
+export INSTALL_MOD_PATH=%{buildroot}
+export INSTALL_MOD_DIR=extra/openvswitch
+make modules_install
+
 find %{buildroot}%{_libdir} -name '*.la' -delete
+find $INSTALL_MOD_PATH/lib/modules -iname 'modules.*' -exec rm {} \;
+
+install -d %{buildroot}%{_sysconfdir}/depmod.d/
+for module in %{buildroot}/lib/modules/%{kernel_version}/$INSTALL_MOD_DIR/*.ko;
+do
+    modname="$(basename ${module})"
+    echo "override ${modname%.ko} * extra/openvswitch" >> openvswitch.conf
+    echo "override ${modname%.ko} * weak-updates/openvswitch" >> openvswitch.conf
+done
+install -m 644 openvswitch.conf %{buildroot}%{_sysconfdir}/depmod.d/
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 cat << EOF >> %{buildroot}/%{_libdir}/systemd/system/openvswitch.service
@@ -135,6 +161,15 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/man/man8/ovs-*.8.gz
 /usr/share/man/man8/ovn-*.8.gz
 /usr/share/man/man8/vtep-ctl.8.gz
+
+%files -n kmod-%{name}
+/etc/depmod.d/openvswitch.conf
+/lib/modules/%{kernelver}/extra/openvswitch/openvswitch.ko
+/lib/modules/%{kernelver}/extra/openvswitch/vport-geneve.ko
+/lib/modules/%{kernelver}/extra/openvswitch/vport-gre.ko
+/lib/modules/%{kernelver}/extra/openvswitch/vport-lisp.ko
+/lib/modules/%{kernelver}/extra/openvswitch/vport-stt.ko
+/lib/modules/%{kernelver}/extra/openvswitch/vport-vxlan.ko
 
 %changelog
 *	Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
