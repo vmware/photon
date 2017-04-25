@@ -116,7 +116,6 @@
         "device-mapper-event",
         "device-mapper-event-libs",
         "libacl",
-        "libselinux-python",
         "libselinux-utils",
         "libaio",
         "thin-provisioning-tools",
