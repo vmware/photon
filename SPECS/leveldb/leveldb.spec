@@ -1,7 +1,7 @@
 Summary:	A fast and lightweight key/value database library by Google
 Name:		leveldb
 Version:	1.20
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://github.com/google/leveldb
 Source0:	https://github.com/google/leveldb/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -20,16 +20,29 @@ Requires:	%{name} = %{version}
 leveldb implements a system for maintaining a persistent key/value store.
 
 %prep
-%setup -q 
+%setup -q
+
+cat > %{name}.pc << EOF
+prefix=%{_prefix}
+exec_prefix=${prefix}
+libdir=%{_libdir}
+includedir=%{_includedir}
+
+Name: %{name}
+Description: %{summary}
+Version: %{version}
+Libs: -l%{name}
+EOF
 
 %build
 make
 
 %install
-mkdir -p %{buildroot}{%{_libdir},%{_includedir}}
+mkdir -p %{buildroot}{%{_libdir}/pkgconfig,%{_includedir}}
 cp -a out-shared/lib%{name}.so* %{buildroot}%{_libdir}/
 cp -a out-static/lib%{name}.a %{buildroot}%{_libdir}/
 cp -a include/%{name}/ %{buildroot}%{_includedir}/
+cp -a %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 %check
 make check
@@ -47,8 +60,11 @@ make check
 %{_includedir}/leveldb/
 %{_libdir}/libleveldb.so
 %{_libdir}/libleveldb.a
+%{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*	Tue Apr 25 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-2
+-	Added pkgconfig file for leveldb
 *	Thu Mar 30 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-1
 -	Updated to version 1.20
 *	Wed Dec 21 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-2
