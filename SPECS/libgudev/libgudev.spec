@@ -36,17 +36,18 @@ libgudev-devel package contains header files for building gudev applications.
 %setup -q
 
 %build
-./configure \
-        --prefix=%{_prefix} \
-		--disable-umockdev
+./configure --prefix=/usr --disable-umockdev &&
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
 
-%post   -p /sbin/ldconfig
+%check
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
-%postun -p /sbin/ldconfig
+%post	-p /sbin/ldconfig
+
+%postun	-p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -67,13 +68,13 @@ make DESTDIR=%{buildroot} install
 
 %changelog
 *	Mon Apr 10 2017 Harish Udaiya kumar <hudaiyakumar@vmware.com> 231-1
--	Updated to version 231-1. 
-*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  230-4
--   Change systemd dependency
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 230-3
--   GA - Bump release of all rpms
-*   Thu Aug 13 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-2
--   Split header files into devel package.
-*   Tue Aug 11 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-1
--   Add libgudev v230
+-	Updated to version 231. 
+*       Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  230-4
+-       Change systemd dependency
+*       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 230-3
+-       GA - Bump release of all rpms
+*       Thu Aug 13 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-2
+-       Split header files into devel package.
+*       Tue Aug 11 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-1
+-       Add libgudev v230
 
