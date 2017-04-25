@@ -15,7 +15,6 @@ Patch0:         chkname-allowcase.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
-Requires:       cracklib-dicts
 BuildRequires:  Linux-PAM-devel
 Requires:       Linux-PAM
 
