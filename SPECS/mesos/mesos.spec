@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.28.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -25,12 +25,15 @@ BuildRequires:	python2-libs
 BuildRequires:  python-xml
 BuildRequires:	python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  protobuf-devel
+BuildRequires:  protobuf-python
 Requires:	apr >= 1.5.2
 Requires:	apr-util >= 1.5.4
 Requires:	cyrus-sasl >= 2.1.26
 Requires:	expat
 Requires:	openjre >= 1.8.0.45
 Requires:	subversion >= 1.8.13
+Requires:       protobuf-python
 
 
 %description
@@ -95,8 +98,10 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Mon Apr 24 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.28.2-2
+-	Install protobuf build and runtime depencencies.
 *	Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 0.28.2-1
--   Upgraded to version 0.28.2
+-	Upgraded to version 0.28.2
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.24.0-3
 -	GA - Bump release of all rpms
 *	Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2
