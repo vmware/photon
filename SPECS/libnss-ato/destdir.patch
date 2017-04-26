@@ -9,7 +9,8 @@ index 6d9a628..23977f2 100644
 -INSTALL = /usr/bin/install
 +INSTALL = /usr/bin/install -D
  INSTALL_PROGRAM = ${INSTALL}
- INSTALL_DATA = ${INSTALL} -m 644
+-INSTALL_DATA = ${INSTALL} -m 644
++INSTALL_DATA = ${INSTALL} -m 755
  
 -prefix = ""
 +DESTDIR ?= ""
@@ -17,3 +18,12 @@ index 6d9a628..23977f2 100644
  exec_prefix = ${prefix}
  
  # Where the installed binary goes.
+@@ -25,7 +26,7 @@
+ all:	libnss_ato libnss_ato_test 
+ 
+ libnss_ato:	libnss_ato.c
+-	${CC} -fPIC -Wall -shared -o libnss_ato.so.2 -Wl,-soname,libnss_ato.so.2 libnss_ato.c
++	${CC} ${CFLAGS} -fPIC -Wall -shared -o libnss_ato.so.2 -Wl,-soname,libnss_ato.so.2 libnss_ato.c
+ 
+ test:	libnss_ato_test.c
+ 	${CC} -fPIC -Wall -o libnss_ato_test libnss_ato_test.c

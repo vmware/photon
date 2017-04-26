@@ -1,6 +1,6 @@
 Name:           ceph-deploy
 Version:        1.5.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            http://ceph.com/
 Summary:        Admin and deploy tool for Ceph
 License:        MIT
@@ -23,6 +23,7 @@ BuildRequires:  python-setuptools
 
 Requires:	python2
 Requires:	python-setuptools
+BuildArch:      noarch
 
 %description
 An easy to use admin tool for deploy ceph storage clusters.
@@ -55,6 +56,8 @@ install -m 0755 -D scripts/ceph-deploy $RPM_BUILD_ROOT/usr/bin
 %{_bindir}/ceph-deploy
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.37-2
+-   Fix arch
 *   Thu Mar 30 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.37-1
 -   Upgrading to version 1.5.37
 *   Thu Mar 9 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.36-2

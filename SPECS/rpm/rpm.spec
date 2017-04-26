@@ -3,25 +3,26 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.11.2
-Release:        22%{?dist}
+Version:        4.13.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
-%define sha1    rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
+Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
+%define sha1    rpm=67f4c9607460d5f71fc8f6206b40d812090f652f
 Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:        macros
 Source3:        brp-strip-debug-symbols
 Source4:        brp-strip-unneeded
 Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
-Patch1:         rpm-4.11.2-cve-2014-8118.patch
-Patch2:         find-debuginfo-do-not-generate-dir-entries.patch
+Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
+Patch2:         find-debuginfo-script-fix.patch
 Requires:       bash
 Requires:       rpm-libs = %{version}-%{release}
+BuildRequires:  libarchive-devel
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -87,13 +88,14 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -q
+%setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%setup -q -T -D -a 1
+%setup -n rpm-%{name}-%{version}-release  -T -D -a 1
 mv db-5.3.28 db
 %build
+sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
 ./autogen.sh --noconfigure
 ./configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
@@ -149,12 +151,15 @@ popd
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}
+
 %files
 %defattr(-,root,root)
 /bin/rpm
 %{_bindir}/gendiff
+%{_bindir}/rpm2archive
 %{_bindir}/rpm2cpio
 %{_bindir}/rpmdb
 %{_bindir}/rpmgraph
@@ -199,12 +204,8 @@ rm -rf %{buildroot}
 %{_bindir}/rpmspec
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
-%{_libdir}/rpm/osgideps.pl
-%{_libdir}/rpm/perldeps.pl
-%{_libdir}/rpm/macros.perl
-%{_libdir}/rpm/perl.prov
+%{_libdir}/rpm/macros.*
 %{_libdir}/rpm/perl.req
-%{_libdir}/rpm/perldeps.pl
 %{_libdir}/rpm/find-debuginfo.sh
 %{_libdir}/rpm/find-lang.sh
 %{_libdir}/rpm/find-provides
@@ -214,12 +215,8 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/mono-find-requires
 %{_libdir}/rpm/ocaml-find-provides.sh
 %{_libdir}/rpm/ocaml-find-requires.sh
-%{_libdir}/rpm/macros.perl
-%{_libdir}/rpm/macros.php
-%{_libdir}/rpm/macros.python
 %{_libdir}/rpm/fileattrs/*
 %{_libdir}/rpm/script.req
-%{_libdir}/rpm/tcl.req
 %{_libdir}/rpm/check-buildroot
 %{_libdir}/rpm/check-files
 %{_libdir}/rpm/check-prereqs
@@ -228,12 +225,13 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/config.guess
 %{_libdir}/rpm/config.sub
 %{_libdir}/rpm/debugedit
-%{_libdir}/rpm/desktop-file.prov
 %{_libdir}/rpm/elfdeps
-%{_libdir}/rpm/fontconfig.prov
 %{_libdir}/rpm/libtooldeps.sh
 %{_libdir}/rpm/mkinstalldirs
 %{_libdir}/rpm/pkgconfigdeps.sh
+%{_libdir}/rpm/*.prov
+%{_libdir}/rpm/sepdebugcrcfix
+
 
 %{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/rpmdeps
@@ -265,6 +263,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0-1
+-   Update to 4.13.0
 *   Wed Apr 19 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-22
 -   Do not allow -debuginfo to own directories to avoid conflicts with
     filesystem package and between each other. Patch applied

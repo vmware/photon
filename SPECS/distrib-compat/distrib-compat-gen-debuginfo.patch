@@ -1,0 +1,17 @@
+--- Makefile	2017-04-24 22:28:36.771244501 +0000
++++ Makefile.1	2017-04-24 22:34:22.567394590 +0000
+@@ -1,4 +1,4 @@
+-CFLAGS=-D_GNU_SOURCE -Wall -O2
++CFLAGS=-D_GNU_SOURCE -Wall -O2 -g
+ PRG=proctools
+ DIR=${DESTDIR}/sbin
+ 
+@@ -12,7 +12,7 @@
+ 
+ install:
+ 	install -dm 0755 $(DIR)
+-	install -sm 0755  $(PRG) $(DIR)
++	install -m 0755  $(PRG) $(DIR)
+ 	ln -sf $(PRG) ${DIR}/checkproc
+ 	ln -sf $(PRG) ${DIR}/killproc
+ 	ln -sf $(PRG) ${DIR}/startproc

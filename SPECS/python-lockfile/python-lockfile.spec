@@ -4,7 +4,7 @@
 Summary:        file locking module
 Name:           python-lockfile
 Version:        0.12.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -16,6 +16,7 @@ Source0:        https://pypi.python.org/packages/source/l/lockfile/lockfile-%{ve
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-pbr
+BuildArch:      noarch
 
 %description
 The lockfile package exports a LockFile class which provides a simple API for locking files.
@@ -69,5 +70,7 @@ popd
 %{python3_sitelib}/lockfile
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.12.2-2
+-   Fix arch
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.12.2-1
 -   Initial packaging for Photon

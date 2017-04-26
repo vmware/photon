@@ -1,7 +1,7 @@
 Summary:	The package automatically configure source code
 Name:		autoconf
 Version:	2.69
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/autoconf
 Group:		System Environment/Base
@@ -14,6 +14,8 @@ Patch0:		autoconf-make-check.patch
 Requires:	perl
 BuildRequires:	m4
 Requires:	m4
+BuildArch:      noarch
+
 %description
 The package contains programs for producing shell scripts that can
 automatically configure source code.
@@ -38,6 +40,8 @@ make -k check %{?_smp_mflags}  TESTSUITEFLAGS="1-500"
 %{_mandir}/*/*
 %{_datarootdir}/autoconf/*
 %changelog
+*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.69-6
+-	Fix arch
 *	Tue Dec 6 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.69-5
 -	Fixed Bug 1718089 make check failure
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.69-4

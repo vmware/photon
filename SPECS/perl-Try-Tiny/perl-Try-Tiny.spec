@@ -10,7 +10,7 @@ Distribution:   Photon
 Source:         http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/Try-Tiny-%{version}.tar.gz
 %define sha1    Try-Tiny=70dc6bfc6b6cdba3bc7262fe7b2ee488934b3095
 
-BuildArch:      x86_64
+BuildArch:      noarch
 Requires:       perl
 BuildRequires:  perl
 
@@ -38,5 +38,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+
+*   Wed Apr 26 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.28-2
+-   Fix arch
 *   Wed Apr 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.28-1
 -   Initial version.
