@@ -1,14 +1,14 @@
 Summary: Create deltas between rpms
 Name: deltarpm
-Version: 3.6
-Release: 2%{?dist}
+Version: 3.6.1
+Release: 1%{?dist}
 License: BSD
 Group: Applications/System
 Vendor: VMware, Inc.
 Distribution: Photon
-URL: http://www.novell.com/products/linuxpackages/professional/deltarpm.html
-Source0: ftp://ftp.suse.com/pub/projects/deltarpm/deltarpm-%{version}.tar.bz2
-%define sha1 deltarpm=1f92f9ad44be7ba5a9ead5481ac7208c609e9374
+URL: https://github.com/rpm-software-management/deltarpm
+Source0: https://github.com/rpm-software-management/deltarpm/archive/deltarpm-%{version}.tar.gz
+%define sha1 deltarpm=29f39a8c55f48a7e538cabe49ca3203ebb823b2c
 BuildRequires: rpm-devel >= 4.2
 BuildRequires: bzip2-devel
 BuildRequires: xz-devel
@@ -63,6 +63,8 @@ deltarpms can also work with installed rpms.
 %{python_sitelib}/*
 
 %changelog
+* Tue Apr 25 2017 Bo Gan <ganb@vmware.com> 3.6.1-1
+- Update to 3.6.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6-2
 -	GA - Bump release of all rpms
 * Tue Apr 28 2015 Fabio Rapposelli <fabio@vmware.com> - 3.6-2
