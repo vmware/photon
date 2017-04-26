@@ -4,7 +4,7 @@
 Summary:        Lightweight in-process concurrent programming
 Name:           python-greenlet
 Version:        0.4.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -60,8 +60,10 @@ python3 setup.py test
 %files -n python3-greenlet
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-/usr/include/python3.5m/greenlet/greenlet.h
+/usr/include/python3.6m/greenlet/greenlet.h
 
 %changelog
+*   Thu Apr 27 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.4.12-2
+-   updated python version
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4.12-1
 -   Initial packaging for Photon
