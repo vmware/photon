@@ -1,15 +1,16 @@
 Summary:	Basic system utilities
 Name:		coreutils
-Version:	8.25
-Release:	2%{?dist}
+Version:	8.27
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
-%define sha1 coreutils=301f186c24afb882a3ca73d19a102a2ce6f456c3
-Patch0:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.25-i18n-2.patch
+%define sha1 coreutils=ee054c8a4c0c924de49e4f03266733f27f986fbb
+Patch0:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-i18n-1.patch
+Patch1:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-uname-1.patch
 Requires:	gmp
 Provides:	sh-utils
 %description
@@ -26,8 +27,9 @@ These are the additional language files of coreutils.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
-FORCE_UNSAFE_CONFIGURE=1  ./configure \
+export FORCE_UNSAFE_CONFIGURE=1 &&  ./configure \
 	--prefix=%{_prefix} \
 	--enable-no-install-program=kill,uptime \
 	--disable-silent-rules
@@ -67,6 +69,8 @@ make NON_ROOT_USERNAME=nobody check
 %defattr(-,root,root)
 
 %changelog
+*       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 8.27-1
+-       Upgraded to version 8.27
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.25-2
 -	GA - Bump release of all rpms
 *	Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 8.25-1

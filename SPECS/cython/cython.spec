@@ -1,12 +1,12 @@
 Summary:        C extensions for Python
 Name:           cython
-Version:        0.23.4
-Release:        3%{?dist}
+Version:        0.25.2
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
 Source0:        http://cython.org/release/Cython-%{version}.tar.gz
-%define sha1 Cython=fc574c5050cd5a8e34435432e2a4a693353ed807
+%define sha1 Cython=e73f5afe89792df3467cc7bccd29fc01467fc28b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	python2-devel
@@ -37,13 +37,15 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
-%{python_sitearch}/Cython-0.23.4-py2.7.egg-info
+%{python_sitearch}/Cython-%{version}-*.egg-info
 %{python_sitearch}/Cython/*
 %{python_sitearch}/cython.py*
 %{python_sitearch}/pyximport/*
 
 
 %changelog
+*       Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 0.25.2-1
+-       Update to 0.25.2
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.23.4-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.23.4-2

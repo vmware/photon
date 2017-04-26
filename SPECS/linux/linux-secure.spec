@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.13
-Release:        3%{?dist}
+Version:        4.9.24
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=236f993bf556ad6d839160ec0d0ea31ff4d34034
+%define sha1 linux=c504e8817a320030313710066360bc50be7bebe8
 Source1:        config-secure-%{version}
 Source2:        aufs4.9.tar.gz
 # common
@@ -216,6 +216,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Apr 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.24-1
+-   Fix CVE-2017-6874 and CVE-2017-7618.
+-   .config: build nvme and nvme-core in kernel.
 *   Tue Mar 21 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-3
 -   Added LKCM module
 *   Mon Mar 6 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.13-2

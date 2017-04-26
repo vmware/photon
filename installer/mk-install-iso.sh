@@ -244,7 +244,7 @@ if [ "$LIVE_CD" = false ] ; then
 
     # TODO: mbassiouny, Find a clean way to do that
     for i in `ls ${BUILDROOT}/usr/share/`; do
-        if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' ]; then
+        if [ $i != 'terminfo' -a $i != 'cracklib' -a $i != 'grub' -a $i != 'factory' -a $i != 'dbus-1' ]; then
             rm -rf ${BUILDROOT}/usr/share/$i
         fi
     done

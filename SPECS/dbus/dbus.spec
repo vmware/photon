@@ -1,12 +1,12 @@
 Summary:        DBus for systemd
 Name:           dbus
-Version:        1.8.8
-Release:        8%{?dist}
+Version:        1.11.12
+Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
 Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
-%define sha1    dbus=e0d10e8b4494383c7e366ac80a942ba45a705a96
+%define sha1    dbus=2e2247398abb22115e724b5e955fece2307dddb0
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  expat-devel
@@ -31,15 +31,16 @@ It contains the libraries and header files to create applications
 ./configure --prefix=%{_prefix}                 \
             --sysconfdir=%{_sysconfdir}         \
             --localstatedir=%{_var}             \
-            --docdir=%{_datadir}/doc/dbus-1.8.8  \
+            --docdir=%{_datadir}/doc/dbus-1.11.12  \
+            --enable-libaudit=no --enable-selinux=no \
             --with-console-auth-dir=/run/console
 
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}%{_lib}
-ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libdbus-1.so) %{buildroot}%{_libdir}/libdbus-1.so
-rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
+#ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libdbus-1.so) %{buildroot}%{_libdir}/libdbus-1.so
+#rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
 #ln -sv %{buildroot}%{_sysconfdir}/machine-id %{buildroot}%{_sharedstatedir}/dbus
 
 %check
@@ -47,17 +48,23 @@ make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
-/etc/*
+%{_sysconfdir}/dbus-1
 %{_bindir}/*
-%{_lib}/libdbus-1.so.*
+%{_libdir}/libdbus-1.so.*
+%exclude %{_libdir}/sysusers.d
 /lib/*
 %{_libexecdir}/*
 %{_docdir}/*
-%{_sharedstatedir}/*
+%{_datadir}/dbus-1
+
+#%{_sharedstatedir}/*
 
 %files  devel
 %defattr(-,root,root)
 %{_includedir}/*
+%{_datadir}/xml/dbus-1
+%{_libdir}/cmake/DBus1
+%dir %{_libdir}/dbus-1.0
 %{_libdir}/dbus-1.0/include/
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.la
@@ -65,6 +72,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+*   Fri Apr 21 2017 Bo Gan <ganb@vmware.com> 1.11.12-1
+-   Update to 1.11.12
 *   Tue Dec 20 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.8-8
 -   Move all header files to devel subpackage.
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.8.8-7

@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.0
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -543,8 +543,8 @@ EOF
 %attr(664,root,utmp)	/var/log/lastlog
 %attr(600,root,root)	/var/log/btmp
 /var/lock
-%ghost /var/run
-/var/run/lock
+/var/run
+
 #	Symlinks for AMD64
 %ifarch x86_64
 /lib64
@@ -554,6 +554,8 @@ EOF
 /usr/lib/debug/usr/lib64
 %endif
 %changelog
+*   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-13
+-   make /var/run symlink to /run and keep it in rpm
 *   Thu Apr 20 2017 Bo Gan <ganb@vmware.com> 1.0-12
 -   Fix /usr/local/lib64 symlink
 *   Wed Mar 08 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0-11
