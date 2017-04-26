@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.6
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -31,6 +31,7 @@ Requires:       python-requests
 Requires:       PyYAML
 Requires:       python-jsonpatch
 Requires:       python-jinja2
+BuildArch:      noarch
 
 %description
 Cloud-init is a set of init scripts for cloud instances.  Cloud instances
@@ -136,6 +137,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-17
+-   Fix Arch
 *   Wed Mar 29 2017 Kumar Kaushik <kaushikk@vmware.com>  0.7.6-16
 -   Adding support for disk partition and resize fs
 *   Thu Dec 15 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-15
