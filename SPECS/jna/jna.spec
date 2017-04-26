@@ -1,7 +1,10 @@
+#need to disable debuginfo till we bring in x11 deps
+%define debug_package %{nil}
+
 Summary:        Java Native Access
 Name:           jna
 Version:        4.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://github.com/twall/jna
 Group:          Applications/System
@@ -70,6 +73,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*.aar
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-3
+-   disable debuginfo temporarily - wait for x11 deps
 *   Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-2
 -   use java rpm macros to determine versions
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-1

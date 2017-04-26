@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat Connector
 Name:		httpd-mod_jk
 Version:	1.2.42
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org/connectors-doc
 Group:		Applications/System
@@ -30,7 +30,7 @@ make %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}
-install -D -m 644 native/apache-2.0/mod_jk.so %{buildroot}%{_libdir}/httpd/modules/mod_jk.so
+install -D -m 755 native/apache-2.0/mod_jk.so %{buildroot}%{_libdir}/httpd/modules/mod_jk.so
 install -D -m 644 conf/workers.properties  %{buildroot}%{_sysconfdir}/httpd/conf/workers.properties
 install -D -m 644 conf/httpd-jk.conf  %{buildroot}%{_sysconfdir}/httpd/conf/httpd_jk.conf
 
@@ -44,5 +44,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %config(noreplace) %{_sysconfdir}/httpd/conf/workers.properties
 
 %changelog
+*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.42-2
+-	Ensure non empty debuginfo
 *	Tue Feb 21 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.42-1
 -	Initial build.	First version
