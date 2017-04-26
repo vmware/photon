@@ -1,7 +1,7 @@
 Summary:	Docbook-xsl-1.79.1
 Name:		docbook-xsl
 Version:	1.79.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
@@ -11,6 +11,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires:	libxml2
 BuildRequires:	libxml2
+BuildArch:      noarch
+
 %description
 The DocBook XML DTD-4.5 package contains document type definitions for 
 verification of XML data files against the DocBook rule set. These are 
@@ -78,6 +80,8 @@ fi
 %{_docdir}/*
 
 %changelog
+*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-4
+-	Fix arch
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-3
 -	GA - Bump release of all rpms
 *       Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.79.1-2

@@ -1,7 +1,7 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.25
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.25/%{name}-%{version}.tar.xz
@@ -23,6 +23,8 @@ BuildRequires:	python2
 BuildRequires:	python2-libs
 Requires:	python2
 Provides:	perl(gtkdoc-common.pl)
+BuildArch:      noarch
+
 %description
 The GTK-Doc package contains a code documenter. This is useful for extracting 
 specially formatted comments from the code to create API documentation. 
@@ -44,6 +46,8 @@ cd tests && make check-TESTS
 %{_libdir}/cmake/
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.25-2
+-   Fix arch
 * 	Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com>  1.25-1
 - 	Upgrade to 1.25
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.24-3

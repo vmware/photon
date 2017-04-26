@@ -3,7 +3,7 @@
 Summary:        Python C parser
 Name:           python-pycparser
 Version:        2.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pycparser
 License:        BSD
 Group:          Development/Languages/Python
@@ -19,6 +19,7 @@ BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
+BuildArch:      noarch
 
 
 %description
@@ -59,6 +60,8 @@ python all_tests.py
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.17-2
+-   Fix arch
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.17-1
 -   Updated to version 2.17.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.14-4

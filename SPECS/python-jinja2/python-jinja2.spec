@@ -1,6 +1,6 @@
 Name:           python-jinja2
 Version:        2.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
@@ -15,6 +15,7 @@ BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
+BuildArch:      noarch
 
 %description
 Jinja2 is a template engine written in pure Python.  It provides a Django
@@ -43,6 +44,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python_sitelib}/Jinja2-%{version}-py%{python_version}.egg-info
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.5-2
+-   Fix arch
 *   Mon Mar 27 2017 Sarah Choi <sarahc@vmware.com> 2.9.5-1
 -   Upgrade version to 2.9.5 
 *   Tue Dec 13 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.8-1

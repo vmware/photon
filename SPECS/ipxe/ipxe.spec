@@ -1,10 +1,11 @@
 %global security_hardening none
 %global commit          553f4857346faa8c5f6ddf9eced4180924890bfc.tar.bz2
+%define debug_package %{nil}
 
 Summary:        iPXE open source boot firmware
 Name:           ipxe
 Version:        553f485
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -61,6 +62,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  553f485-2
+-   disable debuginfo gen
 *   Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 553f485-1
 -   Version update to build with gcc-6.3
 -   Removed linux/linux-devel build-time dependency
