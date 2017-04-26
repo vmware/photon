@@ -13,7 +13,7 @@
 #################################################################################
 Name:		ceph
 Version:	11.2.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -871,8 +871,8 @@ fi
 
 %files -n python3-rados
 %defattr(-,root,root,-)
-%{_libdir}/python3.5/site-packages/rados.cpython*.so
-%{_libdir}/python3.5/site-packages/rados-*.egg-info
+%{_libdir}/python3.6/site-packages/rados.cpython*.so
+%{_libdir}/python3.6/site-packages/rados-*.egg-info
 
 %files -n libradosstriper1
 %defattr(-,root,root,-)
@@ -941,8 +941,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 %files -n python3-rgw
 %defattr(-,root,root,-)
-%{_libdir}/python3.5/site-packages/rgw.cpython*.so
-%{_libdir}/python3.5/site-packages/rgw-*.egg-info
+%{_libdir}/python3.6/site-packages/rgw.cpython*.so
+%{_libdir}/python3.6/site-packages/rgw-*.egg-info
 
 %files -n python-rbd
 %defattr(-,root,root,-)
@@ -951,8 +951,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 %files -n python3-rbd
 %defattr(-,root,root,-)
-%{_libdir}/python3.5/site-packages/rbd.cpython*.so
-%{_libdir}/python3.5/site-packages/rbd-*.egg-info
+%{_libdir}/python3.6/site-packages/rbd.cpython*.so
+%{_libdir}/python3.6/site-packages/rbd-*.egg-info
 
 %files -n libcephfs2
 %defattr(-,root,root,-)
@@ -979,14 +979,14 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 %files -n python3-cephfs
 %defattr(-,root,root,-)
-%{_libdir}/python3.5/site-packages/cephfs.cpython*.so
-%{_libdir}/python3.5/site-packages/cephfs-*.egg-info
-%{_libdir}/python3.5/site-packages/ceph_volume_client.py
+%{_libdir}/python3.6/site-packages/cephfs.cpython*.so
+%{_libdir}/python3.6/site-packages/cephfs-*.egg-info
+%{_libdir}/python3.6/site-packages/ceph_volume_client.py
 
 %files -n python3-ceph-argparse
 %defattr(-,root,root,-)
-%{_libdir}/python3.5/site-packages/ceph_argparse.py
-%{_libdir}/python3.5/site-packages/ceph_daemon.py
+%{_libdir}/python3.6/site-packages/ceph_argparse.py
+%{_libdir}/python3.6/site-packages/ceph_daemon.py
 
 
 %files -n python-ceph-compat
@@ -995,6 +995,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 
 %changelog
+* Thu Apr 27 2017 Siju Maliakkal <smaliakkal@vmware.com> 11.2.0-5
+- updated python3 version
 * Wed Mar 15 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.2.0-4
 - corrected version number
 * Mon Mar 13 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.2.0-3
