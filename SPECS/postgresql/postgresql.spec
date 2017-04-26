@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        9.5.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -43,15 +43,6 @@ The postgresql-libs package provides the essential shared libraries for any
 PostgreSQL client program or interface. You will need to install this package
 to use any other PostgreSQL package or any clients that need to connect to a
 PostgreSQL server.
-
-%package        devel
-Summary:        Development files for postgresql.
-Group:          Development/Libraries
-Requires:       postgresql = %{version}-%{release}
-
-%description    devel
-The postgresql-devel package contains libraries and header files for
-developing applications that use postgresql.
 
 %prep
 %setup -q
@@ -103,11 +94,17 @@ rm -rf %{buildroot}/*
 %{_bindir}/postgres
 %{_bindir}/postmaster
 %{_bindir}/vacuumlo
+%{_datadir}/postgresql/*
+%{_libdir}/libpgcommon.a
+%{_libdir}/libpgport.a
 %{_libdir}/postgresql/*
 %{_docdir}/postgresql/extension/*.example
+%{_includedir}/postgresql/*
+%exclude %{_includedir}/postgresql/informix/*
+%exclude %{_includedir}/postgresql/internal/*
+%exclude %{_libdir}/debug/
 %exclude %{_datadir}/postgresql/pg_service.conf.sample
 %exclude %{_datadir}/postgresql/psqlrc.sample
-%{_datadir}/postgresql/*
 
 %files libs
 %{_bindir}/clusterdb
@@ -126,26 +123,41 @@ rm -rf %{buildroot}/*
 %{_bindir}/psql
 %{_bindir}/reindexdb
 %{_bindir}/vacuumdb
-%{_libdir}/libecpg*.so.*
-%{_libdir}/libpgtypes*.so.*
-%{_libdir}/libpq*.so.*
+%{_includedir}/ecpg_config.h
+%{_includedir}/ecpg_informix.h
+%{_includedir}/ecpgerrno.h
+%{_includedir}/ecpglib.h
+%{_includedir}/ecpgtype.h
+%{_includedir}/libpq-events.h
+%{_includedir}/libpq-fe.h
+%{_includedir}/libpq/libpq-fs.h
+%{_includedir}/pg_config.h
+%{_includedir}/pg_config_ext.h
+%{_includedir}/pg_config_manual.h
+%{_includedir}/pg_config_os.h
+%{_includedir}/pgtypes_date.h
+%{_includedir}/pgtypes_error.h
+%{_includedir}/pgtypes_interval.h
+%{_includedir}/pgtypes_numeric.h
+%{_includedir}/pgtypes_timestamp.h
+%{_includedir}/postgres_ext.h
+%{_includedir}/postgresql/informix/*
+%{_includedir}/postgresql/internal/*
+%{_includedir}/sql3types.h
+%{_includedir}/sqlca.h
+%{_includedir}/sqlda-compat.h
+%{_includedir}/sqlda-native.h
+%{_includedir}/sqlda.h
+%{_libdir}/libecpg*
+%{_libdir}/libpgtypes*
+%{_libdir}/libpq*
+%{_libdir}/pkgconfig/*
 %{_datadir}/postgresql/pg_service.conf.sample
 %{_datadir}/postgresql/psqlrc.sample
 
-%files devel
-%defattr(-,root,root)
-%{_includedir}/*
-%{_libdir}/pkgconfig/*
-%{_libdir}/libpgcommon.a
-%{_libdir}/libpgport.a
-%{_libdir}/libpq.a
-%{_libdir}/libecpg*.a
-%{_libdir}/libpgtypes*.a
-%{_libdir}/libecpg*.so
-%{_libdir}/libpgtypes*.so
-%{_libdir}/libpq*.so
-
 %changelog
+*   Thu Apr 13 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-3
+-   Removed postgresql-devel and removed libpq.a from main package.
 *   Thu Apr 13 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-2
 -   Added postgresql-devel.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-1
