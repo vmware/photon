@@ -1,8 +1,8 @@
-%define python3_sitearch /usr/lib/python3.5/site-packages
+%define python3_sitearch /usr/lib/python3.6/site-packages
 Summary:        C extensions for Python
 Name:           cython3
 Version:        0.25.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
@@ -49,6 +49,8 @@ rm -rf %{buildroot}
 %{python3_sitearch}/__pycache__/*
 
 %changelog
+*       Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.25.2-2
+-       Updated python3 site path
 *       Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 0.25.2-1
 -       Update to 0.25.2
 * 	Fri Jan 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.23.4-1
