@@ -1,7 +1,7 @@
 Summary:        C library for manipulating tar files
 Name:           libtar
 Version:        1.2.20
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/tklauser/libtar/archive/v1.2.20.tar.gz
 License:        MIT
 Group:          System Environment/Libraries
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        libtar-%{version}.tar.gz
 %define         sha1 libtar=b3ec4058fa83448d6040ce9f9acf85eeec4530b1
+Patch0:         libtar-gen-debuginfo.patch
 Provides:       libtar.so.0()(64bit)
 
 %description
@@ -25,14 +26,16 @@ developing applications that use libtar.
 
 %prep
 %setup
+%patch0
 autoreconf -iv
 
 %build
-%configure --disable-static
+%configure CFLAGS="%{optflags}" STRIP=/bin/true --disable-static
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
+chmod +x %{buildroot}/%{_libdir}/libtar.so.*
 
 %check
 make %{?_smp_mflags} check
@@ -53,6 +56,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libtar.la
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.20-3
+-   Ensure non empty debuginfo
 *   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-2
 -   Provides libtar.so.0()(64bit).
 *   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-1

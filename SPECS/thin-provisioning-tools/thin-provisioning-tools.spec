@@ -1,7 +1,7 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
 Version:        0.6.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
@@ -26,15 +26,21 @@ snapshot eras
 
 %build
 autoconf
-%configure
+export CFLAGS="%{optflags}"
+export LDFLAGS=""
+./configure STRIP=/bin/true --prefix=%{_prefix}
+
 make %{?_smp_mflags}
 
 %install
+rm -rf %{buildroot}
 make DESTDIR=%{buildroot} MANDIR=%{_mandir} install
 
 %clean
+rm -rf %{buildroot}
 
 %files
+%defattr(-,root,root,-)
 %doc COPYING README.md
 %{_mandir}/man8/*
 %{_sbindir}/pdata_tools
@@ -58,6 +64,8 @@ make DESTDIR=%{buildroot} MANDIR=%{_mandir} install
 %{_sbindir}/thin_trim
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.3-2
+-   Ensure non empty debuginfo
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6.3-1
 -   Updated to version 0.6.3.
 *   Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.1-3
