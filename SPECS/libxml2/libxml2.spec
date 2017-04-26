@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -82,7 +82,7 @@ make clean
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
     --disable-static \
-    --with-python=/usr/bin/python3.5
+    --with-python=/usr/bin/python3
 make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 
@@ -121,6 +121,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Tue Apr 25 2017 Siju Maliakkal <smaliakkal@vmware.com> 2.9.4-7
+-   Modified python3 version in configure
 *   Thu Apr 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-6
 -   Added python3-libxml2 package.
 *   Tue Jan 3 2017 Alexey Makhalov <amakhalov@vmware.com> 2.9.4-5
