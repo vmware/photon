@@ -1,7 +1,7 @@
 Summary:	Docbook-xml-4.5
 Name:		docbook-xml
 Version:	4.5
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	MIT
 URL:		http://www.docbook.org
 Source0:	http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
@@ -14,6 +14,8 @@ Requires:   libxml2-python
 BuildRequires: 	libxml2
 BuildRequires:  libxml2-python
 BuildRequires: 	unzip
+BuildArch:      noarch
+
 %description
 The DocBook XML DTD-4.5 package contains document type definitions for 
 verification of XML data files against the DocBook rule set. These are 
@@ -161,6 +163,8 @@ fi
 /usr/share/xml/docbook/%{name}-%{version}
 /etc/xml
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.5-7
+-   Fix arch
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.5-6
 -	GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.5-5

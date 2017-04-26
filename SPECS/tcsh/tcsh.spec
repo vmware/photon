@@ -2,7 +2,7 @@
 Summary:        An enhanced version of csh, the C shell
 Name:           tcsh
 Version:        6.20.00
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          System Environment/Shells
 Source:         http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.xz
@@ -105,13 +105,15 @@ if [ $1 -eq 0 ] ; then
   fi
 fi
 
-%files -f tcsh.lang
+%files# -f tcsh.lang
 %defattr(-,root,root,-)
 %{_bindir}/tcsh
 %{_bindir}/csh
 %{_mandir}/man1/*.1*
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.20.00-2
+-   Ensure non empty debuginfo
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.20.00-1
 -   Updated to version 6.20.00
 *   Tue Feb 07 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-6

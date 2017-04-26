@@ -1,7 +1,7 @@
 Summary:       Python documentation generator
 Name:          python-sphinx
 Version:       1.5.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Tools
 Vendor:        VMware, Inc.
 License:       BSD-2-Clause
@@ -15,6 +15,8 @@ BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
 Requires:       python2
+
+BuildArch:      noarch
 
 %description
 Sphinx is a tool that makes it easy to create intelligent and
@@ -39,6 +41,8 @@ python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python_sitelib}/*
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.3-2
+-   Fix arch
 *   Thu Mar 30 2017 Sarah Choi <sarahc@vmware.com> 1.5.3-1
 -   Upgrade version to 1.5.3
 *   Fri Dec 16 2016 Dheeraj Shetty <dheerajs@vmware.com> 1.5.1-1

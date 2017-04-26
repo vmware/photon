@@ -1,7 +1,7 @@
 Summary:        Common development macros for GNOME
 Name:           gnome-common
 Version:        3.18.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL
 URL:            https://www.gnome.org/
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{version}/%{name}-%{version}.tar.xz
@@ -9,6 +9,7 @@ Source0:        http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{version}/%{name
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildArch:      noarch
 
 %description
 This provides Common development macros for GNOME.
@@ -35,13 +36,11 @@ make %{?_smp_mflags} check
 %files
 %defattr(-,root,root)
 %{_bindir}/gnome-autogen.sh
-/usr/share/aclocal/ax_check_enable_debug.m4
-/usr/share/aclocal/ax_code_coverage.m4
-/usr/share/aclocal/gnome-code-coverage.m4
-/usr/share/aclocal/gnome-common.m4
-/usr/share/aclocal/gnome-compiler-flags.m4
+%{_datadir}/aclocal/*.m4
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.18.0-3
+-   Fix arch
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.18.0-2
 -	GA - Bump release of all rpms
 * 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.18.0-1

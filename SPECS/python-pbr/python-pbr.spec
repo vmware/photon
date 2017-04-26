@@ -4,7 +4,7 @@
 Summary:        Python Build Reasonableness
 Name:           python-pbr
 Version:        2.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ BuildRequires:  python-docutils
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 Requires:       python2
+BuildArch:      noarch
 %description
 A library for managing setuptools packaging needs in a consistent manner.
 
@@ -67,5 +68,7 @@ popd
 %{python3_sitelib}/pbr
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-2
+-   Fix arch
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.1.0-1
 -   Initial packaging for Photon
