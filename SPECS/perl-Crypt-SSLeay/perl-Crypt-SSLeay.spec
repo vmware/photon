@@ -1,7 +1,7 @@
 Summary:        Crypt::SSLeay - OpenSSL support for LWP
 Name:           perl-Crypt-SSLeay
 Version:        0.72
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://search.cpan.org/dist/Crypt-SSLeay/
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
@@ -35,6 +35,7 @@ Work on Crypt::SSLeay has been continued only to provide https support for the L
 
 %build
 env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
+sed -i 's/CCCDLFLAGS = /CCCDLFLAGS = -g /' Makefile
 make %{?_smp_mflags}
 
 %install
@@ -50,6 +51,8 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.72-2
+-   Fix arch
 *   Wed Apr 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.72-1
 -   Initial version.
 

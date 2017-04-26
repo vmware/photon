@@ -1,7 +1,7 @@
 Summary:	Itstool-2.0.2
 Name:		itstool
 Version:	2.0.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://itstool.org
 Source0:	http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
@@ -13,6 +13,8 @@ BuildRequires:	docbook-xml >= 4.5
 BuildRequires:	python2 >= 2.7.8
 BuildRequires:	python2-libs >= 2.7.8
 Requires:	python2
+BuildArch:      noarch
+
 %description
 Itstool extracts messages from XML files and outputs PO template files, then merges 
 translations from MO files to create translated XML files. It determines what 
@@ -31,6 +33,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/%{name}/*
 %{_mandir}/man1/*
 %changelog
+*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-4
+-	Fix arch
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-3
 -	GA - Bump release of all rpms
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.0.2-2
