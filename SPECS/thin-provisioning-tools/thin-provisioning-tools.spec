@@ -26,15 +26,21 @@ snapshot eras
 
 %build
 autoconf
-%configure
+export CFLAGS="%{optflags}"
+export LDFLAGS=""
+./configure STRIP=/bin/true --prefix=%{_prefix}
+
 make %{?_smp_mflags}
 
 %install
+rm -rf %{buildroot}
 make DESTDIR=%{buildroot} MANDIR=%{_mandir} install
 
 %clean
+rm -rf %{buildroot}
 
 %files
+%defattr(-,root,root,-)
 %doc COPYING README.md
 %{_mandir}/man8/*
 %{_sbindir}/pdata_tools

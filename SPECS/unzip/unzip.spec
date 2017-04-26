@@ -34,6 +34,9 @@ case `uname -m` in
     ;;
   *)
     sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD/' unix/Makefile
+    sed -i 's/CFLAGS="-O -Wall/CFLAGS="-O -g -Wall/' unix/Makefile
+    sed -i 's/LF2 = -s/LF2 =/' unix/Makefile
+    sed -i 's|STRIP = strip|STRIP = /bin/true|' unix/Makefile
     make -f unix/Makefile linux_noasm %{?_smp_mflags}
     ;;
 esac

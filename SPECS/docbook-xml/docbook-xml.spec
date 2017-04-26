@@ -14,6 +14,8 @@ Requires:   libxml2-python
 BuildRequires: 	libxml2
 BuildRequires:  libxml2-python
 BuildRequires: 	unzip
+BuildArch:      noarch
+
 %description
 The DocBook XML DTD-4.5 package contains document type definitions for 
 verification of XML data files against the DocBook rule set. These are 

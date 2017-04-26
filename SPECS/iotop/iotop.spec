@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	http://guichaz.free.fr/iotop/files/%{name}-%{version}.tar.gz
 %define sha1 iotop=71a0e7043d83673a40d7ddc57f5b50adab7fff2a
 BuildRequires: python2 python2-libs
+BuildArch:      noarch
 
 %description
  Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity. 

@@ -17,7 +17,9 @@ controllers and hard drives both to increase performance and sometimes to increa
 %prep
 %setup -q
 %build
-make %{?_smp_mflags}
+sed -i 's/STRIP ?= strip/STRIP=$(STRIP)/' Makefile
+sed -i 's/LDFLAGS = -s/LDFLAGS=$(LDFLAGS)/' Makefile
+make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS="" STRIP="/bin/true"
 %install
 make DESTDIR=%{buildroot} binprefix=%{_prefix} install
 

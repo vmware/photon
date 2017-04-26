@@ -68,6 +68,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_mandir}/man5/*
 %{_sbindir}/*
+%exclude %{_docdir}/%{name}-%{version}/CHANGES.gz
 
 %files devel
 %defattr(-,root,root)

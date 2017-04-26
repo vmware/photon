@@ -41,6 +41,8 @@ system at the moment or a person.
 %patch1 -p1
 
 %build
+sed -i 's/install -s/install/' finger/Makefile
+sed -i 's/install -s/install/' fingerd/Makefile
 ./configure \
 	--prefix=%{_prefix}
 

@@ -1,5 +1,6 @@
 %global security_hardening none
 %global commit          553f4857346faa8c5f6ddf9eced4180924890bfc.tar.bz2
+%define debug_package %{nil}
 
 Summary:        iPXE open source boot firmware
 Name:           ipxe

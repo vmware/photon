@@ -13,6 +13,8 @@ BuildRequires:	docbook-xml >= 4.5
 BuildRequires:	python2 >= 2.7.8
 BuildRequires:	python2-libs >= 2.7.8
 Requires:	python2
+BuildArch:      noarch
+
 %description
 Itstool extracts messages from XML files and outputs PO template files, then merges 
 translations from MO files to create translated XML files. It determines what 

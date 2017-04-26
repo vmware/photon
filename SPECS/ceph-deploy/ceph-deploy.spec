@@ -23,6 +23,7 @@ BuildRequires:  python-setuptools
 
 Requires:	python2
 Requires:	python-setuptools
+BuildArch:      noarch
 
 %description
 An easy to use admin tool for deploy ceph storage clusters.

@@ -13,6 +13,7 @@ Source0:        http://smarden.org/runit/runit-%{version}.tar.gz
 Source1:	runit.service
 #Patch source: https://github.com/imeyer/runit-rpm
 Patch0:		runit-default-service.patch
+Patch1:		runit-gen-debug.patch
 
 %description
 runit is a cross-platform Unix init scheme with service supervision; a
@@ -23,6 +24,7 @@ systems.
 %prep
 %setup -q -n admin/%{name}-%{version}
 %patch0
+%patch1
 
 %build
 sh package/compile

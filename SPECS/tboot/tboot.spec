@@ -19,10 +19,12 @@ and verified launch of an OS kernel/VMM.
 %prep
 %setup -q
 %build
-make %{?_smp_mflags}
+CFLAGS="%{optflags}"
+export CFLAGS
+make debug=y %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make debug=y DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)

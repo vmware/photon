@@ -23,6 +23,8 @@ BuildRequires:	python2
 BuildRequires:	python2-libs
 Requires:	python2
 Provides:	perl(gtkdoc-common.pl)
+BuildArch:      noarch
+
 %description
 The GTK-Doc package contains a code documenter. This is useful for extracting 
 specially formatted comments from the code to create API documentation. 

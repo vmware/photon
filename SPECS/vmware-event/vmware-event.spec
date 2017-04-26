@@ -1,3 +1,5 @@
+%define debug_package %{nil}
+
 Name:          vmware-event
 Summary:       VMware Event SDK
 Version:       1.2.0
