@@ -17,6 +17,8 @@ Requires:       python2
 Requires:       python2-libs
 Requires:       python-setuptools
 
+BuildArch:      noarch
+
 %description
 The PyPA recommended tool for installing Python packages.
 

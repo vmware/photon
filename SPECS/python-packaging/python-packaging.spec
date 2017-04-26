@@ -19,6 +19,8 @@ BuildRequires:  python2-devel
 Requires:       python2
 Requires:       python2-libs
 
+BuildArch:      noarch
+
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
 

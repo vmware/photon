@@ -9,7 +9,7 @@ Source:         http://search.cpan.org/CPAN/authors/id/S/SU/SULLR/IO-Socket-SSL-
 %define sha1 IO-Socket-SSL=2c624f52d1c53c36f8cc0b21c15575e64114f53c
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:      x86_64
+BuildArch:      noarch
 Requires:       perl-Net-SSLeay
 BuildRequires:  perl-Net-SSLeay
 

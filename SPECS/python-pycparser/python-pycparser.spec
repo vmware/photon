@@ -19,6 +19,7 @@ BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
+BuildArch:      noarch
 
 
 %description

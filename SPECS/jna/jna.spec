@@ -1,3 +1,6 @@
+#need to disable debuginfo till we bring in x11 deps
+%define debug_package %{nil}
+
 Summary:        Java Native Access
 Name:           jna
 Version:        4.4.0

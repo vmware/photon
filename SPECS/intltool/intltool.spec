@@ -11,6 +11,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires: 	XML-Parser
 BuildRequires:	XML-Parser
+BuildArch:      noarch
+
 %description
 The Intltool is an internationalization tool used for extracting translatable strings from source files.
 %prep

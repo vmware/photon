@@ -2,7 +2,7 @@ Name:           traceroute
 Summary:        Traces the route taken by packets over an IPv4/IPv6 network
 Version:        2.1.0
 Release:        1%{?dist}
-License:        GPLv2
+License:        GPLv2+
 Group:          Applications/Internet
 Url:            http://traceroute.sourceforge.net
 Source0:        http://downloads.sourceforge.net/project/traceroute/traceroute/traceroute-%{version}/traceroute-%{version}.tar.gz
@@ -20,9 +20,10 @@ way to a specified network (or Internet) host.
 
 
 %build
-make %{?_smp_mflags}
+make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS=""
 
 %install
+rm -rf %{buildroot}
 
 install -d %{buildroot}/bin
 install -m755 traceroute/traceroute %{buildroot}/bin
@@ -34,14 +35,17 @@ install -d %{buildroot}%{_bindir}
 install -m755 wrappers/tcptraceroute %{buildroot}%{_bindir}
 
 install -d %{buildroot}%{_mandir}/man8
-install -p -m644 traceroute/traceroute.8 %{buildroot}%{_mandir}/man8
+install -p -m644 traceroute/traceroute.8 $RPM_BUILD_ROOT%{_mandir}/man8
 pushd %{buildroot}%{_mandir}/man8
 ln -s traceroute.8 traceroute6.8
 ln -s traceroute.8 tcptraceroute.8
 popd
 
+%clean
+rm -rf $RPM_BUILD_ROOT
 
 %files
+%defattr(-,root,root,-)
 %doc COPYING README TODO CREDITS
 /bin/*
 %{_bindir}/*

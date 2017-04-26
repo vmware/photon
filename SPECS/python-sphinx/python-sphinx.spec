@@ -16,6 +16,8 @@ BuildRequires: python-setuptools
 
 Requires:       python2
 
+BuildArch:      noarch
+
 %description
 Sphinx is a tool that makes it easy to create intelligent and
 beautiful documentation for Python projects (or other documents

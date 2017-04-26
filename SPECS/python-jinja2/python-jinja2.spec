@@ -15,6 +15,7 @@ BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
+BuildArch:      noarch
 
 %description
 Jinja2 is a template engine written in pure Python.  It provides a Django

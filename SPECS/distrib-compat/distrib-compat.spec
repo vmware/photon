@@ -13,13 +13,17 @@ Source1:      rc.status
 Source2:      90-va-tune-up.conf
 Source3:      ifup
 Source4:      ifdown
+Patch0:       distrib-compat-gen-debuginfo.patch
 %description
 Set of scripts and tools to get compatbility with other distributions.
 It includes: rc.status, startproc, killproc, checkproc, ifup and ifdown.
 %prep
 %setup -q
+%patch0
+
 %build
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -d -m 0755 %{buildroot}%{_sysconfdir}/sysctl.d

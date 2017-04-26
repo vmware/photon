@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        libtar-%{version}.tar.gz
 %define         sha1 libtar=b3ec4058fa83448d6040ce9f9acf85eeec4530b1
+Patch0:         libtar-gen-debuginfo.patch
 Provides:       libtar.so.0()(64bit)
 
 %description
@@ -25,14 +26,16 @@ developing applications that use libtar.
 
 %prep
 %setup
+%patch0
 autoreconf -iv
 
 %build
-%configure --disable-static
+%configure CFLAGS="%{optflags}" STRIP=/bin/true --disable-static
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
+chmod +x %{buildroot}/%{_libdir}/libtar.so.*
 
 %check
 make %{?_smp_mflags} check

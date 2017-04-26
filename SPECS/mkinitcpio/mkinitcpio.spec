@@ -15,6 +15,7 @@ BuildRequires: python-xml
 BuildRequires: docbook-xsl
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
+BuildArch:     noarch
 
 %description
 Multi-format archive and compression library

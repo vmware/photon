@@ -9,15 +9,19 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
 %define sha1    vsftpd=d5f5a180dbecd0fbcdc92bf0ba2fc001c962b55a
+Patch0:         vsftpd-gen-debuginfo.patch
 BuildRequires:  libcap-devel Linux-PAM-devel openssl-devel
 Requires:       libcap Linux-PAM openssl
 %description
 Very secure and very small FTP daemon.
 %prep
 %setup -q
+%patch0
+
 %build
 sed -i -e 's|#define VSF_SYSDEP_HAVE_LIBCAP|//&|' sysdeputil.c
-make %{?_smp_mflags}
+make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS=""
+
 %install
 install -vdm 755 %{buildroot}%{_sbindir}
 install -vdm 755 %{buildroot}%{_mandir}/{man5,man8}
@@ -76,7 +80,7 @@ fi
 %{_sysconfdir}/*
 %{_sbindir}/*
 %{_datadir}/*
-%exclude %{_libdir}/debug
+
 %changelog
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.3-2
 -   BuildRequires Linux-PAM-devel

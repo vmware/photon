@@ -20,6 +20,7 @@ BuildRequires:  lapack-devel
 
 Requires:       python2
 Requires:       python2-libs
+BuildArch:      noarch
 
 %description
 ANother Tool for Language Recognition, is a language tool that provides a framework for constructing recognizers, interpreters, compilers, and translators from grammatical descriptions containing actions in a variety of target languages.

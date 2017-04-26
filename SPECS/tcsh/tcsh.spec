@@ -105,7 +105,7 @@ if [ $1 -eq 0 ] ; then
   fi
 fi
 
-%files -f tcsh.lang
+%files# -f tcsh.lang
 %defattr(-,root,root,-)
 %{_bindir}/tcsh
 %{_bindir}/csh

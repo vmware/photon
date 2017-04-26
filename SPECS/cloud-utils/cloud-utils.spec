@@ -11,6 +11,7 @@ Distribution:   Photon
 Requires:       gptfdisk
 Requires:       gawk
 Requires:       util-linux
+BuildArch:      noarch
 
 %define sha1 cloud-utils=c90ccaaac0d5e28b0a0564770af2af2d2c95f0de
 

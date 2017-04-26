@@ -14,6 +14,8 @@ Patch0:		autoconf-make-check.patch
 Requires:	perl
 BuildRequires:	m4
 Requires:	m4
+BuildArch:      noarch
+
 %description
 The package contains programs for producing shell scripts that can
 automatically configure source code.

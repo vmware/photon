@@ -1,4 +1,5 @@
 %global security_hardening none
+
 Summary:        Programs to parse command-line options
 Name:           netkit-telnet
 Version:        0.17
@@ -26,11 +27,14 @@ This provides the telnet server daemons.
 %build 
 sed -i 's/MANDIR="$PREFIX\/man"/MANDIR="$PREFIX\/share\/man"/g' configure
 sed -i 's/LIBS += $(LIBTERMCAP)/LIBS += $(LIBTERMCAP) -lstdc++/g' telnet/Makefile
+sed -i 's/install -s/install/' telnet/Makefile
+sed -i 's/install -s/install/' telnetd/Makefile
 sed -i '/#include <termios.h>/{s/.*/&\n#include <stdlib.h>\n#include <string.h>/;:a;n;ba}' telnet/externs.h
 sed -i '/#include <stdlib.h>/{s/.*/&\n#include <string.h>/;:a;n;ba}' telnet/netlink.cc
 ./configure --installroot=%{buildroot}
 
 make
+
 %install
 export MANDIR=%{_mandir}
 mkdir -p %{buildroot}/%{_bindir}

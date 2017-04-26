@@ -9,6 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://sourceforge.net/projects/asciidoc/files/asciidoc/%{version}/%{name}-%{version}.tar.gz
 %define sha1 asciidoc=82e574dd061640561fa0560644bc74df71fb7305
+BuildArch:  noarch
 
 %description
 AsciiDoc is a human readable text document format that can be easily converted to other document formats.
