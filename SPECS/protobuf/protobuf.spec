@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -135,12 +135,14 @@ popd
 %{_libdir}/python2.7/site-packages/*
 
 %files python3
-%{_libdir}/python3.5/site-packages/*
+%{_libdir}/python3.6/site-packages/*
 
 %files java
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Fri Apr 28 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.0-3
+-   Update python3 version
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.2.0-2
 -   Build protobuf-java.
 *   Fri Mar 31 2017 Rongrong Qiu <rqiu@vmware.com> 3.2.0-1
