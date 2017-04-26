@@ -1,13 +1,12 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.6.9
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       MPLv1.1
 URL:           http://www.rabbitmq.com
-BuildArch:     x86_64
 Source0:       %{name}-%{version}.tar.xz
 %define sha1 rabbitmq=559372baa7df9ebf853f3cbf2a15a1fc14cd38ee
 Source1:       rabbitmq.config
@@ -20,6 +19,7 @@ BuildRequires: rsync
 BuildRequires: zip
 BuildRequires: libxslt
 BuildRequires: python-xml
+BuildArch:     noarch
 
 %description
 rabbitmq messaging server
@@ -74,6 +74,8 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Wed Apr 26 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.9-2
+- Fix arch
 * Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.9-1
 - Updating package to the latest
 * Mon Dec 12 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.6-1

@@ -27,6 +27,26 @@
  #			it better than the autoconf lockingtests.
  #			This will cause the lockingtests to be hotwired.
  #			100	to enable fcntl()
+@@ -86,8 +86,8 @@
+  #-Wimplicit -Wshadow -Wid-clash-6 #-Wuninitialized
+ 
+ # The place to put your favourite extra cc flag
+-CFLAGS0 = -O #$(GCC_WARNINGS)
+-LDFLAGS0= -s
++CFLAGS0 = -O2 -g
++LDFLAGS0=
+ # Read my libs :-)
+ LIBS=
+ 
+@@ -103,7 +103,7 @@
+ BSHELL	= /bin/sh
+ INSTALL = cp
+ DEVNULL = /dev/null
+-STRIP	= strip
++STRIP	= /bin/true
+ MKDIRS	= new/mkinstalldirs
+ 
+ SUBDIRS = src man
 --- procmail-3.22/config.h.rhconfig	2001-09-10 22:53:50.000000000 -0600
 +++ procmail-3.22/config.h	2003-09-12 07:41:40.000000000 -0600
 @@ -46,13 +47,13 @@

@@ -1,7 +1,7 @@
 Summary:	Unzip-6.0
 Name:		unzip
 Version:	6.0
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	BSD
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -34,6 +34,9 @@ case `uname -m` in
     ;;
   *)
     sed -i -e 's/CFLAGS="-O -Wall/& -DNO_LCHMOD/' unix/Makefile
+    sed -i 's/CFLAGS="-O -Wall/CFLAGS="-O -g -Wall/' unix/Makefile
+    sed -i 's/LF2 = -s/LF2 =/' unix/Makefile
+    sed -i 's|STRIP = strip|STRIP = /bin/true|' unix/Makefile
     make -f unix/Makefile linux_noasm %{?_smp_mflags}
     ;;
 esac
@@ -55,6 +58,8 @@ make %{?_smp_mflags}  check
 %{_bindir}/*
 
 %changelog
+*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-9
+-	Ensure non empty debuginfo
 *       Wed Nov 30 2016 Dheeraj Shetty <dheerajs@vmware.com> 6.0-8
 -       Added patch for CVE-2015-7696 and CVE-2015-7697
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 6.0-7

@@ -1,7 +1,7 @@
 Summary:	Intltool 
 Name:		intltool
 Version:	0.51.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://freedesktop.org/wiki/Software/intltool/
 Source0:	https://launchpad.net/intltool/+download/%{name}-%{version}.tar.gz
@@ -11,6 +11,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Requires: 	XML-Parser
 BuildRequires:	XML-Parser
+BuildArch:      noarch
+
 %description
 The Intltool is an internationalization tool used for extracting translatable strings from source files.
 %prep
@@ -33,6 +35,8 @@ make %{?_smp_mflags} check
 %{_datadir}/intltool/*
 %{_mandir}/man8/*
 %changelog
+*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.51.0-3
+-	Fix arch
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.51.0-2
 -	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  0.51.0-1

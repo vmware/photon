@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.7.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -21,7 +21,7 @@ environment.
 
 %build
 cp %{SOURCE1} .config
-make
+NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g"
 
 %install
 PREFIX=%{buildroot} make install
@@ -45,5 +45,7 @@ popd
 %{_sbindir}/*
 
 %changelog
+*   Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.3-2
+-   Ensure debuginfo
 *   Thu Apr 20 2017 Fabio Rapposelli <fabio@vmware.com> 0.7.3-1
 -   Initial build.  First version

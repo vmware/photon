@@ -4,7 +4,7 @@
 Summary:        Core utilities for Python packages
 Name:           python-packaging
 Version:        16.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
@@ -18,6 +18,8 @@ BuildRequires:  python2-devel
 
 Requires:       python2
 Requires:       python2-libs
+
+BuildArch:      noarch
 
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
@@ -65,6 +67,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 16.8-3
+-   Fix arch
 *   Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 16.8-2
 -   Remove python-setuptools from BuildRequires
 *   Tue Apr 04 2017 Xiaolin Li <xiaolinl@vmware.com> 16.8-1

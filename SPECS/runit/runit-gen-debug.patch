@@ -1,0 +1,17 @@
+--- src/conf-cc	2014-08-10 18:22:35.000000000 +0000
++++ src/conf-cc.1	2017-04-24 17:43:21.290444720 +0000
+@@ -1,5 +1,5 @@
+-gcc -O2 -Wall
++gcc -O2 -g -Wall
+ 
+-gcc -O2 -Wimplicit -Wunused -Wcomment -Wchar-subscripts -Wuninitialized -Wshadow -Wcast-qual -Wcast-align -Wwrite-strings
++gcc -O2 -g -Wimplicit -Wunused -Wcomment -Wchar-subscripts -Wuninitialized -Wshadow -Wcast-qual -Wcast-align -Wwrite-strings
+ 
+ This will be used to compile .c files.
+--- src/conf-ld	2014-08-10 18:22:34.000000000 +0000
++++ src/conf-ld.1	2017-04-24 18:15:47.378970037 +0000
+@@ -1,3 +1,3 @@
+-gcc -s
++gcc
+ 
+ This will be used to link .o files into an executable.

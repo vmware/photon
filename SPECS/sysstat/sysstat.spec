@@ -1,7 +1,7 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
 Version:        11.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
 Group:          Development/Debuggers
@@ -23,7 +23,8 @@ Requires:       cronie
             --enable-copy-only \
             --disable-file-attr \
             sa_lib_dir=%{_libdir}/sa \
-            --mandir=%{_mandir}
+            --mandir=%{_mandir} \
+            --disable-stripping
 make %{?_smp_mflags}
 %install
 make install
@@ -51,6 +52,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 11.4.3-2
+-   Ensure debuginfo
 *   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 11.4.3-1
 -   Update to version 11.4.3
 *   Thu Jan 05 2017 Xiaolin Li <xiaolinl@vmware.com> 11.4.2-1
