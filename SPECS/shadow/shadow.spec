@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.2.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 URL:            http://pkg-shadow.alioth.debian.org/
 License:        BSD
 Group:          Applications/System
@@ -138,6 +138,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-12
+-   Allow '.' in username
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-11
 -   BuildRequires Linux-PAM-devel
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-10
