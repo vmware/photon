@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.2.1
-Release:	8%{?dist}
+Release:	9%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -101,33 +101,35 @@ done
 %{_mandir}/*/*
 %config(noreplace) %{_sysconfdir}/pam.d/*
 %changelog
-*       Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
--	Added logic to not replace pam.d conf files in upgrade scenario
-*       Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-7
--	Adding pam_cracklib module as requisite to pam password configuration
-*       Wed May 25 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-6
--	Modifying pam_systemd module as optional in a session
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
--	GA - Bump release of all rpms
+*   Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-9
+-   Allow '.' in username
+*   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
+-   Added logic to not replace pam.d conf files in upgrade scenario
+*   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-7
+-   Adding pam_cracklib module as requisite to pam password configuration
+*   Wed May 25 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-6
+-   Modifying pam_systemd module as optional in a session
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
+-   GA - Bump release of all rpms
 *   Mon May 2 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-4
 -   Enabling pam_systemd module in a session.
-*       Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
--       Setting password aging limits to 90 days
-*       Wed Apr 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
--       Setting password aging limits to 365 days
-*       Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
--       Enabling pam_limits module in a session
-*	Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
--	Update version
-*       Wed Dec 2 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-6
--       Fixed PAM Configuration file for passwd
-*	Mon Oct 26 2015 Sharath George <sharathg@vmware.com> 4.1.5.1-5
--	Allow mixed case in username.
-*	Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-4
--	Fixed PAM Configuration file for chpasswd
-*	Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
--	Use group id 100(users) by default
-*	Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-2
--	Adding PAM support
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-1
--	Initial build.	First version
+*   Fri Apr 29 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
+-   Setting password aging limits to 90 days
+*   Wed Apr 27 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-3
+-   Setting password aging limits to 365 days
+*   Wed Mar 23 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-2
+-   Enabling pam_limits module in a session
+*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 4.2.1-1
+-   Update version
+*   Wed Dec 2 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-6
+-   Fixed PAM Configuration file for passwd
+*   Mon Oct 26 2015 Sharath George <sharathg@vmware.com> 4.1.5.1-5
+-   Allow mixed case in username.
+*   Mon Jun 29 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-4
+-   Fixed PAM Configuration file for chpasswd
+*   Tue Jun 16 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.5.1-3
+-   Use group id 100(users) by default
+*   Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-2
+-   Adding PAM support
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.1.5.1-1
+-   Initial build.	First version
