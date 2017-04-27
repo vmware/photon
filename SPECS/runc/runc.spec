@@ -1,0 +1,46 @@
+Summary:	CLI tool for spawning and running containers per OCI spec.
+Name:		runc
+Version:	0.1.1
+Release:	1%{?dist}
+License:	ASL 2.0
+URL:		https://runc.io/
+Source0:	https://github.com/opencontainers/runc/archive/%{name}-v%{version}.tar.gz
+%define sha1 runc=ca70c97c9211462f774e22f03fec2fe61f45f1ba
+Group:		Virtualization/Libraries
+Vendor:		VMware, Inc.
+Distribution: 	Photon
+BuildRequires:  curl
+BuildRequires:  gawk
+BuildRequires:  go
+BuildRequires:  iptables
+BuildRequires:  pkg-config
+BuildRequires:  libaio-devel
+BuildRequires:  libcap-ng-devel
+BuildRequires:  libseccomp
+BuildRequires:  libseccomp-devel
+BuildRequires:  protobuf-devel
+BuildRequires:  protobuf-c-devel
+BuildRequires:  python2-devel
+Requires:       glibc
+Requires:       libgcc
+Requires:       libseccomp
+
+%description
+runC is a CLI tool for spawning and running containers according to the OCI specification. Containers are started as a child process of runC and can be embedded into various other systems without having to run a daemon.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+make %{?_smp_mflags}
+
+%install
+install -D -m0755 runc %{buildroot}%{_sbindir}/runc
+
+%files
+%defattr(-,root,root)
+%{_sbindir}/runc
+
+%changelog
+*   Tue Apr 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.1-1
+-   Initial runc package for PhotonOS.
