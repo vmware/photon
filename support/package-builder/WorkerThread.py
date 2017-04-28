@@ -29,7 +29,7 @@ class WorkerThread(threading.Thread):
             t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))
             t.start()
             t.join()
-            if outputMap.has_key(pkg):
+            if pkg in outputMap:
                 if outputMap[pkg] == False:
                     buildThreadFailed = True
                     Scheduler.Scheduler.notifyPackageBuildFailed(pkg)

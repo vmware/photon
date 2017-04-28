@@ -58,7 +58,7 @@ class SpecParser(object):
                 else:
                     if defaultpkg.name == packageName :
                         packageName = 'default'
-                    if not self.packages.has_key(packageName):
+                    if packageName not in self.packages:
                         return False
                     macro,i=self.readMacroFromFile(i, lines)
                     self.packages[packageName].updatePackageMacro(macro)

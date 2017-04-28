@@ -50,7 +50,7 @@ class PackageSelector(object):
         additional_files = []
         for install_option in options:
             if install_option[0] == config_type:
-                if install_option[1].has_key("additional-files"):
+                if "additional-files" in install_option[1]:
                     additional_files = install_option[1]["additional-files"]
                 break
         return additional_files

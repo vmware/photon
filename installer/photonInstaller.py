@@ -110,7 +110,7 @@ def create_additional_file_list_to_copy_in_iso(base_path, build_install_option):
     options_sorted = option_list_json.items()
     file_list = []
     for install_option in options_sorted:
-        if install_option[1].has_key("additional-files"):
+        if "additional-files" in install_option[1]:
             file_list = file_list + map(lambda filename: os.path.join(base_path, filename), install_option[1].get("additional-files"))
     return file_list
 
@@ -120,7 +120,7 @@ def get_live_cd_status_string(build_install_option):
     options_sorted = option_list_json.items()
     file_list = []
     for install_option in options_sorted:
-        if install_option[1].has_key("live-cd"):
+        if "live-cd" in install_option[1]:
             if install_option[1].get("live-cd") == True:
                 return "true"
     return "false"

@@ -55,7 +55,7 @@ class PackageBuildDataGenerator(object):
     
     def getCircularDependentPackages(self,pkg):
         circularDependentPackages=[]
-        if self.__mapPackageToCycle.has_key(pkg):
+        if pkg in self.__mapPackageToCycle:
             circularDependentPackages.extend(self.__mapCyclesToPackageList[self.__mapPackageToCycle[pkg]])
             circularDependentPackages.remove(pkg)
         return circularDependentPackages
@@ -125,9 +125,9 @@ class PackageBuildDataGenerator(object):
 
         addBuildTimeGraph=True
         addRunTimeGraph=True
-        if self.__buildDependencyGraph.has_key(basePackage):
+        if basePackage in self.__buildDependencyGraph:
             addBuildTimeGraph = False
-        if self.__runTimeDependencyGraph.has_key(basePackage):
+        if basePackage in self.__runTimeDependencyGraph:
             addRunTimeGraph=False
         
         nextPackagesToConstructGraph=[]
@@ -180,7 +180,7 @@ class PackageBuildDataGenerator(object):
             listDepPkgs.add(package)
             while listDepPkgs:
                 pkg = listDepPkgs.pop()
-                if dependentPackages.has_key(pkg):
+                if pkg in dependentPackages:
                     continue
                 dependentPackages[pkg]=dependencyGraph[pkg][:]
                 for depPkg in dependencyGraph[pkg]:
@@ -192,7 +192,7 @@ class PackageBuildDataGenerator(object):
                 noDepPackages.add(pkg)
             else:
                 for depPkg in dependentPackages[pkg]:
-                    if not dependentOfPackage.has_key(depPkg):
+                    if depPkg not in dependentOfPackage:
                         dependentOfPackage[depPkg]=[pkg]
                     else:
                         if pkg not in dependentOfPackage[depPkg]:
@@ -258,7 +258,7 @@ class PackageBuildDataGenerator(object):
         for node in listNodes:
             listDepPkg=constructDependencyMap[node]
             cycPkgs=[]
-            if not self.__mapPackageToCycle.has_key(node):
+            if node not in self.__mapPackageToCycle:
                 for depPkg in listDepPkg:
                     x = constructDependencyMap[depPkg]
                     if node in x:
