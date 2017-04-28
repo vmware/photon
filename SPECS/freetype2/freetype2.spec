@@ -1,7 +1,7 @@
 Summary:	software font engine.
 Name:		freetype2
 Version:	2.7.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD/GPL
 URL:		http://www.freetype.org/
 Group:		System Environment/Libraries
@@ -9,6 +9,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
 %define sha1 freetype=60fb8097901a887b8e8f6e7f777ef0516ae68022
+Patch0:         CVE-2017-7857-and-CVE-2017-7858.patch
+Patch1:         CVE-2017-7864.patch
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
 
@@ -23,6 +25,9 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q -n freetype-%{version}
+%patch0 -p1
+%patch1 -p1
+
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -56,5 +61,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Fri Apr 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.1-2
+-       CVE-2017-7857, CVE-2017-7858 and CVE-2017-7864
 *       Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.7.1-1
 -       Initial version
