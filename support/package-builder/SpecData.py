@@ -61,7 +61,7 @@ class SerializableSpecObjectsUtils(object):
                     if self.compareVersions(existingObj,specObj) == 1:
                         skipUpdating = True
                         break;
-            	specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
+                specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
                 self.mapPackageToSpec[specPkg]=specName
                 if spec.getIsRPMPackage(specPkg):
                     specObj.listRPMPackages.append(specPkg)
@@ -86,7 +86,7 @@ class SerializableSpecObjectsUtils(object):
 
     def getRequiresForPackage(self, package):
         specName=self.getSpecName(package)
-        if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
+        if package in self.mapSerializableSpecObjects[specName].installRequiresPackages:
             return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
         return None
 
@@ -165,35 +165,35 @@ class SerializableSpecObjectsUtils(object):
         return self.mapSerializableSpecObjects[specName].listRPMPackages
 
     def getReleaseNum(self, releaseVal):
-	id = releaseVal.find("%")
-	if (id != -1):
-	    return releaseVal[0:id]
-	else:
-	    return releaseVal
+        id = releaseVal.find("%")
+        if (id != -1):
+            return releaseVal[0:id]
+        else:
+            return releaseVal
 
     def compareVersions(self, existingObj, newObject):
-	if StrictVersion(existingObj.version) > StrictVersion(newObject.version):
-	    return 1;
-	elif StrictVersion(existingObj.version) < StrictVersion(newObject.version):
-	    return -1
-	else:
-	    if int(self.getReleaseNum(existingObj.release)) > int(self.getReleaseNum(newObject.release)):
-		return 1;
-	    else:
-	     	return -1;
+        if StrictVersion(existingObj.version) > StrictVersion(newObject.version):
+            return 1;
+        elif StrictVersion(existingObj.version) < StrictVersion(newObject.version):
+            return -1
+        else:
+            if int(self.getReleaseNum(existingObj.release)) > int(self.getReleaseNum(newObject.release)):
+                return 1;
+            else:
+                return -1;
 
     def getSpecName(self,package):
-        if self.mapPackageToSpec.has_key(package):
+        if package in self.mapPackageToSpec:
             specName=self.mapPackageToSpec[package]
-            if self.mapSerializableSpecObjects.has_key(specName):
+            if specName in self.mapSerializableSpecObjects:
                 return specName
         self.logger.error("Could not able to find "+package+" package from specs")
         raise Exception("Invalid package:"+package)
 
     def isRPMPackage(self,package):
-        if self.mapPackageToSpec.has_key(package):
+        if package in self.mapPackageToSpec:
             specName=self.mapPackageToSpec[package]
-            if self.mapSerializableSpecObjects.has_key(specName):
+            if specName in self.mapSerializableSpecObjects:
                 return True
         return False
 

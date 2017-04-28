@@ -190,7 +190,7 @@ class Specutils(object):
         depedentPackages=[]
         defaultPkgName=self.spec.packages['default'].name
         pkg = None
-        if self.spec.packages.has_key(packageName):
+        if packageName in self.spec.packages:
             pkg = self.spec.packages.get(packageName)
         if defaultPkgName == packageName:
             pkg=self.spec.packages['default']

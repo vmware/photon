@@ -146,7 +146,7 @@ class PackageBuilder(object):
             return
         self.installDependentRunTimePackages(pkgUtils,package,chrootID,destLogPath,listInstalledPackages)
         noDeps=False
-        if self.mapPackageToCycles.has_key(package):
+        if package in self.mapPackageToCycles:
             noDeps = True
         if package in self.listNodepsPackages:
             noDeps=True
@@ -159,7 +159,7 @@ class PackageBuilder(object):
         listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
         if len(listRunTimeDependentPackages) != 0:
             for pkg in listRunTimeDependentPackages:
-                if self.mapPackageToCycles.has_key(pkg) and pkg not in self.listAvailableCyclicPackages:
+                if pkg in self.mapPackageToCycles and pkg not in self.listAvailableCyclicPackages:
                     continue
                 if pkg in listInstalledPackages:
                     continue
