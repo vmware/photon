@@ -7,7 +7,7 @@ Group:         Applications/System
 Vendor:        VMware, Inc.
 URL: 	       https://github.com/vmware/lightwave
 Source0:       lightwave-%{version}.tar.gz
-%define sha1 lightwave=223d98f15b67f531fc8eeed824756cb313a2ac01
+%define sha1 lightwave=5f8bb80732e5f03df321c52bf12c305e65ad66a3
 Distribution:  Photon
 Requires:       coreutils >= 8.22
 BuildRequires:  coreutils >= 8.22
