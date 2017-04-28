@@ -1,14 +1,14 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.5.3
-Release:        3%{?dist}
+Version:        3.6.1
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=127121fdca11e735b3686e300d66f73aba663e93
+Source0:        https://www.python.org/ftp/python/3.6.1/Python-%{version}.tgz
+%define sha1    Python=6e91434cf22414af8240dfa1bf8ab2d043b04998
 Patch0:         cgi3.patch
 Patch2:         python3-support-photon-platform.patch
 BuildRequires:  pkg-config >= 0.28
@@ -106,7 +106,7 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
-chmod -v 755 %{buildroot}%{_libdir}/libpython3.5m.so.1.0
+chmod -v 755 %{buildroot}%{_libdir}/libpython3.6m.so.1.0
 %{_fixperms} %{buildroot}/*
 
 # Remove unused stuff
@@ -120,15 +120,15 @@ make  %{?_smp_mflags} test
 
 %post
 /sbin/ldconfig
-ln -sf %{_libdir}/libpython3.5m.so %{_libdir}/libpython3.5.so
+ln -sf %{_libdir}/libpython3.6m.so %{_libdir}/libpython3.6.so
 
 %post libs
 export PYTHONHOME=/usr
-export PYTHONPATH=/usr/lib/python3.5
+export PYTHONPATH=/usr/lib/python3.6
 
 %postun
 if [ $1 -eq 0 ] ; then
-    rm %{_libdir}/libpython3.5.so
+    rm %{_libdir}/libpython3.6.so
 fi
 /sbin/ldconfig
 
@@ -137,45 +137,45 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-, root, root)
-%doc LICENSE README
+%doc LICENSE README.rst
 %{_bindir}/pydoc*
 %{_bindir}/pyvenv*
 %{_bindir}/python*
 %{_bindir}/pip*
 %{_mandir}/*/*
 
-%dir %{_libdir}/python3.5
-%dir %{_libdir}/python3.5/site-packages
+%dir %{_libdir}/python3.6
+%dir %{_libdir}/python3.6/site-packages
 
 %{_libdir}/libpython3.so
-%{_libdir}/libpython3.5m.so
-%{_libdir}/libpython3.5m.so.1.0
-%{_libdir}/pkgconfig/python-3.5.pc
-%{_libdir}/pkgconfig/python-3.5m.pc
+%{_libdir}/libpython3.6m.so
+%{_libdir}/libpython3.6m.so.1.0
+%{_libdir}/pkgconfig/python-3.6.pc
+%{_libdir}/pkgconfig/python-3.6m.pc
 %{_libdir}/pkgconfig/python3.pc
 
-%exclude %{_libdir}/python3.5/ctypes/test
-%exclude %{_libdir}/python3.5/distutils/tests
-%exclude %{_libdir}/python3.5/sqlite3/test
-%exclude %{_libdir}/python3.5/idlelib/idle_test
-%exclude %{_libdir}/python3.5/test
-%exclude %{_libdir}/python3.5/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.6/ctypes/test
+%exclude %{_libdir}/python3.6/distutils/tests
+%exclude %{_libdir}/python3.6/sqlite3/test
+%exclude %{_libdir}/python3.6/idlelib/idle_test
+%exclude %{_libdir}/python3.6/test
+%exclude %{_libdir}/python3.6/lib-dynload/_ctypes_test.*.so
 
 %files libs
 %defattr(-,root,root)
-%doc LICENSE README
-%{_libdir}/python3.5
-%exclude %{_libdir}/python3.5/ctypes/test
-%exclude %{_libdir}/python3.5/distutils/tests
-%exclude %{_libdir}/python3.5/sqlite3/test
-%exclude %{_libdir}/python3.5/idlelib/idle_test
-%exclude %{_libdir}/python3.5/test
-%exclude %{_libdir}/python3.5/lib-dynload/_ctypes_test.*.so
+%doc LICENSE README.rst
+%{_libdir}/python3.6
+%exclude %{_libdir}/python3.6/ctypes/test
+%exclude %{_libdir}/python3.6/distutils/tests
+%exclude %{_libdir}/python3.6/sqlite3/test
+%exclude %{_libdir}/python3.6/idlelib/idle_test
+%exclude %{_libdir}/python3.6/test
+%exclude %{_libdir}/python3.6/lib-dynload/_ctypes_test.*.so
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_bindir}/easy_install-3.5
+%{_bindir}/easy_install-3.6
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %{_libdir}/libpython3.so
@@ -185,11 +185,13 @@ rm -rf %{buildroot}/*
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_libdir}/python3.5/lib2to3
-%{_bindir}/2to3-3.5
-%{_bindir}/idle*
+%{_libdir}/python3.6/lib2to3
+%{_bindir}/2to3-3.6
+%exclude %{_bindir}/idle*
 
 %changelog
+*   Fri Apr 28 2017 Harish Udaiya <hudaiyakumar> 3.6.1-1
+-   Upgrade python3 version to 3.6.1.
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
 -   Python3-devel requires expat-devel.
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-2

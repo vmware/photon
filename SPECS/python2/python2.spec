@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -215,11 +215,13 @@ rm -rf %{buildroot}/*
 #%doc Tools/modulator/README.modulator
 #%{_libdir}/python2.7/lib2to3
 #%{_libdir}/python2.7/site-packages/modulator
-%{_bindir}/smtpd*.py*
 %{_bindir}/2to3*
-%{_bindir}/idle*
+%exclude %{_bindir}/smtpd.py
+%exclude %{_bindir}/idle*
 
 %changelog
+*   Fri Apr 28 2017 Harish Udaiya <hudaiyakumar> 2.7.13-4
+-   Excluded unwanted binaries from python2-tools.
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.13-3
 -   Python2-devel requires expat-devel.
 *   Fri Mar 24 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-2
