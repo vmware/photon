@@ -1,7 +1,7 @@
 From 6021a95a6b7ffb8df8823337d4ca05807c2eb6e5 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 30 Sep 2015 23:00:00 +0000
-Subject: [PATCH 01/14] Measure correct boot time.
+Subject: [PATCH 01/15] Measure correct boot time.
 
 ---
  arch/x86/Kconfig          |  8 ++++++++
@@ -10,7 +10,7 @@ Subject: [PATCH 01/14] Measure correct boot time.
  3 files changed, 35 insertions(+)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index db3622f..3f6337e 100644
+index db3622f22b61..3f6337e0ac32 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
 @@ -710,6 +710,14 @@ config KVM_DEBUG_FS
@@ -29,7 +29,7 @@ index db3622f..3f6337e 100644
  
  config PARAVIRT_TIME_ACCOUNTING
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index ffdc0e8..0f54608 100644
+index ffdc0e860390..0f5460806688 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
 @@ -65,6 +65,16 @@ startup_64:
@@ -63,7 +63,7 @@ index ffdc0e8..0f54608 100644
  	/* This must match the first entry in level2_kernel_pgt */
  	.quad   0x0000000000000000
 diff --git a/init/main.c b/init/main.c
-index 9e64d70..ccc9a22 100644
+index 9e64d7097f1a..ccc9a221dae3 100644
 --- a/init/main.c
 +++ b/init/main.c
 @@ -928,6 +928,9 @@ static int try_to_run_init_process(const char *init_filename)
@@ -92,20 +92,20 @@ index 9e64d70..ccc9a22 100644
  		ret = run_init_process(ramdisk_execute_command);
  		if (!ret)
 -- 
-1.9.1
+2.11.0
 
 
 From 1dc2e9f9a9d8d8065fa096b5551ca646086a72ed Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 2 Oct 2015 20:00:06 +0000
-Subject: [PATCH 02/14] PV io_delay for VMware guest.
+Subject: [PATCH 02/15] PV io_delay for VMware guest.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 13 +++++++++++++
  1 file changed, 13 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 628a059..8fdd031 100644
+index 628a059a9a06..8fdd0315f218 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -26,6 +26,7 @@
@@ -143,13 +143,13 @@ index 628a059..8fdd031 100644
  
  /*
 -- 
-1.9.1
+2.11.0
 
 
 From faf39d20732abb865f003b46a567ea42d0841e92 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 7 Oct 2015 22:53:18 +0000
-Subject: [PATCH 03/14] Improved tsc based sched_clock & clocksource.
+Subject: [PATCH 03/15] Improved tsc based sched_clock & clocksource.
 
 ---
  arch/x86/Kconfig             |  1 +
@@ -159,7 +159,7 @@ Subject: [PATCH 03/14] Improved tsc based sched_clock & clocksource.
  4 files changed, 69 insertions(+), 11 deletions(-)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 3f6337e..8182ad6 100644
+index 3f6337e0ac32..8182ad6d8509 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
 @@ -713,6 +713,7 @@ config KVM_DEBUG_FS
@@ -171,7 +171,7 @@ index 3f6337e..8182ad6 100644
  	---help---
  	  This option enables various optimizations for running under the
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 8fdd031..004825e 100644
+index 8fdd0315f218..004825edfa6f 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -27,6 +27,7 @@
@@ -277,7 +277,7 @@ index 8fdd031..004825e 100644
 +	}
 +}
 diff --git a/init/main.c b/init/main.c
-index ccc9a22..9e64d70 100644
+index ccc9a221dae3..9e64d7097f1a 100644
 --- a/init/main.c
 +++ b/init/main.c
 @@ -928,9 +928,6 @@ static int try_to_run_init_process(const char *init_filename)
@@ -306,7 +306,7 @@ index ccc9a22..9e64d70 100644
  		ret = run_init_process(ramdisk_execute_command);
  		if (!ret)
 diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
-index caf4041..86d8a78 100644
+index caf4041f5b0a..86d8a78efc27 100644
 --- a/kernel/sched/clock.c
 +++ b/kernel/sched/clock.c
 @@ -385,8 +385,10 @@ u64 cpu_clock(int cpu)
@@ -321,13 +321,13 @@ index caf4041..86d8a78 100644
  	return sched_clock();
  }
 -- 
-1.9.1
+2.11.0
 
 
 From 543bcc0aa46846859c92be5effde0d900a456c2a Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 12 Oct 2015 22:43:38 +0000
-Subject: [PATCH 04/14] Move read_boot_clock64 into pv_time_ops.
+Subject: [PATCH 04/15] Move read_boot_clock64 into pv_time_ops.
 
 ---
  arch/x86/Kconfig                      | 14 ++++++--
@@ -341,7 +341,7 @@ Subject: [PATCH 04/14] Move read_boot_clock64 into pv_time_ops.
  8 files changed, 83 insertions(+), 38 deletions(-)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 8182ad6..4c3d10a 100644
+index 8182ad6d8509..4c3d10a0ae3a 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
 @@ -711,13 +711,23 @@ config KVM_DEBUG_FS
@@ -371,7 +371,7 @@ index 8182ad6..4c3d10a 100644
  source "arch/x86/lguest/Kconfig"
  
 diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
-index c759b3c..5ee3378 100644
+index c759b3cca663..5ee337859ace 100644
 --- a/arch/x86/include/asm/paravirt.h
 +++ b/arch/x86/include/asm/paravirt.h
 @@ -198,6 +198,11 @@ static inline u64 paravirt_steal_clock(int cpu)
@@ -387,7 +387,7 @@ index c759b3c..5ee3378 100644
  {
  	return PVOP_CALL1(u64, pv_cpu_ops.read_pmc, counter);
 diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
-index 3d44191..2e76e4a 100644
+index 3d44191185f8..2e76e4ad21a7 100644
 --- a/arch/x86/include/asm/paravirt_types.h
 +++ b/arch/x86/include/asm/paravirt_types.h
 @@ -51,6 +51,10 @@ struct mm_struct;
@@ -410,7 +410,7 @@ index 3d44191..2e76e4a 100644
  
  struct pv_cpu_ops {
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 004825e..1bf1fe3 100644
+index 004825edfa6f..1bf1fe3d7886 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -77,8 +77,10 @@ static unsigned long vmware_get_tsc_khz(void)
@@ -543,7 +543,7 @@ index 004825e..1bf1fe3 100644
 -	}
 -}
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index 0f54608..1bc0140 100644
+index 0f5460806688..1bc014083afb 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
 @@ -65,7 +65,7 @@ startup_64:
@@ -569,7 +569,7 @@ index 0f54608..1bc0140 100644
  	/* This must match the first entry in level2_kernel_pgt */
  	.quad   0x0000000000000000
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index c2130ae..0bb48cb 100644
+index c2130aef3f9d..0bb48cb3386a 100644
 --- a/arch/x86/kernel/paravirt.c
 +++ b/arch/x86/kernel/paravirt.c
 @@ -218,6 +218,12 @@ static u64 native_steal_clock(int cpu)
@@ -594,7 +594,7 @@ index c2130ae..0bb48cb 100644
  
  __visible struct pv_irq_ops pv_irq_ops = {
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index d2bbe34..0003203 100644
+index d2bbe343fda7..00032034d2e2 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -1280,3 +1280,12 @@ static int __init register_kernel_offset_dumper(void)
@@ -611,7 +611,7 @@ index d2bbe34..0003203 100644
 +}
 +#endif
 diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
-index 86d8a78..377ab5a 100644
+index 86d8a78efc27..377ab5aee627 100644
 --- a/kernel/sched/clock.c
 +++ b/kernel/sched/clock.c
 @@ -385,7 +385,12 @@ u64 cpu_clock(int cpu)
@@ -629,20 +629,20 @@ index 86d8a78..377ab5a 100644
  		return sched_clock_cpu(raw_smp_processor_id());
  #endif
 -- 
-1.9.1
+2.11.0
 
 
 From f832fc949c5e97799fc977a317025a721d87bb68 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 5 Nov 2015 21:02:52 +0000
-Subject: [PATCH 05/14] Fix clocksource_vmware issue in VM version <= 10
+Subject: [PATCH 05/15] Fix clocksource_vmware issue in VM version <= 10
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++++++++++++++++++++++++++++++++++++++---
  1 file changed, 45 insertions(+), 3 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 1bf1fe3..0b89bb9 100644
+index 1bf1fe3d7886..0b89bb976a35 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -79,7 +79,8 @@ static unsigned long vmware_get_tsc_khz(void)
@@ -727,20 +727,20 @@ index 1bf1fe3..0b89bb9 100644
  	paravirt_ops_setup();
  }
 -- 
-1.9.1
+2.11.0
 
 
 From 15e6d2cc5239e58ab805f882650ad7de9b163228 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 10 Nov 2015 11:46:57 +0000
-Subject: [PATCH 06/14] Get lapic timer frequency from HV, skip calibration
+Subject: [PATCH 06/15] Get lapic timer frequency from HV, skip calibration
 
 ---
  arch/x86/kernel/cpu/vmware.c | 48 +++++---------------------------------------
  1 file changed, 5 insertions(+), 43 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 0b89bb9..b16618b 100644
+index 0b89bb976a35..b16618b5f880 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -96,45 +96,11 @@ static struct clocksource clocksource_vmware = {
@@ -817,13 +817,13 @@ index 0b89bb9..b16618b 100644
  	paravirt_ops_setup();
  }
 -- 
-1.9.1
+2.11.0
 
 
 From 10ebf94df7ed241429a04b2cc3c2d590dd97d7dd Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 15 Dec 2015 21:31:18 +0000
-Subject: [PATCH 07/14] Skip rdrand reseed
+Subject: [PATCH 07/15] Skip rdrand reseed
 
 ---
  arch/x86/kernel/cpu/common.c | 2 ++
@@ -831,7 +831,7 @@ Subject: [PATCH 07/14] Skip rdrand reseed
  2 files changed, 4 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index c2b7522..45a37da 100644
+index c2b7522cbf35..45a37dac1388 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -944,7 +944,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
@@ -845,7 +845,7 @@ index c2b7522..45a37da 100644
  
  	/*
 diff --git a/arch/x86/kernel/cpu/rdrand.c b/arch/x86/kernel/cpu/rdrand.c
-index 136ac74..0685891 100644
+index 136ac74dee82..06858910dfca 100644
 --- a/arch/x86/kernel/cpu/rdrand.c
 +++ b/arch/x86/kernel/cpu/rdrand.c
 @@ -32,6 +32,7 @@ static int __init x86_rdrand_setup(char *s)
@@ -862,20 +862,20 @@ index 136ac74..0685891 100644
  }
 +#endif
 -- 
-1.9.1
+2.11.0
 
 
 From 237e42455bd98cf6e0e0725d35bba1b6d0d04822 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 3 Dec 2015 00:46:46 +0000
-Subject: [PATCH 08/14] STA implementation. first version.
+Subject: [PATCH 08/15] STA implementation. first version.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 163 +++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 163 insertions(+)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index b16618b..cf1fb64 100644
+index b16618b5f880..cf1fb6476af8 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -28,6 +28,8 @@
@@ -1087,20 +1087,20 @@ index b16618b..cf1fb64 100644
  
  /*
 -- 
-1.9.1
+2.11.0
 
 
 From 21249118757b7232948c8401ba5d0b039cd0fa35 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Wed, 13 Jan 2016 22:54:04 +0000
-Subject: [PATCH 09/14] STA. updated version
+Subject: [PATCH 09/15] STA. updated version
 
 ---
  arch/x86/kernel/cpu/vmware.c | 34 ++++++++++++++++++++++++----------
  1 file changed, 24 insertions(+), 10 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index cf1fb64..196703c 100644
+index cf1fb6476af8..196703c7ec49 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -41,16 +41,23 @@
@@ -1176,20 +1176,20 @@ index cf1fb64..196703c 100644
  #ifdef CONFIG_PCI
  	/* PCI BIOS service won't work from a PV guest. */
 -- 
-1.9.1
+2.11.0
 
 
 From 7061430a3c8906e67978da76a73967b0b26aece7 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 15 Mar 2016 22:29:23 +0000
-Subject: [PATCH 10/14] STA: version with a single backdoor command.
+Subject: [PATCH 10/15] STA: version with a single backdoor command.
 
 ---
  arch/x86/kernel/cpu/vmware.c | 35 +++++++++++++++--------------------
  1 file changed, 15 insertions(+), 20 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 196703c..743b8ad 100644
+index 196703c7ec49..743b8ad32119 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -41,12 +41,9 @@
@@ -1267,20 +1267,20 @@ index 196703c..743b8ad 100644
  		return;
  	}
 -- 
-1.9.1
+2.11.0
 
 
 From ee3ab56a4bdca7e514b4d07b6a70f724cde7f0f5 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Fri, 25 Mar 2016 01:14:17 +0000
-Subject: [PATCH 11/14] Remove delays for smpboot
+Subject: [PATCH 11/15] Remove delays for smpboot
 
 ---
  arch/x86/kernel/smpboot.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index fbabe4f..5a18dd6 100644
+index fbabe4fcc7fb..5a18dd6dcf07 100644
 --- a/arch/x86/kernel/smpboot.c
 +++ b/arch/x86/kernel/smpboot.c
 @@ -557,7 +557,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
@@ -1293,20 +1293,20 @@ index fbabe4f..5a18dd6 100644
  		maxlvt = lapic_get_maxlvt();
  		if (maxlvt > 3)			/* Due to the Pentium erratum 3AP.  */
 -- 
-1.9.1
+2.11.0
 
 
 From c6ade3b8c3db962d24e07ff9a483d26e46a41bb0 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Mar 2016 21:14:46 +0000
-Subject: [PATCH 12/14] kmsg_dumper to vmware.log
+Subject: [PATCH 12/15] kmsg_dumper to vmware.log
 
 ---
  arch/x86/kernel/cpu/vmware.c | 143 +++++++++++++++++++++++++++++++++++++++++--
  1 file changed, 139 insertions(+), 4 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 743b8ad..e9f7d52 100644
+index 743b8ad32119..e9f7d520d33c 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -30,10 +30,12 @@
@@ -1486,20 +1486,20 @@ index 743b8ad..e9f7d52 100644
 +	}
 +}
 -- 
-1.9.1
+2.11.0
 
 
 From 9edf1bf3a56c8c8048d2958d13283df5a283acd1 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Mon, 9 May 2016 04:14:03 -0700
-Subject: [PATCH 13/14] __native_read_tsc() -> rdtsc()
+Subject: [PATCH 13/15] __native_read_tsc() -> rdtsc()
 
 ---
  arch/x86/kernel/cpu/vmware.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index e9f7d52..57cef56 100644
+index e9f7d520d33c..57cef56c8ccb 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -130,7 +130,7 @@ uint64_t __initdata vtsc_khz;
@@ -1539,20 +1539,20 @@ index e9f7d52..57cef56 100644
  	if (cpu_has_hypervisor) {
  		unsigned int eax;
 -- 
-1.9.1
+2.11.0
 
 
 From 42ac37f4ec59aee6b37b7beed93c7e1055d14522 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Thu, 6 Oct 2016 11:24:55 -0700
-Subject: [PATCH 14/14] Fix lapic_timer_frequency
+Subject: [PATCH 14/15] Fix lapic_timer_frequency
 
 ---
  arch/x86/kernel/cpu/vmware.c | 15 +++++++++------
  1 file changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 57cef56..63fe6c8 100644
+index 57cef56c8ccb..63fe6c826609 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -291,7 +291,7 @@ arch_initcall(activate_jump_labels);
@@ -1593,5 +1593,33 @@ index 57cef56..63fe6c8 100644
  		DIV_ROUND_CLOSEST(NSEC_PER_MSEC << CYC2NS_SCALE_FACTOR,
  				  vtsc_khz);
 -- 
-1.9.1
+2.11.0
+
+
+From 5dbe97455f3584ba0aee180321d095f0ed0c26ef Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 27 Apr 2017 16:29:20 -0700
+Subject: [PATCH 15/15] clocksource_vmware: use rdtsc_ordered()
+
+It adds a barrier, thus preventing observable non-monotonicity.
+It fixes bug #1852790
+---
+ arch/x86/kernel/cpu/vmware.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 63fe6c826609..5f36b36c0d5e 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -130,7 +130,7 @@ uint64_t __initdata vtsc_khz;
+ 
+ static cycle_t vmware_clock_get_cycles(struct clocksource *cs)
+ {
+-	return rdtsc();
++	return (cycle_t)rdtsc_ordered();
+ }
+ 
+ static struct clocksource clocksource_vmware = {
+-- 
+2.11.0
 
