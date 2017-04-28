@@ -1,16 +1,18 @@
 Summary:	A macro processor
 Name:		m4
-Version:	1.4.17
-Release:	3%{?dist}
+Version:	1.4.18
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/m4
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/m4/%{name}-%{version}.tar.xz
-%define sha1 m4=74ad71fa100ec8c13bc715082757eb9ab1e4bbb0
+Source0:	http://ftp.gnu.org/gnu/m4/%{name}-%{version}.tar.gz
+%define sha1 m4=2f76f8105a45b05c8cfede97b3193cd88b31c657
+
 %description
 The M4 package contains a macro processor
+
 %prep
 %setup -q
 %build
@@ -18,17 +20,23 @@ The M4 package contains a macro processor
 	--prefix=%{_prefix} \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
+
 %check
 sed -i -e '41s/ENOENT/& || errno == EINVAL/' tests/test-readlink.h
 make  %{?_smp_mflags}  check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
+
 %changelog
+*       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 1.4.18-1
+-       Update package version
 *       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 1.4.17-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.17-2
