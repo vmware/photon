@@ -1,10 +1,12 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_version: %define python2_version %(python2 -c "import sys; sys.stdout.write(sys.version[:3])")}
+%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Summary:        World timezone definitions, modern and historical
 Name:           python-pytz
 Version:        2017.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
@@ -19,8 +21,10 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  unzip
+BuildRequires:  python-pytest
 Requires:       python2
 Requires:       python2-libs
+Requires:       tzdata
 
 %description
 pytz brings the Olson tz database into Python. This library allows
@@ -34,8 +38,10 @@ Summary:        python-pytz
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-pytest
 Requires:       python3
 Requires:       python3-libs
+Requires:       tzdata
 
 %description -n python3-pytz
 Python 3 version.
@@ -58,9 +64,13 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
+PATH=%{buildroot}%{_bindir}:${PATH} \
+PYTHONPATH=%{buildroot}%{python2_sitelib} \
+    py.test-%{python2_version} -v
 pushd ../p3dir
-python3 setup.py test
+PATH=%{buildroot}%{_bindir}:${PATH} \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+    py.test-%{python3_version} -v
 popd
 
 %files
@@ -72,5 +82,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.2-2
+-   Requires tzdata
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.2-1
 -   Initial packaging for Photon
