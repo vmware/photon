@@ -169,7 +169,6 @@
         "libacl",
         "libacl-devel",
         "libselinux-devel",
-        "libselinux-python",
         "libselinux-utils",
         "libsepol-devel",
         "libaio",
