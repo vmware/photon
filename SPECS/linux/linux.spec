@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.62
+Version:    	4.4.64
 Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=7934e927d796ff7e47232bf0d2e3317a0af2f724
+%define sha1 linux=4554451ee0b50e55674795f5d760fdbc72df7bf3
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -23,7 +23,7 @@ Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disa
 Patch8:         vfio-pci-fix-integer-overflows-bitmask-check.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-Patch11:        VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+
 Patch12:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
 Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
@@ -37,8 +37,6 @@ Patch18:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
 Patch19:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
 #fixes CVE-2017-2671
 Patch20:        ping-implement-proper-locking.patch
-#fixes CVE-2017-7618
-Patch21:        crypto-ahash-Fix-EINPROGRESS-notification-callback.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -106,7 +104,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
+
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -116,7 +114,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
-%patch21 -p1
 
 %build
 make mrproper
@@ -237,6 +234,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
 %changelog
+*   Thu Apr 27 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.64-1
+-   Fix CVE-2017-7889
+-   Fix Bug #1852790
 *   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.62-1
 -   Fix CVE-2017-2671 and CVE-2017-7618
 *   Mon Apr 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.60-1
