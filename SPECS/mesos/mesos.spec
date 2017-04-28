@@ -1,14 +1,14 @@
 Summary:        Mesos
 Name:           mesos
-Version:        1.1.0
-Release:        3%{?dist}
+Version:        1.2.0
+Release:        1%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1    mesos=5ea8f46cdb5c1b96fdce19120655c8df15732a60
+%define sha1    mesos=1d570504498c90697b690e3b221feba63d0a800b
 Patch0:         mesos-sysmacros.patch
 BuildRequires:  openjre >= 1.8.0.45
 BuildRequires:  openjdk >= 1.8.0.45
@@ -100,6 +100,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 1.2.0-1
+-   Update package version
 *   Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-3
 -   Added mesos-sysmacros.patch and -Wno-strict-aliasing CPPFLAGS
     to fix build issues with glibc-2.25
