@@ -8,7 +8,7 @@ from SpecData import SerializableSpecObject
 from SpecData import SerializedSpecObjects
 import sys
 import os
-from optparse import OptionParser
+from argparse import ArgumentParser
 from jsonwrapper import JsonWrapper
 
 DEFAULT_INPUT_TYPE = "pkg"
@@ -19,15 +19,15 @@ LOG_FILE_DIR = "../../stage/LOGS"
 
 def main():
     usage = os.path.basename(__file__) + "--input-type=[json/pkg/who-needs] --pkg=[pkg_name] --file=<JSON_FILE_NAME> --disp=[tree/list/json]"
-    parser = OptionParser(usage)
-    parser.add_option("-i", "--input-type", dest="input_type", default=DEFAULT_INPUT_TYPE)
-    parser.add_option("-p", "--pkg", dest="pkg")
-    parser.add_option("-f", "--file", dest="json_file", default="packages_minimal.json")
-    parser.add_option("-d", "--disp", dest="display_option", default=DEFAULT_DISPLAY_OPTION) 
-    parser.add_option("-s", "--spec-dir", dest="spec_dir", default=SPEC_FILE_DIR)
-    parser.add_option("-t", "--stage-dir", dest="stage_dir", default="../../stage")
-    parser.add_option("-a", "--input-data-dir", dest="input_data_dir", default="../../common/data/")
-    (options,  args) = parser.parse_args() 
+    parser = ArgumentParser(usage)
+    parser.add_argument("-i", "--input-type", dest="input_type", default=DEFAULT_INPUT_TYPE)
+    parser.add_argument("-p", "--pkg", dest="pkg")
+    parser.add_argument("-f", "--file", dest="json_file", default="packages_minimal.json")
+    parser.add_argument("-d", "--disp", dest="display_option", default=DEFAULT_DISPLAY_OPTION)
+    parser.add_argument("-s", "--spec-dir", dest="spec_dir", default=SPEC_FILE_DIR)
+    parser.add_argument("-t", "--stage-dir", dest="stage_dir", default="../../stage")
+    parser.add_argument("-a", "--input-data-dir", dest="input_data_dir", default="../../common/data/")
+    options = parser.parse_args()
 
     if(False == options.input_data_dir.endswith('/')):
         options.input_data_dir += '/'
