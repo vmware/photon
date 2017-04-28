@@ -9,7 +9,7 @@ from SpecData import SerializedSpecObjects
 from RepoDeps import RepoQueryDependency
 import sys
 import os
-from optparse import OptionParser
+from argparse import ArgumentParser
 from jsonwrapper import JsonWrapper
 
 DEFAULT_INPUT_TYPE      =    "json"
@@ -31,15 +31,15 @@ def reportMissing(pkg,specDepList, repoDepList, excludeList):
 
 def    main():
     usage = os.path.basename(__file__)    +    "--input-type=[json/pkg]    --pkg=[pkg_name]    --file=<JSON_FILE_NAME>    --repo-file=<photon>.repo"
-    parser = OptionParser(usage)
-    parser.add_option("-i",    "--input-type",    dest="input_type",    default=DEFAULT_INPUT_TYPE)
-    parser.add_option("-p",    "--pkg",    dest="pkg")
-    parser.add_option("-f",    "--file",    dest="json_file",    default="packages_full.json")
-    parser.add_option("-s",    "--spec-dir",    dest="spec_dir",    default=SPEC_FILE_DIR)
-    parser.add_option("-a",    "--input-data-dir",    dest="input_data_dir",    default=INPUT_DATA_DIR)
-    parser.add_option("-r",    "--repo-file",    dest    =    "repo_file",    default="")
+    parser = ArgumentParser(usage)
+    parser.add_argument("-i",    "--input-type",    dest="input_type",    default=DEFAULT_INPUT_TYPE)
+    parser.add_argument("-p",    "--pkg",    dest="pkg")
+    parser.add_argument("-f",    "--file",    dest="json_file",    default="packages_full.json")
+    parser.add_argument("-s",    "--spec-dir",    dest="spec_dir",    default=SPEC_FILE_DIR)
+    parser.add_argument("-a",    "--input-data-dir",    dest="input_data_dir",    default=INPUT_DATA_DIR)
+    parser.add_argument("-r",    "--repo-file",    dest    =    "repo_file",    default="")
     excludeList = ["bash","glibc","libgcc","pkg-config","filesystem"]
-    (options, args) = parser.parse_args()
+    options = parser.parse_args()
 
     if(options.repo_file    ==    ""):
         print "Error! repo file not provided"

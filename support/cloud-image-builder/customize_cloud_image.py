@@ -5,7 +5,7 @@ import re
 import shutil
 import tarfile
 import fileinput
-from optparse import OptionParser
+from argparse import ArgumentParser
 from utils import Utils
 
 def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
@@ -88,18 +88,18 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"
-    parser = OptionParser(usage)
+    parser = ArgumentParser(usage)
 
-    parser.add_option("-r", "--raw-image-path",  dest="raw_image_path")
-    parser.add_option("-c", "--vmdk-config-path", dest="vmdk_config_path")
-    parser.add_option("-w",  "--working-directory",  dest="working_directory")
-    parser.add_option("-m",  "--mount-path",  dest="mount_path")
-    parser.add_option("-a",  "--additional-rpms-path",  dest="additional_rpms_path")
-    parser.add_option("-i",  "--image-name",  dest="image_name")
-    parser.add_option("-t",  "--tools-bin-path",  dest="tools_bin_path")
-    parser.add_option("-b",  "--build-scripts-path",  dest="build_scripts_path")
+    parser.add_argument("-r", "--raw-image-path",  dest="raw_image_path")
+    parser.add_argument("-c", "--vmdk-config-path", dest="vmdk_config_path")
+    parser.add_argument("-w",  "--working-directory",  dest="working_directory")
+    parser.add_argument("-m",  "--mount-path",  dest="mount_path")
+    parser.add_argument("-a",  "--additional-rpms-path",  dest="additional_rpms_path")
+    parser.add_argument("-i",  "--image-name",  dest="image_name")
+    parser.add_argument("-t",  "--tools-bin-path",  dest="tools_bin_path")
+    parser.add_argument("-b",  "--build-scripts-path",  dest="build_scripts_path")
 
-    (options,  args) = parser.parse_args()
+    options = parser.parse_args()
     utils = Utils()
     config = utils.jsonread(options.vmdk_config_path)
     print options
