@@ -1,12 +1,12 @@
 Name:           lzo
-Version:        2.09
-Release:        2%{?dist}
+Version:        2.10
+Release:        1%{?dist}
 Summary:        Data compression library with very fast (de)compression
 Group:          System Environment/Libraries
 License:        GPLv2+
 URL:            http://www.oberhumer.com/opensource/lzo/
 Source0:        http://www.oberhumer.com/opensource/lzo/download/%{name}-%{version}.tar.gz
-%define sha1 lzo=e2a60aca818836181e7e6f8c4f2c323aca6ac057
+%define sha1 lzo=4924676a9bae5db58ef129dc1cebce3baa3c4b5d
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  zlib-devel
@@ -74,7 +74,6 @@ rm -rf %{buildroot}
 
 %postun minilzo -p /sbin/ldconfig
 
-
 %files
 %defattr(-,root,root,-)
 %{_libdir}/liblzo2.so.*
@@ -90,9 +89,12 @@ rm -rf %{buildroot}
 %{_datadir}/doc/lzo
 %{_includedir}/lzo
 %{_libdir}/lib*lzo*.so
+%{_libdir}/pkgconfig/lzo2.pc
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.09-2
--	GA - Bump release of all rpms
-* Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.09-1
-- Initial version
+*   Tue Apr 4 2017 Michelle Wang <michellew@vmware.com> 2.10-1
+-   Update package version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.09-2
+-   GA - Bump release of all rpms
+*   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.09-1
+-   Initial version
