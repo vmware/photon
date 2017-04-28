@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.62
+Version:       4.4.64
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=7934e927d796ff7e47232bf0d2e3317a0af2f724
+%define sha1 linux=4554451ee0b50e55674795f5d760fdbc72df7bf3
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -27,7 +27,7 @@ Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disab
 Patch12:       vfio-pci-fix-integer-overflows-bitmask-check.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-Patch15:       VSOCK-Detach-QP-check-should-filter-out-non-matching-QPs.patch
+
 Patch16:       vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
 Patch17:       vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
@@ -42,8 +42,6 @@ Patch24:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
 Patch25:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
 #fixes CVE-2017-2671
 Patch26:        ping-implement-proper-locking.patch
-#fixes CVE-2017-7618
-Patch27:        crypto-ahash-Fix-EINPROGRESS-notification-callback.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -94,7 +92,7 @@ The Linux package contains the Linux kernel doc files
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
-%patch15 -p1
+
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
@@ -106,7 +104,6 @@ The Linux package contains the Linux kernel doc files
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
-%patch27 -p1
 
 %build
 # patch vmw_balloon driver
@@ -195,6 +192,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Apr 27 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.64-1
+-   Fix CVE-2017-7889
+-   Fix Bug #1852790
 *   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.62-1
 -   Fix CVE-2017-2671 and CVE-2017-7618
 -   Add debug info
