@@ -23,7 +23,7 @@ class PackageBuilder(object):
         self.listBuildOptionPackages=listBuildOptionPackages
         self.pkgBuildOptionFile=pkgBuildOptionFile
 
-    def prepareBuildRoot(self,chrootName,isToolChainPackage=False):
+    def prepareBuildRoot(self,chrootName,packageName, isToolChainPackage=False):
         chrootID=None
         try:
             chrUtils = ChrootUtils(self.logName,self.logPath)
@@ -35,7 +35,7 @@ class PackageBuilder(object):
 #            if isToolChainPackage:
 #                tUtils.installCoreToolChainPackages(chrootID)
 #            else:
-            tUtils.installToolChain(chrootID)
+            tUtils.installToolChain(chrootID, packageName)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)
@@ -99,7 +99,7 @@ class PackageBuilder(object):
         if package in constants.listToolChainPackages:
             isToolChainPackage=True
         try:
-            chrootID = self.prepareBuildRoot(chrootName,isToolChainPackage)
+            chrootID = self.prepareBuildRoot(chrootName, package, isToolChainPackage)
             destLogPath=constants.logPath+"/build-"+package
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()
