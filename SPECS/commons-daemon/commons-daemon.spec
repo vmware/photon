@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -10,8 +10,11 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.0.15-src.tar.gz
 %define sha1 commons-daemon=ca6a448d1d214f714e214b35809a2117568970e3
-Requires: openjre >= 1.8.0.112
-BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.6
+%define java_macros_version 1.8.0.131-1%{?dist}
+Requires: openjre >= %{java_macros_version}
+BuildRequires: openjre >= %{java_macros_version}
+BuildRequires: openjdk >= %{java_macros_version}
+BuildRequires: apache-ant >= 1.9.6
 
 %define _prefix /var/opt/%{name}-%{version}
 %define _bindir %{_prefix}/bin
@@ -23,8 +26,8 @@ The JNA package contains libraries for interop from Java to native libraries.
 
 %setup -q -n %{name}-%{version}-src
 %build
-ANT_HOME=/var/opt/apache-ant-1.9.6
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.112-bin
+ANT_HOME=%{_ant_home}
+export JAVA_HOME=%{_java_home}
 
 $ANT_HOME/bin/ant dist
 
@@ -39,7 +42,7 @@ cd $CURDIR
 
 %install
 
-ANT_HOME=/var/opt/apache-ant-1.9.6
+ANT_HOME=%{_ant_home}
 DIST_DIR=%{buildroot}%{_prefix}
 
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -58,6 +61,8 @@ chmod -R 755 $DIST_DIR
 %{_prefix}/*.jar
 
 %changelog
+*	Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-9
+-	Update java to 1.8.0.131 & use java macros to update version
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-8
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-7
