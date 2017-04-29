@@ -12,6 +12,7 @@ class constants(object):
     specData=None
     buildRootPath="/mnt"
     prevPublishRPMRepo=""
+    prevPublishXRPMRepo=""
     pullsourcesConfig=""
     buildPatch=False
     inputRPMSPath=""
@@ -99,6 +100,48 @@ class constants(object):
         "ncurses",
         "readline",
         "bash"]
+
+    # List of X library RPMS that will be installed in a chroot prior to build openjdk & openjre package. 
+    listToolChainXRPMsToInstall=[
+        "glib-devel",
+        "icu-devel",
+	"openjdk",
+	"openjre",
+        "icu",
+        "harfbuzz",
+        "harfbuzz-devel",
+        "freetype2",
+        "freetype2-devel",
+        "alsa-lib",
+        "alsa-lib-devel",
+        "xcb-proto",
+        "libXdmcp-devel",
+        "libXau-devel",
+        "util-macros",
+        "xtrans",
+        "libxcb-devel",
+        "fontconfig-devel",
+        "proto",
+        "libXdmcp",
+        "libxcb",
+        "libXau",
+        "fontconfig",
+        "xtrans-devel",
+        "libX11",
+        "libX11-devel",
+        "libXext",
+        "libXext-devel",
+        "libICE-devel",
+        "libSM",
+        "libICE",
+        "libSM-devel",
+        "libXt",
+        "libXmu",
+        "libXt-devel",
+        "libXmu-devel",
+        "libXrender",
+        "libXrender-devel"
+	]
 
     listToolChainRPMPkgsToInstall=[
         "linux-api-headers",
@@ -264,7 +307,8 @@ class constants(object):
         constants.topDirPath = options.topDirPath
         constants.logPath = options.logPath
         constants.prevPublishRPMRepo=options.publishRPMSPath
-        constants.buildRootPath=options.buildRootPath
+        constants.prevPublishXRPMRepo = options.publishXRPMSPath
+	constants.buildRootPath=options.buildRootPath
         constants.specData = SerializableSpecObjectsUtils(constants.logPath)
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
         constants.pullsourcesConfig = options.pullsourcesConfig
