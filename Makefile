@@ -41,6 +41,12 @@ else
 PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
+ifdef PHOTON_PUBLISH_XRPMS_PATH
+PHOTON_PUBLISH_XRPMS := publish-x-rpms-cached
+else
+PHOTON_PUBLISH_XRPMS := publish-x-rpms
+endif
+
 ifdef PHOTON_ENABLE_RPMCHECK
 PHOTON_RPMCHECK_OPTION := -u
 else
@@ -228,7 +234,7 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
@@ -238,6 +244,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
                 -x $(PHOTON_SRCS_DIR) \
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
+				-e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
@@ -248,7 +255,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTA
                 $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
-updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
@@ -258,6 +265,7 @@ updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
+				-e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_BINTRAY_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -326,10 +334,20 @@ publish-rpms:
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
 	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR)
 
+publish-x-rpms:
+	@echo "Pulling publish X rpms from bintray..."
+	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
+	$(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR)
+
 publish-rpms-cached:
 	@echo "Using cached publish rpms..."
 	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR) && \
 	 $(CP) -rf $(PHOTON_PUBLISH_RPMS_PATH)/* $(PHOTON_PUBLISH_RPMS_DIR)/
+
+publish-x-rpms-cached:
+	@echo "Using ..."
+	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR) && \
+        $(CP) -rf $(PHOTON_PUBLISH_XRPMS_PATH)/* $(PHOTON_PUBLISH_XRPMS_DIR)/			
 
 $(PHOTON_STAGE):
 	@echo "Creating staging folder..."
@@ -503,7 +521,7 @@ endif
 check-packer-ovf-plugin:
 	@[[ -e ~/.packer.d/plugins/packer-post-processor-vagrant-vmware-ovf ]] || { echo "Packer OVF post processor not installed. Aborting" >&2; exit 1; }
 
-%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN)
+%: check $(PHOTON_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_SOURCES) $(CONTAIN)
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -514,6 +532,7 @@ check-packer-ovf-plugin:
                               -a $(PHOTON_SRPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
+							  -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                               -c $(PHOTON_BINTRAY_CONFIG) \
                               -d $(PHOTON_DIST_TAG) \
                               -n $(PHOTON_BUILD_NUMBER) \
