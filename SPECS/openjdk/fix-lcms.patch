@@ -1,0 +1,13 @@
+diff --git a/src/share/native/sun/java2d/cmm/lcms/cmstypes.c b/src/share/native/sun/java2d/cmm/lcms/cmstypes.c
+--- openjdk/jdk/src/share/native/sun/java2d/cmm/lcms/cmstypes.c
++++ openjdk/jdk/src/share/native/sun/java2d/cmm/lcms/cmstypes.c
+@@ -1483,7 +1483,7 @@
+         if (!_cmsReadUInt32Number(io, &Offset)) goto Error;
+ 
+         // Check for overflow
+-        if (Offset < (SizeOfHeader + 8)) goto Error;
++        if ((Offset + Len) > SizeOfTag + :sunglasses: goto Error;
+ 
+         // True begin of the string
+         BeginOfThisString = Offset - SizeOfHeader - 8;
+
