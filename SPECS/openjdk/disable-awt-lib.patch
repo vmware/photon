@@ -1,0 +1,11 @@
+--- a/jdk/make/CompileNativeLibraries.gmk       2017-04-07 20:06:07.668018356 +0000
++++ b/jdk/make/CompileNativeLibraries.gmk       2017-04-07 22:31:57.454696913 +0000
+@@ -83,7 +83,7 @@
+
+ include lib/ServiceabilityLibraries.gmk
+
+-include lib/Awt2dLibraries.gmk
++#include lib/Awt2dLibraries.gmk
+
+ include lib/SoundLibraries.gmk
+
