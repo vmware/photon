@@ -182,7 +182,7 @@ class ToolChainUtils(object):
                 if not returnVal:
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
-                self.installToolChainRPMS(chrootID)
+                self.installToolChainRPMS(chrootID, package)
                 pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
                 pkgUtils.buildRPMSForGivenPackage(package, chrootID, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
                 chrUtils.destroyChroot(chrootID)
@@ -196,7 +196,7 @@ class ToolChainUtils(object):
             traceback.print_exc()
             raise e
                 
-    def installToolChainRPMS(self,chrootID):
+    def installToolChainRPMS(self,chrootID, packageName):
         cmdUtils = CommandUtils()
         self.prepareBuildRoot(chrootID)
         self.logger.info("Installing Tool Chain RPMS.......")
@@ -228,4 +228,31 @@ class ToolChainUtils(object):
             raise Exception("RPM installation failed")
             
         self.logger.info("Successfully installed all Tool Chain RPMS in Chroot:"+chrootID)    
-    
+           self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
+        if "openjdk" in packageName or "openjre" in packageName:
+            self.installToolChainXRPMS(chrootID);
+   
+    def installToolChainXRPMS(self, chrootID):
+        self.logger.info("Installing Tool Chain X package RPMS.......")
+        rpmFiles = ""
+        packages = ""
+        for package in constants.listToolChainXRPMsToInstall:
+            pkgUtils=PackageUtils(self.logName,self.logPath)
+	    print "DEBUG:" + package
+            rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
+            if rpmFile is None:
+                self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
+                raise Exception("Input Error")
+            rpmFiles += " " + rpmFile
+            packages += " " + package
+
+        self.logger.debug("Installing rpms:"+packages)
+	cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+	print "Command Executed:" + cmd 
+        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
+        retval = process.wait()
+        if retval != 0:
+            self.logger.error("Installing tool chain  failed")
+            raise Exception("RPM installation failed")
+        self.logger.info("Successfully installed all Tool Chain X RPMS")
+ 
