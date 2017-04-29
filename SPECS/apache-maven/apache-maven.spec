@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.9
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -10,10 +10,14 @@ Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=1912316078f1f7041dd8cd2580f210d30f898162
-Requires: openjre >= 1.8.0.112
-BuildRequires: openjre >= 1.8.0.45, openjdk >= 1.8.0.45, apache-ant >= 1.9.6, wget >= 1.15
+%define java_macros_version 1.8.0.131-1%{?dist}
+Requires: openjre >= %{java_macros_version}
+BuildRequires: openjre >= %{java_macros_version}
+BuildRequires: openjdk >= %{java_macros_version}
+BuildRequires: apache-ant >= 1.9.6
+BuildRequires: wget >= 1.15
 
-%define _prefix /var/opt/apache-maven-3.3.9
+%define _prefix /var/opt/apache-maven-%{version}
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
 
@@ -26,22 +30,22 @@ The Maven package contains binaries for a build system
 find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 
 %build
-MAVEN_DIST_DIR=/var/opt/apache-maven-3.3.9
+MAVEN_DIST_DIR=%{_prefix}
 
-export JAVA_HOME=/var/opt/OpenJDK-1.8.0.112-bin
-export ANT_HOME=/var/opt/apache-ant-1.9.6
+export JAVA_HOME=%{_java_home}
+export ANT_HOME=%{_ant_home}
 export PATH=$PATH:$ANT_HOME/bin
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 ant -Dmaven.home=$MAVEN_DIST_DIR
 
 %install
-
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+MAVEN_DIST_DIR=%{_prefix}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 
 mkdir -p -m 700 %{buildroot}/var/opt
 
-cp -r /var/opt/apache-maven-3.3.9  %{buildroot}/var/opt
+cp -r "$MAVEN_DIST_DIR"  %{buildroot}/var/opt
 
 install -d -m 755 %{buildroot}/etc/profile.d/
 
@@ -63,6 +67,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*	Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-8
+-	Update java to 1.8.0.131 & use java macros to update version
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-7
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Thu Oct 27 2016 Alexey Makhalov <amakhalov@vmware.com> 3.3.9-6
