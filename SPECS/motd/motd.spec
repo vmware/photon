@@ -6,7 +6,7 @@
 Summary:	Message of the Day
 Name:		motd
 Version:	0.1.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 URL:		http://github.com/rtnpro/fedora-motd
 Source0:	https://github.com/rtnpro/motdgen/archive/motdgen-a152954.tar.gz
@@ -40,7 +40,7 @@ Generates Dynamic MOTD.
 
 %triggerin -- shadow
 [ $1 -eq 1 ] && [ $2 -eq 1 ] || exit 0
-echo "detected install of motd/shadow, patching /etc/pam.d/sshd"
+echo "detected install of motd/shadow, patching /etc/pam.d/sshd" >&2
 grep -q '^\s*session\s*include\s*motdgen.*$' %{_sysconfdir}/pam.d/sshd \
 	|| echo "session include motdgen" >> %{_sysconfdir}/pam.d/sshd
 
@@ -48,7 +48,7 @@ grep -q '^\s*session\s*include\s*motdgen.*$' %{_sysconfdir}/pam.d/sshd \
 [ $1 -eq 0 ] && [ $2 -eq 1 ] || exit 0
 # $1 $2
 # 0  1  motd is being uninstalled, shadow is installed
-echo "detected uninstall of motd/shadow, reverting /etc/pam.d/sshd"
+echo "detected uninstall of motd/shadow, reverting /etc/pam.d/sshd" >&2
 sed -i '/^\s*session\s*include\s*motdgen.*$/d' \
 	%{_sysconfdir}/pam.d/sshd || exit 0
 
@@ -67,5 +67,7 @@ rm -rf %{_localstatedir}/run/motdgen
 %{_sysconfdir}/systemd/system/motdgen.service
 
 %changelog
+*   Sun Apr 30 2017 Bo Gan <ganb@vmware.com> 0.1.3-2
+-   Do not write to stdout in triggers
 *   Mon Apr 17 2017 Bo Gan <ganb@vmware.com> 0.1.3-1
 -   Initial packaging for motd
