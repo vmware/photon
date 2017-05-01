@@ -1,48 +1,81 @@
 Summary:	initramfs
 Name:		initramfs
-Version:	1.0
-Release:	7%{?kernelsubrelease}%{?dist}
+Version:	2.0
+Release:	1%{?dist}
+Source0:	systemd.conf
+Source1:	fscks.conf
 License:	Apache License
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
-BuildRequires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-BuildRequires:       dracut
-BuildRequires:       ostree
-BuildRequires:       e2fsprogs
-Requires:	     linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+Provides:	initramfs
+Requires:	dracut
 
 %description
-Photon release files such as yum configs and other /etc/ release related files
+This package provides the configuration files for initrd generation.
 
-%prep
-umask 022
-cd /usr/src/photon/BUILD
-cd /usr/src/photon/BUILD
-rm -rf initramfs
-mkdir initramfs
-cd initramfs
-/bin/chmod -Rf a+rX,u+w,g-w,o-w .
-echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_ballon hv_utils hv_vmbus cn"' >> /etc/dracut.conf
-
-echo 'add_dracutmodules+=" ostree systemd "' > /etc/dracut.conf.d/ostree.conf
-
-%build
-dracut --force --kver %{KERNEL_VERSION}-%{KERNEL_RELEASE} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %install
-rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT/boot
-install -m 600 initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE} $RPM_BUILD_ROOT/boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+mkdir -p %{buildroot}%{_sysconfdir}/dracut.conf.d
+install -D -m644 %{SOURCE0} %{buildroot}%{_sysconfdir}/dracut.conf.d/
+install -D -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/dracut.conf.d/
+install -d -m755 %{buildroot}%{_localstatedir}/lib/initramfs/kernel
 
-%clean
-rm -rf $RPM_BUILD_ROOT
+%define watched_path %{_sbindir} %{_libdir}/udev/rules.d %{_libdir}/systemd/system  /lib/modules
+%define watched_pkgs e2fsprogs, ostree, systemd, kpartx, device-mapper-multipath
+
+%define removal_action \
+rm -rf %{_localstatedir}/lib/rpm-state/initramfs.regenerate \
+rm -rf %{_localstatedir}/lib/rpm-state/initramfs.pending
+
+%define pkgs_trigger_action \
+[ -f %{_localstatedir}/lib/rpm-state/initramfs.regenerate ] && exit 0 \
+mkdir -p %{_localstatedir}/lib/rpm-state \
+touch %{_localstatedir}/lib/rpm-state/initramfs.regenerate \
+echo "initramfs (re)generation triggered" >&2
+
+%define file_trigger_action \
+if [ -f %{_localstatedir}/lib/rpm-state/initramfs.regenerate ]; then \
+    echo "(re)generate initramfs for all kernels" >&2 \
+    mkinitrd -q \
+elif [ -d %{_localstatedir}/lib/rpm-state/initramfs.pending ]; then \
+    for k in `ls %{_localstatedir}/lib/rpm-state/initramfs.pending/`; do \
+        echo "generate initramfs for $k" >&2 \
+        mkinitrd -q /boot/initrd.img-$k $k \
+    done; \
+fi \
+%{removal_action}
+
+%post
+%{pkgs_trigger_action}
+
+%postun
+[ $1 -eq 0 ] || exit 0
+%{removal_action}
+
+%posttrans
+%{file_trigger_action}
+
+%triggerin -- %{watched_pkgs}
+%{pkgs_trigger_action}
+
+%triggerun -- %{watched_pkgs}
+%{pkgs_trigger_action}
+
+%transfiletriggerin -- %{watched_path}
+%{file_trigger_action}
+
+%transfiletriggerpostun -- %{watched_path}
+%{file_trigger_action}
 
 %files
 %defattr(-,root,root,-)
-%dir /boot
-/boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+%{_sysconfdir}/dracut.conf.d/systemd.conf
+%{_sysconfdir}/dracut.conf.d/fscks.conf
+%dir %{_localstatedir}/lib/initramfs/kernel
 
 %changelog
+*   Wed Apr 12 2017 Bo Gan <ganb@vmware.com> 2.0-1
+-   Made initrd generation dynamic, triggers for systemd, e2fs-progs
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-7
 -   Expand uname -r to have release number
 *   Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  1.0-6
