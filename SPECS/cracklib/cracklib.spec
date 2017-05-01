@@ -56,7 +56,6 @@ If you are installing CrackLib, you should also install cracklib-dicts.
 %package devel
 Summary:	Cracklib link library & header file
 Group:		Development/Libraries
-Provides:	cracklib-devel
 Requires:	cracklib
 
 %description devel

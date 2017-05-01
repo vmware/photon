@@ -9,7 +9,6 @@ Source:     %{name}-%{version}.4.tar.gz
 %define sha1 photon-release=d67b149f28117f1ad30acb585f180f8fa951f679
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Provides:   photon-release
 BuildArch:  noarch
 
 %description

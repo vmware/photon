@@ -12,7 +12,6 @@ Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
 %define sha1    pycurl=e8e9c7e9ae91ae32096b8c86cfc7d49976a66d1b
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Provides:       pycurl
 BuildRequires:  openssl-devel
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs

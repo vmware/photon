@@ -9,7 +9,6 @@ Source0:	compute-image-packages-%{version}.tar.gz
 %define sha1 compute-image-packages=dd115b7d56c08a3c62180a9b72552a54f7babd4f
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Provides:	google-startup-scripts
 BuildArch:	noarch
 Requires:  	python2
 

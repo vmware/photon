@@ -7,7 +7,6 @@ URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Provides:       %{name}
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.gz
 %define sha1    postgresql=3159151f2fc74ec3e684ec0dc8949494b608fb3c
@@ -36,7 +35,6 @@ PostgreSQL is an object-relational database management system.
 %package libs
 Summary:    Libraries for use with PostgreSQL
 Group:      Applications/Databases
-Provides:   %{name}-libs
 
 %description libs
 The postgresql-libs package provides the essential shared libraries for any
