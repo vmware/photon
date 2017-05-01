@@ -1,13 +1,12 @@
 Summary:        Cron Daemon
 Name:           cronie
-Version:        1.5.0
-Release:        13%{?dist}
+Version:        1.5.1
+Release:        1%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
-URL:            https://fedorahosted.org/cronie
-Source0:        https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
-%define sha1    cronie=bbf154a6db7c9802664d1f0397b5e7ae9a9618e4
+URL:            https://github.com/cronie-crond/cronie
+Source0:        https://github.com/cronie-crond/cronie/releases/download/cronie-%{version}/cronie-%{version}.tar.gz
+%define sha1    cronie=0d757921c1ed248cffa14a754a50ccd27e9a8245
 Source1:        run-parts.sh
-Patch0:         cronie_fix_pam_configuration.patch
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -24,47 +23,51 @@ has security and configuration enhancements like the ability to use pam and
 SELinux.
 %prep
 %setup -q
-sed -i "s/\/usr\/sbin\/anacron -s/\/usr\/sbin\/anacron -s -S \/var\/spool\/anacron/" contrib/0anacron
-%patch0 -p1
+sed -i 's/^\s*auth\s*include\s*password-auth$/auth       include    system-auth/g;
+     s/^\s*account\s*include\s*password-auth$/account    include    system-account/g;
+     s/^\s*session\s*include\s*password-auth$/session    include    system-session/g;' pam/crond
 %build
-autoreconf
 ./configure \
     --prefix=%{_prefix} \
     --sysconfdir=/etc   \
-    --with-pam      \
-    --with-selinux      \
+    --localstatedir=/var\
+    --with-pam          \
     --enable-anacron    \
     --enable-pie        \
     --enable-relro
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
-install -vdm700 %{buildroot}/usr/var/spool/cron
-install -vd %{buildroot}%{_sysconfdir}/sysconfig/
-install -vd %{buildroot}%{_sysconfdir}/cron.d/
-install -vd %{buildroot}%{_sysconfdir}/cron.hourly
-install -vd %{buildroot}%{_sysconfdir}/cron.daily
-install -vd %{buildroot}%{_sysconfdir}/cron.weekly
-install -vd %{buildroot}%{_sysconfdir}/cron.monthly
-install -vd %{buildroot}/var/spool/anacron
+install -vdm700 %{buildroot}%{_localstatedir}/spool/cron
 
-install -m 644 crond.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/crond
-install -m 644 contrib/anacrontab %{buildroot}%{_sysconfdir}/anacrontab
-install -c -m644 contrib/0hourly %{buildroot}%{_sysconfdir}/cron.d/0hourly
-install -c -m755 contrib/0anacron %{buildroot}%{_sysconfdir}/cron.hourly/0anacron
-install -m 644 contrib/dailyjobs %{buildroot}%{_sysconfdir}/cron.d/dailyjobs
+install -vdm755 %{buildroot}%{_sysconfdir}/sysconfig/
+install -vm644 crond.sysconfig %{buildroot}%{_sysconfdir}/sysconfig/crond
+
+install -vdm755 %{buildroot}%{_sysconfdir}/cron.d/
+install -vm644 contrib/0hourly %{buildroot}%{_sysconfdir}/cron.d/0hourly
+install -vm644 contrib/dailyjobs %{buildroot}%{_sysconfdir}/cron.d/dailyjobs
+
+install -vdm755 %{buildroot}%{_sysconfdir}/cron.hourly
+install -vm755 contrib/0anacron %{buildroot}%{_sysconfdir}/cron.hourly/0anacron
+
+install -vdm755 %{buildroot}%{_sysconfdir}/cron.daily
+install -vdm755 %{buildroot}%{_sysconfdir}/cron.weekly
+install -vdm755 %{buildroot}%{_sysconfdir}/cron.monthly
+
+install -vm644 contrib/anacrontab %{buildroot}%{_sysconfdir}/anacrontab
 
 touch %{buildroot}%{_sysconfdir}/cron.deny
+
+install -vdm755 %{buildroot}/var/spool/anacron
 touch %{buildroot}/var/spool/anacron/cron.daily
 touch %{buildroot}/var/spool/anacron/cron.weekly
 touch %{buildroot}/var/spool/anacron/cron.monthly
 
-install -vdm755 %{buildroot}/%{_sysconfdir}/pam.d
-install -vd %{buildroot}%{_libdir}/systemd/system/
-install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
-install -c -m755  %{SOURCE1} %{buildroot}/%{_bindir}/run-parts
+install -m755  %{SOURCE1} %{buildroot}/%{_bindir}/run-parts
 
-ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
+install -vdm755 %{buildroot}%{_libdir}/systemd/system/
+install -m644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
+ln -sfv ./crond.service %{buildroot}%{_libdir}/systemd/system/cron.service
 
 %check
 make %{?_smp_mflags} check
@@ -83,29 +86,41 @@ make %{?_smp_mflags} check
 %files
 %defattr(-,root,root)
 %{_lib}/systemd/system/cron.service
-%config(noreplace) %{_sysconfdir}/pam.d/*
-%{_bindir}/*
-%{_sbindir}/*
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-%{_mandir}/man8/*
-%dir /usr/var/spool/cron
-%dir %{_sysconfdir}/sysconfig/
-%dir %{_sysconfdir}/cron.d/
+%{_libdir}/systemd/system/crond.service
+
+%config(noreplace) %{_sysconfdir}/pam.d/crond
+
+%dir %{_localstatedir}/spool/cron
+%dir %{_sysconfdir}/cron.d
+%config(noreplace) %{_sysconfdir}/cron.d/0hourly
+%config(noreplace) %{_sysconfdir}/cron.d/dailyjobs
 %dir %{_sysconfdir}/cron.hourly
+%{_sysconfdir}/cron.hourly/0anacron
 %dir %{_sysconfdir}/cron.daily
 %dir %{_sysconfdir}/cron.weekly
 %dir %{_sysconfdir}/cron.monthly
-%config(noreplace) %{_sysconfdir}/anacrontab
-%attr(0644,root,root) %config(noreplace) %{_sysconfdir}/cron.d/*
+
+%attr(4755,root,root) %{_bindir}/crontab
+%{_bindir}/run-parts
+%{_sbindir}/crond
+%{_sbindir}/anacron
+
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
+
 %config(noreplace) %{_sysconfdir}/cron.deny
-%{_sysconfdir}/cron.hourly/0anacron
 %config(noreplace) %{_sysconfdir}/sysconfig/crond
-%{_libdir}/systemd/system/crond.service
-/var/spool/anacron/cron.daily
-/var/spool/anacron/cron.monthly
-/var/spool/anacron/cron.weekly
+
+%dir /var/spool/anacron
+%config(noreplace) %{_sysconfdir}/anacrontab
+%ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.daily
+%ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.monthly
+%ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.weekly
+
 %changelog
+*   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 1.5.1-1
+-   Update to 1.5.1
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-13
 -   BuildRequires Linux-PAM-devel
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.5.0-12
