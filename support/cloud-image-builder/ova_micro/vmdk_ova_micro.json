@@ -8,7 +8,7 @@
     "type": "micro",
     "size": { "root": "8", "swap": "0" },
     "public_key":"<ssh-key-here>",
-    "customartifacts": { "postinstallscripts": ["ova_micro-custom-patch.sh"] },
+    "postinstallscripts": ["ova_micro-custom-patch.sh"],
     "artifacttype": "ova",
     "keeprawdisk": "false"
 }

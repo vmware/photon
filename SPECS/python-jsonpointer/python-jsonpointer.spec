@@ -3,7 +3,7 @@
 
 Name:           python-jsonpointer
 Version:        1.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -51,10 +51,11 @@ python3 tests.py
 popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/jsonpointer %{buildroot}/%{_bindir}/jsonpointer3
 popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root,-)
@@ -64,9 +65,11 @@ popd
 %files -n python3-jsonpointer
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-%{_bindir}/jsonpointer
+%{_bindir}/jsonpointer3
 
 %changelog
+*       Wed Apr 26 2017 Sarah Choi <sarahc@vmware.com> 1.10-5
+-       Rename jsonpointer for python3 
 *       Thu Apr 06 2017 Sarah Choi <sarahc@vmware.com> 1.10-4
 -       support python3
 *       Tue Oct 04 2016 ChangLee <changlee@vmware.com> 1.10-3
