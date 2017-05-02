@@ -1,3 +1,3 @@
 {
-    "packages":["sudo", "tar", "which", "google-daemon", "google-startup-scripts", "kubernetes", "gawk", "cloud-utils", "gptfdisk", "perl-DBD-SQLite", "perl-DBIx-Simple", "perl", "ntp"]
+    "packages":["sudo", "tar", "which", "google-compute-engine", "google-compute-engine-services", "kubernetes", "gawk", "cloud-utils", "gptfdisk", "perl-DBD-SQLite", "perl-DBIx-Simple", "perl", "ntp"]
 }
