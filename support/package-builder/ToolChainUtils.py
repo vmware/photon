@@ -136,18 +136,24 @@ class ToolChainUtils(object):
         if retval != 0:
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
-        self.logger.info("Successfully installed all Tool Chain RPMS in Chroot:"+chrootID)
-        if "openjdk" in packageName or "openjre" in packageName:
-            self.installToolChainXRPMS(chrootID);
+        self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
+        print "Building Package:"+ packageName
+	print constants.perPackageToolChain
+        if packageName in constants.perPackageToolChain:
+            print constants.perPackageToolChain[packageName]
+            self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName], packageName);
    
-    def installToolChainXRPMS(self, chrootID):
-        self.logger.info("Installing Tool Chain X package RPMS.......")
+    def installCustomToolChainRPMS(self, chrootID, listOfToolChainPkgs, packageName):
+        self.logger.info("Installing package specific tool chain RPMs for " + packageName + ".......")
         rpmFiles = ""
         packages = ""
-        for package in constants.listToolChainXRPMsToInstall:
+        for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
 	    print "DEBUG:" + package
-            rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
+            if "openjre" in packageName or "openjdk" in packageName:
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
+            else:
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
             if rpmFile is None:
                 self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                 raise Exception("Input Error")
