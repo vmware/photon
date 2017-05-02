@@ -2,20 +2,23 @@
 Summary:        JSON serializing/deserializing, done correctly and fast
 Name:           perl-JSON-XS
 Epoch:          1
-Version:        3.01
-Release:        2%{?dist}
+Version:        3.03
+Release:        1%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/JSON-XS/
 Source0:        http://www.cpan.org/authors/id/M/ML/MLEHMANN/JSON-XS-%{version}.tar.gz
-%define sha1 JSON-XS=725f67ef1de914a6fdaf99d751aea3018cee492b
+%define sha1 JSON-XS=7d9d8e7c5bec04d60af28faca1f36c90c9d11da9
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:  perl
-BuildRequires:	perl-Types-Serialiser
-BuildRequires:	perl-common-sense
-Requires:	perl-Types-Serialiser
-Requires:	perl-common-sense
+BuildRequires:  perl-Canary-Stability
+BuildRequires:  perl-Types-Serialiser
+BuildRequires:  perl-common-sense
+Requires:  perl
+Requires:  perl-Canary-Stability
+Requires:  perl-Types-Serialiser
+Requires:  perl-common-sense
 
 %description
 This module converts Perl data structures to JSON and vice versa. Its
@@ -30,16 +33,12 @@ perl -pi -e 's|^#!/opt/bin/perl|#!%{__perl}|' eg/*
 chmod -c -x eg/*
 
 %build
-perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
+export PERL_CANARY_STABILITY_NOPROMPT=1
+perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}" NO_PACKLIST=1
 make %{?_smp_mflags}
 
 %install
 make pure_install DESTDIR=%{buildroot}
-
-find %{buildroot} -type f -name .packlist -exec rm -f {} +
-find %{buildroot} -type f -name '*.bs' -size 0 -exec rm -f {} +
-find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null \;
-
 %{_fixperms} %{buildroot}/*
 
 %check
@@ -52,6 +51,8 @@ make test
 %{_mandir}/man[13]/*
 
 %changelog
+*   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 3.03-1
+-   Add build requires for perl-Canary-Stability, and pass NO_PACKLIST to Makefile.PL.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.01-2
 -	GA - Bump release of all rpms
 *	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 3.01-1
