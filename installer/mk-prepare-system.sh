@@ -56,7 +56,7 @@ fi
 [ -e ${BUILDROOT}/dev/random ]  || mknod -m 444 ${BUILDROOT}/dev/random c 1 8
 [ -e ${BUILDROOT}/dev/urandom ] || mknod -m 444 ${BUILDROOT}/dev/urandom c 1 9
 
-chown -R 0:0 ${BUILDROOT}/*	|| fail "${PRGNAME}: Changing ownership: ${BUILDROOT}: FAILURE"
+chown -R 0:0 ${BUILDROOT}/*	|| :
 
 #
 #	Mount kernel filesystem
