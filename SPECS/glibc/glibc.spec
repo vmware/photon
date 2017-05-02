@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.25
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -166,11 +166,9 @@ sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}/usr/bin/ldd
 sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
 
-%post
-/sbin/ldconfig
+%post -p /sbin/ldconfig
 
-%postun
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -255,6 +253,8 @@ sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
 
 %changelog
+*   Thu May 4  2017 Bo Gan <ganb@vmware.com> 2.25-3
+-   Remove bash dependency in post/postun script
 *   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-2
 -   Added -iconv -tools and -nscd subpackages
 *   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-1
