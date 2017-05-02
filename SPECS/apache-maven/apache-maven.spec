@@ -1,17 +1,17 @@
 Summary:	Apache Maven
 Name:		apache-maven
-Version:	3.3.9
-Release:	8%{?dist}
+Version:	3.5.0
+Release:	1%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-BuildArch:      noarch
+BuildArch:      x86_64
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-maven=1912316078f1f7041dd8cd2580f210d30f898162
+%define sha1 apache-maven=1730812af1cdd77493e269b371ef8ac536230c15
 
-%define java_macros_version 1.8.0.112-2%{?dist}
+%define java_macros_version 1.8.0.121-1%{?dist}
 Requires: openjre >= %{java_macros_version}
 BuildRequires: openjre >= %{java_macros_version}
 BuildRequires: openjdk >= %{java_macros_version}
@@ -28,7 +28,7 @@ The Maven package contains binaries for a build system
 %prep
 
 %setup -q
-find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
+#find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 
 %build
 MAVEN_DIST_DIR=%{_prefix}
@@ -36,29 +36,30 @@ MAVEN_DIST_DIR=%{_prefix}
 export JAVA_HOME=%{_java_home}
 export ANT_HOME=%{_ant_home}
 export PATH=$PATH:$ANT_HOME/bin
+source /etc/profile.d/apache-maven.sh
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
-ant -Dmaven.home=$MAVEN_DIST_DIR
+
+mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
 %install
 MAVEN_DIST_DIR=%{_prefix}
 
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-
 mkdir -p -m 700 %{buildroot}/var/opt
 
 cp -r "$MAVEN_DIST_DIR"  %{buildroot}/var/opt
 
+# install exports file.
 install -d -m 755 %{buildroot}/etc/profile.d/
-
 echo 'export MAVEN_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
 echo 'export PATH=$MAVEN_HOME/bin:$PATH' >> %{buildroot}/etc/profile.d/%{name}.sh
 echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
-%{_libdir}/*
+%{_libdir}
+%{_bindir}
 %{_sysconfdir}/profile.d/%{name}.sh
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
@@ -69,6 +70,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*   Mon Apr 24 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.0-1
+-   Updated to version 3.5.0
 *   Fri Mar 31 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-8
 -   use java rpm macros to determine versions
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-7
