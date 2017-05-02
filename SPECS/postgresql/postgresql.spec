@@ -1,13 +1,12 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        9.5.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Provides:   %{name}
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
 %define sha1 postgresql=bdbbecf691354a689c599631256d41eaa8824c66
@@ -28,17 +27,16 @@ Requires:       readline
 Requires:       zlib
 Requires:       tzdata
 
-Requires:   %{name}-libs = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
 
 %description
 PostgreSQL is an object-relational database management system.
 
 %package libs
-Summary:    Libraries for use with PostgreSQL
-Group:      Applications/Databases
-Provides:   %{name}-libs
+Summary:        Libraries for use with PostgreSQL
+Group:          Applications/Databases
 
-%description libs
+%description    libs
 The postgresql-libs package provides the essential shared libraries for any
 PostgreSQL client program or interface. You will need to install this package
 to use any other PostgreSQL package or any clients that need to connect to a
@@ -74,7 +72,7 @@ cd contrib && make %{?_smp_mflags}
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot}
 cd contrib && make install DESTDIR=%{buildroot}
-
+find %{buildroot}/%{_libdir} -name '*.a' -delete
 %{_fixperms} %{buildroot}/*
 %check
 %post   -p /sbin/ldconfig
@@ -136,16 +134,13 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
-%{_libdir}/libpgcommon.a
-%{_libdir}/libpgport.a
-%{_libdir}/libpq.a
-%{_libdir}/libecpg*.a
-%{_libdir}/libpgtypes*.a
 %{_libdir}/libecpg*.so
 %{_libdir}/libpgtypes*.so
 %{_libdir}/libpq*.so
 
 %changelog
+*   Mon May 01 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-3
+-   Removed Provides section from main libs packages. Removed static lib files.
 *   Thu Apr 13 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-2
 -   Added postgresql-devel.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-1
