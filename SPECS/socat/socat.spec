@@ -1,8 +1,8 @@
 Summary:          Multipurpose relay (SOcket CAT)
 Name:             socat
 Version:          1.7.3.2
-Release:          1%{?dist}
-License:          GPL
+Release:          2%{?dist}
+License:          GPL2
 URL:              http://www.dest-unreach.org/socat
 Group:            Applications/Internet
 Vendor:           VMware, Inc.
@@ -38,6 +38,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Tue May 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.3.2-2
+-   Correct the GPL license version.
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.3.2-1
 -   Update to version 1.7.3.2
 *   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  1.7.3.1-1
