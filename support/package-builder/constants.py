@@ -191,8 +191,7 @@ class constants(object):
         "cpio",
         "go"]
 
-    # List of X library RPMS that will be installed in a chroot prior to build openjdk & openjre package. 
-    listToolChainXRPMsToInstall=[
+    perPackageToolChain = dict.fromkeys(["openjdk", "openjdk-doc", "openjdk-src", "openjdk-sample", "openjre" ], [
         "glib-devel",
         "icu-devel",
 	"openjdk",
@@ -231,7 +230,8 @@ class constants(object):
         "libXmu-devel",
         "libXrender",
         "libXrender-devel"
-	]
+	])
+    perPackageToolChain["apache-maven"] = ["apache-maven"]
     # List of RPMs which are not published. They will be created during the
     # build process
     listOfRPMsProvidedAfterBuild=[
