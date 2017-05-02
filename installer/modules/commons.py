@@ -7,7 +7,9 @@ POST_INSTALL = "post-install"
 
 LOG_LEVEL_DESC = ["emerg", "alert", "crit", "err", "warning", "notice", "info", "debug"]
 LOG_FILE_NAME  = "/var/log/installer.log"
-SIGNATURE   = "Photon echo"
+TDNF_LOG_FILE_NAME  = "/var/log/tdnf.log"
+TDNF_CMDLINE_FILE_NAME = "/var/log/tdnf.cmdline"
+SIGNATURE   = "localhost echo"
 LOG_EMERG   = 0
 LOG_ALERT   = 1
 LOG_CRIT    = 2
