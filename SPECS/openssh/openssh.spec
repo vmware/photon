@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -35,6 +35,7 @@ This provides the ssh client utilities.
 
 %package server
 Summary: openssh server applications
+Requires:   coreutils
 Requires:   Linux-PAM
 Requires:   shadow
 Requires:   ncurses-terminfo
@@ -194,6 +195,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Wed May 3  2017 Bo Gan <ganb@vmware.com> 7.5p1-2
+-   Fixed openssh-server dependency on coreutils
 *   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.5p1-1
 -   Update version
 *   Thu Feb 09 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-3

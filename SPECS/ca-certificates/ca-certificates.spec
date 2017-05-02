@@ -1,7 +1,7 @@
 Summary:  Certificate Authority certificates 
 Name:   ca-certificates
 Version:  20170406
-Release:  2%{?dist}
+Release:  3%{?dist}
 License:  Custom
 URL:    http://mxr.mozilla.org/mozilla/source/security/nss/lib/ckfw/builtins/
 Group:    System Environment/Security
@@ -9,6 +9,7 @@ Vendor:   VMware, Inc.
 Distribution: Photon
 Source0:  certdata.txt
 Requires:   openssl
+Requires:   coreutils
 BuildRequires:  openssl
 Requires:   ca-certificates-pki = %{version}-%{release}
 Provides:       ca-certificates-mozilla
@@ -241,6 +242,8 @@ exit 0
 %defattr(-,root,root)
 /etc/pki/tls/certs/ca-bundle.crt
 %changelog
+* Wed May  3 2017 Bo Gan <ganb@vmware.com> 20170406-3
+- Fixed dependency on coreutils
 * Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 20170406-2
 - Added -pki subpackage
 * Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com> 20170406-1

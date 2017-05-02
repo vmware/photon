@@ -1,7 +1,7 @@
 Summary:        Time zone data
 Name:           tzdata
 Version:        2017b
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
 Group:          Applications/System
@@ -35,11 +35,11 @@ cp -v zone.tab iso3166.tab $ZONEINFO
 zic -d $ZONEINFO -p America/New_York
 install -vdm 755 %{buildroot}%{_sysconfdir}
 
-%pretrans
+%pre
 if [ -f %{_sysconfdir}/localtime ]; then
     mv %{_sysconfdir}/localtime %{_sysconfdir}/localtime.bak
 fi
-%posttrans
+%post
 # Install
 if [ $1 -eq 1 ]; then
     ln -svf %{_datarootdir}/zoneinfo/UTC %{_sysconfdir}/localtime
@@ -54,6 +54,9 @@ fi
 %{_datadir}/*
 
 %changelog
+*   Wed May  3 2017 Bo Gan <ganb@vmware.com> 2017b-2
+-   Moved (pre/post)trans to pre/post
+-   to fix bash dependency before transaction
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2017b-1
 -   Updated to version 2017b.
 *   Wed Dec 14 2016 Anish Swaminathan <anishs@vmware.com> 2016h-2
