@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.64
+Version:       4.4.65
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4554451ee0b50e55674795f5d760fdbc72df7bf3
+%define sha1 linux=f6299db1b2aeda870661c062e475f2395e755096
 Source1:       config-esx-%{version}
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -23,8 +23,7 @@ Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
 Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-#fixes CVE-2016-9083
-Patch12:       vfio-pci-fix-integer-overflows-bitmask-check.patch
+
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 
@@ -40,8 +39,6 @@ Patch23:        net-v2-2-3-net-packet-fix-overflow-in-check-for-tp_frame_nr.patc
 Patch24:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
 #fixes CVE-2017-7346
 Patch25:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
-#fixes CVE-2017-2671
-Patch26:        ping-implement-proper-locking.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -89,7 +86,7 @@ The Linux package contains the Linux kernel doc files
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
-%patch12 -p1
+
 %patch13 -p1
 %patch14 -p1
 
@@ -103,7 +100,6 @@ The Linux package contains the Linux kernel doc files
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
-%patch26 -p1
 
 %build
 # patch vmw_balloon driver
@@ -192,6 +188,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 2 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.65-1
+-   Version update, remove upstreamed patches
 *   Thu Apr 27 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.64-1
 -   Fix CVE-2017-7889
 -   Fix Bug #1852790
