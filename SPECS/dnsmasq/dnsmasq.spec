@@ -9,7 +9,6 @@ Source:	        %{name}-%{version}.tar.xz
 %define sha1 dnsmasq=db42d7297dc0a05d51588baa2f298ebb42fcef99
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Provides:	dnsmasq
 
 %description
 Dnsmasq a lightweight, caching DNS proxy with integrated DHCP server.

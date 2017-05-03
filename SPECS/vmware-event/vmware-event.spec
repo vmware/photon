@@ -1,7 +1,9 @@
+%define debug_package %{nil}
+
 Name:          vmware-event
 Summary:       VMware Event SDK
 Version:       1.2.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -46,5 +48,7 @@ cd vmevent/build && make install DESTDIR=$RPM_BUILD_ROOT
 %{_includedir}/*
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-2
+-   disable debuginfo - dont change arch. package might have binaries in future
 *   Thu Mar 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
 -   Initial - spec modified for Photon from lightwave git repo.

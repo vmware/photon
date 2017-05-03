@@ -1,7 +1,7 @@
 Summary:	The finger client
 Name:		finger
 Version:	0.17
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD/
 Group:		Applications/Internet
 Vendor:		VMware, Inc.
@@ -41,6 +41,8 @@ system at the moment or a person.
 %patch1 -p1
 
 %build
+sed -i 's/install -s/install/' finger/Makefile
+sed -i 's/install -s/install/' fingerd/Makefile
 ./configure \
 	--prefix=%{_prefix}
 
@@ -83,5 +85,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/fingerd.8*
 
 %changelog
+*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
+-	Apply patch to generate debuginfo
 *	Wed Dec 7 2016 Dheeraj Shetty <dheerajs@vmware.com> 0.17-1
 -	initial version

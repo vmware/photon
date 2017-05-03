@@ -1,7 +1,7 @@
 Summary:	Programs for generating Makefiles
 Name:		automake
 Version:	1.15
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/automake/
 Group:		System Environment/Base
@@ -10,6 +10,8 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.gz
 %define sha1 automake=b5a840c7ec4321e78fdc9472e476263fa6614ca1
 BuildRequires:	autoconf
+BuildArch:      noarch
+
 %description
 Contains programs for generating Makefiles for use with Autoconf.
 %prep
@@ -39,6 +41,8 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.15-3
+-	Fix arch
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.15-2
 -	GA - Bump release of all rpms
 *	Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 1.15-1

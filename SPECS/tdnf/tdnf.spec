@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        VMware
@@ -74,11 +74,11 @@ install -v -D -m 0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/motdgen.d/02-tdnf-up
 %triggerin -- motd
 [ $2 -eq 1 ] || exit 0
 if [ $1 -eq 1 ]; then
-    echo "detected install of tdnf/motd, enabling tdnf-cache-updateinfo.timer"
+    echo "detected install of tdnf/motd, enabling tdnf-cache-updateinfo.timer" >&2
     systemctl enable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     systemctl start tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 elif [ $1 -eq 2 ]; then
-    echo "detected upgrade of tdnf, daemon-reload"
+    echo "detected upgrade of tdnf, daemon-reload" >&2
     systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
@@ -91,7 +91,7 @@ fi
 
 %triggerun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] && exit 0
-echo "detected uninstall of tdnf/motd, disabling tdnf-cache-updateinfo.timer"
+echo "detected uninstall of tdnf/motd, disabling tdnf-cache-updateinfo.timer" >&2
 systemctl --no-reload disable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 systemctl stop tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 rm -rf /var/cache/tdnf/cached-updateinfo.txt
@@ -106,7 +106,7 @@ rm -rf /var/cache/tdnf/cached-updateinfo.txt
 
 %triggerpostun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] || exit 0
-echo "detected upgrade of tdnf/motd, restarting tdnf-cache-updateinfo.timer"
+echo "detected upgrade of tdnf/motd, restarting tdnf-cache-updateinfo.timer" >&2
 systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 
 %files
@@ -131,6 +131,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/pkgconfig/tdnf.pc
 
 %changelog
+*   Sun Apr 30 2017 Bo Gan <ganb@vmware.com> 1.1.0-5
+-   Do not write to stdout in motd triggers
 *   Thu Apr 20 2017 Bo Gan <ganb@vmware.com> 1.1.0-4
 -   motd hooks/triggers for updateinfo notification
 *   Fri Apr 14 2017 Dheerajs Shetty <dheerajs@vmware.com> 1.1.0-3

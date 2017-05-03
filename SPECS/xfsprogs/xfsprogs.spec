@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
 Version:        4.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs/
 Group:          System Environment/Base
@@ -68,6 +68,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_mandir}/man5/*
 %{_sbindir}/*
+%exclude %{_docdir}/%{name}-%{version}/CHANGES.gz
 
 %files devel
 %defattr(-,root,root)
@@ -81,6 +82,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.10.0-2
+-   Ensure non empty debuginfo
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 4.10.0-1
 -   Updated to version 4.10.0.
 *   Fri Jan 6 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.0-1

@@ -1,8 +1,9 @@
 %global security_hardening none
+
 Summary:        Programs to parse command-line options
 Name:           netkit-telnet
 Version:        0.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://rpm5.org/files/popt
 Group:          Applications/Internet
@@ -26,11 +27,14 @@ This provides the telnet server daemons.
 %build 
 sed -i 's/MANDIR="$PREFIX\/man"/MANDIR="$PREFIX\/share\/man"/g' configure
 sed -i 's/LIBS += $(LIBTERMCAP)/LIBS += $(LIBTERMCAP) -lstdc++/g' telnet/Makefile
+sed -i 's/install -s/install/' telnet/Makefile
+sed -i 's/install -s/install/' telnetd/Makefile
 sed -i '/#include <termios.h>/{s/.*/&\n#include <stdlib.h>\n#include <string.h>/;:a;n;ba}' telnet/externs.h
 sed -i '/#include <stdlib.h>/{s/.*/&\n#include <string.h>/;:a;n;ba}' telnet/netlink.cc
 ./configure --installroot=%{buildroot}
 
 make
+
 %install
 export MANDIR=%{_mandir}
 mkdir -p %{buildroot}/%{_bindir}
@@ -61,5 +65,7 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
+-   Ensure non empty debuginfo
 *   Mon Jan 09 2017 Xiaolin Li <xiaolinl@vmware.com> 0.17-1
 -   Initial build. First version    

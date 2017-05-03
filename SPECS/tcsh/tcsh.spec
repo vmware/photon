@@ -2,7 +2,7 @@
 Summary:        An enhanced version of csh, the C shell
 Name:           tcsh
 Version:        6.20.00
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          System Environment/Shells
 Source:         http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.xz
@@ -35,7 +35,6 @@ sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
 
 %configure --prefix=%{_prefix}
 make %{?_smp_mflags} all
-make %{?_smp_mflags} -C nls catalogs
 
 %install
 mkdir -p %{buildroot}%{_mandir}/man1 %{buildroot}%{_bindir}
@@ -46,9 +45,9 @@ ln -sf tcsh.1 %{buildroot}%{_mandir}/man1/csh.1
 
 while read lang language ; do
   dest=%{buildroot}%{_datadir}/locale/$lang/LC_MESSAGES
-  if test -f tcsh.$language.cat ; then
+  if test -f nls/$language.cat ; then
     mkdir -p $dest
-    install -p -m 644 tcsh.$language.cat $dest/tcsh
+    install -p -m 644 nls/$language.cat $dest/tcsh
     echo "%lang($lang) %{_datadir}/locale/$lang/LC_MESSAGES/tcsh"
   fi
 done > tcsh.lang << _EOF
@@ -112,6 +111,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.20.00-2
+-   Ensure non empty debuginfo
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.20.00-1
 -   Updated to version 6.20.00
 *   Tue Feb 07 2017 Divya Thaluru <dthaluru@vmware.com> 6.19.00-6

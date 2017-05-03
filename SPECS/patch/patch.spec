@@ -1,7 +1,7 @@
 Summary:	Program for modifying or creating files
 Name:		patch
 Version:	2.7.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
@@ -22,17 +22,20 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 %check
+sed -i "s/ulimit -n 32/ulimit -n 1024/g" tests/deep-directories
 make  %{?_smp_mflags} check
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
-*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 2.7.5-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.5-2
--	GA - Bump release of all rpms
-*	Tue Aug 11 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.5-1
--	Updating to 2.7.5 version
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.7.1-1
--	Initial build. First version
+*   Fri Apr 28 2017 Divya Thaluru <dthaluru@vmware.com> 2.7.5-4
+-   Fixed ulimit in test script
+*   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 2.7.5-3
+-   Modified %check
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.5-2
+-   GA - Bump release of all rpms
+*   Tue Aug 11 2015 Divya Thaluru <dthaluru@vmware.com> 2.7.5-1
+-   Updating to 2.7.5 version
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.7.1-1
+-   Initial build. First version

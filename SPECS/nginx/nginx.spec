@@ -1,7 +1,7 @@
 Summary:    High-performance HTTP server and reverse proxy
 Name:       nginx
 Version:    1.11.13
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD-2-Clause
 URL:        http://nginx.org/download/nginx-1.11.13.tar.gz
 Group:      Applications/System
@@ -29,7 +29,8 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
     --http-log-path=/var/log/nginx/access.log   \
     --with-http_ssl_module \
     --with-pcre \
-    --with-ipv6 
+    --with-ipv6 \
+    --with-stream
 
 make %{?_smp_mflags}
 %install
@@ -46,6 +47,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %dir %{_var}/log/nginx
 
 %changelog
+*   Mon May 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.11.13-2
+-   adding module stream to nginx.
 *   Wed Apr 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.13-1
 -   update to 1.11.13
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.10.0-5

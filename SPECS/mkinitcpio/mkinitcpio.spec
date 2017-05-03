@@ -1,7 +1,7 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    23
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
@@ -15,6 +15,7 @@ BuildRequires: python-xml
 BuildRequires: docbook-xsl
 BuildRequires: libxml2-devel
 BuildRequires: libxslt
+BuildArch:     noarch
 
 %description
 Multi-format archive and compression library
@@ -46,6 +47,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 23-2
+-   Fix arch
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 23-1
 -   Update package version
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 19-2

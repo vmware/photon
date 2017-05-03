@@ -29,8 +29,6 @@ The GLib package contains a low-level libraries useful for providing data struct
 Summary:	Header files for the glib library
 Group:		Development/Libraries
 Requires:	glib = %{version}-%{release}
-Provides:	glib-devel
-Provides:	glib-devel(x86-64)
 BuildRequires:	python2 >= 2.7
 BuildRequires:	python2-libs >= 2.7
 Requires:	pcre-devel
