@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.64
+Version:    	4.4.65
 Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=4554451ee0b50e55674795f5d760fdbc72df7bf3
+%define sha1 linux=f6299db1b2aeda870661c062e475f2395e755096
 Source1:	config-%{version}
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -19,8 +19,8 @@ Patch4:         06-sunrpc.patch
 Patch5:         vmware-log-kmsg-dump-on-panic.patch
 Patch6:         vmxnet3-1.4.6.0-update-rx-ring2-max-size.patch
 Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-#fixes CVE-2016-9083
-Patch8:         vfio-pci-fix-integer-overflows-bitmask-check.patch
+#for linux-tools
+Patch8:		perf-top-sigsegv-fix.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 
@@ -35,8 +35,6 @@ Patch17:        net-v2-2-3-net-packet-fix-overflow-in-check-for-tp_frame_nr.patc
 Patch18:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
 #fixes CVE-2017-7346
 Patch19:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
-#fixes CVE-2017-2671
-Patch20:        ping-implement-proper-locking.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -46,7 +44,7 @@ BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet
 BuildRequires:  libmspack
 BuildRequires:  Linux-PAM
-BuildRequires:  openssl-devel
+BuildRequires:  openssl-devel audit-devel
 BuildRequires:  procps-ng-devel
 Requires:       filesystem kmod coreutils
 %define uname_r %{version}-%{release}
@@ -55,11 +53,13 @@ Requires:       filesystem kmod coreutils
 The Linux package contains the Linux kernel. 
 
 
-%package dev
+%package devel
 Summary:    Kernel Dev
 Group:        System Environment/Kernel
+Provides:    linux-dev = %{version}-%{release}
+Requires:    %{name} = %{version}-%{release}
 Requires:    python2
-%description dev
+%description devel
 The Linux package contains the Linux kernel dev files
 
 %package drivers-gpu
@@ -79,6 +79,7 @@ The Linux package contains the Linux kernel sound support
 %package docs
 Summary:    Kernel docs
 Group:        System Environment/Kernel
+Requires:    %{name} = %{version}-%{release}
 Requires:    python2
 %description docs
 The Linux package contains the Linux kernel doc files
@@ -89,6 +90,14 @@ Group:        System Environment/Kernel
 Requires:    %{name} = %{version}-%{release}
 %description oprofile
 Kernel driver for oprofile, a statistical profiler for Linux systems
+
+%package tools
+Summary:      This package contains the 'perf' performance analysis tools for Linux kernel
+Group:        System/Tools
+Requires:     audit
+Requires:    %{name} = %{version}-%{release}
+%description tools
+This package contains the 'perf' performance analysis tools for Linux kernel.
 
 
 %prep
@@ -113,7 +122,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
-%patch20 -p1
 
 %build
 make mrproper
@@ -121,6 +129,7 @@ cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+make -C tools perf
 
 %define __modules_install_post \
     find %{buildroot}/lib/modules/%{uname_r} -name *.ko | xargs xz \
@@ -184,6 +193,12 @@ find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp 
 cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
 ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
+
+# disable (JOBS=1) parallel build to fix this issue:
+# fixdep: error opening depfile: ./.plugin_cfg80211.o.d: No such file or directory
+# Linux version that was affected is 4.4.26
+make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
+
 %post
 /sbin/depmod -aq %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
@@ -215,7 +230,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 %{_defaultdocdir}/%{name}-%{uname_r}/*
 
-%files dev
+%files devel
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/build
 /usr/src/%{name}-headers-%{uname_r}
@@ -233,7 +248,20 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 
+%files tools
+%defattr(-,root,root)
+/usr/libexec
+/usr/lib64/traceevent
+%{_bindir}
+/etc/bash_completion.d/*
+/usr/share/perf-core
+
 %changelog
+*   Tue May 2 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.65-1
+-   Version update, remove upstreamed patches
+-   Added crypto modules for NSX
+-   Move linux-tools as a -tools subpackage
+-   Rename -dev to -devel subpackage
 *   Thu Apr 27 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.64-1
 -   Fix CVE-2017-7889
 -   Fix Bug #1852790
