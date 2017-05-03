@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2017.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1    ostree=eb3546c552849ace2f4e3701bc0b826611f569cc
 Source1:        91-ostree.preset
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
 BuildRequires:  which
-BuildRequires:  libgsystem
+BuildRequires:  libgsystem-devel
 BuildRequires:  xz-devel
 BuildRequires:  gtk-doc
 BuildRequires:  e2fsprogs-devel
@@ -28,6 +28,7 @@ Requires:       mkinitcpio
 Requires:       dracut
 Requires:       dracut-tools
 Requires:       libarchive
+Requires:		libgsystem
 BuildRequires:  attr-devel
 BuildRequires:  fuse-devel
 BuildRequires:  libgpg-error-devel
@@ -135,6 +136,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*	Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2017.4-2
+-	Use libgsystem-devel to build instead of libgsystem.
 *   Mon Apr 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2017.4-1
 -   Update to 2017.4
 *   Wed Feb 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2015.7-10
