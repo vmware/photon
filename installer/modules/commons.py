@@ -19,7 +19,7 @@ LOG_DEBUG   = 7
 
 default_partitions = [
                         {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
-                    ]
+                     ]
 
 def partition_compare(p1, p2):
     if 'mountpoint' in p1 and 'mountpoint' in p2:
@@ -70,6 +70,7 @@ def partition_disk(disk, partitions):
         if 'nvme' in disk:
             prefix = 'p'
         partition['path'] = disk + prefix + `partition_number`
+        partition_number = partition_number + 1
 
     # Adding the last extendible partition
     if extensible_partition:
