@@ -22,6 +22,9 @@ grub_efi_install()
     if [[ $HDD == *"loop"* ]]
     then
          BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
+    elif [[ $HDD == *"nvme"* ]]
+    then
+         BOOT_PARTITION=${HDD}p1
     else
          BOOT_PARTITION=${HDD}1
     fi
