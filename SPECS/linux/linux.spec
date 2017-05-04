@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.24
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -11,6 +11,7 @@ Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=c504e8817a320030313710066360bc50be7bebe8
 Source1:	config-%{version}
+Source2:	initramfs.trigger
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -159,7 +160,13 @@ cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
 photon_linux=vmlinuz-%{uname_r}
-photon_initrd=initrd.img-%{uname_r}
+#photon_initrd=initrd.img-%{uname_r}
+EOF
+
+# Register myself to initramfs
+mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
+cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
+--add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_balloon cn"
 EOF
 
 #    Cleanup dangling symlinks
@@ -183,6 +190,8 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 # Linux version that was affected is 4.4.26
 make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 
+%include %{SOURCE2}
+
 %post
 /sbin/depmod -aq %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
@@ -202,6 +211,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
+%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/firmware/*
 %defattr(0644,root,root)
 /lib/modules/%{uname_r}/*
@@ -243,6 +253,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 4.9.24-2
+-   Support dynamic initrd generation
 *   Tue Apr 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.24-1
 -   Fix CVE-2017-6874 and CVE-2017-7618.
 -   Fix audit-devel BuildRequires.
