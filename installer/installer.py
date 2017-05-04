@@ -410,8 +410,7 @@ class Installer(object):
 
     def adjust_packages_for_vmware_virt(self):
         try:
-            if (self.install_config['vmware_virt'] and
-                self.install_config['install_linux_esx']):
+            if self.install_config['install_linux_esx']:
                 selected_packages = self.install_config['packages']
                 try:
                     selected_packages.remove('linux')

@@ -184,9 +184,6 @@ class IsoInstaller(object):
             random_id = '%12x' % random.randrange(16**12)
             random_hostname = "photon-" + random_id.strip()
             install_config = {'iso_system': False}
-            install_config['vmware_virt'] = False
-            if self.is_vmware_virtualization():
-                install_config['vmware_virt'] = True
             license_agreement = License(self.maxy, self.maxx)
             select_disk = SelectDisk(self.maxy, self.maxx, install_config)
             select_partition = PartitionISO(self.maxy, self.maxx, install_config)
@@ -236,7 +233,7 @@ class IsoInstaller(object):
             items.append((select_disk.guided_partitions, False))
             items.append((package_selector.display, True))
             select_linux_index = -1
-            if install_config['vmware_virt'] == True:
+            if self.is_vmware_virtualization():
                 linux_selector   = LinuxSelector(self.maxy, self.maxx, install_config)
                 items.append((linux_selector.display, True))
                 select_linux_index = items.index((linux_selector.display, True))
@@ -247,6 +244,8 @@ class IsoInstaller(object):
         else:
             install_config = ks_config
             install_config['iso_system'] = False
+            if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
+                 install_config['install_linux_esx'] = True
 
         installer = InstallerContainer(install_config, self.maxy, self.maxx, True, rpm_path=rpm_path, log_path="/var/log", ks_config=ks_config)
 
