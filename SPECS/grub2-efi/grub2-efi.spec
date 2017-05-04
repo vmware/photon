@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2-efi
 Version:    2.02
-Release:    7%{?dist}
+Release:    8%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -84,6 +84,8 @@ rm -rf %{buildroot}%{_infodir}
 /usr/share/locale/*
 
 %changelog
+*   Thu May 4 2017 Alexey Makhalov <amakhalov@vmware.com>  2.02-8
+-   linuxefi: free allocated memory on error.
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com>  2.02-7
 -   Version update to 2.02~rc2
 -   SecureBoot hardening: forbid unsigned vmlinuz image
