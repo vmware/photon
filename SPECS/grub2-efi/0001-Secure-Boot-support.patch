@@ -1,4 +1,4 @@
-From 0982e048621339e212fda782ed10ff1ca09eb8d2 Mon Sep 17 00:00:00 2001
+From e5d5e5a259a9827e4d6e41e49085f730c773c178 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 10 Jul 2012 11:58:52 -0400
 Subject: [PATCH] Secure Boot support
@@ -12,11 +12,11 @@ Forbid dl file loading (insmod and similar) when secure boot is enabled.
  grub-core/kern/dl.c               |  21 +++
  grub-core/kern/efi/efi.c          |  30 +++
  grub-core/kern/efi/mm.c           |  32 ++++
- grub-core/loader/i386/efi/linux.c | 386 ++++++++++++++++++++++++++++++++++++++
- grub-core/loader/i386/linux.c     |  44 +++++
+ grub-core/loader/i386/efi/linux.c | 387 ++++++++++++++++++++++++++++++++++++++
+ grub-core/loader/i386/linux.c     |  45 +++++
  include/grub/efi/efi.h            |   4 +
  include/grub/i386/linux.h         |   1 +
- 8 files changed, 526 insertions(+)
+ 8 files changed, 528 insertions(+)
  create mode 100644 grub-core/loader/i386/efi/linux.c
 
 diff --git a/grub-core/Makefile.core.def b/grub-core/Makefile.core.def
@@ -163,10 +163,10 @@ index 20a47aa..efb15cc 100644
  grub_efi_allocate_pages (grub_efi_physical_address_t address,
 diff --git a/grub-core/loader/i386/efi/linux.c b/grub-core/loader/i386/efi/linux.c
 new file mode 100644
-index 0000000..6d23063
+index 0000000..78bc216
 --- /dev/null
 +++ b/grub-core/loader/i386/efi/linux.c
-@@ -0,0 +1,386 @@
+@@ -0,0 +1,387 @@
 +/*
 + *  GRUB  --  GRand Unified Bootloader
 + *  Copyright (C) 2012  Free Software Foundation, Inc.
@@ -398,6 +398,7 @@ index 0000000..6d23063
 +  if (grub_file_read (file, kernel, filelen) != filelen)
 +    {
 +      grub_error (GRUB_ERR_FILE_READ_ERROR, N_("Can't read kernel %s"), argv[0]);
++      grub_free (kernel);
 +      goto fail;
 +    }
 +
@@ -554,7 +555,7 @@ index 0000000..6d23063
 +  grub_unregister_command (cmd_initrd);
 +}
 diff --git a/grub-core/loader/i386/linux.c b/grub-core/loader/i386/linux.c
-index b15b8cc..845a5c9 100644
+index b15b8cc..fce1b45 100644
 --- a/grub-core/loader/i386/linux.c
 +++ b/grub-core/loader/i386/linux.c
 @@ -75,6 +75,8 @@ static grub_size_t maximal_cmdline_size;
@@ -566,7 +567,7 @@ index b15b8cc..845a5c9 100644
  static grub_efi_uintn_t efi_mmap_size;
  #else
  static const grub_size_t efi_mmap_size = 0;
-@@ -689,6 +691,42 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
+@@ -689,6 +691,43 @@ grub_cmd_linux (grub_command_t cmd __attribute__ ((unused)),
  
    grub_dl_ref (my_mod);
  
@@ -574,10 +575,11 @@ index b15b8cc..845a5c9 100644
 +  using_linuxefi = 0;
 +  if (grub_efi_secure_boot ())
 +    {
-+      /* Try linuxefi first, which will require a successful signature check
-+	 and then hand over to the kernel without calling ExitBootServices.
-+	 If that fails, however, fall back to calling ExitBootServices
-+	 ourselves and then booting an unsigned kernel.  */
++      /* Use linuxefi if SB is enabled, which will require a successful
++         signature check and then hand over to the kernel without calling
++         ExitBootServices.
++         If that fails, however, DO NOT fall back to original 'linux'
++         command which boots an unsigned kernel.  */
 +      grub_dl_t mod;
 +      grub_command_t linuxefi_cmd;
 +
@@ -609,7 +611,7 @@ index b15b8cc..845a5c9 100644
    if (argc == 0)
      {
        grub_error (GRUB_ERR_BAD_ARGUMENT, N_("filename expected"));
-@@ -1051,6 +1089,12 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
+@@ -1051,6 +1090,12 @@ grub_cmd_initrd (grub_command_t cmd __attribute__ ((unused)),
    grub_err_t err;
    struct grub_linux_initrd_context initrd_ctx = { 0, 0, 0 };
  
