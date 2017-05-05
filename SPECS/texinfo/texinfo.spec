@@ -1,7 +1,7 @@
 Summary:        Reading, writing, and converting info pages
 Name:           texinfo
 Version:        6.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/texinfo/texinfo-%{version}.tar.xz
 Group:          Applications/System
@@ -37,7 +37,15 @@ rm -rf %{buildroot}%{_infodir}
 
 %files -f %{name}.lang
 %defattr(-,root,root)
-%{_bindir}/*
+%exclude %{_bindir}/pdftexi2dvi
+%exclude %{_bindir}/texi2dvi
+%exclude %{_bindir}/texi2pdf
+%{_bindir}/info
+%{_bindir}/install-info
+%{_bindir}/makeinfo
+%{_bindir}/pod2texi
+%{_bindir}/texi2any
+%{_bindir}/texindex
 %{_mandir}/*/*
 %dir %{_datarootdir}/texinfo
 %{_datarootdir}/texinfo/*
@@ -46,6 +54,9 @@ rm -rf %{buildroot}%{_infodir}
 %{_libdir}/texinfo/*
 
 %changelog
+*   Fri May 05 2017 Xiaolin Li <xiaolinl@vmware.com> 6.3-3
+-   Excluded pdftexi2dvi, texi2dvi, texi2pdf from package,
+-   because these commands depend on installation of tex.
 *   Tue Apr 18 2017 Robert Qi <qij@vmware.com> 6.3-2
 -   Updated to version 6.3-2 due to perl build requires.
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.3-1
