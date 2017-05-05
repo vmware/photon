@@ -1,11 +1,11 @@
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
-Version:        0.7.0
+Version:        0.7.1
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
-Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.zip
-%define sha1 flannel=758fc9c4b3b3631de2b73b1f00898a4c72589b58
+Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
+%define sha1 flannel=3626430734a705f3a907f05f0c9a0ac33f5397dc
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,34 +21,26 @@ host OS for use with containers. flannel uses etcd to store the network
 configuration, allocated subnets, and additional data.
 
 %prep
-%setup -n %{name}-%{version}
+%setup -cqn src/github.com/coreos/
+
 %build
-mkdir -p src/github.com/coreos/flannel
-cp -r backend \
-      dist \
-      network \
-      pkg \
-      remote \
-      subnet \
-      vendor \
-      version \
-      src/github.com/coreos/flannel/
-cp -r vendor/github.com/golang src/github.com/
-cp -r vendor/golang.org src/
-cp -r vendor/github.com/coreos/pkg src/github.com/coreos/
-export GOPATH=$(pwd)
+export GOPATH=%{_builddir}
+echo $GOAPTH
+mv %{name}-%{version}  %{name}
+pushd %{name}
 make dist/flanneld
+popd
 
 %install
 install -vdm 755 %{buildroot}%{_bindir}
-install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/flanneld
+install -vpm 0755 -t %{buildroot}%{_bindir}/ %{name}/dist/flanneld
 
 %check
-export GOPATH=%{_builddir}
+pushd %{name}
 go get golang.org/x/tools/cmd/cover
 sed -e 's:^func TestRemote:func _TestRemote:' -i remote/remote_test.go || die
 ./test
-
+popd
 %post
 
 %postun
@@ -58,6 +50,8 @@ sed -e 's:^func TestRemote:func _TestRemote:' -i remote/remote_test.go || die
 %{_bindir}/flanneld
 
 %changelog
+*	Fri May 05 2017 Chang Lee <changlee@vmware.com> 0.7.1-1
+-	Updated to version 0.7.1
 *	Tue Apr 04 2017 Chang Lee <changlee@vmware.com> 0.7.0-1
 -	Updated to version 0.7.0
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.5-2
