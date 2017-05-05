@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.2.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
@@ -9,7 +9,6 @@ Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#BuildArch:     noarch
 BuildRequires:  swig libxml2-devel libxslt-devel XML-Parser
 BuildRequires:  rpm-devel
 BuildRequires:  libgcrypt-devel
@@ -18,7 +17,6 @@ BuildRequires:  libacl-devel
 BuildRequires:  libselinux-devel libcap-devel
 BuildRequires:  util-linux-devel
 BuildRequires:  bzip2-devel
-BuildRequires:  XML-XPath
 BuildRequires:  curl-devel
 BuildRequires:  popt-devel
 BuildRequires:  python2-devel
@@ -95,6 +93,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/python2.7/*
 
 %changelog
+*   Fri May 5 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.14-2
+-   Remove BuildRequires XML-XPath.
 *   Mon Mar 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.14-1
 -   Update to latest version.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-2
