@@ -1,7 +1,7 @@
 Summary:	RPC program number mapper
 Name:		rpcbind
 Version:	0.2.3
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD
 URL:		http://nfsv4.bullopensource.org
 Group:	    Applications/Daemons
@@ -17,6 +17,9 @@ BuildRequires:	libtirpc-devel
 BuildRequires:  systemd
 Requires:       libtirpc
 Requires:       systemd
+Requires(pre):  shadow
+Requires(preun):shadow
+Requires(post): coreutils
 %description
 The rpcbind program is a replacement for portmap. It is required for import or export of Network File System (NFS) shared directories. The rpcbind utility is a server that converts RPC program numbers into universal addresses
 %prep
@@ -82,6 +85,8 @@ fi
 %clean
 rm -rf %{buildroot}/*
 %changelog
+*	Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-7
+-	add shadow and coreutils to requires
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-6
 -	GA - Bump release of all rpms
 *	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 0.2.3-5
