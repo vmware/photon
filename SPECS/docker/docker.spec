@@ -1,7 +1,7 @@
 Summary:        Docker
 Name:           docker
 Version:        1.13.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -25,6 +25,7 @@ BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 BuildRequires:  unzip
+BuildRequires:  go
 Requires:       libgcc
 Requires:       glibc
 Requires:       libseccomp
@@ -128,6 +129,8 @@ rm -rf %{buildroot}/*
 /usr/share/bash-completion/completions/docker
 
 %changelog
+*   Thu May 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-3
+-   Docker build requires GO.
 *   Wed May 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-2
 -   Fixing docker plugin runc version github issue # 640.
 -   Adding docker group for non-sudo users, GitHub issue # 207.
