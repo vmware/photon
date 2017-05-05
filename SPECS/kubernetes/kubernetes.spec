@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -34,7 +34,7 @@ make
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
 
-binaries=(kube-apiserver kube-controller-manager kube-scheduler kube-proxy kubelet kubectl hyperkube kubeadm kubefed)
+binaries=(cloud-controller-manager hyperkube kubeadm kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl kubefed)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/${bin}
@@ -106,6 +106,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Thu May 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-2
+-   Include cloud-controller-manager, kube-aggregator binaries.
 *   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-1
 -   Build kubernetes 1.6.0 from source.
 *   Mon Feb 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.5.2-3
