@@ -1,7 +1,7 @@
 Summary:	GNU Ubiquitous Intelligent Language for Extensions
 Name:		guile
 Version:	2.0.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 License: 	LGPLv3+
 URL:		http://www.gnu.org/software/guile/
 Source0: 	ftp://ftp.gnu.org/pub/gnu/guile/%{name}-%{version}.tar.gz
@@ -18,6 +18,7 @@ Requires:	libunistring
 Requires:	gc
 Requires:	libffi
 Requires:	gmp
+Requires:       glibc-iconv
 
 %description
 GUILE (GNU's Ubiquitous Intelligent Language for Extension) is a library
@@ -65,6 +66,8 @@ make  %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*       Wed May 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-2
+-       Adding glibc-iconv to Requires section
 *       Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-1
 -       Bumped to latest version 2.0.13 to handle CVE-2016-8606
 *       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.0.11-3

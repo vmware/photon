@@ -22,17 +22,19 @@ grub_efi_install()
     if [[ $HDD == *"loop"* ]]
     then
          BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
+    elif [[ $HDD == *"nvme"* ]]
+    then
+         BOOT_PARTITION=${HDD}p1
     else
-         BOOT_PARTITION=${HDD}2
+         BOOT_PARTITION=${HDD}1
     fi
-    mkfs.vfat $BOOT_PARTITION
+    mkfs.fat $BOOT_PARTITION
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
-    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
-    rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
+    mkdir -p $BUILDROOT/boot/efi/EFI/Boot/
     cp EFI/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
     mkdir -p $BUILDROOT/boot/efi/boot/grub2
-    echo "configfile (hd0,gpt1)/boot/grub2/grub.cfg" > $BUILDROOT/boot/efi/boot/grub2/grub.cfg
+    echo "configfile (hd0,gpt${BOOT_PARTITION_NUMBER})${BOOT_DIRECTORY}grub2/grub.cfg" > $BUILDROOT/boot/efi/boot/grub2/grub.cfg
     umount $BUILDROOT/boot/efi
 }
 
@@ -53,13 +55,14 @@ ARCH=$(uname -m)    # host architecture
 > ${LOGFILE}        #    clear/initialize logfile
 
 # Check if passing a HHD and partition
-if [ $# -eq 5 ] 
+if [ $# -eq 6 ]
     then
         BOOTMODE=$1
     HDD=$2
     ROOT_PARTITION_PATH=$3
     BOOT_PARTITION_PATH=$4
     BOOT_DIRECTORY=$5
+    BOOT_PARTITION_NUMBER=$6
 fi
 
 #

@@ -39,8 +39,6 @@ printf "GOOGLE\n" > /etc/ssh/sshd_not_to_be_run
 sudo groupadd docker
 sudo groupadd sudo
 
-sed -i "s/plugdev/docker/" /usr/share/google/google_daemon/accounts.py
-
 rm /root/.ssh/authorized_keys   
 
 # ssh server config

@@ -1,7 +1,7 @@
 Summary:	The Automated Text and Program Generation Tool
 Name:		autogen
 Version:	5.18.12
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/autogen/
 Source0:        ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
@@ -48,6 +48,9 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+make %{?_smp_mflags} check
+
 %post	libopts -p /sbin/ldconfig
 %postun	libopts -p /sbin/ldconfig
 
@@ -77,6 +80,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.la
 
 %changelog
+*       Mon May 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.18.12-2
+-       Adding Make Check
 *       Tue Apr 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.18.12-1
 -       Updated version to 5.18.12
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.18.7-2

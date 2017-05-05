@@ -1,11 +1,11 @@
 Summary:	Glib interfaces to D-Bus API 
 Name:		dbus-glib
-Version:	0.106
-Release:	5%{?dist}
+Version:	0.108
+Release:	1%{?dist}
 License: 	AFL and GPLv2+
 Group: 		System Environment/Libraries
 Source0:	http://dbus.freedesktop.org/releases/dbus-glib/%{name}-%{version}.tar.gz
-%define sha1 dbus-glib=660f1c1d511eb72384c10df37118bdc0f65dd927
+%define sha1 dbus-glib=5c851f3d457b46d5fa7f1e647d1141592d38cc53
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	glib-devel
@@ -63,6 +63,8 @@ make %{?_smp_mflags} check
 
 
 %changelog
+*       Wed May 03 2017 Bo Gan <ganb@vmware.com> 0.108-1
+-       Update to 0.108
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.106-5
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.106-4

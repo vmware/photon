@@ -3,25 +3,25 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        1.1.0
-Release:        4%{?dist}
+Version:        1.2.0
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-License:        VMware
+License:        LGPLv2.1,GPLv2
 Url:            http://www.vmware.com
 Group:          Applications/RPM
 Requires:       hawkey >= 2017.1
-Requires:       librepo, rpm-libs
+Requires:       rpm-libs
+Requires:       curl
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
-BuildRequires:  glib-devel
 BuildRequires:  hawkey-devel >= 2017.1
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
-BuildRequires:  librepo-devel
+BuildRequires:  curl-devel
 Source0:    %{name}-%{version}.tar.gz
 Patch0:     hy_sack_create.patch
-%define sha1 tdnf=15544a87ea01d6215fed35bd2d1299776f7daca1
+%define sha1 tdnf=56deeb1e89177a4aadfac1ebb85b7c09a452a79e
 Source1:    cache-updateinfo
 Source2:    cache-updateinfo.service
 Source3:    cache-updateinfo.timer
@@ -39,17 +39,30 @@ Requires:   tdnf = %{version}-%{release}
 %description devel
 Development files for tdnf
 
+%package	cli-libs
+Summary:	Library providing cli libs for tdnf like clients
+Group:		Development/Libraries
+
+%description cli-libs
+Library providing cli libs for tdnf like clients.
+
 %prep
 %setup -q
 %patch0 -p1
 
 %build
 autoreconf -i
-./configure --prefix=%{_prefix} --bindir=%{_bindir} --libdir=%{_libdir} --sysconfdir=/etc
+./configure \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --sysconfdir=/etc   \
+    --disable-static
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
+find %{buildroot} -name '*.la' -delete
 mkdir -p %{buildroot}/var/cache/tdnf
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
 install -v -D -m 0755 %{SOURCE1} %{buildroot}%{_bindir}/tdnf-cache-updateinfo
@@ -74,11 +87,11 @@ install -v -D -m 0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/motdgen.d/02-tdnf-up
 %triggerin -- motd
 [ $2 -eq 1 ] || exit 0
 if [ $1 -eq 1 ]; then
-    echo "detected install of tdnf/motd, enabling tdnf-cache-updateinfo.timer"
+    echo "detected install of tdnf/motd, enabling tdnf-cache-updateinfo.timer" >&2
     systemctl enable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     systemctl start tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 elif [ $1 -eq 2 ]; then
-    echo "detected upgrade of tdnf, daemon-reload"
+    echo "detected upgrade of tdnf, daemon-reload" >&2
     systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
@@ -91,7 +104,7 @@ fi
 
 %triggerun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] && exit 0
-echo "detected uninstall of tdnf/motd, disabling tdnf-cache-updateinfo.timer"
+echo "detected uninstall of tdnf/motd, disabling tdnf-cache-updateinfo.timer" >&2
 systemctl --no-reload disable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 systemctl stop tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 rm -rf /var/cache/tdnf/cached-updateinfo.txt
@@ -106,7 +119,7 @@ rm -rf /var/cache/tdnf/cached-updateinfo.txt
 
 %triggerpostun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] || exit 0
-echo "detected upgrade of tdnf/motd, restarting tdnf-cache-updateinfo.timer"
+echo "detected upgrade of tdnf/motd, restarting tdnf-cache-updateinfo.timer" >&2
 systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 
 %files
@@ -125,12 +138,19 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %defattr(-,root,root)
     %{_includedir}/tdnf/*.h
     %{_libdir}/*.so
-    %{_libdir}/*.a
-    %{_libdir}/*.la
     %exclude %{_libdir}/debug
     %{_libdir}/pkgconfig/tdnf.pc
+    %{_libdir}/pkgconfig/tdnf-cli-libs.pc
+
+%files cli-libs
+    %defattr(-,root,root)
+    %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Wed May 03 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
+-   update to v1.2.0
+*   Sun Apr 30 2017 Bo Gan <ganb@vmware.com> 1.1.0-5
+-   Do not write to stdout in motd triggers
 *   Thu Apr 20 2017 Bo Gan <ganb@vmware.com> 1.1.0-4
 -   motd hooks/triggers for updateinfo notification
 *   Fri Apr 14 2017 Dheerajs Shetty <dheerajs@vmware.com> 1.1.0-3

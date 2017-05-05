@@ -1,7 +1,7 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.43.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
@@ -24,10 +24,19 @@ Summary:    Header and development files for e2fsprogs
 Requires:   %{name} = %{version}
 %description    devel
 It contains the libraries and header files to create applications 
+
+%package lang
+Summary: Additional language files for e2fsprogs
+Group:   System Environment/Base
+Requires: %{name} = %{version}-%{release}
+%description lang
+These are the additional language files of e2fsprogs
+
 %prep
 %setup -q
 install -vdm 755 build
 sed -i -e 's|^LD_LIBRARY_PATH.*|&:/tools/lib|' tests/test_config
+
 %build
 cd build
 LIBS=-L/tools/lib \
@@ -44,6 +53,7 @@ PKG_CONFIG_PATH=/tools/lib/pkgconfig \
     --disable-silent-rules \
     --enable-symlink-install
 make %{?_smp_mflags}
+
 %install
 pushd build
 make DESTDIR=%{buildroot} install
@@ -61,7 +71,8 @@ make %{?_smp_mflags} check
 /sbin/ldconfig
 %postun
 /sbin/ldconfig
-%files -f %{name}.lang
+
+%files
 %defattr(-,root,root)
 %config %{_sysconfdir}/mke2fs.conf
 %{_bindir}/compile_et
@@ -118,7 +129,13 @@ make %{?_smp_mflags} check
 %{_libdir}/libe2p.a
 %{_libdir}/libext2fs.a
 %{_mandir}/man3/*
+
+%files lang -f %{name}.lang
+%defattr(-,root,root)
+
 %changelog
+*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.43.4-2
+-   Add lang package.
 *   Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 1.43.4-1
 -   Updated to version 1.43.4
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-5

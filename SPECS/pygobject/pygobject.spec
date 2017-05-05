@@ -15,7 +15,6 @@ Source0:        ftp://ftp.gnome.org/pub/GNOME/sources/pygobject/3.24/pygobject-3
 Requires:       python2
 Requires:       gobject-introspection
 Requires:       glib
-Provides:       pygobject
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  gobject-introspection-devel

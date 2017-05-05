@@ -6,7 +6,6 @@ License:	Apache License
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Provides:	initramfs
 BuildRequires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:       dracut
 BuildRequires:       ostree
