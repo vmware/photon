@@ -9,7 +9,7 @@
                 "open-vm-tools",
                 "docker","bridge-utils",
                 "cloud-init", "tzdata",
-                "krb5", "which", "initramfs", "motd"]
+                "krb5", "which", "initramfs", "motd", "cracklib-dicts"]
 }
 
 

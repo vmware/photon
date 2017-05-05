@@ -3,18 +3,19 @@
 Summary:	A password strength-checking library.
 Name:		cracklib
 Version:	2.9.6
-Release:	4%{?dist}
+Release:	5%{?dist}
 Group:		System Environment/Libraries
 Source:		cracklib-%{version}.tar.gz
-%define sha1 cracklib-2.9.6=9199e7b8830717565a844430653f5a90a04fcd65
-Source1:    cracklib-words-20080507.gz
-%define sha1 cracklib-words=e0cea03e505e709b15b8b950d56cb493166607da
+%define sha1 cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
+Source1:	cracklib-words-%{version}.gz
+%define sha1 cracklib-words-%{version}=b0739c990431a0971545dff347b50f922604c1cd
+Patch0:		CVE-2016-6318.patch
 URL:		http://sourceforge.net/projects/cracklib/
 License:	GPL
 Vendor:     VMware, Inc.
 Distribution: Photon
 
-BuildRequires: python2 gzip
+BuildRequires: python2
 BuildRequires: python2-libs
 BuildRequires: python2-devel
 
@@ -82,6 +83,7 @@ The CrackLib language pack.
 %prep
 
 %setup -q -n cracklib-%{version}
+%patch0 -p1
 chmod -R og+rX .
 mkdir -p dicts
 install %{SOURCE1} dicts/
@@ -104,7 +106,8 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT/
 chmod 755 ./util/cracklib-format
 chmod 755 ./util/cracklib-packer
-util/cracklib-format dicts/cracklib* | util/cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/pw_dict
+util/cracklib-format dicts/cracklib* | util/cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/words
+echo password | util/cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/empty
 rm -f $RPM_BUILD_ROOT/%{_datadir}/cracklib/cracklib-small
 ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
 ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
@@ -117,13 +120,39 @@ make %{?_smp_mflags} test
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -p /sbin/ldconfig
+%post
+/sbin/ldconfig
+[ $1 = 1 ] || exit 0
+echo "using empty dict to provide pw_dict" >&2
+ln -sf empty.hwm %{_datadir}/cracklib/pw_dict.hwm
+ln -sf empty.pwd %{_datadir}/cracklib/pw_dict.pwd
+ln -sf empty.pwi %{_datadir}/cracklib/pw_dict.pwi
 
-%postun -p /sbin/ldconfig 
+%triggerin -- cracklib-dicts
+[ $2 = 1 ] || exit 0
+echo "switching pw_dict to cracklib-dicts" >&2
+ln -sf words.hwm %{_datadir}/cracklib/pw_dict.hwm
+ln -sf words.pwd %{_datadir}/cracklib/pw_dict.pwd
+ln -sf words.pwi %{_datadir}/cracklib/pw_dict.pwi
+
+%triggerun -- cracklib-dicts
+[ $2 = 0 ] || exit 0
+echo "switching pw_dict to empty dict" >&2
+ln -sf empty.hwm %{_datadir}/cracklib/pw_dict.hwm
+ln -sf empty.pwd %{_datadir}/cracklib/pw_dict.pwd
+ln -sf empty.pwi %{_datadir}/cracklib/pw_dict.pwi
+
+%postun
+/sbin/ldconfig
+[ $1 = 0 ] || exit 0
+rm -f %{_datadir}/cracklib/pw_dict.hwm
+rm -f %{_datadir}/cracklib/pw_dict.pwd
+rm -f %{_datadir}/cracklib/pw_dict.pwi
 
 %files
 %defattr(-,root,root)
 %{_datadir}/cracklib/cracklib.magic
+%{_datadir}/cracklib/empty*
 %{_libdir}/libcrack.so.*
 
 %files devel
@@ -140,13 +169,16 @@ rm -rf $RPM_BUILD_ROOT
 %files dicts
 %defattr(-,root,root)
 %{_sbindir}/*
-%{_datadir}/cracklib/pw_dict*
+%{_datadir}/cracklib/words*
 
 %files lang
 %defattr(-,root,root)
 %{_datadir}/locale/*
 
 %changelog
+*   Thu Apr 13 2017 Bo Gan <ganb@vmware.com> 2.9.6-5
+-   Fix CVE-2016-6318, trigger for cracklib-dicts
+-   Trigger for dynamic symlink for dict
 *   Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
 -   Revert compressing pw_dict.pwd back. Python code 
     cracklib.VeryFascistCheck does not handle it.

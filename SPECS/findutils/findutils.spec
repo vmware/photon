@@ -1,7 +1,7 @@
 Summary:	This package contains programs to find files
 Name:		findutils
 Version:	4.6.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/findutils
 Group:		Applications/File
@@ -14,6 +14,14 @@ These programs are provided to recursively search through a
 directory tree and to create, maintain, and search a database
 (often faster than the recursive find, but unreliable if the
 database has not been recently updated).
+
+%package lang
+Summary: Additional language files for findutils
+Group:   Applications/File
+Requires: %{name} = %{version}-%{release}
+%description lang
+These are the additional language files of findutils
+
 %prep
 %setup -q
 %build
@@ -35,13 +43,20 @@ make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
-%files -f %{name}.lang
+
+%files
 %defattr(-,root,root)
 /bin/find
 %{_bindir}/*
 %{_libexecdir}/*
 %{_mandir}/*/*
+
+%files lang -f %{name}.lang
+%defattr(-,root,root)
+
 %changelog
+*       Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 4.6.0-3
+-       Add lang package.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.6.0-2
 -	GA - Bump release of all rpms
 *   	Tue Apr 26 2016 Anish Swaminathan <anishs@vmware.com> 4.6.0-1

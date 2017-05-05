@@ -1,36 +1,46 @@
 Name:           cloud-init
-Version:        0.7.6
-Release:        17%{?dist}
+Version:        0.7.9
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=9af02f68d68abce91463bec22b17964d1618e1da
+%define sha1 cloud-init=3b4345267e72e28b877e2e3f0735c1f672674cfc
 Source1:        cloud-photon.cfg
 
 Patch0:         photon-distro.patch
-Patch1:         cloud-init-log.patch
+Patch1:         change-requires.patch
 Patch2:         vca-admin-pwd.patch
-Patch3:         remove-netstat.patch
-Patch4:         distro-systemctl.patch
-Patch5:         photon-hosts-template.patch
-Patch6:         resizePartitionUUID.patch
+Patch3:         photon-hosts-template.patch
+Patch4:         resizePartitionUUID.patch
+Patch5:         datasource-guestinfo.patch
+Patch6:         systemd-service-changes.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  systemd
-BuildRequires:  dbus, python-ipaddr, iproute2, automake
+BuildRequires:  dbus
+BuildRequires:  python-ipaddr
+BuildRequires:  iproute2
+BuildRequires:  automake
+
 Requires:       systemd
+Requires:       net-tools
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-configobj
 Requires:       python-prettytable
 Requires:       python-requests
+Requires:       python-setuptools
 Requires:       PyYAML
 Requires:       python-jsonpatch
+Requires:       python-oauthlib
 Requires:       python-jinja2
+Requires:       python-markupsafe
+Requires:       python-six
+
 BuildArch:      noarch
 
 %description
@@ -127,7 +137,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %license LICENSE
-%{_sysconfdir}/cloud/*
+%doc %{_sysconfdir}/cloud/cloud.cfg.d/README
+%dir %{_sysconfdir}/cloud/templates
+%config(noreplace) %{_sysconfdir}/cloud/templates/*
+%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
+%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
+%{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
+%{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
+/lib/systemd/system-generators/cloud-init-generator
+/lib/udev/rules.d/66-azure-ephemeral.rules
 /lib/systemd/system/*
 %{_docdir}/cloud-init/*
 %{_libdir}/cloud-init/*
@@ -137,6 +155,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu Apr 27 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-1
+-   Upgraded to version 0.7.9
+-   Enabled VmxGuestinfo datasource
 *   Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.6-17
 -   Fix Arch
 *   Wed Mar 29 2017 Kumar Kaushik <kaushikk@vmware.com>  0.7.6-16

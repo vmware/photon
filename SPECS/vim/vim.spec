@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,7 +12,6 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    vim=6169cece15cb139db3ceff9c9ba2bf74013b1e02
 BuildRequires:  ncurses-devel
-Requires:       tcsh
 
 %description
 The Vim package contains a powerful text editor.
@@ -165,6 +164,8 @@ make test
 %{_bindir}/vimdiff
 
 %changelog
+*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com>  8.0.0533-2
+-   Remove tcsh requires
 *   Fri Apr 14 2017 Xiaolin Li <xiaolinl@vmware.com> 8.0.0533-1
 -   Updated to version 8.0.0533.
 *   Tue Feb 28 2017 Anish Swaminathan <anishs@vmware.com>  7.4-10

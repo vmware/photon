@@ -1,7 +1,7 @@
 Summary:        Docker
 Name:           docker
 Version:        1.13.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -11,8 +11,8 @@ Source0:        https://github.com/docker/docker/archive/%{name}-%{version}.tar.
 %define sha1 docker=8a39c44c9e665495484fd86fbefdfbc9ab9d815d 
 Source1:        https://github.com/docker/containerd/archive/containerd-0.2.5.tar.gz
 %define sha1 containerd=aaf6fd1c5176b8575af1d8edf82af3d733528451
-Source2:        https://github.com/opencontainers/runc/archive/runc-1.0.0-rc2.tar.gz
-%define sha1 runc=27ab28ba1c81c4f2f62ed11601f8e3a2fafd229f
+Source2:        https://github.com/opencontainers/runc/tree/runc-1.0.0-rc2-9df8b306d01f59d3a8029be411de015b7304dd8f.zip
+%define sha1 runc=8f66277f75bafebe564226d8a3107a19d60b3237
 Source3:        https://github.com/docker/libnetwork/archive/docker-libnetwork-master-0.8.1.tar.gz
 %define sha1 docker-libnetwork-master=231c59f72a17f5e3f33e75e1efa164623e1852d8
 Source4:        docker.service
@@ -25,6 +25,7 @@ BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
+BuildRequires:  unzip
 Requires:       libgcc
 Requires:       glibc
 Requires:       libseccomp
@@ -57,8 +58,8 @@ make
 
 mkdir -p /usr/share/gocode/src/github.com/opencontainers/
 cd /usr/share/gocode/src/github.com/opencontainers/
-mv /usr/src/photon/BUILD/docker-1.13.1/runc-1.0.0-rc2 .
-mv runc-1.0.0-rc2 runc
+mv /usr/src/photon/BUILD/docker-1.13.1/runc-9df8b306d01f59d3a8029be411de015b7304dd8f .
+mv runc-9df8b306d01f59d3a8029be411de015b7304dd8f runc
 cd runc
 make BUILDTAGS='seccomp'
 
@@ -93,7 +94,7 @@ install -m 0644 %{SOURCE6} %{buildroot}%{_datadir}/bash-completion/completions/d
 /sbin/ldconfig
 
 if [ $1 -eq 1 ] ; then
-  getent group  docker  >/dev/null || groupadd -r docker
+    getent group  docker  >/dev/null || groupadd -r docker
 fi
 
 %postun
@@ -125,6 +126,8 @@ rm -rf %{buildroot}/*
 /usr/share/bash-completion/completions/docker
 
 %changelog
+*   Wed May 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-3
+-   Fixing docker plugin runc version github issue # 640.
 *   Mon Apr 24 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-2
 -   Adding docker group for non-sudo users, GitHub issue # 207.
 *   Tue Apr 11 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-1
