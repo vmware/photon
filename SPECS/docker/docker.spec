@@ -1,7 +1,7 @@
 Summary:        Docker
 Name:           docker
 Version:        1.13.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -26,11 +26,13 @@ BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 BuildRequires:  unzip
+BuildRequires:  go
 Requires:       libgcc
 Requires:       glibc
 Requires:       libseccomp
 Requires:       systemd
 Requires:       device-mapper-libs
+Requires:       go
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
@@ -126,6 +128,8 @@ rm -rf %{buildroot}/*
 /usr/share/bash-completion/completions/docker
 
 %changelog
+*   Thu May 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-4
+-   Adding build requires GO.
 *   Wed May 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-3
 -   Fixing docker plugin runc version github issue # 640.
 *   Mon Apr 24 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-2
