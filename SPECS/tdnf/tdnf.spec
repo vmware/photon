@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -35,6 +35,7 @@ which uses libhawkey and librepo
 Summary:    A Library providing C API for tdnf
 Group:      Development/Libraries
 Requires:   tdnf = %{version}-%{release}
+Requires:   hawkey-devel >= 2017.1
 
 %description devel
 Development files for tdnf
@@ -147,6 +148,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-2
+-   Fix Requires for cli-libs
 *   Wed May 03 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
 -   update to v1.2.0
 *   Sun Apr 30 2017 Bo Gan <ganb@vmware.com> 1.1.0-5
