@@ -8,7 +8,7 @@ index c998fba..8129f99 100644
  
 +static cycle_t vmware_clock_get_cycles(struct clocksource *cs)
 +{
-+	return rdtsc();
++	return (cycle_t)rdtsc_ordered();
 +}
 +
 +static struct clocksource clocksource_vmware = {

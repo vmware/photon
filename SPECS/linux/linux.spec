@@ -1,16 +1,16 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.24
-Release:        2%{?dist}
+Version:        4.9.26
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c504e8817a320030313710066360bc50be7bebe8
-Source1:	config-%{version}
+%define sha1 linux=b244ab8ee3d7a0385c7bc1b1dc1d55f0920df997
+Source1:	config
 Source2:	initramfs.trigger
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
@@ -253,6 +253,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Sun May 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.26-1
+-   Version update
+-   Removed version suffix from config file name
 *   Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 4.9.24-2
 -   Support dynamic initrd generation
 *   Tue Apr 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.24-1
