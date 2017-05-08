@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -155,6 +155,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-2
+-   Support userdata in vmx guestinfo
 *   Thu Apr 27 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-1
 -   Upgraded to version 0.7.9
 -   Enabled VmxGuestinfo datasource
