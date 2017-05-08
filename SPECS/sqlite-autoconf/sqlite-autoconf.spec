@@ -1,15 +1,15 @@
-%define sourcever 3110000
+%define sourcever 3180000
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		sqlite-autoconf
-Version:	3.11.0
-Release:	2%{?dist}
+Version:	3.18.0
+Release:	1%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:	http://sqlite.org/2016/%{name}-3110000.tar.gz
-%define sha1 sqlite-autoconf=e2d300e4b24af5ecd67a1396488893fa44864e36
+Source0:	http://sqlite.org/2017/%{name}-autoconf-3180000.tar.gz
+%define sha1 sqlite=74559194e1dd9b9d577cac001c0e9d370856671b
 Obsoletes:	libsqlite
 Provides:	sqlite3
 %description
@@ -51,11 +51,13 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 %{_mandir}/man1/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11.0-2
--	GA - Bump release of all rpms
+*   Mon May 8 2017 Divya Thaluru <dthaluru@vmware.com> 3.18.0-1
+-   Updated to version 3.18.0
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11.0-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.11.0-1
 -   Updated to version 3.11.0
-*	Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 3.8.3.1-2
-- 	Fix versioning
-*	Mon Oct 7 2014 Divya Thaluru <dthaluru@vmware.com> 3080301-1
--	Initial build.	First version
+*   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 3.8.3.1-2
+-   Fix versioning
+*   Mon Oct 7 2014 Divya Thaluru <dthaluru@vmware.com> 3080301-1
+-   Initial build.	First version
