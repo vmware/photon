@@ -1,7 +1,7 @@
 Summary:	Google's C++ gtest framework
 Name:		gtest
 Version:	1.8.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/google/googletest
 Source0:	https://github.com/google/googletest/archive/googletest-%{version}.tar.gz
@@ -45,6 +45,8 @@ rm -rf %{buildroot}/%{_includedir}/gmock
 rm -f %{buildroot}/%{_libdir}/libgmock*
 install -p -m 644 -t %{buildroot}/usr/lib googlemock/gtest/libgtest.a
 install -p -m 644 -t %{buildroot}/usr/lib googlemock/gtest/libgtest_main.a
+install -vdm 755 %{buildroot}/usr/src/gtest/src/
+cp googletest/src/* %{buildroot}/usr/src/gtest/src/
 find %{buildroot} -name '*.la' -delete
 
 %files
@@ -55,6 +57,7 @@ find %{buildroot} -name '*.la' -delete
 %files devel
 %defattr(-,root,root)
 %{_includedir}/gtest/*
+/usr/src/gtest/
 
 %files static
 %defattr(-,root,root)
@@ -62,5 +65,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libgtest_main.a
 
 %changelog
+*    Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 1.8.0-2
+-    Add gtest sources in devel package
 *    Mon Apr 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.0-1
 -    Initial version of libgtest package for Photon.
