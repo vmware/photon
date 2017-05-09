@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.65
+Version:       4.4.67
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,8 +9,8 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f6299db1b2aeda870661c062e475f2395e755096
-Source1:       config-esx-%{version}
+%define sha1 linux=1a396da733c26066af6ab1a13ade3779af175afd
+Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:        linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -188,6 +188,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.67-1
+-   Version update
+-   pci-probe: set bar count to 4 for class 0x010000
+-   Removed version suffix from config file name
 *   Tue May 2 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.65-1
 -   Version update, remove upstreamed patches
 *   Thu Apr 27 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.64-1
