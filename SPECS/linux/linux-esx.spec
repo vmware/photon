@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.65
+Version:       4.4.67
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,8 +9,8 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f6299db1b2aeda870661c062e475f2395e755096
-Source1:       config-esx-%{version}
+%define sha1 linux=1a396da733c26066af6ab1a13ade3779af175afd
+Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:        linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -34,11 +34,8 @@ Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
-#fixes CVE-2017-7308
-Patch23:        net-v2-2-3-net-packet-fix-overflow-in-check-for-tp_frame_nr.patch
-Patch24:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
 #fixes CVE-2017-7346
-Patch25:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
+Patch23:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -98,8 +95,6 @@ The Linux package contains the Linux kernel doc files
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
-%patch24 -p1
-%patch25 -p1
 
 %build
 # patch vmw_balloon driver
@@ -188,6 +183,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.67-1
+-   Version update
+-   pci-probe: set bar count to 4 for class 0x010000
+-   Removed version suffix from config file name
 *   Tue May 2 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.65-1
 -   Version update, remove upstreamed patches
 *   Thu Apr 27 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.64-1

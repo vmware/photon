@@ -326,7 +326,7 @@ index edb1984..522bdaa 100644
 +        if (class == 0x020000)
 +            return 3;
 +        if (class == 0x010000)
-+            return 2;
++            return 4;
 +        if (class == 0x00ff00)
 +            return 1;
 +        return 6;
