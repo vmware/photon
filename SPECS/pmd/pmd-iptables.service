@@ -1,0 +1,15 @@
+Description=iptables rules for pmd
+After=iptables.service
+Requires=iptables.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/iptables -A INPUT -p tcp --dport 81 -j ACCEPT
+ExecStart=/usr/sbin/iptables -A INPUT -p tcp --dport 2016 -j ACCEPT
+ExecStop=/usr/sbin/iptables -D INPUT -p tcp --dport 81 -j ACCEPT
+ExecStop=/usr/sbin/iptables -D INPUT -p tcp --dport 2016 -j ACCEPT
+TimeoutSec=0
+RemainAfterExit=yes
+
+[Install]
+WantedBy=iptables.service
