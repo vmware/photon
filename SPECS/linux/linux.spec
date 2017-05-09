@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.65
+Version:    	4.4.67
 Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,8 +9,8 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=f6299db1b2aeda870661c062e475f2395e755096
-Source1:	config-%{version}
+%define sha1 linux=1a396da733c26066af6ab1a13ade3779af175afd
+Source1:	config
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -30,11 +30,8 @@ Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 Patch16:        net-9p-vsock.patch
-#fixes CVE-2017-7308
-Patch17:        net-v2-2-3-net-packet-fix-overflow-in-check-for-tp_frame_nr.patch
-Patch18:        net-v2-3-3-net-packet-fix-overflow-in-check-for-tp_reserve.patch
 #fixes CVE-2017-7346
-Patch19:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
+Patch17:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -120,8 +117,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch15 -p1
 %patch16 -p1
 %patch17 -p1
-%patch18 -p1
-%patch19 -p1
 
 %build
 make mrproper
@@ -133,6 +128,13 @@ make -C tools perf
 
 %define __modules_install_post \
     find %{buildroot}/lib/modules/%{uname_r} -name *.ko | xargs xz \
+%{nil}
+%define __modules_install_post \
+for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
+    ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+    rm -f $MODULE.{sig,dig} \
+    xz $MODULE \
+    done \
 %{nil}
 
 # We want to compress modules after stripping. Extra step is added to
@@ -257,6 +259,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue May 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.67-1
+-   Version update
+-   Sign and compress modules after stripping. fips=1 requires signed modules
+-   Removed version suffix from config file name
 *   Tue May 2 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.65-1
 -   Version update, remove upstreamed patches
 -   Added crypto modules for NSX
