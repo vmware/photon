@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -14,8 +14,15 @@ Distribution:   Photon
 BuildRequires:  go
 BuildRequires:  rsync
 BuildRequires:  which
+Requires:       cni
+Requires:       ebtables
 Requires:       etcd >= 3.0.4
+Requires:       ethtool
+Requires:       iptables
+Requires:       iproute2
 Requires:       shadow
+Requires:       socat
+Requires:       util-linux
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -106,6 +113,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Tue May 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-3
+-   Fix kubernetes dependencies.
 *   Thu May 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-2
 -   Include cloud-controller-manager, kube-aggregator binaries.
 *   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-1
