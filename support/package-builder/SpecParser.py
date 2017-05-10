@@ -366,6 +366,7 @@ class SpecParser(object):
             print "Error: Can not find match for sha1 "+value[0]
             return False
         if (len(matchedSources) > 1):
+            print "Matched Sources:" + ' '.join(matchedSources)
             print "Error: Too many matches in sources: "+matchedSources+" for sha1 "+value[0]
             return False
         pkg.checksums[sourceName] = value[1]
