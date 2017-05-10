@@ -1,5 +1,14 @@
+From 725ac7c54935bbff858092e2db302afe88062162 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:39:18 -0700
+Subject: [PATCH] x86/vmware: pv-ops clocksource
+
+---
+ arch/x86/kernel/cpu/vmware.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index c998fba..8129f99 100644
+index 70b8c4614e22..987ac571d16c 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -155,6 +155,26 @@ static void __init vmware_cyc2ns_setup(void)
@@ -37,3 +46,6 @@ index c998fba..8129f99 100644
  }
  #else
  #define vmware_paravirt_ops_setup() do {} while (0)
+-- 
+2.11.0
+

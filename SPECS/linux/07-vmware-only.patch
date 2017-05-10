@@ -1,8 +1,20 @@
+From ffb4b625e8b2f0ce0f31433564973eb2c80a7ef5 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:41:17 -0700
+Subject: [PATCH] vmware only
+
+---
+ arch/x86/kernel/cpu/common.c | 2 ++
+ arch/x86/kernel/cpu/rdrand.c | 2 ++
+ arch/x86/kernel/cpu/vmware.c | 5 +++++
+ arch/x86/kernel/smpboot.c    | 2 +-
+ 4 files changed, 10 insertions(+), 1 deletion(-)
+
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index cc9e980..be408d4 100644
+index 4eece91ada37..5b8e45f48bf3 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1095,7 +1095,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+@@ -1089,7 +1089,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
  #endif
  
  	init_hypervisor(c);
@@ -13,7 +25,7 @@ index cc9e980..be408d4 100644
  	setup_pku(c);
  
 diff --git a/arch/x86/kernel/cpu/rdrand.c b/arch/x86/kernel/cpu/rdrand.c
-index cfa97ff..e31cfe6 100644
+index cfa97ff67bda..e31cfe683da2 100644
 --- a/arch/x86/kernel/cpu/rdrand.c
 +++ b/arch/x86/kernel/cpu/rdrand.c
 @@ -32,6 +32,7 @@ static int __init x86_rdrand_setup(char *s)
@@ -30,7 +42,7 @@ index cfa97ff..e31cfe6 100644
  #endif
 +#endif
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 387ac46..b9e3cad 100644
+index 0e1fc6e17efc..59e2cc6a70d2 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -30,6 +30,7 @@
@@ -53,10 +65,10 @@ index 387ac46..b9e3cad 100644
  
  /*
 diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
-index 42f5eb7..693ba78 100644
+index 36171bcd91f8..f7f3d0b4b882 100644
 --- a/arch/x86/kernel/smpboot.c
 +++ b/arch/x86/kernel/smpboot.c
-@@ -690,7 +690,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
+@@ -683,7 +683,7 @@ wakeup_secondary_cpu_via_nmi(int apicid, unsigned long start_eip)
  	/*
  	 * Give the other CPU some time to accept the IPI.
  	 */
@@ -65,3 +77,6 @@ index 42f5eb7..693ba78 100644
  	if (APIC_INTEGRATED(boot_cpu_apic_version)) {
  		maxlvt = lapic_get_maxlvt();
  		if (maxlvt > 3)			/* Due to the Pentium erratum 3AP.  */
+-- 
+2.11.0
+

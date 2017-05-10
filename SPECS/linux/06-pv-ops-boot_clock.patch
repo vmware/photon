@@ -1,5 +1,19 @@
+From b2ce2307e8547e420fcce9fbad46119814f7f810 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:39:57 -0700
+Subject: [PATCH] x86/vmware: pv-ops boot_clock
+
+---
+ arch/x86/include/asm/paravirt.h       |  5 +++++
+ arch/x86/include/asm/paravirt_types.h |  5 +++++
+ arch/x86/kernel/cpu/vmware.c          | 24 +++++++++++++++++++++++-
+ arch/x86/kernel/head_64.S             |  8 ++++++++
+ arch/x86/kernel/paravirt.c            |  7 +++++++
+ arch/x86/kernel/setup.c               |  9 +++++++++
+ 6 files changed, 57 insertions(+), 1 deletion(-)
+
 diff --git a/arch/x86/include/asm/paravirt.h b/arch/x86/include/asm/paravirt.h
-index ce93281..3d4ba2a 100644
+index ce932812f142..3d4ba2a999cb 100644
 --- a/arch/x86/include/asm/paravirt.h
 +++ b/arch/x86/include/asm/paravirt.h
 @@ -193,6 +193,11 @@ static inline u64 paravirt_steal_clock(int cpu)
@@ -15,7 +29,7 @@ index ce93281..3d4ba2a 100644
  {
  	return PVOP_CALL1(u64, pv_cpu_ops.read_pmc, counter);
 diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
-index 0f400c0..5f09979 100644
+index 0f400c0e4979..5f09979f612d 100644
 --- a/arch/x86/include/asm/paravirt_types.h
 +++ b/arch/x86/include/asm/paravirt_types.h
 @@ -51,6 +51,10 @@ struct mm_struct;
@@ -38,7 +52,7 @@ index 0f400c0..5f09979 100644
  
  struct pv_cpu_ops {
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 8129f99..387ac46 100644
+index 987ac571d16c..0e1fc6e17efc 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -124,6 +124,7 @@ static struct kmsg_dumper kmsg_dumper = {
@@ -94,7 +108,7 @@ index 8129f99..387ac46 100644
  #else
  #define vmware_paravirt_ops_setup() do {} while (0)
 diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
-index b4421cc..f7b8017 100644
+index b4421cc191b0..f7b8017fa90a 100644
 --- a/arch/x86/kernel/head_64.S
 +++ b/arch/x86/kernel/head_64.S
 @@ -184,6 +184,14 @@ ENTRY(secondary_startup_64)
@@ -113,7 +127,7 @@ index b4421cc..f7b8017 100644
  	call verify_cpu
  
 diff --git a/arch/x86/kernel/paravirt.c b/arch/x86/kernel/paravirt.c
-index bbf3d59..10bbdb3 100644
+index bbf3d5933eaa..10bbdb3e6651 100644
 --- a/arch/x86/kernel/paravirt.c
 +++ b/arch/x86/kernel/paravirt.c
 @@ -203,6 +203,12 @@ static u64 native_steal_clock(int cpu)
@@ -138,7 +152,7 @@ index bbf3d59..10bbdb3 100644
  
  __visible struct pv_irq_ops pv_irq_ops = {
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 9c337b0..67a42e5 100644
+index 9c337b0e8ba7..67a42e58b118 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -1302,3 +1302,12 @@ void arch_show_smap(struct seq_file *m, struct vm_area_struct *vma)
@@ -154,3 +168,6 @@ index 9c337b0..67a42e5 100644
 +	paravirt_read_boot_clock64(ts);
 +}
 +#endif
+-- 
+2.11.0
+

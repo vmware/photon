@@ -1,8 +1,18 @@
+From 71048bf46e2beea4cbfa41a7b0987f1817fc2218 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:31:15 -0700
+Subject: [PATCH] Log kmsg dump on panic
+
+In case of panic kmsg will be dumped to vmware.log file
+---
+ arch/x86/kernel/cpu/vmware.c | 143 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 140 insertions(+), 3 deletions(-)
+
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 628a059..a964013 100644
+index 6745c0b7414e..1ef88701b2d9 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -26,19 +26,23 @@
+@@ -30,19 +30,23 @@
  #include <asm/hypervisor.h>
  #include <asm/timer.h>
  #include <asm/apic.h>
@@ -29,7 +39,7 @@ index 628a059..a964013 100644
  
  #define VMWARE_PORT(cmd, eax, ebx, ecx, edx)				\
  	__asm__("inl (%%dx)" :						\
-@@ -75,6 +79,13 @@ static unsigned long vmware_get_tsc_khz(void)
+@@ -66,6 +70,13 @@ static unsigned long vmware_get_tsc_khz(void)
  	return vmware_tsc_khz;
  }
  
@@ -43,7 +53,7 @@ index 628a059..a964013 100644
  #ifdef CONFIG_PARAVIRT
  static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
  static int vmw_sched_clock __initdata = 1;
-@@ -86,6 +97,8 @@ static void __init vmware_platform_setup(void)
+@@ -152,6 +163,8 @@ static void __init vmware_platform_setup(void)
  #endif
  
  	vmware_paravirt_ops_setup();
@@ -52,7 +62,7 @@ index 628a059..a964013 100644
  }
  
  /*
-@@ -145,3 +158,127 @@ const __refconst struct hypervisor_x86 x86_hyper_vmware = {
+@@ -211,3 +224,127 @@ const __refconst struct hypervisor_x86 x86_hyper_vmware = {
  	.x2apic_available	= vmware_legacy_x2apic_available,
  };
  EXPORT_SYMBOL(x86_hyper_vmware);
@@ -180,3 +190,6 @@ index 628a059..a964013 100644
 +			break;
 +	}
 +}
+-- 
+2.11.0
+

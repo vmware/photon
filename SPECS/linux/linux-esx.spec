@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.26
+Version:        4.9.27
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b244ab8ee3d7a0385c7bc1b1dc1d55f0920df997
+%define sha1 linux=d248ff518f822d4324a482a39f3159b1ee86cc84
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -35,6 +35,7 @@ Patch17:        04-quiet-boot.patch
 Patch18:        05-pv-ops-clocksource.patch
 Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
+Patch21:        vmware-balloon-late-initcall.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -91,6 +92,7 @@ The Linux package contains the Linux kernel doc files
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 
 %build
 # patch vmw_balloon driver
@@ -187,6 +189,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed May 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.27-1
+-   New pci=scan_all cmdline parameter to verify hardcoded pci-probe values
+-   pci-probe added more known values
+-   vmw_balloon late initcall
 *   Sun May 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.26-1
 -   Version update
 -   Use ordered rdtsc in clocksource_vmware

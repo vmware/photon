@@ -1,7 +1,17 @@
-diff -Naur a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
---- a/net/sunrpc/xprtsock.c	2016-08-20 09:09:38.000000000 -0700
-+++ b/net/sunrpc/xprtsock.c	2016-09-01 15:06:02.939461738 -0700
-@@ -2333,6 +2333,7 @@
+From 440ba4f4203ab271cec9d02d799dd310caac7efd Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:36:15 -0700
+Subject: [PATCH] SUNRPC: Do not reuse srcport for TIME_WAIT socket
+
+---
+ net/sunrpc/xprtsock.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
+index e01c825bc683..eff5a482f35a 100644
+--- a/net/sunrpc/xprtsock.c
++++ b/net/sunrpc/xprtsock.c
+@@ -2367,6 +2367,7 @@ static void xs_tcp_setup_socket(struct work_struct *work)
  		/* We're probably in TIME_WAIT. Get rid of existing socket,
  		 * and retry
  		 */
@@ -9,3 +19,6 @@ diff -Naur a/net/sunrpc/xprtsock.c b/net/sunrpc/xprtsock.c
  		xs_tcp_force_close(xprt);
  		break;
  	case 0:
+-- 
+2.11.0
+
