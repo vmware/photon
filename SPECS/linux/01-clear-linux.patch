@@ -1,5 +1,17 @@
+From 7d80ae3e4f1dd73fb61010e5a84135d3e92ba47e Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:26:58 -0700
+Subject: [PATCH] Patch from Clear Linux
+
+---
+ drivers/video/console/fbcon.c | 2 +-
+ include/linux/blkdev.h        | 2 +-
+ init/do_mounts.c              | 4 +++-
+ mm/vmstat.c                   | 2 +-
+ 4 files changed, 6 insertions(+), 4 deletions(-)
+
 diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
-index 92f3949..4ff61d7 100644
+index 4db10d7990c9..1f84959cc87e 100644
 --- a/drivers/video/console/fbcon.c
 +++ b/drivers/video/console/fbcon.c
 @@ -146,7 +146,7 @@ static const struct consw fb_con;
@@ -12,10 +24,10 @@ index 92f3949..4ff61d7 100644
  #define divides(a, b)	((!(a) || (b)%(a)) ? 0 : 1)
  
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index c70e358..72f56a8 100644
+index f6a816129856..f4fb458a91dd 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
-@@ -38,7 +38,7 @@ struct blk_flush_queue;
+@@ -39,7 +39,7 @@ struct blk_flush_queue;
  struct pr_ops;
  
  #define BLKDEV_MIN_RQ	4
@@ -25,7 +37,7 @@ index c70e358..72f56a8 100644
  /*
   * Maximum number of blkcg policies allowed to be registered concurrently.
 diff --git a/init/do_mounts.c b/init/do_mounts.c
-index dea5de9..da84094 100644
+index dea5de95c2dd..da840946d90b 100644
 --- a/init/do_mounts.c
 +++ b/init/do_mounts.c
 @@ -28,6 +28,7 @@
@@ -47,10 +59,10 @@ index dea5de9..da84094 100644
  	md_run_setup();
  
 diff --git a/mm/vmstat.c b/mm/vmstat.c
-index c54fd29..f0baa1a 100644
+index 604f26a4f696..bfbbcd76df57 100644
 --- a/mm/vmstat.c
 +++ b/mm/vmstat.c
-@@ -1381,7 +1381,7 @@ static const struct file_operations proc_vmstat_file_operations = {
+@@ -1549,7 +1549,7 @@ static const struct file_operations proc_vmstat_file_operations = {
  #ifdef CONFIG_SMP
  static struct workqueue_struct *vmstat_wq;
  static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
@@ -60,5 +72,5 @@ index c54fd29..f0baa1a 100644
  #ifdef CONFIG_PROC_FS
  static void refresh_vm_stats(struct work_struct *work)
 -- 
-1.9.1
+2.11.0
 

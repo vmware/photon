@@ -1,5 +1,14 @@
+From ddbfe173c561aa8c81462d0782b3852f32cb71f6 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:37:47 -0700
+Subject: [PATCH] x86/vmware: sta support
+
+---
+ arch/x86/kernel/cpu/vmware.c | 184 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 177 insertions(+), 7 deletions(-)
+
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 1ef8870..c998fba 100644
+index 1ef88701b2d9..70b8c4614e22 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -30,6 +30,8 @@
@@ -236,3 +245,6 @@ index 1ef8870..c998fba 100644
  	kmsg_dump_register(&kmsg_dumper);
  }
  
+-- 
+2.11.0
+

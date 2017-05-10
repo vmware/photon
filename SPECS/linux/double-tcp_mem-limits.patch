@@ -1,6 +1,17 @@
---- a/net/ipv4/tcp.c	2016-08-20 09:09:38.000000000 -0700
-+++ b/net/ipv4/tcp.c	2016-09-01 14:52:17.239459557 -0700
-@@ -3104,7 +3104,7 @@
+From d64863f3ff0a643b0c79c9d0a2b451b20ddd2912 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:32:51 -0700
+Subject: [PATCH] Double tcp_mem limits
+
+---
+ net/ipv4/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index eb142ca71fc5..70068387dfab 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3272,7 +3272,7 @@ __setup("thash_entries=", set_thash_entries);
  
  static void __init tcp_init_mem(void)
  {
@@ -9,3 +20,6 @@
  
  	limit = max(limit, 128UL);
  	sysctl_tcp_mem[0] = limit / 4 * 3;		/* 4.68 % */
+-- 
+2.11.0
+
