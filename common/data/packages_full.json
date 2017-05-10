@@ -168,6 +168,7 @@
         "apr-util-pgsql",
         "apr-util-sqlite",
         "openjre8",
+        "cassandra",
         "sshpass",
         "iputils",
         "openjdk8-src",
