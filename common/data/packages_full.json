@@ -172,6 +172,7 @@
         "apr-util-ldap",
         "apr-util-pgsql",
         "apr-util-sqlite",
+        "cassandra",
         "openjre",
         "sshpass",
         "iputils",
