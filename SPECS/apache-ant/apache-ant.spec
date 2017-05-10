@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -44,7 +44,7 @@ mkdir -p -m 700 %{buildroot}/var/opt
 
 cp -r /var/opt/apache-ant-%{version} %{buildroot}/var/opt
 
-cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/ 
+cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/
 
 MAVEN_ANT_TASKS_DIR=%{buildroot}/var/opt/%{name}-%{version}/maven-ant-tasks
 
@@ -57,7 +57,10 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 
 install -d -m 755 %{buildroot}/etc/profile.d/
 
-echo 'export ANT_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
+cat >> %{buildroot}/etc/profile.d/%{name}.sh <<- "EOF"
+export ANT_HOME=/var/opt/%{name}-%{version}
+export PATH="$PATH:$ANT_HOME/bin"
+EOF
 
 %files
 %defattr(-,root,root)
@@ -67,8 +70,10 @@ echo 'export ANT_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/
 %{_sysconfdir}/profile.d/%{name}.sh
 
 %changelog
-*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.1-2
--	Renamed openjdk to openjdk8
+*   Mon Jun 05 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.1-3
+-   Fixed the profile.d/apache-ant.sh script to include ant in $PATH
+*   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.1-2
+-   Renamed openjdk to openjdk8
 *   Mon Apr 17 2017 Chang Lee <changlee@vmware.com> 1.10.1-1
 -   Updated Apache Ant to 1.10.1
 *   Fri Mar 31 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-6
@@ -77,8 +82,8 @@ echo 'export ANT_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-4
 -   Updated JAVA_HOME path to point to latest JDK.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-3
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-3
+-   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.9.6-2
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
