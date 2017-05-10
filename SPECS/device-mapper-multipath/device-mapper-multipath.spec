@@ -1,20 +1,23 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
-Version:    0.5.0
-Release:    3%{?dist}
+Version:    0.7.1
+Release:    1%{?dist}
 License:    GPL+
 Group:      System Environment/Base
 URL:        http://christophe.varoqui.free.fr/
-Source0:    http://christophe.varoqui.free.fr/multipath-tools/multipath-tools-0.5.0.tar.bz2
-%define sha1 multipath-tools=dcd889c09bcb1f2b89900838da6ac1ed970104cb
-Patch0:     makefile-systemd.patch
+Source0:    multipath-tools-be1191b.tar.gz
+%define git_commit_short be1191b
+%define sha1 multipath-tools=20543995feebb122068f2aaac37b16c91e8cb905
+BuildRequires:  userspace-rcu-devel
+BuildRequires:  librados-devel
 BuildRequires:  libaio-devel
 BuildRequires:  device-mapper-devel
-BuildRequires:  libselinux-devel
-BuildRequires:  libsepol-devel
 BuildRequires:  readline-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  systemd-devel
+BuildRequires:  json-c-devel
+Requires:   userspace-rcu
+Requires:   librados2
 Requires:   libaio
 Requires:   device-mapper
 Requires:   libselinux
@@ -33,18 +36,27 @@ Summary:    Partition device manager for device-mapper devices
 %description -n kpartx
 kpartx manages partition creation and removal for device-mapper devices.
 
+%package devel
+Summary: Development libraries and headers for %{name}
+Requires: %{name} = %{version}-%{release}
+%description devel
+It contains the libraries and header files to create applications
+
 %prep
-%setup -qn multipath-tools-0.5.0
-%patch0 -p1
+%setup -qn multipath-tools-%{git_commit_short}
 
 %build
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot} bindir=%{_sbindir} syslibdir=%{_libdir} libdir=%{_libdir}/multipath
+make install DESTDIR=%{buildroot} \
+	SYSTEMDPATH=/lib \
+	bindir=%{_sbindir} \
+	syslibdir=%{_libdir} \
+	libdir=%{_libdir}/multipath \
+	pkgconfdir=%{_libdir}/pkgconfig
+
 install -vd %{buildroot}/etc/multipath
-ln -sfv libmpathpersist.so.0 %{buildroot}/%{_libdir}/libmpathpersist.so
-rm -rf %{buildroot}/%{_initrddir}
 
 %clean
 rm -rf %{buildroot}
@@ -54,25 +66,35 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-/etc/udev/rules.d/*
-%{_sbindir}/*
-%{_libdir}/systemd/system/*
+%{_sbindir}/mpathpersist
+%{_sbindir}/multipath
+%{_sbindir}/multipathd
+/lib/udev/rules.d/*
+%{_unitdir}/*
 %{_libdir}/*.so
 %{_libdir}/*.so.*
 %{_libdir}/multipath/*.so
-%{_includedir}/*.h
-%{_mandir}/man3/*
 %{_mandir}/man5/*
-%{_mandir}/man8/*
+%{_mandir}/man8/mpathpersist.8.gz
+%{_mandir}/man8/multipath.8.gz
+%{_mandir}/man8/multipathd.8.gz
 %dir /etc/multipath
+
+%files devel
+%defattr(-,root,root,-)
+%{_mandir}/man3/*
+%{_includedir}/*
+%{_libdir}/pkgconfig/*
 
 %files -n kpartx
 %defattr(-,root,root,-)
 %{_sbindir}/kpartx
-/lib/udev/*
+/lib/udev/kpartx_id
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+*   Tue May 9  2017 Bo Gan <ganb@vmware.com> 0.7.1-1
+-   Update to 0.7.1
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  0.5.0-3
 -   Change systemd dependency
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.0-2

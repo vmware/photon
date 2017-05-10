@@ -13,7 +13,7 @@
 #################################################################################
 Name:		ceph
 Version:	11.2.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -213,6 +213,7 @@ Group:		System Environment/Libraries
 License:	LGPL-2.0
 %if 0%{?rhel} || 0%{?fedora}
 Obsoletes:	ceph-libs < %{epoch}:%{version}-%{release}
+Requires:	libatomic_ops
 %endif
 %description -n librados2
 RADOS is a reliable, autonomic distributed object storage cluster
@@ -995,6 +996,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 
 %changelog
+* Mon May 8 2017 Bo Gan <ganb@vmware.com> 11.2.0-6
+- Fix librados2 dependency
 * Thu Apr 27 2017 Siju Maliakkal <smaliakkal@vmware.com> 11.2.0-5
 - updated python3 version
 * Wed Mar 15 2017 Dheeraj Shetty <Dheerajs@vmware.com> 11.2.0-4

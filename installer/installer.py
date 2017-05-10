@@ -116,17 +116,52 @@ class Installer(object):
 
         if self.iso_installer:
             self.adjust_packages_for_vmware_virt()
-            self.get_size_of_packages()
             selected_packages = self.install_config['packages']
-            for package in selected_packages:
-                self.progress_bar.update_message('Installing {0}...'.format(package))
-                process = subprocess.Popen(['tdnf', 'install', package, '--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=self.output, stderr=subprocess.STDOUT)
-                retval = process.wait()
+            state = 0
+            packages_to_install = {}
+            total_size = 0
+            with open(modules.commons.TDNF_CMDLINE_FILE_NAME, "w") as tdnf_cmdline_file:
+                tdnf_cmdline_file.write("tdnf install --installroot {0} --nogpgcheck {1}".format(self.photon_root, " ".join(selected_packages)))
+            with open(modules.commons.TDNF_LOG_FILE_NAME, "w") as tdnf_errlog:
+                process = subprocess.Popen(
+                    ['tdnf', 'install'] + selected_packages + ['--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=subprocess.PIPE, stderr=tdnf_errlog)
+                while True:
+                    output = process.stdout.readline()
+                    if output == '':
+                        retval = process.poll()
+                        if retval is not None:
+                            break
+                    modules.commons.log(modules.commons.LOG_INFO, "[tdnf] {0}".format(output))
+                    if state == 0:
+                        if output == 'Installing:\n':
+                            state = 1
+                    elif state == 1: #N A EVR Size(readable) Size(in bytes)
+                        if output == '\n':
+                            state = 2
+                            self.progress_bar.update_num_items(total_size)
+                        else:
+                            info = output.split()
+                            package = '{0}-{1}.{2}'.format(info[0], info[2], info[1])
+                            packages_to_install[package] = int(info[5])
+                            total_size += int(info[5])
+                    elif state == 2:
+                        if output == 'Downloading:\n':
+                            self.progress_bar.update_message('Preparing ...')
+                            state = 3
+                    elif state == 3:
+                        if output == 'Running transaction\n':
+                            state = 4
+                    else:
+                        prefix = 'Installing/Updating: '
+                        if output.startswith(prefix):
+                            package = output[len(prefix):].rstrip('\n')
+                            self.progress_bar.increment(packages_to_install[package])
+                        self.progress_bar.update_message(output)
+                            #packages_to_install[package]))
                 # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
                 if retval != 0 and retval != 137:
-                    modules.commons.log(modules.commons.LOG_ERROR, "Failed install: {} with error code {}".format(package, retval))
+                    modules.commons.log(modules.commons.LOG_ERROR, "Failed to install some packages, refer to {0}".format(modules.commons.TDNF_LOG_FILE_NAME))
                     self.exit_gracefully(None, None)
-                self.progress_bar.increment(self.size_of_packages[package])
         else:
         #install packages
             for rpm in self.rpms_tobeinstalled:
@@ -255,6 +290,12 @@ class Installer(object):
         process = subprocess.Popen(['mount', '--bind', '/installer', os.path.join(self.photon_root, "installer")], stdout=self.output)
         retval = process.wait()
 
+    def bind_repo_dir(self):
+        rpm_cache_dir = self.photon_root + '/cache/tdnf/photon-iso/rpms'
+        if subprocess.call(['mkdir', '-p', rpm_cache_dir]) != 0 or subprocess.call(['mount', '--bind', self.rpm_path, rpm_cache_dir]) != 0:
+            modules.commons.log(modules.commons.LOG_ERROR, "Fail to bind cache rpms")
+            self.exit_gracefully(None, None)
+
     def update_fstab(self):
         fstab_file = open(os.path.join(self.photon_root, "etc/fstab"), "w")
         fstab_file.write("#system\tmnt-pt\ttype\toptions\tdump\tfsck\n")
@@ -311,6 +352,7 @@ class Installer(object):
         
         if self.iso_installer:
             self.bind_installer()
+            self.bind_repo_dir()
             process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, 'install'], stdout=self.output)
             retval = process.wait()
         else:
@@ -327,6 +369,7 @@ class Installer(object):
 
             modules.commons.dump(modules.commons.LOG_FILE_NAME)
             shutil.copy(modules.commons.LOG_FILE_NAME, self.photon_root + '/var/log/')
+            shutil.copy(modules.commons.TDNF_LOG_FILE_NAME, self.photon_root + '/var/log/')
 
             # unmount the installer directory
             process = subprocess.Popen(['umount', os.path.join(self.photon_root, "installer")], stdout=self.output)
@@ -383,35 +426,9 @@ class Installer(object):
                 continue
             mod.execute(module, self.ks_config, self.install_config, self.photon_root)
 
-    def get_install_size_of_a_package(self, name_size_pairs, package):
-        modules.commons.log(modules.commons.LOG_INFO, "Find the install size of: {} ".format(package))
-        for index, name in enumerate(name_size_pairs, start=0):
-            if name[name.find(":") + 1:].strip() == package.strip():  
-                item = name_size_pairs[index + 1] 
-                size = item[item.find("(") + 1:item.find(")")]
-                return int(size)
-        raise LookupError("Cannot find package {} in the repo.".format(package))
-    def get_size_of_packages(self):
-        #call tdnf info to get the install size of all the packages.
-        process = subprocess.Popen(['tdnf', 'info', '--installroot', self.photon_root], stdout=subprocess.PIPE)
-        out,err = process.communicate()
-        if err != None and err != 0:
-            modules.commons.log(modules.commons.LOG_ERROR, "Failed to get infomation from : {} with error code {}".format(package, err))
-
-        name_size_pairs = re.findall("(?:^Name.*$)|(?:^.*Install Size.*$)", out, re.M)
-        selected_packages = self.install_config['packages']
-        self.size_of_packages = {}
-        progressbar_num_items = 0
-        for package in selected_packages:
-            size = self.get_install_size_of_a_package(name_size_pairs, package)
-            progressbar_num_items += size;
-            self.size_of_packages[package] = size;
-        self.progress_bar.update_num_items(progressbar_num_items)
-
     def adjust_packages_for_vmware_virt(self):
         try:
-            if (self.install_config['vmware_virt'] and
-                self.install_config['install_linux_esx']):
+            if self.install_config['install_linux_esx']:
                 selected_packages = self.install_config['packages']
                 try:
                     selected_packages.remove('linux')

@@ -1,7 +1,7 @@
 Summary: 	Extra tools for rpm-ostree
 Name: 		rpm-ostree-toolbox
 Version: 	2016.4
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 #VCS: https://github.com/cgwalters/rpm-ostree-toolbox
 # This tarball is generated via "make -C packaging -f Makefile.dist-packaging dist-snapshot"
 # which is really just a wrapper for "git archive".
@@ -19,7 +19,7 @@ BuildRequires:	autoconf automake libtool
 BuildRequires: 	gtk-doc
 # BuildRequires: gnome-common
 BuildRequires: 	ostree-devel
-BuildRequires: 	libgsystem
+BuildRequires: 	libgsystem-devel
 BuildRequires: 	json-glib-devel
 BuildRequires:	which
 BuildRequires:	python2
@@ -29,6 +29,7 @@ BuildRequires:	gobject-introspection-python
 BuildRequires:  autogen
 Requires: 	systemd
 Requires: 	perl
+Requires:	libgsystem
 Requires:	gobject-introspection
 Requires:	python2
 Requires:	shadow
@@ -82,6 +83,8 @@ fi
 %attr(0755,rpmostreecompose,rpmostreecompose) %{_localstatedir}/lib/%{name}
 
 %changelog
+*   Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2016.4-2
+-	Created libgsystem-devel & updated build requires
 *   Wed Apr 12 2017 Siju Maliakkal <smaliakkal@vmware.com> 2016.4-1
 -   Updated to latest version   
 *       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2015.12-4

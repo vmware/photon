@@ -27,8 +27,8 @@ class LinuxSelector(object):
         self.menu_starty = self.win_starty + 3
 
         self.menu_items = []
-        self.menu_items.append(("1. linux", self.set_linux_esx_installation, False))
-        self.menu_items.append(("2. linux-esx", self.set_linux_esx_installation, True))
+        self.menu_items.append(("1. linux-esx", self.set_linux_esx_installation, True))
+        self.menu_items.append(("2. linux", self.set_linux_esx_installation, False))
 
         self.host_menu = Menu(self.menu_starty, self.maxx, self.menu_items,
                               default_selected = 0, tab_enable=False)

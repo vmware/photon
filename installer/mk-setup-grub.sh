@@ -34,7 +34,10 @@ grub_efi_install()
     mkdir -p $BUILDROOT/boot/efi/EFI/Boot/
     cp EFI/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
     mkdir -p $BUILDROOT/boot/efi/boot/grub2
-    echo "configfile (hd0,gpt${BOOT_PARTITION_NUMBER})${BOOT_DIRECTORY}grub2/grub.cfg" > $BUILDROOT/boot/efi/boot/grub2/grub.cfg
+    cat > $BUILDROOT/boot/efi/boot/grub2/grub.cfg << EOF
+search -n -u ${BOOT_UUID} -s
+configfile ${BOOT_DIRECTORY}grub2/grub.cfg
+EOF
     umount $BUILDROOT/boot/efi
 }
 

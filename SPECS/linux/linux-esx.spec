@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.24
+Version:        4.9.26
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,8 +9,9 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c504e8817a320030313710066360bc50be7bebe8
-Source1:        config-esx-%{version}
+%define sha1 linux=b244ab8ee3d7a0385c7bc1b1dc1d55f0920df997
+Source1:        config-esx
+Source2:        initramfs.trigger
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -136,7 +137,12 @@ cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp cpu_init_udelay=0
 photon_linux=vmlinuz-%{uname_r}
+#photon_initrd=initrd.img-%{uname_r}
 EOF
+
+# Register myself to initramfs
+mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
+touch %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 
 # cleanup dangling symlinks
 rm -f %{buildroot}/lib/modules/%{uname_r}/source
@@ -154,6 +160,8 @@ cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
+%include %{SOURCE2}
+
 %post
 /sbin/depmod -aq %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
@@ -164,6 +172,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
+%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
@@ -178,6 +187,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sun May 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.26-1
+-   Version update
+-   Use ordered rdtsc in clocksource_vmware
+-   .config: added debug info
+-   Removed version suffix from config file name
+*   Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 4.9.24-2
+-   Support dynamic initrd generation
 *   Tue Apr 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.24-1
 -   Fix CVE-2017-6874 and CVE-2017-7618.
 -   .config: build nvme and nvme-core in kernel.

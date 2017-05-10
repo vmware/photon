@@ -1,18 +1,16 @@
 Summary:        Userland logical volume management tools 
 Name:           lvm2
-Version:        2.02.141
-Release:        8%{?dist}
+Version:        2.02.171
+Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1    LVM2=d48b403ca10d407df394889d8dafd167a4bd4819
+%define sha1    LVM2=134498350084fe1371e48e1bdcf558913a112a78
 Source1:        lvm2-activate.service
 Patch0:         lvm2-set-default-preferred_names.patch
-Patch1:         lvm2-enable-lvmetad-by-default.patch
-Patch2:         lvm2-remove-mpath-device-handling-from-udev-rules.patch
 BuildRequires:  libselinux-devel, libsepol-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
@@ -169,7 +167,7 @@ the device-mapper event library.
 %setup -q -n LVM2.%{version}
 %patch0 -p1 -b .preferred_names
 #%patch1 -p1 -b .enable_lvmetad
-%patch2 -p1 -b .udev_no_mpath
+#%patch2 -p1 -b .udev_no_mpath
 
 %build
 %define _default_pid_dir /run
@@ -194,7 +192,7 @@ the device-mapper event library.
     --enable-cmdlib \
     --enable-dmeventd \
     --enable-use_lvmetad \
-    --enable-python-bindings \
+    --enable-python2-bindings \
     --enable-blkid_wiping \
     --enable-lvmetad \
     --with-udevdir=%{_udevdir} --enable-udev_sync \
@@ -255,7 +253,9 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 %files -n device-mapper
 %defattr(-,root,root,-)
 %attr(555, -, -) %{_sbindir}/dmsetup
+%{_sbindir}/dmstats
 %{_mandir}/man8/dmsetup.8.gz
+%{_mandir}/man8/dmstats.8.gz
 /lib/udev/rules.d/10-dm.rules
 /lib/udev/rules.d/13-dm-disk.rules
 /lib/udev/rules.d/95-dm-notify.rules
@@ -289,142 +289,38 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 
 %files
 %defattr(-,root,root)
-%dir %{_sysconfdir}/lvm
-%ghost %{_sysconfdir}/lvm/cache/.cache
-%attr(644, -, -) %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
-%dir %{_sysconfdir}/lvm/profile
-%{_sysconfdir}/lvm/profile/command_profile_template.profile
-%{_sysconfdir}/lvm/profile/metadata_profile_template.profile
-%{_sysconfdir}/lvm/profile/thin-generic.profile
-%{_sysconfdir}/lvm/profile/thin-performance.profile
 %dir %{_sysconfdir}/lvm/backup
 %dir %{_sysconfdir}/lvm/cache
 %dir %{_sysconfdir}/lvm/archive
 /lib/udev/rules.d/11-dm-lvm.rules
 /lib/udev/rules.d/69-dm-lvm-metad.rules
-/usr/sbin/blkdeactivate
-/usr/sbin/fsadm
-/usr/sbin/lvchange
-/usr/sbin/lvconvert
-/usr/sbin/lvcreate
-/usr/sbin/lvdisplay
-/usr/sbin/lvextend
-/usr/sbin/lvm
-/usr/sbin/lvmchange
-/usr/sbin/lvmconf
-/usr/sbin/lvmdiskscan
-/usr/sbin/lvmdump
-/usr/sbin/lvmetad
-/usr/sbin/lvmsadc
-/usr/sbin/lvmsar
-/usr/sbin/lvreduce
-/usr/sbin/lvremove
-/usr/sbin/lvrename
-/usr/sbin/lvresize
-/usr/sbin/lvs
-/usr/sbin/lvscan
-/usr/sbin/pvchange
-/usr/sbin/pvck
-/usr/sbin/pvcreate
-/usr/sbin/pvdisplay
-/usr/sbin/pvmove
-/usr/sbin/pvremove
-/usr/sbin/pvresize
-/usr/sbin/pvs
-/usr/sbin/pvscan
-/usr/sbin/vgcfgbackup
-/usr/sbin/vgcfgrestore
-/usr/sbin/vgchange
-/usr/sbin/vgck
-/usr/sbin/vgconvert
-/usr/sbin/vgcreate
-/usr/sbin/vgdisplay
-/usr/sbin/vgexport
-/usr/sbin/vgextend
-/usr/sbin/vgimport
-/usr/sbin/vgimportclone
-/usr/sbin/vgmerge
-/usr/sbin/vgmknodes
-/usr/sbin/vgreduce
-/usr/sbin/vgremove
-/usr/sbin/vgrename
-/usr/sbin/vgs
-/usr/sbin/vgscan
-/usr/sbin/vgsplit
-/usr/sbin/dmstats
-/usr/sbin/lvmconfig
-/usr/share/man/man5/lvm.conf.5.gz
-/usr/share/man/man7/lvmcache.7.gz
-/usr/share/man/man7/lvmthin.7.gz
-/usr/share/man/man8/blkdeactivate.8.gz
-/usr/share/man/man8/fsadm.8.gz
-/usr/share/man/man8/lvchange.8.gz
-/usr/share/man/man8/lvconvert.8.gz
-/usr/share/man/man8/lvcreate.8.gz
-/usr/share/man/man8/lvdisplay.8.gz
-/usr/share/man/man8/lvextend.8.gz
-/usr/share/man/man8/lvm-dumpconfig.8.gz
-/usr/share/man/man8/lvm.8.gz
-/usr/share/man/man8/lvmchange.8.gz
-/usr/share/man/man8/lvmconf.8.gz
-/usr/share/man/man8/lvmdiskscan.8.gz
-/usr/share/man/man8/lvmdump.8.gz
-/usr/share/man/man8/lvmetad.8.gz
-/usr/share/man/man8/lvmsadc.8.gz
-/usr/share/man/man8/lvmsar.8.gz
-/usr/share/man/man8/lvreduce.8.gz
-/usr/share/man/man8/lvremove.8.gz
-/usr/share/man/man8/lvrename.8.gz
-/usr/share/man/man8/lvresize.8.gz
-/usr/share/man/man8/lvs.8.gz
-/usr/share/man/man8/lvscan.8.gz
-/usr/share/man/man8/pvchange.8.gz
-/usr/share/man/man8/pvck.8.gz
-/usr/share/man/man8/pvcreate.8.gz
-/usr/share/man/man8/pvdisplay.8.gz
-/usr/share/man/man8/pvmove.8.gz
-/usr/share/man/man8/pvremove.8.gz
-/usr/share/man/man8/pvresize.8.gz
-/usr/share/man/man8/pvs.8.gz
-/usr/share/man/man8/pvscan.8.gz
-/usr/share/man/man8/vgcfgbackup.8.gz
-/usr/share/man/man8/vgcfgrestore.8.gz
-/usr/share/man/man8/vgchange.8.gz
-/usr/share/man/man8/vgck.8.gz
-/usr/share/man/man8/vgconvert.8.gz
-/usr/share/man/man8/vgcreate.8.gz
-/usr/share/man/man8/vgdisplay.8.gz
-/usr/share/man/man8/vgexport.8.gz
-/usr/share/man/man8/vgextend.8.gz
-/usr/share/man/man8/vgimport.8.gz
-/usr/share/man/man8/vgimportclone.8.gz
-/usr/share/man/man8/vgmerge.8.gz
-/usr/share/man/man8/vgmknodes.8.gz
-/usr/share/man/man8/vgreduce.8.gz
-/usr/share/man/man8/vgremove.8.gz
-/usr/share/man/man8/vgrename.8.gz
-/usr/share/man/man8/vgs.8.gz
-/usr/share/man/man8/vgscan.8.gz
-/usr/share/man/man8/vgsplit.8.gz
-/usr/share/man/man7/lvmsystemid.7.gz
-/usr/share/man/man8/dmstats.8.gz
-/usr/share/man/man8/lvm-config.8.gz
-/usr/share/man/man8/lvm-lvpoll.8.gz
-/usr/share/man/man8/lvmconfig.8.gz
-/lib/systemd/system-generators/lvm2-activation-generator
-/lib/systemd/system/blk-availability.service
-/lib/systemd/system/lvm2-lvmetad.service
-/lib/systemd/system/lvm2-lvmetad.socket
-/lib/systemd/system/lvm2-monitor.service
-/lib/systemd/system/lvm2-activate.service
-/lib/systemd/system/lvm2-pvscan@.service
-/usr/lib/tmpfiles.d/lvm2.conf
-/usr/share/man/man8/lvm2-activation-generator.8.gz
-/etc/lvm/lvmlocal.conf
-/etc/lvm/profile/cache-mq.profile
-/etc/lvm/profile/cache-smq.profile
+%{_sbindir}/blkdeactivate
+%{_sbindir}/fsadm
+%{_sbindir}/lv*
+%{_sbindir}/pv*
+%{_sbindir}/vg*
+%{_mandir}/man5/lvm.conf.5.gz
+%{_mandir}/man7/lv*
+%{_mandir}/man8/blkdeactivate.8.gz
+%{_mandir}/man8/fsadm.8.gz
+%{_mandir}/man8/lv*
+%{_mandir}/man8/pv*
+%{_mandir}/man8/vg*
+%{_unitdir}/../system-generators/lvm2-activation-generator
+%{_unitdir}/blk-availability.service
+%{_unitdir}/lvm2-*
+%{_libdir}/tmpfiles.d/lvm2.conf
+%dir %{_sysconfdir}/lvm
+%attr(644, -, -) %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
+%config(noreplace) %{_sysconfdir}/lvm/lvmlocal.conf
+%dir %{_sysconfdir}/lvm/profile
+%{_sysconfdir}/lvm/profile/*
+%ghost %{_sysconfdir}/lvm/cache/.cache
+
 
 %changelog
+*   Thu May 4  2017 Bo Gan <ganb@vmware.com> 2.02.171-1
+-   Update to 2.02.171
 *   Wed Dec 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.02.141-8
 -   device-mapper requires systemd.
 *   Wed Nov 30 2016 Anish Swaminathan <anishs@vmware.com>  2.02.141-7

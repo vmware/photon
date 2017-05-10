@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.24
+Version:        4.9.26
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,9 +9,10 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c504e8817a320030313710066360bc50be7bebe8
-Source1:        config-secure-%{version}
+%define sha1 linux=b244ab8ee3d7a0385c7bc1b1dc1d55f0920df997
+Source1:        config-secure
 Source2:        aufs4.9.tar.gz
+Source3:        initramfs.trigger
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -174,6 +175,13 @@ cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
 photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta loadpin.enabled=0 slub_debug=P page_poison=1
 photon_linux=vmlinuz-%{uname_r}
+photon_initrd=initrd.img-%{uname_r}
+EOF
+
+# Register myself to initramfs
+mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
+cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
+--add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_balloon cn"
 EOF
 
 # cleanup dangling symlinks
@@ -191,6 +199,9 @@ cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 # symling to the build folder
 ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
 
+
+%include %{SOURCE3}
+
 %post
 /sbin/depmod -aq %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
@@ -201,6 +212,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
+%config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
@@ -216,6 +228,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sun May 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.26-1
+-   Version update
+-   Removed version suffix from config file name
+*   Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 4.9.24-2
+-   Support dynamic initrd generation
 *   Tue Apr 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.24-1
 -   Fix CVE-2017-6874 and CVE-2017-7618.
 -   .config: build nvme and nvme-core in kernel.

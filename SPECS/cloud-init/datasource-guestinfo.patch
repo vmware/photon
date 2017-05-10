@@ -1,7 +1,7 @@
 diff -rupN cloud-init-0.7.9/cloudinit/sources/DataSourceVmxGuestinfo.py cloud-init-0.7.9-new/cloudinit/sources/DataSourceVmxGuestinfo.py
---- cloud-init-0.7.9/cloudinit/sources/DataSourceVmxGuestinfo.py    1969-12-31 16:00:00.000000000 -0800
-+++ cloud-init-0.7.9-new/cloudinit/sources/DataSourceVmxGuestinfo.py    2017-04-20 04:57:22.007957797 -0700
-@@ -0,0 +1,139 @@
+--- cloud-init-0.7.9/cloudinit/sources/DataSourceVmxGuestinfo.py	1969-12-31 16:00:00.000000000 -0800
++++ cloud-init-0.7.9-new/cloudinit/sources/DataSourceVmxGuestinfo.py	2017-05-08 07:47:27.388662680 -0700
+@@ -0,0 +1,144 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2017 VMware Inc.
@@ -9,6 +9,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/sources/DataSourceVmxGuestinfo.py cloud-in
 +# Author: Anish Swaminathan <anishs@vmware.com>
 +#
 +import os
++import base64
 +
 +from cloudinit import log as logging
 +from cloudinit import sources
@@ -34,6 +35,10 @@ diff -rupN cloud-init-0.7.9/cloudinit/sources/DataSourceVmxGuestinfo.py cloud-in
 +        hostname = self._get_guestinfo_value('hostname')
 +        if hostname:
 +            self.distro.set_hostname(hostname)
++        ud = self._get_guestinfo_value('userdata')
++        if ud:
++            LOG.debug("Decoding base64 format guestinfo.userdata")
++            self.userdata_raw = base64.b64decode(ud)
 +        found = True
 +        dev_index = 0
 +        network_settings = ''
