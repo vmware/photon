@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -49,7 +49,7 @@ mkdir -p -m 700 %{buildroot}/var/opt
 
 cp -r /var/opt/apache-ant-%{version} %{buildroot}/var/opt
 
-cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/ 
+cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/
 
 MAVEN_ANT_TASKS_DIR=%{buildroot}/var/opt/%{name}-%{version}/maven-ant-tasks
 
@@ -62,7 +62,10 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 
 install -d -m 755 %{buildroot}/etc/profile.d/
 
-echo 'export ANT_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
+cat >> %{buildroot}/etc/profile.d/%{name}.sh <<- "EOF"
+export ANT_HOME=/var/opt/%{name}-%{version}
+export PATH="$PATH:$ANT_HOME/bin"
+EOF
 
 %files
 %defattr(-,root,root)
@@ -72,6 +75,8 @@ echo 'export ANT_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/
 %{_sysconfdir}/profile.d/%{name}.sh
 
 %changelog
+*	Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.1-2
+-	Fixed the profile.d/apache-ant.sh script to include ant in $PATH
 *   Mon Apr 17 2017 Chang Lee <changlee@vmware.com> 1.10.1-1
 -   Updated Apache Ant to 1.10.1
 *   Fri Mar 31 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-6
