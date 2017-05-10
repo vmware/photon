@@ -1,0 +1,19 @@
+[Unit]
+Description=Apache Cassandra
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/sysconfig/cassandra
+Type=forking
+PIDFile=/var/run/cassandra.pid
+ExecStart=/usr/sbin/cassandra -f -p /var/run/cassandra.pid
+User=cassandra
+Group=cassandra
+StandardError=journal
+StandardOutput=journal
+Restart=always
+RestartSec=30
+LimitNOFILE=infinity
+
+[Install]
+WantedBy=multi-user.target
