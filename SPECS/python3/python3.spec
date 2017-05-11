@@ -46,6 +46,7 @@ Requires:       coreutils
 Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
+Requires:		%{name} = %{version}
 Requires:       sqlite-libs
 
 
@@ -187,9 +188,11 @@ rm -rf %{buildroot}/*
 %doc Tools/README
 %{_libdir}/python3.6/lib2to3
 %{_bindir}/2to3-3.6
-%{_bindir}/idle*
+%exclude %{_bindir}/idle*
 
 %changelog
+*	Wed May 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.6.1-2
+-	Update the Requires & exclude idle3.
 *   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.1-1
 -   Updating to latest
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
