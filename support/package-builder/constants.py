@@ -93,6 +93,7 @@ class constants(object):
         "openssl",
         "python2",
         "rpm",
+        "libdb",
         "groff",
         "man-pages",
         "cpio"]
@@ -185,6 +186,7 @@ class constants(object):
         "python2-libs",
         "python2-devel",
         "libcap",
+        "libdb",
         "rpm",
         "rpm-build",
         "rpm-devel",
@@ -287,6 +289,7 @@ class constants(object):
         "iana-etc",
         "yum-metadata-parser",
         "yum",
+        "libdb",
         "rpm-devel",
         "rpm",
         "libxml2",
