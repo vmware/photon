@@ -16,3 +16,12 @@ diff -Naur a/scripts/find-debuginfo.sh b/scripts/find-debuginfo.sh
  
    (cd "${RPM_BUILD_ROOT}/usr"
     test ! -d lib/debug || find lib/debug ! -type d
+@@ -467,7 +467,7 @@
+   mv "${LISTFILE}.new" "$LISTFILE"
+   ((++i))
+ done
+-if ((nout > 0)); then
++if ((0 && nout > 0)); then
+   # Now add the right %dir lines to each output list.
+   (cd "${RPM_BUILD_ROOT}"; find usr/lib/debug -type d) |
+   sed 's#^.*$#\\@^/&/@{h;s@^.*$@%dir /&@p;g;}#' |
