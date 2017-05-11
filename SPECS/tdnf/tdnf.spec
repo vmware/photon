@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -148,6 +148,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Wed May 10 2017 Bo Gan <ganb@vmware.com> 1.2.0-3
+-   Fix cache-updateinfo script
 *   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-2
 -   Fix Requires for cli-libs
 *   Wed May 03 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
