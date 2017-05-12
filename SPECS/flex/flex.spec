@@ -1,14 +1,14 @@
 Summary:	A utility for generating programs that recognize patterns in text
 Name:		flex
-Version:	2.6.0
+Version:	2.6.4
 Release:	1%{?dist}
 License:	BSD
-URL:		http://flex.sourceforge.net
+URL:		https://github.com/westes/flex/releases
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://prdownloads.sourceforge.net/flex/%{name}-%{version}.tar.gz
-%define sha1 flex=cfe10b5de4893ced356adc437e78018e715818c3
+Source0:	https://github.com/westes/flex/releases/%{name}-%{version}.tar.gz
+%define sha1 flex=fafece095a0d9890ebd618adb1f242d8908076e1
 BuildRequires:	m4
 Requires:	m4
 %description
@@ -68,6 +68,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
+*   Tue May 11 2017 Chang Lee <changlee@vmware.com> 2.6.4-1
+-   Updated to version 2.6.4
 *   Tue Apr 04 2017 Chang Lee <changlee@vmware.com> 2.6.0-1
 -   Updated to version 2.6.0
 *       Thu Oct 13 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.39-3
