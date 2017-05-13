@@ -1,0 +1,51 @@
+diff --git a/client/init.c b/client/init.c
+index 0269446..dc765e4 100644
+--- a/client/init.c
++++ b/client/init.c
+@@ -284,9 +284,12 @@ TDNFRefreshRepo(
+ 
+     if(nCleanMetadata || nMetadataExpired)
+     {
+-        fprintf(stdout,
+-                "Refreshing metadata for: '%s'\n",
+-                pRepo->pszName);
++        if(!pTdnf->pArgs->nQuiet)
++        {
++            fprintf(stdout,
++                    "Refreshing metadata for: '%s'\n",
++                    pRepo->pszName);
++        }
+         dwError = TDNFRepoRemoveCache(pTdnf, pRepo->pszId);
+         if(dwError == ERROR_TDNF_FILE_NOT_FOUND)
+         {
+diff --git a/client/repo.c b/client/repo.c
+index 5f0acdb..0f0baa1 100644
+--- a/client/repo.c
++++ b/client/repo.c
+@@ -339,7 +339,7 @@ TDNFGetRepoMD(
+                       pRepoData->pszId,
+                       pszRepoMDUrl,
+                       pszRepoMDFile,
+-                      pRepoData->pszId);
++                      pTdnf->pArgs->nQuiet ? NULL : pRepoData->pszId);
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
+@@ -418,7 +418,7 @@ TDNFEnsureRepoMDParts(
+                       pRepoMDRel->pszRepo,
+                       pszTempUrl,
+                       pRepoMD->pszPrimary,
+-                      pRepoMDRel->pszRepo);
++                      pTdnf->pArgs->nQuiet ? NULL : pRepoMDRel->pszRepo);
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
+@@ -447,7 +447,7 @@ TDNFEnsureRepoMDParts(
+                       pRepoMDRel->pszRepo,
+                       pszTempUrl,
+                       pRepoMD->pszFileLists,
+-                      pRepoMDRel->pszRepo);
++                      pTdnf->pArgs->nQuiet ? NULL : pRepoMDRel->pszRepo);
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+     *ppRepoMD = pRepoMD;
