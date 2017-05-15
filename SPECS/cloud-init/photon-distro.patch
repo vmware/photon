@@ -1,7 +1,7 @@
-=== added file './cloudinit/distros/photon.py'
---- ./cloudinit/distros/photon.py	1970-01-01 00:00:00 +0000
-+++ ./cloudinit/distros/photon.py	2017-04-17 01:28:00 +0000
-@@ -0,0 +1,299 @@
+diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/cloudinit/distros/photon.py
+--- cloud-init-0.7.9/cloudinit/distros/photon.py	1969-12-31 16:00:00.000000000 -0800
++++ cloud-init-0.7.9-new/cloudinit/distros/photon.py	2017-05-15 05:13:49.156848344 -0700
+@@ -0,0 +1,319 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2017 VMware Inc.
@@ -25,7 +25,7 @@
 +    hostname_conf_fn = "/etc/hostname"
 +    locale_conf_fn = "/etc/default/locale"
 +    network_conf_dir = "/etc/systemd/network/"
-+    resolve_conf_fn = "/etc/resolv.conf"
++    resolve_conf_fn = "/etc/systemd/resolved.conf"
 +    init_cmd = ['systemctl']  # init scripts
 +
 +    def __init__(self, name, cfg, paths):
@@ -110,9 +110,23 @@
 +                searchdomains.extend(info['dns-search'])
 +            dev_index = dev_index + 1;
 +
++        resolve_data = []
++        new_resolve_data = []
++        with open(self.resolve_conf_fn, "r") as rf:
++            resolve_data = rf.readlines()
++        LOG.debug("Old Resolve Data\n")
++        LOG.debug("%s",resolve_data)
++        for item in resolve_data:
++            if (nameservers and ('DNS=' in item)) or (searchdomains and ('Domains=' in item)):
++                continue
++            else:
++                new_resolve_data.append(item)
++        
++        new_resolve_data = new_resolve_data +  convert_resolv_conf(nameservers, searchdomains)
++        LOG.debug("New resolve data\n")
++        LOG.debug("%s",new_resolve_data)
 +        if nameservers or searchdomains:
-+            util.write_file(self.resolve_conf_fn,
-+                            convert_resolv_conf(nameservers, searchdomains))
++            util.write_file(self.resolve_conf_fn, ''.join(new_resolve_data))
 +
 +        return dev_names
 +
@@ -150,7 +164,7 @@
 +
 +
 +    def _bring_up_interfaces(self, device_names):
-+        cmd = ['systemctl', 'restart', 'systemd-networkd', 'systemd-resolved']
++        cmd = ['systemctl', 'status', 'systemd-networkd', 'systemd-resolved']
 +        LOG.debug("Attempting to run bring up interfaces using command %s",
 +                  cmd)
 +        try:
@@ -236,13 +250,19 @@
 +
 +def convert_resolv_conf(nameservers, searchdomains):
 +    """Returns a string formatted for resolv.conf."""
-+    result = ''
++    result = []
 +    if isinstance(nameservers, list):
++        nslist = "DNS="
 +        for ns in nameservers:
-+            result = result + 'nameserver %s\n' % ns
++            nslist = nslist + '%s ' % ns
++        nslist = nslist + '\n'
++        result.append(str(nslist))
 +    if isinstance(searchdomains, list):
++        sdlist = "Domains="
 +        for sd in searchdomains:
-+            result = result + 'search %s\n' % sd
++            sdlist = sdlist + '%s ' % sd
++        sdlist = sdlist + '\n'
++        result.append(str(sdlist))
 +    return result
 +
 +def translate_routes(settings):
