@@ -169,6 +169,7 @@
         "audit",
         "libcap-ng",
         "tcp_wrappers",
+        "jq",
         "apr-util-ldap",
         "apr-util-pgsql",
         "apr-util-sqlite",
