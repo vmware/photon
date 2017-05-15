@@ -38,6 +38,23 @@ PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 WORKINGDIR=${BUILDROOT}
 BUILDROOT=${BUILDROOT}/photon-chroot
 
+#Generate efiboot image
+# efiboot is a fat16 image that has at least EFI/BOOT/bootx64.efi
+
+# As a bootx64.efi we use shimx64.efi from shim-12
+# # make VENDOR_CERT_FILE=<VMware cert> EFI_PATH=/usr/lib 'DEFAULT_LOADER=\\\\grubx64.efi' shimx64.efi
+# # mv shimx64.efi bootx64.efi
+
+# grubx64.efi is generated on Photon OS by using grub2-efi >= 2.02-7:
+# # grub2-efi-mkimage -o grubx64.efi -p /boot/grub2 -O x86_64-efi  fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain  efifwsetup efi_gop efi_uga  ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help linuxefi
+
+# both bootx64.efi and grubx64.efi are signed with VMware key
+
+EFI_IMAGE=${STAGE_PATH}/efiboot.img
+dd if=/dev/zero of=$EFI_IMAGE bs=3K count=1024
+mkdosfs $EFI_IMAGE
+mcopy -s -i $EFI_IMAGE ./EFI '::/'
+
 run_command "cp isolinux to working directory: ${WORKINGDIR}" "cp -r BUILD_DVD/isolinux ${WORKINGDIR}/" "${LOGFILE}"
 run_command "cp boot/grub2 to working directory: ${WORKINGDIR}" "cp -r BUILD_DVD/boot ${WORKINGDIR}/" "${LOGFILE}"
 run_command "# 1" "mkdir ${WORKINGDIR}/boot/grub2/fonts/" "${LOGFILE}"
@@ -264,8 +281,8 @@ rm -rf $BUILDROOT
 pushd $WORKINGDIR
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
         -no-emul-boot -boot-load-size 4 -boot-info-table \
-        -eltorito-alt-boot -e boot/grub2/efiboot.img -no-emul-boot \
+        -eltorito-alt-boot -e ${EFI_IMAGE} -no-emul-boot \
         -V "PHOTON_$(date +%Y%m%d)" \
         $WORKINGDIR >$ISO_OUTPUT_NAME
-
 popd
+rm -f ${EFI_IMAGE}
