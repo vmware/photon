@@ -1,8 +1,17 @@
+From 3f0069a352b7a55db73b522918116cd6d6a4dcfd Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 9 May 2017 12:38:15 -0700
+Subject: [PATCH] serial 8250 do not probe U6 16550A fifo size
+
+---
+ drivers/tty/serial/8250/8250_port.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 56ccbce..ea95693 100644
+index 080d5a59d0a7..67d5cf07346e 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1045,10 +1045,12 @@ static void autoconfig_16550a(struct uart_8250_port *up)
+@@ -1148,10 +1148,12 @@ static void autoconfig_16550a(struct uart_8250_port *up)
  	 * We distinguish between 16550A and U6 16550A by counting
  	 * how many bytes are in the FIFO.
  	 */
@@ -15,3 +24,6 @@ index 56ccbce..ea95693 100644
  }
  
  /*
+-- 
+2.11.0
+

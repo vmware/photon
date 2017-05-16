@@ -1,20 +1,55 @@
-From a2d9f1f747247f31f769930a8198b12a0667d21f Mon Sep 17 00:00:00 2001
+From c6e73db5fafa151b81a969a74c3138488a4310fa Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Tue, 29 Sep 2015 15:55:49 -0700
 Subject: [PATCH] pci/probe.c: Hardcodded pci probe.
 
+Added pci=scan_all cmdline parameter to verify hardcodded pci values
 ---
- drivers/pci/probe.c | 312 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 310 insertions(+), 2 deletions(-)
+ drivers/pci/pci.c   |   2 +
+ drivers/pci/pci.h   |   2 +
+ drivers/pci/probe.c | 377 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 377 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 6922964e3dff..e4db16e7c1d2 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -5303,6 +5303,8 @@ static int __init pci_setup(char *str)
+ 				pcie_bus_config = PCIE_BUS_PEER2PEER;
+ 			} else if (!strncmp(str, "pcie_scan_all", 13)) {
+ 				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
++			} else if (!strncmp(str, "scan_all", 8)) {
++				pci_scan_all();
+ 			} else {
+ 				printk(KERN_ERR "PCI: Unknown option `%s'\n",
+ 						str);
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index a5d37f6a9fb5..aaa456c9bf95 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -163,6 +163,8 @@ void pci_no_msi(void);
+ static inline void pci_no_msi(void) { }
+ #endif
+ 
++void pci_scan_all(void);
++
+ static inline void pci_msi_set_enable(struct pci_dev *dev, int enable)
+ {
+ 	u16 control;
 diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index edb1984..522bdaa 100644
+index d266d800f246..11544ddd6e5c 100644
 --- a/drivers/pci/probe.c
 +++ b/drivers/pci/probe.c
-@@ -162,6 +162,281 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+@@ -163,6 +163,346 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
  
  #define PCI_COMMAND_DECODE_ENABLE	(PCI_COMMAND_MEMORY | PCI_COMMAND_IO)
  
++static int pci_scan_and_verify = 0;
++
++void pci_scan_all(void)
++{
++	pci_scan_and_verify = 1;
++}
 +
 +/* shortcut version of __pci_read_base where we know the sizes already */
 +int __pci_read_base_shortcut(struct pci_dev *dev, enum pci_bar_type type,
@@ -58,7 +93,8 @@ index edb1984..522bdaa 100644
 +			mask64 = (u32)PCI_BASE_ADDRESS_MEM_MASK;
 +		}
 +	} else {
-+		res->flags |= (l & IORESOURCE_ROM_ENABLE);
++		if (l & PCI_ROM_ADDRESS_ENABLE)
++			res->flags |= IORESOURCE_ROM_ENABLE;
 +		l64 = l & PCI_ROM_ADDRESS_MASK;
 +		sz64 = sz & PCI_ROM_ADDRESS_MASK;
 +		mask64 = (u32)PCI_ROM_ADDRESS_MASK;
@@ -142,6 +178,35 @@ index edb1984..522bdaa 100644
 +	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
 +}
 +
++static int guess_bar_count(int class)
++{
++        if (class == 0x088000)
++            return 2;
++        if (class == 0x068000)
++            return 0;
++        if (class == 0x060100)
++            return 0;
++        if (class == 0x060000)
++            return 0;
++        if (class == 0x030000)
++            return 3;
++        if (class == 0x020000 || class == 0x010000)
++            return 4;
++        if (class == 0x00ff00)
++            return 1;
++        return 6;
++}
++
++static int has_rom(int class, int rom)
++{
++        if (class == 0x088000 ||
++	    class == 0x060100 ||
++	    class == 0x060000 ||
++	    class == 0x00ff00)
++          return 0;
++        return rom;
++}
++
 +static int is_known_device(struct pci_dev *dev, int pos, int *sz)
 +{
 +	switch (dev->vendor) {
@@ -192,8 +257,9 @@ index edb1984..522bdaa 100644
 +					*sz = 0xfffffff1;
 +					return 1;
 +				case 0x14:
-+					*sz = 0xfc000000;
-+					return 1;
++					/* variable mem size */
++					*sz = 0xffffffff;
++					return 0;
 +				case 0x18:
 +					*sz = 0xff800000;
 +					return 1;
@@ -215,7 +281,7 @@ index edb1984..522bdaa 100644
 +					*sz = 0xffffffc1;
 +					return 1;
 +				case 0x14:
-+					*sz = 0xffffe000;
++					*sz = 0xffffe004;
 +					return 1;
 +				case 0x1c:
 +				case 0x20:
@@ -286,19 +352,55 @@ index edb1984..522bdaa 100644
 +		}
 +		break;
 +
++		/* SCSI storage controller */
++		case 0x1000:
++		switch (dev->device) {
++			/* LSI Logic */
++			case 0x0030:
++			switch (pos) {
++				case 0x10:
++					*sz = 0xff01;
++					return 1;
++				case 0x14:
++					*sz = 0xfffe0004;
++					return 1;
++				case 0x1c:
++					*sz = 0xfffe0004;
++					return 1;
++				case 0x18:
++				case 0x20:
++				case 0x24:
++					*sz = 0; /* Not implemented */
++					return 1;
++				case 0x30:
++					*sz = 0xffffc000;
++					return 1;
++			}
++			break;
++		}
++		break;
 +	}
++	*sz = 0xffffffff;
 +        return 0;
 +}
 +
  /**
   * pci_read_base - read a PCI BAR
   * @dev: the PCI device
-@@ -181,6 +456,13 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -175,13 +515,20 @@ static inline unsigned long decode_bar(struct pci_dev *dev, u32 bar)
+ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+ 		    struct resource *res, unsigned int pos)
+ {
+-	u32 l, sz, mask;
++	u32 l, sz, known_sz, mask;
+ 	u64 l64, sz64, mask64;
+ 	u16 orig_cmd;
+ 	struct pci_bus_region region, inverted_region;
  
  	mask = type ? PCI_ROM_ADDRESS_MASK : ~0;
  
-+	if (is_known_device(dev, pos, &sz))
-+		return __pci_read_base_shortcut(dev, type, res, pos, sz, 0);
++	if (is_known_device(dev, pos, &known_sz) && !pci_scan_and_verify)
++		return __pci_read_base_shortcut(dev, type, res, pos, known_sz, 0);
 +
 +	res->name = pci_name(dev);
 +
@@ -307,7 +409,7 @@ index edb1984..522bdaa 100644
  	/* No printks while decoding is disabled! */
  	if (!dev->mmio_always_on) {
  		pci_read_config_word(dev, PCI_COMMAND, &orig_cmd);
-@@ -190,7 +472,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+@@ -191,7 +538,6 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		}
  	}
  
@@ -315,56 +417,55 @@ index edb1984..522bdaa 100644
  
  	pci_read_config_dword(dev, pos, &l);
  	pci_write_config_dword(dev, pos, l | mask);
-@@ -1145,6 +1426,28 @@ int pci_cfg_space_size(struct pci_dev *dev)
+@@ -207,6 +553,11 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+ 	if (sz == 0xffffffff)
+ 		sz = 0;
  
- #define LEGACY_IO_RESOURCE	(IORESOURCE_IO | IORESOURCE_PCI_FIXED)
- 
-+static int guess_bar_count(int class)
-+{
-+        if (class == 0x068000)
-+            return 0;
-+        if (class == 0x020000)
-+            return 3;
-+        if (class == 0x010000)
-+            return 2;
-+        if (class == 0x00ff00)
-+            return 1;
-+        return 6;
-+}
++	if (pci_scan_and_verify && known_sz != 0xffffffff && known_sz != sz)
++		dev_err(&dev->dev,
++			"wrong known bar size: %x != %x\n",
++			known_sz, sz);
 +
-+static int has_rom(int class, int rom)
-+{
-+        if (class == 0x020000)
-+          return 0;
-+        if (class == 0x010000 || class == 0x00ff00)
-+          return 0;
-+        return rom;
-+}
-+
- static void pci_msi_setup_pci_dev(struct pci_dev *dev)
- {
  	/*
-@@ -1178,6 +1481,7 @@ int pci_setup_device(struct pci_dev *dev)
- 	int pos = 0;
- 	struct pci_bus_region region;
- 	struct resource *res;
-+	int maxbar;
+ 	 * I don't know how l can have all bits set.  Copied from old code.
+ 	 * Maybe it fixes a bug on some ancient platform.
+@@ -311,8 +662,19 @@ int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
+ fail:
+ 	res->flags = 0;
+ out:
+-	if (res->flags)
++	if (res->flags) {
+ 		dev_printk(KERN_DEBUG, &dev->dev, "reg 0x%x: %pR\n", pos, res);
++		if (pci_scan_and_verify) {
++			int bar = (pos - PCI_BASE_ADDRESS_0) >> 2;
++			int maxbar = guess_bar_count(dev->class);
++			if (bar < 6 && bar >= maxbar)
++				dev_err(&dev->dev,
++					"wrong guess_bar_count value %d\n",
++					maxbar);
++			if (pos == PCI_ROM_ADDRESS && !has_rom(dev->class, 1))
++				dev_err(&dev->dev, "wrong has_rom value\n");
++		}
++	}
  
- 	if (pci_read_config_byte(dev, PCI_HEADER_TYPE, &hdr_type))
- 		return -EIO;
-@@ -1224,7 +1528,11 @@ int pci_setup_device(struct pci_dev *dev)
+ 	return (res->flags & IORESOURCE_MEM_64) ? 1 : 0;
+ }
+@@ -1265,7 +1627,14 @@ int pci_setup_device(struct pci_dev *dev)
  		if (class == PCI_CLASS_BRIDGE_PCI)
  			goto bad;
  		pci_read_irq(dev);
 -		pci_read_bases(dev, 6, PCI_ROM_ADDRESS);
 +
-+		maxbar = guess_bar_count(dev->class);
++		if (pci_scan_and_verify)
++			pci_read_bases(dev, 6, PCI_ROM_ADDRESS);
++		else if (class != PCI_CLASS_STORAGE_IDE)
++			pci_read_bases(dev,
++			guess_bar_count(dev->class),
++			has_rom(dev->class, PCI_ROM_ADDRESS));
 +
-+		if (class != PCI_CLASS_STORAGE_IDE)
-+			pci_read_bases(dev, maxbar, has_rom(dev->class, PCI_ROM_ADDRESS));
  		pci_read_config_word(dev, PCI_SUBSYSTEM_VENDOR_ID, &dev->subsystem_vendor);
  		pci_read_config_word(dev, PCI_SUBSYSTEM_ID, &dev->subsystem_device);
  
 -- 
-1.9.1
+2.11.0
 

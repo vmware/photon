@@ -2,4 +2,4 @@
 
 exec > /var/cache/tdnf/cached-updateinfo.txt
 
-tdnf -qC updateinfo
+tdnf -q --refresh updateinfo | grep -vE '^Refreshing|^Disabling'

@@ -1,7 +1,7 @@
 Summary:	Platform-neutral API
 Name:		nspr
 Version:	4.14
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MPLv2.0
 URL:		http://ftp.mozilla.org/pub/mozilla.org
 Group:		Applications/System
@@ -48,16 +48,18 @@ make DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
+%{_bindir}/*
 %{_libdir}/*.so
 
 %files devel
 %defattr(-,root,root)
-%{_bindir}/*
 %{_includedir}/*
 %{_libdir}/pkgconfig/*.pc
 %{_datarootdir}/aclocal/*
 
 %changelog
+*   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.14-2
+-   Fix error - binary packed in devel.
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.14-1
 -   Update to 4.14
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.12-3
