@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -187,9 +187,11 @@ rm -rf %{buildroot}/*
 %doc Tools/README
 %{_libdir}/python3.6/lib2to3
 %{_bindir}/2to3-3.6
-%{_bindir}/idle*
+%exclude %{_bindir}/idle*
 
 %changelog
+*   Tue May 16 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.6.1-2
+-   bug:1702273 - exclude idle from python3-tools
 *   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.1-1
 -   Updating to latest
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
