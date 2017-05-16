@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.27
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -42,7 +42,7 @@ Requires:       filesystem kmod coreutils
 %define uname_r %{version}-%{release}
 
 %description
-The Linux package contains the Linux kernel. 
+The Linux package contains the Linux kernel.
 
 
 %package devel
@@ -81,12 +81,12 @@ Requires:       %{name} = %{version}-%{release}
 Kernel driver for oprofile, a statistical profiler for Linux systems
 
 %package tools
-Summary:        This package contains the 'perf' performance analysis tools for Linux kernel 
+Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
 Requires:       %{name} = %{version}-%{release}
 Requires:       audit
 %description tools
-This package contains the 'perf' performance analysis tools for Linux kernel. 
+This package contains the 'perf' performance analysis tools for Linux kernel.
 
 
 %prep
@@ -248,11 +248,13 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude %{_libdir}/debug
 /usr/lib64/traceevent
 %{_bindir}
-/etc/bash_completion.d/* 
+/etc/bash_completion.d/*
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
 
 %changelog
+*   Mon May 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.9.27-2
+-   Enable IPVLAN module.
 *   Wed May 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.27-1
 -   Version update
 *   Sun May 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.26-1
@@ -322,7 +324,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 -   Rename -dev subpackage to -devel
 *   Wed Sep  7 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.20-1
 -   Update to linux-4.4.20
--   apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch 
+-   apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 -   keys-fix-asn.1-indefinite-length-object-parsing.patch
 *   Thu Aug 25 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-11
 -   vmxnet3 patches to bumpup a version to 1.4.8.0
@@ -336,7 +338,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 -   patch: e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 -   .config: disable rt group scheduling - not supported by systemd
 *   Wed Jun 15 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.8-7
--   fixed the capitalization for - System.map 
+-   fixed the capitalization for - System.map
 *   Thu May 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.4.8-6
 -   patch: REVERT-sched-fair-Beef-up-wake_wide.patch
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.8-5
@@ -413,7 +415,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 *   Mon Nov 09 2015 Vinay Kulkarni <kulkarniv@vmware.com> 4.2.0-2
 -   Enable Geneve module support for generic kernel.
 *   Fri Oct 23 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.0-1
--   Upgraded the generic linux kernel to version 4.2.0 & and updated timer handling to full tickless mode. 
+-   Upgraded the generic linux kernel to version 4.2.0 & and updated timer handling to full tickless mode.
 *   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.9-5
 -   Added driver support for frame buffer devices and ACPI
 *   Wed Sep 2 2015 Alexey Makhalov <amakhalov@vmware.com> 4.0.9-4
@@ -429,7 +431,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 -   Rename -gpu-drivers to -drivers-gpu in accordance to directory structure.
 -   Added -sound package/
 *   Tue Aug 11 2015 Anish Swaminathan<anishs@vmware.com> 3.19.2-4
--   Removed Requires dependencies. 
+-   Removed Requires dependencies.
 *   Fri Jul 24 2015 Harish Udaiya Kumar <hudaiyakumar@gmail.com> 3.19.2-3
 -   Updated the config file to include graphics drivers.
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.13.3-2
