@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.29.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -44,7 +44,8 @@ sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
     --disable-silent-rules \
     --disable-static \
     --disable-use-tty-group \
-    --without-python
+    --without-python \
+    --without-udev
 make %{?_smp_mflags}
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
@@ -54,8 +55,7 @@ find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 
 %check
-chown -Rv nobody .
-sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
+make check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -91,6 +91,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_mandir}/man3/*
 
 %changelog
+*   Tue May 16 2017 Chang Lee <changlee@vmware.com> 2.29.2-3
+-   Update according to %check
 *   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29.2-2
 -   Added -libs subpackage to strip docker image.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.29.2-1
