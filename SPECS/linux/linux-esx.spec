@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.27
+Version:        4.9.28
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d248ff518f822d4324a482a39f3159b1ee86cc84
+%define sha1 linux=58ca565d0675f518465220b8b2515b10c779c426
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -189,6 +189,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 16 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.28-1
+-   .config: built ATA drivers in a kernel
 *   Wed May 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.27-1
 -   New pci=scan_all cmdline parameter to verify hardcoded pci-probe values
 -   pci-probe added more known values
