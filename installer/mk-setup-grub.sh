@@ -87,7 +87,7 @@ if [ "$BOOTMODE" == "bios" ]; then
     fi
     grub_mbr_install
 fi
-if [ "$BOOTMODE" == "efi" ]; then 
+if [ "$BOOTMODE" == "efi" ]; then
     grub_efi_install
 fi
 
@@ -97,6 +97,13 @@ mkdir -p ${BUILDROOT}/boot/grub2/themes/photon
 cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
 cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
+# linux-esx tries to mount rootfs even before nvme got initialized.
+# rootwait fixes this issue
+EXTRA_PARAMS=""
+if [[ $HDD == *"nvme"* ]]; then
+    EXTRA_PARAMS=rootwait
+fi
+
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg
 
@@ -127,7 +134,7 @@ fi
 set rootpartition=PARTUUID=$PARTUUID
 
 menuentry "Photon" {
-    linux ${BOOT_DIRECTORY}\$photon_linux root=\$rootpartition \$photon_cmdline \$systemd_cmdline
+    linux ${BOOT_DIRECTORY}\$photon_linux root=\$rootpartition \$photon_cmdline \$systemd_cmdline $EXTRA_PARAMS
     if [ -f ${BOOT_DIRECTORY}\$photon_initrd ]; then
         initrd ${BOOT_DIRECTORY}\$photon_initrd
     fi
