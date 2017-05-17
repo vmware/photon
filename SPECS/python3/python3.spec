@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -171,11 +171,14 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python3.6/idlelib/idle_test
 %exclude %{_libdir}/python3.6/test
 %exclude %{_libdir}/python3.6/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.6/site-packages/setuptools/*
+%exclude %{_libdir}/python3.6/site-packages/pkg_resources/__init__.py
+
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_bindir}/easy_install-3.6
+%exclude %{_bindir}/easy_install-3.6
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %{_libdir}/libpython3.so
@@ -190,6 +193,8 @@ rm -rf %{buildroot}/*
 %exclude %{_bindir}/idle*
 
 %changelog
+*   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 3.6.1-3
+-   Excluding easy-install binary, to be provided by python-setuptools.
 *   Wed May 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.6.1-2
 -   Exclude idle3.
 *   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.1-1
