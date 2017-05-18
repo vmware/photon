@@ -3,7 +3,7 @@
 Summary:	OpenJDK 
 Name:		openjdk
 Version:	1.8.0.131
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -158,7 +158,6 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/bin/wsimport
 /var/opt/OpenJDK-%{version}-bin/bin/xjc
 
-
 %files	-n openjre
 %defattr(-,root,root)
 
@@ -175,6 +174,7 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/lib/amd64/jli/
 /etc/profile.d/java-exports.sh
 %{_rpmconfigdir}/macros.d/macros.java
+%exclude /var/opt/OpenJDK-%{version}-bin/jre/lib/amd64/*.diz
 
 %files sample
 %defattr(-,root,root)
@@ -190,6 +190,8 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
+-	Exclude the redundant .diz files.
 *	Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1
 -	Upgraded to version 1.8.0.131 and building Java from sources
 *       Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
