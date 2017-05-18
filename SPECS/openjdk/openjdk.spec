@@ -1,9 +1,9 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
-Summary:	OpenJDK 
+Summary:	OpenJDK
 Name:		openjdk
 Version:	1.8.0.131
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -13,7 +13,7 @@ Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK/openjdk-%{version
 %define sha1 openjdk=ae01c24fe5247d5aa246a60c0272ba92188a7d55
 Source1:    macros.java
 Patch0:		disable-awt-lib.patch
-Patch1:		fix-lcms.patch 
+Patch1:		fix-lcms.patch
 Patch2:		Fix-memory-leak.patch
 Patch3:		check-system-ca-certs.patch
 BuildRequires:  pcre-devel
@@ -26,7 +26,7 @@ Requires:       openjre = %{version}-%{release}
 AutoReqProv: 	no
 %define bootstrapjdkversion 1.8.0.112
 %description
-The OpenJDK package installs java class library and javac java compiler. 
+The OpenJDK package installs java class library and javac java compiler.
 
 %package	-n openjre
 Summary:	Java runtime environment
@@ -37,7 +37,7 @@ It contains the libraries files for Java runtime environment
 #%filter_from_requires ^libgif.*$
 
 %package		sample
-Summary:		Sample java applications. 
+Summary:		Sample java applications.
 Group:          Development/Languages/Java
 %description	sample
 It contains the Sample java applications.
@@ -54,7 +54,7 @@ Requires:       %{name} = %{version}-%{release}
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
 %description	src
-This package provides the runtime library class sources. 
+This package provides the runtime library class sources.
 Requires:       %{name} = %{version}-%{release}
 
 %prep -p exit
@@ -158,7 +158,6 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/bin/wsimport
 /var/opt/OpenJDK-%{version}-bin/bin/xjc
 
-
 %files	-n openjre
 %defattr(-,root,root)
 
@@ -175,6 +174,7 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/lib/amd64/jli/
 /etc/profile.d/java-exports.sh
 %{_rpmconfigdir}/macros.d/macros.java
+%exclude /var/opt/OpenJDK-%{version}-bin/jre/lib/amd64/*.diz
 
 %files sample
 %defattr(-,root,root)
@@ -190,10 +190,12 @@ rm -rf %{buildroot}/*
 /var/opt/OpenJDK-%{version}-bin/src.zip
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
+-	Exclude the redundant .diz files.
 *	Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1
 -	Upgraded to version 1.8.0.131 and building Java from sources
-*       Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
--       add java rpm macros
+*   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
+-   add java rpm macros
 *       Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-1
 -       Update to 1.8.0.112. addresses CVE-2016-5582 CVE-2016-5573
 *       Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.102-1
@@ -214,10 +216,10 @@ rm -rf %{buildroot}/*
 *	Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.8.0.51-3
 -	Change to use /var/opt path
 *	Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
--	Split the openjdk into multiple sub-packages to reduce size. 
+-	Split the openjdk into multiple sub-packages to reduce size.
 *	Mon Aug 17 2015 Sharath George <sarahc@vmware.com> 1.8.0.51-1
 -	Moved to the next version
 *	Tue Jun 30 2015 Sarah Choi <sarahc@vmware.com> 1.8.0.45-2
--	Add JRE path 
+-	Add JRE path
 *	Mon May 18 2015 Sharath George <sharathg@vmware.com> 1.8.0.45-1
 -	Initial build.	First version
