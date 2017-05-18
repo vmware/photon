@@ -1,11 +1,11 @@
 #! /usr/bin/python2
 #
-#    Copyright (C) 2015 VMware, Inc. All rights reserved.
+#    Copyright (C) 2015-2017 VMware, Inc. All rights reserved.
 #    pullsources.py 
-#    Allows pulling packages'sources from a bintary  
-#    repository.
+#    Allows pulling packages'sources from a source repository.
 #
 #    Author(s): Mahmoud Bassiouny (mbassiouny@vmware.com)
+#               Alexey Makhalov (amakhalov@vmware.com)
 #
 
 import json
@@ -25,7 +25,7 @@ def getFileHash(filepath):
         f.close()
     return sha1.hexdigest()
 
-def get(source, sha1, sourcesPath, configs):
+def get(source, sha1, sourcesPath, configs, logger):
     cmdUtils = CommandUtils()
     sourcePath = cmdUtils.findFile(source, sourcesPath)
     if sourcePath is not None and len(sourcePath) > 0:
@@ -35,22 +35,23 @@ def get(source, sha1, sourcesPath, configs):
             # Use file from sourcesPath
             return
         else:
-            print 'sha1 of %s does not match. %s vs %s' % (sourcePath[0], sha1, getFileHash(sourcePath[0]))
+            logger.info("sha1 of "+sourcePath[0]+" does not match. "+sha1+" vs "+getFileHash(sourcePath[0]))
     configFiles=configs.split(":")
     for config in configFiles:
-        p = pullSources(config)
+        p = pullSources(config, logger)
         package_path = os.path.join(sourcesPath, source)
         try: 
             p.downloadFileHelper(source, package_path, sha1)
             return
         except Exception as e:
-            print e
+            logger.error(e)
     raise Exception("Missing source: "+source)
 
 class pullSources:
 
-    def __init__(self, conf_file):
+    def __init__(self, conf_file, logger):
         self._config = {}
+        self.logger=logger
         self.loadConfig(conf_file)
 
         # generate the auth
@@ -65,14 +66,9 @@ class pullSources:
 
     def downloadFile(self, filename, file_path):
         #form url: https://dl.bintray.com/vmware/photon_sources/1.0/<filename>.
-        url = '%s/%s/%s/%s/%s' % \
-              (self._config['baseurl'],\
-               self._config['subject'],\
-               self._config['repo'],\
-               self._config['version'],\
-               filename)
+        url = '%s/%s' % (self._config['baseurl'], filename)
 
-        print '%s: Downloading %s...' % (str(datetime.datetime.today()), url)
+        self.logger.info("Downloading: "+url)
 
         with open(file_path, 'wb') as handle:
             response = requests.get(url, auth=self._auth, stream=True)
