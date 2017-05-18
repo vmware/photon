@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.13
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -11,10 +11,10 @@ BuildArch:      noarch
 Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
 %define sha1 apache-tomcat=a2097a08b023c363098917078d9a23bd7a3b6032
 %define java_macros_version 1.8.0.112-2%{?dist}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
+BuildRequires: openjre8 >= %{java_macros_version}
+BuildRequires: openjdk8 >= %{java_macros_version}
 BuildRequires: apache-ant >= 1.9.6
-Requires: openjre >= %{java_macros_version}
+Requires: openjre8 >= %{java_macros_version}
 Requires: apache-ant >= 1.9.6
 
 %define _prefix /var/opt/%{name}-%{version}
@@ -34,7 +34,6 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 
 %build
 export ANT_HOME=%{_ant_home}
-export JAVA_HOME=%{_java_home}
 mkdir -p -m 700 %{_prefix}
 $ANT_HOME/bin/ant -Dbase.path="." deploy dist-prepare dist-source javadoc
 
@@ -73,6 +72,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.13-3
+-	Renamed openjdk to openjdk8
 *   Tue Apr 18 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.13-2
 -   Added logic to package directories
 *   Mon Apr 10 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.13-1
