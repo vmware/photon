@@ -96,7 +96,7 @@ packages-micro: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) g
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -c $(PHOTON_BINTRAY_CONFIG) \
+                -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
@@ -165,7 +165,7 @@ packages-minimal: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -c $(PHOTON_BINTRAY_CONFIG) \
+                -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
@@ -246,7 +246,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $
                 -l $(PHOTON_LOGS_DIR) \
 		-e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -c $(PHOTON_BINTRAY_CONFIG) \
+                -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
@@ -265,8 +265,8 @@ updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-				-e $(PHOTON_PUBLISH_XRPMS_DIR) \
-                -c $(PHOTON_BINTRAY_CONFIG) \
+                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
@@ -286,7 +286,7 @@ tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -t ${THREADS} \
-                -c $(PHOTON_BINTRAY_CONFIG) \
+                -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
@@ -305,7 +305,7 @@ tool-chain-stage2: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
                 -t ${THREADS} \
-                -c $(PHOTON_BINTRAY_CONFIG) \
+                -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
@@ -321,7 +321,6 @@ packages-cached:
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/x86_64/* $(PHOTON_RPMS_DIR_X86_64)/
 
 sources:
-	@echo "Pulling sources from bintray...(nothing to do)"
 	@$(MKDIR) -p $(PHOTON_SRCS_DIR)
 
 sources-cached:
@@ -532,8 +531,8 @@ check-packer-ovf-plugin:
                               -a $(PHOTON_SRPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
-							  -e $(PHOTON_PUBLISH_XRPMS_DIR) \
-                              -c $(PHOTON_BINTRAY_CONFIG) \
+                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                              -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -d $(PHOTON_DIST_TAG) \
                               -n $(PHOTON_BUILD_NUMBER) \
                               -v $(PHOTON_RELEASE_VERSION) \
