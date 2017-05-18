@@ -1,7 +1,7 @@
 Name:          vmware-ca
 Summary:       VMware Certificate Authority Service
 Version:       1.2.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -10,6 +10,7 @@ Source0:       lightwave-%{version}.tar.gz
 %define sha1 lightwave=5f8bb80732e5f03df321c52bf12c305e65ad66a3
 Distribution:  Photon
 Requires:  coreutils >= 8.22, openssl >= 1.0.2, krb5 >= 1.14, cyrus-sasl >= 2.1, likewise-open >= 6.2.11, vmware-directory-client = %{version}, vmware-afd-client = %{version}, boost = 1.63.0
+BuildRequires:  chkconfig
 BuildRequires:  boost-devel = 1.63.0
 BuildRequires:  coreutils >= 8.22
 BuildRequires:  e2fsprogs-devel
@@ -17,7 +18,7 @@ BuildRequires:  openssl-devel >= 1.0.2
 BuildRequires:  krb5-devel >= 1.14
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  likewise-open-devel >= 6.2.11
-BuildRequires:  openjdk >= 1.8.0.112-2, apache-ant >= 1.9.6-6
+BuildRequires:  openjdk8 >= 1.8.0.112-2, apache-ant >= 1.9.6-6
 BuildRequires:  ant-contrib >= 1.0b3
 BuildRequires:  vmware-directory-client-devel = %{version}
 BuildRequires:  vmware-afd-client-devel = %{version}
@@ -246,5 +247,7 @@ rm -rf $RPM_BUILD_ROOT
 # %doc ChangeLog README COPYING
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.0-2
+-	Renamed openjdk to openjdk8
 *   Thu Mar 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
 -   Initial - spec modified for Photon from lightwave git repo.
