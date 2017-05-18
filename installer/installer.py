@@ -242,26 +242,19 @@ class Installer(object):
         
     def copy_rpms(self):
         # prepare the RPMs list
-        rpms = []
-        for root, dirs, files in os.walk(self.rpm_path):
-            for name in files:
-                file = os.path.join(root, name)
-                size = os.path.getsize(file)
-                rpms.append({'filename': name, 'path': file, 'size': size})
+        json_pkg_to_rpm_map = JsonWrapper(self.install_config["pkg_to_rpm_map_file"])
+        pkg_to_rpm_map = json_pkg_to_rpm_map.read()
 
         self.rpms_tobeinstalled = []
         selected_packages = self.install_config['packages']
-        for package in selected_packages:
-            pattern = package + '-[0-9]*.rpm'
-            if (package == 'glibc'):
-                pattern2 = pattern
-            else:
-                pattern2 = package + '-[a-z][0-9]*.rpm'
-            for rpm in rpms:
-                if fnmatch.fnmatch(rpm['filename'], pattern) or fnmatch.fnmatch(rpm['filename'], pattern2):
-                    rpm['package'] = package
-                    self.rpms_tobeinstalled.append(rpm)
-                    break
+
+        for pkg in selected_packages: 
+            if pkg in pkg_to_rpm_map:
+                if not pkg_to_rpm_map[pkg]['rpm'] is None:
+                    name = pkg_to_rpm_map[pkg]['rpm']
+                    basename = os.path.basename(name)
+                    self.rpms_tobeinstalled.append({'filename': basename, 'path': name, 'package' : pkg})
+
         # Copy the rpms
         for rpm in self.rpms_tobeinstalled:
             shutil.copy(rpm['path'], self.photon_root + '/RPMS/')
