@@ -192,6 +192,7 @@ class PackageUtils(object):
         listSRPMFiles=[]
         try:
             listRPMFiles,listSRPMFiles = self.buildRPM(chrootSpecPath +specName,chrootLogsFilePath,chrootCmd,package,macros)
+            self.logger.info("Successfully built rpm:"+package)
         except Exception as e:
             self.logger.error("Failed while building rpm:"+package)
             raise e
