@@ -1,0 +1,13 @@
+{
+	"hostname": "photon-machine",
+	"password": 
+		{
+			"crypted": false,
+			"text": "60a8efc3dc593900e09314732c0487dd"
+		},
+	"type": "uefi",
+    "size": {"root": "8", "swap": "0"},
+    "boot":"efi",
+    "public_key":"<ssh-key-here>"
+}
+
