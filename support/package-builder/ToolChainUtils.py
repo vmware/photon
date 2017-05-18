@@ -150,7 +150,7 @@ class ToolChainUtils(object):
         for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
 	    print "DEBUG:" + package
-            if "openjre" in packageName or "openjdk" in packageName:
+            if "openjre8" in packageName or "openjdk8" in packageName:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             else:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
