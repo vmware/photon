@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -12,9 +12,9 @@ Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.0.15-
 %define sha1 commons-daemon=ca6a448d1d214f714e214b35809a2117568970e3
 
 %define java_macros_version 1.8.0.112-2%{?dist}
-Requires: openjre >= %{java_macros_version}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
+Requires: openjre8 >= %{java_macros_version}
+BuildRequires: openjre8 >= %{java_macros_version}
+BuildRequires: openjdk8 >= %{java_macros_version}
 BuildRequires: apache-ant >= 1.9.6
 
 %define _prefix /var/opt/%{name}-%{version}
@@ -62,6 +62,8 @@ chmod -R 755 $DIST_DIR
 %{_prefix}/*.jar
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-10
+-	Renamed openjdk to openjdk8
 *   Fri Mar 31 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-9
 -   use java rpm macros to determine versions
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-8
