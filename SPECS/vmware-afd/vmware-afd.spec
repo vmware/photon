@@ -1,7 +1,7 @@
 Name:          vmware-afd
 Summary:       Authentication Framework Service
 Version:       1.2.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -18,13 +18,14 @@ Requires:  vmware-directory-client = %{version}
 Requires:  vmware-afd-client = %{version}
 Requires:  vmware-dns-client = %{version}
 Requires:  e2fsprogs
+BuildRequires:  chkconfig
 BuildRequires:  coreutils >= 8.22
 BuildRequires:  openssl-devel >= 1.0.2
 BuildRequires:  krb5-devel >= 1.14
 BuildRequires:  cyrus-sasl >= 2.1, likewise-open-devel >= 6.2.11
 BuildRequires:  vmware-directory-client-devel = %{version}
 BuildRequires:  sqlite-devel, python2-devel >= 2.7.8
-BuildRequires:  openjdk >= 1.8.0.112-2, apache-ant >= 1.9.6-6
+BuildRequires:  openjdk8 >= 1.8.0.112-2, apache-ant >= 1.9.6-6
 BuildRequires:  ant-contrib >= 1.0b3
 BuildRequires:  vmware-dns-client-devel = %{version}
 BuildRequires:  apache-maven >= 3.3.9-8, boost-devel = 1.63.0
@@ -297,5 +298,7 @@ rm -rf $RPM_BUILD_ROOT
 # %doc ChangeLog README COPYING
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.0-2
+-	Renamed openjdk to openjdk8
 *   Thu Mar 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
 -   Initial - spec modified for Photon from lightwave git repo.

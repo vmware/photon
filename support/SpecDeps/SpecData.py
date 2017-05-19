@@ -32,6 +32,8 @@ class SerializedSpecObjects(object):
         while not depQue.empty():
             specPkg = depQue.get()
             specName = self.getSpecName(specPkg)
+            if specName is None:
+                print specPkg + " is missing"
             specObj = self.mapSerializableSpecObjects[specName]
             for depPkg in specObj.installRequiresPackages[specPkg]:
                 if True == allDeps.has_key(depPkg):
