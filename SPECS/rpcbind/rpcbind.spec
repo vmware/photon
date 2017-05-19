@@ -1,30 +1,35 @@
-Summary:	RPC program number mapper
-Name:		rpcbind
-Version:	0.2.3
-Release:	7%{?dist}
-License:	BSD
-URL:		http://nfsv4.bullopensource.org
-Group:	    Applications/Daemons
-Source0:    http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
+Summary:        RPC program number mapper
+Name:           rpcbind
+Version:        0.2.3
+Release:        8%{?dist}
+License:        BSD
+URL:            http://nfsv4.bullopensource.org
+Group:          Applications/Daemons
+Source0:        http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.bz2
 %define sha1 rpcbind=e79974a99d09b6d6fff9d86bf00225dc33723ce2
-Source1:    rpcbind.service
-Source2:    rpcbind.socket
-Source3:    rpcbind.sysconfig
-Patch0:     http://www.linuxfromscratch.org/patches/blfs/svn/rpcbind-0.2.3-tirpc_fix-1.patch
-Vendor:     VMware, Inc.
+Source1:        rpcbind.service
+Source2:        rpcbind.socket
+Source3:        rpcbind.sysconfig
+Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/rpcbind-0.2.3-tirpc_fix-1.patch
+Patch1:         rpcbind-CVE-2017-8779.patch
+Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:	libtirpc-devel
+BuildRequires:  libtirpc-devel
 BuildRequires:  systemd
 Requires:       libtirpc
 Requires:       systemd
 Requires(pre):  shadow
 Requires(preun):shadow
 Requires(post): coreutils
+
 %description
 The rpcbind program is a replacement for portmap. It is required for import or export of Network File System (NFS) shared directories. The rpcbind utility is a server that converts RPC program numbers into universal addresses
+
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+
 %build
 sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
 ./configure --prefix=%{_prefix}      \
@@ -34,6 +39,7 @@ sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
             --with-statedir=%{_localstatedir}/lib/rpcbind \
             --with-rpcuser=rpc
 make
+
 %install
 make DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}%{_localstatedir}/lib/rpcbind
@@ -58,7 +64,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 rpcid=`getent passwd rpc | cut -d: -f 3`
 if [ -n "$rpcid" -a "$rpcid" != "31" ]; then
 	userdel  rpc 2> /dev/null || :
-	groupdel rpc 2> /dev/null || : 
+	groupdel rpc 2> /dev/null || :
 fi
 if [ -z "$rpcid" -o "$rpcid" != "31" ]; then
 	groupadd -g 31 rpc > /dev/null 2>&1
@@ -84,7 +90,10 @@ fi
 
 %clean
 rm -rf %{buildroot}/*
+
 %changelog
+*	Thu May 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.2.3-8
+-	Fix CVE-2017-8779
 *	Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-7
 -	add shadow and coreutils to requires
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-6
