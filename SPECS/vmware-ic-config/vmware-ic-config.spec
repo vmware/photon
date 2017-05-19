@@ -1,7 +1,7 @@
 Name:          vmware-ic-config
 Summary:       VMware Infrastructure Controller Configuration Tool
 Version:       1.2.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -19,6 +19,7 @@ Requires:  vmware-afd-client = %{version}
 Requires:  vmware-ca-client = %{version}
 Requires:  gawk >= 4.1.3
 
+BuildRequires:  chkconfig
 BuildRequires:  coreutils >= 8.22
 BuildRequires:  curl-devel
 BuildRequires:  jansson-devel
@@ -30,7 +31,7 @@ BuildRequires:  vmware-afd-client-devel = %{version}
 BuildRequires:  vmware-ca-client-devel = %{version}
 BuildRequires:  vmware-dns-client-devel = %{version}
 BuildRequires:  vmware-sts = %{version}
-BuildRequires:  openjdk >= 1.8.0.112-2, apache-ant >= 1.9.6-6
+BuildRequires:  openjdk8 >= 1.8.0.112-2, apache-ant >= 1.9.6-6
 BuildRequires:  ant-contrib >= 1.0b3
 BuildRequires:  apache-maven >= 3.3.9-8
 
@@ -166,5 +167,7 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.0-2
+-	Renamed openjdk to openjdk8
 *   Thu Mar 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
 -   Initial - spec modified for Photon from lightwave git repo.
