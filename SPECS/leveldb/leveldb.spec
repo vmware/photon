@@ -1,7 +1,7 @@
 Summary:	A fast and lightweight key/value database library by Google
 Name:		leveldb
 Version:	1.19
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		https://github.com/google/leveldb
 Source0:	https://github.com/google/leveldb/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -35,7 +35,7 @@ Libs: -l%{name}
 EOF
 
 %build
-make %{?_smp_mflags}
+make
 
 %install
 mkdir -p %{buildroot}{%{_libdir}/pkgconfig,%{_includedir}}
@@ -63,7 +63,9 @@ make check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*	Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 1.19-2
--	Added pkgconfig file for leveldb
-*	Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-1
--	Initial build. First version
+*   Thu May 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.19-3
+-   Do not build in parallel. Fix bug #1876201
+*   Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 1.19-2
+-   Added pkgconfig file for leveldb
+*   Fri Dec 16 2016 Dheeraj Shetty <Dheerajs@vmware.com> 1.19-1
+-   Initial build. First version
