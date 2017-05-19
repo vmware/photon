@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache
 URL:            http://github.com/twall/jna
 Group:          Applications/System
@@ -15,10 +15,11 @@ Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{n
 %define sha1 jna=d9b54e98393a696f458468bc8f3167f701a9ea9f
 
 %define java_macros_version 1.8.0.112-2%{?dist}
-Requires: openjre >= %{java_macros_version}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
+BuildRequires: chkconfig
+BuildRequires: openjre8 >= %{java_macros_version}
+BuildRequires: openjdk8 >= %{java_macros_version}
 BuildRequires: apache-ant >= 1.9.6
+Requires:      openjre8 >= %{java_macros_version}
 
 %define _prefix /var/opt/jna-4.4.0
 
@@ -38,7 +39,6 @@ Sources for JNA
 %setup -q
 %build
 ANT_HOME=%{_ant_home}
-export JAVA_HOME=%{_java_home}
 
 #disabling all tests
 $ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
@@ -73,6 +73,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*.aar
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-4
+-	Renamed openjdk to openjdk8
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-3
 -   disable debuginfo temporarily - wait for x11 deps
 *   Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-2
