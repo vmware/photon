@@ -1,7 +1,7 @@
 Summary:    Free version of the SSH connectivity tools
 Name:       openssh
 Version:    7.4p1
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSD
 URL:         https://www.openssh.com/
 Group:      System Environment/Security
@@ -142,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Fri May 19 2017 Alexey Makhalov <amakhalov@vmware.com> 7.4p1-4
+-   Configure FIPS mode: call FIPS_mode_set(1) earlier.
 *   Thu Feb 09 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-3
 -   Add patch to configure openssh FIPS mode
 *   Thu Feb 02 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-2
