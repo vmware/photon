@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -161,6 +161,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Mon June 5 2017 Julian Vassev <jvassev@vmware.com> 0.7.9-5
+-   Enable OVF datasource by default
 *   Mon May 22 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-4
 -   Making cloud-init to use python3.
 *   Thu May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
