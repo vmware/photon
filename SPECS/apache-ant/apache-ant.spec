@@ -62,6 +62,7 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 
 install -d -m 755 %{buildroot}/etc/profile.d/
 echo 'export ANT_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
+echo 'export PATH=$PATH:$ANT_HOME/bin' >> %{buildroot}/etc/profile.d/%{name}.sh
 
 %files
 %defattr(-,root,root)
