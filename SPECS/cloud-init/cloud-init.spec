@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -160,6 +160,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Mon May 22 2017 Julian Vassev <jvassev@vmware.com> 0.7.9-4
+-   Enable OVF datasource by default
 *   Thu May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
 -   Disable networking config by cloud-init
 *   Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-2
