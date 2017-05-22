@@ -1,12 +1,12 @@
 
 Summary:	SELinux library and simple utilities
 Name:		libselinux
-Version:	2.5
-Release:	2%{?dist}
+Version:	2.6
+Release:	1%{?dist}
 License:	Public Domain
 Group:		System Environment/Libraries
-Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}-rc1.tar.gz
-%define sha1 libselinux=ca50f64f5996c6c4c80a9f80a9adf038231ba211
+Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
+%define sha1 libselinux=38213c5f3298c980a399ea73e47498e7a393e4f7
 Url:		https://github.com/SELinuxProject/selinux/wiki
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -62,13 +62,12 @@ The libselinux-devel package contains the libraries and header files
 needed for developing SELinux applications. 
 
 %prep
-%setup -qn %{name}-%{version}-rc1
+%setup -qn %{name}-%{version}
 
 %build
 
 make clean
 make LIBDIR="%{_libdir}" %{?_smp_mflags} swigify
-make LIBDIR="%{_libdir}" %{?_smp_mflags} all
 make LIBDIR="%{_libdir}" %{?_smp_mflags} pywrap
 
 %install
@@ -110,11 +109,14 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %dir %{python_sitearch}/selinux
 %{python_sitearch}/selinux/*
+%{python_sitearch}/_selinux.so
 
 %changelog
+*	Mon May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-1
+-	Update to version 2.6 (CVE bug:1836427)
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
 -	GA - Bump release of all rpms
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
--   Updated to version 2.5
+*	Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
+-	Updated to version 2.5
 *	Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
 -	Initial build.	First version
