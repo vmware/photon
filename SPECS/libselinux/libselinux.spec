@@ -1,7 +1,7 @@
 Summary:	SELinux library and simple utilities
 Name:		libselinux
 Version:	2.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Public Domain
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
@@ -49,20 +49,31 @@ Provides:	pkgconfig(libselinux)
 The libselinux-devel package contains the libraries and header files
 needed for developing SELinux applications. 
 
+%package        python
+Summary:        SELinux python bindings for libselinux
+Group:          Development/Libraries
+Requires:       libselinux = %{version}-%{release}
+Requires:       python2
+Requires:       python2-libs
+
+%description    python
+The libselinux-python package contains the python bindings for developing
+SELinux applications.
+
 %prep
 %setup -qn %{name}-%{version}
 
 %build
-
-make %{?_smp_mflags}
+make clean
+make %{?_smp_mflags} swigify
+make LIBDIR="%{_libdir}" %{?_smp_mflags} pywrap
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR="%{buildroot}" LIBDIR="%{buildroot}%{_libdir}" SHLIBDIR="%{buildroot}/%{_lib}" BINDIR="%{buildroot}%{_bindir}" SBINDIR="%{buildroot}%{_sbindir}" install install-pywrap
 
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
 mkdir -p %{buildroot}/var/run/setrans
 echo "d /var/run/setrans 0755 root root" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/libselinux.conf
-mv %{buildroot}/lib/libselinux.so.* %{buildroot}%{_libdir}/
 
 %clean
 rm -rf %{buildroot}
@@ -94,14 +105,21 @@ rm -rf %{buildroot}
 %{_libdir}/libselinux.a
 %{_mandir}/man3/*
 
+%files python
+%defattr(-,root,root,-)
+%dir %{python_sitearch}/selinux
+%{python_sitearch}/selinux/*
+
 %changelog
+*	Wed May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-2
+-	Include python subpackage.
 *	Wed May 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-1
 -	Upgraded to version 2.6
-*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 2.5-3
--   Remove pcre requires and add requires on pcre-libs
+*	Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 2.5-3
+-	Remove pcre requires and add requires on pcre-libs
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
 -	GA - Bump release of all rpms
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
--   Updated to version 2.5
+*	Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
+-	Updated to version 2.5
 *	Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
 -	Initial build.	First version
