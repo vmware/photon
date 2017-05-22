@@ -1,6 +1,8 @@
+%define python3_sitelib /usr/lib/python3.6/site-packages
+
 Name:           cloud-init
 Version:        0.7.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -18,29 +20,27 @@ Patch4:         resizePartitionUUID.patch
 Patch5:         datasource-guestinfo.patch
 Patch6:         systemd-service-changes.patch
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
 BuildRequires:  systemd
 BuildRequires:  dbus
-BuildRequires:  python-ipaddr
+BuildRequires:  python3-ipaddr
 BuildRequires:  iproute2
 BuildRequires:  automake
 
 Requires:       systemd
 Requires:       net-tools
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-configobj
-Requires:       python-prettytable
-Requires:       python-requests
-Requires:       python-setuptools
-Requires:       PyYAML
-Requires:       python-jsonpatch
-Requires:       python-oauthlib
-Requires:       python-jinja2
-Requires:       python-markupsafe
-Requires:       python-six
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-configobj
+Requires:       python3-prettytable
+Requires:       python3-requests
+Requires:       python3-PyYAML
+Requires:       python3-jsonpatch
+Requires:       python3-oauthlib
+Requires:       python3-jinja2
+Requires:       python3-markupsafe
+Requires:       python3-six
 
 BuildArch:      noarch
 
@@ -63,20 +63,21 @@ ssh keys and to let the user run various scripts.
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
-%{__python} setup.py build
+python3 setup.py build
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT --init-system systemd
+python3 setup.py install -O1 --skip-build --root=%{buildroot} --init-system systemd
 
 # Don't ship the tests
-rm -r $RPM_BUILD_ROOT%{python_sitelib}/tests
+rm -r %{buildroot}%{python3_sitelib}/tests
 
-mkdir -p $RPM_BUILD_ROOT/var/lib/cloud
+mkdir -p %{buildroot}/var/lib/cloud
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 
 # We supply our own config file since our software differs from Ubuntu's.
-cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
+cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
+
 # Disable networking config by cloud-init
 cp -p %{SOURCE2} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 
@@ -154,12 +155,14 @@ rm -rf $RPM_BUILD_ROOT
 /lib/systemd/system/*
 %{_docdir}/cloud-init/*
 %{_libdir}/cloud-init/*
-%{python_sitelib}/*
+%{python3_sitelib}/*
 %{_bindir}/cloud-init*
 %dir /var/lib/cloud
 
 
 %changelog
+*   Mon May 22 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-4
+-   Making cloud-init to use python3.
 *   Thu May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
 -   Disable networking config by cloud-init
 *   Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-2
