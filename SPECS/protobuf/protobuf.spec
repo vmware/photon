@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        2.6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ Source0:        protobuf-%{version}.tar.gz
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
+BuildRequires:	which
 BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
@@ -68,10 +69,10 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-BuildRequires:  openjre >= 1.8.0.45
-BuildRequires:  openjdk >= 1.8.0.45
+BuildRequires:  openjre >= %{JAVA_VERSION}
+BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:  apache-maven >= 3.3.3
-Requires:       openjre >= 1.8.0.45
+Requires:       openjre >= %{JAVA_VERSION}
 
 %description    java
 This contains protobuf java package.
@@ -81,7 +82,9 @@ This contains protobuf java package.
 autoreconf -iv
 
 %build
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 %configure --disable-silent-rules
+
 make %{?_smp_mflags}
 pushd python
 python setup.py build
@@ -143,6 +146,8 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6.1-4
+-   Use JAVA_VERSION macro instead of hard coded version.
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
 -   Build protobuf python and java.
 *   Mon Mar 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2

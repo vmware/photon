@@ -1,7 +1,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	0.28.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -9,8 +9,8 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 mesos=a8675ef59b4c34d4337553215a5295eebf2e4265
-BuildRequires:	openjre >= 1.8.0.45
-BuildRequires:  openjdk >= 1.8.0.45
+BuildRequires:	openjre >= %{JAVA_VERSION}
+BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:	curl
 BuildRequires:	apache-maven >= 3.3.3
 BuildRequires:	apr-devel >= 1.5.2
@@ -29,6 +29,7 @@ BuildRequires:  python-setuptools
 BuildRequires:  protobuf
 BuildRequires:  protobuf-devel
 BuildRequires:  protobuf-python
+BuildRequires:	which
 Requires:	apr >= 1.5.2
 Requires:	apr-util >= 1.5.4
 Requires:	cyrus-sasl >= 2.1.26
@@ -56,6 +57,7 @@ Requires:	%{name} = %{version}
 %build
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.in
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.in
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 ./configure \
 	CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
 	CXXFLAGS="%{optflags} -Wno-deprecated-declarations" \
@@ -69,6 +71,7 @@ make
 make check
 
 %install
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -101,6 +104,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*	Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.28.2-3
+-	Use JAVA_VERSION macro instead of hard coding version.
 *	Mon Apr 24 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.28.2-2
 -	Install protobuf build and runtime depencencies.
 *	Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 0.28.2-1
