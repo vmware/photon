@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -68,10 +68,11 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-BuildRequires:  openjre >= 1.8.0.45
-BuildRequires:  openjdk >= 1.8.0.45
+BuildRequires:  chkconfig
+BuildRequires:  openjre8 >= 1.8.0.45
+BuildRequires:  openjdk8 >= 1.8.0.45
 BuildRequires:  apache-maven >= 3.3.3
-Requires:       openjre >= 1.8.0.45
+Requires:       openjre8 >= 1.8.0.45
 
 %description    java
 This contains protobuf java package.
@@ -141,6 +142,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.0-4
+-   Renamed openjdk to openjdk8
 *   Fri Apr 28 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.0-3
 -   Update python3 version
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.2.0-2

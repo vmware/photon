@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -10,12 +10,12 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}-src.tar.gz
 %define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
-%define java_macros_version 1.8.0.112-2%{?dist}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
-BuildRequires: apache-ant >= 1.9.6
-Requires: openjre >= %{java_macros_version}
-Requires: apache-ant >= 1.9.6
+BuildRequires: chkconfig
+BuildRequires: openjre8 >= %{JAVA8_VERSION}
+BuildRequires: openjdk8 >= %{JAVA8_VERSION}
+BuildRequires: apache-ant >= %{ANT_VERSION}
+Requires: openjre8 >= %{JAVA8_VERSION}
+Requires: apache-ant >= %{ANT_VERSION}
 %define _prefix /var/opt/ant-contrib
 
 %description
@@ -26,12 +26,13 @@ The Ant Contrib project is a collection of tasks for Apache Ant.
 find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
 
 %build
-export ANT_HOME=%{_ant_home}
-export JAVA_HOME=%{_java_home}
+export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 mkdir -p -m 700 %{_prefix}
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 $ANT_HOME/bin/ant -Ddist.dir="%{_prefix}" -Dproject.version="1.0b3" dist
 %install
-ANT_HOME=/var/opt/apache-ant-1.9.6
+export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 ANT_CONTRIB_DIST_DIR=%{buildroot}%{name}-%{version}
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p -m 700 %{buildroot}/var/opt
@@ -42,6 +43,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wi
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3-11
+-   Renamed openjdk to openjdk8
 *   Fri Apr 07 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-10
 -   Removed prebuilt binaries from source tar ball
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0b3-9
