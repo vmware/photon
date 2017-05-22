@@ -334,7 +334,11 @@ class constants(object):
         #adding kernelrelease rpm macro
         kernelrelease = constants.specData.getRelease("linux")
         constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
-        
+       
+	#adding openjre version rpm macro
+        java8version = constants.specData.getVersion("openjre")
+        constants.specData.addMacro("JAVA_VERSION",java8version)
+
         #adding kernelsubrelease rpm macro
         kernelversion = kernelversion.replace(".","")
         if kernelversion.isdigit():
