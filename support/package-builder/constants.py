@@ -19,7 +19,7 @@ class constants(object):
     inputRPMSPath=""
     rpmCheck=False
     sourceRpmPath=""
-    noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","openjdk","go"]
+    noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","go"]
 
     # These packages will be built in first order as build-core-toolchain stage
     listCoreToolChainPackages=[
@@ -197,7 +197,7 @@ class constants(object):
         "cpio",
         "go"]
 
-    perPackageToolChain = dict.fromkeys(["openjdk", "openjdk-doc", "openjdk-src", "openjdk-sample", "openjre" ], [
+    perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
         "glib-devel",
         "icu-devel",
 	"openjdk",
@@ -341,7 +341,19 @@ class constants(object):
         kernelversion = constants.specData.getVersion("linux")
         constants.specData.addMacro("KERNEL_VERSION",kernelversion)
 
-        #adding kernelrelease rpm macro
+	#adding openjre8 version rpm macro
+        java8version = constants.specData.getVersion("openjre8")
+        constants.specData.addMacro("JAVA8_VERSION",java8version)
+
+	#adding apache-ant version rpm macro
+        antversion = constants.specData.getVersion("apache-ant")
+        constants.specData.addMacro("ANT_VERSION", antversion)
+        
+	#adding apache-maven version rpm macro
+        mavenversion = constants.specData.getVersion("apache-maven")
+        constants.specData.addMacro("MAVEN_VERSION", mavenversion)
+
+	#adding kernelrelease rpm macro
         kernelrelease = constants.specData.getRelease("linux")
         constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
         
