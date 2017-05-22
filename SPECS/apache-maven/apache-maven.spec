@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.9
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -10,10 +10,9 @@ Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=1912316078f1f7041dd8cd2580f210d30f898162
-%define java_macros_version 1.8.0.131-1%{?dist}
-Requires: openjre >= %{java_macros_version}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
+Requires: openjre >= %{JAVA_VERSION}
+BuildRequires: openjre >= %{JAVA_VERSION}
+BuildRequires: openjdk >= %{JAVA_VERSION}
 BuildRequires: apache-ant >= 1.9.6
 BuildRequires: wget >= 1.15
 
@@ -32,7 +31,7 @@ find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 %build
 MAVEN_DIST_DIR=%{_prefix}
 
-export JAVA_HOME=%{_java_home}
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 export ANT_HOME=%{_ant_home}
 export PATH=$PATH:$ANT_HOME/bin
 
@@ -55,6 +54,7 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 
 %files
 %defattr(-,root,root)
+%dir %{_prefix}
 %{_bindir}/*
 %{_libdir}/*
 %{_sysconfdir}/profile.d/%{name}.sh
@@ -67,8 +67,10 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %{_prefix}/conf/toolchains.xml
 
 %changelog
-*	Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-8
--	Update java to 1.8.0.131 & use java macros to update version
+*   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-9
+-   Remove macros and use java alternatives
+*   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-8
+-   Update java to 1.8.0.131 & use java macros to update version
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-7
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Thu Oct 27 2016 Alexey Makhalov <amakhalov@vmware.com> 3.3.9-6
