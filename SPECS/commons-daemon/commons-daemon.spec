@@ -1,7 +1,7 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
@@ -10,10 +10,9 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.0.15-src.tar.gz
 %define sha1 commons-daemon=ca6a448d1d214f714e214b35809a2117568970e3
-%define java_macros_version 1.8.0.131-1%{?dist}
-Requires: openjre >= %{java_macros_version}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
+Requires: openjre >= %{JAVA_VERSION}
+BuildRequires: openjre >= %{JAVA_VERSION}
+BuildRequires: openjdk >= %{JAVA_VERSION}
 BuildRequires: apache-ant >= 1.9.6
 
 %define _prefix /var/opt/%{name}-%{version}
@@ -27,7 +26,6 @@ The JNA package contains libraries for interop from Java to native libraries.
 %setup -q -n %{name}-%{version}-src
 %build
 ANT_HOME=%{_ant_home}
-export JAVA_HOME=%{_java_home}
 
 $ANT_HOME/bin/ant dist
 
@@ -57,10 +55,13 @@ chmod -R 755 $DIST_DIR
 
 %files
 %defattr(-,root,root)
+%dir %{_prefix}
 %{_bindir}/jsvc
 %{_prefix}/*.jar
 
 %changelog
+*   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-10
+-   Use java alternatives and remove macros
 *	Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0.15-9
 -	Update java to 1.8.0.131 & use java macros to update version
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.15-8
