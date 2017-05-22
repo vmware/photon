@@ -19,7 +19,7 @@ class constants(object):
     inputRPMSPath=""
     rpmCheck=False
     sourceRpmPath=""
-    noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","openjdk","go"]
+    noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","openjdk8","go"]
 
     # These packages will be built in first order as build-core-toolchain stage
     listCoreToolChainPackages=[
@@ -194,7 +194,7 @@ class constants(object):
         "cpio",
         "go"]
 
-    perPackageToolChain = dict.fromkeys(["openjdk", "openjdk-doc", "openjdk-src", "openjdk-sample", "openjre" ], [
+    perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
         "glib-devel",
         "icu-devel",
 	"openjdk",
@@ -336,6 +336,10 @@ class constants(object):
         #adding kernelversion rpm macro
         kernelversion = constants.specData.getVersion("linux")
         constants.specData.addMacro("KERNEL_VERSION",kernelversion)
+
+	#adding openjre8 version rpm macro
+        java8version = constants.specData.getVersion("openjre8")
+        constants.specData.addMacro("JAVA8_VERSION",java8version)
 
         #adding kernelrelease rpm macro
         kernelrelease = constants.specData.getRelease("linux")
