@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.13
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -10,11 +10,10 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
 %define sha1 apache-tomcat=a2097a08b023c363098917078d9a23bd7a3b6032
-%define java_macros_version 1.8.0.131-1%{?dist}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
+BuildRequires: openjre >= %{JAVA_VERSION}
+BuildRequires: openjdk >= %{JAVA_VERSION}
 BuildRequires: apache-ant >= 1.9.6
-Requires: openjre >= %{java_macros_version}
+Requires: openjre >= %{JAVA_VERSION}
 Requires: apache-ant >= 1.9.6
 
 %define _prefix /var/opt/%{name}-%{version}
@@ -33,8 +32,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-export ANT_HOME=%{_ant_home}
-export JAVA_HOME=%{_java_home}
+export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 mkdir -p -m 700 %{_prefix}
 $ANT_HOME/bin/ant -Dbase.path="." deploy dist-prepare dist-source javadoc
 
@@ -73,8 +71,10 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
-*	Tue May 02 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.13-3
--	Updated openjdk to version 1.8.0.131 & used java macros to update version.
+*   Tue May 02 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.13-4
+-   Use java alternatives.
+*   Tue May 02 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.13-3
+-   Updated openjdk to version 1.8.0.131 & used java macros to update version.
 *   Tue Apr 18 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.13-2
 -   Added logic to package directories
 *   Mon Apr 10 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.13-1
