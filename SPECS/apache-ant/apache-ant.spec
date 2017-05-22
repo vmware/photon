@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -14,10 +14,10 @@ Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
-%define java_macros_version 1.8.0.112-2%{?dist}
-Requires: openjre >= %{java_macros_version}, python2
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
+Requires: openjre8 >= %{JAVA8_VERSION}, python2
+BuildRequires: chkconfig
+BuildRequires: openjre8 >= %{JAVA8_VERSION}
+BuildRequires: openjdk8 >= %{JAVA8_VERSION}
 %define _prefix /var/opt/apache-ant-%{version}
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
@@ -32,13 +32,9 @@ tar xf %{SOURCE1} --no-same-owner
 tar xf %{SOURCE2} --no-same-owner
 %build
 ANT_DIST_DIR=/var/opt/apache-ant-%{version}
-
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
-
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 mkdir -p -m 700 $ANT_DIST_DIR
-
-export JAVA_HOME=%{_java_home}
-
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
 %install
@@ -72,6 +68,8 @@ echo 'export ANT_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/
 %{_sysconfdir}/profile.d/%{name}.sh
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.1-2
+-	Renamed openjdk to openjdk8
 *   Mon Apr 17 2017 Chang Lee <changlee@vmware.com> 1.10.1-1
 -   Updated Apache Ant to 1.10.1
 *   Fri Mar 31 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-6
