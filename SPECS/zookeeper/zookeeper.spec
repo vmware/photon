@@ -15,7 +15,7 @@ Patch0:	        zookeeper-3.4.8-server.patch
 BuildRequires:  systemd
 Requires:       systemd
 Requires:       shadow
-Requires:       openjre
+Requires:       openjre8
 %description
 ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. All of these kinds of services are used in some form or another by distributed applications. Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable. Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them ,which make them brittle in the presence of change and difficult to manage. Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
@@ -101,6 +101,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Fri May 26 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-2
+-   Renamed openjdk to openjdk8.
 *   Wed May 24 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-2
 -   Used RuntimeDirectory to create folder /var/run/zookeeper.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
