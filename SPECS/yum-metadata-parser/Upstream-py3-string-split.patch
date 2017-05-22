@@ -1,0 +1,41 @@
+From 8472bc2706377c93752b2f0b8429b0d18639b65c Mon Sep 17 00:00:00 2001
+From: Martin Kletzander <mkletzan@redhat.com>
+Date: Fri, 5 Apr 2013 15:12:15 +0200
+Subject: [PATCH] setup: make build work on python 3
+
+In python 3, the string module doesn't have 'split' function anymore
+and users are encouraged to use '.split()' on the string itself.  Also
+'map()' is lazy and returns an iterable map object, but setup expects
+only a list, so it has to be wrapped in 'list()'.  All of this works
+with python2 as well.
+
+Signed-off-by: Martin Kletzander <mkletzan@redhat.com>
+---
+ setup.py | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index d0d0429..a42a9b7 100644
+--- a/setup.py
++++ b/setup.py
+@@ -1,16 +1,16 @@
+-import os, string
++import os
+ from distutils.core import setup, Extension
+ 
+ pc = os.popen("pkg-config --cflags-only-I glib-2.0 libxml-2.0 sqlite3", "r")
+-includes = map(lambda x:x[2:], string.split(pc.readline()))
++includes = list(map(lambda x:x[2:], pc.readline().split()))
+ pc.close()
+ 
+ pc = os.popen("pkg-config --libs-only-l glib-2.0 libxml-2.0 sqlite3", "r")
+-libs = map(lambda x:x[2:], string.split(pc.readline()))
++libs = list(map(lambda x:x[2:], pc.readline().split()))
+ pc.close()
+ 
+ pc = os.popen("pkg-config --libs-only-L glib-2.0 libxml-2.0 sqlite3", "r")
+-libdirs = map(lambda x:x[2:], string.split(pc.readline()))
++libdirs = list(map(lambda x:x[2:], pc.readline().split()))
+ pc.close()
+ 
+ module = Extension('_sqlitecache',
