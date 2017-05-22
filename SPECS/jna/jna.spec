@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -10,10 +10,9 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
 %define sha1 jna=30a1132f9ca6b3222eccd380a3f4149aa7df3f59
-%define java_macros_version 1.8.0.131-1%{?dist}
-Requires: openjre >= %{java_macros_version}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
+Requires: openjre >= %{JAVA_VERSION}
+BuildRequires: openjre >= %{JAVA_VERSION}
+BuildRequires: openjdk >= %{JAVA_VERSION}
 BuildRequires: apache-ant >= 1.9.6
 
 %define _prefix /var/opt/jna-4.2.1
@@ -34,7 +33,6 @@ Sources for JNA
 %setup -q
 %build
 ANT_HOME=%{_ant_home}
-export JAVA_HOME=%{_java_home}
 
 #disabling all tests
 $ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
@@ -53,6 +51,7 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 
 %files
 %defattr(-,root,root)
+%dir %{_prefix}
 %{_prefix}/*.jar
 %exclude %{_prefix}/*javadoc.jar
 %exclude %{_prefix}/*sources.jar
@@ -68,8 +67,10 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
-*	Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-7
--	Update java to 1.8.0.131 & use java macros to update version
+*   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-8
+-   Use java alternatives and remove macros
+*   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-7
+-   Update java to 1.8.0.131 & use java macros to update version
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-6
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.1-5
