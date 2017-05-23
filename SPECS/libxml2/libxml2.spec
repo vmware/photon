@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -17,28 +17,28 @@ Patch1:         libxml2-2.9.4-cve-2016-5131.patch
 # Fix for CVE-2016-9318
 Patch2:         cve-2016-9318.patch
 %define sha1    libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
-Requires:       python2
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Provides:       pkgconfig(libxml-2.0)
 
 %description
 The libxml2 package contains libraries and utilities used for parsing XML files. 
 
 %package python
-Summary:    The libxml2 python module
-Group:      Development/Languages/Python
-Requires:   %{name} = %{version}
-Requires:   python2
-Requires:   python2-libs
+Summary:        The libxml2 python module
+Group:          Development/Languages/Python
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+Requires:       %{name} = %{version}
+Requires:       python2
+Requires:       python2-libs
 
-%description python
+%description    python
 The libxml2 python module
 
 %package -n     python3-libxml2
 Summary:        Python 3 bindings for libxml2.
 Group:          Development/Libraries
 BuildRequires:  python3-devel
+Requires:       %{name} = %{version}
 Requires:       python3
 
 %description -n python3-libxml2
@@ -121,6 +121,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-8
+-   Move python2 requires to python subpackage.
 *   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 2.9.4-7
 -   Modified python3 version in configure
 *   Thu Apr 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-6
