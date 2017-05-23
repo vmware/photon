@@ -1,7 +1,9 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Userland logical volume management tools 
 Name:           lvm2
 Version:        2.02.171
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -14,8 +16,6 @@ Patch0:         lvm2-set-default-preferred_names.patch
 BuildRequires:  libselinux-devel, libsepol-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 BuildRequires:  systemd-devel
 BuildRequires:  thin-provisioning-tools
 Requires:       device-mapper-libs = %{version}-%{release}
@@ -58,15 +58,29 @@ This package contains shared lvm2 libraries for applications.
 
 %postun libs -p /sbin/ldconfig
 
-%package    python-libs
-Summary:    Python module to access LVM
-License:    LGPLv2
-Group:      Development/Libraries
-Requires:   %{name}-libs = %{version}-%{release}
-Requires:   python2-libs
-Requires:   python2
+%package        python-libs
+Summary:        Python module to access LVM
+License:        LGPLv2
+Group:          Development/Libraries
+BuildRequires:  python2-devel
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       python2-libs
+Requires:       python2
 
 %description    python-libs
+Python module to allow the creation and use of LVM
+logical volumes, physical volumes, and volume groups.
+
+%package    -n  python3-lvm2-libs
+Summary:        Python module to access LVM
+License:        LGPLv2
+Group:          Development/Libraries
+BuildRequires:  python3-devel
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       python3-libs
+Requires:       python3
+
+%description -n python3-lvm2-libs
 Python module to allow the creation and use of LVM
 logical volumes, physical volumes, and volume groups.
 
@@ -193,6 +207,7 @@ the device-mapper event library.
     --enable-dmeventd \
     --enable-use_lvmetad \
     --enable-python2-bindings \
+    --enable-python3-bindings \
     --enable-blkid_wiping \
     --enable-lvmetad \
     --with-udevdir=%{_udevdir} --enable-udev_sync \
@@ -248,7 +263,10 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 %{_libdir}/device-mapper/libdevmapper-event-lvm2thin.so
 
 %files  python-libs
-%{python_sitearch}/*
+%{python2_sitelib}/*
+
+%files -n  python3-lvm2-libs
+%{python3_sitelib}/*
 
 %files -n device-mapper
 %defattr(-,root,root,-)
@@ -319,6 +337,8 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 
 
 %changelog
+*   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.02.171-2
+-   Added python3 subpackage.
 *   Thu May 4  2017 Bo Gan <ganb@vmware.com> 2.02.171-1
 -   Update to 2.02.171
 *   Wed Dec 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.02.141-8

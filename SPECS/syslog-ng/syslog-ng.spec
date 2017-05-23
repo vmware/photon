@@ -1,28 +1,30 @@
-Summary:	Next generation system logger facilty
-Name:		syslog-ng
-Version:	3.9.1
-Release:	1%{?dist}
-License:	GPL + LGPL
-URL:		https://syslog-ng.org/
-Group:		System Environment/Daemons
-Vendor: 	VMware, Inc.
-Distribution: 	Photon
-Source0:	https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 syslog-ng=1ca437393d8895654452bef8ac0b996fe73284f8
-Source1:	60-syslog-ng-journald.conf
-Requires:	glib
-Requires:	json-glib
-Requires:	json-c
-Requires:   	eventlog
-Requires:	python2
-Requires:	systemd
-BuildRequires:	eventlog
-BuildRequires:	glib-devel
-BuildRequires:	json-glib-devel
-BuildRequires:	json-c-devel
-BuildRequires:	python2-libs
-BuildRequires:	python2-devel
-BuildRequires:	systemd-devel
+%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+Summary:        Next generation system logger facilty
+Name:           syslog-ng
+Version:        3.9.1
+Release:        2%{?dist}
+License:        GPL + LGPL
+URL:            https://syslog-ng.org/
+Group:          System Environment/Daemons
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha1    syslog-ng=1ca437393d8895654452bef8ac0b996fe73284f8
+Source1:        60-syslog-ng-journald.conf
+Requires:       glib
+Requires:       json-glib
+Requires:       json-c
+Requires:       eventlog
+Requires:       systemd
+BuildRequires:  eventlog
+BuildRequires:  glib-devel
+BuildRequires:  json-glib-devel
+BuildRequires:  json-c-devel
+BuildRequires:  systemd-devel
+BuildRequires:  python2-devel
+BuildRequires:  python2
+BuildRequires:  python2-libs
 
 %description
  The syslog-ng application is a flexible and highly scalable
@@ -30,40 +32,81 @@ BuildRequires:	systemd-devel
  centralized logging, where the aim is to collect the log messages of several
  devices to a single, central log server.
 
-%package	devel
-Summary:	Header and development files for syslog-ng
-Requires:	%{name} = %{version}
-%description	devel
+%package -n     python2-syslog-ng
+Summary:        python2-syslog-ng
+BuildRequires:  python2
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+Requires:       python2
+Requires:       python2-libs
+
+%description -n python2-syslog-ng
+Python 2 version.
+
+%package -n     python3-syslog-ng
+Summary:        python3-syslog-ng
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+Requires:       python3
+Requires:       python3-libs
+
+%description -n python3-syslog-ng
+Python 3 version.
+
+%package        devel
+Summary:        Header and development files for syslog-ng
+Requires:       %{name} = %{version}
+%description    devel
  syslog-ng-devel package contains header files, pkfconfig files, and libraries
  needed to build applications using syslog-ng APIs.
 
-%package	python
-Summary:	python interface for syslog-ng
-Requires:	%{name} = %{version}
-%description	python
- This packages has the python interface to syslog-ng
-
 %prep
 %setup -q
-
+rm -rf ../p3dir
+cp -a . ../p3dir
 %build
+
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--disable-silent-rules \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--includedir=%{_includedir} \
-	--libdir=%{_libdir} \
-	--sysconfdir=/etc/syslog-ng \
-	--enable-systemd \
-	--with-systemdsystemunitdir=%{_libdir}/systemd/system \
-	--enable-json=yes \
-	--with-jsonc=system \
-	--disable-java \
-	--disable-redis \
-        PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --disable-silent-rules \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --sysconfdir=/etc/syslog-ng \
+    --enable-systemd \
+    --with-systemdsystemunitdir=%{_libdir}/systemd/system \
+    --enable-json=yes \
+    --with-jsonc=system \
+    --disable-java \
+    --disable-redis \
+    --with-python=2 \
+    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 make %{?_smp_mflags}
+pushd ../p3dir
+./configure \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --disable-silent-rules \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --sysconfdir=/etc/syslog-ng \
+    --enable-systemd \
+    --with-systemdsystemunitdir=%{_libdir}/systemd/system \
+    --enable-json=yes \
+    --with-jsonc=system \
+    --disable-java \
+    --disable-redis \
+    --with-python=3 \
+    PYTHON=/bin/python3 \
+    PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
+make %{?_smp_mflags}
+
+popd
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -75,9 +118,19 @@ rm -rf %{buildroot}/%{_infodir}
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 %{_fixperms} %{buildroot}/*
+pushd ../p3dir
+make DESTDIR=%{buildroot} install
+rm %{buildroot}/%{_libdir}/pkgconfig/syslog-ng-test.pc
+rm %{buildroot}/%{_libdir}/syslog-ng/libtest/libsyslog-ng-test.a
+rm -rf %{buildroot}/%{_infodir}
+find %{buildroot} -name "*.la" -exec rm -f {} \;
+popd
 
 %check
 make %{?_smp_mflags} check
+pushd ../p3dir
+make %{?_smp_mflags} check
+popd
 
 %post
 if [ $1 -eq 1 ] ; then
@@ -107,6 +160,14 @@ rm -rf %{buildroot}/*
 %{_libdir}/syslog-ng/lib*.so
 /usr/share/syslog-ng/*
 
+%files -n python2-syslog-ng
+%defattr(-,root,root)
+%{python2_sitelib}/*
+
+%files -n python3-syslog-ng
+%defattr(-,root,root,-)
+%{python3_sitelib}/*
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/syslog-ng/*
@@ -114,11 +175,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsyslog-ng-native-connector.a
 %{_libdir}/pkgconfig/*
 
-%files python
-%defattr(-,root,root)
-/usr/lib/python2.7/site-packages/*
-
 %changelog
+*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 3.9.1-2
+-   Move python2 requires to python2 subpackage and added python3 binding.
 *   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.9.1-1
 -   Update to version 3.9.1
 *   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 3.6.4-6
