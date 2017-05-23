@@ -3,7 +3,7 @@
 Summary:		A high-level cross-protocol url-grabber
 Name: 			urlgrabber
 Version: 		3.10.1
-Release: 		2%{?dist}
+Release: 		3%{?dist}
 Source0: 		urlgrabber-%{version}.tar.gz
 %define sha1 urlgrabber=75206abe4c2498d4ff01498e4a35192a65c92f3e
 License: 		LGPLv2+
@@ -19,6 +19,7 @@ BuildRequires:		python2
 BuildRequires:		python2-libs
 Requires:		python2
 Requires:		curl
+Requires:		pycurl
 
 %description
 A high-level cross-protocol url-grabber for python supporting HTTP, FTP 
@@ -48,6 +49,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,root,root) /usr/libexec/urlgrabber-ext-down
 
 %changelog
+*   	Mon May 22 2017 Rongrong Qiu <rqiu@vmware.com> 3.10.1-3
+-   	Add pycurl as requires.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.10.1-2
 -	GA - Bump release of all rpms
 *   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 3.10.1-1
