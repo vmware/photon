@@ -1,7 +1,7 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
 Version:        1.1.29
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -11,14 +11,13 @@ Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    libxslt=edcaeabb3555ae44853bdc406ee9521fb65c620d
 Requires:       libxml2-devel
 BuildRequires:  libxml2-devel
-BuildRequires:  python2
 %description
 The libxslt package contains XSLT libraries used for extending libxml2 libraries to support XSLT files. 
 
 %package devel
-Summary: Development Libraries for libxslt
-Group: Development/Libraries
-Requires: libxslt = %{version}-%{release}
+Summary:        Development Libraries for libxslt
+Group:          Development/Libraries
+Requires:       libxslt = %{version}-%{release}
 %description devel
 Header files for doing development with libxslt.
 
@@ -63,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Tue May 23 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1.29-3
+-   Build does not requires python.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.29-2
 -   Moved man3 to devel subpackage.
 *   Fri Oct 21 2016 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.29-1
