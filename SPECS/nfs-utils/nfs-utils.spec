@@ -1,25 +1,26 @@
-Summary:    NFS client utils
-Name:       nfs-utils
-Version:    2.1.1
-Release:    1%{?dist}
-License:    GPLv2+
-URL:        http://sourceforge.net/projects/nfs
-Group:      Applications/Nfs-utils-client
-Source0:    http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.bz2
-%define sha1 nfs-utils=8f86ffef3bfc954f3ef9aee805b35cdca3802b14
-Source1:    nfs-client.service
-Source2:    nfs-client.target
-Source3:    rpc-statd.service
-Source4:    rpc-statd-notify.service
-Source5:    nfs-utils.defaults
-Vendor:     VMware, Inc.
+Summary:        NFS client utils
+Name:           nfs-utils
+Version:        2.1.1
+Release:        2%{?dist}
+License:        GPLv2+
+URL:            http://sourceforge.net/projects/nfs
+Group:          Applications/Nfs-utils-client
+Source0:        http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.bz2
+%define sha1    nfs-utils=8f86ffef3bfc954f3ef9aee805b35cdca3802b14
+Source1:        nfs-client.service
+Source2:        nfs-client.target
+Source3:        rpc-statd.service
+Source4:        rpc-statd-notify.service
+Source5:        nfs-utils.defaults
+Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  krb5
 BuildRequires:  libtirpc-devel
-Requires:   python2-libs
-Requires:   libtirpc
-Requires:   rpcbind
-Requires:   shadow
+BuildRequires:  python3-devel
+Requires:       libtirpc
+Requires:       rpcbind
+Requires:       shadow
+Requires:       python3-libs
 
 %description
 The nfs-utils package contains simple nfs client service
@@ -28,6 +29,7 @@ The nfs-utils package contains simple nfs client service
 %setup -q -n %{name}-%{version}
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
+find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
 
 %build
 ./configure --prefix=%{_prefix}          \
@@ -69,6 +71,8 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.1-2
+-   Build with python3.
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.1-1
 -   Update to 2.1.1
 *   Fri Dec 16 2016 Nick Shi <nshi@vmware.com> 1.3.3-6
