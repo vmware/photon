@@ -1,19 +1,17 @@
-Summary:	Docbook-xml-4.5
-Name:		docbook-xml
-Version:	4.5
-Release:	7%{?dist}
-License:	MIT
-URL:		http://www.docbook.org
-Source0:	http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
-%define sha1 docbook-xml=b9124233b50668fb508773aa2b3ebc631d7c1620
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Requires: 	libxml2
-Requires:   libxml2-python
-BuildRequires: 	libxml2
-BuildRequires:  libxml2-python
-BuildRequires: 	unzip
+Summary:        Docbook-xml-4.5
+Name:           docbook-xml
+Version:        4.5
+Release:        8%{?dist}
+License:        MIT
+URL:            http://www.docbook.org
+Source0:        http://www.docbook.org/xml/4.5/%{name}-%{version}.zip
+%define sha1    docbook-xml=b9124233b50668fb508773aa2b3ebc631d7c1620
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Requires:       libxml2
+BuildRequires:  libxml2
+BuildRequires:  unzip
 BuildArch:      noarch
 
 %description
@@ -163,10 +161,12 @@ fi
 /usr/share/xml/docbook/%{name}-%{version}
 /etc/xml
 %changelog
+*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.5-8
+-   Remove libxml2-python from requires.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.5-7
 -   Fix arch
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.5-6
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.5-6
+-   GA - Bump release of all rpms
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.5-5
 -   Fixing spec file to handle rpm upgrade scenario correctly
 *   Thu Mar 10 2016 XIaolin Li <xiaolinl@vmware.com> 4.5.1-4
@@ -175,5 +175,5 @@ fi
 -   Updated dependencies.
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 4.5.1-2
 -   Updated group.
-*	Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 4.5-1
--	Initial build. First version
+*   Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 4.5-1
+-   Initial build. First version
