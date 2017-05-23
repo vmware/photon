@@ -1,6 +1,6 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
-Version:       1.0.0
+Version:       1.0.1
 Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -12,7 +12,7 @@ Requires:      openssl >= 1.0.1
 BuildRequires: coreutils >= 8.22
 BuildRequires: openssl-devel >= 1.0.1
 Source0:       %{name}-%{version}.tar.gz
-%define sha1   c-rest-engine=49c8c4c701650bf435307e2e5cbc72d723abbded
+%define sha1   c-rest-engine=a67d655cc7ba0c2f29cde3517eb105ecb7e57cd7
 
 %description
 c-rest-engine is a minimal embedded http(s) server written in C.
@@ -62,5 +62,7 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Tue May 18 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.1-1
+-  Updating version to 1.0.1
 *  Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.0-1
 -  Initial build.  First version
