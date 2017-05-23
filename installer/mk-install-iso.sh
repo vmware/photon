@@ -275,7 +275,7 @@ if [ "$LIVE_CD" = false ] ; then
 fi
 
 # Set password max days to 99999 (disable aging)
-chage -R ${BUILDROOT} -M 99999 root
+chroot ${BUILDROOT} chage -M 99999 root
 
 # Generate the intird
 pushd $BUILDROOT
