@@ -275,7 +275,7 @@ if [ "$LIVE_CD" = false ] ; then
 fi
 
 # Set password max days to 99999 (disable aging)
-chage -R ${BUILDROOT} -M 99999 root
+chroot ${BUILDROOT} chage -M 99999 root
 
 # Generate the intird
 pushd $BUILDROOT
@@ -287,7 +287,7 @@ rm -rf $BUILDROOT
 pushd $WORKINGDIR
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
         -no-emul-boot -boot-load-size 4 -boot-info-table \
-        -eltorito-alt-boot -e ${EFI_IMAGE} -no-emul-boot \
+        -eltorito-alt-boot -b ${EFI_IMAGE} -no-emul-boot \
         -V "PHOTON_$(date +%Y%m%d)" \
         $WORKINGDIR >$ISO_OUTPUT_NAME
 popd
