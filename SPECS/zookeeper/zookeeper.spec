@@ -1,7 +1,7 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
 Version:        3.4.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -53,6 +53,13 @@ popd
 mkdir -p %{buildroot}/lib/systemd/system
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/zookeeper.service
 cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
+
+mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
+cat << EOF >> %{buildroot}/%{_prefix}/lib/tmpfiles.d/zookeeper.conf
+d /var/run/zookeeper 0755 zookeeper hadoop
+d /var/log/zookeeper 0755 zookeeper hadoop
+EOF
+
 %pre
 getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
 getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
@@ -99,10 +106,13 @@ fi
 %attr(0775,zookeeper,hadoop) %{_var}/run/zookeeper
 %attr(0775,zookeeper,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
+%{_prefix}/lib/tmpfiles.d/zookeeper.conf
 /lib/systemd/system/zookeeper.service
 %{_prefix}
 
 %changelog
+*   Wed May 24 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-2
+-   Added zookeeper.conf to systemd tmpfile.d.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
 -   Updated to version 3.4.10.
 *   Mon Nov 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.9-1
