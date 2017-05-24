@@ -9,7 +9,7 @@
 Summary:	Photon Management Daemon
 Name:		pmd
 Version:	0.0.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	Apache 2.0
@@ -22,8 +22,7 @@ Requires:	likewise-open >= 6.2.9
 Requires:       netmgmt
 Requires:	systemd
 Requires:	tdnf >= 1.2.0
-Requires:       vmware-afd-client
-Requires:       vmware-directory-client
+Requires:       lightwave-client-libs
 BuildRequires:  copenapi-devel
 BuildRequires:	c-rest-engine-devel
 BuildRequires:	curl-devel
@@ -34,8 +33,7 @@ BuildRequires:	likewise-open-devel >= 6.2.9
 BuildRequires:	netmgmt-cli-devel
 BuildRequires:	netmgmt-devel
 BuildRequires:	tdnf-devel >= 1.2.0
-BuildRequires:  vmware-afd-client-devel
-BuildRequires:  vmware-directory-client-devel
+BuildRequires:  lightwave-devel
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 pmd=d09828dc160b1fb12d891bed00100d9bcdd402ce
 Source1:        pmd.service
@@ -46,7 +44,7 @@ Photon Management Daemon
 %package cli
 Summary: photon management daemon cmd line cli
 Requires: likewise-open >= 6.2.0
-Requires: vmware-directory-client
+Requires: lightwave-client-libs
 
 %description cli
 photon management daemon cmd line cli
@@ -82,6 +80,8 @@ Python3 bindings for photon management daemon
 %setup -q
 
 %build
+sed -i 's,include/c-rest-engine/,include,' configure.ac
+sed -i 's,-lcrypto,-lcrypto @LWBASE_LIBS@ -lgssapi_krb5,' server/Makefile.am
 sed -i 's,c-rest-engine/,,' server/includes.h
 sed -i 's,c-rest-engine/,,' server/restutils/includes.h
 autoreconf -mif
@@ -141,7 +141,7 @@ install -D -m 444 conf/server.key %{buildroot}/etc/pmd/server.key
 
     # Add libgssapi_unix.so to GSSAPI plugin directory
     if [ ! -h %{_libdir}/gss/libgssapi_unix.so ]; then
-        /bin/ln -sf /opt/vmware/lib64/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
+        /bin/ln -sf %{_libdir}/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
     fi
     # Add gssapi_unix plugin configuration to GSS mech file
     if [ -f "%{_mech_file}" ]; then
@@ -192,7 +192,7 @@ fi
 
     # Add libgssapi_unix.so to GSSAPI plugin directory
     if [ ! -h %{_libdir}/gss/libgssapi_unix.so ]; then
-        /bin/ln -sf /opt/vmware/lib64/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
+        /bin/ln -sf %{_libdir}/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
     fi
     # Add gssapi_unix plugin configuration to GSS mech file
     if [ -f "%{_mech_file}" ]; then
@@ -262,5 +262,7 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*       Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
+-       Changes for lightwave dependencies
 *       Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
 -       Initial build.  First version
