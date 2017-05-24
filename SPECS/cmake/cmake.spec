@@ -1,7 +1,7 @@
 Summary:	Cmake-3.8.0
 Name:		cmake
 Version:	3.8.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.8/%{name}-%{version}.tar.gz
@@ -17,8 +17,9 @@ operating system and in a compiler-independent manner.
 %prep
 %setup -q
 %build
-./bootstrap --prefix=%{_prefix}
-make %{?_smp_mflags}
+ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
+./bootstrap --prefix=%{_prefix} --parallel=$ncores
+make
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -33,6 +34,8 @@ make  %{?_smp_mflags} test
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
 %changelog
+*	Wed May 23 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.8.0-2
+-	bug 1448414: Updated to build in parallel
 *       Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  3.8.0-1
 -       Upgrade to 3.8.0
 *       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 3.4.3-3
