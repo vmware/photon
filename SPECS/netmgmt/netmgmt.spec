@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.1.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -81,6 +81,8 @@ make %{?_smp_mflags} -k check
 # %doc ChangeLog README COPYING
 
 %changelog
+*    Thu  May 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-3
+-    Fix handling of invalid match section config files.
 *    Tue  Apr 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-2
 -    Add query cfg filename API, remove fw_rule API, misc cleanup.
 *    Fri  Mar 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-1
