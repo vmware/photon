@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.67
+Version:    	4.4.70
 Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=1a396da733c26066af6ab1a13ade3779af175afd
+%define sha1 linux=857eedbb2c61efa3d8a281111d4563476f52183b
 Source1:	config
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -259,6 +259,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu May 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-1
+-   Fix CVE-2017-7487 and CVE-2017-9059
 *   Tue May 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.67-1
 -   Version update
 -   Sign and compress modules after stripping. fips=1 requires signed modules
