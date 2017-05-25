@@ -1,7 +1,7 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
 Version:        3.4.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -30,7 +30,6 @@ mkdir -p %{buildroot}%{_libdir}/java/zookeeper
 mkdir -p %{buildroot}%{_libdir}/zookeeper
 mkdir -p %{buildroot}%{_var}/log/zookeeper
 mkdir -p %{buildroot}%{_sysconfdir}/zookeeper
-mkdir -p %{buildroot}%{_var}/run/zookeeper
 mkdir -p %{buildroot}/sbin
 mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 mkdir -p %{buildroot}%{_var}/zookeeper
@@ -96,13 +95,14 @@ fi
 %files
 %defattr(-,root,root)
 %attr(0755,zookeeper,hadoop) %{_var}/log/zookeeper
-%attr(0775,zookeeper,hadoop) %{_var}/run/zookeeper
 %attr(0775,zookeeper,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
 /lib/systemd/system/zookeeper.service
 %{_prefix}
 
 %changelog
+*   Wed May 24 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-2
+-   Used RuntimeDirectory to create folder /var/run/zookeeper.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
 -   Updated to version 3.4.10.
 *   Mon Nov 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.9-1
