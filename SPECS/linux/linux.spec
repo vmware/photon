@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.70
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -11,6 +11,9 @@ Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
 %define sha1 linux=857eedbb2c61efa3d8a281111d4563476f52183b
 Source1:	config
+%define ena_version 1.1.3
+Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
+%define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
 Patch0:         double-tcp_mem-limits.patch
 Patch1:         linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch2:         linux-4.4-watchdog-Disable-watchdog-on-virtual-machines.patch
@@ -99,6 +102,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %prep
 %setup -q
+%setup -D -b 2
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -125,6 +130,11 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 make -C tools perf
+# build ENA module
+bldroot=`pwd`
+pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
+make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
+popd
 
 %define __modules_install_post \
     find %{buildroot}/lib/modules/%{uname_r} -name *.ko | xargs xz \
@@ -154,6 +164,11 @@ install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
+# install ENA module
+bldroot=`pwd`
+pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -259,6 +274,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-2
+-   Added ENA driver for AMI
 *   Thu May 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-1
 -   Fix CVE-2017-7487 and CVE-2017-9059
 *   Tue May 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.67-1
