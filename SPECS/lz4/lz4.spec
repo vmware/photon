@@ -2,8 +2,8 @@ Summary:        Extremely fast compression.
 Name:           lz4
 Version:        1.7.5
 Release:        1%{?dist}
-License:        GPLv2+ and BSD
-URL:            http://www.gnuplot.info/
+License:        BSD
+URL:            http://lz4.github.io/lz4/
 Group:          Applications
 Vendor:         VMware, Inc.
 Distribution:   Photon
