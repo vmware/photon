@@ -1,6 +1,9 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Name:           python-jsonpointer
 Version:        1.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -20,23 +23,56 @@ BuildArch:      noarch
 %description
 Library to apply JSON Patches according to RFC 6902.
 
+%package -n     python3-jsonpointer
+Summary:        python-jsonpointer
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+
+Requires:       python3
+Requires:       python3-libs
+
+%description -n python3-jsonpointer
+
 %prep
 %setup -n jsonpointer-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
-python setup.py build
+python2 setup.py build
+pushd ../p3dir
+python3 setup.py build
+popd
+
+%check
+python2 tests.py
+pushd ../p3dir
+python3 tests.py
+popd
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+pushd ../p3dir
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/jsonpointer %{buildroot}/%{_bindir}/jsonpointer3
+popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 %{_bindir}/jsonpointer
 
+%files -n python3-jsonpointer
+%defattr(-,root,root,-)
+%{python3_sitelib}/*
+%{_bindir}/jsonpointer3
+
+
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10-2
--	GA - Bump release of all rpms
+*   Wed May 24 2017 Kumar Kaushik <kaushikk@vmware.com> 1.10-3
+-   Adding python3 support.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10-1
 -   Updated to version 1.10
 *   Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
