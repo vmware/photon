@@ -3,7 +3,7 @@
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
 Distribution:   Discus
@@ -16,7 +16,6 @@ Requires:       systemd
 
 BuildRequires:  systemd
 BuildRequires:  automake
-BuildRequires:  gdb
 BuildRequires:  coreutils
 BuildRequires:  glibc
 
@@ -107,53 +106,55 @@ rm -rf %{buildroot}
 
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.1-3
--	GA - Bump release of all rpms
-* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.9.1-2
-- Add systemd requirement.
-* Sun Jan 13 2013 Jirka Hladky <hladky.jiri@gmail.com> - 1.7h-0
-- Couple of minor updates
-* Sat Jan 12 2013 Jirka Hladky <hladky.jiri@gmail.com> - 1.7g-0
-- Updated to the version 1.7
-- Version 1.7 brings developement libraries
-- Added devel package
-* Sat Oct 13 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.5-2
-- BZ 850144
-- Introduce new systemd-rpm macros in haveged spec file
-- Fedora 19 changes the way how to work with services in spec files. 
-- It introduces new macros - systemd_post, systemd_preun and systemd_postun; 
-- which replace scriptlets from Fedora 18 and older
-- see https://fedoraproject.org/wiki/Packaging:ScriptletSnippets#Systemd
+*   Thu May 25 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.1-4
+-   Removed gdb from buildrequires.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.1-3
+-   GA - Bump release of all rpms
+*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.9.1-2
+-   Add systemd requirement.
+*   Sun Jan 13 2013 Jirka Hladky <hladky.jiri@gmail.com> - 1.7h-0
+-   Couple of minor updates
+*   Sat Jan 12 2013 Jirka Hladky <hladky.jiri@gmail.com> - 1.7g-0
+-   Updated to the version 1.7
+-   Version 1.7 brings developement libraries
+-   Added devel package
+*   Sat Oct 13 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.5-2
+-   BZ 850144
+-   Introduce new systemd-rpm macros in haveged spec file
+-   Fedora 19 changes the way how to work with services in spec files. 
+-   It introduces new macros - systemd_post, systemd_preun and systemd_postun; 
+-   which replace scriptlets from Fedora 18 and older
+-   see https://fedoraproject.org/wiki/Packaging:ScriptletSnippets#Systemd
 
-* Tue Aug 14 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.5-1
-- Update to the version 1.5
-- Main new feature is a run time verification of the produced random numbers
-- PIDFILE set to /run/haveged.pid
-- converted README and man page to UTF-8. Informed the upstream to fix it.
-* Wed Feb 15 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.4-3
-- PIDFile should be stored at /run instead of the default location /var/run 
-- There is  long term plan that directory /var/run will not further exist in the future Fedora versions
-- Asked upstream to add -p <PID_FILE_location> switch to influence the location of the PID File
-- Set PIDFile=/var/run/haveged.pid This is needed as long -p option is not implemented
-- https://bugzilla.redhat.com/show_bug.cgi?id=770306#c10
-* Wed Feb 15 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.4-2
-- Updated systemd service file, https://bugzilla.redhat.com/show_bug.cgi?id=770306
-* Tue Feb 14 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.4-1
-- Update to the version 1.4
-- Conversion to systemd, drop init script
-* Sun Nov 06 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.3-2
-- Fixed a bug on non x86 systems
-* Sat Nov 05 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.3-1
-- update from the upstream (1.3 stable)
-* Mon Oct 03 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.3-0
--version 1.3 beta
-* Fri Sep 30 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.2-4
-- ppc64 build
-* Mon Sep 26 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.2-3
-- Cleaned spec file according to https://bugzilla.redhat.com/show_bug.cgi?id=739347#c11
-* Sat Sep 24 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.2-2
-- Added comment to explain why we need use Fedora specific start script
-* Wed Sep 21 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.2-1
-- Cleaned spec file according to https://bugzilla.redhat.com/show_bug.cgi?id=739347#c1
-* Wed Sep 07 2011  Jirka Hladky <hladky.jiri@gmail.com> - 1.2-0
-- Initial build
+*   Tue Aug 14 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.5-1
+-   Update to the version 1.5
+-   Main new feature is a run time verification of the produced random numbers
+-   PIDFILE set to /run/haveged.pid
+-   converted README and man page to UTF-8. Informed the upstream to fix it.
+*   Wed Feb 15 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.4-3
+-   PIDFile should be stored at /run instead of the default location /var/run 
+-   There is  long term plan that directory /var/run will not further exist in the future Fedora versions
+-   Asked upstream to add -p <PID_FILE_location> switch to influence the location of the PID File
+-   Set PIDFile=/var/run/haveged.pid This is needed as long -p option is not implemented
+-   https://bugzilla.redhat.com/show_bug.cgi?id=770306#c10
+*   Wed Feb 15 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.4-2
+-   Updated systemd service file, https://bugzilla.redhat.com/show_bug.cgi?id=770306
+*   Tue Feb 14 2012 Jirka Hladky <hladky.jiri@gmail.com> - 1.4-1
+-   Update to the version 1.4
+-   Conversion to systemd, drop init script
+*   Sun Nov 06 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.3-2
+-   Fixed a bug on non x86 systems
+*   Sat Nov 05 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.3-1
+-   update from the upstream (1.3 stable)
+*   Mon Oct 03 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.3-0
+-   version 1.3 beta
+*   Fri Sep 30 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.2-4
+-   ppc64 build
+*   Mon Sep 26 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.2-3
+-   Cleaned spec file according to https://bugzilla.redhat.com/show_bug.cgi?id=739347#c11
+*   Sat Sep 24 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.2-2
+-   Added comment to explain why we need use Fedora specific start script
+*   Wed Sep 21 2011 Jirka Hladky <hladky.jiri@gmail.com> - 1.2-1
+-   Cleaned spec file according to https://bugzilla.redhat.com/show_bug.cgi?id=739347#c1
+*   Wed Sep 07 2011  Jirka Hladky <hladky.jiri@gmail.com> - 1.2-0
+-   Initial build
