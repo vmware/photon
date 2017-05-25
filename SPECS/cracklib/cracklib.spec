@@ -1,23 +1,21 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 # Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
 
-Summary:	A password strength-checking library.
-Name:		cracklib
-Version:	2.9.6
-Release:	5%{?dist}
-Group:		System Environment/Libraries
-Source:		cracklib-%{version}.tar.gz
-%define sha1 cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
-Source1:	cracklib-words-%{version}.gz
-%define sha1 cracklib-words-%{version}=b0739c990431a0971545dff347b50f922604c1cd
-Patch0:		CVE-2016-6318.patch
-URL:		http://sourceforge.net/projects/cracklib/
-License:	GPL
-Vendor:     VMware, Inc.
-Distribution: Photon
-
-BuildRequires: python2
-BuildRequires: python2-libs
-BuildRequires: python2-devel
+Summary:        A password strength-checking library.
+Name:           cracklib
+Version:        2.9.6
+Release:        6%{?dist}
+Group:          System Environment/Libraries
+Source:         cracklib-%{version}.tar.gz
+%define sha1    cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
+Source1:        cracklib-words-%{version}.gz
+%define sha1    cracklib-words-%{version}=b0739c990431a0971545dff347b50f922604c1cd
+Patch0:         CVE-2016-6318.patch
+URL:            http://sourceforge.net/projects/cracklib/
+License:        GPL
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 %description
 CrackLib tests passwords to determine whether they match certain
@@ -41,12 +39,12 @@ passwords to see if they are at least minimally secure. If you
 install CrackLib, you'll also want to install the cracklib-dicts
 package.
 
-%package	dicts
-Summary:	The standard CrackLib dictionaries.
-Group:		System Environment/Utilities
+%package    dicts
+Summary:    The standard CrackLib dictionaries.
+Group:      System Environment/Utilities
 Requires:   cracklib
 
-%description	dicts
+%description    dicts
 The cracklib-dicts package includes the CrackLib dictionaries.
 CrackLib will need to use the dictionary appropriate to your system,
 which is normally put in /usr/share/dict/words.  Cracklib-dicts also contains
@@ -55,23 +53,42 @@ the utilities necessary for the creation of new dictionaries.
 If you are installing CrackLib, you should also install cracklib-dicts.
 
 %package devel
-Summary:	Cracklib link library & header file
-Group:		Development/Libraries
-Requires:	cracklib
+Summary:    Cracklib link library & header file
+Group:      Development/Libraries
+Requires:   cracklib
 
 %description devel
 The cracklib devel package include the needed library link and
 header files for development.
 
-%package python
+%package    python
 Summary:    The cracklib python module
 Group:      Development/Languages/Python
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+
 Requires:   cracklib
 Requires:   python2
 Requires:   python2-libs
 
 %description python
 The cracklib python module
+
+%package -n python3-cracklib
+Summary:        The cracklib python module
+Group:          Development/Languages/Python
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+
+Requires:   cracklib
+Requires:   python3
+Requires:   python3-libs
+
+%description -n python3-cracklib
+The cracklib python3 module
 
 %package lang
 Summary:    The CrackLib language pack.
@@ -97,9 +114,13 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure \
   --libexecdir=%{_libdir} \
   --datadir=%{_datadir} \
   --disable-static \
-  --with-python
+  --without-python
 
 make
+pushd python
+python2 setup.py build
+python3 setup.py build
+popd
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -111,6 +132,11 @@ echo password | util/cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/empty
 rm -f $RPM_BUILD_ROOT/%{_datadir}/cracklib/cracklib-small
 ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
 ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
+
+pushd python
+python2 setup.py install --skip-build --root %{buildroot}
+python3 setup.py install --skip-build --root %{buildroot}
+popd
 
 %check
 mkdir -p /usr/share/cracklib
@@ -164,7 +190,11 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 
 %files python
 %defattr(-,root,root)
-%{_libdir}/python*
+%{python2_sitelib}/*
+
+%files -n python3-cracklib
+%defattr(-,root,root)
+%{python3_sitelib}/*
 
 %files dicts
 %defattr(-,root,root)
@@ -176,6 +206,8 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-6
+-   Move python2 requires to python subpackage and added python3.
 *   Thu Apr 13 2017 Bo Gan <ganb@vmware.com> 2.9.6-5
 -   Fix CVE-2016-6318, trigger for cracklib-dicts
 -   Trigger for dynamic symlink for dict
