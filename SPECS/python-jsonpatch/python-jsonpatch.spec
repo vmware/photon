@@ -1,17 +1,20 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Name:           python-jsonpatch
-Version:        1.9
-Release:        2%{?dist}
+Version:        1.15
+Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/source/j/jsonpatch/jsonpatch-%{version}.tar.gz
-Source0:        jsonpatch-%{version}.tar.gz
-%define sha1 jsonpatch=b45d37d581315e423451a9f0ea8dc091b6138254
+Url:		https://pypi.python.org/pypi/jsonpatch
+Source0:        https://pypi.python.org/packages/be/c1/947048a839120acefc13a614280be3289db404901d1a2d49b6310c6d5757/jsonpatch-%{version}.tar.gz
+%define sha1 jsonpatch=a678cb3d2a91fc350c7355361f0d3a0d9808d119
 
 BuildRequires: python2
 BuildRequires: python2-libs
 BuildRequires: python-setuptools
-
+BuildRequires: python-jsonpointer
 Requires: python-jsonpointer
 
 BuildArch:      noarch
@@ -19,23 +22,56 @@ BuildArch:      noarch
 %description
 Library to apply JSON Patches according to RFC 6902.
 
+%package -n     python3-jsonpatch
+Summary:        python-jsonpatch
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+
+Requires:       python3-jsonpointer
+
+%description -n python3-jsonpatch
+
 %prep
 %setup -n jsonpatch-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
-python setup.py build
+python2 setup.py build
+pushd ../p3dir
+python3 setup.py build
+popd
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+pushd ../p3dir
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/jsonpatch %{buildroot}/%{_bindir}/jsonpatch3
+mv %{buildroot}/%{_bindir}/jsondiff %{buildroot}/%{_bindir}/jsondiff3
+popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+
+%check
+python2 ext_tests.py && python2 tests.py
+pushd ../p3dir
+python3 ext_tests.py && python3 tests.py
+popd
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 %{_bindir}/jsondiff
 %{_bindir}/jsonpatch
 
+%files -n python3-jsonpatch
+%defattr(-,root,root)
+%{python3_sitelib}/*
+%{_bindir}/jsondiff3
+%{_bindir}/jsonpatch3
+
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9-2
--	GA - Bump release of all rpms
-* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
-- Initial packaging for Photon
+*   Wed May 24 2017 Kumar Kaushik <kaushikk@vmware.com> 1.15-1
+-   Upgrading to 1.15 and adding python3 support.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9-2
+-   GA - Bump release of all rpms
+*   Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+-   Initial packaging for Photon

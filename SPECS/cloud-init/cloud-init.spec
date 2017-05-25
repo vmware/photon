@@ -1,34 +1,49 @@
+%define python3_sitelib /usr/lib/python3.5/site-packages
+
 Name:           cloud-init
-Version:        0.7.6
-Release:        16%{?dist}
+Version:        0.7.9
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=9af02f68d68abce91463bec22b17964d1618e1da
+%define sha1 cloud-init=3b4345267e72e28b877e2e3f0735c1f672674cfc
 Source1:        cloud-photon.cfg
+Source2:        99-disable-networking-config.cfg
 
 Patch0:         photon-distro.patch
-Patch1:         cloud-init-log.patch
+Patch1:         change-requires.patch
 Patch2:         vca-admin-pwd.patch
-Patch3:         remove-netstat.patch
-Patch4:         distro-systemctl.patch
-Patch5:         photon-hosts-template.patch
+Patch3:         photon-hosts-template.patch
+Patch4:         resizePartitionUUID.patch
+Patch5:         datasource-guestinfo.patch
+Patch6:         systemd-service-changes.patch
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
 BuildRequires:  systemd
+BuildRequires:  dbus
+BuildRequires:  python3-ipaddr
+BuildRequires:  iproute2
+BuildRequires:  automake
+
 Requires:       systemd
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-configobj
-Requires:       python-prettytable
-Requires:       python-requests
-Requires:       PyYAML
-Requires:       python-jsonpatch
-Requires:       python-jinja2
+Requires:       net-tools
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-configobj
+Requires:       python3-prettytable
+Requires:       python3-requests
+Requires:       python3-PyYAML
+Requires:       python3-jsonpatch
+Requires:       python3-oauthlib
+Requires:       python3-jinja2
+Requires:       python3-markupsafe
+Requires:       python3-six
+
+BuildArch:      noarch
 
 %description
 Cloud-init is a set of init scripts for cloud instances.  Cloud instances
@@ -44,23 +59,65 @@ ssh keys and to let the user run various scripts.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
 %build
-%{__python} setup.py build
+python3 setup.py build
 
 %install
 rm -rf $RPM_BUILD_ROOT
-%{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT --init-system systemd
+python3 setup.py install -O1 --skip-build --root=%{buildroot} --init-system systemd
 
 # Don't ship the tests
-rm -r $RPM_BUILD_ROOT%{python_sitelib}/tests
+rm -r %{buildroot}%{python3_sitelib}/tests
 
-mkdir -p $RPM_BUILD_ROOT/var/lib/cloud
+mkdir -p %{buildroot}/var/lib/cloud
+mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 
 # We supply our own config file since our software differs from Ubuntu's.
-cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
+cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
+# Disable networking config by cloud-init
+cp -p %{SOURCE2} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d/
+
+%check
+openssl req \
+    -new \
+    -newkey rsa:4096 \
+    -days 365 \
+    -nodes \
+    -x509 \
+    -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=photon.com" \
+    -keyout photon.key \
+    -out photon.cert
+     openssl rsa -in photon.key -out photon.pem
+mv photon.pem /etc/ssl/certs   
+
+easy_install pip
+easy_install -U setuptools
+easy_install HTTPretty 
+easy_install mocker
+easy_install mock
+easy_install nose
+easy_install pep8
+easy_install pyflakes
+easy_install pyyaml
+easy_install pyserial
+easy_install oauth2
+easy_install oauth
+easy_install cheetah
+easy_install jinja2
+easy_install PrettyTable
+easy_install argparse
+easy_install requests
+easy_install jsonpatch
+easy_install configobj
+
+sed -i '38,43d' tests/unittests/test_handler/test_handler_set_hostname.py
+mkdir -p /etc/sysconfig
+echo "HOSTNAME=test.com" >/etc/sysconfig/network
+make test
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -85,7 +142,6 @@ if [ $1 -eq 2 ]; then
     fi
     systemctl daemon-reload >/dev/null 2>&1 || :
 fi
-
 %systemd_post cloud-config.service
 %systemd_post cloud-final.service
 %systemd_post cloud-init.service
@@ -120,16 +176,31 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 %files
 %license LICENSE
-%{_sysconfdir}/cloud/*
+%doc %{_sysconfdir}/cloud/cloud.cfg.d/README
+%dir %{_sysconfdir}/cloud/templates
+%config(noreplace) %{_sysconfdir}/cloud/templates/*
+%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
+%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
+%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/99-disable-networking-config.cfg
+%{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
+%{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
+/lib/systemd/system-generators/cloud-init-generator
+/lib/udev/rules.d/66-azure-ephemeral.rules
 /lib/systemd/system/*
 %{_docdir}/cloud-init/*
 %{_libdir}/cloud-init/*
-%{python_sitelib}/*
+%{python3_sitelib}/*
 %{_bindir}/cloud-init*
 %dir /var/lib/cloud
 
 
 %changelog
+*   Wed May 24 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-1
+-   Migrating to python 3.
+-   Disable networking config by cloud-init
+-   Support userdata in vmx guestinfo
+-   Upgraded to version 0.7.9
+-   Enabled VmxGuestinfo datasource
 *   Thu Dec 15 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-16
 -   Adding template file and python-jinja2 dependency to update hosts
 *   Wed Dec 14 2016 Dheeraj Shetty <dheerajs@vmware.com>  0.7.6-15
