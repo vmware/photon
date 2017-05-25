@@ -1,0 +1,78 @@
+From 3b8f1ab07fb1744c57f5d04c872e81d8d669de87 Mon Sep 17 00:00:00 2001
+From: zherczeg <zherczeg@2f5784b3-3f2a-0410-8824-cb99058d5e15>
+Date: Fri, 31 Mar 2017 05:41:17 +0000
+Subject: [PATCH] Fix character type detection when 32-bit and UCP are enabled
+ but UTF is not in JIT.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+git-svn-id: svn://vcs.exim.org/pcre/code/trunk@1693 2f5784b3-3f2a-0410-8824-cb99058d5e15
+Signed-off-by: Petr Písař <ppisar@redhat.com>
+---
+ pcre_jit_compile.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/pcre_jit_compile.c b/pcre_jit_compile.c
+index 1a8ce1e..c9db7ee 100644
+--- a/pcre_jit_compile.c
++++ b/pcre_jit_compile.c
+@@ -559,6 +559,8 @@ the start pointers when the end of the capturing group has not yet reached. */
+ 
+ #define READ_CHAR_MAX 0x7fffffff
+ 
++#define INVALID_UTF_CHAR 888
++
+ static pcre_uchar *bracketend(pcre_uchar *cc)
+ {
+ SLJIT_ASSERT((*cc >= OP_ASSERT && *cc <= OP_ASSERTBACK_NOT) || (*cc >= OP_ONCE && *cc <= OP_SCOND));
+@@ -3277,10 +3279,30 @@ static void do_getucd(compiler_common *common)
+ /* Search the UCD record for the character comes in TMP1.
+ Returns chartype in TMP1 and UCD offset in TMP2. */
+ DEFINE_COMPILER;
++#ifdef COMPILE_PCRE32
++struct sljit_jump *jump;
++#endif
++
++#if defined SLJIT_DEBUG && SLJIT_DEBUG
++/* dummy_ucd_record */
++const ucd_record *record = GET_UCD(INVALID_UTF_CHAR);
++SLJIT_ASSERT(record->script == ucp_Common && record->chartype == ucp_Cn && record->gbprop == ucp_gbOther);
++SLJIT_ASSERT(record->caseset == 0 && record->other_case == 0);
++#endif
+ 
+ SLJIT_ASSERT(UCD_BLOCK_SIZE == 128 && sizeof(ucd_record) == 8);
+ 
+ sljit_emit_fast_enter(compiler, RETURN_ADDR, 0);
++
++#ifdef COMPILE_PCRE32
++if (!common->utf)
++  {
++  jump = CMP(SLJIT_LESS, TMP1, 0, SLJIT_IMM, 0x10ffff + 1);
++  OP1(SLJIT_MOV, TMP1, 0, SLJIT_IMM, INVALID_UTF_CHAR);
++  JUMPHERE(jump);
++  }
++#endif
++
+ OP2(SLJIT_LSHR, TMP2, 0, TMP1, 0, SLJIT_IMM, UCD_BLOCK_SHIFT);
+ OP1(SLJIT_MOV_U8, TMP2, 0, SLJIT_MEM1(TMP2), (sljit_sw)PRIV(ucd_stage1));
+ OP2(SLJIT_AND, TMP1, 0, TMP1, 0, SLJIT_IMM, UCD_BLOCK_MASK);
+@@ -5636,6 +5658,15 @@ if (needstype || needsscript)
+   if (needschar && !charsaved)
+     OP1(SLJIT_MOV, RETURN_ADDR, 0, TMP1, 0);
+ 
++#ifdef COMPILE_PCRE32
++  if (!common->utf)
++    {
++    jump = CMP(SLJIT_LESS, TMP1, 0, SLJIT_IMM, 0x10ffff + 1);
++    OP1(SLJIT_MOV, TMP1, 0, SLJIT_IMM, INVALID_UTF_CHAR);
++    JUMPHERE(jump);
++    }
++#endif
++
+   OP2(SLJIT_LSHR, TMP2, 0, TMP1, 0, SLJIT_IMM, UCD_BLOCK_SHIFT);
+   OP1(SLJIT_MOV_U8, TMP2, 0, SLJIT_MEM1(TMP2), (sljit_sw)PRIV(ucd_stage1));
+   OP2(SLJIT_AND, TMP1, 0, TMP1, 0, SLJIT_IMM, UCD_BLOCK_MASK);
+-- 
+2.7.4
+
