@@ -1,0 +1,72 @@
+From 8037f71d03b3cd8919248f38448a0a2d3715c18c Mon Sep 17 00:00:00 2001
+From: ph10 <ph10@2f5784b3-3f2a-0410-8824-cb99058d5e15>
+Date: Fri, 24 Feb 2017 17:30:30 +0000
+Subject: [PATCH] Fix Unicode property crash for 32-bit characters greater than
+ 0x10ffff.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+git-svn-id: svn://vcs.exim.org/pcre/code/trunk@1688 2f5784b3-3f2a-0410-8824-cb99058d5e15
+
+Petr Písař: Ported to 8.40.
+
+diff --git a/pcre_internal.h b/pcre_internal.h
+index 2923b29..154d3f6 100644
+--- a/pcre_internal.h
++++ b/pcre_internal.h
+@@ -2772,6 +2772,9 @@ extern const pcre_uint8  PRIV(ucd_stage1)[];
+ extern const pcre_uint16 PRIV(ucd_stage2)[];
+ extern const pcre_uint32 PRIV(ucp_gentype)[];
+ extern const pcre_uint32 PRIV(ucp_gbtable)[];
++#ifdef COMPILE_PCRE32
++extern const ucd_record  PRIV(dummy_ucd_record)[];
++#endif
+ #ifdef SUPPORT_JIT
+ extern const int         PRIV(ucp_typerange)[];
+ #endif
+@@ -2780,9 +2783,15 @@ extern const int         PRIV(ucp_typerange)[];
+ /* UCD access macros */
+ 
+ #define UCD_BLOCK_SIZE 128
+-#define GET_UCD(ch) (PRIV(ucd_records) + \
++#define REAL_GET_UCD(ch) (PRIV(ucd_records) + \
+         PRIV(ucd_stage2)[PRIV(ucd_stage1)[(int)(ch) / UCD_BLOCK_SIZE] * \
+         UCD_BLOCK_SIZE + (int)(ch) % UCD_BLOCK_SIZE])
++        
++#ifdef COMPILE_PCRE32
++#define GET_UCD(ch) ((ch > 0x10ffff)? PRIV(dummy_ucd_record) : REAL_GET_UCD(ch))
++#else
++#define GET_UCD(ch) REAL_GET_UCD(ch)
++#endif 
+ 
+ #define UCD_CHARTYPE(ch)    GET_UCD(ch)->chartype
+ #define UCD_SCRIPT(ch)      GET_UCD(ch)->script
+diff --git a/pcre_ucd.c b/pcre_ucd.c
+index 69c4fd4..f22f826 100644
+--- a/pcre_ucd.c
++++ b/pcre_ucd.c
+@@ -38,6 +38,20 @@ const pcre_uint16 PRIV(ucd_stage2)[] = {0};
+ const pcre_uint32 PRIV(ucd_caseless_sets)[] = {0};
+ #else
+ 
++/* If the 32-bit library is run in non-32-bit mode, character values
++greater than 0x10ffff may be encountered. For these we set up a
++special record. */
++
++#ifdef COMPILE_PCRE32
++const ucd_record PRIV(dummy_ucd_record)[] = {{
++  ucp_Common,    /* script */
++  ucp_Cn,        /* type unassigned */
++  ucp_gbOther,   /* grapheme break property */
++  0,             /* case set */
++  0,             /* other case */
++  }};
++#endif
++
+ /* When recompiling tables with a new Unicode version, please check the
+ types in this structure definition from pcre_internal.h (the actual
+ field names will be different):
+-- 
+2.7.4
+
