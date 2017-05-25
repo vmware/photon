@@ -1,7 +1,7 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.40
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
@@ -9,6 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
 %define sha1 pcre=12f338719b8b028a2eecbf9192fcc00a13fc04f6
+#Fixes CVE-2017-7244, CVE-2017-7245, CVE-2017-7246
+Patch0:         pcre-8.40-Fix-Unicode-property-crash-for-32-bit-characters-gre.patch
+#Fixes CVE-2017-7186
+Patch1:         pcre-8.40-Fix-character-type-detection-when-32-bit-and-UCP-are.patch
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
 Requires:       libgcc
@@ -35,6 +39,8 @@ This package contains minimal set of shared pcre libraries.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 %build
 ./configure --prefix=/usr                     \
             --docdir=/usr/share/doc/pcre-%{version} \
@@ -83,6 +89,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+*   Wed May 24 2017 Divya Thaluru <dthaluru@vmware.com> 8.40-3
+-   Added fixes for CVE-2017-7244, CVE-2017-7245, CVE-2017-7246, CVE-2017-7186
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 8.40-2
 -   Added -libs subpackage
 *   Mon Apr 03 2017 Robert Qi <qij@vmware.com> 8.40-1
