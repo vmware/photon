@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.11.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -16,7 +16,7 @@ Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:          rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
-Patch0:       rpm-debuginfo-exclude.1.patch
+Patch0:         rpm-debuginfo-exclude.1.patch
 Patch1:         rpm-4.11.2-cve-2014-8118.patch
 #Requires:      nspr
 Requires:       nss 
@@ -28,9 +28,6 @@ Requires:       file
 Requires:       bash
 Requires:       elfutils-libelf
 Requires:       libcap
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
 BuildRequires:  lua-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
@@ -40,7 +37,6 @@ BuildRequires:  libcap-devel
 RPM package manager
 
 %package devel
-Requires:       python2
 Summary:        Libraries and header files for rpm
 Provides:       pkgconfig(rpm)
 %description    devel
@@ -60,6 +56,8 @@ Binaries, libraries and scripts to build rpms.
 %package -n     python-rpm
 Summary:        Python 2 bindings for rpm.
 Group:          Development/Libraries
+BuildRequires:  python2
+BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 Requires:       python2
 %description -n python-rpm
@@ -241,6 +239,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Fri May 26 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-13
+-    Remove python2 from requires of rpm-devel subpackages.
 *    Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-12
 -    Added python3 packages and moved python2 site packages from devel to python-rpm.
 *    Thu Oct 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-11
