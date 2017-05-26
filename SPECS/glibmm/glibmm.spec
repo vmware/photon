@@ -1,6 +1,6 @@
 Summary:	C++ interface to the glib
 Name:		glibmm
-Version:	2.53.1
+Version:	2.50.1
 Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/GNOME/sources/glibmm
@@ -8,11 +8,11 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/glibmm/2.53/%{name}-%{version}.tar.xz
-%define sha1 glibmm=5b7e6c932b6ddece79a2fb9c88abee152325035a
+%define sha1 glibmm=07ceb53b995f10ae0f9c572fb11febaa3e33d669
 BuildRequires:	python2 >= 2.7
-BuildRequires:	libsigc++ >= 2.99.5
+BuildRequires:	libsigc++ >= 2.10.0
 BuildRequires:	glib-devel glib-schemas
-Requires:	libsigc++ >= 2.99.5
+Requires:	libsigc++ >= 2.10.0
 Requires:	glib >= 2.50.0
 Requires:	gobject-introspection >= 1.50.0
 Requires:	XML-Parser
@@ -49,17 +49,19 @@ make  %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/pkgconfig/*.pc
-%{_libdir}/glibmm-2.54/proc/*
+%{_libdir}/glibmm-2.4/proc/*
 %files devel 
 %defattr(-,root,root)
 %{_libdir}/*.so
 %{_libdir}/*.la
-%{_libdir}/glibmm-2.54/include/*
-%{_libdir}/giomm-2.54/include/*
+%{_libdir}/glibmm-2.4/include/*
+%{_libdir}/giomm-2.4/include/*
 %{_includedir}/*
 %{_datadir}/*
 
 %changelog
+*   Thu May 26 2017 Harish Udaiya Kumar <hudaiykumar@vmware.com> 2.50.1-1
+-   Downgrade to stable version 2.50.1
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.53.1-1
 -   Update to version 2.53.1
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.48.1-2
