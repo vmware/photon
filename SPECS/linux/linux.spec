@@ -1,17 +1,20 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.28
-Release:        2%{?dist}
+Version:        4.9.30
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=58ca565d0675f518465220b8b2515b10c779c426
+%define sha1 linux=08d55d9392cf4b176ae17d07dbbb9a22abf0d7b2
 Source1:	config
 Source2:	initramfs.trigger
+%define ena_version 1.1.3
+Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
+%define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -91,6 +94,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %prep
 %setup -q -n linux-%{version}
+%setup -D -b 3 -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -112,6 +116,11 @@ sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 make -C tools perf
+# build ENA module
+bldroot=`pwd`
+pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
+make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
+popd
 
 %define __modules_install_post \
     find %{buildroot}/lib/modules/%{uname_r} -name *.ko | xargs xz \
@@ -134,6 +143,11 @@ install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
+# install ENA module
+bldroot=`pwd`
+pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -253,6 +267,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.30-1
+-   Added ENA driver for AMI
+-   Fix CVE-2017-7487 and CVE-2017-9059
 *   Wed May 17 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.9.28-2
 -   Enable IPVLAN module.
 *   Tue May 16 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.28-1
