@@ -1,27 +1,26 @@
-Summary:	C debugger
-Name:		gdb
-Version:	7.12.1
-Release:	1%{?dist}
-License:	GPLv2+
-URL:		http://www.gnu.org/software/%{name}
-Source0:	http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
-%define sha1 gdb=ef77c5345d6f9fdcdf7a5d8503301242b701936e
+Summary:        C debugger
+Name:           gdb
+Version:        7.12.1
+Release:        2%{?dist}
+License:        GPLv2+
+URL:            http://www.gnu.org/software/%{name}
+Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
+%define sha1    gdb=ef77c5345d6f9fdcdf7a5d8503301242b701936e
 Source1:        http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz
-%define sha1 tcl=9bc452eec453c2ed37625874b9011563db687b07
+%define sha1    tcl=9bc452eec453c2ed37625874b9011563db687b07
 Source2:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
-%define sha1 expect=e634992cab35b7c6931e1f21fbb8f74d464bd496
+%define sha1    expect=e634992cab35b7c6931e1f21fbb8f74d464bd496
 Source3:         https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz
-%define sha1 dejagnu=d81288e7d7bd38e74b7fee8e570ebfa8c21508d9
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Requires:	python2
-Requires:	expat
-Requires:	ncurses
-BuildRequires:	expat-devel
-BuildRequires:	ncurses-devel
-BuildRequires:	python2-devel
-BuildRequires:	python2-libs
+%define sha1    dejagnu=d81288e7d7bd38e74b7fee8e570ebfa8c21508d9
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Requires:       expat
+Requires:       ncurses
+BuildRequires:  expat-devel
+BuildRequires:  ncurses-devel
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %description
 GDB, the GNU Project debugger, allows you to see what is going on 
 `inside' another program while it executes -- or what 
@@ -34,7 +33,8 @@ tar xf %{SOURCE3} --no-same-owner
 
 %build
 ./configure \
-	--prefix=%{_prefix}
+    --prefix=%{_prefix} \
+    --with-python=/usr/bin/python3
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -90,6 +90,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 7.12.1-2
+-   Build gdb with python3.
 *   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-1
 -   Version update
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.8.2-3
