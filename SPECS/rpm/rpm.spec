@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -22,9 +22,6 @@ Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
 BuildRequires:  elfutils-devel
@@ -35,7 +32,6 @@ BuildRequires:  xz-devel
 RPM package manager
 
 %package devel
-Requires:       python2
 Summary:        Libraries and header files for rpm
 Provides:       pkgconfig(rpm)
 Requires:       %{name} = %{version}-%{release}
@@ -263,6 +259,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-2
+-   Remove python2 from requires of rpm-devel subpackages.
 *   Wed May 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0.1-1
 -   Update to 4.13.0.1
 *   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0-1
