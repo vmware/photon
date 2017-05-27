@@ -1,7 +1,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 Source0:	fscks.conf
 License:	Apache License
 Group:		System Environment/Base
@@ -32,6 +32,7 @@ touch %{_localstatedir}/lib/rpm-state/initramfs.regenerate \
 echo "initramfs (re)generation triggered" >&2
 
 %define file_trigger_action \
+cat > /dev/null \
 if [ -f %{_localstatedir}/lib/rpm-state/initramfs.regenerate ]; then \
     echo "(re)generate initramfs for all kernels" >&2 \
     mkinitrd -q \
@@ -71,6 +72,8 @@ fi \
 %dir %{_localstatedir}/lib/initramfs/kernel
 
 %changelog
+*   Fri May 26 2017 Bo Gan <ganb@vmware.com> 2.0-2
+-   Discard stdin before dracut
 *   Wed Apr 12 2017 Bo Gan <ganb@vmware.com> 2.0-1
 -   Made initrd generation dynamic, triggers for systemd, e2fs-progs
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-7
