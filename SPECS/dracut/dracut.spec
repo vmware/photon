@@ -5,7 +5,7 @@
 
 Name:		dracut
 Version:	045
-Release:	2%{?dist}
+Release:	3%{?dist}
 Group:		System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -27,10 +27,14 @@ BuildRequires: bash git
 BuildRequires: pkg-config
 BuildRequires: kmod
 Requires:	bash >= 4
-Requires:	coreutils
+Requires:	(coreutils or toybox)
 Requires:	util-linux
 Requires:	systemd
-
+Requires:	sed
+Requires:	grep
+Requires:	findutils
+Requires:	cpio
+Requires:	kmod
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -161,6 +165,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*	Fri May 26 2017 Bo Gan <ganb@vmware.com> 045-3
+-	Fix dependency
 *	Thu Apr 27 2017 Bo Gan <ganb@vmware.com> 045-2
 -	Disable xattr for cp
 *	Wed Apr 12 2017 Chang Lee <changlee@vmware.com> 045-1
