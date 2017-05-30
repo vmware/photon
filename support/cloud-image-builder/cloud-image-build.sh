@@ -59,7 +59,7 @@ if [ -n "$ADDITIONAL_RPMS_PATH" ]
     cp -f $ADDITIONAL_RPMS_PATH/* $PHOTON_STAGE_PATH/RPMS/additional/
 fi
 
-./photonInstaller.py -p $GENERATED_DATA_PATH/build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $WORKING_DIR/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
+./photonInstaller.py -p $GENERATED_DATA_PATH/build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $WORKING_DIR/photon-${IMG_NAME} -d $PHOTON_STAGE_PATH/pkg_info.json -o $GENERATED_DATA_PATH -f $VMDK_CONFIG_SAFE_FILE
 cat $VMDK_CONFIG_SAFE_FILE
 rm $VMDK_CONFIG_SAFE_FILE
 
