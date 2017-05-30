@@ -255,6 +255,7 @@ if __name__ == '__main__':
             config['iso_system'] = False
             config['vmdk_install'] = False
 
+        config["pkg_to_rpm_map_file"] = options.pkg_to_rpm_map_file
         if 'password' in config:
             # crypt the password if needed
             if config['password']['crypted']:
