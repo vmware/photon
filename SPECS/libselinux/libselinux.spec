@@ -1,18 +1,21 @@
-Summary:	SELinux library and simple utilities
-Name:		libselinux
-Version:	2.6
-Release:	2%{?dist}
-License:	Public Domain
-Group:		System Environment/Libraries
-Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
-%define sha1 libselinux=38213c5f3298c980a399ea73e47498e7a393e4f7
-Url:		https://github.com/SELinuxProject/selinux/wiki
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	libsepol-devel
-BuildRequires:	pcre-devel, swig
-Requires:	pcre-libs
-Requires:	libsepol
+%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+Summary:        SELinux library and simple utilities
+Name:           libselinux
+Version:        2.6
+Release:        3%{?dist}
+License:        Public Domain
+Group:          System Environment/Libraries
+Source0:        https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
+%define sha1    libselinux=38213c5f3298c980a399ea73e47498e7a393e4f7
+Url:            https://github.com/SELinuxProject/selinux/wiki
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  libsepol-devel
+BuildRequires:  pcre-devel, swig
+BuildRequires:  python3-devel
+Requires:       pcre-libs
+Requires:       libsepol
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -29,35 +32,46 @@ libselinux provides an API for SELinux applications to get and set
 process and file security contexts and to obtain security policy
 decisions.  Required for any applications that use the SELinux API.
 
-%package	utils
-Summary:	SELinux libselinux utilies
-Group:		Development/Libraries
-Requires:	libselinux = %{version}-%{release} 
+%package        utils
+Summary:        SELinux libselinux utilies
+Group:          Development/Libraries
+Requires:       libselinux = %{version}-%{release} 
 
-%description	utils
+%description    utils
 The libselinux-utils package contains the utilities
 
-%package	devel
-Summary:	Header files and libraries used to build SELinux
-Group:		Development/Libraries
-Requires:	libselinux = %{version}-%{release}
-Requires:	pcre-devel
-Requires:	libsepol-devel 
-Provides:	pkgconfig(libselinux)
+%package        devel
+Summary:        Header files and libraries used to build SELinux
+Group:          Development/Libraries
+Requires:       libselinux = %{version}-%{release}
+Requires:       pcre-devel
+Requires:       libsepol-devel
+Provides:       pkgconfig(libselinux)
 
-%description	devel
+%description    devel
 The libselinux-devel package contains the libraries and header files
 needed for developing SELinux applications. 
 
 %package        python
-Summary:        SELinux python bindings for libselinux
+Summary:        SELinux python2 bindings for libselinux
 Group:          Development/Libraries
 Requires:       libselinux = %{version}-%{release}
 Requires:       python2
 Requires:       python2-libs
 
 %description    python
-The libselinux-python package contains the python bindings for developing
+The libselinux-python package contains the python2 bindings for developing
+SELinux applications.
+
+%package        python3
+Summary:        SELinux python3 bindings for libselinux
+Group:          Development/Libraries
+Requires:       libselinux = %{version}-%{release}
+Requires:       python3
+Requires:       python3-libs
+
+%description    python3
+The libselinux-python package contains the python3 bindings for developing
 SELinux applications.
 
 %prep
@@ -66,10 +80,13 @@ SELinux applications.
 %build
 make clean
 make %{?_smp_mflags} swigify
-make LIBDIR="%{_libdir}" %{?_smp_mflags} pywrap
+make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python2 pywrap
+make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
 
 %install
-make DESTDIR="%{buildroot}" LIBDIR="%{buildroot}%{_libdir}" SHLIBDIR="%{buildroot}/%{_lib}" BINDIR="%{buildroot}%{_bindir}" SBINDIR="%{buildroot}%{_sbindir}" install install-pywrap
+make DESTDIR="%{buildroot}" LIBDIR="%{buildroot}%{_libdir}" SHLIBDIR="%{buildroot}/%{_lib}" BINDIR="%{buildroot}%{_bindir}" SBINDIR="%{buildroot}%{_sbindir}" PYTHON=/usr/bin/python2 install install-pywrap
+
+make DESTDIR="%{buildroot}" LIBDIR="%{buildroot}%{_libdir}" SHLIBDIR="%{buildroot}/%{_lib}" BINDIR="%{buildroot}%{_bindir}" SBINDIR="%{buildroot}%{_sbindir}" PYTHON=/usr/bin/python3 install install-pywrap
 
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
 mkdir -p %{buildroot}/var/run/setrans
@@ -85,10 +102,8 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %ghost /var/run/setrans
-%{_libdir}/*
+%{_libdir}/libselinux.so.1
 %{_prefix}/lib/tmpfiles.d/libselinux.conf
-%exclude %{_libdir}/pkgconfig
-%exclude /usr/lib/debug
 
 %files utils
 %defattr(-,root,root,-)
@@ -107,19 +122,24 @@ rm -rf %{buildroot}
 
 %files python
 %defattr(-,root,root,-)
-%dir %{python_sitearch}/selinux
-%{python_sitearch}/selinux/*
+%{python2_sitelib}/*
+
+%files python3
+%defattr(-,root,root,-)
+%{python3_sitelib}/*
 
 %changelog
-*	Wed May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-2
--	Include python subpackage.
-*	Wed May 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-1
--	Upgraded to version 2.6
-*	Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 2.5-3
--	Remove pcre requires and add requires on pcre-libs
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
--	GA - Bump release of all rpms
-*	Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
--	Updated to version 2.5
-*	Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
--	Initial build.	First version
+*   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6-3
+-   Include pytho3 packages.
+*   Wed May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-2
+-   Include python subpackage.
+*   Wed May 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-1
+-   Upgraded to version 2.6
+*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 2.5-3
+-   Remove pcre requires and add requires on pcre-libs
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
+-   GA - Bump release of all rpms
+*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
+-   Updated to version 2.5
+*   Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
+-   Initial build.  First version
