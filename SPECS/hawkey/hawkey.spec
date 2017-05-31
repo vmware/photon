@@ -1,7 +1,10 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary:        Hawkey
 Name:           hawkey
 Version:        2017.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
 Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -44,16 +47,43 @@ Requires:   python2
 %description -n python-hawkey
 Python 2 bindings for the hawkey library.
 
+%package -n python3-%{name}
+Summary:        Python 3 bindings for the hawkey library
+%{?python_provide:%python_provide python3-%{name}}
+BuildRequires:  python3-devel
+BuildRequires:  python3-sphinx
+Requires:       %{name} = %{version}-%{release}
+
+%description -n python3-%{name}
+Python 3 bindings for the hawkey library.
+
 %prep
 %setup -qn hawkey-hawkey-0.6.4-1
 sed -i 's/ADD_SUBDIRECTORY (doc)//' CMakeLists.txt
+mkdir build
+mkdir build-py3
 %build
+pushd build
 cmake \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix}
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} ..
 make %{?_smp_mflags}
+popd
+pushd build-py3
+cmake \
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DPYTHON_DESIRED:str=3 ..
+popd
+
 %install
+pushd build
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
+popd
+pushd build-py3
+make DESTDIR=%{buildroot} install
+find %{buildroot} -name '*.la' -delete
+popd
+
 %check
 cp src/libhawkey.* /lib
 easy_install nose
@@ -66,7 +96,11 @@ tests/test_main tests/repos/
 
 %files -n python-hawkey
 %defattr(-,root,root)
-%{python_sitearch}/
+%{python2_sitelib}/*
+
+%files -n python3-hawkey
+%defattr(-,root,root)
+%{python3_sitelib}/*
 
 %files devel
 %defattr(-,root,root)
@@ -76,6 +110,8 @@ tests/test_main tests/repos/
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Mon May 22 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-2
+-   Added python3 subpackage.
 *   Wed Apr 05 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.1-1
 -   Upgrading to version 2017.1 which is 0.6.4-1.
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 2014.1-6
