@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.70
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -183,6 +183,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed May 31 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-2
+-   .config: added aesni_intel and aes_x86_64 modules
 *   Thu May 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-1
 -   Fix CVE-2017-7487 and CVE-2017-9059
 *   Tue May 9 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.67-1
