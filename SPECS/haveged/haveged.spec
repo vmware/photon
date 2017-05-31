@@ -16,7 +16,6 @@ Requires:       systemd
 
 BuildRequires:  systemd
 BuildRequires:  automake
-BuildRequires:  gdb
 BuildRequires:  coreutils
 BuildRequires:  glibc
 

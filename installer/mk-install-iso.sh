@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /bin/bash
 #################################################
 #       Title:  mk-install-iso                  #
 #        Date:  2014-11-26                      #
@@ -50,6 +50,29 @@ run_command "echo : ${WORKINGDIR}" "echo ${WORKINGDIR}" "${LOGFILE}"
 cp BUILD_DVD/isolinux/splash.png ${BUILDROOT}/installer/boot/.
 mkdir -p ${BUILDROOT}/installer/EFI/BOOT
 cp EFI/BOOT/* ${BUILDROOT}/installer/EFI/BOOT/
+
+#Generate efiboot image
+# efiboot is a fat16 image that has at least EFI/BOOT/bootx64.efi
+
+# As a bootx64.efi we use shimx64.efi from shim-12
+# # make VENDOR_CERT_FILE=<VMware cert> EFI_PATH=/usr/lib 'DEFAULT_LOADER=\\\\grubx64.efi' shimx64.efi
+# # mv shimx64.efi bootx64.efi
+
+# grubx64.efi is generated on Photon OS by using grub2-efi >= 2.02-7:
+# # grub2-efi-mkimage -o grubx64.efi -p /boot/grub2 -O x86_64-efi  fat iso9660 part_gpt part_msdos  normal boot linux configfile loopback chain  efifwsetup efi_gop efi_uga  ls search search_label search_fs_uuid search_fs_file  gfxterm gfxterm_background gfxterm_menu test all_video loadenv  exfat ext2 udf halt gfxmenu png tga lsefi help linuxefi
+
+# both bootx64.efi and grubx64.efi are signed with VMware key
+EFI_IMAGE=boot/grub2/efiboot.img
+EFI_FOLDER=`readlink -f ${STAGE_PATH}/efiboot`
+dd if=/dev/zero of=${WORKINGDIR}/${EFI_IMAGE} bs=3K count=1024
+mkdosfs ${WORKINGDIR}/${EFI_IMAGE}
+mkdir $EFI_FOLDER
+mount -o loop ${WORKINGDIR}/${EFI_IMAGE} $EFI_FOLDER
+cp -r ./EFI $EFI_FOLDER
+ls -lR $EFI_FOLDER
+umount $EFI_FOLDER
+rm -rf $EFI_FOLDER
+#mcopy -s -i ${WORKINGDIR}/${EFI_IMAGE} ./EFI '::/'
 
 if [ "$LIVE_CD" = true ] ; then
     mv ${WORKINGDIR}/isolinux/live-menu.cfg ${WORKINGDIR}/isolinux/menu.cfg
@@ -264,8 +287,7 @@ rm -rf $BUILDROOT
 pushd $WORKINGDIR
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
         -no-emul-boot -boot-load-size 4 -boot-info-table \
-        -eltorito-alt-boot -e boot/grub2/efiboot.img -no-emul-boot \
+        -eltorito-alt-boot -e ${EFI_IMAGE} -no-emul-boot \
         -V "PHOTON_$(date +%Y%m%d)" \
         $WORKINGDIR >$ISO_OUTPUT_NAME
-
 popd

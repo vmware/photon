@@ -3,29 +3,25 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.13.0
-Release:        1%{?dist}
+Version:        4.13.0.1
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=67f4c9607460d5f71fc8f6206b40d812090f652f
-Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
-%define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
-Source2:        macros
-Source3:        brp-strip-debug-symbols
-Source4:        brp-strip-unneeded
+%define sha1    rpm=2119489397d7e4da19320ef9330ab717ac05587d
+Source1:        macros
+Source2:        brp-strip-debug-symbols
+Source3:        brp-strip-unneeded
 Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch2:         find-debuginfo-script-fix.patch
 Requires:       bash
+Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 BuildRequires:  libarchive-devel
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
+BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
 BuildRequires:  elfutils-devel
@@ -36,7 +32,6 @@ BuildRequires:  xz-devel
 RPM package manager
 
 %package devel
-Requires:       python2
 Summary:        Libraries and header files for rpm
 Provides:       pkgconfig(rpm)
 Requires:       %{name} = %{version}-%{release}
@@ -91,11 +86,11 @@ Python3 rpm.
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%setup -n rpm-%{name}-%{version}-release  -T -D -a 1
-mv db-5.3.28 db
+
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
+sed -i '/^ *include_dirs = /d' python/setup.py.in
+sed -i '/^ *libraries = /d' python/setup.py.in
 ./autogen.sh --noconfigure
 ./configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
@@ -118,7 +113,8 @@ sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
         --enable-python \
         --with-cap \
         --without-lua \
-        --disable-silent-rules
+        --disable-silent-rules \
+        --with-external-db
 make %{?_smp_mflags}
 
 pushd python
@@ -132,9 +128,9 @@ find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 # System macros and prefix
 install -dm 755 %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/rpm/
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/
+install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
 install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
-install -vm755 %{SOURCE4} %{buildroot}%{_libdir}/rpm/
 
 pushd python
 python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -263,6 +259,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-2
+-   Remove python2 from requires of rpm-devel subpackages.
+*   Wed May 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0.1-1
+-   Update to 4.13.0.1
 *   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0-1
 -   Update to 4.13.0
 *   Wed Apr 19 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-22

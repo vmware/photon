@@ -1,6 +1,6 @@
 Name:           cloud-init
 Version:        0.7.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -8,6 +8,7 @@ URL:            http://launchpad.net/cloud-init
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha1 cloud-init=3b4345267e72e28b877e2e3f0735c1f672674cfc
 Source1:        cloud-photon.cfg
+Source2:        99-disable-networking-config.cfg
 
 Patch0:         photon-distro.patch
 Patch1:         change-requires.patch
@@ -72,9 +73,12 @@ rm -rf $RPM_BUILD_ROOT
 rm -r $RPM_BUILD_ROOT%{python_sitelib}/tests
 
 mkdir -p $RPM_BUILD_ROOT/var/lib/cloud
+mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 
 # We supply our own config file since our software differs from Ubuntu's.
 cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
+# Disable networking config by cloud-init
+cp -p %{SOURCE2} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 
 %check
 openssl req \
@@ -142,6 +146,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
+%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/99-disable-networking-config.cfg
 %{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
 %{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
 /lib/systemd/system-generators/cloud-init-generator
@@ -155,6 +160,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
+-   Disable networking config by cloud-init
 *   Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-2
 -   Support userdata in vmx guestinfo
 *   Thu Apr 27 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-1

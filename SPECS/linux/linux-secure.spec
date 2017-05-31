@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.28
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -228,6 +228,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed May 17 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.9.28-2
+-   Enable IPVLAN module.
 *   Tue May 16 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.28-1
 -   Version update
 *   Wed May 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.27-1

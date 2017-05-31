@@ -1,7 +1,7 @@
 Summary:        A filtering tool for a Linux-based bridging firewall.
 Name:           ebtables
 Version:        2.0.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://ebtables.netfilter.org/
 Group:          System Environment/Security
@@ -11,7 +11,8 @@ Source0:        ftp://ftp.netfilter.org/pub/ebtables/%{name}-v%{version}-4.tar.g
 %define sha1    ebtables=907d3b82329e8fbb7aaaa98049732bd8dab022f9
 Source1:        ebtables_script
 Source2:        ebtables.service
-
+BuildRequires:  systemd
+Requires:       systemd
 %description
 The ebtables program is a filtering tool for a Linux-based bridging firewall. It enables transparent filtering of network traffic passing through a Linux bridge. The filtering possibilities are limited to link layer filtering and some basic filtering on higher network layers. Advanced logging, MAC DNAT/SNAT and brouter facilities are also included.
 
@@ -41,7 +42,6 @@ install -m 644 %{SOURCE2} %{buildroot}/%{_libdir}/systemd/system/ebtables.servic
 /sbin/ldconfig
 %systemd_postun_with_restart ebtables.service
 
-
 %check
 make %{?_smp_mflags} check
 
@@ -62,5 +62,7 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon May 15 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-2
+-   Added systemd to Requires and BuildRequires.
 *   Wed Jan 18 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-1
 -   Initial build.

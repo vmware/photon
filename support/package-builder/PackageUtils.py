@@ -112,7 +112,7 @@ class PackageUtils(object):
             # Fetch/verify sources if sha1 not None.
             sha1 = constants.specData.getSHA1(package, source)
             if sha1 is not None:
-                PullSources.get(source, sha1, constants.sourcePath, constants.pullsourcesConfig)
+                PullSources.get(source, sha1, constants.sourcePath, constants.pullsourcesConfig, self.logger)
 
             sourcePath = cmdUtils.findFile(source,constants.sourcePath)
             if sourcePath is None or len(sourcePath) == 0:
@@ -192,6 +192,7 @@ class PackageUtils(object):
         listSRPMFiles=[]
         try:
             listRPMFiles,listSRPMFiles = self.buildRPM(chrootSpecPath +specName,chrootLogsFilePath,chrootCmd,package,macros)
+            self.logger.info("Successfully built rpm:"+package)
         except Exception as e:
             self.logger.error("Failed while building rpm:"+package)
             raise e

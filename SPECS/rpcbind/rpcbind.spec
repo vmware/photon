@@ -1,7 +1,7 @@
 Summary:        RPC program number mapper
 Name:           rpcbind
 Version:        0.2.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://nfsv4.bullopensource.org
 Group:          Applications/Daemons
@@ -10,6 +10,7 @@ Source0:        http://downloads.sourceforge.net/rpcbind/%{name}-%{version}.tar.
 Source1:        rpcbind.service
 Source2:        rpcbind.socket
 Source3:        rpcbind.sysconfig
+Patch0:         rpcbind-CVE-2017-8779.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libtirpc-devel
@@ -18,10 +19,14 @@ Requires:       libtirpc
 Requires:       systemd
 Requires:       shadow
 Requires:       coreutils
+
 %description
 The rpcbind program is a replacement for portmap. It is required for import or export of Network File System (NFS) shared directories. The rpcbind utility is a server that converts RPC program numbers into universal addresses
+
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
 ./configure --prefix=%{_prefix}      \
@@ -31,6 +36,7 @@ sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
             --with-statedir=%{_localstatedir}/lib/rpcbind \
             --with-rpcuser=rpc
 make
+
 %install
 make DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}%{_localstatedir}/lib/rpcbind
@@ -55,7 +61,7 @@ make %{?_smp_mflags} check
 rpcid=`getent passwd rpc | cut -d: -f 3`
 if [ -n "$rpcid" -a "$rpcid" != "31" ]; then
     userdel  rpc 2> /dev/null || :
-    groupdel rpc 2> /dev/null || : 
+    groupdel rpc 2> /dev/null || :
 fi
 if [ -z "$rpcid" -o "$rpcid" != "31" ]; then
     groupadd -g 31 rpc > /dev/null 2>&1
@@ -81,7 +87,10 @@ fi
 
 %clean
 rm -rf %{buildroot}/*
+
 %changelog
+*   Thu May 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.2.4-2
+-   Fix CVE-2017-8779
 *   Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.2.4-1
 -   Updating to latest version
 *   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-9

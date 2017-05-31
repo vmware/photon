@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -13,6 +13,7 @@ Patch0:         cgi.patch
 Patch1:         added-compiler-flags-for-curses-module.patch
 Patch2:         added-pyopenssl-ipaddress-certificate-validation.patch
 Patch3:         python2-support-photon-platform.patch
+Patch4:         back-port-random-dot-c.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
@@ -105,6 +106,7 @@ to build python programs.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -220,8 +222,10 @@ rm -rf %{buildroot}/*
 %exclude %{_bindir}/idle*
 
 %changelog
-*	Fri Apr 28 2017 Harish Udaiya <hudaiyakumar@vmware.com> 2.7.13-4
--	Excluded unwanted binaries from python2-tools.
+*   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 2.7.13-5
+-   Fixing python issue 29188, backport random.c from 3.5 to 2.7.
+*   Fri Apr 28 2017 Harish Udaiya <hudaiyakumar@vmware.com> 2.7.13-4
+-   Excluded unwanted binaries from python2-tools.
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.13-3
 -   Python2-devel requires expat-devel.
 *   Fri Mar 24 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-2
