@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.9.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -11,9 +11,6 @@ Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.t
 %define sha1    git=5d0274c028083206844142263aeef110ec1495d5
 BuildRequires:  curl-devel
 BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  openssl-devel
-Requires:       python2
 Requires:       openssl
 Requires:       curl
 Requires:       expat
@@ -92,6 +89,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-3
+-   Remove python2 from requires.
 *   Tue Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
 -   Update since perl version got updated.
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.9.3-1
