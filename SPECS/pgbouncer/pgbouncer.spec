@@ -1,7 +1,7 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.7.2
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
@@ -41,8 +41,13 @@ Description=Connection poller for PostgreSQL.
 After=syslog.target network.target
 
 [Service]
+Type=forking
 ExecStart=/usr/bin/pgbouncer --quiet --user pgbouncer /etc/pgbouncer.ini
 ExecReload=/bin/kill -USR2 $MAINPID
+User=pgbouncer
+Group=pgbouncer
+RuntimeDirectory=pgbouncer
+RuntimeDirectoryMode=0755
 Restart=always
 
 [Install]
@@ -92,6 +97,8 @@ fi
 /var/run/pgbouncer
 
 %changelog
+*       Wed May 31 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-5
+-       Add RuntimeDirectory and Type=forking
 *	Thu Apr 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
 -	Fixed the requires.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3
