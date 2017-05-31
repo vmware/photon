@@ -1,7 +1,9 @@
+%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -17,6 +19,18 @@ BuildRequires:  libcap-ng-devel
 BuildRequires:  make
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
+
+Requires:       libgcc-atomic
+Requires:       libcap-ng
+Requires:       openssl
+
+%description
+Open vSwitch provides standard network bridging functions and
+support for the OpenFlow protocol for remote per-flow control of
+traffic.
+
+%package -n     python-openvswitch
+Summary:        python-openvswitch
 BuildRequires:  python2 >= 2.7.0
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
@@ -24,27 +38,27 @@ BuildRequires:  python-pip
 BuildRequires:  python-six
 BuildRequires:  python-xml
 BuildRequires:  python-setuptools
-
-Requires:       libgcc-atomic
-Requires:       libcap-ng
-Requires:       openssl
-Requires:       PyYAML
 Requires:       python2
 Requires:       python2-libs
-Requires:       python-xml
-Requires:       python-configobj
-Requires:       python-jsonpatch
-Requires:       python-prettytable
-Requires:       python-requests
 
-%description
-Open vSwitch provides standard network bridging functions and
-support for the OpenFlow protocol for remote per-flow control of
-traffic.
+%description -n python-openvswitch
+Python 2 openvswith bindings.
 
-%package	devel
-Summary:	Header and development files for openvswitch
-Requires:	%{name} = %{version}
+%package -n     python3-openvswitch
+Summary:        python3-openvswitch
+BuildRequires:  python3 >= 3.4.0
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-six
+Requires:       python3
+Requires:       python3-libs
+
+%description -n python3-openvswitch
+Python 3 version.
+
+%package        devel
+Summary:        Header and development files for openvswitch
+Requires:       %{name} = %{version}
 %description    devel
 openvswitch-devel package contains header files and libs.
 
@@ -73,7 +87,12 @@ make %{_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
-find %{buildroot}%{_libdir} -name '*.la' -delete
+find %{buildroot}/%{_libdir} -name '*.la' -delete
+mkdir -p %{buildroot}/%{python2_sitelib}
+mkdir -p %{buildroot}/%{python3_sitelib}
+cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python2_sitelib}
+
+cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python3_sitelib}
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 cat << EOF >> %{buildroot}/%{_libdir}/systemd/system/openvswitch.service
@@ -121,6 +140,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/openvswitch/scripts/ovn-*
 %{_datadir}/openvswitch/scripts/ovndb-servers.ocf
 
+%files -n python-openvswitch
+%{python2_sitelib}/*
+
+%files -n python3-openvswitch
+%{python3_sitelib}/*
+
 %files devel
 %{_includedir}/ovn/*.h
 %{_includedir}/openflow/*.h
@@ -140,21 +165,23 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/vtep-ctl.8.gz
 
 %changelog
-*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.0-1
--	Update to 2.7.0
-*	Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
--	Build ovs shared library
-*	Wed Nov 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-1
--	Update to openvswitch 2.6.1
-*	Sat Sep 24 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.5.0-1
--	Update to openvswitch 2.5.0
-*	Fri Sep 09 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
--	Update to openvswitch 2.4.1
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
--	GA - Bump release of all rpms
-*       Sat Oct 31 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-2
--       OVS requires libatomic.so.1 provided by gcc.
-*       Mon Oct 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-1
--       Update to OVS v2.4.0
-*       Fri May 29 2015 Kumar Kaushik <kaushikk@vmware.com> 2.3.1-1
--       Initial build. First version
+*   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-2
+-   Added python and python3 subpackage.
+*   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.0-1
+-   Update to 2.7.0
+*   Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
+-   Build ovs shared library
+*   Wed Nov 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-1
+-   Update to openvswitch 2.6.1
+*   Sat Sep 24 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.5.0-1
+-   Update to openvswitch 2.5.0
+*   Fri Sep 09 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
+-   Update to openvswitch 2.4.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
+-   GA - Bump release of all rpms
+*   Sat Oct 31 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-2
+-   OVS requires libatomic.so.1 provided by gcc.
+*   Mon Oct 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-1
+-   Update to OVS v2.4.0
+*   Fri May 29 2015 Kumar Kaushik <kaushikk@vmware.com> 2.3.1-1
+-   Initial build. First version
