@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.25
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -94,6 +94,10 @@ ExecReload=/usr/sbin/httpd -k graceful
 WantedBy=multi-user.target
 
 EOF
+
+install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
+echo "disable httpd.service" > %{buildroot}/usr/lib/systemd/system-preset/50-httpd.preset
+
 ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
 ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
 
@@ -167,6 +171,7 @@ fi
 %{_sysconfdir}/httpd/httpd.conf
 %dir %{_sysconfdir}/httpd/logs
 %{_libdir}/systemd/system/httpd.service
+%{_libdir}/systemd/system-preset/50-httpd.preset
 
 %files tools
 %defattr(-,root,root)
@@ -174,6 +179,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.4.25-3
+-   Provide preset file to disable service by default.
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
 -   Fixing httpd.pid file write issue
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1

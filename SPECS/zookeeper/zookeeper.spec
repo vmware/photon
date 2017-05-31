@@ -1,7 +1,7 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
 Version:        3.4.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -52,6 +52,10 @@ popd
 mkdir -p %{buildroot}/lib/systemd/system
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/zookeeper.service
 cp %{SOURCE2} %{buildroot}%{_bindir}/zkEnv.sh
+
+install -vdm755 %{buildroot}/lib/systemd/system-preset
+echo "disable zookeeper.service" > %{buildroot}/lib/systemd/system-preset/50-zookeeper.preset
+
 %pre
 getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
 getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
@@ -98,9 +102,12 @@ fi
 %attr(0775,zookeeper,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
 /lib/systemd/system/zookeeper.service
+/lib/systemd/system-preset/50-zookeeper.preset
 %{_prefix}
 
 %changelog
+*   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-3
+-   Provide preset to disable service by default
 *   Wed May 24 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-2
 -   Used RuntimeDirectory to create folder /var/run/zookeeper.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
