@@ -1,7 +1,7 @@
 Summary:        Etcd-3.1.5
 Name:           etcd
 Version:        3.1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
 Group:          System Environment/Security
@@ -36,6 +36,9 @@ mv %{_builddir}/%{name}-%{version}/README.md %{buildroot}/%{_docdir}/%{name}-%{v
 mv %{_builddir}/%{name}-%{version}/etcdctl/README.md %{buildroot}/%{_docdir}/%{name}-%{version}/README-etcdctl.md
 mv %{_builddir}/%{name}-%{version}/etcdctl/READMEv2.md %{buildroot}/%{_docdir}/%{name}-%{version}/READMEv2-etcdctl.md
 
+install -vdm755 %{buildroot}/lib/systemd/system-preset
+echo "disable etcd.service" > %{buildroot}/lib/systemd/system-preset/50-etcd.preset
+
 cp %{SOURCE1} %{buildroot}/lib/systemd/system
 install -vdm755 %{buildroot}/var/lib/etcd
 
@@ -50,9 +53,12 @@ rm -rf %{buildroot}/*
 %{_bindir}/etcd*
 /%{_docdir}/%{name}-%{version}/*
 /lib/systemd/system/etcd.service
+/lib/systemd/system-preset/50-etcd.preset
 %dir /var/lib/etcd
 
 %changelog
+*   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.5-2
+-   Provide preset file to disable service by default
 *   Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 3.1.5-1
 -   Upgraded to version 3.1.5, build from sources
 *   Fri Sep 2 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.9-1
