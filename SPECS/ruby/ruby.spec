@@ -1,7 +1,7 @@
 Summary:    Ruby
 Name:       ruby
 Version:    2.4.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSDL
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
@@ -49,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Wed May 31 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.0-2
+-   Bump release to build with latest openssl
 *   Wed Jan 18 2017 Anish Swaminathan <anishs@vmware.com> 2.4.0-1
 -   Update to 2.4.0 - Fixes CVE-2016-2339
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.0-3
