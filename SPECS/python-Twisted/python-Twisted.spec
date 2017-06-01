@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
 Version:        17.1.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -63,21 +63,23 @@ python3 setup.py build
 popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/*
+%{_bindir}/*
 
 %files -n python3-Twisted
 %defattr(-,root,root)
 %{python3_sitelib}/*
-%{_bindir}/*
 
 %changelog
+*   Thu Jun 01 2017 Xiaolin Li <rqiu@vmware.com> 17.1.0-6
+-   Keep python2 scrips in bin folder.
 *   Mon May 22 2017 Rongrong Qiu <rqiu@vmware.com> 17.1.0-5
 -   Added python-constantly to the requires.
 *   Mon Mar 27 2017 Xiaolin Li <xiaolinl@vmware.com> 17.1.0-4
