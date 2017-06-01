@@ -1,7 +1,7 @@
 Summary:        vSphere Docker Volume Service
 Name:           docker-volume-vsphere
 Version:        0.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/docker-volume-vsphere
 Group:          Applications/System
@@ -36,24 +36,23 @@ mkdir -p %{buildroot}/usr/local/bin
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 cp ../build/bin/vmdk_plugin %{buildroot}/usr/local/bin/docker-volume-vsphere
 chmod 755 %{buildroot}/usr/local/bin/docker-volume-vsphere
+cp ./misc/scripts/install/*.sh %{buildroot}/usr/local/bin/.
+chmod 755 %{buildroot}/usr/local/bin/*.sh
 cp ./misc/scripts/install/docker-volume-vsphere.service %{buildroot}/%{_libdir}/systemd/system/.
 
 %post
-%systemd_post docker-volume-vsphere.service
+/usr/local/bin/after-install.sh
 
 %preun
-%systemd_preun docker-volume-vsphere.service
-
-%postun
-%systemd_postun_with_restart docker-volume-vsphere.service
+/usr/local/bin/before-remove.sh
 
 %files
 %defattr(-,root,root)
 %{_lib}/systemd/system/*
 /usr/local/bin/*
 
-
-
 %changelog
+*   Thu Jun 01 2017 Xiaolin Li <xiaolinl@vmware.com> 0.11-2
+-   Use scripts from docker-volume-vsphere as post and preun scriptlets.
 *   Mon Feb 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.11-1
 -   Initial version
