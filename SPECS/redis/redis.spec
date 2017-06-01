@@ -1,7 +1,7 @@
 Summary:	advanced key-value store
 Name:		redis
 Version:	3.2.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
 %define sha1 redis=6780d1abb66f33a97aad0edbe020403d0a15b67f
+Patch0:         redis-conf.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
 BuildRequires:  make
@@ -20,6 +21,7 @@ Redis is an in-memory data structure store, used as database, cache and message 
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 make %{?_smp_mflags}
@@ -28,7 +30,8 @@ make %{?_smp_mflags}
 install -vdm 755 %{buildroot}
 make PREFIX=%{buildroot}/usr install
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
-
+mkdir -p %{buildroot}/var/lib/redis
+mkdir -p %{buildroot}/var/log/redis
 mkdir -p %{buildroot}/usr/lib/systemd/system
 cat << EOF >>  %{buildroot}/usr/lib/systemd/system/redis.service
 [Unit]
@@ -37,7 +40,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/redis-server /etc/redis.conf --daemonize no
-ExecStop=/usr/libexec/redis-shutdown
+ExecStop=/usr/bin/redis-cli shutdown
 User=redis
 Group=redis
 
@@ -68,11 +71,15 @@ exit 0
 
 %files
 %defattr(-,root,root)
+%dir %attr(0750, redis, redis) /var/lib/redis
+%dir %attr(0750, redis, redis) /var/log/redis
 %{_bindir}/*
 %{_libdir}/systemd/*
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+*	Wed May 31 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-3
+-	Fix DB persistence,log file,grace-ful shutdown issues
 *       Tue May 16 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-2
 -       Added systemd service unit
 *       Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-1
