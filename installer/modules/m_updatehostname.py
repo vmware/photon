@@ -9,7 +9,8 @@ def execute(name, ks_config, config, root):
 
     if ks_config:
         if "hostname" in ks_config:
-            config['hostname'] = ks_config["hostname"].strip(" ")
+            evalhostname = os.popen('printf ' + ks_config["hostname"].strip(" ")).readlines()
+            config['hostname'] = evalhostname[0]
         if "hostname" not in config or config['hostname'] == "":
             random_id = '%12x' % random.randrange(16**12)
             config['hostname'] = "photon-" + random_id.strip()
