@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -189,6 +189,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 1 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.30-2
+-   [feature] ACPI NFIT support (for PMEM type 7)
 *   Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.30-1
 -   Fix CVE-2017-7487 and CVE-2017-9059
 *   Wed May 17 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.9.28-2
