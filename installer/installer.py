@@ -131,7 +131,6 @@ class Installer(object):
                         retval = process.poll()
                         if retval is not None:
                             break
-                    modules.commons.log(modules.commons.LOG_INFO, "[tdnf] {0}".format(output))
                     if state == 0:
                         if output == 'Installing:\n':
                             state = 1
@@ -149,15 +148,16 @@ class Installer(object):
                             self.progress_bar.update_message('Preparing ...')
                             state = 3
                     elif state == 3:
+                        self.progress_bar.update_message(output)
                         if output == 'Running transaction\n':
                             state = 4
                     else:
+                        modules.commons.log(modules.commons.LOG_INFO, "[tdnf] {0}".format(output))
                         prefix = 'Installing/Updating: '
                         if output.startswith(prefix):
                             package = output[len(prefix):].rstrip('\n')
                             self.progress_bar.increment(packages_to_install[package])
                         self.progress_bar.update_message(output)
-                            #packages_to_install[package]))
                 # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
                 if retval != 0 and retval != 137:
                     modules.commons.log(modules.commons.LOG_ERROR, "Failed to install some packages, refer to {0}".format(modules.commons.TDNF_LOG_FILE_NAME))
@@ -285,6 +285,8 @@ class Installer(object):
 
     def bind_repo_dir(self):
         rpm_cache_dir = self.photon_root + '/cache/tdnf/photon-iso/rpms'
+        if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
+            return
         if subprocess.call(['mkdir', '-p', rpm_cache_dir]) != 0 or subprocess.call(['mount', '--bind', self.rpm_path, rpm_cache_dir]) != 0:
             modules.commons.log(modules.commons.LOG_ERROR, "Fail to bind cache rpms")
             self.exit_gracefully(None, None)
