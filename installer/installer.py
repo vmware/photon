@@ -234,10 +234,14 @@ class Installer(object):
         if self.iso_installer:
             self.progress_bar.hide()
             self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
+            eject_cdrom = True
             if self.ks_config == None:
                 self.window.content_window().getch()
-            process = subprocess.Popen(['eject', '-r'], stdout=self.output)
-            process.wait()
+            if 'eject_cdrom' in self.install_config and not self.install_config['eject_cdrom']:
+                eject_cdrom = False
+            if eject_cdrom:
+                process = subprocess.Popen(['eject', '-r'], stdout=self.output)
+                process.wait()
         return ActionResult(True, None)
         
     def copy_rpms(self):
