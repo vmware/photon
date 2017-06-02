@@ -8,8 +8,8 @@
 
 Summary:	Photon Management Daemon
 Name:		pmd
-Version:	0.0.1
-Release:	2%{?dist}
+Version:	0.0.2
+Release:	1%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	Apache 2.0
@@ -35,7 +35,7 @@ BuildRequires:	netmgmt-devel
 BuildRequires:	tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 pmd=d09828dc160b1fb12d891bed00100d9bcdd402ce
+%define sha1 pmd=2a5299ed3e4f330dc8fc874ba9fb4fc3ffa4a5c6
 Source1:        pmd.service
 
 %description
@@ -80,10 +80,8 @@ Python3 bindings for photon management daemon
 %setup -q
 
 %build
-sed -i 's,include/c-rest-engine/,include,' configure.ac
+sed -i 's/pmd, 0.0.1/pmd, 0.0.2/' configure.ac
 sed -i 's,-lcrypto,-lcrypto @LWBASE_LIBS@ -lgssapi_krb5,' server/Makefile.am
-sed -i 's,c-rest-engine/,,' server/includes.h
-sed -i 's,c-rest-engine/,,' server/restutils/includes.h
 autoreconf -mif
 ./configure \
     --prefix=%{_prefix} \
@@ -262,6 +260,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*       Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
+-       Fix python3 string issues.
 *       Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
 -       Changes for lightwave dependencies
 *       Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
