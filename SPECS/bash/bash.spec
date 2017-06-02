@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -251,11 +251,17 @@ if [ $1 -eq 1 ] ; then
         cp /etc/skel/.bash_logout /root/.bash_logout
     fi
     if [ ! -f /etc/shells ]; then
+        echo "/bin/sh" >> /etc/shells
         echo "/bin/bash" >> /etc/shells
+        echo "%{_bindir}/sh" >> /etc/shells
         echo "%{_bindir}/bash" >> /etc/shells
     else
+        grep -q '^/bin/sh$' /etc/shells || \
+        echo "/bin/sh" >> /etc/shells
         grep -q '^/bin/bash$' /etc/shells || \
         echo "/bin/bash" >> /etc/shells
+        grep -q '^%{_bindir}/sh$' /etc/shells || \
+        echo "%{_bindir}/sh" >> /etc/shells
         grep -q '^%{_bindir}/bash$' /etc/shells || \
         echo "%{_bindir}/bash" >> /etc/shells
     fi
@@ -266,9 +272,19 @@ if [ $1 -eq 0 ] ; then
     if [ -f "/root/.bash_logout" ] ; then
         rm -f /root/.bash_logout
     fi
+    if [ ! -x /bin/sh ]; then
+        grep -v '^/bin/sh$'  /etc/shells | \
+        grep -v '^/bin/sh$' > /etc/shells.rpm && \
+        mv /etc/shells.rpm /etc/shells
+    fi
     if [ ! -x /bin/bash ]; then
         grep -v '^/bin/bash$'  /etc/shells | \
         grep -v '^/bin/bash$' > /etc/shells.rpm && \
+        mv /etc/shells.rpm /etc/shells
+    fi
+    if [ ! -x %{_bindir}/sh ]; then
+        grep -v '^%{_bindir}/sh$'  /etc/shells | \
+        grep -v '^%{_bindir}/sh$' > /etc/shells.rpm && \
         mv /etc/shells.rpm /etc/shells
     fi
     if [ ! -x %{_bindir}/bash ]; then
@@ -296,6 +312,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Wed Jun 7 2017 Divya Thaluru <dthaluru@vmware.com>  4.4-4
+-   Added /usr/bin/sh and /bin/sh entries in /etc/shells
 *   Sun Jun 4 2017 Bo Gan <ganb@vmware.com> 4.4-3
 -   Fix dependency
 *   Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com> 4.4-2
