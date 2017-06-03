@@ -105,8 +105,8 @@ class constants(object):
     listToolChainXRPMsToInstall=[
         "glib-devel",
         "icu-devel",
-	"openjdk",
-	"openjre",
+        "openjdk",
+        "openjre",
         "icu",
         "harfbuzz",
         "harfbuzz-devel",
@@ -140,8 +140,7 @@ class constants(object):
         "libXt-devel",
         "libXmu-devel",
         "libXrender",
-        "libXrender-devel"
-	]
+        "libXrender-devel"]
 
     listToolChainRPMPkgsToInstall=[
         "linux-api-headers",
@@ -210,7 +209,14 @@ class constants(object):
         "man-pages",
         "elfutils",
         "cpio",
-		"go"]
+        "go",
+        "expat",
+        "libffi",
+        "openssl",
+        "openssl-devel",
+        "python2",
+        "python2-libs",
+        "python2-devel"]
 
     listToolChainRPMPkgsToBuild=[
         "linux-api-headers",
