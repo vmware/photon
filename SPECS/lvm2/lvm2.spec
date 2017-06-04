@@ -141,7 +141,7 @@ if [ $1 -eq 1 ];then
     systemctl start dm-event.socket
 fi
 %preun -n device-mapper-event
-if [ $1 -eq 0];then
+if [ $1 -eq 0 ];then
     # This is erase operation
     systemctl stop dm-event.socket
 fi
@@ -160,11 +160,9 @@ Requires:   device-mapper-libs = %{version}-%{release}
 This package contains the device-mapper event daemon shared library,
 libdevmapper-event.
 
-%post -n device-mapper-event-libs
-/sbin/ldconfig
+%post -n device-mapper-event-libs -p /sbin/ldconfig
 
-%postun -n device-mapper-event-libs
-/sbin/ldconfig
+%postun -n device-mapper-event-libs -p /sbin/ldconfig
 
 %package -n device-mapper-event-devel
 Summary:    Development libraries and headers for the device-mapper event daemon
