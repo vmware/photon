@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2k
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -69,8 +69,8 @@ make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
-ln -sf %{_libdir}/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
-ln -sf %{_libdir}/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
+ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
+ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
 %check
 make %{?_smp_mflags} tests
@@ -112,6 +112,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 1.0.2k-2
+-   Fix symlink
 *   Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-1
 -   Upgrade to 1.0.2k
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.2j-3
