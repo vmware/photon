@@ -1,7 +1,7 @@
 Summary:	Contains programs for compressing and decompressing files
 Name:		bzip2
 Version:	1.0.6
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	BSD
 URL:		http://www.bzip.org/
 Group:		System Environment/Base
@@ -46,8 +46,8 @@ install -vdm 0755 %{buildroot}/%{_lib}
 install -vdm 0755 %{buildroot}/bin
 cp -av libbz2.so* %{buildroot}/%{_lib}
 install -vdm 755 %{buildroot}%{_libdir}
-ln -sv %{_lib}/libbz2.so.%{version} %{buildroot}%{_lib}/libbz2.so
-ln -sv %{_lib}/libbz2.so.%{version} %{buildroot}%{_lib}/libbz2.so.1
+ln -sv libbz2.so.%{version} %{buildroot}%{_lib}/libbz2.so
+ln -sv libbz2.so.%{version} %{buildroot}%{_lib}/libbz2.so.1
 rm -v %{buildroot}%{_bindir}/{bunzip2,bzcat}
 ln -sv bzip2 %{buildroot}/usr/bin/bunzip2
 ln -sv bzip2 %{buildroot}/usr/bin/bzcat
@@ -87,6 +87,8 @@ make %{?_smp_mflags} check
 %{_lib}/libbz2.so.*
 
 %changelog
+*   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 1.0.6-8
+-   Fix symlink
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.6-7
 -   Added -libs subpackage
 *   Fri Oct 21 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.6-6
