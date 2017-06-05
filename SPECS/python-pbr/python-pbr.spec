@@ -4,7 +4,7 @@
 Summary:        Python Build Reasonableness
 Name:           python-pbr
 Version:        2.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -43,6 +43,7 @@ popd
 %install
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/pbr %{buildroot}/%{_bindir}/pbr3
 popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
@@ -64,10 +65,13 @@ popd
 %defattr(-,root,root)
 %license LICENSE
 %doc README.rst
+%{_bindir}/pbr3
 %{python3_sitelib}/pbr-%{version}-*.egg-info
 %{python3_sitelib}/pbr
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.1.0-3
+-   Create pbr3 script
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-2
 -   Fix arch
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.1.0-1

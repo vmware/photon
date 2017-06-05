@@ -1,9 +1,9 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-six
 Version:        1.10.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
@@ -38,27 +38,29 @@ Python 3 version.
 %setup -n six-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install py
-%{__python} test_six.py
+python2 test_six.py
 python3 test_six.py
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-six
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-6
+-   Use python2 explicitly
 *   Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 1.10.0-5
 -   Remove python-setuptools from BuildRequires
 *   Mon Jan 09 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-4

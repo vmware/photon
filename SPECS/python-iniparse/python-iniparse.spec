@@ -62,12 +62,12 @@ mv %{buildroot}/usr/share/doc/iniparse-%{version} %{buildroot}/usr/share/doc/pyt
 %check
 cp -r iniparse/ tests/
 cd tests
-python test_misc.py
-python test_tidy.py
-python test_fuzz.py
-python test_ini.py
-python test_multiprocessing.py
-python test_unicode.py
+python2 test_misc.py
+python2 test_tidy.py
+python2 test_fuzz.py
+python2 test_ini.py
+python2 test_multiprocessing.py
+python2 test_unicode.py
 
 pushd ../p3dir
 cp -r iniparse/ tests/
