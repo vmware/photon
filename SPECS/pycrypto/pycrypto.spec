@@ -1,10 +1,10 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        The Python Cryptography Toolkit.
 Name:           pycrypto
 Version:        2.7a1
-Release:        3%{?dist}
+Release:        5%{?dist}
 License:        UNKNOWN
 URL:            https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-2.7a1.tar.gz
 Source:         %{name}-%{version}.tar.gz
@@ -22,6 +22,7 @@ This is a collection of both secure hash functions (such as SHA256 and RIPEMD160
 %package -n     python3-pycrypto
 Summary:        python3-pycrypto
 BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python3
 %description -n python3-pycrypto
@@ -32,26 +33,28 @@ Python 3 version.
 %setup -q
 
 %build
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 
 %install
-python setup.py install -O1 --root=%{buildroot} --prefix=/usr
+python2 setup.py install -O1 --root=%{buildroot} --prefix=/usr
 python3 setup.py install -O1 --root=%{buildroot} --prefix=/usr
 
 %check
-python setup.py test
+python2 setup.py test
 python3 setup.py test
 
 %files
 %defattr(-,root,root)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-pycrypto
 %defattr(-, root, root)
 %{python3_sitelib}/*
 
 %changelog
+*   Wed May 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7a1-5
+-   Using python2 explicitly while building
 *   Mon Feb 27 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7a1-4
 -   Added python3 site-packages.
 *   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 2.7a1-3

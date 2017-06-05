@@ -76,10 +76,11 @@ python3 setup.py build
 popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/automat-visualize %{buildroot}/%{_bindir}/automat-visualize3
 popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 python2 setup.py test
@@ -90,12 +91,15 @@ popd
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/*
+%{_bindir}/automat-visualize
 
 %files -n python3-automat
 %defattr(-,root,root)
 %{python3_sitelib}/*
-%{_bindir}/*
+%{_bindir}/automat-visualize3
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-1
+-   Separate the python3 and python2 scripts in bin directory
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-1
 -   Initial packaging for Photon

@@ -1,6 +1,8 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Name:           python-fuse
 Version:        0.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python interface to libfuse
 License:        LGPL
 Group:          Development/Languages/Python
@@ -26,18 +28,20 @@ FUSE (Filesystem in USErspace) is a simple interface for userspace programs to e
 %setup -n %{name}-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install py
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/fuse*
+%{python2_sitelib}/fuse*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.2.1-2
+-   Change python to python2
 *   Thu Apr 06 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.2.1-1
 -   Initial version of python-fuse package for Photon.

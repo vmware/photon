@@ -1,9 +1,10 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:       Python documentation generator
 Name:          python-sphinx
 Version:       1.5.3
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
 URL:           http://www.vmware.com
@@ -88,16 +89,20 @@ rm -rf ../p3dir
 cp -a . ../p3dir
 
 %build
-python setup.py build
+python2 setup.py build
 pushd ../p3dir
 python3 setup.py build
 popd
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/sphinx-quickstart %{buildroot}/%{_bindir}/sphinx-quickstart3
+mv %{buildroot}/%{_bindir}/sphinx-build %{buildroot}/%{_bindir}/sphinx-build3
+mv %{buildroot}/%{_bindir}/sphinx-autogen %{buildroot}/%{_bindir}/sphinx-autogen3
+mv %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc3
 popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -106,14 +111,23 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root)
-%{python_sitelib}/*
+%{_bindir}/sphinx-quickstart
+%{_bindir}/sphinx-build
+%{_bindir}/sphinx-autogen
+%{_bindir}/sphinx-apidoc
+%{python2_sitelib}/*
 
 %files -n python3-sphinx
 %defattr(-,root,root)
-%{_bindir}/*
+%{_bindir}/sphinx-quickstart3
+%{_bindir}/sphinx-build3
+%{_bindir}/sphinx-autogen3
+%{_bindir}/sphinx-apidoc3
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.3-4
+-   Keep the original python2 scripts and rename the python3 scripts
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.3-3
 -   BuildRequires and Requires python-babel, python-docutils, python-jinja2,
     python-Pygments, python-six, python-alabaster, python-imagesize,

@@ -4,7 +4,7 @@
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python.
 Name:           python-simplejson
 Version:        3.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -38,16 +38,16 @@ Python 3 version.
 %setup -q -n simplejson-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install py
-python setup.py test
+python2 setup.py test
 python3 setup.py test
 
 %files
@@ -59,5 +59,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.10.0-2
+-   Use python2 explicitly
 *   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10.0-1
 -   Initial packaging for Photon
