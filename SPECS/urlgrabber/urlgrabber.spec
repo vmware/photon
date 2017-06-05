@@ -3,7 +3,7 @@
 Summary:        A high-level cross-protocol url-grabber
 Name:           urlgrabber
 Version:        3.10.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -40,7 +40,7 @@ python setup.py install -O1 --root=$RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT/%{_docdir}/urlgrabber-%{version}
 
 %check
-make  %{?_smp_mflags} test
+make test
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -54,6 +54,8 @@ rm -rf $RPM_BUILD_ROOT
 %attr(0755,root,root) /usr/libexec/urlgrabber-ext-down
 
 %changelog
+*   Tue Jun 05 2017 Chang Lee <changlee@vmware.com> 3.10.2-3
+-   Remove thread option in %check
 *   Thu May 25 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10.2-2
 -   Added pycurl to requires.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10.2-1
