@@ -1,9 +1,10 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Name:           python-jinja2
 Version:        2.9.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
@@ -45,7 +46,7 @@ rm -rf ../p3dir
 cp -a . ../p3dir
 
 %build
-python setup.py build
+python2 setup.py build
 sed -i 's/\r$//' LICENSE # Fix wrong EOL encoding
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
@@ -53,7 +54,7 @@ sed -i 's/\r$//' LICENSE # Fix wrong EOL encoding
 popd
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
@@ -65,8 +66,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %doc AUTHORS CHANGES
 %license LICENSE
-%{python_sitelib}/jinja2
-%{python_sitelib}/Jinja2-%{version}-py%{python_version}.egg-info
+%{python2_sitelib}/jinja2
+%{python2_sitelib}/Jinja2-%{version}-py%{python_version}.egg-info
 
 %files -n python3-jinja2
 %defattr(-,root,root)
@@ -76,6 +77,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.5-5
+-   Change python to python2
 *   Mon Jun 12 2017 Kumar Kaushik <kaushikk@vmware.com> 2.9.5-4
 -   Fixing import error in python3.
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.5-3

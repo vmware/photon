@@ -1,8 +1,8 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-enum34
 Version:        1.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Robust enumerated type support in Python
 License:        BSD
 Group:          Development/Libraries
@@ -29,20 +29,22 @@ An enumeration is a set of symbolic names (members) bound to unique, constant va
 %setup -n enum34-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 PATH=%{buildroot}%{_bindir}:${PATH} \
 PYTHONPATH=%{buildroot}%{python_sitelib} \
- python enum/test.py
+ python2 enum/test.py
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.1.6-2
+-   Changed python to python2
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.1.6-1
 -   Initial packaging for Photon
