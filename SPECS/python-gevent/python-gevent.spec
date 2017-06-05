@@ -1,11 +1,10 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Summary:        Coroutine-based network library
 Name:           python-gevent
 Version:        1.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -70,6 +69,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.1-3
+-   Removed erroneous line
 *   Tue May 16 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.1-2
 -   Add requires python-greenlet and python3-greenlet
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1

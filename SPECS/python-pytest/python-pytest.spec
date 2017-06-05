@@ -1,11 +1,11 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python2_version: %define python2_version %(python2 -c "import sys; sys.stdout.write(sys.version[:3])")}
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Name:           python-pytest
 Version:        3.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
@@ -62,18 +62,18 @@ popd
 %install
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
-mv %{buildroot}%{_bindir}/pytest %{buildroot}%{_bindir}/pytest-%{python2_version}
-ln -snf pytest-%{python2_version} %{buildroot}%{_bindir}/pytest-2
-mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test-%{python2_version}
-ln -snf py.test-%{python2_version} %{buildroot}%{_bindir}/py.test-2
+mv %{buildroot}%{_bindir}/pytest %{buildroot}%{_bindir}/pytest%{python2_version}
+ln -snf pytest%{python2_version} %{buildroot}%{_bindir}/pytest2
+mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test%{python2_version}
+ln -snf py.test%{python2_version} %{buildroot}%{_bindir}/py.test2
 
 
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-mv %{buildroot}%{_bindir}/pytest %{buildroot}%{_bindir}/pytest-%{python3_version}
-ln -snf pytest-%{python3_version} %{buildroot}%{_bindir}/pytest-3
-mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test-%{python3_version}
-ln -snf py.test-%{python3_version} %{buildroot}%{_bindir}/py.test-3
+mv %{buildroot}%{_bindir}/pytest %{buildroot}%{_bindir}/pytest%{python3_version}
+ln -snf pytest%{python3_version} %{buildroot}%{_bindir}/pytest3
+mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test%{python3_version}
+ln -snf py.test%{python3_version} %{buildroot}%{_bindir}/py.test3
 popd
 
 %check
@@ -81,20 +81,22 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/pytest-2
-%{_bindir}/pytest-%{python2_version}
-%{_bindir}/py.test-2
-%{_bindir}/py.test-%{python2_version}
-%{python_sitelib}/*
+%{_bindir}/pytest2
+%{_bindir}/pytest%{python2_version}
+%{_bindir}/py.test2
+%{_bindir}/py.test%{python2_version}
+%{python2_sitelib}/*
 
 %files -n python3-pytest
 %defattr(-,root,root,-)
-%{_bindir}/pytest-3
-%{_bindir}/pytest-%{python3_version}
-%{_bindir}/py.test-3
-%{_bindir}/py.test-%{python3_version}
+%{_bindir}/pytest3
+%{_bindir}/pytest%{python3_version}
+%{_bindir}/py.test3
+%{_bindir}/py.test%{python3_version}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.0.7-2
+-   Use python2 instead of python and rename the scripts in bin directory
 *   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.0.7-1
 -   Initial

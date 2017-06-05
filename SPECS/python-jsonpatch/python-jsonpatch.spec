@@ -3,7 +3,7 @@
 
 Name:           python-jsonpatch
 Version:        1.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -45,9 +45,9 @@ popd
 %install
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-mv %{buildroot}/%{_bindir}/jsonpatch %{buildroot}/%{_bindir}/jsonpatch3
-mv %{buildroot}/%{_bindir}/jsondiff %{buildroot}/%{_bindir}/jsondiff3
 popd
+mv %{buildroot}/%{_bindir}/jsondiff %{buildroot}/%{_bindir}/jsondiff3
+mv %{buildroot}/%{_bindir}/jsonpatch %{buildroot}/%{_bindir}/jsonpatch3
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
@@ -69,6 +69,8 @@ popd
 %{_bindir}/jsonpatch3
 
 %changelog
+*       Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.15-4
+-       Separate python3 and python2 specific scripts in bin directory
 *       Thu Apr 27 2017 Sarah Choi <sarahc@vmware.com> 1.15-3
 -       Rename jsonpatch for python3
 *       Thu Apr 06 2017 Sarah Choi <sarahc@vmware.com> 1.15-2
