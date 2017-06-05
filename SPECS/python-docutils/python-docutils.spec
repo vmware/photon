@@ -4,7 +4,7 @@
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python-docutils
 Version:        0.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -49,10 +49,21 @@ python3 setup.py build
 popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/rstpep2html.py %{buildroot}/%{_bindir}/rstpep2html3.py
+mv %{buildroot}/%{_bindir}/rst2xml.py %{buildroot}/%{_bindir}/rst2xml3.py
+mv %{buildroot}/%{_bindir}/rst2xetex.py %{buildroot}/%{_bindir}/rst2xetex3.py
+mv %{buildroot}/%{_bindir}/rst2s5.py %{buildroot}/%{_bindir}/rst2s53.py
+mv %{buildroot}/%{_bindir}/rst2pseudoxml.py %{buildroot}/%{_bindir}/rst2pseudoxml3.py
+mv %{buildroot}/%{_bindir}/rst2odt_prepstyles.py %{buildroot}/%{_bindir}/rst2odt_prepstyles3.py
+mv %{buildroot}/%{_bindir}/rst2odt.py %{buildroot}/%{_bindir}/rst2odt3.py
+mv %{buildroot}/%{_bindir}/rst2man.py %{buildroot}/%{_bindir}/rst2man3.py
+mv %{buildroot}/%{_bindir}/rst2latex.py %{buildroot}/%{_bindir}/rst2latex3.py
+mv %{buildroot}/%{_bindir}/rst2html5.py %{buildroot}/%{_bindir}/rst2html53.py
+mv %{buildroot}/%{_bindir}/rst2html.py %{buildroot}/%{_bindir}/rst2html3.py
 popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 python2 setup.py test
@@ -63,12 +74,35 @@ popd
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/*
+%{_bindir}/rstpep2html.py
+%{_bindir}/rst2xml.py
+%{_bindir}/rst2xetex.py
+%{_bindir}/rst2s5.py
+%{_bindir}/rst2pseudoxml.py
+%{_bindir}/rst2odt_prepstyles.py
+%{_bindir}/rst2odt.py
+%{_bindir}/rst2man.py
+%{_bindir}/rst2latex.py
+%{_bindir}/rst2html5.py
+%{_bindir}/rst2html.py
 
 %files -n python3-docutils
 %defattr(-,root,root)
 %{python3_sitelib}/*
-%{_bindir}/*
+%{_bindir}/rstpep2html3.py
+%{_bindir}/rst2xml3.py
+%{_bindir}/rst2xetex3.py
+%{_bindir}/rst2s53.py
+%{_bindir}/rst2pseudoxml3.py
+%{_bindir}/rst2odt_prepstyles3.py
+%{_bindir}/rst2odt3.py
+%{_bindir}/rst2man3.py
+%{_bindir}/rst2latex3.py
+%{_bindir}/rst2html53.py
+%{_bindir}/rst2html3.py
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.13.1-2
+-   Create separate packages for python2 and python3 in the bin directory
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.13.1-1
 -   Initial packaging for Photon

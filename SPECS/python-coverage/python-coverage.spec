@@ -1,10 +1,12 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
+%{!?python2_version: %define python2_version %(python2 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Summary:        Code coverage measurement for Python.
 Name:           python-coverage
 Version:        4.3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -62,12 +64,18 @@ popd
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/*
+%{_bindir}/coverage2
+%{_bindir}/coverage-%{python2_version}
 
 %files -n python3-coverage
 %defattr(-,root,root)
 %{python3_sitelib}/*
-%{_bindir}/*
+%{_bindir}/coverage
+%{_bindir}/coverage3
+%{_bindir}/coverage-%{python3_version}
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.3.4-2
+-   Packaging python2 and oython3 scripts in bin directory
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-1
 -   Initial packaging for Photon

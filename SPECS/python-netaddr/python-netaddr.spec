@@ -3,7 +3,7 @@
 
 Name:           python-netaddr
 Version:        0.7.19
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
@@ -26,6 +26,7 @@ A network address manipulation library for Python
 %package -n python3-netaddr
 Summary:        Python3-netaddr
 BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 %description -n python3-netaddr
 Python 3 version.
@@ -48,7 +49,6 @@ mv %{buildroot}/%{_bindir}/netaddr %{buildroot}/%{_bindir}/netaddr3
 popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
-
 %check
 easy_install py
 python2 test_netadr.py
@@ -58,15 +58,17 @@ popd
 
 %files
 %defattr(-,root,root,-)
-/usr/bin/netaddr
 %{python2_sitelib}/*
+%{_bindir}/netaddr
 
 %files -n python3-netaddr
 %defattr(-,root,root,-)
-/usr/bin/netaddr3
+%{_bindir}/netaddr3
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.19-3
+-   Separate python2 and python3 bindings
 *   Mon Mar 27 2017 XIaolin Li <xiaolinl@vmware.com> 0.7.19-2
 -   Added python3 package.
 *   Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.19-1

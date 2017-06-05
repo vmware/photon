@@ -1,8 +1,8 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-ipaddress
 Version:        1.0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
 License:        MIT
 Group:          Development/Languages/Python
@@ -28,18 +28,20 @@ IPv4/IPv6 manipulation library
 %setup -n ipaddress-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-python setup.py test
+python2 setup.py test
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.0.18-2
+-   Change python to python2
 *   Thu Feb 16 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.18-1
 -   Initial packaging for Photon
