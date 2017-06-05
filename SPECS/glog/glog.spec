@@ -1,7 +1,7 @@
 Summary:	Google's C++ logging module
 Name:		glog
 Version:	0.3.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		https://github.com/google/glog
 Source0:	https://github.com/google/glog/archive/%{name}-v%{version}.tar.gz
@@ -36,6 +36,7 @@ The contains glog package doc files.
 
 %build
 ./configure \
+    --prefix=/usr \
     --disable-silent-rules \
     --includedir=%{_includedir} \
     --libdir=%{_libdir} \
@@ -60,8 +61,10 @@ find %{buildroot} -name '*.la' -delete
 
 %files docs
 %defattr(-,root,root)
-/usr/local/share/doc/%{name}-%{version}/*
+%{_docdir}/*
 
 %changelog
+*    Thu Jun 1  2017 Bo Gan <ganb@vmware.com> 0.3.4-2
+-    Fix file paths
 *    Sat Mar 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.4-1
 -    Initial version of glog for Photon.

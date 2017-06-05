@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -10,13 +10,12 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=1730812af1cdd77493e269b371ef8ac536230c15
-
-%define java_macros_version 1.8.0.121-1%{?dist}
-Requires: openjre >= %{java_macros_version}
-BuildRequires: openjre >= %{java_macros_version}
-BuildRequires: openjdk >= %{java_macros_version}
-BuildRequires: apache-ant >= 1.9.6
+BuildRequires: openjre8 >= %{JAVA8_VERSION}
+BuildRequires: openjdk8 >= %{JAVA8_VERSION}
+BuildRequires: apache-ant >= %{ANT_VERSION}
 BuildRequires: wget >= 1.15
+Requires: openjre8 >= %{JAVA8_VERSION}
+Requires: which
 
 %define _prefix /var/opt/apache-maven-%{version}
 %define _bindir %{_prefix}/bin
@@ -32,9 +31,8 @@ The Maven package contains binaries for a build system
 
 %build
 MAVEN_DIST_DIR=%{_prefix}
-
-export JAVA_HOME=%{_java_home}
-export ANT_HOME=%{_ant_home}
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 export PATH=$PATH:$ANT_HOME/bin
 source /etc/profile.d/apache-maven.sh
 
@@ -71,6 +69,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.0-2
+-	Renamed openjdk to openjdk8
 *   Mon Apr 24 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.0-1
 -   Updated apache-maven to version 3.5.0
 *   Fri Mar 31 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-8

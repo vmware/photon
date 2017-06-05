@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.2.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -19,7 +19,7 @@ Requires:  e2fsprogs
 Requires:  gawk >= 4.1.3
 Requires:  krb5 >= 1.14
 Requires:  likewise-open >= 6.2.10
-Requires:  openjre >= 1.8.0.112
+Requires:  openjre8 >= %{JAVA8_VERSION}
 Requires:  openssl >= 1.0.2
 Requires:  lightwave-client = %{version}
 
@@ -36,7 +36,7 @@ BuildRequires: jansson-devel
 BuildRequires: jaxws-ri = 2.2.10
 BuildRequires: krb5-devel >= 1.14
 BuildRequires: likewise-open-devel >= 6.2.10
-BuildRequires: openjdk > 1.8.0.112
+BuildRequires: openjdk8 >= %{JAVA8_VERSION}
 BuildRequires: openssl-devel >= 1.0.2
 BuildRequires: python2-devel >= 2.7.8
 BuildRequires: sqlite-devel >= 3.14
@@ -51,6 +51,9 @@ VMware Lightwave Server
 %define _commons_daemon_home /var/opt/commons-daemon-1.0.15
 %define _tomcat_home /var/opt/apache-tomcat-8.5.13
 %define _jaxws_home /opt/jaxws-ri-2.2.10
+%define _java_home /usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+%define _ant_home /var/opt/apache-ant-%{ANT_VERSION}
+%define _maven_home /var/opt/apache-maven-%{MAVEN_VERSION}
 
 %if 0%{?_likewise_open_prefix:1} == 0
 %define _likewise_open_prefix /opt/likewise
@@ -97,7 +100,7 @@ Requires: openssl >= 1.0.2
 Requires: jansson
 Requires: krb5 >= 1.14
 Requires: likewise-open >= 6.2.9
-Requires: openjdk >= 1.8.0.45
+Requires: openjdk8 >= %{JAVA8_VERSION}
 Requires: boost = 1.63.0
 Requires: lightwave-client-libs = %{version}-%{release}
 
@@ -1115,5 +1118,7 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-2
+-   disable java macros and use java alternatives
 *   Mon May 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-1
 -   Initial - spec modified for Photon from lightwave git repo.
