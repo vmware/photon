@@ -3,7 +3,7 @@
 
 Name:           python-iniparse
 Version:        0.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 License:        MIT
@@ -62,12 +62,12 @@ mv %{buildroot}/usr/share/doc/iniparse-%{version} %{buildroot}/usr/share/doc/pyt
 %check
 cp -r iniparse/ tests/
 cd tests
-python test_misc.py
-python test_tidy.py
-python test_fuzz.py
-python test_ini.py
-python test_multiprocessing.py
-python test_unicode.py
+python2 test_misc.py
+python2 test_tidy.py
+python2 test_fuzz.py
+python2 test_ini.py
+python2 test_multiprocessing.py
+python2 test_unicode.py
 
 pushd ../p3dir
 cp -r iniparse/ tests/
@@ -92,6 +92,8 @@ popd
 
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.4-5
+-   Use python2 explicitly to build
 *   Mon May 22 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4-4
 -   Added python3 subpackage.
 *   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 0.4-3

@@ -4,7 +4,7 @@
 Summary:        Markdown to reStructuredText converter.
 Name:           python-m2r
 Version:        0.1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -53,10 +53,11 @@ python3 setup.py build
 popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/m2r %{buildroot}/%{_bindir}/m2r3
 popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 python2 setup.py test
@@ -67,12 +68,15 @@ popd
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/*
+%{_bindir}/m2r
 
 %files -n python3-m2r
 %defattr(-,root,root)
 %{python3_sitelib}/*
-%{_bindir}/*
+%{_bindir}/m2r3
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.1.5-2
+-   Separate the python2 and python3 scripts in the bin directory
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.5-1
 -   Initial packaging for Photon
