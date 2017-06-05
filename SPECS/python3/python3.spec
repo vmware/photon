@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -108,6 +108,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 chmod -v 755 %{buildroot}%{_libdir}/libpython3.6m.so.1.0
 %{_fixperms} %{buildroot}/*
+ln -sf libpython3.6m.so %{buildroot}%{_libdir}/libpython3.6.so
 
 # Remove unused stuff
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
@@ -118,19 +119,8 @@ rm %{buildroot}%{_bindir}/2to3
 %check
 make  %{?_smp_mflags} test
 
-%post
-/sbin/ldconfig
-ln -sf %{_libdir}/libpython3.6m.so %{_libdir}/libpython3.6.so
-
-%post libs
-export PYTHONHOME=/usr
-export PYTHONPATH=/usr/lib/python3.6
-
-%postun
-if [ $1 -eq 0 ] ; then
-    rm %{_libdir}/libpython3.6.so
-fi
-/sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -148,6 +138,7 @@ rm -rf %{buildroot}/*
 %dir %{_libdir}/python3.6/site-packages
 
 %{_libdir}/libpython3.so
+%{_libdir}/libpython3.6.so
 %{_libdir}/libpython3.6m.so
 %{_libdir}/libpython3.6m.so.1.0
 %{_libdir}/pkgconfig/python-3.6.pc
@@ -190,6 +181,8 @@ rm -rf %{buildroot}/*
 %exclude %{_bindir}/idle*
 
 %changelog
+*   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 3.6.1-3
+-   Fix symlink and script
 *   Wed May 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.6.1-2
 -   Exclude idle3.
 *   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.1-1
