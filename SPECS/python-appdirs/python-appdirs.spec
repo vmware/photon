@@ -1,9 +1,9 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-appdirs
 Version:        1.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
@@ -38,26 +38,28 @@ Python 3 version.
 %setup -n appdirs-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install py
-%{__python} test_appdirs.py
+python2 test_appdirs.py
 python3 test_appdirs.py
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-appdirs
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.3-2
+-   Change python to python2
 *   Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 1.4.3-1
 -   Create appdirs 1.4.3

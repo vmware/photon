@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
 Version:        17.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -63,10 +63,18 @@ python3 setup.py build
 popd
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/twistd %{buildroot}/%{_bindir}/twistd3
+mv %{buildroot}/%{_bindir}/trial %{buildroot}/%{_bindir}/trial3
+mv %{buildroot}/%{_bindir}/tkconch %{buildroot}/%{_bindir}/tkconch3
+mv %{buildroot}/%{_bindir}/pyhtmlizer %{buildroot}/%{_bindir}/pyhtmlizer3
+mv %{buildroot}/%{_bindir}/twist %{buildroot}/%{_bindir}/twist3
+mv %{buildroot}/%{_bindir}/conch %{buildroot}/%{_bindir}/conch3
+mv %{buildroot}/%{_bindir}/ckeygen %{buildroot}/%{_bindir}/ckeygen3
+mv %{buildroot}/%{_bindir}/cftp %{buildroot}/%{_bindir}/cftp3
 popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install tox
@@ -75,13 +83,31 @@ tox -e py27-tests
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/*
+%{_bindir}/twistd
+%{_bindir}/trial
+%{_bindir}/tkconch
+%{_bindir}/pyhtmlizer
+%{_bindir}/twist
+%{_bindir}/mailmail
+%{_bindir}/conch
+%{_bindir}/ckeygen
+%{_bindir}/cftp
 
 %files -n python3-Twisted
 %defattr(-,root,root)
 %{python3_sitelib}/*
-%{_bindir}/*
+%{_bindir}/twistd3
+%{_bindir}/trial3
+%{_bindir}/tkconch3
+%{_bindir}/pyhtmlizer3
+%{_bindir}/twist3
+%{_bindir}/conch3
+%{_bindir}/ckeygen3
+%{_bindir}/cftp3
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 17.1.0-5
+-   Adding python3 scripts to bin directory
 *   Tue May 09 2017 Rongrong Qiu <rqiu@vmware.com> 17.1.0-4
 -   Added python-constantly to the requires.
 *   Mon Mar 27 2017 Xiaolin Li <xiaolinl@vmware.com> 17.1.0-3

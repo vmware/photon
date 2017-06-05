@@ -1,11 +1,10 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python-markupsafe
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -60,6 +59,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.0-2
+-   Removed erroneous version line
 *   Thu Mar 30 2017 Sarah Choi <sarahc@vmware.com> 1.0-1
 -   Upgrade version to 1.0
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 0.23-1

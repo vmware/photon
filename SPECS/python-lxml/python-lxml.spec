@@ -1,9 +1,9 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python-lxml
 Version:        3.7.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
@@ -42,11 +42,11 @@ Python 3 version.
 %setup -q -n lxml-%{version}
 
 %build
-%{__python} setup.py build
+python2 setup.py build
 python3 setup.py build
 
 %install
-%{__python} setup.py install --skip-build --root %{buildroot}
+python2 setup.py install --skip-build --root %{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
@@ -57,14 +57,16 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{python_sitearch}/lxml/*
-%{python_sitearch}/lxml-%{version}-py2.7.egg-info
+%{python2_sitelib}/lxml/*
+%{python2_sitelib}/lxml-%{version}-py2.7.egg-info
 
 %files -n python3-lxml
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.7.3-2
+-   Use python2_sitelib
 *   Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 3.7.3-1
 -   Update to 3.7.3
 *   Wed Feb 08 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.0b1-4
