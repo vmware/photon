@@ -4,7 +4,7 @@
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python-daemon
 Version:        2.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2
 Url:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
@@ -61,7 +61,7 @@ popd
 %check
 python2 setup.py test
 
-pshd ../p3dir
+pushd ../p3dir
 python3 setup.py test
 popd
 
@@ -73,6 +73,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.1.2-2
+-   Corrected an error in command
 *   Fri Mar 24 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.2-1
 -   Initial packaging for Photon
 
