@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
-Version:	8.5.13
-Release:	3%{?dist}
+Version:	8.5.15
+Release:	1%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
 Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1 apache-tomcat=a2097a08b023c363098917078d9a23bd7a3b6032
+%define sha1 apache-tomcat=5f26f71a1a3730020254a76aca1ee2615bd12d02
 BuildRequires: openjre8 >= %{JAVA8_VERSION}
 BuildRequires: openjdk8 >= %{JAVA8_VERSION}
 BuildRequires: apache-ant >= %{ANT_VERSION}
@@ -71,6 +71,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*   Tue Jun 6 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.15-1
+-   Upgraded to version 8.5.15
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.13-3
 -   Renamed openjdk to openjdk8
 *   Tue Apr 18 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.13-2
