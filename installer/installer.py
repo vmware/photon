@@ -131,7 +131,6 @@ class Installer(object):
                         retval = process.poll()
                         if retval is not None:
                             break
-                    modules.commons.log(modules.commons.LOG_INFO, "[tdnf] {0}".format(output))
                     if state == 0:
                         if output == 'Installing:\n':
                             state = 1
@@ -149,28 +148,31 @@ class Installer(object):
                             self.progress_bar.update_message('Preparing ...')
                             state = 3
                     elif state == 3:
+                        self.progress_bar.update_message(output)
                         if output == 'Running transaction\n':
                             state = 4
                     else:
+                        modules.commons.log(modules.commons.LOG_INFO, "[tdnf] {0}".format(output))
                         prefix = 'Installing/Updating: '
                         if output.startswith(prefix):
                             package = output[len(prefix):].rstrip('\n')
                             self.progress_bar.increment(packages_to_install[package])
                         self.progress_bar.update_message(output)
-                            #packages_to_install[package]))
                 # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
                 if retval != 0 and retval != 137:
                     modules.commons.log(modules.commons.LOG_ERROR, "Failed to install some packages, refer to {0}".format(modules.commons.TDNF_LOG_FILE_NAME))
                     self.exit_gracefully(None, None)
         else:
         #install packages
+            rpms = []
             for rpm in self.rpms_tobeinstalled:
                 # We already installed the filesystem in the preparation
                 if rpm['package'] == 'filesystem':
                     continue
-                return_value = self.install_package(rpm['filename'])
-                if return_value != 0:
-                    self.exit_gracefully(None, None)
+                rpms.append(rpm['filename'])
+            return_value = self.install_package(rpms)
+            if return_value != 0:
+                self.exit_gracefully(None, None)
 
 
         if self.iso_installer:
@@ -289,6 +291,8 @@ class Installer(object):
 
     def bind_repo_dir(self):
         rpm_cache_dir = self.photon_root + '/cache/tdnf/photon-iso/rpms'
+        if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
+            return
         if subprocess.call(['mkdir', '-p', rpm_cache_dir]) != 0 or subprocess.call(['mount', '--bind', self.rpm_path, rpm_cache_dir]) != 0:
             modules.commons.log(modules.commons.LOG_ERROR, "Fail to bind cache rpms")
             self.exit_gracefully(None, None)
@@ -379,20 +383,24 @@ class Installer(object):
             retval = process.wait()
             # remove the tdnf cache directory and the swapfile.
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "cache")], stdout=self.output)
+            retval = process.wait()
 
-    def install_package(self,  package_name):
-        rpm_params = ''
+    def install_package(self,  rpm_file_names):
 
-        os.environ["RPMROOT"] = self.rpm_path
-        rpm_params = rpm_params + ' --force '
-        rpm_params = rpm_params + ' --root ' + self.photon_root
-        rpm_params = rpm_params + ' --dbpath /var/lib/rpm '
+        rpms = set(rpm_file_names)
+        rpm_paths = []
+        for root, dirs, files in os.walk(self.rpm_path):
+            for f in files:
+                if f in rpms:
+                    rpm_paths.append(os.path.join(root, f))
+
+        rpm_params = ['--root', self.photon_root, '--dbpath', '/var/lib/rpm']
 
         if ('type' in self.install_config and (self.install_config['type'] in ['micro', 'minimal'])) or self.install_config['iso_system']:
-            rpm_params = rpm_params + ' --excludedocs '
+            rpm_params.append('--excludedocs')
 
-        process = subprocess.Popen([self.install_package_command, '-w', self.photon_root, package_name, rpm_params],  stdout=self.output)
-
+        modules.commons.log(modules.commons.LOG_INFO, "installing packages {0}, with params {1}".format(rpm_paths, rpm_params))
+        process = subprocess.Popen(['rpm', '-Uvh'] + rpm_params + rpm_paths, stderr=subprocess.STDOUT)
         return process.wait()
 
     def execute_modules(self, phase):

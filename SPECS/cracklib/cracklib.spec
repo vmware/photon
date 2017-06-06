@@ -5,7 +5,7 @@
 Summary:        A password strength-checking library.
 Name:           cracklib
 Version:        2.9.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          System Environment/Libraries
 Source:         cracklib-%{version}.tar.gz
 %define sha1    cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
@@ -16,6 +16,9 @@ URL:            http://sourceforge.net/projects/cracklib/
 License:        GPL
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Requires:         /bin/ln
+Requires(post):   /bin/ln
+Requires(postun): /bin/rm
 
 %description
 CrackLib tests passwords to determine whether they match certain
@@ -206,6 +209,8 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+*   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
+-   Fix script dependency
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-6
 -   Move python2 requires to python subpackage and added python3.
 *   Thu Apr 13 2017 Bo Gan <ganb@vmware.com> 2.9.6-5

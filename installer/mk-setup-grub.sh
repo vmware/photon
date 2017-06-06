@@ -43,7 +43,7 @@ EOF
 
 grub_mbr_install()
 {
-    $grubInstallCmd --force --boot-directory=$BUILDROOT/boot "$HDD"
+    $grubInstallCmd --target=i386-pc --force --boot-directory=$BUILDROOT/boot "$HDD"
 }
 
 set -o errexit        # exit if error...insurance ;)

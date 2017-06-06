@@ -221,6 +221,9 @@ class SpecParser(object):
             while i < totalContents:
                 dpkg = dependentPackageData()
                 compare=None
+                if listContents[i].startswith("/"):
+                    i=i+1
+                    continue
                 if i+2 < len(listContents):
                     if listContents[i+1] == ">=":
                         compare="gte"
