@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.6.2
+Version:        9.6.3
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    postgresql=3159151f2fc74ec3e684ec0dc8949494b608fb3c
+%define sha1    postgresql=f596ca487e0c4d41ccc628b1d69b180fb23402db
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -160,6 +160,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/psqlrc.sample
 
 %changelog
+*   Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
+-   Upgrade to 9.6.3
 *   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
 -   Upgrade to 9.6.2 for Photon upgrade bump 
 *   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
