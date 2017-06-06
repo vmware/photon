@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -44,6 +44,7 @@ Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
 Requires:       coreutils
+Requires:       gdbm
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size
 # Requires: binutils
@@ -222,6 +223,8 @@ rm -rf %{buildroot}/*
 %exclude %{_bindir}/idle*
 
 %changelog
+*   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.7.13-6
+-   Fix dependency for libs
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 2.7.13-5
 -   Fixing python issue 29188, backport random.c from 3.5 to 2.7.
 *   Fri Apr 28 2017 Harish Udaiya <hudaiyakumar@vmware.com> 2.7.13-4

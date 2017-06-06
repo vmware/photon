@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -20,6 +20,7 @@ Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
+Requires:       libarchive
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
@@ -259,6 +260,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 4.13.0.1-3
+-   Fix Dependency
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-2
 -   Remove python2 from requires of rpm-devel subpackages.
 *   Wed May 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0.1-1
