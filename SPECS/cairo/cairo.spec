@@ -1,7 +1,7 @@
 Summary:	A 2D graphics library.
 Name:		cairo
 Version:	1.14.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2 or MPLv1.1
 URL:		http://cairographics.org
 Group:		System Environment/Libraries
@@ -49,9 +49,6 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 %post
 /sbin/ldconfig
 
@@ -73,5 +70,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Tue Jun 06 2017 Chang Lee <changlee@vmware.com> 1.14.8-2
+-       Remove %check
 *       Wed Apr 05 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-1
 -       Initial version
