@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -15,6 +15,10 @@ Provides:	/bin/sh
 Provides:	/bin/bash
 BuildRequires:  readline
 Requires:       readline
+Requires(post):    grep
+Requires(post):    /bin/cp
+Requires(postun):  grep
+Requires(postun):  /bin/mv
 %description
 The package contains the Bourne-Again SHell
 
@@ -292,6 +296,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Sun Jun 4 2017 Bo Gan <ganb@vmware.com> 4.4-3
+-   Fix dependency
 *   Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com> 4.4-2
 -   Modified bash entry in /etc/shells
 *   Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4-1
