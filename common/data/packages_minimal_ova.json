@@ -9,7 +9,7 @@
                 "open-vm-tools",
                 "docker","bridge-utils",
                 "cloud-init",
-                "krb5", "which", "tzdata", "motd"]
+                "krb5", "which", "tzdata", "motd", "gdbm"]
 }
 
 
