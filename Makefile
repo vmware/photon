@@ -31,7 +31,6 @@ else
 PHOTON_SOURCES ?= sources
 endif
 
-MINIMAL_PACKAGE_LIST_FILE := build_install_options_minimal.json
 MICRO_PACKAGE_LIST_FILE := build_install_options_micro.json
 FULL_PACKAGE_LIST_FILE := build_install_options_all.json
 
@@ -75,7 +74,7 @@ clean-install clean-chroot build-updated-packages check
 
 THREADS?=1
 
-all: iso minimal-iso docker-image live-iso cloud-image-all src-iso
+all: iso docker-image live-iso cloud-image-all src-iso
 
 micro: micro-iso
 	@:
@@ -114,27 +113,7 @@ packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
                 $(PHOTON_RPMCHECK_FLAGS) \
                 -t ${THREADS}
 
-minimal: minimal-iso
-	@:
-
-minimal-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
-	@echo "Building Photon Minimal ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-        $(PHOTON_INSTALLER) \
-                -i $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
-                -k $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
-                -w $(PHOTON_STAGE)/photon_iso \
-                -l $(PHOTON_STAGE)/LOGS \
-                -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
-                -c $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
-                -o $(PHOTON_STAGE)/common/data \
-                -d $(PHOTON_STAGE)/pkg_info.json \
-                -s $(PHOTON_DATA_DIR) \
-                -f > \
-                $(PHOTON_LOGS_DIR)/installer.log 2>&1
-
-live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
+live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 	@echo "Building Photon Minimal LIVE ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
