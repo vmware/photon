@@ -1,7 +1,7 @@
 Summary:	Command-line editing and history capabilities
 Name:		readline
 Version:	7.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 Group:		Applications/System
@@ -10,7 +10,7 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/readline/%{name}-%{version}.tar.gz
 %define sha1 readline=d9095fa14a812495052357e1d678b3f2ac635463
 BuildRequires:	ncurses-devel
-Requires:	ncurses
+Requires:	ncurses-libs
 %description
 The Readline package is a set of libraries that offers command-line
 editing and history capabilities.
@@ -96,6 +96,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/history.3.gz
 %{_mandir}/man3/readline.3.gz
 %changelog
+*       Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 7.0-2
+-       Fix dependency
 *       Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.0-1
 -       Updated to version 7.0
 *       Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 6.3-6

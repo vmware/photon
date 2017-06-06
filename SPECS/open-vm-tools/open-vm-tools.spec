@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.1.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -38,6 +38,7 @@ Requires:       glib
 Requires:       xml-security-c
 Requires:       openssl
 Requires:       systemd
+Requires:	libstdc++
 %description
 VmWare virtualization user mode tools
 %prep
@@ -107,6 +108,8 @@ fi
 
 
 %changelog
+*	Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 10.1.5-5
+-	Fix dependency
 *       Thu Apr 20 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-4
 -       Timezone customization, PR # 1684889
 *       Fri Apr 07 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-3
