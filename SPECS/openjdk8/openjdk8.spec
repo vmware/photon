@@ -3,7 +3,7 @@
 Summary:	OpenJDK 
 Name:		openjdk8
 Version:	1.8.0.131
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -33,6 +33,7 @@ The OpenJDK package installs java class library and javac java compiler.
 Summary:	Java runtime environment
 AutoReqProv: 	no
 Requires:       chkconfig
+Requires:	libstdc++
 %description	-n openjre8
 It contains the libraries files for Java runtime environment
 
@@ -226,6 +227,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*	Tue Jun 06 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
+-	Add requires for libstdc++
 *	Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1
 -	Upgraded to version 1.8.0.131 and building Java from sources
 *   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
