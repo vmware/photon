@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.5.4
-Release:        3%{?dist}
+Version:        9.5.7
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1 postgresql=bdbbecf691354a689c599631256d41eaa8824c66
+%define sha1 postgresql=3bb9675025cf1c2a5722f45a0fc8d0891669e094
 # Common libraries needed
 BuildRequires:  krb5
 BuildRequires:  libxml2-devel
@@ -139,6 +139,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpq*.so
 
 %changelog
+*   Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.5.7-1
+-   Upgraded to version 9.5.7
 *   Mon May 01 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-3
 -   Removed Provides section from main libs packages. Removed static lib files.
 *   Thu Apr 13 2017 Xiaolin Li <xiaolinl@vmware.com> 9.5.4-2
