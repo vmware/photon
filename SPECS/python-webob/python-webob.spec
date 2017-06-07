@@ -4,7 +4,7 @@
 Summary:        WebOb provides objects for HTTP requests and responses..
 Name:           python-webob
 Version:        1.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -32,6 +32,8 @@ Summary:        python-webob
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -64,6 +66,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Mar 30 2017 Siju Maliakkal <smaliakkal@vmware.com> 1.7.2-1
 -   Updating package to 1.7.2-1
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.1-1
