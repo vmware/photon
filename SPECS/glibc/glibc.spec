@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -156,11 +156,8 @@ EOF
 popd
 %find_lang %{name} --all-name
 
-%post
-printf "Creating ldconfig cache\n";/sbin/ldconfig
-
-%postun
-/sbin/ldconfig
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -206,6 +203,8 @@ printf "Creating ldconfig cache\n";/sbin/ldconfig
 
 
 %changelog
+*   Wed Jun 07 2017 Bo Gan <ganb@vmware.com> 2.22-11
+-   Fix post/postun
 *   Tue Apr 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.22-10
 -   Fix CVE-2016-3075, CVE-2016-3706, CVE-2016-1234 and CVE-2016-4429
 *   Wed Sep 28 2016 Alexey Makhalov <amakhalov@vmware.com> 2.22-9

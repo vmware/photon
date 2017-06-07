@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -93,7 +93,6 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %files
 %defattr(-,root,root)
 %{_bindir}/captoinfo
-%{_bindir}/ncursesw6-config
 %{_bindir}/clear
 %{_bindir}/tabs
 %{_bindir}/tic
@@ -119,6 +118,7 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_bindir}/ncursesw5-config
 
 %files devel
+%{_bindir}/ncursesw6-config
 %{_includedir}/*.h
 %{_libdir}/libncurses.a
 %{_libdir}/libformw.a
@@ -152,6 +152,8 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
 %changelog
+*   Wed Jun 07 2017 Bo Gan <ganb@vmware.com> 6.0-4
+-   Remove ncurses /bin/sh dependency
 *   Wed Mar 29 2017 Alexey Makhalov <amakhalov@vmware.com> 6.0-3
 -   --with-chtype=long --with-mmask-t=long to avoid type clashes (1838226)
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-2
