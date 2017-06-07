@@ -260,7 +260,7 @@ if [ "$LIVE_CD" = false ] ; then
 
     for j in `ls ${BUILDROOT}/usr/sbin/grub2*`; do
         bsname=$(basename "$j")
-        if [ $bsname != 'grub2-efi-install' -a $bsname != 'grub2-install' ]; then
+        if [ $bsname != 'grub2-install' ]; then
             rm $j
         fi
     done
