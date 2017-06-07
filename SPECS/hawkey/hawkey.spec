@@ -4,7 +4,7 @@
 Summary:        Hawkey
 Name:           hawkey
 Version:        2017.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
 Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -85,10 +85,14 @@ find %{buildroot} -name '*.la' -delete
 popd
 
 %check
+pushd build
 cp src/libhawkey.* /lib
 easy_install nose
 PYTHONPATH=`readlink -f ./src/python/` nosetests -s tests/python/tests/
-tests/test_main tests/repos/
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test tests/test_main ../tests/repos/ && userdel test -r -f
+popd
 
 %files
 %defattr(-,root,root)
@@ -110,6 +114,8 @@ tests/test_main tests/repos/
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-3
+-   Fix check issues.
 *   Mon May 22 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-2
 -   Added python3 subpackage.
 *   Wed Apr 05 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.1-1
