@@ -1,7 +1,7 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
 Version:	2.1.20
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
@@ -22,6 +22,7 @@ BuildRequires:  libgpg-error >= 1.24
 Requires:       libksba
 Requires:       npth
 Requires:       libassuan
+Requires:       pinentry
 Provides:       gpg
 
 
@@ -57,6 +58,8 @@ make DESTDIR=%{buildroot} install
 %exclude /usr/share/doc/*
 
 %changelog
+*       Wed Jun 07 2017 Danut Moraru <dmoraru@vmware.com> 2.1.20-2
+-       Add pinentry dependency
 *       Tue Apr 11 2017 Danut Moraru <dmoraru@vmware.com> 2.1.20-1
 -       Update to 2.1.20
 *       Wed Jul 27 2016 Kumar Kaushik <kaushikk@vmware.com> 2.0.30-1
