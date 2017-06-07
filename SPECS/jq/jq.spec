@@ -1,13 +1,15 @@
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
 Version:       1.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       MIT
 URL:           https://github.com/stedolan/jq
 Source0:       https://github.com/stedolan/jq/releases/download/jq-1.5/jq-1.5.tar.gz
 %define sha1 jq=6eef3705ac0a322e8aa0521c57ce339671838277
+Patch0:        CVE-2015-8863.patch
+Patch1:        CVE-2016-4074.patch
 Distribution:  Photon
 
 %description
@@ -23,6 +25,8 @@ Development files for jq
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
 ./configure \
@@ -54,5 +58,7 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*  Wed Jun 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5-2
+-  Fix for CVE-2015-8863 and CVE-2016-4074
 *  Mon May 15 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5-1
 -  Initial version
