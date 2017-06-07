@@ -4,7 +4,7 @@
 Summary:        MessagePack (de)serializer.
 Name:           python-msgpack
 Version:        0.4.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -23,6 +23,8 @@ MessagePack is a fast, compact binary serialization format, suitable for similar
 %package -n     python3-msgpack
 Summary:        Python3 msgpack
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 
 %description -n python3-msgpack
@@ -59,5 +61,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4.8-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu May 25 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4.8-1
 -   Initial version

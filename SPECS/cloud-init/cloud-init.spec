@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -27,6 +27,8 @@ BuildRequires:  dbus
 BuildRequires:  python3-ipaddr
 BuildRequires:  iproute2
 BuildRequires:  automake
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       systemd
 Requires:       net-tools
@@ -161,6 +163,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.9-6
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Jun 5 2017 Julian Vassev <jvassev@vmware.com> 0.7.9-5
 -   Enable OVF datasource by default
 *   Mon May 22 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-4

@@ -4,7 +4,7 @@
 Summary:        The fastest markdown parser in pure Python.
 Name:           python-mistune
 Version:        0.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -32,6 +32,8 @@ The fastest markdown parser in pure Python with renderer features, inspired by m
 Summary:        python-mistune
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -71,5 +73,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.4-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.4-1
 -   Initial packaging for Photon

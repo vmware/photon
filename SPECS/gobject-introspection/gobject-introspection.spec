@@ -4,7 +4,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.52.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -47,6 +47,8 @@ Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-xml
+Requires:       python3-xml
 Requires:       python3
 %description -n python3-gobject-introspection
 This package contains a Python package for handling the introspection
@@ -131,6 +133,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.52.1-3
+-   Add python3-xml to python3 sub package Buildrequires.
 *   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.52.1-2
 -   Added python3 subpackage.
 *   Wed Apr 12 2017 Danut Moraru <dmoraru@vmware.com> 1.52.1-1
