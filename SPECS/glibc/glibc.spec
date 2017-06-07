@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.25
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -16,6 +16,9 @@ Source1:	locale-gen.sh
 Source2:	locale-gen.conf
 Patch0:   	http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
 Patch1:		glibc-2.24-bindrsvport-blacklist.patch
+#Patches 2 & 3 from here : https://github.com/guidovranken/rpcbomb
+Patch2:		libtirpc_CVE_2017-8804.patch
+Patch3:		librpcbind_CVE_2017_8804.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -71,6 +74,8 @@ Name Service Cache Daemon
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -253,6 +258,8 @@ sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
 
 %changelog
+*   Wed Jun 07 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.25-4
+-   Added patches for CVE-2017-8804 (and related CVE-2017-8779)
 *   Thu May 4  2017 Bo Gan <ganb@vmware.com> 2.25-3
 -   Remove bash dependency in post/postun script
 *   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-2
