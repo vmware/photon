@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.70
-Release:    	2%{?dist}
+Release:    	3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -274,6 +274,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Jun 6 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-3
+-   [feature] IPV6 netfilter NAT table support
 *   Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-2
 -   Added ENA driver for AMI
 *   Thu May 25 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-1
