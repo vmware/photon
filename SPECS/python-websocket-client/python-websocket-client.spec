@@ -3,7 +3,7 @@
 
 Name:           python-websocket-client
 Version:        0.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
@@ -25,6 +25,8 @@ WebSocket client for python
 %package -n     python3-websocket-client
 Summary:        WebSocket client for python3
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 %description -n python3-websocket-client
 WebSocket client for python3
@@ -56,5 +58,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.0-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Sun Jun 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.0-1
 -   Initial version of python WebSocket for PhotonOS.

@@ -4,14 +4,14 @@
 Summary:        Python Build Reasonableness
 Name:           python-pbr
 Version:        2.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://docs.openstack.org/developer/pbr/
 Source0:        https://pypi.io/packages/source/p/pbr/pbr-%{version}.tar.gz
-%define sha1	pbr=cb5278676a96b429e491435ac04cfaf97b41d1c5
+%define sha1    pbr=cb5278676a96b429e491435ac04cfaf97b41d1c5
 
 BuildRequires:  python-docutils
 BuildRequires:  python-setuptools
@@ -24,6 +24,8 @@ A library for managing setuptools packaging needs in a consistent manner.
 %package -n     python3-pbr
 Summary:        Python Build Reasonableness
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 
 %description -n python3-pbr
@@ -68,6 +70,8 @@ popd
 %{python3_sitelib}/pbr
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.0-3
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.0-2
 -   Fix arch
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.1.0-1
