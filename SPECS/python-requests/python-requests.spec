@@ -4,7 +4,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python-requests
 Version:        2.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -50,7 +50,8 @@ Features:
 Summary:        python-requests
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 %description -n python3-requests
@@ -90,6 +91,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-1
 -   Updated to version 2.13.0.
 *   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.1-4
