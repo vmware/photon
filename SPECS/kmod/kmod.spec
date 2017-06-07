@@ -1,7 +1,7 @@
 Summary:	Utilities for loading kernel modules
 Name:		kmod
 Version:	24
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:		Applications/System
@@ -34,9 +34,6 @@ for target in depmod insmod lsmod modinfo modprobe rmmod; do
 done
 find %{buildroot} -name '*.la' -delete
 
-%check
-make %{?_smp_mflags} check
-
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files
@@ -49,6 +46,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 %{_datadir}/bash-completion/completions/kmod
 %changelog
+*   Tue Jun 06 2017 Chang Lee <changlee@vmware.com> 24-2
+-   Remove %check
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 24-1
 -   Updated to version 24
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 21-4
