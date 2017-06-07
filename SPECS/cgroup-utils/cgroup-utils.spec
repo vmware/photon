@@ -3,7 +3,7 @@
 Summary:        Utility tools for control groups of Linux
 Name:           cgroup-utils
 Version:        0.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          Development/Libraries
 URL:            https://pypi.python.org/pypi/cgroup-utils/0.6
@@ -23,7 +23,8 @@ cgutil top is a top-like tool which shows activities of running processes in con
 %package -n     python3-cgroup-utils
 Summary:        python3-cgroup-utils
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 %description -n python3-cgroup-utils
 %prep
@@ -64,6 +65,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-4
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-3
 -   Added python3 subpackage.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6-2

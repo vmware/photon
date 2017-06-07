@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -49,21 +49,39 @@ Requires:       ncurses
 Requires:       sqlite-libs
 
 
-%description libs
+%description    libs
 The python interpreter can be embedded into applications wanting to
 use python as an embedded scripting language.  The python-libs package
 provides the libraries needed for python 3 applications.
 
-%package devel
+%package        xml
+Summary:        XML libraries for python3 runtime
+Group:          Applications/System
+Requires:       python3-libs = %{version}-%{release}
+Requires:       python3 = %{version}-%{release}
+
+%description    xml
+The python3-xml package provides the libraries needed for XML manipulation.
+
+%package        curses
+Summary:        Python module interface for NCurses Library 
+Group:          Applications/System
+Requires:       python3-libs = %{version}-%{release}
+Requires:       ncurses
+
+%description    curses
+The python3-curses package provides interface for ncurses library.
+
+%package        devel
 Summary: The libraries and header files needed for Python development.
-Group: Development/Libraries
-Requires: python3 = %{version}-%{release}
-Requires: expat-devel >= 2.1.0
+Group:          Development/Libraries
+Requires:       python3 = %{version}-%{release}
+Requires:       expat-devel >= 2.1.0
 # Needed here because of the migration of Makefile from -devel to the main
 # package
 Conflicts: python3 < %{version}-%{release}
 
-%description devel
+%description    devel
 The Python programming language's interpreter can be extended with
 dynamically loaded extensions and can be embedded in other programs.
 This package contains the header files and libraries needed to do
@@ -74,15 +92,33 @@ python package will also need to be installed.  You'll probably also
 want to install the python-docs package, which contains Python
 documentation.
 
-%package tools
-Summary: A collection of development tools included with Python.
-Group: Development/Tools
-Requires: python3 = %{version}-%{release}
+%package        tools
+Summary:        A collection of development tools included with Python.
+Group:          Development/Tools
+Requires:       python3 = %{version}-%{release}
 
-%description tools
+%description    tools
 The Python package includes several development tools that are used
 to build python programs.
 
+%package        pip
+Summary:        The PyPA recommended tool for installing Python packages.
+Group:          Development/Tools
+BuildArch:      noarch
+Requires:       python3 = %{version}-%{release}
+Requires:       python3-xml = %{version}-%{release}
+
+%description    pip
+The PyPA recommended tool for installing Python packages.
+
+%package        setuptools
+Summary:        Download, build, install, upgrade, and uninstall Python packages.
+Group:          Development/Tools
+BuildArch:      noarch
+Requires:       python3 = %{version}-%{release}
+
+%description    setuptools
+setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
 
 %prep
 %setup -q -n Python-%{version}
@@ -130,8 +166,9 @@ rm -rf %{buildroot}/*
 %doc LICENSE README.rst
 %{_bindir}/pydoc*
 %{_bindir}/pyvenv*
-%{_bindir}/python*
-%{_bindir}/pip*
+%{_bindir}/python3
+%{_bindir}/python3.6
+%{_bindir}/python3.6m
 %{_mandir}/*/*
 
 %dir %{_libdir}/python3.6
@@ -139,11 +176,8 @@ rm -rf %{buildroot}/*
 
 %{_libdir}/libpython3.so
 %{_libdir}/libpython3.6.so
-%{_libdir}/libpython3.6m.so
 %{_libdir}/libpython3.6m.so.1.0
-%{_libdir}/pkgconfig/python-3.6.pc
-%{_libdir}/pkgconfig/python-3.6m.pc
-%{_libdir}/pkgconfig/python3.pc
+
 
 %exclude %{_libdir}/python3.6/ctypes/test
 %exclude %{_libdir}/python3.6/distutils/tests
@@ -156,17 +190,38 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %doc LICENSE README.rst
 %{_libdir}/python3.6
+%{_libdir}/python3.6/site-packages/easy_install.py
+%{_libdir}/python3.6/site-packages/README.txt
+%exclude %{_libdir}/python3.6/site-packages/
 %exclude %{_libdir}/python3.6/ctypes/test
 %exclude %{_libdir}/python3.6/distutils/tests
 %exclude %{_libdir}/python3.6/sqlite3/test
 %exclude %{_libdir}/python3.6/idlelib/idle_test
 %exclude %{_libdir}/python3.6/test
 %exclude %{_libdir}/python3.6/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.6/xml
+%exclude %{_libdir}/python3.6/lib-dynload/pyexpat*.so
+%exclude %{_libdir}/python3.6/curses
+%exclude %{_libdir}/python3.6/lib-dynload/_curses*.so
+
+%files  xml
+%{_libdir}/python3.6/xml/*
+%{_libdir}/python3.6/lib-dynload/pyexpat*.so
+
+%files  curses
+%{_libdir}/python3.6/curses/*
+%{_libdir}/python3.6/lib-dynload/_curses*.so
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_bindir}/easy_install-3.6
+%{_libdir}/pkgconfig/python-3.6.pc
+%{_libdir}/pkgconfig/python-3.6m.pc
+%{_libdir}/pkgconfig/python3.pc
+%{_libdir}/libpython3.6m.so
+%{_bindir}/python3-config
+%{_bindir}/python3.6-config
+%{_bindir}/python3.6m-config
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %{_libdir}/libpython3.so
@@ -180,7 +235,22 @@ rm -rf %{buildroot}/*
 %{_bindir}/2to3-3.6
 %exclude %{_bindir}/idle*
 
+%files pip
+%defattr(-,root,root,755)
+%{_libdir}/python3.6/site-packages/pip/*
+%{_libdir}/python3.6/site-packages/pip-9.0.1.dist-info/*
+%{_bindir}/pip*
+
+%files setuptools
+%defattr(-,root,root,755)
+%{_libdir}/python3.6/site-packages/pkg_resources/*
+%{_libdir}/python3.6/site-packages/setuptools/*
+%{_libdir}/python3.6/site-packages/setuptools-28.8.0.dist-info/*
+%{_bindir}/easy_install-3.6
+
 %changelog
+*   Mon Jun 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.6.1-4
+-   Added pip, setuptools, xml, and curses sub packages.
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 3.6.1-3
 -   Fix symlink and script
 *   Wed May 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.6.1-2

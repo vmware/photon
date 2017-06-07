@@ -5,7 +5,7 @@
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python-markupsafe
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -29,6 +29,8 @@ Summary:        python-markupsafe
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -60,6 +62,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Mar 30 2017 Sarah Choi <sarahc@vmware.com> 1.0-1
 -   Upgrade version to 1.0
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 0.23-1
