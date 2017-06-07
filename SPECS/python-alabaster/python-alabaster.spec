@@ -3,12 +3,12 @@
 
 Name:           python-alabaster
 Version:        0.7.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A configurable sidebar-enabled Sphinx theme
 License:        BSD
 Group:          Development/Languages/Python
 Url:            https://github.com/bitprophet/alabaster/
-Vendor:		VMware, Inc.
+Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/d0/a5/e3a9ad3ee86aceeff71908ae562580643b955ea1b1d4f08ed6f7e8396bd7/alabaster-%{version}.tar.gz
 %define sha1    alabaster=dba599faf1ca5541ef35ab251eb2b365ae2f25c7
@@ -29,6 +29,8 @@ Alabaster is a visually (c)lean, responsive, configurable theme for the Sphinx d
 Summary:        A configurable sidebar-enabled Sphinx theme
 BuildRequires:  python3
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -65,5 +67,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.10-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.10-1
 -   Initial

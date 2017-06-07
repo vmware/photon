@@ -3,7 +3,7 @@
 
 Name:           python-zope.interface
 Version:        4.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
@@ -30,7 +30,8 @@ Summary:        python-zope.interface
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -70,9 +71,13 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*       Mon Oct 04 2016 ChangLee <changlee@vmware.com> 4.1.3-3
--       Modified %check
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+*   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
+-   Updated to version 4.3.3.
+*   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 4.1.3-3
+-   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1.3-2
 -   GA - Bump release of all rpms
-* Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
-- Initial packaging for Photon
+*   Tue Oct 27 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+-   Initial packaging for Photon

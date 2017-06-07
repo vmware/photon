@@ -3,7 +3,7 @@
 
 Name:           docker-py
 Version:        2.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -36,6 +36,8 @@ Python API for docker
 %package -n     docker-py3
 Summary:        Python3 API for docker
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 %description -n docker-py3
 Python3 API for docker
@@ -66,5 +68,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.3.0-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Sun Jun 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.3.0-1
 -   Initial version of docker-py for PhotonOS.

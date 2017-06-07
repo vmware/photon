@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.2.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -57,7 +57,8 @@ Group:          Development/Libraries
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       protobuf = %{version}-%{release}
@@ -85,7 +86,7 @@ autoreconf -iv
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 pushd python
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 popd
 pushd java
@@ -95,7 +96,7 @@ popd
 %install
 make DESTDIR=%{buildroot} install
 pushd python
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 pushd java
@@ -142,6 +143,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-5
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.0-4
 -   Renamed openjdk to openjdk8
 *   Fri Apr 28 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.0-3

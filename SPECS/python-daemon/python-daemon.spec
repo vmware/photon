@@ -4,7 +4,7 @@
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python-daemon
 Version:        2.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2
 Url:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
@@ -29,6 +29,8 @@ A well-behaved Unix daemon process is tricky to get right, but the required step
 Summary:        Python3-daemon
 BuildRequires:  python3-devel
 BuildRequires:  python3-docutils
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 
 %description -n python3-daemon
@@ -73,6 +75,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.2-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Fri Mar 24 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.2-1
 -   Initial packaging for Photon
 

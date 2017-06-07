@@ -5,7 +5,7 @@
 Summary:        Pure Python Vi Implementation.
 Name:           python-pyvim
 Version:        0.0.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -31,6 +31,8 @@ An implementation of Vim in Python.
 Summary:        python-pyvim
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -64,5 +66,7 @@ python3 setup.py test
 %{_bindir}/pyvim-%{python3_version}
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.20-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.20-1
 -   Initial packaging for Photon.
