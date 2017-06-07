@@ -3,7 +3,7 @@
 Summary:        Python SSH module
 Name:           paramiko
 Version:        2.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -35,6 +35,8 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-ecdsa > 0.11
 BuildRequires:  python3-pycrypto > 2.1
 BuildRequires:  python3-cryptography
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-pycrypto > 2.1
@@ -79,6 +81,8 @@ python3   test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.2-3
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-2
 -   Added missing requires python-cryptography
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-1
