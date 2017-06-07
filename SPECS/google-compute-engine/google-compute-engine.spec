@@ -5,7 +5,7 @@
 Summary:        Package for Google Compute Engine Linux images
 Name:           google-compute-engine
 Version:        20170426
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -28,6 +28,8 @@ Collection of packages installed on Google supported Compute Engine images.
 Summary:        Python3 bindings for Google Compute Engine Linux images package
 BuildRequires:  python3
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Obsoletes:      google-daemon
 
@@ -84,6 +86,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/set_multiqueue3
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 20170426-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Fri Apr 28 2017 Anish Swaminathan <anishs@vmware.com> 20170426-1
 -   Initial packaging for Photon
 

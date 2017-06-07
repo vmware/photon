@@ -3,12 +3,12 @@
 
 Name:           python-imagesize
 Version:        0.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://github.com/shibukawa/imagesize_py
-Vendor:		VMware, Inc.
+Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/imagesize_py-%{version}.tar.gz
 %define sha1    imagesize_py=b0ae3151495d8bbb207170bff7ed253d929e0dce
@@ -31,6 +31,8 @@ Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and 
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -68,5 +70,7 @@ py.test-3
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.1-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.1-1
 -   Initial

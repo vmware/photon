@@ -3,7 +3,7 @@
 
 Name:           python-prettytable
 Version:        0.7.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Library for displaying tabular data in a visually appealing ASCII format
 License:        BSD-2-Clause
 Group:          Development/Languages/Python
@@ -35,6 +35,8 @@ Summary:        python-prettytable
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -75,6 +77,8 @@ popd
 
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.2-5
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.2-4
 -   Adding python3 support.
 *   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 0.7.2-3
