@@ -1,55 +1,38 @@
-Summary:	TIFF libraries and associated utilities.
-Name:		libtiff
-Version:	4.0.7
-Release:	4%{?dist}
-License:	libtiff
-URL:		http://www.remotesensing.org/libtiff
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://download.osgeo.org/%{name}/tiff-%{version}.tar.gz
-%define sha1 tiff=2c1b64478e88f93522a42dd5271214a0e5eae648
-# patches: https://blogs.gentoo.org/ago/2017/01/01/libtiff-multiple-heap-based-buffer-overflow/
-Patch0:		libtiff-4.0.6-CVE-2015-7554.patch
-Patch1:     	libtiff-4.0.6-CVE-2015-1547.patch
-Patch2:     	libtiff-4.0.7-CVE-2017-5225.patch
-Patch3:     	libtiff-4.0.7-CVE-2016-10092.patch
-Patch4:     	libtiff-4.0.7-CVE-2016-10093.patch
-Patch5:     	libtiff-4.0.7-CVE-2016-10094.patch
-Patch6:         libtiff-4.0.6-CVE-2016-10268.patch
-Patch7:         libtiff-heap-buffer-overflow.patch
-Patch8:		libtiff-4.0.7-CVE-2016-10269.patch
-Patch9:		libtiff-4.0.7-CVE-2016-10267.patch
-Patch10:        libtiff-2017-CVE-2016-10266.patch
-BuildRequires:	libjpeg-turbo-devel
-Requires:	libjpeg-turbo
+Summary:        TIFF libraries and associated utilities.
+Name:           libtiff
+Version:        4.0.8
+Release:        1%{?dist}
+License:        libtiff
+URL:            http://www.simplesystems.org/libtiff/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://download.osgeo.org/%{name}/tiff-%{version}.tar.gz
+%define sha1    tiff=88717c97480a7976c94d23b6d9ed4ac74715267f
+# patches:      https://blogs.gentoo.org/ago/2017/01/01/libtiff-multiple-heap-based-buffer-overflow/
+Patch0:         libtiff-4.0.6-CVE-2015-7554.patch
+Patch1:         libtiff-4.0.6-CVE-2015-1547.patch
+BuildRequires:  libjpeg-turbo-devel
+Requires:       libjpeg-turbo
 %description
 The LibTIFF package contains the TIFF libraries and associated utilities. The libraries are used by many programs for reading and writing TIFF files and the utilities are used for general work with TIFF files.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-Requires:	libjpeg-turbo-devel
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+Requires:       libjpeg-turbo-devel
+%description    devel
 It contains the libraries and header files to create applications
 
 %prep
 %setup -q -n tiff-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
+
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--disable-static
+    --prefix=%{_prefix} \
+    --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -80,6 +63,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 4.0.8-1
+-   Updated to version 4.0.8.
 *   Tue May 16 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.7-4
 -   Added patch for CVE-2016-10266, CVE-2016-10268, CVE-2016-10269, CVE-2016-10267 and libtiff-heap-buffer-overflow patch
 *   Mon Apr 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.0.7-3
