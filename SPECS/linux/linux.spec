@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.70
-Release:    	3%{?dist}
+Version:    	4.4.71
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=857eedbb2c61efa3d8a281111d4563476f52183b
+%define sha1 linux=e1803ee9837d8ef729601e71e1f51666366a3612
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -274,6 +274,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Jun 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.71-1
+-   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
+    CVE-2017-9077 and CVE-2017-9242
 *   Tue Jun 6 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-3
 -   [feature] IPV6 netfilter NAT table support
 *   Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-2

@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.70
-Release:       3%{?dist}
+Version:       4.4.71
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=857eedbb2c61efa3d8a281111d4563476f52183b
+%define sha1 linux=e1803ee9837d8ef729601e71e1f51666366a3612
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -183,6 +183,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.71-1
+-   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
+    CVE-2017-9077 and CVE-2017-9242
 *   Thu Jun 1 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-3
 -   [feature] ACPI NFIT support (for PMEM type 7)
 *   Wed May 31 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.70-2
