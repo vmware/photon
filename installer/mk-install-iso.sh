@@ -119,10 +119,10 @@ EOF
 #- Step 7 - Create installer script
 if [ "$LIVE_CD" = false ] ; then
 
-cat >> ${BUILDROOT}/bin/bootphotoninstaller << 'EOF'
+cat >> ${BUILDROOT}/bin/bootphotoninstaller << EOF
 #!/bin/bash
 cd /installer
-[ `tty` == '/dev/tty1' ] && ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
+[ \`tty\` == '/dev/tty1' ] && ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
 /bin/bash
 EOF
 

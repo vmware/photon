@@ -35,7 +35,6 @@ class Installer(object):
         self.mount_command = "./mk-mount-disk.sh"
         self.prepare_command = "./mk-prepare-system.sh"
         self.finalize_command = "./mk-finalize-system.sh"
-        self.install_package_command = "./mk-install-package.sh"
         self.chroot_command = "./mk-run-chroot.sh"
         self.setup_grub_command = "./mk-setup-grub.sh"
         self.unmount_disk_command = "./mk-unmount-disk.sh"
