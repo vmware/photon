@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -15,9 +15,9 @@ Provides:	/bin/sh
 Provides:	/bin/bash
 BuildRequires:  readline
 Requires:       readline
-Requires(post):    grep
+Requires(post):    /bin/grep
 Requires(post):    /bin/cp
-Requires(postun):  grep
+Requires(postun):  /bin/grep
 Requires(postun):  /bin/mv
 %description
 The package contains the Bourne-Again SHell
@@ -296,6 +296,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Thu Jun 8 2017 Bo Gan <ganb@vmware.com> 4.4-4
+-   Fix dependency again
 *   Sun Jun 4 2017 Bo Gan <ganb@vmware.com> 4.4-3
 -   Fix dependency
 *   Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com> 4.4-2
