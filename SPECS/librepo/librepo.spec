@@ -5,7 +5,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.7.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/Tojaj/librepo/
 Group:          System Environment/Libraries
@@ -31,6 +31,7 @@ BuildRequires:  python2-tools
 BuildRequires:  gpgme-devel
 BuildRequires:  openssl-devel
 BuildRequires:  attr-devel
+BuildRequires:  gnupg
 
 %description
 A library providing C and Python (libcURL like) API for downloading 
@@ -64,12 +65,10 @@ cp %{_builddir}/%{librepo_name}-%{version}/build/librepo.pc %{buildroot}%{_libdi
 cp %{_builddir}/%{librepo_name}-%{version}/librepo/*.h %{buildroot}%{_includedir}/librepo
 
 %check
-easy_install nose flask pyxattr
-pushd pygpgme-0.3
-python setup.py install
+pushd build/tests
+./run_tests.sh
 popd
 
-PYTHONPATH=`readlink -f ./librepo/python/python2/` nosetests -s -v tests/python/tests/
 
 %post 
 /sbin/ldconfig
@@ -86,6 +85,8 @@ PYTHONPATH=`readlink -f ./librepo/python/python2/` nosetests -s -v tests/python/
 %{_includedir}/librepo/*.h
 
 %changelog
+*   Thu Jun 08 2017 Chang Lee <changlee@vmware.com> 1.7.20-2
+-   Updated %check
 *   Thu Apr 20 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.20-1
 -   Updated to version 1.7.20
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.17-6
