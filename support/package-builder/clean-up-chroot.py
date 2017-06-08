@@ -71,8 +71,10 @@ def sortmountpoints(listmountpoints,chrootPath):
 def main():
     if len(sys.argv) < 2:
         print "Usage: ./clean-up-chroot.py <chrootpath>"
-        return False
-    return cleanUpChroot(sys.argv[1])
+        sys.exit(1)
+    if not cleanUpChroot(sys.argv[1]):
+        sys.exit(1)
+    sys.exit(0)
 
 if __name__=="__main__":
     main()
