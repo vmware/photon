@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.30
+Version:        4.9.31
 Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=08d55d9392cf4b176ae17d07dbbb9a22abf0d7b2
+%define sha1 linux=53e5a2409c713c3d6e8de2839e6cec9c2c5deb56
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -267,6 +267,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jun 8 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.31-1
+-   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
+    CVE-2017-9077 and CVE-2017-9242
+-   [feature] IPV6 netfilter NAT table support
 *   Fri May 26 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.30-1
 -   Added ENA driver for AMI
 -   Fix CVE-2017-7487 and CVE-2017-9059
