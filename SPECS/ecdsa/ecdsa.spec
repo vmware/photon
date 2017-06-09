@@ -1,10 +1,10 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           ecdsa
 Version:        0.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -42,12 +42,12 @@ Python 3 version.
 %setup -q
 
 %build
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 
 %install
 %{__rm} -rf %{buildroot}
-%{__python} setup.py install -O1 --skip-build \
+python2 setup.py install -O1 --skip-build \
     --root "%{buildroot}" \
     --single-version-externally-managed
 
@@ -56,7 +56,7 @@ python3 setup.py install -O1 --skip-build \
     --single-version-externally-managed
 
 %check
-python setup.py test
+python2 setup.py test
 python3 setup.py test
 
 %clean
@@ -64,13 +64,15 @@ python3 setup.py test
 
 %files
 %defattr(-, root, root)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-ecdsa
 %defattr(-, root, root)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.13-4
+-   Use python2 explicitly
 *   Mon Feb 27 2017 Xiaolin Li <xiaolinl@vmware.com> 0.13-3
 -   Added python3 site-packages.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.13-2

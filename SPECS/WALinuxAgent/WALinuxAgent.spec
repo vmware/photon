@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.0.18
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            http://go.microsoft.com/fwlink/?LinkId=250998
@@ -44,16 +44,16 @@ find . -type f -exec chmod 0644 {} +
 %pre -p /bin/sh
 
 %build
-%{__python} setup.py build
+python2 setup.py build
 
 %install
-%{__python} setup.py install --prefix=%{_prefix} --lnx-distro='photon' --init-system='systemd' --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --lnx-distro='photon' --init-system='systemd' --root=%{buildroot}
 mkdir -p  %{buildroot}/%{_localstatedir}/log
 mkdir -p -m 0700 %{buildroot}/%{_sharedstatedir}/waagent
 touch %{buildroot}/%{_localstatedir}/log/waagent.log
 
 %check
-%{__python} setup.py check && %{__python} setup.py test
+python2 setup.py check && python2 setup.py test
 
 %post
 %systemd_post waagent.service
@@ -78,8 +78,10 @@ touch %{buildroot}/%{_localstatedir}/log/waagent.log
 
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.18-3
--	GA - Bump release of all rpms
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.18-4
+- Use python2 explicitly to build
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.18-3
+- GA - Bump release of all rpms
 * Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-2
 - Edit post scripts
 * Thu Apr 28 2016 Anish Swaminathan <anishs@vmware.com> 2.0.18-1
