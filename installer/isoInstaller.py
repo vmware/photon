@@ -7,24 +7,19 @@
 from argparse import ArgumentParser
 import os.path
 import curses
-import sys
 import subprocess
 import re
-import requests
 import json
 import time
-import os
-import cracklib
 import crypt
 import string
 import random
-import urllib
 import urllib2
+import requests
+import cracklib
 import modules.commons
 from partitionISO import PartitionISO
-from diskpartitioner import DiskPartitioner
 from packageselector import PackageSelector
-from custompackageselector import CustomPackageSelector
 from installer import Installer
 from installercontainer import InstallerContainer
 from windowstringreader import WindowStringReader
@@ -40,7 +35,7 @@ class IsoInstaller(object):
             # Do 5 trials to get the kick start
             # TODO: make sure the installer run after network is up
             wait = 1
-            for x in range(0,5):
+            for x in range(0, 5):
                 err_msg = ""
                 try:
                     response = requests.get(path, timeout=3)
@@ -62,7 +57,7 @@ class IsoInstaller(object):
             if path.startswith("cdrom:/"):
                 self.mount_RPMS_cd()
                 path = os.path.join(self.cd_path, path.replace("cdrom:/", "", 1))
-            return (JsonWrapper(path)).read();
+            return (JsonWrapper(path)).read()
 
     def mount_RPMS_cd(self):
         # check if the cd is already mounted
@@ -74,7 +69,7 @@ class IsoInstaller(object):
         retval = process.wait()
 
         # Retry mount the CD
-        for i in range(0,3):
+        for i in range(0, 3):
             process = subprocess.Popen(['mount', '/dev/cdrom', '/mnt/cdrom'])
             retval = process.wait()
             if retval == 0:
@@ -90,7 +85,7 @@ class IsoInstaller(object):
         error_dash = "Hostname or domain should not start or end with '-'"
         error_hostname = "Hostname should start with alpha char and <= 64 chars"
 
-        if (hostname == None or len(hostname) == 0):
+        if hostname is None or len(hostname) == 0:
             return False, error_empty
 
         fields = hostname.split('.')
@@ -110,14 +105,14 @@ class IsoInstaller(object):
             p = str(message)
         return p == text, "Error: " + p
 
-    def generate_password_hash(self,  password):
+    def generate_password_hash(self, password):
         shadow_password = crypt.crypt(password, "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
         return shadow_password
 
     def validate_http_response(self, url, checks, exception_text, error_text):
         try:
             if url.startswith("https"):
-                response = urllib2.urlopen(url,cafile="/usr/lib/python2.7/site-packages/requests/cacert.pem")
+                response = urllib2.urlopen(url, cafile="/usr/lib/python2.7/site-packages/requests/cacert.pem")
             else:
                 response = urllib2.urlopen(url)
 
@@ -126,9 +121,9 @@ class IsoInstaller(object):
         else:
             if response.getcode() != 200:
                 return error_text
-        
+
         html = response.read()
-        
+
         for pattern, count, failed_check_text in checks:
             match = re.findall(pattern, html)
             if len(match) != count:
@@ -138,8 +133,8 @@ class IsoInstaller(object):
 
     def is_vmware_virtualization(self):
         process = subprocess.Popen(['systemd-detect-virt'], stdout=subprocess.PIPE)
-        out,err = process.communicate()
-        if err != None and err != 0:
+        out, err = process.communicate()
+        if err is not None and err != 0:
             return False
         else:
             return out == 'vmware\n'
@@ -155,12 +150,12 @@ class IsoInstaller(object):
 
         self.screen.bkgd(' ', curses.color_pair(1))
 
-        self.maxy,  self.maxx = self.screen.getmaxyx()
+        self.maxy, self.maxx = self.screen.getmaxyx()
         self.screen.addstr(self.maxy - 1, 0, '  Arrow keys make selections; <Enter> activates.')
         curses.curs_set(0)
 
-        self.cd_path = None;
-        
+        self.cd_path = None
+
         kernel_params = subprocess.check_output(['cat', '/proc/cmdline'])
 
         # check the kickstart param
@@ -176,7 +171,7 @@ class IsoInstaller(object):
         else:
             # the rpms should be in the cd
             self.mount_RPMS_cd()
-            rpm_path=os.path.join(self.cd_path, "RPMS")
+            rpm_path = os.path.join(self.cd_path, "RPMS")
 
         # This represents the installer screen, the bool indicated if I can go back to this window or not
         items = []
@@ -189,43 +184,42 @@ class IsoInstaller(object):
             select_partition = PartitionISO(self.maxy, self.maxx, install_config)
             package_selector = PackageSelector(self.maxy, self.maxx, install_config, options_file)
             self.alpha_chars = range(65, 91)
-            self.alpha_chars.extend(range(97,123))
-            partition_accepted_chars = list(range(48, 58))
+            self.alpha_chars.extend(range(97, 123))
             hostname_accepted_chars = list(self.alpha_chars)
             # Adding the numeric chars
             hostname_accepted_chars.extend(range(48, 58))
             # Adding the . and -
             hostname_accepted_chars.extend([ord('.'), ord('-')])
-            
+
             hostname_reader = WindowStringReader(
-                    self.maxy, self.maxx, 10, 70, 
-                    'hostname', 
-                    None, # confirmation error msg if it's a confirmation text
-                    None, # echo char
-                    hostname_accepted_chars, # set of accepted chars
-                    self.validate_hostname, # validation function of the input
-                    None, # post processing of the input field
-                    'Choose the hostname for your system', 'Hostname:', 2, install_config,
-                    random_hostname,
-                    True)
+                self.maxy, self.maxx, 10, 70,
+                'hostname',
+                None, # confirmation error msg if it's a confirmation text
+                None, # echo char
+                hostname_accepted_chars, # set of accepted chars
+                self.validate_hostname, # validation function of the input
+                None, # post processing of the input field
+                'Choose the hostname for your system', 'Hostname:', 2, install_config,
+                random_hostname,
+                True)
             root_password_reader = WindowStringReader(
-                    self.maxy, self.maxx, 10, 70, 
-                    'password', 
-                    None, # confirmation error msg if it's a confirmation text
-                    '*', # echo char
-                    None, # set of accepted chars
-                    self.validate_password, # validation function of the input
-                    None,  # post processing of the input field
-                    'Set up root password', 'Root password:', 2, install_config)
+                self.maxy, self.maxx, 10, 70,
+                'password',
+                None, # confirmation error msg if it's a confirmation text
+                '*', # echo char
+                None, # set of accepted chars
+                self.validate_password, # validation function of the input
+                None,  # post processing of the input field
+                'Set up root password', 'Root password:', 2, install_config)
             confirm_password_reader = WindowStringReader(
-                    self.maxy, self.maxx, 10, 70, 
-                    'password', 
-                    "Passwords don't match, please try again.", # confirmation error msg if it's a confirmation text
-                    '*', # echo char
-                    None, # set of accepted chars
-                    None, # validation function of the input
-                    self.generate_password_hash, # post processing of the input field
-                    'Confirm root password', 'Confirm Root password:', 2, install_config)
+                self.maxy, self.maxx, 10, 70, 
+                'password', 
+                "Passwords don't match, please try again.", # confirmation error msg if it's a confirmation text
+                '*', # echo char
+                None, # set of accepted chars
+                None, # validation function of the input
+                self.generate_password_hash, # post processing of the input field
+                'Confirm root password', 'Confirm Root password:', 2, install_config)
 
             items.append((license_agreement.display, False))
             items.append((select_disk.display, True))
@@ -234,7 +228,7 @@ class IsoInstaller(object):
             items.append((package_selector.display, True))
             select_linux_index = -1
             if self.is_vmware_virtualization():
-                linux_selector   = LinuxSelector(self.maxy, self.maxx, install_config)
+                linux_selector = LinuxSelector(self.maxy, self.maxx, install_config)
                 items.append((linux_selector.display, True))
                 select_linux_index = items.index((linux_selector.display, True))
             items.append((hostname_reader.get_user_string, True))
@@ -245,7 +239,7 @@ class IsoInstaller(object):
             install_config = ks_config
             install_config['iso_system'] = False
             if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
-                 install_config['install_linux_esx'] = True
+                install_config['install_linux_esx'] = True
 
         installer = InstallerContainer(install_config, self.maxy, self.maxx, True, rpm_path=rpm_path, log_path="/var/log", ks_config=ks_config)
 
@@ -264,23 +258,23 @@ class IsoInstaller(object):
                     break
                 #Skip linux select screen for ostree installation.
                 if index == select_linux_index:
-                    if (install_config['type'] == 'ostree_server'):
+                    if install_config['type'] == 'ostree_server':
                         index += 1
             else:
                 index -= 1
-                while index >= 0 and items[index][1] == False:
+                while index >= 0 and items[index][1] is False:
                     index -= 1
                 if index < 0:
                     index = 0
                 #Skip linux select screen for ostree installation.
                 if index == select_linux_index:
-                    if (install_config['type'] == 'ostree_server'):
+                    if install_config['type'] == 'ostree_server':
                         index -= 1
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"
     parser = ArgumentParser(usage)
-    parser.add_argument("-j",  "--json-file", dest="options_file",  default="input.json")
+    parser.add_argument("-j", "--json-file", dest="options_file", default="input.json")
 
     options = parser.parse_args()
     curses.wrapper(IsoInstaller, options.options_file)
