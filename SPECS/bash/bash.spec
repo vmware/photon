@@ -1,7 +1,7 @@
 Summary:  Bourne-Again SHell
 Name:   bash
 Version:  4.3.30
-Release:  9%{?dist}
+Release:  10%{?dist}
 License:  GPLv3
 URL:    http://www.gnu.org/software/bash/
 Group:    System Environment/Base
@@ -15,6 +15,8 @@ Patch2:   bash-4.3.patch
 Patch3:   bash-CVE-2016-7543.patch
 Provides: /bin/sh
 Provides: /bin/bash
+Requires(post): ncurses
+Requires(post): readline
 %description
 The package contains the Bourne-Again SHell
 
@@ -300,6 +302,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Fri Jun 9 2017 Bo Gan <ganb@vmware.com> 4.3.30-10
+-   Add post dependency
 *   Fri Jun 2 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-9
 -   Added /usr/bin/sh and /bin/sh entries in /etc/shells
 *   Tue Apr 04 2017 Anish Swaminathan <anishs@vmware.com> 4.3.30-8
