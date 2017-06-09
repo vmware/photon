@@ -1,7 +1,9 @@
+%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary:    A free, distributed source control management tool.
 Name:       mercurial
 Version:    4.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2+
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
@@ -25,7 +27,7 @@ make build
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 mkdir -p %{buildroot}/%{_bindir}
-%{__python} setup.py install --skip-build --root %{buildroot}
+python2 setup.py install --skip-build --root %{buildroot}
 
 cat >> %{buildroot}/.hgrc << "EOF"
 [ui]
@@ -47,9 +49,11 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 /.hgrc
 %{_bindir}/hg
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.1-2
+-   Use python2 explicitly while building
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.1-1
 -   Update package version
 *   Mon Jan 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-6
