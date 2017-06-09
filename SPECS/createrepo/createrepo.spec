@@ -1,9 +1,9 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Summary: 	Creates a common metadata repository
 Name: 		createrepo
 Version: 	0.10.4
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 License:	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.
@@ -35,7 +35,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 %check
 pushd pychecker-0.8.19
-python setup.py install
+python2 setup.py install
 popd
 
 make %{?_smp_mflags} check 
@@ -56,11 +56,13 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/createrepo.8*
 %{_mandir}/man1/modifyrepo.1*
 /etc/bash_completion.d/*
-%{python_sitelib}/createrepo
+%{python2_sitelib}/createrepo
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.4-2
--	GA - Bump release of all rpms
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.10.4-3
+- Use python2 explicitly
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.4-2
+- GA - Bump release of all rpms
 * Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.10.4
 - Updating to new version.
 * Thu Dec 20 2007 Seth Vidal <skvidal at fedoraproject.org>
