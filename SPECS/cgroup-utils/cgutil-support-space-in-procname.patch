@@ -1,0 +1,24 @@
+diff --git a/process.py b/process2.py
+index 66cf702..ae939c1 100644
+--- a/cgutils/process.py
++++ b/cgutils/process.py
+@@ -27,12 +27,13 @@ class Process(object):
+     def __init__(self, pid):
+         self.pid = pid
+ 
+-        items = fileops.read('/proc/%d/stat' % pid).split(' ')
+-        self.name = items[1].lstrip('(').rstrip(')')
+-        self.state = items[2]
+-        self.ppid = int(items[3])
+-        self.pgid = int(items[4])
+-        self.sid = int(items[5])
++        items = fileops.read('/proc/%d/stat' % pid).rsplit(')', 1)
++        self.name = items[0].split('(')[1]
++        otherinfo = items[1].lstrip(' ').split(' ')
++        self.state = otherinfo[0]
++        self.ppid = int(otherinfo[1])
++        self.pgid = int(otherinfo[2])
++        self.sid = int(otherinfo[3])
+         if not self.is_kthread():
+             self.name = self._get_fullname()
+             cmdline = fileops.read('/proc/%d/cmdline' % self.pid)
