@@ -3,7 +3,7 @@
 Summary:        Utility tools for control groups of Linux
 Name:           cgroup-utils
 Version:        0.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          Development/Libraries
 URL:            https://pypi.python.org/pypi/cgroup-utils/0.6
@@ -11,10 +11,12 @@ URL:            https://pypi.python.org/pypi/cgroup-utils/0.6
 Source0:        https://github.com/peo3/cgroup-utils/archive/%{name}-%{version}.tar.gz
 %define sha1    cgroup-utils=c0c9c6ddcd7e5ce2eb04394aa1ad46e1b05eb669
 
+Patch0:         cgutil-support-space-in-procname.patch
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 
 Requires:       python2
+
 
 %description
 cgroup-utils provides utility tools and libraries for control groups of Linux. For example, 
@@ -28,6 +30,7 @@ BuildRequires:  python3-libs
 %description -n python3-cgroup-utils
 %prep
 %setup -q
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -64,6 +67,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 09 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-4
+-   Support space in proc name.
 *   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-3
 -   Added python3 subpackage.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6-2
