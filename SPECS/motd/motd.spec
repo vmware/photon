@@ -5,7 +5,7 @@
 Summary:        Message of the Day
 Name:           motd
 Version:        0.1.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3
 URL:            http://github.com/rtnpro/fedora-motd
 Source0:        https://github.com/rtnpro/motdgen/archive/motdgen-a152954.tar.gz
@@ -19,6 +19,7 @@ BuildRequires:  python3-devel
 Requires:       Linux-PAM
 Requires:       systemd
 Requires:       python3
+Requires:       /bin/grep
 
 %description
 Generates Dynamic MOTD.
@@ -65,6 +66,8 @@ rm -rf %{_localstatedir}/run/motdgen
 %{_sysconfdir}/systemd/system/motdgen.service
 
 %changelog
+*   Mon Jun 12 2017 Bo Gan <ganb@vmware.com> 0.1.3-4
+-   Add grep dependency
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.3-3
 -   Upgraded to python3.
 *   Sun Apr 30 2017 Bo Gan <ganb@vmware.com> 0.1.3-2
