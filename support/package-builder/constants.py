@@ -299,7 +299,9 @@ class constants(object):
         "tzdata",
         "libgcrypt-devel",
         "Linux-PAM",
-        "unzip"]
+        "unzip",
+        "systemd-devel",
+        "gnupg" ]
 
     @staticmethod
     def initialize(options):
