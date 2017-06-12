@@ -1,9 +1,9 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://www.sendmail.org/
-License:        GPLv2+ and GPLv3+ and LGPLv2+
+License:        BSD and CDDL1.1 and MIT
 Group:          Email/Server/Library
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -196,6 +196,8 @@ fi
 
 
 %changelog
+*	Mon Jun 12 2017 Darren Hart <dvhart@vmware.com> 8.15.2-13
+-	Update the sendmail License meta-data
 *	Tue Apr 4 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-12
 -       Update requires to use libdb and build to use libdb-devel
 *       Fri Mar 24 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-11
