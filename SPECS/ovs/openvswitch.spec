@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -11,6 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
+Patch0:         ovs-CVE-2017-9264.patch
 %define sha1 openvswitch=0f324ccfe52ae84a2b102a7f2db1411f4debacf6
 
 BuildRequires:  gcc >= 4.0.0
@@ -70,6 +71,7 @@ It contains the documentation and manpages for openvswitch.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./configure \
@@ -165,6 +167,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/vtep-ctl.8.gz
 
 %changelog
+*   Mon Jun 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-3
+-   Fix CVE-2017-9264
 *   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-2
 -   Added python and python3 subpackage.
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.0-1
