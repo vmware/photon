@@ -3,7 +3,7 @@
 
 Name:           python-jinja2
 Version:        2.9.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
@@ -66,7 +66,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %doc AUTHORS CHANGES
 %license LICENSE
 %{python_sitelib}/jinja2
-%exclude %{python_sitelib}/*/*.py
 %{python_sitelib}/Jinja2-%{version}-py%{python_version}.egg-info
 
 %files -n python3-jinja2
@@ -74,10 +73,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %doc AUTHORS CHANGES
 %license LICENSE
 %{python3_sitelib}/jinja2
-%exclude %{python3_sitelib}/*/*.py
 %{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+*   Mon Jun 12 2017 Kumar Kaushik <kaushikk@vmware.com> 2.9.5-4
+-   Fixing import error in python3.
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.5-3
 -   BuildRequires python-markupsafe , creating subpackage python3-jinja2
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.5-2
