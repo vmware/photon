@@ -4,7 +4,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
 Version:        1.12.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -30,7 +30,8 @@ NumPy is a general-purpose array-processing package designed to efficiently mani
 Summary:        python-numpy
 BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -64,6 +65,8 @@ python3 setup.py test
 %{_bindir}/f2py3
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-3
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu May 04 2017 Sarah Choi <sarahc@vmware.com> 1.12.1-2
 -   Fix typo in Source0
 *   Thu Mar 30 2017 Sarah Choi <sarahc@vmware.com> 1.12.1-1
