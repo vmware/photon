@@ -1,10 +1,10 @@
 Summary:	Logrotate
 Name:		logrotate
 Version:	3.9.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPL+
-URL:		https://fedorahosted.org/logrotate
-Source0:	https://fedorahosted.org/releases/l/o/logrotate/%{name}-%{version}.tar.gz
+URL:		https://github.com/logrotate/logrotate/
+Source0:	https://github.com/logrotate/logrotate/archive/%{name}-%{version}.tar.gz
 %define sha1 logrotate=7ba734cd1ffa7198b66edc4bca17a28ea8999386
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -33,13 +33,15 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 %postun	-p /sbin/ldconfig
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/cron.daily/logrotate
-%{_sysconfdir}/logrotate.conf
+%config(noreplace) %{_sysconfdir}/cron.daily/logrotate
+%config(noreplace) %{_sysconfdir}/logrotate.conf
 %{_sbindir}/logrotate
 %{_mandir}/man5/logrotate.conf.5.gz
 %{_mandir}/man8/logrotate.8.gz
 /var/lib/logrotate/logrotate.status
 %changelog
+*       Wed Jun 14 2017 Anish Swaminathan <anishs@vmware.com> 3.9.1-3
+-       Mark config files as noreplace
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.9.1-2
 -	GA - Bump release of all rpms
 *	Wed Jun 24 2015 Divya Thaluru <dthaluru@vmware.com> 3.9.1-1
