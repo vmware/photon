@@ -1,7 +1,7 @@
 Summary:	Userland logical volume management tools 
 Name:		lvm2
 Version:	2.02.141
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2
 Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
@@ -128,7 +128,7 @@ if [ $1 -eq 1 ];then
     systemctl start dm-event.socket
 fi
 %preun -n device-mapper-event
-if [ $1 -eq 0];then
+if [ $1 -eq 0 ];then
     # This is erase operation
     systemctl stop dm-event.socket
 fi
@@ -424,6 +424,8 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
+*   Wed Jun 14 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-6
+-   Fix script error
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-5
 -	GA - Bump release of all rpms
 *   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
