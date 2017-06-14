@@ -60,7 +60,7 @@ IMGCONVERTER := $(TOOLS_BIN)/imgconverter
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
 check check-docker check-bison check-g++ check-gawk check-createrepo check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
-clean-install clean-chroot build-updated-packages
+clean-install clean-chroot build-updated-packages generate-yaml-files
 
 THREADS?=1
 
@@ -539,6 +539,27 @@ check-packer-ovf-plugin:
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_OPTION) \
                               -l $(PHOTON_LOGS_DIR)
+
+generate-yaml-files: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+	@echo "Generating yaml files for packages ..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -y \
+                              -b $(PHOTON_CHROOT_PATH) \
+                              -s $(PHOTON_SPECS_DIR) \
+                              -r $(PHOTON_RPMS_DIR) \
+                              -a $(PHOTON_SRPMS_DIR) \
+                              -x $(PHOTON_SRCS_DIR) \
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                              -c $(PHOTON_PULLSOURCES_CONFIG) \
+                              -d $(PHOTON_DIST_TAG) \
+                              -n $(PHOTON_BUILD_NUMBER) \
+                              -v $(PHOTON_RELEASE_VERSION) \
+                              -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                              $(PHOTON_RPMCHECK_OPTION) \
+                              -l $(PHOTON_LOGS_DIR) \
+                              -j $(PHOTON_STAGE) \
+                              -f $(PHOTON_PKG_BLACKLIST_FILE)
 
 $(TOOLS_BIN):
 	mkdir -p $(TOOLS_BIN)
