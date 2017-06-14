@@ -37,6 +37,9 @@ def main():
     parser.add_option("-a",  "--source-rpm-path",  dest="sourceRpmPath",  default="../../stage/SRPMS")
     parser.add_option("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../stage/pkg_info.json")
     parser.add_option("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
+    parser.add_option("-y",  "--generate-pkg-yaml-files",  dest="generatePkgYamlFiles",  default=False, action ="store_true")
+    parser.add_option("-q",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
+    parser.add_option("-f",  "--pkg-blacklist-file",  dest="pkgBlacklistFile",  default=None)
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -76,6 +79,11 @@ def main():
         logger.error("Given input RPMS Path is not a directory:"+options.inputRPMSPath)
         errorFlag = True
 
+    if options.generatePkgYamlFiles:
+        if options.pkgBlacklistFile is not None and options.pkgBlacklistFile != "" and not os.path.isfile(options.pkgBlacklistFile):
+            logger.error("Given package blacklist file is not valid:"+options.pkgBlacklistFile)
+            errorFlag = True
+
     if options.installPackage :
         if len(args) != 1:
             logger.error("Please provide package name")
@@ -98,6 +106,10 @@ def main():
     if not os.path.isdir(options.buildRootPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.buildRootPath)
 
+    if options.generatePkgYamlFiles:
+        if not os.path.isdir(options.pkgYamlDirPath):
+            cmdUtils.runCommandInShell("mkdir -p "+options.pkgYamlDirPath)
+
     logger.info("Source Path :"+options.sourcePath)
     logger.info("Spec Path :" + options.specPath)
     logger.info("Rpm Path :" + options.rpmPath)
@@ -114,14 +126,10 @@ def main():
         constants.initialize(options)
         if package == "packages_list":
             buildPackagesList(options.buildRootPath+"/../packages_list.csv")
-        elif package == "sources_list":
-            if not os.path.isdir("../../stage/yaml_sources"):
-                cmdUtils.runCommandInShell("mkdir -p ../../stage/yaml_sources")
-            buildSourcesList('../../stage/yaml_sources',logger)
-        elif package == "srpms_list":
-            if not os.path.isdir("../../stage/yaml_srpms"):
-                cmdUtils.runCommandInShell("mkdir -p ../../stage/yaml_srpms")
-            buildSRPMList(options.sourceRpmPath,"../../stage/yaml_srpms",logger)
+        elif options.generatePkgYamlFiles:
+            blackListPkgs = readBlackListPackages(options.pkgBlacklistFile)
+            buildSourcesList(options.pkgYamlDirPath, blackListPkgs, logger)
+            buildSRPMList(options.sourceRpmPath, options.pkgYamlDirPath, blackListPkgs, logger)
         elif options.toolChainStage == "stage1":
             pkgManager = PackageManager()
             pkgManager.buildToolChain()
@@ -166,14 +174,28 @@ def buildPackagesList(csvFilename):
         csvFile.write(name+","+version+","+license+","+url+","+sources+","+patches+"\n")
     csvFile.close()
 
-def buildSourcesList(yamlDir, logger, singleFile=True):
-    strUtils = StringUtils()
+def readBlackListPackages(pkgBlackListFile):
+    blackListPkgs = []
+    if pkgBlackListFile is not None and pkgBlackListFile != "":
+        with open(pkgBlackListFile) as jsonFile:
+            config = json.load(jsonFile)
+            if 'packages' in config:
+                blackListPkgs = config['packages']
+    return blackListPkgs
+
+def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
+    cmdUtils = CommandUtils()
+    yamlSourceDir = os.path.join(yamlDir, "yaml_sources")
+    if not os.path.isdir(yamlSourceDir):
+        cmdUtils.runCommandInShell("mkdir -p "+yamlSourceDir)
     if singleFile:
-        yamlFile = open(yamlDir+"/sources_list.yaml", "w")
+        yamlFile = open(yamlSourceDir+"/sources_list.yaml", "w")
     listPackages =  constants.specData.getListPackages()
     listPackages.sort()
     import PullSources
     for package in listPackages:
+        if package in blackListPkgs:
+            continue
         ossname = package
         ossversion = constants.specData.getVersion(package)
         modified = False
@@ -193,7 +215,7 @@ def buildSourcesList(yamlDir, logger, singleFile=True):
                 PullSources.get(sourceName, sha1, yamlDir, constants.pullsourcesConfig, logger)
 
         if not singleFile:
-            yamlFile = open(yamlDir+"/"+ossname+"-"+ossversion+".yaml", "w")
+            yamlFile = open(yamlSourceDir+"/"+ossname+"-"+ossversion+".yaml", "w")
         yamlFile.write("vmwsource:"+ossname+":"+ossversion+":\n")
         yamlFile.write("  repository: VMWsource\n")
         yamlFile.write("  name: '"+ossname+"'\n")
@@ -212,14 +234,18 @@ def buildSourcesList(yamlDir, logger, singleFile=True):
         yamlFile.close()
     logger.info("Generated source yaml files for all packages")
 
-def buildSRPMList(srpmPath, yamlDir, logger, singleFile=True):
-    strUtils = StringUtils()
+def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
+    cmdUtils = CommandUtils()
+    yamlSrpmDir = os.path.join(yamlDir, "yaml_srpms")
+    if not os.path.isdir(yamlSrpmDir):
+        cmdUtils.runCommandInShell("mkdir -p "+yamlSrpmDir)
     if singleFile:
-        yamlFile = open(yamlDir+"/srpm_list.yaml", "w")
+        yamlFile = open(yamlSrpmDir+"/srpm_list.yaml", "w")
     listPackages =  constants.specData.getListPackages()
     listPackages.sort()
-    cmdUtils = CommandUtils()
     for package in listPackages:
+        if package in blackListPkgs:
+            continue
         ossname = package
         ossversion = constants.specData.getVersion(package)
         ossrelease = constants.specData.getRelease(package)
@@ -237,7 +263,7 @@ def buildSRPMList(srpmPath, yamlDir, logger, singleFile=True):
              logger.error("SRPM file is not found:" +ossname)
 
         if not singleFile:
-            yamlFile = open(yamlDir+"/"+ossname+"-"+ossversion+"-"+ossrelease+".yaml", "w")
+            yamlFile = open(yamlSrpmDir+"/"+ossname+"-"+ossversion+"-"+ossrelease+".yaml", "w")
 
         yamlFile.write("baseos:"+ossname+":"+ossversion+"-"+ossrelease+":\n")
         yamlFile.write("  repository: BaseOS\n")
