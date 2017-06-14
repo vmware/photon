@@ -3,7 +3,7 @@
 
 Name:           python-jinja2
 Version:        2.9.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
@@ -31,6 +31,8 @@ Summary:        A fast and easy to use template engine written in pure Python
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-markupsafe
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-markupsafe
@@ -76,6 +78,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+*   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.5-5
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Jun 12 2017 Kumar Kaushik <kaushikk@vmware.com> 2.9.5-4
 -   Fixing import error in python3.
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.5-3

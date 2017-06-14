@@ -4,7 +4,7 @@
 Summary:        Symbolic constants in Python.
 Name:           python-constantly
 Version:        15.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/constantly
 License:        MIT
 Group:          Development/Languages/Python
@@ -31,7 +31,8 @@ Summary:        python-constantly
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -71,5 +72,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 15.1.0-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 15.1.0-1
 -   Initial packaging for Photon
