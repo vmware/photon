@@ -52,7 +52,6 @@ make VERBOSE=1 %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 unset BUILD_ZLIB BUILD_BZIP2
 %check
-false
 make test TEST_SKIP_VERSION_CHECK=1
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
