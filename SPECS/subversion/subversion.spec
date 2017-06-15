@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -42,7 +42,10 @@ make -j1 DESTDIR=%{buildroot} install
 %find_lang %{name}
 
 %check
-make  %{?_smp_mflags} check
+# subversion expect nonroot user to run tests
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test make check && userdel test -r -f
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -59,6 +62,8 @@ make  %{?_smp_mflags} check
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Thu Jun 15 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.5-2
+-   Fix make check issues.
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.5-1
 -   Update to version 1.9.5
 *   Tue Dec 27 2016 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-2
