@@ -212,7 +212,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             sourceName=listSourceNames[0]
             sha1 = constants.specData.getSHA1(package, sourceName)
             if sha1 is not None:
-                PullSources.get(sourceName, sha1, yamlDir, constants.pullsourcesConfig, logger)
+                PullSources.get(sourceName, sha1, yamlSourceDir, constants.pullsourcesConfig, logger)
 
         if not singleFile:
             yamlFile = open(yamlSourceDir+"/"+ossname+"-"+ossversion+".yaml", "w")
@@ -255,7 +255,7 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
         if len(listFoundSRPMFiles) == 1:
             srpmFullPath = listFoundSRPMFiles[0];
             srpmName = os.path.basename(srpmFullPath)
-            cpcmd = "cp "+ srpmFullPath +" "+yamlDir+"/"
+            cpcmd = "cp "+ srpmFullPath +" "+yamlSrpmDir+"/"
             returnVal = cmdUtils.runCommandInShell(cpcmd)
             if not returnVal:
                 logger.error("Copy SRPM File is failed for package:"+ossname)
