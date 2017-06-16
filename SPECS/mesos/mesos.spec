@@ -1,7 +1,9 @@
+%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary:        Mesos
 Name:           mesos
 Version:        1.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -96,13 +98,15 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_includedir}/*
 %{_libdir}/libfixed_resource_estimator*
 %{_libdir}/pkgconfig/mesos.pc
-%{_libdir}/python2.7/site-packages/*
+%{python2_sitelib}/*
 %{_prefix}/etc/mesos/*
 %exclude %{_libdir}/debug/
 
 %changelog
-*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.0-2
--	Renamed openjdk to openjdk8
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.0-3
+-   Use python2_sitelib explicitly
+*   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.0-2
+-   Renamed openjdk to openjdk8
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 1.2.0-1
 -   Update package version
 *   Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-3

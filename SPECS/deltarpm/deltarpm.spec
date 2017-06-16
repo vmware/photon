@@ -4,7 +4,7 @@
 Summary:        Create deltas between rpms
 Name:           deltarpm
 Version:        3.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -81,13 +81,15 @@ The python3-deltarpm package contains the python3 bindings for deltarpm.
 
 %files python
 %defattr(-,root,root)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-deltarpm
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-3
+-   Use python2_sitelib
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 3.6.1-2
 -   Move python2 requires to python subpackage and added python3.
 *   Tue Apr 25 2017 Bo Gan <ganb@vmware.com> 3.6.1-1
