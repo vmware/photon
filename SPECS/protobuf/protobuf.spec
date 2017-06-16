@@ -1,7 +1,10 @@
+%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.2.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -85,7 +88,7 @@ autoreconf -iv
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 pushd python
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 popd
 pushd java
@@ -95,7 +98,7 @@ popd
 %install
 make DESTDIR=%{buildroot} install
 pushd python
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 pushd java
@@ -133,15 +136,17 @@ popd
 %{_libdir}/libprotoc.a
 
 %files python
-%{_libdir}/python2.7/site-packages/*
+%{python2_sitelib}/*
 
 %files python3
-%{_libdir}/python3.6/site-packages/*
+%{python3_sitelib}/*
 
 %files java
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.2.0-5
+-   Use python2 explicitly while building
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.0-4
 -   Renamed openjdk to openjdk8
 *   Fri Apr 28 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.0-3
