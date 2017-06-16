@@ -1,10 +1,9 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Name:           python-mako
 Version:        1.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
@@ -36,15 +35,21 @@ Requires:       python3-libs
 Python 3 version.
 %prep
 %setup -n Mako-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
-python setup.py build
+python2 setup.py build
+pushd ../p3dir
 python3 setup.py build
+popd
 
 %install
+pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-mv %{buildroot}/%{_bindir}/mako-render %{buildroot}/%{_bindir}/mako-render-%{python3_version}
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+mv %{buildroot}/%{_bindir}/mako-render %{buildroot}/%{_bindir}/mako-render3
+popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install py
@@ -53,15 +58,17 @@ python3 test_mako.py
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/mako-render
 %{python_sitelib}/*
+%{_bindir}/mako-render
 
 %files -n python3-mako
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-%{_bindir}/mako-render-%{python3_version}
+%{_bindir}/mako-render3
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.0.6-3
+-   Separate the python2 and python3 specific scripts in the bin directory
 *   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.6-2
 -   Added python3 package.
 *   Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.6-1

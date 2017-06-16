@@ -3,7 +3,7 @@
 Summary:        Python C parser
 Name:           python-pycparser
 Version:        2.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pycparser
 License:        BSD
 Group:          Development/Languages/Python
@@ -44,12 +44,12 @@ python2 setup.py build
 python3 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 cd tests
-python all_tests.py
+python2 all_tests.py
 
 %files
 %defattr(-,root,root)
@@ -60,6 +60,8 @@ python all_tests.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.17-3
+-   Use python2 instead of python
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.17-2
 -   Fix arch
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.17-1

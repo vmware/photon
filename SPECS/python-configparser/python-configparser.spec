@@ -1,10 +1,10 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        This library brings the updated configparser from Python 3.5 to Python 2.6-3.5.
 Name:           python-configparser
 Version:        3.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -40,26 +40,28 @@ Python 3 version.
 %setup -q -n configparser-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 python3 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install py
-python setup.py test
+python2 setup.py test
 python3 setup.py test
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-configparser
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.5.0-2
+-   Changed python to python2
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.0-1
 -   Initial packaging for Photon

@@ -1,11 +1,10 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Summary:        Pure Python Vi Implementation.
 Name:           python-pyvim
 Version:        0.0.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -46,7 +45,7 @@ python3 setup.py build
 
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-mv %{buildroot}/%{_bindir}/pyvim %{buildroot}/%{_bindir}/pyvim-%{python3_version}
+mv %{buildroot}/%{_bindir}/pyvim %{buildroot}/%{_bindir}/pyvim3
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
@@ -61,8 +60,10 @@ python3 setup.py test
 %files -n python3-pyvim
 %defattr(-,root,root)
 %{python3_sitelib}/*
-%{_bindir}/pyvim-%{python3_version}
+%{_bindir}/pyvim3
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.0.20-2
+-   Rectified python3 version
 *   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.20-1
 -   Initial packaging for Photon.

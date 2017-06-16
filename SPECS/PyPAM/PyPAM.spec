@@ -5,7 +5,7 @@
 Summary:        Python bindings for PAM (Pluggable Authentication Modules).
 Name:           PyPAM
 Version:        0.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -74,12 +74,14 @@ popd
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-PyPAM
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Wed May 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-2
+-   Changing python_sitelib to python2
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-1
 -   Initial packaging for Photon.

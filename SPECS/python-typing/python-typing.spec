@@ -1,8 +1,8 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-typing
 Version:        3.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Type Hints for Python
 License:        PSF
 Group:          Development/Tools
@@ -36,13 +36,15 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 PATH=%{buildroot}%{_bindir}:${PATH} \
-PYTHONPATH=%{buildroot}%{python_sitelib} \
+PYTHONPATH=%{buildroot}%{python2_sitelib} \
     python2 python2/test_typing.py
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-2
+-   Use python2 explicitly
 *   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-1
 -   Initial
