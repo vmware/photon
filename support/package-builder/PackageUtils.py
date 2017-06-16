@@ -26,7 +26,7 @@ class PackageUtils(object):
 
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOption = "-ba --clean"
-        self.rpmbuildNocheckOption = "--nocheck"
+        self.rpmbuildNocheckOption = ""
         self.rpmbuildCheckOption ="-bi --clean"
         self.rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
         self.queryRpmPackageOptions = "-qa"
