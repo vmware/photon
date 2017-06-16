@@ -1,6 +1,6 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.8.19p2
+Version:        1.8.20p2
 Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    sudo=78868ef825e7b6db246d99160ec16fd4e4c93f3f
+%define sha1    sudo=7aa187518735312a82c5fcb3d253ed700cb8c68e
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 Requires:       Linux-PAM
@@ -85,8 +85,11 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
+%exclude  /etc/sudoers.dist
 
 %changelog
+*   Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
+-   Udating version to 1.8.20p2, fixing CVE-2016-1000367 and CVE-2016-1000368
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.19p2-1
 -   Update to version 1.8.19p2
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.18p1-3
