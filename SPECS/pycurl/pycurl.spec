@@ -3,7 +3,7 @@
 
 Name:           pycurl
 Version:        7.43.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -56,14 +56,14 @@ rm -rf ../p3dir
 cp -a . ../p3dir
 
 %build
-CFLAGS="$RPM_OPT_FLAGS -DHAVE_CURL_OPENSSL" python setup.py build
+CFLAGS="$RPM_OPT_FLAGS -DHAVE_CURL_OPENSSL" python2 setup.py build
 pushd ../p3dir
 CFLAGS="$RPM_OPT_FLAGS -DHAVE_CURL_OPENSSL" python3 setup.py build
 popd
 
 %install
 rm -rf %{buildroot}
-python setup.py install -O1 --skip-build --root %{buildroot}
+python2 setup.py install -O1 --skip-build --root %{buildroot}
 rm -rf %{buildroot}%{_datadir}/doc/pycurl
 chmod 755 %{buildroot}%{python2_sitelib}/pycurl*.so
 pushd ../p3dir
@@ -95,6 +95,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Wed May 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.43.0-2
+-   Using python2 explicitly while building
 *   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 7.43.0-1
 -   Upgrade to 7.43.0  and add pycurl3
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 7.21.5-5

@@ -66,11 +66,11 @@ popd
 %check
 PATH=%{buildroot}%{_bindir}:${PATH} \
 PYTHONPATH=%{buildroot}%{python2_sitelib} \
-    py.test-%{python2_version} -v
+    py.test%{python2_version} -v
 pushd ../p3dir
 PATH=%{buildroot}%{_bindir}:${PATH} \
 PYTHONPATH=%{buildroot}%{python3_sitelib} \
-    py.test-%{python3_version} -v
+    py.test%{python3_version} -v
 popd
 
 %files
