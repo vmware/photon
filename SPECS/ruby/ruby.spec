@@ -1,7 +1,7 @@
 Summary:    Ruby
 Name:       ruby
 Version:    2.4.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSDL
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
@@ -9,6 +9,10 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    http://cache.ruby-lang.org/pub/ruby/%{version}/%{name}-%{version}.tar.gz
 %define sha1 ruby=d44a3c50a0e742341ed3033d5db79d865151a4f4
+Patch0:     ruby-CVE-2017-9224.patch
+Patch1:     ruby-CVE-2017-9226.patch
+Patch2:     ruby-CVE-2017-9227.patch
+Patch3:     ruby-CVE-2017-9229.patch
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -22,6 +26,10 @@ This is useful for object-oriented scripting.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 %build
 ./configure \
     --prefix=%{_prefix}   \
@@ -49,6 +57,9 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Tue Jun 13 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
+-   [security] CVE-2017-9224,CVE-2017-9225
+-   [security] CVE-2017-9227,CVE-2017-9229
 *   Wed May 31 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.0-2
 -   Bump release to build with latest openssl
 *   Wed Jan 18 2017 Anish Swaminathan <anishs@vmware.com> 2.4.0-1
