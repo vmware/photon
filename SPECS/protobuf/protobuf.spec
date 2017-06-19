@@ -4,7 +4,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.2.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -60,7 +60,8 @@ Group:          Development/Libraries
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       protobuf = %{version}-%{release}
@@ -145,6 +146,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-6
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.2.0-5
 -   Use python2 explicitly while building
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.0-4

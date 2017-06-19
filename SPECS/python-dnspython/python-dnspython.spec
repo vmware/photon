@@ -4,7 +4,7 @@
 Summary:        A DNS toolkit for Python
 Name:           python-dnspython
 Version:        1.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/dnspython
 License:        BSD
 Group:          Development/Languages/Python
@@ -30,10 +30,12 @@ dnspython provides both high and low level access to DNS. The high level classes
 dnspython originated at Nominum where it was developed to facilitate the testing of DNS software. Nominum has generously allowed it to be open sourced under a BSD-style license.
 
 %package -n     python3-dnspython
-Summary:        python-dnspython
+Summary:        python3-dnspython
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -72,5 +74,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.0-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.0-1
 -   Initial packaging for Photon
