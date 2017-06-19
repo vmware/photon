@@ -4,7 +4,7 @@
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           ecdsa
 Version:        0.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -32,7 +32,8 @@ into other protocols.
 %package -n     python3-ecdsa
 Summary:        python3-ecdsa
 BuildRequires:  python3-devel
-
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 %description -n python3-ecdsa
 
@@ -71,6 +72,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.13-5
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.13-4
 -   Use python2 explicitly
 *   Mon Feb 27 2017 Xiaolin Li <xiaolinl@vmware.com> 0.13-3

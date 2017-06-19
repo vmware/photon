@@ -4,7 +4,7 @@
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python-prompt_toolkit
 Version:        1.0.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -30,6 +30,8 @@ prompt_toolkit is a library for building powerful interactive command lines and 
 Summary:        python-prompt_toolkit
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -69,5 +71,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.14-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.14-1
 -   Initial packaging for Photon

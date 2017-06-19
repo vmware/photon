@@ -4,7 +4,7 @@
 Summary:        Markdown to reStructuredText converter.
 Name:           python-m2r
 Version:        0.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -34,6 +34,8 @@ I wanted to write sphinx document in markdown, since it’s widely used now and 
 Summary:        python-m2r
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -76,6 +78,8 @@ popd
 %{_bindir}/m2r3
 
 %changelog
+*   Mon Jun 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.5-3
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.1.5-2
 -   Separate the python2 and python3 scripts in the bin directory
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.5-1

@@ -4,7 +4,7 @@
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python-automat
 Version:        0.5.0
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -51,6 +51,8 @@ BuildRequires:  python3-attrs
 BuildRequires:  python3-six
 BuildRequires:  python3-docutils
 BuildRequires:  python3-mistune
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -99,7 +101,9 @@ popd
 %{_bindir}/automat-visualize3
 
 %changelog
-*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-1
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-3
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-2
 -   Separate the python3 and python2 scripts in bin directory
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-1
 -   Initial packaging for Photon

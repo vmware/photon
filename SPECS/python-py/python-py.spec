@@ -3,12 +3,12 @@
 
 Name:           python-py
 Version:        1.4.33
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python development support library
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://github.com/pytest-dev/py
-Vendor:		VMware, Inc.
+Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/py-%{version}.tar.gz
 %define sha1    py=4ac8bacefc2583cd7ba488b5cdbfa1e0d469e792
@@ -34,6 +34,8 @@ py.code: dynamic code generation and introspection
 Summary:        Python development support library
 BuildRequires:  python3
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -72,6 +74,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.4.33-3
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.33-2
 -   Use python2_sitelib
 *   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.33-1
