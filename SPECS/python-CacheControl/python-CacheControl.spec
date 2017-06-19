@@ -4,7 +4,7 @@
 Summary:        A port of the caching algorithms in httplib2 for use with requests session object.
 Name:           python-CacheControl
 Version:        0.12.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -27,6 +27,8 @@ It was written because httplib2's better support for caching is often mitigated 
 %package -n     python3-CacheControl
 Summary:        Python3 CacheControl
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3-requests
 Requires:       python3-msgpack
 
@@ -67,5 +69,7 @@ popd
 %{_bindir}/doesitcache3
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.12.3-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu May 25 2017 Xiaolin Li <xiaolinl@vmware.com> 0.12.3-1
 -   Initial version

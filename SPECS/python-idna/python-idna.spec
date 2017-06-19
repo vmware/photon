@@ -4,7 +4,7 @@
 Summary:        Internationalized Domain Names in Applications (IDNA).
 Name:           python-idna
 Version:        2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/idna
 License:        BSD-like
 Group:          Development/Languages/Python
@@ -31,10 +31,12 @@ This library also provides support for Unicode Technical Standard 46, Unicode ID
 This acts as a suitable replacement for the “encodings.idna” module that comes with the Python standard library, but only supports the old, deprecated IDNA specification (RFC 3490).
 
 %package -n     python3-idna
-Summary:        python-idna
+Summary:        python3-idna
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -75,5 +77,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
 -   Initial packaging for Photon
