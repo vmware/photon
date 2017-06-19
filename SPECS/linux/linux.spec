@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.71
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -274,6 +274,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Jun 19 2017 Anish Swaminathan <anishs@vmware.com>  4.4.71-2
+-   [feature] IPV6 netfilter NAT masquerade, security support
 *   Wed Jun 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.71-1
 -   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
     CVE-2017-9077 and CVE-2017-9242
