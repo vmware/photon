@@ -1,7 +1,7 @@
 Summary:	The Kerberos newtork authentication system
 Name:		krb5
 Version:	1.14
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	MIT
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -12,6 +12,7 @@ Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{versi
 Patch0:         krb5-1.14-skip-unnecessary-mech-calls.patch
 Patch1:         krb5-1.14-never-unload-mechanisms.patch
 Patch2:         krb5-1.14-CVE-2015-8631.patch
+Patch3:         krb5-1.14-CVE-2016-3120.patch
 Requires:	openssl
 Requires:	e2fsprogs
 BuildRequires: 	openssl-devel
@@ -25,6 +26,7 @@ practice of clear text passwords.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %build
 
 cd src &&
@@ -94,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/man/man5/.k5login.5.gz
 %{_docdir}/%{name}-%{version}
 %changelog
+*	Mon Jun 19 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14-6
+-	Patch for CVE-2016-3120
 *	Wed Apr 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-5
 -	Patch for CVE-2015-8631
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
