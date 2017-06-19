@@ -4,7 +4,7 @@
 Summary:        Software library for fast, message-based applications
 Name:           python-zmq
 Version:        16.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv3+ and BSD3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -25,6 +25,7 @@ python bindings for zeromq
 Summary:        Software library for fast, message-based applications
 BuildRequires:  python3
 BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 BuildRequires:  cython3
 Requires:       python3
 
@@ -61,5 +62,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/zmq
 
 %changelog
+*   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 16.0.2-2
+-   Add python3-libs to BuildRequires
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 16.0.2-1
 -   Initial packaging for Photon

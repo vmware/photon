@@ -31,7 +31,6 @@ else
 PHOTON_SOURCES ?= sources
 endif
 
-MINIMAL_PACKAGE_LIST_FILE := build_install_options_minimal.json
 MICRO_PACKAGE_LIST_FILE := build_install_options_micro.json
 FULL_PACKAGE_LIST_FILE := build_install_options_all.json
 
@@ -71,11 +70,11 @@ IMGCONVERTER := $(TOOLS_BIN)/imgconverter
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
 check-tools check-docker check-bison check-g++ check-gawk check-createrepo check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
-clean-install clean-chroot build-updated-packages check
+clean-install clean-chroot build-updated-packages check generate-yaml-files
 
 THREADS?=1
 
-all: iso minimal-iso docker-image live-iso cloud-image-all src-iso
+all: iso docker-image live-iso cloud-image-all src-iso
 
 micro: micro-iso
 	@:
@@ -114,27 +113,7 @@ packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
                 $(PHOTON_RPMCHECK_FLAGS) \
                 -t ${THREADS}
 
-minimal: minimal-iso
-	@:
-
-minimal-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
-	@echo "Building Photon Minimal ISO..."
-	@cd $(PHOTON_INSTALLER_DIR) && \
-        $(PHOTON_INSTALLER) \
-                -i $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
-                -k $(PHOTON_STAGE)/photon-minimal-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).debug.iso \
-                -w $(PHOTON_STAGE)/photon_iso \
-                -l $(PHOTON_STAGE)/LOGS \
-                -r $(PHOTON_STAGE)/RPMS \
-                -p $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
-                -c $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
-                -o $(PHOTON_STAGE)/common/data \
-                -d $(PHOTON_STAGE)/pkg_info.json \
-                -s $(PHOTON_DATA_DIR) \
-                -f > \
-                $(PHOTON_LOGS_DIR)/installer.log 2>&1
-
-live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL) minimal-iso
+live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 	@echo "Building Photon Minimal LIVE ISO..."
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
@@ -553,6 +532,27 @@ check: packages
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_FLAGS) \
                               -l $(PHOTON_LOGS_DIR)
+
+generate-yaml-files: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+	@echo "Generating yaml files for packages ..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) -y \
+                              -b $(PHOTON_CHROOT_PATH) \
+                              -s $(PHOTON_SPECS_DIR) \
+                              -r $(PHOTON_RPMS_DIR) \
+                              -a $(PHOTON_SRPMS_DIR) \
+                              -x $(PHOTON_SRCS_DIR) \
+                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                              -c $(PHOTON_PULLSOURCES_CONFIG) \
+                              -d $(PHOTON_DIST_TAG) \
+                              -n $(PHOTON_BUILD_NUMBER) \
+                              -v $(PHOTON_RELEASE_VERSION) \
+                              -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                              $(PHOTON_RPMCHECK_OPTION) \
+                              -l $(PHOTON_LOGS_DIR) \
+                              -j $(PHOTON_STAGE) \
+                              -f $(PHOTON_PKG_BLACKLIST_FILE)
 
 $(TOOLS_BIN):
 	mkdir -p $(TOOLS_BIN)

@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -9,10 +9,18 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.gnu.org/gnu/ncurses/%{name}-%{version}.tar.gz
 %define sha1 ncurses=acd606135a5124905da770803c05f1f20dd3b21c
-Provides:       libncurses.so.6()(64bit)
+Requires:	ncurses-libs = %{version}-%{release}
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
+
+%package libs
+Summary: Ncurses Libraries
+Group: System Environment/Libraries
+Provides:       libncurses.so.6()(64bit)
+
+%description libs
+This package contains ncurses libraries
 
 %package compat
 Summary: Ncurses compatibility libraries
@@ -98,8 +106,8 @@ cd test
 ./configure
 make
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post libs -p /sbin/ldconfig
+%postun	libs -p /sbin/ldconfig
 %post compat -p /sbin/ldconfig
 %postun compat -p /sbin/ldconfig
 %files
@@ -115,13 +123,15 @@ make
 %{_bindir}/tput
 %{_bindir}/infotocap
 %{_bindir}/toe
-%{_libdir}/lib*.so.6*
-%{_datadir}/tabset/*
 %{_mandir}/man7/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
+
+%files libs
 %{_datadir}/terminfo/l/linux
+%{_datadir}/tabset/*
 %{_libdir}/terminfo
+%{_libdir}/lib*.so.6*
 
 %files compat
 %{_libdir}/lib*.so.5*
@@ -170,6 +180,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 6.0-8
+-   Fix bash dependency
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 6.0-7
 -   Fix symlink
 *   Wed Mar 29 2017 Alexey Makhalov <amakhalov@vmware.com> 6.0-6

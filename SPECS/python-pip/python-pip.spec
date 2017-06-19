@@ -1,6 +1,7 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           python-pip
 Version:        9.0.1
-Release:        3%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
@@ -16,6 +17,7 @@ BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-setuptools
+Requires:       python-xml
 
 BuildArch:      noarch
 
@@ -27,21 +29,25 @@ The PyPA recommended tool for installing Python packages.
 %setup -q -n pip-%{version}
 
 %build
-python setup.py build
+python2 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install freezegun
-%{__python} setup.py test
+python2 setup.py test
 
 %files
 %defattr(-,root,root)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 %{_bindir}/*
 
 %changelog
+*   Thu Jun 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 9.0.1-5
+-   Use python2 explicitly
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 9.0.1-4
+-   Add python-xml to requires.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.0.1-3
 -   Fix arch
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 9.0.1-2

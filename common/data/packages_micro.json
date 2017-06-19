@@ -9,6 +9,8 @@
                 "photon-release", 
                 "photon-repos",
                 "tdnf",
+                "grep",
+                "pkg-config",
                 "rpm"]
 }
 

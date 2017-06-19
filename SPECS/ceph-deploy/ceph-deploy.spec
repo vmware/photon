@@ -1,6 +1,8 @@
+%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
 Name:           ceph-deploy
 Version:        1.5.37
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            http://ceph.com/
 Summary:        Admin and deploy tool for Ceph
 License:        MIT
@@ -40,10 +42,10 @@ An easy to use admin tool for deploy ceph storage clusters.
 %patch6 -p1
 
 %build
-python setup.py build
+python2 setup.py build
 
 %install
-python setup.py install --prefix=%{_prefix} --root=%{buildroot}
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 install -m 0755 -D scripts/ceph-deploy $RPM_BUILD_ROOT/usr/bin
 
 %check
@@ -52,10 +54,12 @@ install -m 0755 -D scripts/ceph-deploy $RPM_BUILD_ROOT/usr/bin
 %files
 %defattr(-,root,root)
 %doc LICENSE README.rst
-%{python_sitelib}/*
+%{python2_sitelib}/*
 %{_bindir}/ceph-deploy
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.37-3
+-   Use python2 explicitly
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.37-2
 -   Fix arch
 *   Thu Mar 30 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.37-1

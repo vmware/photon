@@ -1,7 +1,7 @@
 Summary:	gptfdisk-1.0.1
 Name:		gptfdisk
 Version:	1.0.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://sourceforge.net/projects/gptfdisk/
 Group:		System Environment/Filesystem and Disk management
@@ -14,6 +14,7 @@ Requires: 	popt >= 1.16
 BuildRequires:	popt-devel
 BuildRequires:	ncurses-devel
 Requires:	ncurses
+Requires:	libstdc++
 %description
 The gptfdisk package is a set of programs for creation and maintenance of GUID Partition 
 Table (GPT) disk drives. A GPT partitioned disk is required for drives greater than 2 TB 
@@ -38,6 +39,8 @@ rm -rf %{buildroot}/*
 /sbin/*
 %{_mandir}/man8/*
 %changelog
+*	Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 1.0.1-4
+-	Fix dependency
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.0.1-3
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-2

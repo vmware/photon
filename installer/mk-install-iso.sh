@@ -106,14 +106,14 @@ mkdir -p ${BUILDROOT}/etc/systemd/scripts
 cp BUILD_DVD/fstab ${BUILDROOT}/etc/fstab
 
 mkdir -p ${BUILDROOT}/etc/yum.repos.d
-cat >> ${BUILDROOT}/etc/yum.repos.d/photon-iso.repo <<EOF
+cat >> ${BUILDROOT}/etc/yum.repos.d/photon-iso.repo << EOF
 [photon-iso]
 name=VMWare Photon Linux 1.0(x86_64)
 baseurl=file:///mnt/cdrom/RPMS
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
-skip_if_unavailable=True​
+skip_if_unavailable=True
 EOF
 
 #- Step 7 - Create installer script
@@ -122,7 +122,7 @@ if [ "$LIVE_CD" = false ] ; then
 cat >> ${BUILDROOT}/bin/bootphotoninstaller << EOF
 #!/bin/bash
 cd /installer
-./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
+[ \`tty\` == '/dev/tty1' ] && ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME 2> /var/log/installer && shutdown -r now
 /bin/bash
 EOF
 
@@ -260,7 +260,7 @@ if [ "$LIVE_CD" = false ] ; then
 
     for j in `ls ${BUILDROOT}/usr/sbin/grub2*`; do
         bsname=$(basename "$j")
-        if [ $bsname != 'grub2-efi-install' -a $bsname != 'grub2-install' ]; then
+        if [ $bsname != 'grub2-install' ]; then
             rm $j
         fi
     done

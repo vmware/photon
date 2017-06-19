@@ -1,9 +1,9 @@
-%{!?python_sitelib: %define python_sitelib %(python -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-imagesize
 Version:        0.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 License:        MIT
 Group:          Development/Languages/Python
@@ -56,17 +56,19 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-py.test-2
-py.test-3
+py.test2
+py.test3
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/*
+%{python2_sitelib}/*
 
 %files -n python3-imagesize
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.1-2
+-   Change python to python2
 *   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.1-1
 -   Initial

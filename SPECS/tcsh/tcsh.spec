@@ -2,13 +2,13 @@
 Summary:        An enhanced version of csh, the C shell
 Name:           tcsh
 Version:        6.20.00
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Group:          System Environment/Shells
 Source:         http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.xz
 %define sha1    tcsh=a52deb0181e32583dbe666474c9c2e784357feba
-Patch0:         tcsh-6.19.00-calloc-gcc-5.patch
-Patch1:         tcsh.glibc-2.24.patch
+# patch origin http://pkgs.fedoraproject.org/cgit/rpms/tcsh.git/
+Patch0:         tcsh-6.20.00-009-fix-regexp-for-backlash-quoting-tests.patch
 URL:            http://www.tcsh.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -29,6 +29,7 @@ like syntax.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 sed -i -e 's|\$\*|#&|' -e 's|fR/g|&m|' tcsh.man2html &&
@@ -66,7 +67,10 @@ uk ukrainian
 _EOF
 
 %check
-make check
+# tcsh expect nonroot user to run a tests
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test make check && userdel test -r -f
 
 %clean
 rm -rf %{buildroot}
@@ -111,6 +115,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*   Tue Jun 6 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-3
+-   Fix make check issues.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.20.00-2
 -   Ensure non empty debuginfo
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 6.20.00-1

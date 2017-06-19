@@ -27,7 +27,7 @@ grub_efi_install()
     mkfs.vfat $BOOT_PARTITION
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
-    grub2-efi-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
+    grub2-install --target=x86_64-efi --efi-directory=$BUILDROOT/boot/efi --bootloader-id=Boot --root-directory=$BUILDROOT --recheck
     rm $BUILDROOT/boot/efi/EFI/Boot/grubx64.efi
     cp efi/bootx64.efi $BUILDROOT/boot/efi/EFI/Boot/bootx64.efi
     umount $BUILDROOT/boot/efi

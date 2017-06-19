@@ -247,6 +247,9 @@ class SpecParser(object):
             while i < totalContents:
                 dpkg = dependentPackageData()
                 compare=None
+                if listContents[i].startswith("/"):
+                    i=i+1
+                    continue
                 if i+2 < len(listContents):
                     if listContents[i+1] == ">=":
                         compare="gte"
@@ -366,7 +369,7 @@ class SpecParser(object):
             print "Error: Can not find match for sha1 "+value[0]
             return False
         if (len(matchedSources) > 1):
-            print "Error: Too many matches in sources: "+matchedSources+" for sha1 "+value[0]
+            print "Error: Too many matched Sources:" + ' '.join(matchedSources) + " for sha1 "+value[0]
             return False
         pkg.checksums[sourceName] = value[1]
         return True;
