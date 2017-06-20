@@ -91,6 +91,7 @@ class constants(object):
         "autoconf",
         "automake",
         "openssl",
+        "openssl-devel",
         "python2",
         "libdb",
         "rpm",
@@ -304,6 +305,9 @@ class constants(object):
         "unzip",
         "systemd-devel",
         "gnupg" ]
+
+    listReInstallPackages=[
+        "go"]
 
     @staticmethod
     def initialize(options):
