@@ -25,7 +25,6 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 %patch0 -p1
 
 %build
-source /etc/profile.d/apache-ant.sh
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 ant jar javadoc -Drelease=true
 
@@ -118,5 +117,7 @@ fi
 /lib/systemd/system/cassandra.service
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.10-2
+-   Removed dependency on ANT_HOME
 *   Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-1
 -   Initial build. First version
