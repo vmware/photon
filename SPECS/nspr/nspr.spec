@@ -1,22 +1,22 @@
-Summary:	Platform-neutral API
-Name:		nspr
-Version:	4.14
-Release:	2%{?dist}
-License:	MPLv2.0
-URL:		http://ftp.mozilla.org/pub/mozilla.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://ftp.mozilla.org/pub/mozilla.org/%{name}/releases/v%{version}/src/%{name}-%{version}.tar.gz
-%define sha1 nspr=4c9ffda940882229104090f8fc8539f6412e1ff7
+Summary:        Platform-neutral API
+Name:           nspr
+Version:        4.15
+Release:        1%{?dist}
+License:        MPLv2.0
+URL:            http://ftp.mozilla.org/pub/mozilla.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.mozilla.org/pub/nspr/releases/v%{version}/src/%{name}-%{version}.tar.gz
+%define sha1    nspr=56030e0177849034ba3027a23ae2a7f8ed41f379
 
 %description
 Netscape Portable Runtime (NSPR) provides a platform-neutral API
 for system level and libc like functions.
 
-%package    devel
-Summary:    Header and development files for nspr
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files for nspr
+Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications
 
@@ -29,12 +29,12 @@ sed -i 's#$(LIBRARY) ##' config/rules.mk
 %build
 cd nspr
 ./configure \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--with-mozilla \
-	--with-pthreads \
-	$([ $(uname -m) = x86_64 ] && echo --enable-64bit) \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --with-mozilla \
+    --with-pthreads \
+    $([ $(uname -m) = x86_64 ] && echo --enable-64bit) \
+    --disable-silent-rules
 
 make %{?_smp_mflags}
 
@@ -42,9 +42,9 @@ make %{?_smp_mflags}
 cd nspr
 make DESTDIR=%{buildroot} install
 
-%post	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -58,6 +58,8 @@ make DESTDIR=%{buildroot} install
 %{_datarootdir}/aclocal/*
 
 %changelog
+*   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 4.15-1
+-   Upgrade to 4.15.
 *   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.14-2
 -   Fix error - binary packed in devel.
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.14-1
