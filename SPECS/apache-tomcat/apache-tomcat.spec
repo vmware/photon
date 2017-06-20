@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.15
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -12,9 +12,9 @@ Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{
 %define sha1 apache-tomcat=5f26f71a1a3730020254a76aca1ee2615bd12d02
 BuildRequires: openjre8 >= %{JAVA8_VERSION}
 BuildRequires: openjdk8 >= %{JAVA8_VERSION}
-BuildRequires: apache-ant >= %{ANT_VERSION}
+BuildRequires: apache-ant
 Requires: openjre8 >= %{JAVA8_VERSION}
-Requires: apache-ant >= %{ANT_VERSION}
+Requires: apache-ant
 
 %define _prefix /var/opt/%{name}-%{version}
 %define _bindir %{_prefix}/bin
@@ -32,9 +32,8 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 mkdir -p -m 700 %{_prefix}
-$ANT_HOME/bin/ant -Dbase.path="." deploy dist-prepare dist-source javadoc
+ant -Dbase.path="." deploy dist-prepare dist-source javadoc
 
 %install
 mkdir -p -m 700 %{buildroot}%{_prefix}
@@ -71,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_webappsdir}/*
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.15-2
+-   Removed dependency on ANT_HOME
 *   Tue Jun 6 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.15-1
 -   Upgraded to version 8.5.15
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.13-3

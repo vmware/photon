@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -12,7 +12,7 @@ Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version
 %define sha1 apache-maven=1730812af1cdd77493e269b371ef8ac536230c15
 BuildRequires: openjre8 >= %{JAVA8_VERSION}
 BuildRequires: openjdk8 >= %{JAVA8_VERSION}
-BuildRequires: apache-ant >= %{ANT_VERSION}
+BuildRequires: apache-ant
 BuildRequires: wget >= 1.15
 Requires: openjre8 >= %{JAVA8_VERSION}
 Requires: which
@@ -29,11 +29,12 @@ The Maven package contains binaries for a build system
 %setup -q
 #find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 
+%clean
+rm -rf %{buildroot}
+
 %build
-MAVEN_DIST_DIR=%{_prefix}
+MAVEN_DIST_DIR=%{buildroot}%{_prefix}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
-export PATH=$PATH:$ANT_HOME/bin
 source /etc/profile.d/apache-maven.sh
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
@@ -41,12 +42,6 @@ sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
 %install
-MAVEN_DIST_DIR=%{_prefix}
-
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-mkdir -p -m 700 %{buildroot}/var/opt
-
-cp -r "$MAVEN_DIST_DIR"  %{buildroot}/var/opt
 
 # install exports file.
 install -d -m 755 %{buildroot}/etc/profile.d/
@@ -69,6 +64,8 @@ echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.0-3
+-   Removed dependency on ANT_HOME
 *	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.0-2
 -	Renamed openjdk to openjdk8
 *   Mon Apr 24 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.0-1

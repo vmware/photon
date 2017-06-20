@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -12,9 +12,9 @@ Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{ve
 %define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
 BuildRequires: openjre8 >= %{JAVA8_VERSION}
 BuildRequires: openjdk8 >= %{JAVA8_VERSION}
-BuildRequires: apache-ant >= %{ANT_VERSION}
+BuildRequires: apache-ant
 Requires: openjre8 >= %{JAVA8_VERSION}
-Requires: apache-ant >= %{ANT_VERSION}
+Requires: apache-ant
 %define _prefix /var/opt/ant-contrib
 
 %description
@@ -24,16 +24,16 @@ The Ant Contrib project is a collection of tasks for Apache Ant.
 %setup -n %{name}
 find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
 
+%clean
+rm -rf %{buildroot}
+
 %build
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 mkdir -p -m 700 %{_prefix}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
-$ANT_HOME/bin/ant -Ddist.dir="%{_prefix}" -Dproject.version="1.0b3" dist
+ant -Ddist.dir="%{buildroot}%{_prefix}" -Dproject.version="1.0b3" dist
+
 %install
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
-ANT_CONTRIB_DIST_DIR=%{buildroot}%{name}-%{version}
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p -m 700 %{buildroot}/var/opt
 cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wildcards "*.jar"
 %files
@@ -42,6 +42,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wi
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-12
+-   Removed dependency on ANT_HOME
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3-11
 -   Renamed openjdk to openjdk8
 *   Fri Apr 07 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-10
