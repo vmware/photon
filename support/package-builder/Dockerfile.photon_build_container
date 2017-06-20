@@ -1,0 +1,9 @@
+# Photon Base Build Container
+
+FROM scratch
+MAINTAINER kulkarniv@vmware.com
+
+ADD tcroot.tar.gz /
+ADD wait.sh /
+
+CMD ["/usr/bin/bash", "--login"]
