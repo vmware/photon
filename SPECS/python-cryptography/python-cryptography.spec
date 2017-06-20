@@ -4,7 +4,7 @@
 Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        1.7.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://cryptography.io
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -29,6 +29,7 @@ Requires:       python-pyasn1
 Requires:       python-ipaddress
 Requires:       python-setuptools
 Requires:       python-enum
+Requires:       python-six
 
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
@@ -71,6 +72,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 20 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-4
+-   Add python-six as requires.
 *   Mon May 22 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-3
 -   Add python-enum as requires.
 *   Mon Apr 03 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-2
