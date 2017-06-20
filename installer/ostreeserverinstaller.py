@@ -27,8 +27,8 @@ from installer import Installer
 
 class OstreeServerInstaller(Installer):
 
-    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
-        Installer.__init__(self, install_config, maxy, maxx, iso_installer, rpm_path, log_path, ks_config)
+    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS"):
+        Installer.__init__(self, install_config, maxy, maxx, iso_installer, rpm_path, log_path)
 
     def finalize_system(self):
         Installer.finalize_system(self)
