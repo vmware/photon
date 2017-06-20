@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -20,6 +20,7 @@ Patch3:           systemd-233-ipv6-disabled-fix.patch
 Patch4:           systemd-233-default-dns-from-env.patch
 Patch5:           systemd-macros.patch
 Patch6:           systemd-233-resolv-conf-symlink.patch
+Patch7:           systemd-233-CVE-2017-9217.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -75,6 +76,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -222,6 +224,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Jun 20 2017 Anish Swaminathan <anishs@vmware.com>  233-2
+-    Fix for CVE-2017-9217
 *    Mon Mar 06 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-1
 -    Update systemd to 233
 *    Tue Jan 3 2017 Alexey Makhalov <amakhalov@vmware.com>  232-5
