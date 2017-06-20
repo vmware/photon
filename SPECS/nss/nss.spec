@@ -1,19 +1,19 @@
-Summary:	Security client
-Name:		nss
-Version:	3.25
-Release:	1%{?dist}
-License:	MPLv2.0
-URL:		http://ftp.mozilla.org/pub/mozilla.org/security/nss
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 nss=ffa55041a7904bb43afbc6821f479819d9802abf
-Patch:		nss-3.25-standalone-1.patch
-Requires:	nspr
-Requires:	sqlite-autoconf
-BuildRequires:	nspr
-BuildRequires:	sqlite-autoconf
+Summary:        Security client
+Name:           nss
+Version:        3.31
+Release:        1%{?dist}
+License:        MPLv2.0
+URL:            http://ftp.mozilla.org/pub/mozilla.org/security/nss
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    nss=006a13a5e52867c49ea1e7d986b7c02a3cd8ebfb
+Patch:          nss-3.31-standalone-1.patch
+Requires:       nspr
+Requires:       sqlite-autoconf
+BuildRequires:  nspr
+BuildRequires:  sqlite-autoconf
 
 %description
  The Network Security Services (NSS) package is a set of libraries
@@ -38,11 +38,11 @@ Header files for doing development with Network Security Services.
 cd nss
 # -j is not supported by nss
 make VERBOSE=1 BUILD_OPT=1 \
-	NSPR_INCLUDE_DIR=%{_includedir}/nspr \
-	USE_SYSTEM_ZLIB=1 \
-	ZLIB_LIBS=-lz \
-	$([ $(uname -m) = x86_64 ] && echo USE_64=1) \
-	$([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
+    NSPR_INCLUDE_DIR=%{_includedir}/nspr \
+    USE_SYSTEM_ZLIB=1 \
+    ZLIB_LIBS=-lz \
+    $([ $(uname -m) = x86_64 ] && echo USE_64=1) \
+    $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
 %install
 cd nss
 cd ../dist
@@ -56,7 +56,7 @@ chmod 644 %{buildroot}%{_includedir}/nss/*
 install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
-%post	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -69,17 +69,18 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
-
 %changelog
-*       Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
--       Upgrade to 3.25
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2
--	GA - Bump release of all rpms
-* 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
-- 	Updated to version 3.21
-*       Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2
--       Version update. Firefox requirement.
-*	Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19-1
--	Version update. Firefox requirement.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.15.4-1
--	Initial build. First version
+*   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-1
+-   Upgrade to 3.31.
+*   Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
+-   Upgrade to 3.25
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.21-2
+-   GA - Bump release of all rpms
+*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 3.21
+-   Updated to version 3.21
+*   Tue Aug 04 2015 Kumar Kaushik <kaushikk@vmware.com> 3.19-2
+-   Version update. Firefox requirement.
+*   Fri May 29 2015 Alexey Makhalov <amakhalov@vmware.com> 3.19-1
+-   Version update. Firefox requirement.
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.15.4-1
+-   Initial build. First version
