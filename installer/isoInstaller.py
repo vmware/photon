@@ -136,6 +136,7 @@ class IsoInstaller(object):
         random_id = '%12x' % random.randrange(16**12)
         random_hostname = "photon-" + random_id.strip()
         install_config = {'iso_system': False}
+        install_config['ui_install'] = True
         license_agreement = License(self.maxy, self.maxx)
         select_disk = SelectDisk(self.maxy, self.maxx, install_config)
         select_partition = PartitionISO(self.maxy, self.maxx, install_config)
@@ -227,6 +228,53 @@ class IsoInstaller(object):
                     if install_config['type'] == 'ostree_server':
                         index -= 1
 
+    def ks_install(self, options_file, rpm_path, ks_config):
+        install_config = ks_config
+        install_config['iso_system'] = False
+        if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
+            install_config['install_linux_esx'] = True
+
+        json_wrapper_option_list = JsonWrapper("build_install_options_all.json")
+        option_list_json = json_wrapper_option_list.read()
+        options_sorted = option_list_json.items()
+
+        base_path = os.path.dirname("build_install_options_all.json")
+        package_list = []
+
+        package_list = PackageSelector.get_packages_to_install(options_sorted, install_config['type'], base_path)
+        if 'additional_packages' in install_config:
+            package_list.extend(install_config['additional_packages'])
+        install_config['packages'] = package_list
+
+        if 'partitions' in install_config:
+            partitions = install_config['partitions']
+        else:
+            partitions = modules.commons.default_partitions
+
+        install_config['disk'] = modules.commons.partition_disk(install_config['disk'], partitions)
+
+        if "hostname" in install_config:
+            evalhostname = os.popen('printf ' + install_config["hostname"].strip(" ")).readlines()
+            install_config['hostname'] = evalhostname[0]
+        if "hostname" not in install_config or install_config['hostname'] == "":
+            random_id = '%12x' % random.randrange(16**12)
+            install_config['hostname'] = "photon-" + random_id.strip()
+
+        # crypt the password if needed
+        if install_config['password']['crypted']:
+            install_config['password'] = install_config['password']['text']
+        else:
+            install_config['password'] = crypt.crypt(install_config['password']['text'], 
+                "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
+
+        installer = InstallerContainer(
+            install_config,
+            self.maxy, self.maxx,
+            True,
+            rpm_path=rpm_path,
+            log_path="/var/log")
+
+        installer.install(None)
 
     def is_vmware_virtualization(self):
         process = subprocess.Popen(['systemd-detect-virt'], stdout=subprocess.PIPE)
@@ -270,22 +318,10 @@ class IsoInstaller(object):
             self.mount_RPMS_cd()
             rpm_path = os.path.join(self.cd_path, "RPMS")
 
-        if not ks_config:
-            self.ui_install(options_file, rpm_path)
+        if ks_config:
+            self.ks_install(options_file, rpm_path, ks_config)
         else:
-            install_config = ks_config
-            install_config['iso_system'] = False
-            if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
-                install_config['install_linux_esx'] = True
-            installer = InstallerContainer(
-                install_config,
-                self.maxy, self.maxx,
-                True,
-                rpm_path=rpm_path,
-                log_path="/var/log",
-                ks_config=ks_config)
-
-            installer.install(None)
+            self.ui_install(options_file, rpm_path)
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"

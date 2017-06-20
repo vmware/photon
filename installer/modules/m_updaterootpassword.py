@@ -7,16 +7,7 @@ import string
 install_phase = commons.POST_INSTALL
 enabled = True
 
-def execute(name, ks_config, config, root):
-
-    if ks_config:
-        # crypt the password if needed
-        if ks_config['password']['crypted']:
-            config['password'] = ks_config['password']['text']
-        else:
-            config['password'] = crypt.crypt(ks_config['password']['text'], 
-                "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
-    
+def execute(name, config, root):
     shadow_password = config['password']
 
     passwd_filename = os.path.join(root, 'etc/passwd')

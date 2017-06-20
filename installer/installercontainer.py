@@ -9,11 +9,13 @@ from ostreeinstaller import OstreeInstaller
 from ostreeserverinstaller import OstreeServerInstaller
 
 class InstallerContainer(object):
-    def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False, rpm_path = "../stage/RPMS", log_path = "../stage/LOGS", ks_config = None):
+    def __init__(self, install_config, maxy = 0, maxx = 0,
+        iso_installer = False, rpm_path = "../stage/RPMS",
+        log_path = "../stage/LOGS"):
+
         self.install_config = install_config
         self.maxy = maxy
         self.maxx = maxx
-        self.ks_config = ks_config
         self.iso_installer = iso_installer
         self.rpm_path = rpm_path
         self.log_path = log_path
@@ -21,10 +23,10 @@ class InstallerContainer(object):
     def install(self, params):
         installer = None
         if self.install_config['type'] == "ostree_host":
-            installer = OstreeInstaller(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path, self.ks_config)
+            installer = OstreeInstaller(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path)
         elif self.install_config['type'] == "ostree_server":
-            installer = OstreeServerInstaller(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path, self.ks_config)
+            installer = OstreeServerInstaller(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path)
         else:
-            installer = Installer(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path, self.ks_config)
+            installer = Installer(self.install_config, self.maxy, self.maxx, self.iso_installer, self.rpm_path, self.log_path)
 
         return installer.install(params)
