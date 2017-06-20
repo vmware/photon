@@ -76,6 +76,7 @@ class ToolChainUtils(object):
     def buildCoreToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile):
         self.logger.info("Building core tool chain packages.....")
         chrootID=None
+        pkgCount = 0
         try:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             for package in constants.listCoreToolChainPackages:
@@ -95,6 +96,7 @@ class ToolChainUtils(object):
                 self.installToolChainRPMS(chrootID, package)
                 pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
                 pkgUtils.buildRPMSForGivenPackage(package, chrootID, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
+                pkgCount += 1
                 chrUtils.destroyChroot(chrootID)
                 chrootID=None
             self.logger.info("Successfully built toolchain")
@@ -105,6 +107,7 @@ class ToolChainUtils(object):
             # print stacktrace
             traceback.print_exc()
             raise e
+        return pkgCount
                 
     def installToolChainRPMS(self,chrootID, packageName):
         cmdUtils = CommandUtils()
@@ -169,3 +172,75 @@ class ToolChainUtils(object):
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
         self.logger.info("Successfully installed all Tool Chain X RPMS")
+
+    def installToolChainRPMSinContainer(self, containerID):
+        self.logger.info("Installing tool-chain RPMS in container: " + containerID.short_id)
+        rpmFiles = ""
+        packages = ""
+        pkgUtils = PackageUtils(self.logName, self.logPath)
+        for package in constants.listToolChainRPMPkgsToInstall:
+            rpmFile = pkgUtils.findRPMFileForGivenPackage(package)
+            if rpmFile is None:
+                # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
+                if package == "sqlite":
+                    package = "sqlite-autoconf"
+                rpmFile = self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+                if rpmFile is None:
+                    if package in constants.listOfRPMsProvidedAfterBuild:
+                        self.logger.info("No old version of " + package + " exists, skip until the new version is built")
+                        continue
+                    self.logger.error("Unable to find rpm " + package + " in current and previous versions")
+                    raise Exception("Input Error")
+            if rpmFile.find("stage/PUBLISHRPMS"):
+                rpmFile = rpmFile.replace(constants.prevPublishRPMRepo, "/publishrpms")
+            if rpmFile.find("stage/PUBLISHXRPMS"):
+                rpmFile = rpmFile.replace(constants.prevPublishXRPMRepo, "/publishxrpms")
+            if rpmFile.find("stage/RPMS"):
+                rpmFile = rpmFile.replace(constants.rpmPath, "/rpms")
+            rpmFiles += " " + rpmFile
+            packages += " " + package
+
+        self.logger.debug("Installing tool-chain rpms: " + packages)
+
+        cmd = "/usr/bin/bash -l -c '/usr/bin/rpm -Uvh --force --nodeps " + rpmFiles + "'"
+        self.logger.info("VDBG-TCU-installToolChainRPMSinContainer: Installing rpms cmd: " + cmd)
+        tcInstallLog = containerID.exec_run(cmd)
+        # TODO: Find a way to collect exit status of the command that was run.
+        if not tcInstallLog:
+            self.logger.error("Installing tool chain in container failed")
+            raise Exception("RPM installation in container failed")
+        self.logger.info("VDBG-TCU-installToolChainRPMSinContainer: TCInstallLog: " + tcInstallLog)
+        self.logger.info("Successfully installed default tool-chain RPMS in container: " + containerID.short_id)
+
+    def installCustomToolChainRPMSinContainer(self, containerID, listOfToolChainPkgs, packageName):
+        self.logger.info("Installing package specific tool chain RPMs for " + packageName)
+        rpmFiles = ""
+        packages = ""
+        for package in listOfToolChainPkgs:
+            print "VDBG-TCU-installCustomToolChainRPMSinContainer-DEBUG:" + package
+            if "openjre8" in packageName or "openjdk8" in packageName:
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
+            else:
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+            if rpmFile is None:
+                self.logger.error("Unable to find rpm " + package + " in current and previous versions")
+                raise Exception("Input Error")
+            if rpmFile.find("stage/PUBLISHRPMS"):
+                rpmFile = rpmFile.replace(constants.prevPublishRPMRepo, "/publishrpms")
+            if rpmFile.find("stage/PUBLISHXRPMS"):
+                rpmFile = rpmFile.replace(constants.prevPublishXRPMRepo, "/publishxrpms")
+            if rpmFile.find("stage/RPMS"):
+                rpmFile = rpmFile.replace(constants.rpmPath, "/rpms")
+            rpmFiles += " " + rpmFile
+            packages += " " + package
+
+        self.logger.debug("Installing rpms: " + packages)
+        cmd = "rpm -Uvh --nodeps --force " + rpmFiles
+        self.logger.debug("VDBG-TCU-installCustomToolChainRPMSinContainer: Installing rpms cmd: " + cmd)
+        tcInstallLog = containerID.exec_run(cmd)
+        # TODO: Find a way to collect exit status of the command that was run.
+        if not tcInstallLog:
+            self.logger.error("Installing tool chain in container failed")
+            raise Exception("RPM installation in container failed")
+        self.logger.info("VDBG-TCU-installCustomToolChainRPMSinContainer: TCInstallLog: " + tcInstallLog)
+        self.logger.info("Successfully installed all tool-chain XRPMS in container: " + containerID.short_id)
