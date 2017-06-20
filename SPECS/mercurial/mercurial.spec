@@ -1,7 +1,7 @@
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
 Version:        3.7.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{python_sitelib}/*
 
 %changelog
+*   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-7
+-   Fix CVE-2017-9462 patch.
 *   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-6
 -   Apply CVE-2017-9462 patch
 *   Mon Jan 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-5
