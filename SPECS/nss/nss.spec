@@ -1,18 +1,18 @@
-Summary:	Security client
-Name:		nss
-Version:	3.30.1
-Release:	1%{?dist}
-License:	MPLv2.0
-URL:		https://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/NSS_3_30_1_RTM/src/%{name}-%{version}.tar.gz
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	%{name}-%{version}.tar.gz
-%define sha1 nss=3e1207b1293605435106148aa8e7205b37aeae74
-Patch:		nss-3.30.1-standalone-1.patch
-Requires:	nspr
-BuildRequires:	nspr-devel
-BuildRequires:	sqlite-devel
+Summary:        Security client
+Name:           nss
+Version:        3.31
+Release:        1%{?dist}
+License:        MPLv2.0
+URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_RTM/src/%{name}-%{version}.tar.gz
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    nss=006a13a5e52867c49ea1e7d986b7c02a3cd8ebfb
+Patch:          nss-3.31-standalone-1.patch
+Requires:       nspr
+BuildRequires:  nspr-devel
+BuildRequires:  sqlite-devel
 Requires:       nss-libs = %{version}-%{release}
 
 %description
@@ -34,8 +34,8 @@ Header files for doing development with Network Security Services.
 %package libs
 Summary: Libraries for Network Security Services
 Group:      System Environment/Libraries
-Requires:	sqlite-libs
-Requires:	nspr
+Requires:   sqlite-libs
+Requires:   nspr
 %description libs
 This package contains minimal set of shared nss libraries.
 
@@ -46,11 +46,11 @@ This package contains minimal set of shared nss libraries.
 cd nss
 # -j is not supported by nss
 make VERBOSE=1 BUILD_OPT=1 \
-	NSPR_INCLUDE_DIR=%{_includedir}/nspr \
-	USE_SYSTEM_ZLIB=1 \
-	ZLIB_LIBS=-lz \
-	$([ $(uname -m) = x86_64 ] && echo USE_64=1) \
-	$([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
+    NSPR_INCLUDE_DIR=%{_includedir}/nspr \
+    USE_SYSTEM_ZLIB=1 \
+    ZLIB_LIBS=-lz \
+    $([ $(uname -m) = x86_64 ] && echo USE_64=1) \
+    $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
 %install
 cd nss
 cd ../dist
@@ -70,7 +70,7 @@ cd nss/tests
 HOST=localhost DOMSUF=localdomain
 ./all.sh
 
-%post	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -94,6 +94,8 @@ HOST=localhost DOMSUF=localdomain
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-1
+-   Upgrade to 3.31.
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.30.1-1
 -   Update to 3.30.1
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.25-4
