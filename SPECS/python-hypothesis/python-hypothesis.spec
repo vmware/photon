@@ -3,12 +3,12 @@
 
 Name:           python-hypothesis
 Version:        3.8.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
 License:        MPLv2.0
 Group:          Development/Languages/Python
 Url:            https://github.com/HypothesisWorks/hypothesis-python
-Vendor:		VMware, Inc.
+Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/cf/d5/b3d491e4b5094be0ef69b910d637096c8e23f84a9bdc4eba0b869220d1f0/hypothesis-%{version}.tar.gz
 %define sha1    hypothesis=7416346ebd8ae6f78f482980f80a57764913e27f
@@ -33,6 +33,8 @@ and then generates simple and comprehensible examples that make your tests fail.
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
 BuildRequires:  python3
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -70,6 +72,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.8.2-3
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.8.2-2
 -   Changed python to python2
 *   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.8.2-1

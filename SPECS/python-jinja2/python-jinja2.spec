@@ -4,7 +4,7 @@
 
 Name:           python-jinja2
 Version:        2.9.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Url:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
@@ -12,7 +12,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/71/59/d7423bd5e7ddaf3a1ce299ab4490e9044e8dfd195420fc83a24de9e60726/Jinja2-2.9.5.tar.gz
-%define sha1 	Jinja2=a3129c140d34ae565a556e48db40772df3536b23
+%define sha1    Jinja2=a3129c140d34ae565a556e48db40772df3536b23
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
@@ -32,6 +32,8 @@ Summary:        A fast and easy to use template engine written in pure Python
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-markupsafe
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-markupsafe
@@ -77,6 +79,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+*   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.5-6
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.5-5
 -   Change python to python2
 *   Mon Jun 12 2017 Kumar Kaushik <kaushikk@vmware.com> 2.9.5-4
