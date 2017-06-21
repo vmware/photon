@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.2.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -132,6 +132,7 @@ sed -i 's/^TC_INSTANCE_ROOT=.*/TC_INSTANCE_ROOT=\%{_prefix}/' vmidentity/install
 sed -i 's/\/opt\/vmware/\%{_prefix}/' vmidentity/config/vmware-stsd.service.in
 sed -i 's/rpm -qa vmware-sts/rpm -qa lightwave/' vmidentity/install/src/main/java/com/vmware/identity/installer/ReleaseUtil.java
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/jars/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
+sed -i 's,/opt/vmware/bin/ic-join,/usr/bin/ic-join,' config/scripts/domainjoin.sh
 
 %build
 
@@ -186,6 +187,7 @@ autoreconf -mif .. &&
 
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build && make install DESTDIR=%{buildroot}
+mkdir -p %{buildroot}/opt/vmware/share/config
 find %{buildroot} -name '*.a' -delete
 find %{buildroot} -name '*.la' -delete
 
@@ -887,9 +889,8 @@ fi
 %files
 
 %defattr(-,root,root,0755)
-
+%dir /opt/vmware/share/config
 %{_bindir}/ic-promote
-%{_bindir}/ic-join
 %{_bindir}/configure-lightwave-server
 %{_bindir}/configure-identity-server
 %{_bindir}/test-ldapbind
@@ -985,6 +986,7 @@ fi
 
 %defattr(-,root,root)
 
+%{_bindir}/ic-join
 %{_bindir}/cdc-cli
 %{_bindir}/certool
 %{_bindir}/dir-cli
@@ -1118,6 +1120,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Jun 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-3
+-   fix domainjoin and allow publish of oidc xml
 *   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-2
 -   disable java macros and use java alternatives
 *   Mon May 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-1

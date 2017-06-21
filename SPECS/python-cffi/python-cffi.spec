@@ -4,7 +4,7 @@
 Summary:        Interface for Python to call C code
 Name:           python-cffi
 Version:        1.10.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -32,6 +32,8 @@ BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-pycparser
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pycparser
@@ -71,6 +73,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 1.10.0-1
 -   Update to 1.10.0
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.1-1

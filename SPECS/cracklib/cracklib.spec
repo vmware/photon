@@ -5,7 +5,7 @@
 Summary:        A password strength-checking library.
 Name:           cracklib
 Version:        2.9.6
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          System Environment/Libraries
 Source:         cracklib-%{version}.tar.gz
 %define sha1    cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
@@ -85,6 +85,8 @@ Group:          Development/Languages/Python
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:   cracklib
 Requires:   python3
@@ -209,6 +211,8 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
 -   Fix script dependency
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-6
