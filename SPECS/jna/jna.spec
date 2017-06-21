@@ -1,7 +1,7 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
@@ -10,12 +10,12 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
 %define sha1 jna=30a1132f9ca6b3222eccd380a3f4149aa7df3f59
-Requires: openjre >= %{JAVA_VERSION}
-BuildRequires: openjre >= %{JAVA_VERSION}
-BuildRequires: openjdk >= %{JAVA_VERSION}
-BuildRequires: apache-ant >= 1.9.6
+Requires: openjre
+BuildRequires: openjre
+BuildRequires: openjdk
+BuildRequires: apache-ant
 
-%define _prefix /var/opt/jna-4.2.1
+%define _prefix /var/opt/%{name}-%{version}
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
@@ -31,23 +31,23 @@ Sources for JNA
 %prep
 
 %setup -q
+
+%clean
+rm -rf %{buildroot}
+
 %build
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 #disabling all tests
-$ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
+ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
 #$ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/LibraryLoadTest.java" -Drelease=true
 
 %install
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
-JNA_DIST_DIR=%{buildroot}%{_prefix}
-
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+export JNA_DIST_DIR=%{buildroot}%{_prefix}
 
 mkdir -p -m 700 $JNA_DIST_DIR
 
-$ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
+ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 
 %files
 %defattr(-,root,root)
@@ -67,6 +67,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-9
+-   Removed dependency on ANT_HOME
 *   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-8
 -   Use java alternatives and remove macros
 *   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-7

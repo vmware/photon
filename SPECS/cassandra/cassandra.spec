@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -15,8 +15,8 @@ Source1:		cassandra.service
 Patch0:			build-fix.patch
 BuildRequires:  apache-ant
 BuildRequires:	unzip zip
-BuildRequires:	openjdk >= %{JAVA_VERSION}
-Requires:       openjre >= %{JAVA_VERSION}
+BuildRequires:	openjdk
+Requires:       openjre
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
@@ -25,8 +25,6 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 %patch0 -p1
 
 %build
-source /etc/profile.d/apache-ant.sh
-export PATH=$PATH:$ANT_HOME/bin
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 ant jar javadoc -Drelease=true
 
@@ -121,5 +119,7 @@ fi
 /lib/systemd/system/cassandra.service
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.10-2
+-   Removed dependency on ANT_HOME
 *   Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-1
 -   Initial build. First version

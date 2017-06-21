@@ -345,10 +345,6 @@ class constants(object):
         javaversion = constants.specData.getVersion("openjre")
         constants.specData.addMacro("JAVA_VERSION",javaversion)
 
-	#adding ant version rpm macro
-        antversion = constants.specData.getVersion("apache-ant")
-        constants.specData.addMacro("ANT_VERSION",antversion)
-
         #adding kernelsubrelease rpm macro
         kernelversion = kernelversion.replace(".","")
         if kernelversion.isdigit():

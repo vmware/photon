@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.9.6
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -14,10 +14,10 @@ Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
-Requires: openjre >= %{JAVA_VERSION}, python2
-BuildRequires: openjre >= %{JAVA_VERSION}
-BuildRequires: openjdk >= %{JAVA_VERSION}
-%define _prefix /var/opt/apache-ant-%{version}
+Requires: openjre, python2
+BuildRequires: openjre
+BuildRequires: openjdk
+%define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
 
@@ -29,9 +29,12 @@ The Ant package contains binaries for a build system
 %setup -q
 tar xf %{SOURCE1}
 tar xf %{SOURCE2}
-%build
-ANT_DIST_DIR=/var/opt/apache-ant-%{version}
 
+%clean
+rm -rf %{buildroot}
+
+%build
+ANT_DIST_DIR=%{buildroot}%{_prefix}
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
 
 mkdir -p -m 700 $ANT_DIST_DIR
@@ -39,16 +42,25 @@ export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
 %install
+cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/
+mkdir -p %{buildroot}%{_datadir}/java/ant
 
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+for jar in %{buildroot}/%{_libdir}/*.jar
+do
+    jarname=$(basename $jar .jar)
+    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/ant/${jarname}.jar
+done
+rm -rf %{buildroot}%{_bindir}/*.bat
+rm -rf %{buildroot}%{_bindir}/*.cmd
 
-mkdir -p -m 700 %{buildroot}/var/opt
+mkdir -p %{buildroot}/bin
+for b in %{buildroot}%{_bindir}/*
+do
+    binaryname=$(basename $b)
+    ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
+done
 
-cp -r /var/opt/apache-ant-%{version} %{buildroot}/var/opt
-
-cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/ 
-
-MAVEN_ANT_TASKS_DIR=%{buildroot}/var/opt/%{name}-%{version}/maven-ant-tasks
+MAVEN_ANT_TASKS_DIR=%{buildroot}%{_prefix}/maven-ant-tasks
 
 mkdir -p -m 700 $MAVEN_ANT_TASKS_DIR
 cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/LICENSE $MAVEN_ANT_TASKS_DIR/
@@ -57,19 +69,33 @@ cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/README.txt $MAVEN_ANT_T
 chown -R root:root $MAVEN_ANT_TASKS_DIR
 chmod 644 $MAVEN_ANT_TASKS_DIR/*
 
-install -d -m 755 %{buildroot}/etc/profile.d/
-echo 'export ANT_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
-echo 'export PATH=$PATH:$ANT_HOME/bin' >> %{buildroot}/etc/profile.d/%{name}.sh
-
 %files
 %defattr(-,root,root)
-%dir %{_prefix}
-%{_bindir}/*
+%dir %{_bindir}
+%dir %{_libdir}
+%dir %{_datadir}/java/ant
+%dir %{_prefix}/maven-ant-tasks
+/bin/ant
+/bin/antRun
+/bin/antRun.pl
+/bin/complete-ant-cmd.pl
+/bin/runant.py
+/bin/runant.pl
+%{_bindir}/ant
+%{_bindir}/antRun
+%{_bindir}/antRun.pl
+%{_bindir}/complete-ant-cmd.pl
+%{_bindir}/runant.py
+%{_bindir}/runant.pl
 %{_libdir}/*
-%{_prefix}/maven-ant-tasks/*
-%{_sysconfdir}/profile.d/%{name}.sh
+%{_datadir}/java/ant/*.jar
+%{_prefix}/maven-ant-tasks/LICENSE
+%{_prefix}/maven-ant-tasks/README.txt
+%{_prefix}/maven-ant-tasks/NOTICE
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.9.6-8
+-   Removed dependency on ANT_HOME
 *   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-7
 -   Use Java alternatives
 *	Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-6
