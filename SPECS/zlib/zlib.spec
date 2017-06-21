@@ -1,15 +1,17 @@
 Summary:	Compression and decompression routines
 Name:		zlib
 Version:	1.2.8
-Release:	4%{?dist}
+Release:	5%{?dist}
 URL:		http://www.zlib.net/
 License:	zlib
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.zlib.net/%{name}-%{version}.tar.xz
-Patch0:         CVE-2016-9841.patch
-Patch1:         CVE-2016-9843.patch
+Patch0:         CVE-2016-9840.patch
+Patch1:         CVE-2016-9841.patch
+Patch2:         CVE-2016-9842.patch
+Patch3:         CVE-2016-9843.patch
 %define sha1 zlib=b598beb7acc96347cbd1020b71aef7871d374677
 %description
 Compression and decompression routines
@@ -23,6 +25,8 @@ for handling compiled objects.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 %build
 ./configure \
 	--prefix=%{_prefix}
@@ -47,6 +51,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libz.a
 %{_libdir}/libz.so
 %changelog
+*   Tue Jun 20 2017 Kumar Kaushik <kaushikk@vmware.com> 1.2.8-5
+-   Fixing CVE-2016-9840 and CVE-2016-9842, bug#1886934
 *   Wed Jun 14 2017 Kumar Kaushik <kaushikk@vmware.com> 1.2.8-4
 -   Fixing CVE-2016-9841 and CVE-2016-9843, bug#1886934
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.8-3
