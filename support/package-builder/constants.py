@@ -349,14 +349,6 @@ class constants(object):
         java8version = constants.specData.getVersion("openjre8")
         constants.specData.addMacro("JAVA8_VERSION",java8version)
 
-	#adding apache-ant version rpm macro
-        antversion = constants.specData.getVersion("apache-ant")
-        constants.specData.addMacro("ANT_VERSION", antversion)
-        
-	#adding apache-maven version rpm macro
-        mavenversion = constants.specData.getVersion("apache-maven")
-        constants.specData.addMacro("MAVEN_VERSION", mavenversion)
-
 	#adding kernelrelease rpm macro
         kernelrelease = constants.specData.getRelease("linux")
         constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)

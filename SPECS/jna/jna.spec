@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.4.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache
 URL:            http://github.com/twall/jna
 Group:          Applications/System
@@ -13,12 +13,12 @@ Distribution:   Photon
 BuildArch:      x86_64
 Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha1 jna=d9b54e98393a696f458468bc8f3167f701a9ea9f
-BuildRequires: openjre8 >= %{JAVA8_VERSION}
-BuildRequires: openjdk8 >= %{JAVA8_VERSION}
-BuildRequires: apache-ant >= %{ANT_VERSION}
-Requires:      openjre8 >= %{JAVA8_VERSION}
+BuildRequires: openjre8
+BuildRequires: openjdk8
+BuildRequires: apache-ant
+Requires:      openjre8
 
-%define _prefix /var/opt/jna-4.4.0
+%define _prefix /var/opt/%{name}-%{version}
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
@@ -34,26 +34,27 @@ Sources for JNA
 %prep
 
 %setup -q
+
+%clean
+rm -rf %{buildroot}
+
 %build
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 #disabling all tests
-$ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
+ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
 #$ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/LibraryLoadTest.java" -Drelease=true
 
 %install
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 export JNA_DIST_DIR=%{buildroot}%{_prefix}
-
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 
 mkdir -p -m 700 $JNA_DIST_DIR
 
-$ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
+ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 
 %files
 %defattr(-,root,root)
+%dir %{_prefix}
 %{_prefix}/*.jar
 %exclude %{_prefix}/*javadoc.jar
 %exclude %{_prefix}/*sources.jar
@@ -70,6 +71,8 @@ $ANT_HOME/bin/ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*.aar
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-5
+-   Removed dependency on ANT_HOME
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-4
 -   Renamed openjdk to openjdk8
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-3
