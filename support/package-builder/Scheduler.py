@@ -89,7 +89,7 @@ class Scheduler(object):
     def parseWeights():
 	try:
             Scheduler.pkgWeights.clear()
-	    weightFile = open('/tmp/packageWeights.txt', 'r')
+	    weightFile = open('packageWeights.txt', 'r')
             for line in weightFile:
                 (key, value) = line.split(':')
                 Scheduler.pkgWeights[key] = value
