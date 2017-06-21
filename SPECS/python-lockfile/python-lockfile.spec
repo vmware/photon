@@ -4,14 +4,14 @@
 Summary:        file locking module
 Name:           python-lockfile
 Version:        0.12.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/openstack/pylockfile
 Source0:        https://pypi.python.org/packages/source/l/lockfile/lockfile-%{version}.tar.gz
-%define sha1	lockfile=c2ac46e48585e5f8f8d57ccc55ca83faa8b53b86
+%define sha1    lockfile=c2ac46e48585e5f8f8d57ccc55ca83faa8b53b86
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -29,7 +29,8 @@ as a demonstration of the possibilities it provides than as production-quality c
 %package -n     python3-lockfile
 Summary:        Python Build Reasonableness
 BuildRequires:  python3-devel
-BuildRequires:  python-setuptools
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 BuildRequires:  python3-pbr
 
 %description -n python3-lockfile
@@ -70,6 +71,8 @@ popd
 %{python3_sitelib}/lockfile
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.12.2-3
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.12.2-2
 -   Fix arch
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.12.2-1

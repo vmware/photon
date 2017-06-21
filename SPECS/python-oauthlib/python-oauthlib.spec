@@ -4,7 +4,7 @@
 Summary:        An implementation of the OAuth request-signing logic
 Name:           python-oauthlib
 Version:        2.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Url:            https://pypi.python.org/pypi/python-oauthlib/
 Group:          Development/Languages/Python
@@ -26,6 +26,8 @@ OAuthLib is a generic utility which implements the logic of OAuth without assumi
 %package -n python3-oauthlib
 Summary:        Python3 package for oauthlib
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -68,6 +70,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.2-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Apr 13 2017 Anish Swaminathan <anishs@vmware.com> 2.0.2-1
 -   Initial packaging for Photon
 

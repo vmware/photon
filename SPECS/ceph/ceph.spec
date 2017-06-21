@@ -13,7 +13,7 @@
 #################################################################################
 Name:		ceph
 Version:	11.2.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 Epoch:		1
 Summary:	User space components of the Ceph file system
 License:	LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -52,6 +52,8 @@ BuildRequires:	python2-devel
 BuildRequires:	python-xml
 BuildRequires:	python3
 BuildRequires:	python3-devel
+BuildRequires:	python3-setuptools
+BuildRequires:	python3-xml
 BuildRequires:	python-requests
 BuildRequires:	python-sphinx
 BuildRequires:	snappy-devel
@@ -996,6 +998,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 
 
 %changelog
+* Thu Jun 08 2017 Xiaolin Li <xiaolinl@vmware.com> 11.2.0-7
+- Add python3-setuptools and python3-xml to Buildrequires.
 * Mon May 8 2017 Bo Gan <ganb@vmware.com> 11.2.0-6
 - Fix librados2 dependency
 * Thu Apr 27 2017 Siju Maliakkal <smaliakkal@vmware.com> 11.2.0-5

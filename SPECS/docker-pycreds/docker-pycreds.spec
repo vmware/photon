@@ -3,7 +3,7 @@
 
 Name:           docker-pycreds
 Version:        0.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python API for docker credentials store
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -25,6 +25,8 @@ Python API for docker credentials store
 %package -n     docker-pycreds3
 Summary:        Python3 API for docker credentials store
 BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 %description -n docker-pycreds3
 Python3 API for docker credentials store
@@ -55,5 +57,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.2.1-2
+-   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Sun Jun 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.2.1-1
 -   Initial version of docker-pycreds for PhotonOS.
