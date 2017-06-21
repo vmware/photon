@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -10,14 +10,14 @@ Distribution: 	Photon
 BuildArch:      x86_64
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=1730812af1cdd77493e269b371ef8ac536230c15
-BuildRequires: openjre8 >= %{JAVA8_VERSION}
-BuildRequires: openjdk8 >= %{JAVA8_VERSION}
-BuildRequires: apache-ant >= %{ANT_VERSION}
+BuildRequires: openjre8
+BuildRequires: openjdk8
+BuildRequires: apache-ant
 BuildRequires: wget >= 1.15
-Requires: openjre8 >= %{JAVA8_VERSION}
+Requires: openjre8
 Requires: which
 
-%define _prefix /var/opt/apache-maven-%{version}
+%define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
 
@@ -29,48 +29,60 @@ The Maven package contains binaries for a build system
 %setup -q
 #find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 
+%clean
+rm -rf %{buildroot}
+
 %build
-MAVEN_DIST_DIR=%{_prefix}
+MAVEN_DIST_DIR=%{buildroot}%{_prefix}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
-export PATH=$PATH:$ANT_HOME/bin
-source /etc/profile.d/apache-maven.sh
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 
 mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
 %install
-MAVEN_DIST_DIR=%{_prefix}
+mkdir -p %{buildroot}%{_datadir}/java/maven
 
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-mkdir -p -m 700 %{buildroot}/var/opt
+for jar in %{buildroot}/%{_libdir}/*.jar
+do
+    jarname=$(basename $jar .jar)
+    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/maven/${jarname}.jar
+done
 
-cp -r "$MAVEN_DIST_DIR"  %{buildroot}/var/opt
-
-# install exports file.
-install -d -m 755 %{buildroot}/etc/profile.d/
-echo 'export MAVEN_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
-echo 'export PATH=$MAVEN_HOME/bin:$PATH' >> %{buildroot}/etc/profile.d/%{name}.sh
-echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
+mkdir -p %{buildroot}/bin
+for b in %{buildroot}%{_bindir}/*
+do
+    binaryname=$(basename $b)
+    ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
+done
 
 %files
 %defattr(-,root,root)
-%{_libdir}
-%{_bindir}
-%{_sysconfdir}/profile.d/%{name}.sh
-%{_prefix}/LICENSE
-%{_prefix}/NOTICE
-%{_prefix}/README.txt
+%dir %{_libdir}
+%dir %{_bindir}
+%dir %{_prefix}/conf
+%dir %{_prefix}/boot
+%dir %{_datadir}/java/maven
+%{_libdir}/*
+%{_bindir}/*
+/bin/*
+%{_datadir}/java/maven/*.jar
 %{_prefix}/boot/plexus-classworlds-2.5.2.jar
 %{_prefix}/conf/logging/simplelogger.properties
 %{_prefix}/conf/settings.xml
 %{_prefix}/conf/toolchains.xml
+%{_prefix}/LICENSE
+%{_prefix}/NOTICE
+%{_prefix}/README.txt
 %exclude %{_libdir}/jansi-native
 
 %changelog
-*	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.0-2
--	Renamed openjdk to openjdk8
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.0-3
+-   Removed dependency on ANT_HOME
+-   Removed apache-maven profile file
+-   Removed version from directory path
+*   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.0-2
+-   Renamed openjdk to openjdk8
 *   Mon Apr 24 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.0-1
 -   Updated apache-maven to version 3.5.0
 *   Fri Mar 31 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.9-8
