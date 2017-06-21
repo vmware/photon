@@ -3,7 +3,7 @@
 
 Name:           python-six
 Version:        1.10.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
@@ -13,6 +13,7 @@ Source0:        six-%{version}.tar.gz
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
+BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
@@ -59,6 +60,8 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-7
+-   Add python-setuptools to BuildRequires to avoid Update issues
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.10.0-6
 -   Use python2 explicitly
 *   Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 1.10.0-5

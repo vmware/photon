@@ -4,7 +4,7 @@
 Summary:        Python parsing module.
 Name:           python-pyparsing
 Version:        2.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pyparsing/%{version}
 License:        MIT
 Group:          Development/Languages/Python
@@ -18,6 +18,7 @@ BuildArch:      noarch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
@@ -70,6 +71,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.2.0-2
+-   Add build dependency with python-setuptools to handle 1.0 update
 *   Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 2.2.0-1
 -   Update to 2.2.0 and remove build dependency with python-setuptools
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.10-1
