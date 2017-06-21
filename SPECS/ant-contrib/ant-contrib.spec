@@ -1,7 +1,7 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
@@ -10,11 +10,11 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}-src.tar.gz
 %define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
-BuildRequires: openjre >= %{JAVA_VERSION}
-BuildRequires: openjdk >= %{JAVA_VERSION}
-BuildRequires: apache-ant >= 1.9.6
-Requires: openjre >= %{JAVA_VERSION}
-Requires: apache-ant >= 1.9.6
+BuildRequires: openjre
+BuildRequires: openjdk
+BuildRequires: apache-ant
+Requires: openjre
+Requires: apache-ant
 %define _prefix /var/opt/ant-contrib
 
 %description
@@ -24,25 +24,27 @@ The Ant Contrib project is a collection of tasks for Apache Ant.
 %setup -n %{name}
 find . -name '*.jar' -or -name '*.class' -exec rm -rf {} +
 
-%build
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
-mkdir -p -m 700 %{_prefix}
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
-$ANT_HOME/bin/ant -Ddist.dir="%{_prefix}" -Dproject.version="1.0b3" dist
-%install
-ANT_HOME=/var/opt/apache-ant-1.9.6
-ANT_CONTRIB_DIST_DIR=%{buildroot}%{name}-%{version}
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-mkdir -p -m 700 %{buildroot}/var/opt
-cd %{buildroot}/var/opt && tar xvzf %{_prefix}/ant-contrib-1.0b3-bin.tar.gz --wildcards "*.jar"
+%clean
+rm -rf %{buildroot}
 
+%build
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+ant -Ddist.dir="." -Dproject.version=%{version} dist
+
+%install
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
+mkdir -p -m 700 %{buildroot}/var/opt
+cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.tar.gz --wildcards "*.jar"
 %files
 %defattr(-,root,root)
 %dir %{_prefix}
+%dir %{_prefix}/lib
 %{_prefix}/*.jar
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-13
+-   Removed dependency on ANT_HOME
 *   Fri May 19 2017 Harish Udiaya Kumar <hudaiyakumar@vmware.com> 1.0b3-12
 -   Use java alternatives 
 *   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3-11

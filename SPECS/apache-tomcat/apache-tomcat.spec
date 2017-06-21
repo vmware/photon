@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.15
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -10,17 +10,19 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
 %define sha1 apache-tomcat=5f26f71a1a3730020254a76aca1ee2615bd12d02
-BuildRequires: openjre >= %{JAVA_VERSION}
-BuildRequires: openjdk >= %{JAVA_VERSION}
-BuildRequires: apache-ant >= 1.9.6
-Requires: openjre >= %{JAVA_VERSION}
-Requires: apache-ant >= 1.9.6
+BuildRequires: openjre
+BuildRequires: openjdk
+BuildRequires: apache-ant
+Requires: openjre
+Requires: apache-ant
 
-%define _prefix /var/opt/%{name}-%{version}
+%define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
 %define _confdir %{_prefix}/conf
 %define _libdir %{_prefix}/lib
 %define _webappsdir %{_prefix}/webapps
+%define _logsdir %{_prefix}/logs
+%define _tempdir %{_prefix}/temp
 
 %description
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
@@ -32,9 +34,8 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
 mkdir -p -m 700 %{_prefix}
-$ANT_HOME/bin/ant -Dbase.path="." deploy dist-prepare dist-source javadoc
+ant -Dbase.path="." deploy dist-prepare dist-source javadoc
 
 %install
 mkdir -p -m 700 %{buildroot}%{_prefix}
@@ -42,6 +43,8 @@ mkdir -p -m 700 %{buildroot}%{_bindir}
 mkdir -p -m 700 %{buildroot}%{_libdir}
 mkdir -p -m 700 %{buildroot}%{_confdir}
 mkdir -p -m 700 %{buildroot}%{_webappsdir}
+mkdir -p -m 700 %{buildroot}%{_logsdir}
+mkdir -p -m 700 %{buildroot}%{_tempdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/lib/* %{buildroot}%{_libdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/conf/* %{buildroot}%{_confdir}
@@ -50,8 +53,17 @@ cp -r %{_builddir}/%{name}-%{version}-src/output/build/webapps/* %{buildroot}%{_
 cp %{_builddir}/%{name}-%{version}-src/LICENSE %{buildroot}%{_prefix}
 cp %{_builddir}/%{name}-%{version}-src/NOTICE %{buildroot}%{_prefix}
 
-rm -rf %{buildroot}/var/opt/%{name}-%{version}/webapps/examples
-rm -rf %{buildroot}/var/opt/%{name}-%{version}/webapps/docs
+touch %{buildroot}%{_logsdir}/catalina.out
+rm -rf %{buildroot}%{_prefix}/webapps/examples
+rm -rf %{buildroot}%{_prefix}/webapps/docs
+
+mkdir -p %{buildroot}%{_datadir}/java/tomcat
+
+for jar in %{buildroot}/%{_libdir}/*.jar
+do
+    jarname=$(basename $jar .jar)
+    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/tomcat/${jarname}.jar
+done
 
 %clean
 rm -rf %{buildroot}/*
@@ -63,14 +75,21 @@ rm -rf %{buildroot}/*
 %dir %{_libdir}
 %dir %{_confdir}
 %dir %{_webappsdir}
-%{_prefix}/LICENSE
-%{_prefix}/NOTICE
+%dir %{_logsdir}
+%dir %{_tempdir}
 %{_bindir}/*
 %{_confdir}/*
 %{_libdir}/*
 %{_webappsdir}/*
+%{_datadir}/java/tomcat/*.jar
+%{_prefix}/LICENSE
+%{_prefix}/NOTICE
+%{_logsdir}/catalina.out
 
 %changelog
+*   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.15-2
+-   Removed version from directory path
+-   Removed dependency on ANT_HOME
 *   Tue Jun 6 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.15-1
 -   Upgraded to version 8.5.15
 *   Tue May 02 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.13-4

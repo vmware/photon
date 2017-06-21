@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.3.9
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -10,13 +10,13 @@ Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=1912316078f1f7041dd8cd2580f210d30f898162
-Requires: openjre >= %{JAVA_VERSION}
-BuildRequires: openjre >= %{JAVA_VERSION}
-BuildRequires: openjdk >= %{JAVA_VERSION}
-BuildRequires: apache-ant >= 1.9.6
+BuildRequires: openjre
+BuildRequires: openjdk
+BuildRequires: apache-ant
 BuildRequires: wget >= 1.15
+Requires: openjre
 
-%define _prefix /var/opt/apache-maven-%{version}
+%define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
 %define _libdir %{_prefix}/lib
 
@@ -28,45 +28,56 @@ The Maven package contains binaries for a build system
 %setup -q
 find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 
-%build
-MAVEN_DIST_DIR=%{_prefix}
+%clean
+rm -rf %{buildroot}
 
+%build
+MAVEN_DIST_DIR=%{buildroot}%{_prefix}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
-export ANT_HOME=/var/opt/apache-ant-%{ANT_VERSION}
-export PATH=$PATH:$ANT_HOME/bin
 
 sed -i 's/www.opensource/opensource/g' DEPENDENCIES
 ant -Dmaven.home=$MAVEN_DIST_DIR
 
 %install
-MAVEN_DIST_DIR=%{_prefix}
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+mkdir -p %{buildroot}%{_datadir}/java/maven
 
-mkdir -p -m 700 %{buildroot}/var/opt
+for jar in %{buildroot}/%{_libdir}/*.jar
+do
+    jarname=$(basename $jar .jar)
+    ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/maven/${jarname}.jar
+done
 
-cp -r "$MAVEN_DIST_DIR"  %{buildroot}/var/opt
-
-install -d -m 755 %{buildroot}/etc/profile.d/
-
-echo 'export MAVEN_HOME=/var/opt/%{name}-%{version}' > %{buildroot}/etc/profile.d/%{name}.sh
-echo 'export PATH=$MAVEN_HOME/bin:$PATH' >> %{buildroot}/etc/profile.d/%{name}.sh
-echo 'export MAVEN_OPTS=-Xms256m' >> %{buildroot}/etc/profile.d/%{name}.sh
+mkdir -p %{buildroot}/bin
+for b in %{buildroot}%{_bindir}/*
+do
+    binaryname=$(basename $b)
+    ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
+done
 
 %files
 %defattr(-,root,root)
-%dir %{_prefix}
-%{_bindir}/*
+%dir %{_libdir}
+%dir %{_bindir}
+%dir %{_prefix}/conf
+%dir %{_prefix}/boot
+%dir %{_datadir}/java/maven
 %{_libdir}/*
-%{_sysconfdir}/profile.d/%{name}.sh
+%{_bindir}/*
+/bin/*
 %{_prefix}/LICENSE
 %{_prefix}/NOTICE
 %{_prefix}/README.txt
+%{_datadir}/java/maven/*.jar
 %{_prefix}/boot/plexus-classworlds-2.5.2.jar
 %{_prefix}/conf/logging/simplelogger.properties
 %{_prefix}/conf/settings.xml
 %{_prefix}/conf/toolchains.xml
 
 %changelog
+*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.9-10
+-   Removed dependency on ANT_HOME
+-   Removed apache-maven profile file
+-   Removed version from directory path
 *   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-9
 -   Remove macros and use java alternatives
 *   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.3.9-8
