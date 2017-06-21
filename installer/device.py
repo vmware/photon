@@ -29,8 +29,11 @@ class Device(object):
         deviceslines = list.splitlines()
         for deviceline in deviceslines:
             cols = deviceline.split(None, 2)
+            model = "Unknown"
+            if(len(cols) >= 3):
+                model = cols[2]
             devices.append(
-                    Device(cols[2] #Model
+                    Device(model #Model
                         , '/dev/' + cols[0] #Path
                         , cols[1] #size
                         ))
