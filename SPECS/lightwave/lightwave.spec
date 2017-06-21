@@ -48,12 +48,12 @@ VMware Lightwave Server
 %define _webappsdir %{_prefix}/vmware-sts/webapps
 %define _configdir %{_datadir}/config
 %define _servicedir /lib/systemd/system
-%define _commons_daemon_home /var/opt/commons-daemon-1.0.15
-%define _tomcat_home /var/opt/apache-tomcat-8.5.13
+%define _commons_daemon_home /var/opt/commons-daemon
+%define _tomcat_home /var/opt/apache-tomcat
 %define _jaxws_home /opt/jaxws-ri-2.2.10
 %define _java_home /usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
-%define _ant_home /var/opt/apache-ant-%{ANT_VERSION}
-%define _maven_home /var/opt/apache-maven-%{MAVEN_VERSION}
+%define _ant_home /var/opt/apache-ant
+%define _maven_home /var/opt/apache-maven
 
 %if 0%{?_likewise_open_prefix:1} == 0
 %define _likewise_open_prefix /opt/likewise
@@ -1120,6 +1120,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
+-   Fixed apache-maven directory path
 *   Tue Jun 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-3
 -   fix domainjoin and allow publish of oidc xml
 *   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-2
