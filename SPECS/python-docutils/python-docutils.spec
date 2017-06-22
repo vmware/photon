@@ -4,7 +4,7 @@
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python-docutils
 Version:        0.13.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -30,6 +31,7 @@ Docutils is a modular system for processing documentation into useful formats, s
 Summary:        python-docutils
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -66,9 +68,13 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-python2 setup.py test
+PATH=%{buildroot}%{_bindir}:${PATH} \
+ PYTHONPATH=%{buildroot}%{python2_sitelib}
+python2 test/alltests.py
 pushd ../p3dir
-python3 setup.py test
+PATH=%{buildroot}%{_bindir}:${PATH} \
+  PYTHONPATH=%{buildroot}%{python3_sitelib}
+python3 test3/alltests.py
 popd
 
 %files
@@ -102,6 +108,8 @@ popd
 %{_bindir}/rst2html3.py
 
 %changelog
+*   Thu Jun 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.13.1-3
+-   Add BuildRequires python-xml and python3-xml for the tests to pass
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.13.1-2
 -   Create separate packages for python2 and python3 in the bin directory
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.13.1-1
