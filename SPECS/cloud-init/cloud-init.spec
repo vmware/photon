@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -43,7 +43,8 @@ Requires:       python3-oauthlib
 Requires:       python3-jinja2
 Requires:       python3-markupsafe
 Requires:       python3-six
-
+Requires:       python3-setuptools
+Requires:       python3-xml
 BuildArch:      noarch
 
 %description
@@ -163,6 +164,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Thu Jun 22 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.9-7
+-   Add python3-setuptools and python3-xml to requires.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.9-6
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Jun 5 2017 Julian Vassev <jvassev@vmware.com> 0.7.9-5
