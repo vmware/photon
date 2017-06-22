@@ -3,7 +3,7 @@
 
 Name:           python-appdirs
 Version:        1.4.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
@@ -46,9 +46,15 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install py
-python2 test_appdirs.py
-python3 test_appdirs.py
+cd test
+
+PATH=%{buildroot}%{_bindir}:${PATH} \
+ PYTHONPATH=%{buildroot}%{python2_sitelib} \
+python2 test_api.py
+
+PATH=%{buildroot}%{_bindir}:${PATH} \
+ PYTHONPATH=%{buildroot}%{python3_sitelib} \
+python3 test_api.py
 
 %files
 %defattr(-,root,root,-)
@@ -59,6 +65,8 @@ python3 test_appdirs.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.3-3
+-   Changes to check section
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.3-2
 -   Change python to python2
 *   Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 1.4.3-1
