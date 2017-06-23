@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.25
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -148,7 +148,8 @@ fi
 
 %files
 %defattr(-,root,root)
-%{_libdir}/*
+%{_libdir}/httpd/*
+%{_libdir}/systemd/system/httpd.service
 %{_bindir}/*
 %exclude %{_bindir}/apxs
 %exclude %{_bindir}/dbmmanage
@@ -174,6 +175,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.25-3
+-   Removed packaging of debug files
 *   Thu Apr 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
 -   Fixing httpd.pid file write issue
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1

@@ -1,7 +1,7 @@
 Summary:	System utilities to list pci devices
 Name:		pciutils
 Version:	3.3.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		https://www.kernel.org/pub/software/utils/pciutils/
 Group:		System Environment/System Utilities
@@ -32,12 +32,15 @@ rm -rf %{buildroot}/*
 %files 
 %defattr(-,root,root)
 %{_sbindir}/*
-%{_libdir}/*
+%{_libdir}/*.so*
+%{_libdir}/pkgconfig/*
 %{_includedir}/*
 %{_datadir}/misc/*
 %{_mandir}/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.1-2
--	GA - Bump release of all rpms
-*	Thu Jul 2 2015 Sharath George <sharathg@vmware.com> 3.3.1-1
--	Initial build.	First version
+*   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.1-3
+-   Removed packaging of debug files
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.1-2
+-   GA - Bump release of all rpms
+*   Thu Jul 2 2015 Sharath George <sharathg@vmware.com> 3.3.1-1
+-   Initial build.	First version
