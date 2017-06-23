@@ -3,7 +3,7 @@
 %define gem_name zip
 Name: rubygem-zip
 Version: 2.0.2
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: Ruby library for reading and writing Zip files
 Group: Applications/Programming
 License: BSD
@@ -21,15 +21,17 @@ Ruby library for reading and writing Zip files
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 
 %check
-pushd /usr/src/photon/BUILDROOT/rubygem-zip-%{version}-%{release}.x86_64/usr/lib/ruby/gems/2.3.0/gems/zip-%{version}/
+cd %{buildroot}%{gemdir}/gems/zip-%{version}
 gem install jeweler
 rake test
-popd
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
+
 %changelog
+* Fri Jun 23 2017 Chang Lee <changlee@vmware.com> 2.0.2-5
+- Updated %check
 * Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 2.0.2-4
 - Bump up release number to reflect ruby upgrade
 * Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.0.2-3
