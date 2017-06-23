@@ -1,7 +1,7 @@
 Summary:    High-performance HTTP server and reverse proxy
 Name:       nginx
 Version:    1.11.13
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD-2-Clause
 URL:        http://nginx.org/download/nginx-1.11.13.tar.gz
 Group:      Applications/System
@@ -46,10 +46,12 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %defattr(-,root,root)
 %{_sysconfdir}/*
 %{_sbindir}/*
-%{_libdir}/*
+%{_libdir}/systemd/system/nginx.service
 %dir %{_var}/log/nginx
 
 %changelog
+*   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.11.13-3
+-   Removed packaging of debug files
 *   Mon May 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.11.13-2
 -   adding module stream to nginx.
 *   Wed Apr 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.13-1

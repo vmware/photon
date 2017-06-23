@@ -1,7 +1,7 @@
 Summary:	Reading, writing, and converting info pages
 Name:		texinfo
 Version:	6.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/texinfo/texinfo-6.1.tar.xz
 Group:		Applications/System
@@ -34,15 +34,17 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/texinfo/*
 %dir %{_datarootdir}/texmf
 %{_datarootdir}/texmf/*
-%{_libdir}/*
+%{_libdir}/texinfo/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.1-2
--	GA - Bump release of all rpms
+*   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 6.1-3
+-   Removed packaging of debug files
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.1-2
+-   GA - Bump release of all rpms
 *   Mon Feb 22 2016 XIaolin Li <xiaolinl@vmware.com> 6.1-1
 -   Updated to version 6.1
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-3
--	Handled locale files with macro find_lang
-*	Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 5.2-2
--	Removing perl-libintl package from run-time required packages
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2-1
--	Upgrade version
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 5.2-3
+-   Handled locale files with macro find_lang
+*   Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 5.2-2
+-   Removing perl-libintl package from run-time required packages
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2-1
+-   Upgrade version
