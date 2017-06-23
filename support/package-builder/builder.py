@@ -38,6 +38,7 @@ def main():
     parser.add_argument("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../stage/pkg_info.json")
     parser.add_argument("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
     parser.add_argument("-q",  "--rpmcheck-stop-on-error", dest="rpmCheckStopOnError",  default=False, action ="store_true")
+    parser.add_argument("-bd", "--publish-build-dependencies", dest="publishBuildDependencies", default=False)
 
     parser.add_argument("-y",  "--generate-pkg-yaml-files",  dest="generatePkgYamlFiles",  default=False, action ="store_true")
     parser.add_argument("-j",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
@@ -49,7 +50,6 @@ def main():
         cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
 
     logger=Logger.getLogger(options.logPath+"/Main")
-
     errorFlag=False
     package = None
     pkgInfoJsonFile = options.pkgInfoFile
@@ -152,7 +152,7 @@ def main():
         # print stacktrace
         traceback.print_exc()
         sys.exit(1)
-
+    #constants.publishBuildDependencies = options.publishBuildDependencies
     sys.exit(0)
 
 def buildPackagesList(csvFilename):
