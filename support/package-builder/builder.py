@@ -38,7 +38,8 @@ def main():
     parser.add_argument("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../stage/pkg_info.json")
     parser.add_argument("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
     parser.add_argument("-q",  "--rpmcheck-stop-on-error", dest="rpmCheckStopOnError",  default=False, action ="store_true")
-
+    parser.add_argument("-bd", "--publish-build-dependencies", dest="publishBuildDependencies", default=False)
+    parser.add_argument("-pw", "--package-weights-path", dest="packageWeightsPath", default=None)
     parser.add_argument("-y",  "--generate-pkg-yaml-files",  dest="generatePkgYamlFiles",  default=False, action ="store_true")
     parser.add_argument("-j",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
     parser.add_argument("-f",  "--pkg-blacklist-file",  dest="pkgBlacklistFile",  default=None)
@@ -49,7 +50,6 @@ def main():
         cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
 
     logger=Logger.getLogger(options.logPath+"/Main")
-
     errorFlag=False
     package = None
     pkgInfoJsonFile = options.pkgInfoFile
@@ -82,6 +82,10 @@ def main():
 
     if options.inputRPMSPath is not None and not os.path.isdir(options.inputRPMSPath):
         logger.error("Given input RPMS Path is not a directory:"+options.inputRPMSPath)
+        errorFlag = True
+
+    if options.packageWeightsPath is not None and not os.path.isfile(options.packageWeightsPath):
+        logger.error("Given input Weights file is not a file:"+options.packageWeightsPath)
         errorFlag = True
 
     if options.generatePkgYamlFiles:
@@ -152,7 +156,6 @@ def main():
         # print stacktrace
         traceback.print_exc()
         sys.exit(1)
-
     sys.exit(0)
 
 def buildPackagesList(csvFilename):
