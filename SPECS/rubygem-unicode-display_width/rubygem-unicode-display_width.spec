@@ -5,7 +5,7 @@
 Summary:        Unicode::DisplayWidth.
 Name:           rubygem-unicode-display_width
 Version:        1.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
@@ -28,17 +28,16 @@ Determines the monospace display width of a string in Ruby. Implementation based
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 
 %check
-pushd /usr/src/photon/BUILDROOT/rubygem-rbvmomi-%{version}-%{release}.x86_64/usr/lib/ruby/gems/2.3.0/gems/rbvmomi-%{version}/
-gem install yard
-gem install jeweler
-gem install rake
+cd %{buildroot}%{gemdir}/gems/unicode-display_width-%{version}
+gem install yard jeweler rake rspec
 rake test
-popd
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Fri Jun 23 2017 Chang Lee <changlee@vmware.com> 1.1.3-2
+-   Updated %check
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.1.3-1
 -   Initial build
