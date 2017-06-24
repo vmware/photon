@@ -27,6 +27,7 @@ Requires:       nss-libs = %{version}-%{release}
 %package devel
 Summary: Development Libraries for Network Security Services
 Group: Development/Libraries
+Requires: nspr-devel
 Requires: nss = %{version}-%{release}
 %description devel
 Header files for doing development with Network Security Services.
