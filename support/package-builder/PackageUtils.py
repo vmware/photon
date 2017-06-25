@@ -136,13 +136,17 @@ class PackageUtils(object):
 
     def copyAdditionalBuildFiles(self,listAdditionalFiles,chrootID):
         cmdUtils = CommandUtils()
+        self.logger.debug("VDBGGG: copying additional file: chroot: "+chrootID)
+        self.logger.debug(listAdditionalFiles)
         for additionalFile in listAdditionalFiles:
             source = additionalFile["src"].encode('utf-8')
             destDir = chrootID + additionalFile["dst"].encode('utf-8')
             if os.path.exists(source):
                 if os.path.isfile(source):
+                    self.logger.debug("VDBGGG: copying additional file - source: " + source + " , destdir: " + destDir)
                     shutil.copy(source, destDir)
                 else:
+                    self.logger.debug("VDBGGG: copying additional file tree - source: " + source + " , destdir: " + destDir)
                     shutil.copytree(source, destDir)
 
     def buildRPMSForGivenPackage(self,package,chrootID,listBuildOptionPackages,pkgBuildOptionFile,destLogPath=None):
