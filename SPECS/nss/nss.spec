@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -27,6 +27,7 @@ Requires:       nss-libs = %{version}-%{release}
 %package devel
 Summary: Development Libraries for Network Security Services
 Group: Development/Libraries
+Requires: nspr-devel
 Requires: nss = %{version}-%{release}
 %description devel
 Header files for doing development with Network Security Services.
@@ -94,6 +95,8 @@ HOST=localhost DOMSUF=localdomain
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Tue Jun 27 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.31-2
+-   Fix buildrequires.
 *   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-1
 -   Upgrade to 3.31.
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.30.1-1
