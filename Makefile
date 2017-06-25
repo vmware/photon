@@ -63,6 +63,13 @@ else
 PHOTON_RPMCHECK_FLAGS :=
 endif
 
+ifeq ($(BUILDDEPS),true)
+PUBLISH_BUILD_DEPENDENCIES := -bd True
+else
+PUBLISH_BUILD_DEPENDENCIES :=
+endif
+
+
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
@@ -111,6 +118,7 @@ packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_FLAGS) \
+		$(PUBLISH_BUILD_DEPENDENCIES) \
                 -t ${THREADS}
 
 live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
@@ -145,6 +153,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_FLAGS) \
+		$(PUBLISH_BUILD_DEPENDENCIES) \
                 -t ${THREADS}
 
 iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
@@ -209,7 +218,7 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
@@ -228,6 +237,7 @@ packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_R
                 -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 $(PHOTON_RPMCHECK_FLAGS) \
+		$(PUBLISH_BUILD_DEPENDENCIES) \
                 -t ${THREADS}
 
 updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -247,6 +257,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
                 -v $(PHOTON_RELEASE_VERSION) \
                 -k $(PHOTON_INPUT_RPMS_DIR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
+		$(PUBLISH_BUILD_DEPENDENCIES) \
                 -t ${THREADS}
 
 tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -451,6 +462,9 @@ check-tools: check-bison check-g++ check-gawk check-createrepo check-texinfo che
 
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
+
+check-docker-py:
+	tdnf install -y docker docker-py --refresh && systemctl daemon-reload && systemctl start docker
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
