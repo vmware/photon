@@ -1,0 +1,351 @@
+From 1afabdd529ec4520127c2da7744c3d603c6e38d4 Mon Sep 17 00:00:00 2001
+From: himkalyan <hbordoloi@vmware.com>
+Date: Fri, 23 Jun 2017 09:39:34 -0700
+Subject: [PATCH] Priority scheduler for Photon Build
+
+Change-Id: I077ab48c4d2aae7295fec49cef279ba45ce53981
+---
+
+diff --git a/Makefile b/Makefile
+index fa01c15..9db0915 100644
+--- a/Makefile
++++ b/Makefile
+@@ -63,6 +63,13 @@
+ PHOTON_RPMCHECK_FLAGS :=
+ endif
+ 
++ifeq ($(BUILDDEPS),true)
++PUBLISH_BUILD_DEPENDENCIES := -bd True
++else
++PUBLISH_BUILD_DEPENDENCIES :=
++endif
++
++
+ TOOLS_BIN := $(SRCROOT)/tools/bin
+ CONTAIN := $(TOOLS_BIN)/contain
+ VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
+@@ -111,6 +118,7 @@
+                 -n $(PHOTON_BUILD_NUMBER) \
+                 -v $(PHOTON_RELEASE_VERSION) \
+                 $(PHOTON_RPMCHECK_FLAGS) \
++		$(PUBLISH_BUILD_DEPENDENCIES) \
+                 -t ${THREADS}
+ 
+ live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
+@@ -145,6 +153,7 @@
+                 -n $(PHOTON_BUILD_NUMBER) \
+                 -v $(PHOTON_RELEASE_VERSION) \
+                 $(PHOTON_RPMCHECK_FLAGS) \
++		$(PUBLISH_BUILD_DEPENDENCIES) \
+                 -t ${THREADS}
+ 
+ iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+@@ -228,6 +237,7 @@
+                 -w $(PHOTON_STAGE)/pkg_info.json \
+                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                 $(PHOTON_RPMCHECK_FLAGS) \
++		$(PUBLISH_BUILD_DEPENDENCIES) \
+                 -t ${THREADS}
+ 
+ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+@@ -247,6 +257,7 @@
+                 -v $(PHOTON_RELEASE_VERSION) \
+                 -k $(PHOTON_INPUT_RPMS_DIR) \
+                 $(PHOTON_RPMCHECK_FLAGS) \
++		$(PUBLISH_BUILD_DEPENDENCIES) \
+                 -t ${THREADS}
+ 
+ tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+diff --git a/support/package-builder/Scheduler.py b/support/package-builder/Scheduler.py
+index 4f4f3a2..27375f9 100644
+--- a/support/package-builder/Scheduler.py
++++ b/support/package-builder/Scheduler.py
+@@ -1,7 +1,8 @@
+ import ThreadPool
+ from constants import constants
+ from Logger import Logger
+-import threading 
++import threading
++from Queue import PriorityQueue
+ 
+ class Scheduler(object):
+     
+@@ -10,8 +11,13 @@
+     listOfPackagesToBuild=[]
+     listOfPackagesCurrentlyBuilding=[]
+     sortedList=[]
+-    listOfPackagesNextToBuild=[]
++    listOfPackagesNextToBuild=PriorityQueue()
+     listOfFailedPackages=[]
++    alldependencyGraph = {}
++    dependencyGraph = {}
++    priorityMap = {}
++    pkgWeights={}
++    isPriorityScheduler=1
+     logger=None
+     event=None
+     stopScheduling=False
+@@ -23,7 +29,123 @@
+     @staticmethod
+     def setLog(logName,logPath):
+         Scheduler.logger = Logger.getLogger(logName, logPath)    
+-        
++
++    @staticmethod
++    def getBuildRequiredPackages(package):
++        listRequiredRPMPackages = []
++        listRequiredRPMPackages.extend(constants.specData.getBuildRequiresForPackage(package))
++
++        listRequiredPackages = []
++
++        for pkg in listRequiredRPMPackages:
++            basePkg = constants.specData.getSpecName(pkg)
++            if basePkg not in listRequiredPackages:
++                listRequiredPackages.append(basePkg)
++
++        return listRequiredPackages
++
++
++    @staticmethod
++    def getDependencies(package, parentPackage, tracker, k):
++
++        if tracker[package] == 0:
++            for node in Scheduler.alldependencyGraph[package].keys():
++                Scheduler.getDependencies(node, package, tracker, k)
++            tracker[package] = 0
++
++        if parentPackage == None:
++            return
++        else:
++            for node in Scheduler.alldependencyGraph[package].keys():
++                try:
++                    Scheduler.alldependencyGraph[parentPackage][node] = max(
++                        Scheduler.alldependencyGraph[parentPackage][node],
++                        Scheduler.alldependencyGraph[package][node] * k)
++                except KeyError:
++                    Scheduler.alldependencyGraph[parentPackage][node] = \
++                        Scheduler.alldependencyGraph[package][node] * k
++
++    @staticmethod
++    def makeGraph():
++        tracker = {}
++        k = 3
++        for package in Scheduler.sortedList:
++            tracker[package] = 0
++        for package in Scheduler.sortedList:
++            for child_pkg in Scheduler.dependencyGraph[package].keys():
++                Scheduler.getDependencies(child_pkg, package, tracker, k)
++                for node in Scheduler.alldependencyGraph[child_pkg].keys():
++                    try:
++                        Scheduler.dependencyGraph[package][node] = max(
++                            Scheduler.dependencyGraph[package][node],
++                            Scheduler.alldependencyGraph[child_pkg][node] * k)
++                    except KeyError:
++                        Scheduler.dependencyGraph[package][node] = \
++                            Scheduler.alldependencyGraph[child_pkg][node] * k
++	if constants.publishBuildDependencies:
++            graphfile = open("../../stage/LOGS/BuildDependencies.txt", 'w')
++            graphfile.write("")
++            for package in Scheduler.dependencyGraph.keys():
++                graphfile.write(str(package) + ": ")
++                noOfDep = len( Scheduler.dependencyGraph[package])
++                for buildDep in Scheduler.dependencyGraph[package].keys():
++                    noOfDep = noOfDep-1
++                    graphfile.write(str(buildDep))
++                    if noOfDep:
++                        graphfile.write( ", ")
++                graphfile.write("\n\n")
++
++
++    @staticmethod
++    def parseWeights():
++	try:
++            Scheduler.pkgWeights.clear()
++	    weightFile = open('/tmp/packageWeights.txt', 'r')
++            for line in weightFile:
++                (key, value) = line.split(':')
++                Scheduler.pkgWeights[key] = value
++	except:
++	    return 0
++
++
++
++    @staticmethod
++    def getWeight(package):
++        try:
++            return float(Scheduler.pkgWeights[package])
++        except KeyError:
++            return 0
++
++
++
++    @staticmethod
++    def setPriorities():
++	if Scheduler.parseWeights() == 0:
++            Scheduler.logger.info("Priority Scheduler disabled")
++            Scheduler.isPriorityScheduler = 0
++
++        for package in Scheduler.sortedList:
++            #TODO: read from spec to initalize weights
++            Scheduler.dependencyGraph[package] = {}
++            Scheduler.alldependencyGraph[package] = {}
++            for child_package in Scheduler.getBuildRequiredPackages(package):
++                Scheduler.dependencyGraph[package][child_package] = 1
++            for child_package in Scheduler.getRequiredPackages(package):
++                Scheduler.alldependencyGraph[package][child_package] = 1
++        Scheduler.makeGraph()
++        for package in Scheduler.sortedList:
++            try:
++                Scheduler.priorityMap[package] = Scheduler.getWeight(package)
++            except KeyError:
++                Scheduler.priorityMap[package] = 0
++            for child_pkg in Scheduler.dependencyGraph[package].keys():
++                Scheduler.priorityMap[child_pkg] = Scheduler.priorityMap[child_pkg] \
++                                                 + (Scheduler.dependencyGraph[package][child_pkg]
++                                                    * (Scheduler.getWeight(package)))
++        Scheduler.logger.info("set Priorities: Priority of all packages")
++        Scheduler.logger.info(Scheduler.priorityMap)
++
++
+     @staticmethod
+     def setParams(sortedList,listOfAlreadyBuiltPackages):
+         Scheduler.sortedList=sortedList
+@@ -34,6 +156,7 @@
+         Scheduler.listOfPackagesCurrentlyBuilding=[]
+         Scheduler.listOfPackagesNextToBuild=[]
+         Scheduler.listOfFailedPackages=[]
++        Scheduler.setPriorities()
+         
+     @staticmethod
+     def getRequiredPackages(package):
+@@ -52,7 +175,7 @@
+     
+     @staticmethod
+     def __getListNextPackagesReadyToBuild():
+-        listOfPackagesNextToBuild=[]
++        listOfPackagesNextToBuild=PriorityQueue()
+         Scheduler.logger.info("Checking for next possible packages to build")
+         for pkg in Scheduler.listOfPackagesToBuild:
+             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
+@@ -67,37 +190,49 @@
+                     Scheduler.logger.info(reqPkg+" is not available. So we cannot build "+ pkg +" at this moment.")
+                     break
+             if canBuild:
+-                listOfPackagesNextToBuild.append(pkg)
++                listOfPackagesNextToBuild.put((-Scheduler.priorityMap[pkg], pkg))
+                 Scheduler.logger.info("Adding "+ pkg +" to the schedule list")
+         return listOfPackagesNextToBuild
+-    
++
+     @staticmethod
+     def getNextPackageToBuild():
+         Scheduler.logger.info("Waiting to acquire scheduler lock")
+         Scheduler.lock.acquire()
+-        
++
+         if Scheduler.stopScheduling:
+             Scheduler.logger.info("Released scheduler lock")
+             Scheduler.lock.release()
+             return None
+-        
++
+         if len(Scheduler.listOfPackagesToBuild) == 0:
+             if Scheduler.event is not None:
+                 Scheduler.event.set()
+-            
+-        if len(Scheduler.listOfPackagesNextToBuild) == 0:
+-            listOfPackagesNextToBuild=Scheduler.__getListNextPackagesReadyToBuild()
+-            Scheduler.listOfPackagesNextToBuild=listOfPackagesNextToBuild
+-            
+-        if len(Scheduler.listOfPackagesNextToBuild) == 0:
++
++        try:
++            if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
++                listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
++                Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
++        except:
++            if len(Scheduler.listOfPackagesNextToBuild) == 0:
++                listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
++                Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
++
++        if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
+             Scheduler.logger.info("Released scheduler lock")
+             Scheduler.lock.release()
+             return None
+-        
+-        package=Scheduler.listOfPackagesNextToBuild.pop(0)
+-        
+-        if len(Scheduler.listOfPackagesNextToBuild) > 0:
+-            ThreadPool.ThreadPool.activateWorkerThreads(len(Scheduler.listOfPackagesNextToBuild))
++
++        packageTup=Scheduler.listOfPackagesNextToBuild.get()
++
++        if packageTup[0] == 0 and Scheduler.isPriorityScheduler == 1:
++            listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
++            Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
++            packageTup = Scheduler.listOfPackagesNextToBuild.get()
++
++        package = packageTup[1]
++        Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
++        if Scheduler.listOfPackagesNextToBuild.qsize() > 0:
++            ThreadPool.ThreadPool.activateWorkerThreads(Scheduler.listOfPackagesNextToBuild.qsize())
+         Scheduler.logger.info("Released scheduler lock")
+         Scheduler.lock.release()
+         Scheduler.listOfPackagesCurrentlyBuilding.append(package)
+@@ -130,5 +265,4 @@
+         if len(Scheduler.listOfFailedPackages) != 0:
+             return True
+         return False
+-        
+-        
+\ No newline at end of file
++
+diff --git a/support/package-builder/builder.py b/support/package-builder/builder.py
+index 08e1085..963f5f2 100755
+--- a/support/package-builder/builder.py
++++ b/support/package-builder/builder.py
+@@ -38,6 +38,7 @@
+     parser.add_argument("-w",  "--pkginfo-file",  dest="pkgInfoFile",  default="../../stage/pkg_info.json")
+     parser.add_argument("-g",  "--pkg-build-option-file",  dest="pkgBuildOptionFile",  default="../../common/data/pkg_build_options.json")
+     parser.add_argument("-q",  "--rpmcheck-stop-on-error", dest="rpmCheckStopOnError",  default=False, action ="store_true")
++    parser.add_argument("-bd", "--publish-build-dependencies", dest="publishBuildDependencies", default=False)
+ 
+     parser.add_argument("-y",  "--generate-pkg-yaml-files",  dest="generatePkgYamlFiles",  default=False, action ="store_true")
+     parser.add_argument("-j",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
+@@ -49,7 +50,6 @@
+         cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
+ 
+     logger=Logger.getLogger(options.logPath+"/Main")
+-
+     errorFlag=False
+     package = None
+     pkgInfoJsonFile = options.pkgInfoFile
+@@ -152,7 +152,6 @@
+         # print stacktrace
+         traceback.print_exc()
+         sys.exit(1)
+-
+     sys.exit(0)
+ 
+ def buildPackagesList(csvFilename):
+diff --git a/support/package-builder/constants.py b/support/package-builder/constants.py
+index 783a73c..dc6f6f3 100644
+--- a/support/package-builder/constants.py
++++ b/support/package-builder/constants.py
+@@ -20,7 +20,7 @@
+     rpmCheck=False
+     sourceRpmPath=""
+     noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","go"]
+-
++    publishBuildDependencies=False
+     # These packages will be built in first order as build-core-toolchain stage
+     listCoreToolChainPackages=[
+         "filesystem",
+@@ -328,6 +328,7 @@
+         constants.testForceRPMS=[]
+         constants.rpmCheck = options.rpmCheck
+         constants.rpmCheckStopOnError = options.rpmCheckStopOnError
++	constants.publishBuildDependencies=options.publishBuildDependencies
+         if constants.rpmCheck:
+             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
+ 
