@@ -3,7 +3,7 @@
 Summary:        Mesos
 Name:           mesos
 Version:        1.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -63,7 +63,7 @@ sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libproc
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir}
-make
+make %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -103,6 +103,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Tue Jun 27 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-4
+-   make with smp_flags.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.0-3
 -   Use python2_sitelib explicitly
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.0-2
