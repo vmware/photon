@@ -20,7 +20,7 @@ class constants(object):
     rpmCheck=False
     sourceRpmPath=""
     noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","go"]
-
+    publishBuildDependencies=False
     # These packages will be built in first order as build-core-toolchain stage
     listCoreToolChainPackages=[
         "filesystem",
@@ -328,6 +328,7 @@ class constants(object):
         constants.testForceRPMS=[]
         constants.rpmCheck = options.rpmCheck
         constants.rpmCheckStopOnError = options.rpmCheckStopOnError
+	constants.publishBuildDependencies=options.publishBuildDependencies
         if constants.rpmCheck:
             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
 
