@@ -1,24 +1,24 @@
-Summary:    HA monitor built upon LVS, VRRP and services poller 
-Name:       keepalived
-Version:    1.3.5
-Release:    1%{?dist}
-License:    GPL
-URL:        http://www.keepalived.org/
-Group:      Applications/System
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:     http://www.keepalived.org/software/%{name}-%{version}.tar.gz
-%define sha1 keepalived=5a373d8f5d382700cf53b827947a92a7f4cef148
-Source1:     keepalived.service
-BuildRequires:    openssl-devel
-BuildRequires:    iptables
-BuildRequires:    libmnl-devel
-BuildRequires:    ipset-devel
-BuildRequires:    libnl-devel
-BuildRequires:    libnfnetlink-devel
-BuildRequires:    net-snmp-devel
-BuildRequires:    systemd
-Requires:         systemd
+Summary:        HA monitor built upon LVS, VRRP and services poller 
+Name:           keepalived
+Version:        1.3.5
+Release:        2%{?dist}
+License:        GPL
+URL:            http://www.keepalived.org/
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://www.keepalived.org/software/%{name}-%{version}.tar.gz
+%define sha1    keepalived=5a373d8f5d382700cf53b827947a92a7f4cef148
+Source1:        keepalived.service
+BuildRequires:  openssl-devel
+BuildRequires:  iptables-devel
+BuildRequires:  libmnl-devel
+BuildRequires:  ipset-devel
+BuildRequires:  libnl-devel
+BuildRequires:  libnfnetlink-devel
+BuildRequires:  net-snmp-devel
+BuildRequires:  systemd
+Requires:       systemd
 
 %description
 The main goal of the keepalived project is to add a strong & robust keepalive
@@ -37,9 +37,9 @@ healthchecks and LVS directors failover.
 
 %build
 ./configure \
-    --prefix=%{_prefix}	\
-    --bindir=%{_bindir}	\
-    --libdir=%{_libdir}	\
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
     --sysconfdir=%{_sysconfdir} \
     --with-systemdsystemunitdir=%{_unitdir} \
     --enable-snmp       \
@@ -85,5 +85,7 @@ fi
 %{_mandir}/man8/keepalived.8*
 
 %changelog
+*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.3.5-2
+-   Add iptables-devel to BuildRequires
 *   Thu Apr 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.3.5-1
 -   Initial build.  First version
