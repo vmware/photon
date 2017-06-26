@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,12 +31,12 @@ Patch11:        net-9p-vsock.patch
 Patch12:        x86-vmware-sta.patch
 BuildRequires:  bc
 BuildRequires:  kbd
-BuildRequires:  kmod
+BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
-BuildRequires:  libdnet
-BuildRequires:  libmspack
+BuildRequires:  libdnet-devel
+BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
@@ -267,6 +267,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.31-2
+-   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Thu Jun 8 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.31-1
 -   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
     CVE-2017-9077 and CVE-2017-9242
