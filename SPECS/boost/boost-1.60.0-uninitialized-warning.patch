@@ -1,0 +1,24 @@
+From e6adec141147c6ca3acf289342bff9bb28b0d675 Mon Sep 17 00:00:00 2001
+From: "Patrick J. LoPresti" <lopresti@gmail.com>
+Date: Fri, 1 Apr 2016 10:16:42 -0700
+Subject: [PATCH] Silence "may be used uninitialized" warnings from GCC 4.9.2
+ and others.
+
+Avoid boost::value_initialized<> since it does not work on move-only types.
+---
+ boost/lexical_cast.hpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/boost/lexical_cast.hpp b/boost/lexical_cast.hpp
+index dc3d7e3..3dc21f8 100644
+--- a/boost/lexical_cast.hpp
++++ b/boost/lexical_cast.hpp
+@@ -36,7 +36,7 @@ namespace boost
+     template <typename Target, typename Source>
+     inline Target lexical_cast(const Source &arg)
+     {
+-        Target result;
++        Target result = Target();
+ 
+         if (!boost::conversion::detail::try_lexical_convert(arg, result)) {
+             boost::conversion::detail::throw_bad_cast<Source, Target>();
