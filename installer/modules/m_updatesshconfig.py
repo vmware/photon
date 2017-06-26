@@ -5,9 +5,7 @@ import commons
 install_phase = commons.POST_INSTALL
 enabled = True
 
-def execute(name, ks_config, config, root):
-    if ks_config and 'public_key' in ks_config:
-        config['public_key'] = ks_config['public_key']
+def execute(name, config, root):
     if 'public_key' not in config:
         return
 
