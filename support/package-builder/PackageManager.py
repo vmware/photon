@@ -34,7 +34,7 @@ class PackageManager(object):
             pkgBuildDataGen = PackageBuildDataGenerator(self.logName,self.logPath)
             self.mapCyclesToPackageList,self.mapPackageToCycle,self.sortedPackageList = pkgBuildDataGen.getPackageBuildData(listPackages)
         except:
-            self.logger.error("unable to get sorted list")
+            self.logger.error("Unable to get sorted list")
             return False
         return True
 
