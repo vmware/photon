@@ -34,6 +34,7 @@ class IsoInstaller(object):
         if path.startswith("http://"):
             # Do 5 trials to get the kick start
             # TODO: make sure the installer run after network is up
+            ks_file_error = "Failed to get the kickstart file at {0}".format(path)
             wait = 1
             for x in range(0, 5):
                 err_msg = ""
@@ -44,14 +45,19 @@ class IsoInstaller(object):
                     err_msg = response.text
                 except Exception as e:
                     err_msg = e
-                modules.commons.log(modules.commons.LOG_ERROR, "Failed to get the kickstart file at {0}, error msg: {1}".format(path, err_msg))
-                print "Failed to get the kickstart file at {0}, retry in a second".format(path)
+
+                modules.commons.log(modules.commons.LOG_ERROR,
+                    ks_file_error)
+                modules.commons.log(modules.commons.LOG_ERROR,
+                    "error msg: {0}".format(err_msg))
+                print(ks_file_error)
+                print("retry in a second")
                 time.sleep(wait)
                 wait = wait * 2
 
-
             # Something went wrong
-            print "Failed to get the kickstart file at {0}, exiting the installer, check the logs for more details".format(path)
+            print(ks_file_error)
+            print("exiting the installer, check the logs for more details")
             raise Exception(err_msg)
         else:
             if path.startswith("cdrom:/"):
@@ -75,9 +81,10 @@ class IsoInstaller(object):
             if retval == 0:
                 self.cd_path = "/mnt/cdrom"
                 return
-            print "Failed to mount the cd, retry in a second"
+            print("Failed to mount the cd, retry in a second")
             time.sleep(1)
-        print "Failed to mount the cd, exiting the installer, check the logs for more details"
+        print("Failed to mount the cd, exiting the installer")
+        print("check the logs for more details")
         raise Exception("Can not mount the cd")
 
     def validate_hostname(self, hostname):
@@ -98,14 +105,16 @@ class IsoInstaller(object):
         machinename = fields[0]
         return (len(machinename) <= 64) and (ord(machinename[0]) in self.alpha_chars), error_hostname
 
-    def validate_password(self, text):
+    @staticmethod
+    def validate_password(text):
         try:
             p = cracklib.VeryFascistCheck(text)
         except ValueError, message:
             p = str(message)
         return p == text, "Error: " + p
 
-    def generate_password_hash(self, password):
+    @staticmethod
+    def generate_password_hash(password):
         shadow_password = crypt.crypt(password, "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
         return shadow_password
 
@@ -136,6 +145,7 @@ class IsoInstaller(object):
         random_id = '%12x' % random.randrange(16**12)
         random_hostname = "photon-" + random_id.strip()
         install_config = {'iso_system': False}
+        install_config['ui_install'] = True
         license_agreement = License(self.maxy, self.maxx)
         select_disk = SelectDisk(self.maxy, self.maxx, install_config)
         select_partition = PartitionISO(self.maxy, self.maxx, install_config)
@@ -165,7 +175,7 @@ class IsoInstaller(object):
             None, # confirmation error msg if it's a confirmation text
             '*', # echo char
             None, # set of accepted chars
-            self.validate_password, # validation function of the input
+            IsoInstaller.validate_password, # validation function of the input
             None,  # post processing of the input field
             'Set up root password', 'Root password:', 2, install_config)
         confirm_password_reader = WindowStringReader(
@@ -175,7 +185,7 @@ class IsoInstaller(object):
             '*', # echo char
             None, # set of accepted chars
             None, # validation function of the input
-            self.generate_password_hash, # post processing of the input field
+            IsoInstaller.generate_password_hash, # post processing of the input field
             'Confirm root password', 'Confirm Root password:', 2, install_config)
 
         items.append((license_agreement.display, False))
@@ -227,6 +237,53 @@ class IsoInstaller(object):
                     if install_config['type'] == 'ostree_server':
                         index -= 1
 
+    def ks_install(self, options_file, rpm_path, ks_config):
+        install_config = ks_config
+        install_config['iso_system'] = False
+        if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
+            install_config['install_linux_esx'] = True
+
+        json_wrapper_option_list = JsonWrapper("build_install_options_all.json")
+        option_list_json = json_wrapper_option_list.read()
+        options_sorted = option_list_json.items()
+
+        base_path = os.path.dirname("build_install_options_all.json")
+        package_list = []
+
+        package_list = PackageSelector.get_packages_to_install(options_sorted, install_config['type'], base_path)
+        if 'additional_packages' in install_config:
+            package_list.extend(install_config['additional_packages'])
+        install_config['packages'] = package_list
+
+        if 'partitions' in install_config:
+            partitions = install_config['partitions']
+        else:
+            partitions = modules.commons.default_partitions
+
+        install_config['disk'] = modules.commons.partition_disk(install_config['disk'], partitions)
+
+        if "hostname" in install_config:
+            evalhostname = os.popen('printf ' + install_config["hostname"].strip(" ")).readlines()
+            install_config['hostname'] = evalhostname[0]
+        if "hostname" not in install_config or install_config['hostname'] == "":
+            random_id = '%12x' % random.randrange(16**12)
+            install_config['hostname'] = "photon-" + random_id.strip()
+
+        # crypt the password if needed
+        if install_config['password']['crypted']:
+            install_config['password'] = install_config['password']['text']
+        else:
+            install_config['password'] = crypt.crypt(install_config['password']['text'],
+                "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
+
+        installer = InstallerContainer(
+            install_config,
+            self.maxy, self.maxx,
+            True,
+            rpm_path=rpm_path,
+            log_path="/var/log")
+
+        installer.install(None)
 
     def is_vmware_virtualization(self):
         process = subprocess.Popen(['systemd-detect-virt'], stdout=subprocess.PIPE)
@@ -270,22 +327,10 @@ class IsoInstaller(object):
             self.mount_RPMS_cd()
             rpm_path = os.path.join(self.cd_path, "RPMS")
 
-        if not ks_config:
-            self.ui_install(options_file, rpm_path)
+        if ks_config:
+            self.ks_install(options_file, rpm_path, ks_config)
         else:
-            install_config = ks_config
-            install_config['iso_system'] = False
-            if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
-                install_config['install_linux_esx'] = True
-            installer = InstallerContainer(
-                install_config,
-                self.maxy, self.maxx,
-                True,
-                rpm_path=rpm_path,
-                log_path="/var/log",
-                ks_config=ks_config)
-
-            installer.install(None)
+            self.ui_install(options_file, rpm_path)
 
 if __name__ == '__main__':
     usage = "Usage: %prog [options]"

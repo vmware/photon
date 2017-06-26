@@ -5,10 +5,7 @@ import commons
 install_phase = commons.POST_INSTALL
 enabled = True
 
-def execute(name, ks_config, config, root):
-
-    if ks_config and 'postinstall' in ks_config:
-        config['postinstall'] = ks_config['postinstall']
+def execute(name, config, root):
     if 'postinstall' not in config:
         return
     # run the script in the chroot environment
@@ -20,5 +17,10 @@ def execute(name, ks_config, config, root):
         outfile.write("\n".join(script))
 
     os.chmod(script_file, 0700);
-    process = subprocess.Popen(["./mk-run-chroot.sh", '-w', root, "/etc/tmpfiles.d/postinstall.sh"])
-    process.wait()
+    with open("/var/log/installer-kickstart.log","w") as logfile:
+        process = subprocess.Popen(["./mk-run-chroot.sh", '-w', root, "/etc/tmpfiles.d/postinstall.sh"],
+            stdout=logfile,stderr=logfile)
+        retval = process.wait()
+        if retval==0:
+            return True
+        return False
