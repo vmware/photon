@@ -63,7 +63,7 @@ sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libproc
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir}
-make
+make %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
