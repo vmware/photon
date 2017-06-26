@@ -6,6 +6,7 @@ from CommandUtils import CommandUtils
 import os.path
 from constants import constants
 import shutil
+import time
 
 class PackageBuilder(object):
 
@@ -24,6 +25,7 @@ class PackageBuilder(object):
         self.pkgBuildOptionFile=pkgBuildOptionFile
 
     def prepareBuildRoot(self,chrootName, packageName):
+        self.logger.info("VDBG pkg: " + packageName + ", create-build-chroot STARTtime: " + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
         chrootID=None
         try:
             chrUtils = ChrootUtils(self.logName,self.logPath)
@@ -38,6 +40,7 @@ class PackageBuilder(object):
                 self.logger.debug("Deleting chroot: " + chrootID)
                 chrUtils.destroyChroot(chrootID)
             raise e
+        self.logger.debug("VDBG pkg: " + packageName + ", create-build-chroot DONEtime: " + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()))
         return chrootID
 
     def findPackageNameFromRPMFile(self,rpmfile):
