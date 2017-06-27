@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -123,6 +123,9 @@ python2 setup.py build
 python3 setup.py build
 popd
 
+%check
+make check
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -137,14 +140,6 @@ pushd python
 python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 popd
-
-%check
-make %{?_smp_mflags} check
-pushd python
-python2 setup.py test
-python3 setup.py test
-popd
-
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -260,6 +255,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 26 2017 Chang Lee <changlee@vmware.com> 4.13.0.1-4
+-   Updated %check
 *   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 4.13.0.1-3
 -   Fix Dependency
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-2
