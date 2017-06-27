@@ -201,8 +201,8 @@ class constants(object):
     perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
         "glib-devel",
         "icu-devel",
-	"openjdk",
-	"openjre",
+        "openjdk",
+        "openjre",
         "icu",
         "harfbuzz",
         "harfbuzz-devel",
@@ -236,8 +236,7 @@ class constants(object):
         "libXt-devel",
         "libXmu-devel",
         "libXrender",
-        "libXrender-devel"
-	])
+        "libXrender-devel"])
     perPackageToolChain["apache-maven"] = ["apache-maven"]
     # List of RPMs which are not published. They will be created during the
     # build process
@@ -264,6 +263,8 @@ class constants(object):
         "python2-devel",
         "python2-libs",
         "python2-tools",
+        "PyYAML",
+        "libyaml",
         "libffi",
         "python-setuptools",
         "ca-certificates",
@@ -345,22 +346,14 @@ class constants(object):
         kernelversion = constants.specData.getVersion("linux")
         constants.specData.addMacro("KERNEL_VERSION",kernelversion)
 
-	#adding openjre8 version rpm macro
+        #adding openjre8 version rpm macro
         java8version = constants.specData.getVersion("openjre8")
         constants.specData.addMacro("JAVA8_VERSION",java8version)
 
-	#adding apache-ant version rpm macro
-        antversion = constants.specData.getVersion("apache-ant")
-        constants.specData.addMacro("ANT_VERSION", antversion)
-        
-	#adding apache-maven version rpm macro
-        mavenversion = constants.specData.getVersion("apache-maven")
-        constants.specData.addMacro("MAVEN_VERSION", mavenversion)
-
-	#adding kernelrelease rpm macro
+        #adding kernelrelease rpm macro
         kernelrelease = constants.specData.getRelease("linux")
         constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
-        
+
         #adding kernelsubrelease rpm macro
         kernelversion = kernelversion.replace(".","")
         if kernelversion.isdigit():

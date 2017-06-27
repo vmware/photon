@@ -5,7 +5,7 @@
 Summary:        Python bindings for PAM (Pluggable Authentication Modules).
 Name:           PyPAM
 Version:        0.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -67,9 +67,13 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
+PATH=%{buildroot}%{_bindir}:${PATH} \
+ PYTHONPATH=%{buildroot}%{python2_sitelib} \
+python2 tests/PamTest.py
 pushd ../p3dir
-python3 setup.py test
+PATH=%{buildroot}%{_bindir}:${PATH} \
+  PYTHONPATH=%{buildroot}%{python3_sitelib} \
+python3 tests/PamTest.py
 popd
 
 %files
@@ -81,6 +85,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-3
+-   Fix the check section
 *   Wed May 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-2
 -   Changing python_sitelib to python2
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-1
