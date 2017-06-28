@@ -3,15 +3,12 @@
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.7.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
 %define sha1    libcap-ng=de8ea2c89cb1506a578de7cb032da34c970dd035
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-Requires:       python2
 
 %description
 The libcap-ng library is intended to make programming with posix capabilities much easier than the traditional libcap library. It includes utilities that can analyse all currently running applications and print out any capabilities and whether or not it has an open ended bounding set. An open bounding set without the securebits "NOROOT" flag will allow full capabilities escalation for apps retaining uid 0 simply by calling execve.
@@ -86,10 +83,11 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/*.a
 
 %changelog
+*   Tue Jun 27 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.7-4
+-   Removing python2 dependency from the base package.
 *   Fri Jun 02 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.7-3
 -   Move python2 requires to python subpackage and added python3.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.7-2
 -   GA - Bump release of all rpms
 *   Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 0.7.7-1
 -   Initial version
-
