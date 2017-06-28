@@ -164,7 +164,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +
 +
 +    def _bring_up_interfaces(self, device_names):
-+        cmd = ['systemctl', 'status', 'systemd-networkd', 'systemd-resolved']
++        cmd = ['systemctl', 'restart', 'systemd-networkd', 'systemd-resolved']
 +        LOG.debug("Attempting to run bring up interfaces using command %s",
 +                  cmd)
 +        try:

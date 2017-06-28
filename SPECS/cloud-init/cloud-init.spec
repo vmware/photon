@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -164,6 +164,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Jun 28 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-8
+-   Restart network service in bring_up_interfaces
 *   Thu Jun 22 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.9-7
 -   Add python3-setuptools and python3-xml to requires.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.9-6
