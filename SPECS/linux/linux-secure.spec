@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.31
+Version:        4.9.34
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=53e5a2409c713c3d6e8de2839e6cec9c2c5deb56
+%define sha1 linux=d02dc269e67eae329043c9aa7d6c2d6182950c2f
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 Source3:        initramfs.trigger
@@ -228,6 +228,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
+-   [feature] 9P FS security support
+-   [feature] DM Delay target support
+-   Fix CVE-2017-1000364 ("stack clash") and CVE-2017-9605
 *   Thu Jun 8 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.31-1
 -   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
     CVE-2017-9077 and CVE-2017-9242
