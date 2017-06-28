@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.9.6
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -14,7 +14,7 @@ Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
-Requires: openjre, python2
+Requires:      openjre
 BuildRequires: openjre
 BuildRequires: openjdk
 %define _prefix /var/opt/%{name}
@@ -23,6 +23,13 @@ BuildRequires: openjdk
 
 %description
 The Ant package contains binaries for a build system
+
+%package  -n    python2-apache-ant
+Summary:        python specific binary.
+License:        Apache
+Requires:       python2
+%description -n python2-apache-ant
+The python2-apache-ant package containes python2 binding for apache-ant
 
 %prep
 
@@ -79,13 +86,11 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 /bin/antRun
 /bin/antRun.pl
 /bin/complete-ant-cmd.pl
-/bin/runant.py
 /bin/runant.pl
 %{_bindir}/ant
 %{_bindir}/antRun
 %{_bindir}/antRun.pl
 %{_bindir}/complete-ant-cmd.pl
-%{_bindir}/runant.py
 %{_bindir}/runant.pl
 %{_libdir}/*
 %{_datadir}/java/ant/*.jar
@@ -93,19 +98,25 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_prefix}/maven-ant-tasks/README.txt
 %{_prefix}/maven-ant-tasks/NOTICE
 
+%files -n python2-apache-ant
+/bin/runant.py
+%{_bindir}/runant.py
+
 %changelog
+*   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.9.6-9
+-   Spliting python specific file to separate package.
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.9.6-8
 -   Removed dependency on ANT_HOME
 *   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-7
 -   Use Java alternatives
-*	Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-6
--	Update java to 1.8.0.131 & use java macros to update version
+*   Mon May 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-6
+-   Update java to 1.8.0.131 & use java macros to update version
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-5
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-4
 -   Updated JAVA_HOME path to point to latest JDK.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-3
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.6-3
+-   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.9.6-2
 -   Updated JAVA_HOME path to point to latest JDK.
 *   Tue Feb 29 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.9.6-1
