@@ -164,7 +164,7 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +
 +
 +    def _bring_up_interfaces(self, device_names):
-+        cmd = ['systemctl', 'status', 'systemd-networkd', 'systemd-resolved']
++        cmd = ['systemctl', 'restart', 'systemd-networkd', 'systemd-resolved']
 +        LOG.debug("Attempting to run bring up interfaces using command %s",
 +                  cmd)
 +        try:
@@ -251,13 +251,13 @@ diff -rupN cloud-init-0.7.9/cloudinit/distros/photon.py cloud-init-0.7.9-new/clo
 +def convert_resolv_conf(nameservers, searchdomains):
 +    """Returns a string formatted for resolv.conf."""
 +    result = []
-+    if isinstance(nameservers, list):
++    if nameservers:
 +        nslist = "DNS="
 +        for ns in nameservers:
 +            nslist = nslist + '%s ' % ns
 +        nslist = nslist + '\n'
 +        result.append(str(nslist))
-+    if isinstance(searchdomains, list):
++    if searchdomains:
 +        sdlist = "Domains="
 +        for sd in searchdomains:
 +            sdlist = sdlist + '%s ' % sd
