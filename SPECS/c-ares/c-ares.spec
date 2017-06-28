@@ -1,15 +1,14 @@
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
-Version:        1.10.0
-Release:        3%{?dist}
+Version:        1.12.0
+Release:        1%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    c-ares=e44e6575d5af99cb3a38461486e1ee8b49810eb5
-Patch0:         CVE-2016-5180.patch
+%define sha1    c-ares=8abfce61d2d788fb60a3441d05275162a460cbed
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -32,7 +31,6 @@ compile applications or shared objects that use c-ares.
 
 %prep
 %setup -q
-%patch0 -p1
 
 f=CHANGES ; iconv -f iso-8859-1 -t utf-8 $f -o $f.utf8 ; mv $f.utf8 $f
 
@@ -55,7 +53,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-, root, root)
-%doc README README.cares CHANGES NEWS
+%doc README.md README.cares CHANGES NEWS
 %{_libdir}/*.so.*
 
 %files devel
@@ -70,6 +68,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/ares_*
 
 %changelog
+*   Wed Jun 28 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.12.0-1
+-   Upgrade to version 1.12.0 
 *   Wed Oct 05 2016 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-3
 -   Apply patch for CVE-2016-5180.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10.0-2
