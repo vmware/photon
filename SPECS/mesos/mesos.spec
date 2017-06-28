@@ -1,17 +1,14 @@
-%{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:	Mesos
 Name:		mesos
-Version:	1.2.0
-Release:	1%{?dist}
+Version:	0.28.2
+Release:	3%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 mesos=1d570504498c90697b690e3b221feba63d0a800b
-Patch0:         mesos-sysmacros.patch
+%define sha1 mesos=a8675ef59b4c34d4337553215a5295eebf2e4265
 BuildRequires:	openjre >= %{JAVA_VERSION}
 BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:	curl
@@ -56,11 +53,10 @@ Requires:	%{name} = %{version}
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
-sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.am
-sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.am
+sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.in
+sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.in
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 ./configure \
 	CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
@@ -69,7 +65,7 @@ export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 	--prefix=%{_prefix} \
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir}
-make %{?_smp_mflags}
+make
 
 %check
 make check
@@ -88,30 +84,26 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_libexecdir}/mesos/mesos-*
 %{_prefix}/etc/mesos/*
 %{_prefix}/share/mesos/*
-%{_libdir}/libload_qos_controller-*.so
+%{_libdir}/libload_qos_controller-0.28.2.so
 %{_libdir}/libload_qos_controller.so
-%{_libdir}/liblogrotate_container_logger-*.so
+%{_libdir}/liblogrotate_container_logger-0.28.2.so
 %{_libdir}/liblogrotate_container_logger.so
-%{_libdir}/mesos/modules/libfixed_resource_estimator-*.so
+%{_libdir}/mesos/modules/libfixed_resource_estimator-0.28.2.so
 %{_libdir}/mesos/modules/libfixed_resource_estimator.so
-%{_libdir}/mesos/modules/libload_qos_controller-*.so
+%{_libdir}/mesos/modules/libload_qos_controller-0.28.2.so
 %{_libdir}/mesos/modules/libload_qos_controller.so
-%{_libdir}/mesos/modules/liblogrotate_container_logger-*.so
+%{_libdir}/mesos/modules/liblogrotate_container_logger-0.28.2.so
 %{_libdir}/mesos/modules/liblogrotate_container_logger.so
-%exclude %{_bindir}/easy_install
-%exclude %{_bindir}/easy_install-2.7
 
 %files devel
 %{_includedir}/*
 %{_libdir}/libfixed_resource_estimator*
 %{_libdir}/pkgconfig/mesos.pc
+%{_libdir}/python2.7/site-packages/*
 %{_prefix}/etc/mesos/*
-%{python2_sitelib}/*
 %exclude %{_libdir}/debug/
 
 %changelog
-*	Mon Jun 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
--	Upgrade to mesos 1.2.0
 *	Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.28.2-3
 -	Use JAVA_VERSION macro instead of hard coding version.
 *	Mon Apr 24 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.28.2-2

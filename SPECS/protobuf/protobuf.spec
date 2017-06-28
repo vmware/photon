@@ -1,17 +1,16 @@
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        3.0.0
-Release:        1%{?dist}
+Version:        2.6.1
+Release:        4%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=cffdb9bd6eed66b7c3322197740510fd103bb6df
+%define         sha1 protobuf=a8f11eced7352edfefa814996ebf086ab3cfbaa0
 BuildRequires:  autoconf
 BuildRequires:  automake
-BuildRequires:  cmake
 BuildRequires:  libtool
 BuildRequires:	which
 BuildRequires:  libstdc++
@@ -70,7 +69,6 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf java
 Group:          Development/Libraries
-BuildRequires:  chkconfig
 BuildRequires:  openjre >= %{JAVA_VERSION}
 BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:  apache-maven >= 3.3.3
@@ -86,6 +84,7 @@ autoreconf -iv
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 %configure --disable-silent-rules
+
 make %{?_smp_mflags}
 pushd python
 python setup.py build
@@ -104,8 +103,7 @@ popd
 pushd java
 mvn install
 install -vdm755 %{buildroot}%{_libdir}/java/protobuf
-install -vm644 core/target/%{name}-java-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
-install -vm644 util/target/%{name}-java-util-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 target/protobuf-java-2.6.1.jar %{buildroot}%{_libdir}/java/protobuf
 popd
 
 %check
@@ -148,8 +146,6 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
-*   Wed Jun 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
--   Update to protobuf v3.0.0
 *   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6.1-4
 -   Use JAVA_VERSION macro instead of hard coded version.
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
