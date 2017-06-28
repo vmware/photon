@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -14,7 +14,7 @@ Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
-Requires: openjre8, python2
+Requires:      openjre8
 BuildRequires: openjre8
 BuildRequires: openjdk8
 %define _prefix /var/opt/%{name}
@@ -27,6 +27,7 @@ The Ant package contains binaries for a build system
 %package -n ant-scripts
 Summary:        Additional scripts for ant
 Requires:       %{name} = %{version}
+Requires:       python2
 %description -n ant-scripts
 Apache Ant is a Java-based build tool.
 
@@ -105,6 +106,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_bindir}/runant.pl
 
 %changelog
+*   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.10.1-5
+-   Base package does not require python2.
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.10.1-4
 -   Removed dependency on ANT_HOME
 -   Moved perl and python scripts to ant-scripts package
