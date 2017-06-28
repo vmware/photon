@@ -1,7 +1,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        4.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -54,7 +54,8 @@ make DESTDIR=%{buildroot} install
 %postun -p /sbin/ldconfig
 
 %check
-make %{?_smp_mflags} check
+cd build
+make clang-check
 
 %clean
 rm -rf %{buildroot}/*
@@ -75,6 +76,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   wed Jun 28 2017 Chang Lee <changlee@vmware.com> 4.0.0-2
+-   Updated %check
 *   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
 -   Version update
 *   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
