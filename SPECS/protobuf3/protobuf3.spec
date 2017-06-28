@@ -1,16 +1,17 @@
 Summary:        Google's data interchange format
-Name:           protobuf
-Version:        2.6.1
-Release:        4%{?dist}
+Name:           protobuf3
+Version:        3.0.0
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=a8f11eced7352edfefa814996ebf086ab3cfbaa0
+%define         sha1 protobuf=cffdb9bd6eed66b7c3322197740510fd103bb6df
 BuildRequires:  autoconf
 BuildRequires:  automake
+BuildRequires:  cmake
 BuildRequires:  libtool
 BuildRequires:	which
 BuildRequires:  libstdc++
@@ -24,22 +25,22 @@ Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neut
 %package        devel
 Summary:        Development files for protobuf
 Group:          Development/Libraries
-Requires:       protobuf = %{version}-%{release}
+Requires:       protobuf3 = %{version}-%{release}
 
 %description    devel
 The protobuf-devel package contains libraries and header files for
 developing applications that use protobuf.
 
 %package        static
-Summary:        protobuf static lib
+Summary:        protobuf3 static lib
 Group:          Development/Libraries
-Requires:       protobuf = %{version}-%{release}
+Requires:       protobuf3 = %{version}-%{release}
 
 %description    static
 The protobuf-static package contains static protobuf libraries.
 
 %package        python
-Summary:        protobuf python lib
+Summary:        protobuf3 python lib
 Group:          Development/Libraries
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -47,13 +48,13 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
-Requires:       protobuf = %{version}-%{release}
+Requires:       protobuf3 = %{version}-%{release}
 
 %description    python
 This contains protobuf python libraries.
 
 %package        python3
-Summary:        protobuf python3 lib
+Summary:        protobuf3 python3 lib
 Group:          Development/Libraries
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -61,14 +62,15 @@ BuildRequires:  python3-devel
 BuildRequires:  python-setuptools
 Requires:       python3
 Requires:       python3-libs
-Requires:       protobuf = %{version}-%{release}
+Requires:       protobuf3 = %{version}-%{release}
 
 %description    python3
 This contains protobuf python3 libraries.
 
 %package        java
-Summary:        protobuf java
+Summary:        protobuf3 java
 Group:          Development/Libraries
+BuildRequires:  chkconfig
 BuildRequires:  openjre >= %{JAVA_VERSION}
 BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:  apache-maven >= 3.3.3
@@ -78,13 +80,12 @@ Requires:       openjre >= %{JAVA_VERSION}
 This contains protobuf java package.
 
 %prep
-%setup
+%setup -n protobuf-%{version}
 autoreconf -iv
 
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 %configure --disable-silent-rules
-
 make %{?_smp_mflags}
 pushd python
 python setup.py build
@@ -103,7 +104,8 @@ popd
 pushd java
 mvn install
 install -vdm755 %{buildroot}%{_libdir}/java/protobuf
-install -vm644 target/protobuf-java-2.6.1.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 core/target/protobuf-java-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 util/target/protobuf-java-util-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
 popd
 
 %check
@@ -146,11 +148,5 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
-*   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6.1-4
--   Use JAVA_VERSION macro instead of hard coded version.
-*   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
--   Build protobuf python and java.
-*   Mon Mar 20 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
--   Build static lib.
-*   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6.1-1
--   Initial packaging for Photon
+*   Tue Jun 27 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
+-   protobuf v3.0.0

@@ -15,9 +15,9 @@ BuildRequires:  clang
 BuildRequires:  c-ares
 BuildRequires:  c-ares-devel
 BuildRequires:  gcc
-BuildRequires:  protobuf
-BuildRequires:  protobuf-devel
-Requires:       protobuf
+BuildRequires:  protobuf3
+BuildRequires:  protobuf3-devel
+Requires:       protobuf3
 
 %description
 LightStep distributed tracing library for C++.
