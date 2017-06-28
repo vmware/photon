@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.71
-Release:    	2%{?dist}
+Version:    	4.4.74
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=e1803ee9837d8ef729601e71e1f51666366a3612
+%define sha1 linux=80b338e4442f57563dceb71be4acc1f5a5c234a0
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -33,8 +33,6 @@ Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 Patch16:        net-9p-vsock.patch
-#fixes CVE-2017-7346
-Patch17:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -121,7 +119,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
-%patch17 -p1
 
 %build
 make mrproper
@@ -274,6 +271,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.74-1
+-   [feature] 9P FS security support
+-   [feature] DM Delay target support
+-   Fix CVE-2017-1000364 ("stack clash") and CVE-2017-9605
 *   Mon Jun 19 2017 Anish Swaminathan <anishs@vmware.com>  4.4.71-2
 -   [feature] IPV6 netfilter NAT masquerade, security support
 *   Wed Jun 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.71-1

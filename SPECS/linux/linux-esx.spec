@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.71
+Version:       4.4.74
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e1803ee9837d8ef729601e71e1f51666366a3612
+%define sha1 linux=80b338e4442f57563dceb71be4acc1f5a5c234a0
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -34,8 +34,6 @@ Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
-#fixes CVE-2017-7346
-Patch23:        vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_surface_define_ioctl.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -94,7 +92,6 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -183,6 +180,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.74-1
+-   [feature] DM Delay target support
+-   Fix CVE-2017-1000364 ("stack clash") and CVE-2017-9605
 *   Wed Jun 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.71-1
 -   Fix CVE-2017-8890, CVE-2017-9074, CVE-2017-9075, CVE-2017-9076
     CVE-2017-9077 and CVE-2017-9242
