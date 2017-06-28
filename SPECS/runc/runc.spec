@@ -1,18 +1,18 @@
-Summary:	CLI tool for spawning and running containers per OCI spec.
-Name:		runc
-Version:	0.1.1
-Release:	1%{?dist}
-License:	ASL 2.0
-URL:		https://runc.io/
-Source0:	https://github.com/opencontainers/runc/archive/%{name}-v%{version}.tar.gz
-%define sha1 runc=ca70c97c9211462f774e22f03fec2fe61f45f1ba
-Group:		Virtualization/Libraries
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        CLI tool for spawning and running containers per OCI spec.
+Name:           runc
+Version:        0.1.1
+Release:        2%{?dist}
+License:        ASL 2.0
+URL:            https://runc.io/
+Source0:        https://github.com/opencontainers/runc/archive/%{name}-v%{version}.tar.gz
+%define sha1    runc=ca70c97c9211462f774e22f03fec2fe61f45f1ba
+Group:          Virtualization/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  curl
 BuildRequires:  gawk
 BuildRequires:  go
-BuildRequires:  iptables
+BuildRequires:  iptables-devel
 BuildRequires:  pkg-config
 BuildRequires:  libaio-devel
 BuildRequires:  libcap-ng-devel
@@ -42,5 +42,7 @@ install -D -m0755 runc %{buildroot}%{_sbindir}/runc
 %{_sbindir}/runc
 
 %changelog
+*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.1-2
+-   Add iptables-devel to BuildRequires
 *   Tue Apr 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.1-1
 -   Initial runc package for PhotonOS.
