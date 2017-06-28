@@ -1,43 +1,43 @@
-Summary:	Manage "libnvdimm" subsystem devices (Non-volatile Memory)
-Name:		ndctl
-Version:	56
-Release:	2%{?dist}
-License:	GPLv2
-Group:		System Environment/Base
-Url:		https://github.com/pmem/ndctl
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1 ndctl=99dbdae3609c85270dae0530aec0206e6ad36e88
+Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
+Name:           ndctl
+Version:        56
+Release:        3%{?dist}
+License:        GPLv2
+Group:          System Environment/Base
+Url:            https://github.com/pmem/ndctl
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz
+%define sha1    ndctl=99dbdae3609c85270dae0530aec0206e6ad36e88
 
-BuildRequires:	asciidoc
-BuildRequires:	which
-BuildRequires:	xmlto
-BuildRequires:	libtool
-BuildRequires:	pkg-config
-BuildRequires:	kmod
-BuildRequires:	systemd-devel
-BuildRequires:	json-c-devel
+BuildRequires:  asciidoc
+BuildRequires:  which
+BuildRequires:  xmlto
+BuildRequires:  libtool
+BuildRequires:  pkg-config
+BuildRequires:  kmod-devel
+BuildRequires:  systemd-devel
+BuildRequires:  json-c-devel
 
 %description
 Utility library for managing the "libnvdimm" subsystem.  The "libnvdimm"
 subsystem defines a kernel device model and control message interface for
 platform NVDIMM resources.
 
-%package	devel
-Summary:	Development files for ndctl
-License:	LGPLv2
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+%package    devel
+Summary:    Development files for ndctl
+License:    LGPLv2
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
 
-%description	devel
+%description    devel
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %package -n daxctl
-Summary:	Manage Device-DAX instances
-License:	GPLv2
-Group:		System Environment/Base
+Summary:    Manage Device-DAX instances
+License:    GPLv2
+Group:      System Environment/Base
 
 %description -n daxctl
 The daxctl utility provides enumeration and provisioning commands for
@@ -46,10 +46,10 @@ of performance / feature differentiated memory without need of a
 filesystem.
 
 %package -n daxctl-devel
-Summary:	Development files for daxctl
-License:	LGPLv2
-Group:		Development/Libraries
-Requires:	daxctl = %{version}-%{release}
+Summary:    Development files for daxctl
+License:    LGPLv2
+Group:      Development/Libraries
+Requires:   daxctl = %{version}-%{release}
 
 %description -n daxctl-devel
 The %{name}-devel package contains libraries and header files for
@@ -63,9 +63,9 @@ mappings of performance / feature-differentiated memory.
 %build
 ./autogen.sh
 %configure \
-	--disable-static  \
-	--enable-local    \
-	--disable-docs
+    --disable-static  \
+    --enable-local    \
+    --disable-docs
 make %{?_smp_mflags}
 
 %install
@@ -107,6 +107,8 @@ make check
 %{_libdir}/pkgconfig/libdaxctl.pc
 
 %changelog
+*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 56-3
+-   Add kmod-devel to BuildRequires
 *   Mon Apr 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 56-2
 -   Removing the Requires section
 *   Thu Apr 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 56-1
