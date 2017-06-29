@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -205,6 +205,8 @@ popd
 
 
 %changelog
+*   Thu Jun 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-13
+-   Apply related patches for CVE-2017-1000366
 *   Thu Jun 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-12
 -   Fix CVE-2017-1000366
 *   Wed Jun 07 2017 Bo Gan <ganb@vmware.com> 2.22-11
