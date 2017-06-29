@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -95,8 +95,13 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 EOF
+
+install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+echo "disable ntpd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ntpd.preset
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %pre
 if ! getent group ntp >/dev/null; then
     groupadd -g 87 ntp
@@ -121,6 +126,7 @@ rm -rf %{buildroot}/*
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
 %attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
+%{_libdir}/systemd/system-preset/50-ntpd.preset
 %exclude %{_bindir}/ntpstat
 %exclude %{_mandir}/man8/ntpstat.8*
 %{_bindir}/*
@@ -138,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  4.2.8p10-3
+-   Disabled ntpd service by default
 *   Mon Apr 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.8p10-2
 -   add noquery to conf
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 4.2.8p10-1

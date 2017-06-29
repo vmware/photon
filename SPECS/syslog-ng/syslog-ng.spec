@@ -3,7 +3,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -126,6 +126,9 @@ rm -rf %{buildroot}/%{_infodir}
 find %{buildroot} -name "*.la" -exec rm -f {} \;
 popd
 
+install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+echo "disable syslog-ng.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-syslog-ng.preset
+
 %check
 make %{?_smp_mflags} check
 pushd ../p3dir
@@ -153,6 +156,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/syslog-ng/scl.conf
 %{_sysconfdir}/systemd/journald.conf.d/*
 %{_libdir}/systemd/system/syslog-ng.service
+%{_libdir}/systemd/system-preset/50-syslog-ng.preset
 /usr/bin/*
 /usr/sbin/syslog-ng
 /usr/sbin/syslog-ng-ctl
@@ -176,6 +180,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  3.9.1-3
+-   Disabled syslog-ng service by default
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 3.9.1-2
 -   Move python2 requires to python2 subpackage and added python3 binding.
 *   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.9.1-1
