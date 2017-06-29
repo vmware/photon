@@ -89,7 +89,7 @@ rm -rf %{buildroot}/*
 
 %changelog
 *   Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
--   Udating version to 1.8.20p2, fixing CVE-2016-1000367 and CVE-2016-1000368
+-   Udating version to 1.8.20p2, fixing CVE-2017-1000367 and CVE-2017-1000368
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.19p2-1
 -   Update to version 1.8.19p2
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.18p1-3
