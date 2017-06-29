@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -187,6 +187,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-4
+-   Bump release to built with latest toolchain
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
