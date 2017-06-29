@@ -1,7 +1,7 @@
 Summary:	Contains programs for manipulating text files
 Name:		gawk
 Version:	4.1.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gawk
 Group:		Applications/File
@@ -43,6 +43,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 4.1.3-3
+-   Bump release to built with latest toolchain
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1.3-2
 -	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.1.3-1

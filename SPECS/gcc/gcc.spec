@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	5.3.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -211,6 +211,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 5.3.0-4
+-   Bump release to built with latest toolchain
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.0-3
 -   GA - Bump release of all rpms
 *   Tue May 17 2016 Anish Swaminathan <anishs@vmware.com> 5.3.0-2
