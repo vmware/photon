@@ -1,7 +1,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        4.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -55,11 +55,11 @@ make %{?_smp_mflags}
 cd build
 make DESTDIR=%{buildroot} install
 
+#%check
+#make %{?_smp_mflags} check
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
-
-%check
-make %{?_smp_mflags} check
 
 %clean
 rm -rf %{buildroot}/*
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Thu Jun 29 2017 Chang Lee <changlee@vmware.com> 4.0.0-2
+-   Commented out %check due to no test existence.
 *   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
 -   Version update
 *   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
