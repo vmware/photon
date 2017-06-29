@@ -533,7 +533,7 @@ check: packages
                               $(PHOTON_RPMCHECK_FLAGS) \
                               -l $(PHOTON_LOGS_DIR)
 
-generate-yaml-files: check $(PHOTON_STAGE) $(PHOTON_PACKAGES)
+generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Generating yaml files for packages ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -y \
