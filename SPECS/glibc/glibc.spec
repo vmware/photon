@@ -6,7 +6,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.22
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -36,6 +36,7 @@ Patch12:        glob-Simplify-the-interface-for-the-GLOB_ALTDIRFUNC-.patch
 Patch13:        CVE-2016-1234-glob-Do-not-copy-d_name-field-of-struc.patch
 # Fixed CVE-2016-4429
 Patch14:        CVE-2016-4429-sunrpc-Do-not-use-alloca-in-clntudp_ca.patch
+Patch15:	glibc-fix-CVE-2017-1000366.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -76,6 +77,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -203,6 +205,8 @@ popd
 
 
 %changelog
+*   Thu Jun 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-12
+-   Fix CVE-2017-1000366
 *   Wed Jun 07 2017 Bo Gan <ganb@vmware.com> 2.22-11
 -   Fix post/postun
 *   Tue Apr 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.22-10
