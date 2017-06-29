@@ -83,7 +83,7 @@ rm -rf %{buildroot}/*
 
 %changelog
 *       Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
--       Udating version to 1.8.20p2, fixing CVE-2016-1000367 and CVE-2016-1000368
+-       Udating version to 1.8.20p2, fixing CVE-2017-1000367 and CVE-2017-1000368
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-3
 -	GA - Bump release of all rpms
 *   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.15-2
