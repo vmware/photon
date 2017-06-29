@@ -1,7 +1,7 @@
 Summary:    NFS client utils
 Name:       nfs-utils
 Version:    1.3.3
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GPLv2+
 URL:        http://sourceforge.net/projects/nfs
 Group:      Applications/Nfs-utils-client
@@ -16,7 +16,6 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  krb5
 BuildRequires:  libtirpc-devel
-Requires:   python2-libs
 Requires:   libtirpc
 Requires:   rpcbind
 
@@ -65,6 +64,8 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.3.3-6
+-   Removed requires python2-libs
 *   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.3.3-5
 -   Removed packaging of debug files
 *   Fri Jun 03 2016 Nick Shi <nshi@vmware.com> 1.3.3-4
