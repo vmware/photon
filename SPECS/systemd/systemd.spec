@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          34%{?dist}
+Release:          35%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -36,6 +36,7 @@ Patch20:          systemd-228-CVE-notify-socket-DOS-fix.patch
 Patch21:          systemd-macros.patch
 Patch22:          systemd-228-vm-watchdog-timer.patch
 Patch23:          systemd-228-CVE-2016-10156-suid-fix.patch
+Patch24:          systemd-228-CVE-2017-9445-dns-oob.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -92,6 +93,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -201,6 +203,8 @@ rm -rf %{buildroot}/*
 %dir %{_localstatedir}/log/journal
 
 %changelog
+*    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-35
+-    Fix for CVE-2017-9445.
 *    Sat Jan 22 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-34
 -    Fix for CVE-2016-10156.
 *    Sat Jan 21 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-33
