@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -67,8 +67,10 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 
 %check
 cd nss/tests
-HOST=localhost DOMSUF=localdomain
-./all.sh
+chmod g+w . -R
+useradd test -G root -m
+HOST=localhost DOMSUF=localdomain BUILD_OPT=1
+sudo -u test ./all.sh && userdel test -r -f
 
 %post   -p /sbin/ldconfig
 
@@ -94,6 +96,8 @@ HOST=localhost DOMSUF=localdomain
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Thu Jun 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-2
+-   Fix check.
 *   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-1
 -   Upgrade to 3.31.
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.30.1-1
