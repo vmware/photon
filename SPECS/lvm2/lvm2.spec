@@ -3,7 +3,7 @@
 Summary:        Userland logical volume management tools 
 Name:           lvm2
 Version:        2.02.171
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -224,6 +224,12 @@ make install_systemd_generators DESTDIR=%{buildroot}
 make install_tmpfiles_configuration DESTDIR=%{buildroot}
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 
+install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+echo "disable lvm2-activate.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
+echo "disable lvm2-monitor.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
+echo "disable lvm2-lvmeatd.socket" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
+echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
+
 %preun
 %systemd_preun lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
 
@@ -325,6 +331,7 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 %{_unitdir}/../system-generators/lvm2-activation-generator
 %{_unitdir}/blk-availability.service
 %{_unitdir}/lvm2-*
+%{_libdir}/systemd/system-preset/50-lvm2.preset
 %{_libdir}/tmpfiles.d/lvm2.conf
 %dir %{_sysconfdir}/lvm
 %attr(644, -, -) %config(noreplace) %{_sysconfdir}/lvm/lvm.conf
@@ -335,6 +342,8 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.02.171-3
+-   Disabled all lvm services by default
 *   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.02.171-2
 -   Added python3 subpackage.
 *   Thu May 4  2017 Bo Gan <ganb@vmware.com> 2.02.171-1

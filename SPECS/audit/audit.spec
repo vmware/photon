@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.7.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=7aaae7ea80f2280b25f243916e8d18b7338b5f53
 License:        GPLv2+
@@ -92,6 +92,9 @@ mkdir -p %{buildroot}/%{_var}/log/audit
 mkdir -p %{buildroot}/%{_var}/spool/audit
 make install DESTDIR=%{buildroot}
 
+install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-auditd.preset
+
 %check
 make %{?_smp_mflags} check
 
@@ -112,6 +115,7 @@ make %{?_smp_mflags} check
 %{_sbindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/systemd/system/auditd.service
+%{_libdir}/systemd/system-preset/50-auditd.preset
 %{_libexecdir}/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
@@ -154,6 +158,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-3
+-   Disabled audit service by default
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-2
 -   Move python2 requires to python subpackage and added python3.
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.5-1

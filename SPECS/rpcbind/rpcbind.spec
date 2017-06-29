@@ -1,7 +1,7 @@
 Summary:        RPC program number mapper
 Name:           rpcbind
 Version:        0.2.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            http://nfsv4.bullopensource.org
 Group:          Applications/Daemons
@@ -46,6 +46,10 @@ install -m644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE2} %{buildroot}%{_unitdir}
 install -m644 %{SOURCE3} %{buildroot}/etc/sysconfig/rpcbind
 
+install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+echo "disable rpcbind.socket" > %{buildroot}%{_libdir}/systemd/system-preset/50-rpcbind.preset
+echo "disable rpcbind.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-rpcbind.preset
+
 %check
 make %{?_smp_mflags} check
 
@@ -56,6 +60,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/*
 %dir %{_localstatedir}/lib/rpcbind
 %{_unitdir}/*
+%{_libdir}/systemd/system-preset/50-rpcbind.preset
 
 %pre
 rpcid=`getent passwd rpc | cut -d: -f 3`
@@ -89,6 +94,8 @@ fi
 rm -rf %{buildroot}/*
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  0.2.4-3
+-   Disabled rpcbind service by default
 *   Thu May 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.2.4-2
 -   Fix CVE-2017-8779
 *   Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.2.4-1
