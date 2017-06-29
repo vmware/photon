@@ -1,7 +1,7 @@
 Summary:  	xinetd -- A better inetd.
 Name:		xinetd
 Version:	2.3.15
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
@@ -33,7 +33,6 @@ mechanism to protect against port scanners, among other things.
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/%{_sbindir}
-mkdir -p %{buildroot}/etc/rc.d/init.d
 mkdir -p %{buildroot}/etc/xinetd.d
 
 %makeinstall  
@@ -42,16 +41,15 @@ cp contrib/xinetd.d/* %{buildroot}/etc/xinetd.d
 mkdir -p %{buildroot}/lib/systemd/system
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/xinetd.service
 
+install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+echo "disable xinetd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-xinetd.preset
+
 %clean
 rm -rf %{buildroot}
 
 %post
 %{_sbindir}/ldconfig 
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    # Enabled by default per "runs once then goes away" exception
-    /bin/systemctl enable xinetd.service     >/dev/null 2>&1 || :
-fi
+%systemd_post xinetd.service
 
 %preun
 %systemd_preun xinetd.service
@@ -67,8 +65,11 @@ fi
 %attr(0750, root, root) %config(noreplace) /etc/xinetd.conf
 %attr(0750, root, root) %config(noreplace) /etc/xinetd.d/*
 /lib/systemd/system/xinetd.service
+%{_libdir}/systemd/system-preset/50-xinetd.preset
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.3.15-7
+-   Disabled xinetd service by default
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.3.15-6
 -   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.15-5
