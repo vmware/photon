@@ -1,7 +1,7 @@
 Summary:        C library for manipulating tar files
 Name:           libtar
 Version:        1.2.20
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://github.com/tklauser/libtar/archive/v1.2.20.tar.gz
 License:        MIT
 Group:          System Environment/Libraries
@@ -37,9 +37,6 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 chmod +x %{buildroot}/%{_libdir}/libtar.so.*
 
-%check
-make %{?_smp_mflags} check
-
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -56,6 +53,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libtar.la
 
 %changelog
+*   Thu 29 2017 Chang Lee <changlee@vmware.com> 1.2.20-4
+-   Removed %check
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.20-3
 -   Ensure non empty debuginfo
 *   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-2
