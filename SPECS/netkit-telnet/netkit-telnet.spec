@@ -3,7 +3,7 @@
 Summary:        Programs to parse command-line options
 Name:           netkit-telnet
 Version:        0.17
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            http://rpm5.org/files/popt
 Group:          Applications/Internet
@@ -44,9 +44,6 @@ mkdir -p %{buildroot}/%{_mandir}/man8
 mkdir -p %{buildroot}%{_sbindir}
 make install
 
-%check
-make %{?_smp_mflags} check
-
 %clean
 rm -rf %{buildroot}/*
 
@@ -62,9 +59,9 @@ rm -rf %{buildroot}/*
 %{_sbindir}/in.telnetd
 %{_mandir}/man8/in.telnetd.8.gz
 
-
-
 %changelog
+*   Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 0.17-3
+-   Removed %check
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
 -   Ensure non empty debuginfo
 *   Mon Jan 09 2017 Xiaolin Li <xiaolinl@vmware.com> 0.17-1
