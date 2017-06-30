@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -10,7 +10,9 @@ Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define sha1    Python=91d880a2a9fcfc6753cbfa132bf47a47e17e7b16
 Patch0:         cgi3.patch
-Patch2:         python3-support-photon-platform.patch
+Patch1:         python3-support-photon-platform.patch
+#https://github.com/python/cpython/pull/1320/commits/a252330d53afad6f8a4645933989bb017dc35ad8
+Patch2:         skip-imaplib-test.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -123,6 +125,7 @@ setuptools is a collection of enhancements to the Python distutils that allow yo
 %prep
 %setup -q -n Python-%{version}
 %patch0 -p1
+%patch1 -p1
 %patch2 -p1
 
 %build
@@ -249,6 +252,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/easy_install-3.6
 
 %changelog
+*   Fri Jun 30 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-5
+-   Remove the imaplib tests.
 *   Mon Jun 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.6.1-4
 -   Added pip, setuptools, xml, and curses sub packages.
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 3.6.1-3
