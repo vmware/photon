@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.34
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -51,6 +51,7 @@ The Linux package contains the Linux kernel.
 %package devel
 Summary:        Kernel Dev
 Group:          System Environment/Kernel
+Obsoletes:      linux-dev
 Requires:       python2 gawk
 %description devel
 The Linux package contains the Linux kernel dev files
@@ -267,6 +268,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 4.9.34-2
+-   Added obsolete for deprecated linux-dev package
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
 -   [feature] 9P FS security support
 -   [feature] DM Delay target support
