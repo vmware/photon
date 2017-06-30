@@ -5,7 +5,7 @@
 Summary:        Coroutine-based network library
 Name:           python-gevent
 Version:        1.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -21,6 +21,7 @@ BuildRequires:  python2-devel
 
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-greenlet
 
 %description
 gevent is a coroutine-based Python networking library.
@@ -39,6 +40,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-greenlet
 
 %description -n python3-gevent
 Python 3 version.
@@ -68,5 +70,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 30 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.1-2
+-   Add python-greenlet and python3-greenlet as required.
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
 -   Initial packaging for Photon
