@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.2.1
-Release:	9%{?dist}
+Release:	10%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -11,7 +11,8 @@ Source0:	http://pkg-shadow.alioth.debian.org/releases/%{name}-%{version}.tar.xz
 %define sha1 shadow=0917cbadd4ce0c7c36670e5ecd37bbed92e6d82d
 Source1:	PAM-Configuration-Files-1.5.tar.gz
 %define sha1 PAM=08052511f985e3b3072c194ac1287e036d9299fb
-Patch0: chkname-allowcase.patch   
+Patch0: chkname-allowcase.patch
+Patch1: shadow-4.2.1-CVE-2016-6252-fix.patch
 BuildRequires: 	cracklib
 BuildRequires: 	cracklib-devel
 Requires:   	cracklib
@@ -26,6 +27,7 @@ in a secure way.
 %setup -q -n %{name}-%{version}
 %setup -q -T -D -a 1
 %patch0 -p1
+%patch1 -p1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -101,6 +103,8 @@ done
 %{_mandir}/*/*
 %config(noreplace) %{_sysconfdir}/pam.d/*
 %changelog
+*   Fri Jun 30 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-10
+-   Added fix for CVE-2016-6252
 *   Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-9
 -   Allow '.' in username
 *   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.1-8
