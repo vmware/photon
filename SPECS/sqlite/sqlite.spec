@@ -2,7 +2,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		sqlite
 Version:	3.18.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries
@@ -31,6 +31,7 @@ Summary:	sqlite3 library
 Group:		Libraries
 Provides:	pkgconfig(sqlite3)
 Obsoletes:	libsqlite
+Obsoletes:	sqlite-autoconf
 %description libs
 The sqlite3 library.
 
@@ -85,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.18.0-2
+-   Added obseletes for deprecated sqlite-autoconf package
 *   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 3.18.0-1
 -   Version update
 -   Package rename: sqlite-autoconf -> sqlite
