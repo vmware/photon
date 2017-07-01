@@ -1,7 +1,7 @@
 Summary: user space RCU (read-copy-update)
 Name:    userspace-rcu
 Version: 0.9.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: LGPLv2+
 URL: http://liburcu.org
 Source: %{name}-%{version}.tar.bz2
@@ -31,15 +31,19 @@ make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
+find %{buildroot} -name '*.la' -delete
 
 %files
-%{_lib}/*
+%{_lib}/*.so*
+%{_lib}/pkgconfig/*.pc
 %{_includedir}/*
 %{_datadir}/*
 
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.9.1-2
--	GA - Bump release of all rpms
-*	Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-1
+*   Fri Jun 30 2017 Divya Thaluru <dthaluru@vmware.com> 0.9.1-3
+-   Removed packaging of debug files
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.9.1-2
+-   GA - Bump release of all rpms
+*   Tue Nov 24 2015 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-1
 -   Initial build.  First version
