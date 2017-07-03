@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -28,6 +28,7 @@ BuildRequires:  nss-devel
 BuildRequires:  elfutils-devel
 BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
+BuildRequires:  file-devel
 
 %description
 RPM package manager
@@ -255,6 +256,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-5
+-   Add file-devel to BuildRequires
 *   Mon Jun 26 2017 Chang Lee <changlee@vmware.com> 4.13.0.1-4
 -   Updated %check
 *   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 4.13.0.1-3
