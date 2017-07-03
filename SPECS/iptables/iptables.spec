@@ -1,46 +1,53 @@
-Summary:	Linux kernel packet control tool
-Name:		iptables
-Version:	1.6.1
-Release:	1%{?dist}
-License:	GPLv2+
-URL:		http://www.netfilter.org/projects/iptables
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1 iptables-=b2592490ca7a6c2cd0f069e167a4337c86acdf91
-Source1:	iptables.service
-Source2:	iptables
-Source3:	iptables.stop
+Summary:        Linux kernel packet control tool
+Name:           iptables
+Version:        1.6.1
+Release:        2%{?dist}
+License:        GPLv2+
+URL:            http://www.netfilter.org/projects/iptables
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
+%define sha1    iptables-=b2592490ca7a6c2cd0f069e167a4337c86acdf91
+Source1:        iptables.service
+Source2:        iptables
+Source3:        iptables.stop
 BuildRequires:  systemd
 Requires:       systemd
 %description
 The next part of this chapter deals with firewalls. The principal 
 firewall tool for Linux is Iptables. You will need to install 
 Iptables if you intend on using any form of a firewall.
+
+%package        devel
+Summary:        Header and development files for iptables
+Requires:       %{name} = %{version}-%{release}
+%description    devel
+It contains the libraries and header files to create applications.
+
 %prep
 %setup -q
 %build
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--disable-silent-rules \
-	--prefix=%{_prefix} \
-	--exec-prefix= \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--with-xtlibdir=%{_libdir}/iptables \
-	--with-pkgconfigdir=%{_libdir}/pkgconfig \
-	--disable-nftables \
-	--enable-libipq \
-	--enable-devel
-	
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --disable-silent-rules \
+    --prefix=%{_prefix} \
+    --exec-prefix= \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --with-xtlibdir=%{_libdir}/iptables \
+    --with-pkgconfigdir=%{_libdir}/pkgconfig \
+    --disable-nftables \
+    --enable-libipq \
+    --enable-devel
+
 make V=0
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 ln -sfv ../../sbin/xtables-multi %{buildroot}%{_libdir}/iptables-xml
-#	Install daemon scripts
+#   Install daemon scripts
 install -vdm755 %{buildroot}%{_unitdir}
 install -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}/etc/systemd/scripts
@@ -71,15 +78,21 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/iptables.service
 /sbin/*
 %{_bindir}/*
-%{_libdir}/*.so*
+%{_libdir}/*.so.*
 %{_libdir}/iptables/*
-%{_libdir}/pkgconfig/*
 %{_libdir}/iptables-xml
-%{_includedir}/*
 %{_mandir}/man1/*
-%{_mandir}/man3/*
 %{_mandir}/man8/*
+
+%files devel
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*
+%{_includedir}/*
+%{_mandir}/man3/*
+
 %changelog
+*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.6.1-2
+-   Add devel package.
 *   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.1-1
 -   Updated to version 1.6.1
 *   Wed Jan 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.0-6
@@ -100,4 +113,4 @@ rm -rf %{buildroot}/*
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.4.21-2
 -   Updated group.
 *   Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.21-1
--   Initial build.	First version
+-   Initial build.  First version

@@ -1,14 +1,14 @@
-Summary:	The GNU Database Manager
-Name:		gdbm
-Version:	1.13
-Release:	2%{?dist}
-License:	GPLv3+
-URL:		http://www.gnu.org/software/gdbm
-Group:		Applications/Databases
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://ftp.gnu.org/gnu/gdbm/%{name}-%{version}.tar.gz
-%define sha1 gdbm=7f2a8301497bbcac91808b011ca533380914fd21
+Summary:        The GNU Database Manager
+Name:           gdbm
+Version:        1.13
+Release:        3%{?dist}
+License:        GPLv3+
+URL:            http://www.gnu.org/software/gdbm
+Group:          Applications/Databases
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/gdbm/%{name}-%{version}.tar.gz
+%define sha1    gdbm=7f2a8301497bbcac91808b011ca533380914fd21
 
 %description
 This is a disk file format database which stores key/data-pairs in
@@ -17,20 +17,26 @@ by a unique key, which can be retrieved in less time than if it was
 stored in a text file.
 
 %package lang
-Summary: Additional language files for gdbm
-Group:   Applications/Databases
-Requires: %{name} = %{version}-%{release}
+Summary:        Additional language files for gdbm
+Group:          Applications/Databases
+Requires:       %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of gdbm
+
+%package        devel
+Summary:        Header and development files for gdbm
+Requires:       %{name} = %{version}-%{release}
+%description    devel
+It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
 
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--enable-libgdbm-compat \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --enable-libgdbm-compat \
+    --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -42,28 +48,34 @@ rm -rf %{buildroot}%{_infodir}
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/*.so
-%{_libdir}/*.a
-%{_includedir}/*
-%{_mandir}/*/*
+%{_mandir}/man1/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
+%files devel
+%defattr(-,root,root)
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_includedir}/*
+%{_mandir}/man3/*
+
 %changelog
-*       Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.13-2
--       Add lang package.
-*	Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 1.13-1
--	Upgrade gdbm to 1.13
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11-2
--	GA - Bump release of all rpms
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.11-1
--	Initial build.	First version
+*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.13-3
+-   Add devel package.
+*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.13-2
+-   Add lang package.
+*   Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 1.13-1
+-   Upgrade gdbm to 1.13
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11-2
+-   GA - Bump release of all rpms
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.11-1
+-   Initial build.  First version
