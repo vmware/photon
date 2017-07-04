@@ -1,7 +1,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
@@ -44,6 +44,14 @@ for bin in "${binaries[@]}"; do
   install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/bin/${bin}
 done
 
+%check
+export ARCH=amd64
+export VERSION=%{version}
+export PKG=k8s.io/dns
+export GOPATH=/usr/share/gocode
+pushd ${GOPATH}/src/${PKG}
+./build/test.sh cmd pkg
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -57,5 +65,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+*   Tue Jul 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.2-2
+-   Add check section for kubernetes-dns.
 *   Wed Jun 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.2-1
 -   kubernetes-dns for PhotonOS.
