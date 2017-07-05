@@ -1,51 +1,65 @@
-Summary:	Utilities for loading kernel modules
-Name:		kmod
-Version:	24
-Release:	2%{?dist}
-License:	GPLv2+
-URL:		http://www.kernel.org/pub/linux/utils/kernel/kmod
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://www.kernel.org/pub/linux/utils/kernel/kmod/%{name}-%{version}.tar.xz
-%define sha1 kmod=ca506c529cb66ebe12cecb85844ebebf95eb6fa6
-BuildRequires:	xz-devel
-Requires:	xz
+Summary:        Utilities for loading kernel modules
+Name:           kmod
+Version:        24
+Release:        3%{?dist}
+License:        GPLv2+
+URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://www.kernel.org/pub/linux/utils/kernel/kmod/%{name}-%{version}.tar.xz
+%define sha1    kmod=ca506c529cb66ebe12cecb85844ebebf95eb6fa6
+BuildRequires:  xz-devel
+Requires:       xz
 %description
 The Kmod package contains libraries and utilities for loading kernel modules
+
+%package        devel
+Summary:        Header and development files for kmod
+Requires:       %{name} = %{version}-%{release}
+%description    devel
+It contains the libraries and header files to create applications.
+
 %prep
 %setup -q
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--bindir=/bin \
-	--sysconfdir=%{_sysconfdir} \
-	--with-rootlibdir=%{_lib} \
-	--disable-manpages \
-	--with-xz \
-	--with-zlib \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --bindir=/bin \
+    --sysconfdir=%{_sysconfdir} \
+    --with-rootlibdir=%{_lib} \
+    --disable-manpages \
+    --with-xz \
+    --with-zlib \
+    --disable-silent-rules
 make VERBOSE=1 %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} pkgconfigdir=%{_libdir}/pkgconfig install
 install -vdm 755 %{buildroot}/sbin
 for target in depmod insmod lsmod modinfo modprobe rmmod; do
-	ln -sv /bin/kmod %{buildroot}/sbin/$target
+    ln -sv /bin/kmod %{buildroot}/sbin/$target
 done
 find %{buildroot} -name '*.la' -delete
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %files
 %defattr(-,root,root)
 /bin/*
-%{_lib}/*.so.*
+%{_libdir}/*.so.*
 /sbin/*
-%{_libdir}/*.so
+%{_datadir}/bash-completion/completions/kmod
+
+%files devel
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
-%{_datadir}/bash-completion/completions/kmod
+%{_libdir}/pkgconfig/*.pc
+%{_includedir}/*
+%{_libdir}/*.so
+
 %changelog
+*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 24-3
+-   Add devel package.
 *   Tue Jun 06 2017 Chang Lee <changlee@vmware.com> 24-2
 -   Remove %check
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 24-1
