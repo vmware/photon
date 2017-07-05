@@ -1,7 +1,7 @@
 Summary:        Rsync libraries
 Name:           librsync
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://librsync.sourcefrog.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -61,7 +61,8 @@ cd build
 make DESTDIR=%{buildroot} install
 
 %check
-make check
+cd build
+make test
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -79,6 +80,8 @@ make check
 
 
 %changelog
+*   Wed Jun 28 2017 Chang Lee <changlee@vmware.com>  2.0.0-2
+-   Updated %check
 *   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.0-1
 -   Initial build. First version
 
