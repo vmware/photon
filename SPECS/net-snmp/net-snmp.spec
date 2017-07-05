@@ -10,7 +10,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 net-snmp=97dc25077257680815de44e34128d365c76bd839
-Patch1: 	net-snmp-5.7.2-systemd.patch
+Patch0: 	net-snmp-5.7.2-systemd.patch
+Patch1:		net-snmp-CVE-2014-2285.patch
 BuildRequires:	openssl-devel perl systemd
 Requires:	perl systemd
 %description
@@ -26,8 +27,8 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
 
 %prep
 %setup -q
+%patch0 -p1
 %patch1 -p1
-
 %build
 ./configure --prefix=%{_prefix} \
 		--host=ia64-linux \
