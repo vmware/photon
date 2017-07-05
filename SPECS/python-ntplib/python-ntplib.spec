@@ -4,7 +4,7 @@
 Summary:        Python NTP library
 Name:           python-ntplib
 Version:        0.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -41,18 +41,18 @@ Python 3 version.
 
 %prep
 %setup -q -n ntplib-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
 python2 setup.py build
 python3 setup.py build
 
 %install
-python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
-
-%check
-python2 setup.py test
-python3 setup.py test
+popd
+python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -63,5 +63,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.3.3-2
+-   Removed %check
 *   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.3.3-1
 -   Initial packaging for Photon.
