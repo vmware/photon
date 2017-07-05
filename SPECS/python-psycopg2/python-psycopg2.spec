@@ -4,7 +4,7 @@
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python-psycopg2
 Version:        2.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
@@ -17,7 +17,7 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-BuildRequires:  postgresql
+BuildRequires:  postgresql-devel
 Requires:       python2
 Requires:       python2-libs
 Requires:       postgresql
@@ -34,7 +34,7 @@ Summary:        python-psycopg2
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  postgresql
+BuildRequires:  postgresql-devel
 Requires:       python3
 Requires:       python3-libs
 Requires:       postgresql
@@ -74,5 +74,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*	Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 2.7.1-2
+-   Added build requires on postgresql-devel
 *   Wed Apr 26 2017 Xialin Li <xiaolinl@vmware.com> 2.7.1-1
 -   Initial packaging for Photon
