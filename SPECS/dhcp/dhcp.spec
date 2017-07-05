@@ -1,7 +1,7 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
 Version:	4.3.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
@@ -117,18 +117,6 @@ touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd.leases
 touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd6.leases
 mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 
-%check
-pushd %{_builddir}/%{name}-%{version}-P1/bind
-tar xvf bind.tar.gz
-popd
-pushd %{_builddir}/%{name}-%{version}-P1/bind/bind-9.9.7-P3/unit/atf-src/
-./configure --prefix=%{_prefix} --enable-tools --disable-shared
-make
-make install
-popd
-
-make %{?_smp_mflags} check
-
 %post	libs -p /sbin/ldconfig
 %postun	libs -p /sbin/ldconfig
 
@@ -180,6 +168,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+*   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 4.3.5-4
+-   Removed %check due to test dependencies
 *   Thu Apr 20 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.5-3
 -   Added default dhcp configuration and lease files
 *   Wed Dec 7 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.5-2
