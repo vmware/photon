@@ -1,7 +1,7 @@
 Summary:        A filtering tool for a Linux-based bridging firewall.
 Name:           ebtables
 Version:        2.0.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://ebtables.netfilter.org/
 Group:          System Environment/Security
@@ -45,9 +45,6 @@ echo "disable ebtables.service" > %{buildroot}%{_libdir}/systemd/system-preset/5
 /sbin/ldconfig
 %systemd_postun_with_restart ebtables.service
 
-%check
-make %{?_smp_mflags} check
-
 %clean
 rm -rf %{buildroot}/*
 
@@ -66,6 +63,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Wed Jul 05 2017 Chang Lee <changlee@vmware.com>  2.0.10-4
+-   Removed %check
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.0.10-3
 -   Disabled ebtables service by default
 *   Mon May 15 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-2
