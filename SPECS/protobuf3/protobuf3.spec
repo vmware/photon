@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf3
 Version:        3.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -18,6 +18,8 @@ BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
+Provides:       protobuf
+Obsoletes:      protobuf < %{version}
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. You can find protobuf's documentation on the Google Developers site.
@@ -26,6 +28,8 @@ Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neut
 Summary:        Development files for protobuf
 Group:          Development/Libraries
 Requires:       protobuf3 = %{version}-%{release}
+Provides:       protobuf-devel
+Obsoletes:      protobuf-devel < %{version}
 
 %description    devel
 The protobuf-devel package contains libraries and header files for
@@ -35,6 +39,8 @@ developing applications that use protobuf.
 Summary:        protobuf3 static lib
 Group:          Development/Libraries
 Requires:       protobuf3 = %{version}-%{release}
+Provides:       protobuf-static
+Obsoletes:      protobuf-static < %{version}
 
 %description    static
 The protobuf-static package contains static protobuf libraries.
@@ -49,6 +55,8 @@ BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
 Requires:       protobuf3 = %{version}-%{release}
+Provides:       protobuf-python
+Obsoletes:      protobuf-python < %{version}
 
 %description    python
 This contains protobuf python libraries.
@@ -63,6 +71,8 @@ BuildRequires:  python-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       protobuf3 = %{version}-%{release}
+Provides:       protobuf-python3
+Obsoletes:      protobuf-python3 < %{version}
 
 %description    python3
 This contains protobuf python3 libraries.
@@ -75,6 +85,8 @@ BuildRequires:  openjre >= %{JAVA_VERSION}
 BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:  apache-maven >= 3.3.3
 Requires:       openjre >= %{JAVA_VERSION}
+Provides:       protobuf-java
+Obsoletes:      protobuf-java < %{version}
 
 %description    java
 This contains protobuf java package.
@@ -85,7 +97,6 @@ autoreconf -iv
 
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
-printenv
 %configure --disable-silent-rules
 make %{?_smp_mflags}
 pushd python
@@ -149,5 +160,7 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Wed Jul 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-2
+-   Add provides, remove debug printenv.
 *   Tue Jun 27 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
 -   protobuf v3.0.0
