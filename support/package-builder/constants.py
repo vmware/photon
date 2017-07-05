@@ -177,6 +177,7 @@ class constants(object):
         "libffi",
         "libpipeline",
         "gdbm",
+        "gdbm-devel",
         "perl",
         "texinfo",
         "autoconf",

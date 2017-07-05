@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.24.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -20,7 +20,8 @@ Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
-BuildRequires:  zlib-devel, bzip2-devel
+BuildRequires:  zlib-devel
+BuildRequires:  bzip2-devel
 Requires:       zlib 
 Requires:       gdbm
 Requires:       glibc
@@ -67,6 +68,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.24.1-3
+-   Rebuild perl after adding gdbm-devel package.
 *   Thu Jun 15 2017 Chang Lee <changlee@vmware.com> 5.24.1-2
 -   Updated %check
 *   Mon Apr 3 2017 Robert Qi <qij@vmware.com> 5.24.1-1

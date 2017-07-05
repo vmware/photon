@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -35,7 +35,7 @@ BuildRequires:    xz-devel
 BuildRequires:    Linux-PAM-devel
 BuildRequires:    XML-Parser
 BuildRequires:    kbd
-BuildRequires:    kmod
+BuildRequires:    kmod-devel
 BuildRequires:    util-linux-devel
 BuildRequires:    libxslt
 BuildRequires:    docbook-xsl
@@ -226,6 +226,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 233-4
+-    Add kmod-devel to BuildRequires
 *    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-3
 -    Fix for CVE-2017-9445.
 *    Tue Jun 20 2017 Anish Swaminathan <anishs@vmware.com>  233-2
