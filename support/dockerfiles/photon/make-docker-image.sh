@@ -41,6 +41,8 @@ tdnf --installroot $TEMP_CHROOT/ install -y bash coreutils filesystem findutils 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
 cd $TEMP_CHROOT
+#create /var/run symlink
+ln -sf ../run var/run
 # cleanup anything not needed inside rootfs
 rm -rf usr/src/
 rm -rf home/*
