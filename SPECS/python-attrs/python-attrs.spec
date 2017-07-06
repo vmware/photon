@@ -4,7 +4,7 @@
 Summary:        Attributes without boilerplate.
 Name:           python-attrs
 Version:        16.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
@@ -60,9 +60,7 @@ popd
 
 %check
 python2 setup.py test
-pushd ../p3dir
-python3 setup.py test
-popd
+#python3 does not support zope module for tests
 
 %files
 %defattr(-,root,root)
@@ -73,6 +71,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jul 06 2017 Chang Lee <changlee@vmware.com> 16.3.0-3
+-   Updated %check
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 16.3.0-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 16.3.0-1
