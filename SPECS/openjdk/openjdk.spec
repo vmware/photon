@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk
 Version:	1.8.0.131
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -11,10 +11,9 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.bz2
 %define sha1 openjdk=ae01c24fe5247d5aa246a60c0272ba92188a7d55
-Patch0:		disable-awt-lib.patch
-Patch1:		fix-lcms.patch
-Patch2:		Fix-memory-leak.patch
-Patch3:		check-system-ca-certs.patch
+Patch0:		Awt_build_headless_only.patch
+Patch1:		Fix-memory-leak.patch
+Patch2:		check-system-ca-certs.patch
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -62,25 +61,27 @@ This package provides the runtime library class sources.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
+sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
+sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
 
 %build
 chmod a+x ./configure
 unset JAVA_HOME &&
 ./configure \
-	FREETYPE_NOT_NEEDED=yes \
 	CUPS_NOT_NEEDED=yes \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
-	--enable-headful=no \
+	--disable-headful \
 	--with-cacerts-file=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre/lib/security/cacerts \
 	--with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
 	--with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+	--with-freetype-include=/usr/include/freetype2 \
+	--with-freetype-lib=/usr/lib \
 	--with-stdc++lib=dynamic
 
 make \
     DEBUG_BINARIES=true \
-    BUILD_HEADLESS_ONLY=yes \
+    BUILD_HEADLESS_ONLY=1 \
     OPENJDK_TARGET_OS=linux \
     JAVAC_FLAGS=-g \
     STRIP_POLICY=no_strip \
@@ -92,7 +93,7 @@ make \
 
 %install
 make DESTDIR=%{buildroot} install \
-	BUILD_HEADLESS_ONLY=yes \
+        BUILD_HEADLESS_ONLY=1 \
 	OPENJDK_TARGET_OS=linux \
 	DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
 	CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre
@@ -225,6 +226,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*	Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4
+-	Build AWT libraries as well. 
 *	Mon May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-3
 -	Use java alternatives.
 *	Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
