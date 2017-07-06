@@ -3,7 +3,7 @@
 
 Name:           python-mako
 Version:        1.0.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
@@ -14,6 +14,7 @@ Source0:        Mako-%{version}.tar.gz
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python-pytest
 
 Requires:       python2
 Requires:       python2-libs
@@ -30,6 +31,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-pytest
 Requires:       python3
 Requires:       python3-libs
 
@@ -54,9 +56,10 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install py
-%{__python} test_mako.py
-python3 test_mako.py
+python2 setup.py test
+pushd ../p3dir
+python3 setup.py test
+popd
 
 %files
 %defattr(-,root,root,-)
@@ -69,6 +72,8 @@ python3 test_mako.py
 %{_bindir}/mako-render3
 
 %changelog
+*   Thu Jul 06 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.6-5
+-   Fix make check issues.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.6-4
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.0.6-3
