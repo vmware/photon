@@ -291,6 +291,13 @@ class Installer(object):
         if subprocess.call(['mkdir', '-p', rpm_cache_dir]) != 0 or subprocess.call(['mount', '--bind', self.rpm_path, rpm_cache_dir]) != 0:
             modules.commons.log(modules.commons.LOG_ERROR, "Fail to bind cache rpms")
             self.exit_gracefully(None, None)
+    def unbind_repo_dir(self):
+        rpm_cache_dir = self.photon_root + '/cache/tdnf/photon-iso/rpms'
+        if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
+            return
+        if subprocess.call(['umount', rpm_cache_dir]) != 0  or subprocess.call(['rm', '-rf', rpm_cache_dir]) != 0:
+            modules.commons.log(modules.commons.LOG_ERROR, "Fail to unbind cache rpms")
+            self.exit_gracefully(None, None)
 
     def update_fstab(self):
         fstab_file = open(os.path.join(self.photon_root, "etc/fstab"), "w")
@@ -373,6 +380,7 @@ class Installer(object):
             # remove the installer directory
             process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "installer")], stdout=self.output)
             retval = process.wait()
+            self.unbind_repo_dir()
             # Disable the swap file
             process = subprocess.Popen(['swapoff', '-a'], stdout=self.output)
             retval = process.wait()
