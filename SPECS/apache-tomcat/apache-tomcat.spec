@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
-Version:	8.5.15
-Release:	2%{?dist}
+Version:	8.5.16
+Release:	1%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
 Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1 apache-tomcat=5f26f71a1a3730020254a76aca1ee2615bd12d02
+%define sha1 apache-tomcat=094627db1573ed94d375cb370a94584222deaf45
 BuildRequires: openjre
 BuildRequires: openjdk
 BuildRequires: apache-ant
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.16-1
+-   Upgraded to version 8.5.16
 *   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.15-2
 -   Removed version from directory path
 -   Removed dependency on ANT_HOME
