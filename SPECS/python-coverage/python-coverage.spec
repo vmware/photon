@@ -6,7 +6,7 @@
 Summary:        Code coverage measurement for Python.
 Name:           python-coverage
 Version:        4.3.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,9 +19,9 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-xml
 
 %description
 Code coverage measurement for Python.
@@ -35,6 +35,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-xml
 
 %description -n python3-coverage
 Python 3 version.
@@ -76,6 +77,8 @@ popd
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+*   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 4.3.4-4
+-   Add python-xml and pyhton3-xml to  Requires.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.3.4-2
