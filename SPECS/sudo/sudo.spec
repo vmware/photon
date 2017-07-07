@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.8.20p2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -85,9 +85,12 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
 %{_datarootdir}/locale/*
-%exclude  /etc/sudoers.dist
+%exclude /etc/sudoers.dist
+%exclude /usr/lib/tmpfiles.d/sudo.conf
 
 %changelog
+*   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 1.8.20p2-2
+-   Excluding /usr/lib/tmpfiles.d/sudo.conf from %files
 *   Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
 -   Udating version to 1.8.20p2, fixing CVE-2016-1000367 and CVE-2016-1000368
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.19p2-1
