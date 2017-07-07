@@ -1,7 +1,7 @@
 Summary:    Ruby
 Name:       ruby
 Version:    2.4.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSDL
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
@@ -13,6 +13,7 @@ Patch0:     ruby-CVE-2017-9224.patch
 Patch1:     ruby-CVE-2017-9226.patch
 Patch2:     ruby-CVE-2017-9227.patch
 Patch3:     ruby-CVE-2017-9229.patch
+Patch4:	    ruby-CVE-2017-6181.patch
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -30,6 +31,7 @@ This is useful for object-oriented scripting.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 %build
 ./configure \
     --prefix=%{_prefix}   \
