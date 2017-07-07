@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -226,6 +226,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-5
+-    Fix default-dns-from-env patch.
 *    Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 233-4
 -    Add kmod-devel to BuildRequires
 *    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-3
