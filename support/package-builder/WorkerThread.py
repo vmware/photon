@@ -1,4 +1,4 @@
-from PackageBuilder import PackageBuilder
+from BuildContainer import BuildContainer
 import threading
 import Scheduler
 import ThreadPool
@@ -25,7 +25,7 @@ class WorkerThread(threading.Thread):
             if pkg is None:
                 break
             self.logger.info("Thread "+self.name+" is building package:"+ pkg)
-            pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
+            pkgBuilder = BuildContainer(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
             t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))
             t.start()
             t.join()

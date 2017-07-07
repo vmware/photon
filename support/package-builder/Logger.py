@@ -3,12 +3,14 @@ import os
 
 class Logger(object):
     @staticmethod
-    def getLogger (mymodule, logpath=None):
+    def getLogger (mymodule, logpath=None, resetFile=False):
         logfile=mymodule+".log"
         if logpath is not None:
             if not os.path.isdir(logpath):
                 os.makedirs(logpath)
             logfile=logpath+"/"+logfile
+        if resetFile:
+            open(logfile, 'w').close()
         logger=logging.getLogger(mymodule)
         if len(logger.handlers) == 0:
             #creating file handler

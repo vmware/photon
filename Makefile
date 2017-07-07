@@ -225,7 +225,7 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
@@ -482,6 +482,9 @@ check-tools: check-bison check-g++ check-gawk check-createrepo check-texinfo che
 
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
+
+check-docker-py:
+	tdnf install -y docker docker-py --refresh && systemctl daemon-reload && systemctl start docker
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
