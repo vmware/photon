@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.57.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -21,6 +21,7 @@ BuildRequires:   python2-tools
 BuildRequires:   glib-networking
 BuildRequires:   autogen
 BuildRequires:   sqlite-devel
+BuildRequires:   krb5-devel
 Requires:        libxml2
 Requires:        glib-networking
 
@@ -88,6 +89,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 2.57.1-2
+-   Added krb5-devel to BuildRequires for %check
 *   Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.57.1-1
 -   Upgrading to version 2.57.1
 *   Fri Nov 18 2016 Alexey Makhalov <amakhalov@vmware.com> 2.53.90-3
