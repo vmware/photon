@@ -4,7 +4,7 @@
 Summary:        An implementation of the OAuth request-signing logic
 Name:           python-oauthlib
 Version:        2.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Url:            https://pypi.python.org/pypi/python-oauthlib/
 Group:          Development/Languages/Python
@@ -15,6 +15,7 @@ Source0:        https://pypi.python.org/packages/fa/2e/25f25e6c69d97cf921f0a8f7d
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  libffi-devel
 Requires:       python2
 Requires:       python2-libs
 
@@ -56,9 +57,13 @@ python3 setup.py install --root=%{buildroot}
 popd
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 mock
 python2 setup.py test
 
 pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 mock
 python3 setup.py test
 popd
 
@@ -70,6 +75,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 2.0.2-3
+-   Add  libffi-devel in BuildRequires and install mock python module in %check
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.2-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Apr 13 2017 Anish Swaminathan <anishs@vmware.com> 2.0.2-1
