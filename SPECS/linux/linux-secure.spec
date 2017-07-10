@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.34
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -35,12 +35,12 @@ Patch15:        0003-Added-PAX_RANDKSTACK.patch
 Patch16:        LKCM.patch
 BuildRequires:  bc
 BuildRequires:  kbd
-BuildRequires:  kmod
+BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
-BuildRequires:  libdnet
-BuildRequires:  libmspack
+BuildRequires:  libdnet-devel
+BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
@@ -228,6 +228,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
+-   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
 -   [feature] 9P FS security support
 -   [feature] DM Delay target support

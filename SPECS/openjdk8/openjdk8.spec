@@ -3,7 +3,7 @@
 Summary:	OpenJDK 
 Name:		openjdk8
 Version:	1.8.0.131
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -24,6 +24,7 @@ BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
 Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
+Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
 %define bootstrapjdkversion 1.8.0.112
 %description
@@ -32,6 +33,7 @@ The OpenJDK package installs java class library and javac java compiler.
 %package	-n openjre8
 Summary:	Java runtime environment
 AutoReqProv: 	no
+Obsoletes:      openjre <= %{version}
 Requires:       chkconfig
 Requires:	libstdc++
 %description	-n openjre8
@@ -41,6 +43,7 @@ It contains the libraries files for Java runtime environment
 %package	sample
 Summary:	Sample java applications. 
 Group:          Development/Languages/Java
+Obsoletes:      openjdk-sample <= %{version}
 Requires:       %{name} = %{version}-%{release}
 %description	sample
 It contains the Sample java applications.
@@ -48,6 +51,7 @@ It contains the Sample java applications.
 %package		doc
 Summary:		Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
+Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
 %description	doc
 It contains the documentation and demo applications for openjdk
@@ -55,6 +59,7 @@ It contains the documentation and demo applications for openjdk
 %package 		src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
+Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
 %description	src
 This package provides the runtime library class sources.
@@ -227,6 +232,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*	Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.0.131-3
+-	Added obseletes for deprecated openjdk package
 *	Tue Jun 06 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
 -	Add requires for libstdc++
 *	Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1

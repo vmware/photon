@@ -1,5 +1,3 @@
-#!/usr/bin/python2
-#
 #    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
@@ -25,10 +23,8 @@ from __builtin__ import isinstance
 
 class Installer(object):
     def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False,
-                 rpm_path = "../stage/RPMS", log_path = "../stage/LOGS",
-                 ks_config = None):
+                 rpm_path = "../stage/RPMS", log_path = "../stage/LOGS"):
         self.install_config = install_config
-        self.ks_config = ks_config
         self.iso_installer = iso_installer
         self.rpm_path = rpm_path
         self.log_path = log_path
@@ -72,7 +68,7 @@ class Installer(object):
     def exit_gracefully(self, signal, frame):
         if self.iso_installer:
             self.progress_bar.hide()
-            self.window.addstr(0, 0, 'Opps, Installer got interrupted.\n\nPress any key to get to the bash...')
+            self.window.addstr(0, 0, 'Oops, Installer got interrupted.\n\nPress any key to get to the bash...')
             self.window.content_window().getch()
 
         modules.commons.dump(modules.commons.LOG_FILE_NAME)
@@ -236,7 +232,7 @@ class Installer(object):
             self.progress_bar.hide()
             self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
             eject_cdrom = True
-            if self.ks_config == None:
+            if 'ui_install' in self.install_config:
                 self.window.content_window().getch()
             if 'eject_cdrom' in self.install_config and not self.install_config['eject_cdrom']:
                 eject_cdrom = False
@@ -428,7 +424,7 @@ class Installer(object):
             if not hasattr(mod, 'execute'):
                 modules.commons.log(modules.commons.LOG_ERROR, "Error: not able to execute module {}".format(module))
                 continue
-            mod.execute(module, self.ks_config, self.install_config, self.photon_root)
+            mod.execute(module, self.install_config, self.photon_root)
 
     def adjust_packages_for_vmware_virt(self):
         try:

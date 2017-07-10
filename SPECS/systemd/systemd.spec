@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          2%{?dist}
+Release:          4%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -21,6 +21,7 @@ Patch4:           systemd-233-default-dns-from-env.patch
 Patch5:           systemd-macros.patch
 Patch6:           systemd-233-resolv-conf-symlink.patch
 Patch7:           systemd-233-CVE-2017-9217.patch
+Patch8:           systemd-233-CVE-2017-9445-dns-oob.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -34,7 +35,7 @@ BuildRequires:    xz-devel
 BuildRequires:    Linux-PAM-devel
 BuildRequires:    XML-Parser
 BuildRequires:    kbd
-BuildRequires:    kmod
+BuildRequires:    kmod-devel
 BuildRequires:    util-linux-devel
 BuildRequires:    libxslt
 BuildRequires:    docbook-xsl
@@ -77,6 +78,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -224,6 +226,10 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 233-4
+-    Add kmod-devel to BuildRequires
+*    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-3
+-    Fix for CVE-2017-9445.
 *    Tue Jun 20 2017 Anish Swaminathan <anishs@vmware.com>  233-2
 -    Fix for CVE-2017-9217
 *    Mon Mar 06 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-1
