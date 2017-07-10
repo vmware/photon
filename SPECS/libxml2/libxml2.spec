@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.4
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -16,6 +16,10 @@ Patch1:         libxml2-2.9.4-cve-2016-5131.patch
 # Proposed patch from https://bugzilla.gnome.org/show_bug.cgi?id=772726#c17
 # Fix for CVE-2016-9318
 Patch2:         cve-2016-9318.patch
+# Fix for CVE-2017-9047 and CVE-2017-9048
+Patch3:         libxml2-fix-buffer-size-checks.patch
+# Fix for CVE-2017-9049 and CVE-2017-9050
+Patch4:         libxml2-fix-handling-of-parameter-entity-references.patch
 %define sha1    libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
 Provides:       pkgconfig(libxml-2.0)
 
@@ -56,6 +60,8 @@ Static libraries and header files for the support library for libxml
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -121,6 +127,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon Jul 10 2017 Divya Thaluru <dthaluru@vmware.com> 2.9.4-9
+-   Apply patch for CVE-2017-9047, CVE-2017-9048, CVE-2017-9049 and CVE-2017-9050
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-8
 -   Move python2 requires to python subpackage.
 *   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 2.9.4-7
