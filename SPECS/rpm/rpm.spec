@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.11.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -16,8 +16,9 @@ Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:          rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
-Patch0:         rpm-debuginfo-exclude.1.patch
-Patch1:         rpm-4.11.2-cve-2014-8118.patch
+Patch0:         rpm-4.11.2-cve-2014-8118.patch
+Patch1:         find-debuginfo-do-not-generate-non-existing-build-id.patch
+Patch2:         find-debuginfo-do-not-generate-dir-entries.patch
 #Requires:      nspr
 Requires:       nss 
 Requires:       popt
@@ -78,6 +79,7 @@ Python3 rpm.
 mv db-5.3.28 db
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 ./autogen.sh --noconfigure
@@ -239,6 +241,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Mon Jul 10 2017 Divya Thaluru <dthaluru@vmware.com> 4.11.2-14
+-    Do not allow -debuginfo to own directories to avoid conflicts with
+-    find-debuginfo...patch: exclude non existing .build-id from packaging
 *    Fri May 26 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-13
 -    Remove python2 from requires of rpm-devel subpackages.
 *    Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-12
