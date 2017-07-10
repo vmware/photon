@@ -1,20 +1,27 @@
+%define debug_package %{nil}
+%define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
 Version:        1.13.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/docker/docker/archive/%{name}-%{version}.tar.gz
-%define sha1 docker=8a39c44c9e665495484fd86fbefdfbc9ab9d815d 
-Source1:        https://github.com/docker/containerd/archive/containerd-0.2.5.tar.gz
-%define sha1 containerd=aaf6fd1c5176b8575af1d8edf82af3d733528451
-Source2:        https://github.com/opencontainers/runc/tree/runc-1.0.0-rc2-9df8b306d01f59d3a8029be411de015b7304dd8f.zip
-%define sha1 runc=8f66277f75bafebe564226d8a3107a19d60b3237
-Source3:        https://github.com/docker/libnetwork/archive/docker-libnetwork-master-0.8.1.tar.gz
-%define sha1 docker-libnetwork-master=231c59f72a17f5e3f33e75e1efa164623e1852d8
+#Git commits must be in sync with docker/hack/dockerfile/binaries-commits
+Source0:        https://github.com/docker/moby/archive/moby-%{version}.tar.gz
+%define sha1 moby=eb67f8c60bd132d8917335ebf92d90020ba52d27
+%define DOCKER_SHORT_COMMIT 092cba3
+Source1:        https://github.com/docker/containerd/tree/containerd-aa8187d.tar.gz
+%define CONTAINERD_SHORT_COMMIT aa8187d
+%define sha1 containerd=b8aac40b423e80028ec6b7ff5cca1ccaab617d86
+Source2:        https://github.com/docker/runc/tree/runc-9df8b30.tar.gz
+%define sha1 runc=35d0c90f634d2327356e7268ff73ecbffdd65d82
+%define RUNC_SHORT_COMMIT 9df8b30
+Source3:        https://github.com/docker/libnetwork/tree/libnetwork-0f53435.tar.gz
+%define sha1 libnetwork=a63774a38bec3aba4b1ff7a0b3e748960da2048b
+%define LIBNETWORK_SHORT_COMMIT 0f53435
 Source4:        docker.service
 Source5:        docker-containerd.service
 Source6:        docker-completion.bash
@@ -26,6 +33,8 @@ BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 BuildRequires:  unzip
 BuildRequires:  go
+BuildRequires:  findutils
+BuildRequires:  sed
 Requires:       libgcc
 Requires:       glibc
 Requires:       libseccomp
@@ -35,59 +44,86 @@ Requires:       device-mapper-libs
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
 %prep
-%setup -q
+%setup -q -c
 %setup -T -D -a 1
 %setup -T -D -a 2
 %setup -T -D -a 3
 
+#Fix containerd git commit/branch
+find containerd-%{CONTAINERD_SHORT_COMMIT}* -name Makefile \
+  -exec sed -i 's/^GIT_COMMIT :=.*$/GIT_COMMIT := %{CONTAINERD_SHORT_COMMIT}/g' {} \; \
+  -exec sed -i 's/^GIT_BRANCH :=.*$/GIT_BRANCH := %{name}-%{version}/g' {} \;
+
+#Fix runc git commit/branch
+find runc-%{RUNC_SHORT_COMMIT}* -name Makefile \
+  -exec sed -i 's/^GIT_COMMIT :=.*$/GIT_COMMIT := %{RUNC_SHORT_COMMIT}/g' {} \; \
+  -exec sed -i 's/^COMMIT :=.*$/COMMIT := %{RUNC_SHORT_COMMIT}/g' {} \; \
+  -exec sed -i 's/^COMMIT_NO :=.*$/COMMIT_NO := %{RUNC_SHORT_COMMIT}/g' {} \; \
+  -exec sed -i 's/^GIT_BRANCH :=.*$/GIT_BRANCH := %{name}-%{version}/g' {} \;
+
+#Fix docker git commit/branch
+find moby-%{version}* -name Makefile \
+  -exec sed -i 's/^GIT_COMMIT :=.*$/GIT_COMMIT := %{DOCKER_SHORT_COMMIT}/g' {} \; \
+  -exec sed -i 's/^GIT_BRANCH :=.*$/GIT_BRANCH := %{name}-%{version}/g' {} \;
+
+#Fail if there is still "shell git" invocation
+find -name Makefile -exec grep "shell git" {} \; | read && exit 1
+
 %build
 
-export AUTO_GOPATH=1
-export DOCKER_BUILDTAGS='exclude_graphdriver_aufs'
-export DOCKER_GITCOMMIT="092cba3"
+export GOPATH="${PWD}/gopath"
+mkdir -p gopath/src/github.com
+cd gopath/src/github.com
+mkdir -p docker
+mkdir -p opencontainers
 
-./hack/make.sh dynbinary
+ln -snrf ../../../runc-%{RUNC_SHORT_COMMIT}* opencontainers/runc
+ln -snrf ../../../containerd-%{CONTAINERD_SHORT_COMMIT}* docker/containerd
+ln -snrf ../../../libnetwork-%{LIBNETWORK_SHORT_COMMIT}* docker/libnetwork
+ln -snrf ../../../moby-%{version} docker/docker
 
-mkdir -p /usr/share/gocode/src/github.com/docker/
-cd /usr/share/gocode/src/github.com/docker/
-mv /usr/src/photon/BUILD/docker-1.13.1/containerd-0.2.5 .
-mv containerd-0.2.5 containerd
-cd containerd
+#export DOCKER_BUILDTAGS='exclude_graphdriver_aufs'
 
+pushd docker/docker
+DOCKER_GITCOMMIT=%{DOCKER_SHORT_COMMIT} DOCKER_BUILDTAGS='seccomp' ./hack/make.sh dynbinary
+popd
+
+pushd docker/containerd
 make
+popd
 
-mkdir -p /usr/share/gocode/src/github.com/opencontainers/
-cd /usr/share/gocode/src/github.com/opencontainers/
-mv /usr/src/photon/BUILD/docker-1.13.1/runc-9df8b306d01f59d3a8029be411de015b7304dd8f .
-mv runc-9df8b306d01f59d3a8029be411de015b7304dd8f runc
-cd runc
+pushd opencontainers/runc
 make BUILDTAGS='seccomp'
+popd
 
-cd /usr/share/gocode/src/github.com/docker/
-mv /usr/src/photon/BUILD/docker-1.13.1/libnetwork-master/ .
-mv libnetwork-master libnetwork
-cd libnetwork
+pushd docker/libnetwork
 go build -ldflags="-linkmode=external" -o docker-proxy github.com/docker/libnetwork/cmd/proxy
+popd
 
 %install
-install -vdm755 %{buildroot}/usr/bin
-mv -v %{_builddir}/%{name}-%{version}/bundles/latest/dynbinary-client/%{name}-%{version} %{buildroot}/usr/bin/%{name}
-mv -v %{_builddir}/%{name}-%{version}/bundles/latest/dynbinary-daemon/%{name}d-%{version} %{buildroot}/usr/bin/%{name}d
-mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/containerd %{buildroot}/usr/bin/%{name}-containerd
-mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/containerd-shim %{buildroot}/usr/bin/%{name}-containerd-shim
-mv -v /usr/share/gocode/src/github.com/docker/containerd/bin/ctr %{buildroot}/usr/bin/%{name}-containerd-ctr
-mv -v /usr/share/gocode/src/github.com/opencontainers/runc/runc %{buildroot}/usr/bin/%{name}-runc
-mv -v /usr/share/gocode/src/github.com/docker/libnetwork/docker-proxy %{buildroot}/usr/bin/%{name}-proxy
-install -vd %{buildroot}/lib/systemd/system
-cp %{SOURCE4} %{buildroot}/lib/systemd/system/docker.service
-cp %{SOURCE5} %{buildroot}/lib/systemd/system/docker-containerd.service
-install -vdm 755 %{buildroot}%{_datadir}/bash-completion/completions
-install -m 0644 %{SOURCE6} %{buildroot}%{_datadir}/bash-completion/completions/docker
 
-%{_fixperms} %{buildroot}/*
+install -vdm755 %{buildroot}%{_bindir}
+install -vdm755 %{buildroot}%{_unitdir}
+install -vdm755 %{buildroot}%{_datadir}/bash-completion/completions
 
-%check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+pushd gopath/src/github.com/docker
+install -m755 docker/bundles/latest/dynbinary-client/%{name}-%{version} %{buildroot}%{_bindir}/%{name}
+install -m755 docker/bundles/latest/dynbinary-daemon/%{name}d-%{version} %{buildroot}%{_bindir}/%{name}d
+install -m755 containerd/bin/containerd %{buildroot}%{_bindir}/%{name}-containerd
+install -m755 containerd/bin/containerd-shim %{buildroot}%{_bindir}/%{name}-containerd-shim
+install -m755 containerd/bin/ctr %{buildroot}%{_bindir}/%{name}-containerd-ctr
+install -m755 libnetwork/docker-proxy %{buildroot}%{_bindir}/%{name}-proxy
+popd
+
+pushd gopath/src/github.com/opencontainers
+install -m755 runc/runc %{buildroot}%{_bindir}/%{name}-runc
+popd
+
+install -m644 %{SOURCE4} %{buildroot}%{_unitdir}/docker.service
+install -m644 %{SOURCE5} %{buildroot}%{_unitdir}/docker-containerd.service
+install -m644 %{SOURCE6} %{buildroot}%{_datadir}/bash-completion/completions/docker
+
+#%{_fixperms} %{buildroot}/*
 
 %preun
 %systemd_preun docker.service
@@ -116,19 +152,21 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-/lib/systemd/system/docker-containerd.service
-/lib/systemd/system/docker.service
-/usr/bin
-/usr/bin/docker
-/usr/bin/docker-containerd
-/usr/bin/docker-containerd-ctr
-/usr/bin/docker-containerd-shim
-/usr/bin/docker-proxy
-/usr/bin/docker-runc
-/usr/bin/dockerd
-/usr/share/bash-completion/completions/docker
+%{_unitdir}/docker-containerd.service
+%{_unitdir}/docker.service
+%{_bindir}/docker
+%{_bindir}/docker-containerd
+%{_bindir}/docker-containerd-ctr
+%{_bindir}/docker-containerd-shim
+%{_bindir}/docker-proxy
+%{_bindir}/docker-runc
+%{_bindir}/dockerd
+%{_datadir}/bash-completion/completions/docker
 
 %changelog
+*   Mon Jul 10 2017 Bo Gan <ganb@vmware.com> 1.13.1-4
+-   Fix runc/containerd/libnetwork versions
+-   Do not strip binaries
 *   Thu May 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-3
 -   Docker build requires GO.
 *   Wed May 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-2
