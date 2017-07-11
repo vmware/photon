@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -11,12 +11,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/3.10/apache-%{name}-%{version}-src.tar.gz
 %define sha1 apache-cassandra=fa2bbeb62f930f5ff6fccee60cfb837d0794633a
-Source1:		cassandra.service
-Patch0:			build-fix.patch
+Source1:        cassandra.service
+Patch0:         build-fix.patch
 BuildRequires:  apache-ant
-BuildRequires:	unzip zip
-BuildRequires:	openjdk8
+BuildRequires:  unzip zip
+BuildRequires:  openjdk8
 Requires:       openjre8
+
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
@@ -47,8 +48,6 @@ cp bin/sstablescrub %{buildroot}%{_bindir}/
 cp bin/sstableupgrade %{buildroot}%{_bindir}/
 cp bin/sstableutil %{buildroot}%{_bindir}/
 cp bin/sstableverify %{buildroot}%{_bindir}/
-cp bin/cqlsh %{buildroot}%{_bindir}/
-cp bin/cqlsh.py %{buildroot}%{_bindir}/
 cp conf/cassandra-env.sh %{buildroot}%{_sysconfdir}/cassandra/
 cp conf/cassandra.yaml %{buildroot}%{_sysconfdir}/cassandra/
 cp conf/cassandra-jaas.config %{buildroot}%{_sysconfdir}/cassandra/
@@ -117,6 +116,8 @@ fi
 /lib/systemd/system/cassandra.service
 
 %changelog
+*   Mon Jul 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10-3
+-   Remove cqlsh and cqlsh.py.
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.10-2
 -   Removed dependency on ANT_HOME
 *   Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-1
