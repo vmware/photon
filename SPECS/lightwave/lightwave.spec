@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.2.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -48,7 +48,7 @@ VMware Lightwave Server
 %define _webappsdir %{_prefix}/vmware-sts/webapps
 %define _configdir %{_datadir}/config
 %define _servicedir /lib/systemd/system
-%define _commons_daemon_home /var/opt/commons-daemon
+%define _commons_daemon_home /usr/share/java
 %define _tomcat_home /var/opt/apache-tomcat
 %define _jaxws_home /opt/jaxws-ri-2.2.10
 %define _java_home /usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
@@ -133,7 +133,7 @@ sed -i 's/\/opt\/vmware/\%{_prefix}/' vmidentity/config/vmware-stsd.service.in
 sed -i 's/rpm -qa vmware-sts/rpm -qa lightwave/' vmidentity/install/src/main/java/com/vmware/identity/installer/ReleaseUtil.java
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/jars/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
 sed -i 's,/opt/vmware/bin/ic-join,/usr/bin/ic-join,' config/scripts/domainjoin.sh
-
+sed -i 's#$COMMONS_DAEMON_HOME#usr#g' vmidentity/configure.ac
 %build
 
 export CFLAGS="-Wno-pointer-sign -Wno-unused-but-set-variable -Wno-implicit-function-declaration -Wno-address -Wno-deprecated-declarations -Wno-enum-compare"
@@ -1120,6 +1120,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Mon Jul 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-4
+-   Updated the commons-daemon directory path to its new location
 *   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
 -   Fixed apache-maven directory path
 *   Tue Jun 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-3
