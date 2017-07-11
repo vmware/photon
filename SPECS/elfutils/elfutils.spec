@@ -1,13 +1,13 @@
 # -*- rpm-spec-*-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.168
+Version:	0.169
 Release:	1%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
-URL:        	https://fedorahosted.org/elfutils/
-Source0:	elfutils-%{version}.tar.bz2
-%define sha1 elfutils=53e486ddba572cf872d32e9aad4d7d7aa6e767ff
+URL:    	https://sourceware.org/elfutils
+Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
+%define sha1 elfutils=4977019aece471362dbdd28a27ef1030471dff84
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -195,6 +195,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 0.169-1
+- Updated to 0.169
 * Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 0.168-1
 - Updated to 0.168
 * Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 0.165-3
