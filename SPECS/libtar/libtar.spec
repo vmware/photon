@@ -37,6 +37,9 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 chmod +x %{buildroot}/%{_libdir}/libtar.so.*
 
+#%check
+#Commented out %check due to no test existence
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
@@ -54,7 +57,7 @@ chmod +x %{buildroot}/%{_libdir}/libtar.so.*
 
 %changelog
 *   Thu Jun 29 2017 Chang Lee <changlee@vmware.com> 1.2.20-4
--   Removed %check
+-   Removed %check due to no test existence.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.20-3
 -   Ensure non empty debuginfo
 *   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-2

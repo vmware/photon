@@ -2,7 +2,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        4.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -70,8 +70,8 @@ rm -f %{buildroot}%{python2_sitelib}/six.*
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-%check
-make %{?_smp_mflags} check
+#%check
+#Commented out %check due to no test existence
 
 %clean
 rm -rf %{buildroot}/*
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Thu Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
+-   Commented out %check due to no test existence.
 *   Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
 -   Added python-lldb package
 *   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
