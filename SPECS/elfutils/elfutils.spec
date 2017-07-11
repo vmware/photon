@@ -1,17 +1,15 @@
 # -*- rpm-spec-*-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.165
-Release:	2%{?dist}
+Version:	0.169
+Release:	1%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
-URL:        	https://fedorahosted.org/elfutils/
-Source0:	elfutils-%{version}.tar.bz2
-%define sha1 elfutils=b994f2f31e6638415d7f8a3c0c7e04e6bc4ca4a9
+URL:        https://sourceware.org/elfutils
+Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
+%define sha1 elfutils=4977019aece471362dbdd28a27ef1030471dff84
 Vendor:		VMware, Inc.
 Distribution:	Photon
-
-Patch0: cve-2014-0172.patch
 
 Obsoletes:	libelf libelf-devel
 Requires:	elfutils-libelf = %{version}-%{release}
@@ -100,7 +98,6 @@ for libelf.
 
 %prep
 %setup -q
-%patch0 -p1
 %build
 %configure --program-prefix=%{_programprefix}
 make %{?_smp_mflags}
@@ -188,8 +185,10 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libelf.a
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.165-2
--	GA - Bump release of all rpms
+*   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 0.169-1
+-   Updated to version 0.169
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.165-2
+-   GA - Bump release of all rpms
 *   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 0.165-1
 -   Updated to version 0.165
 * Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.158-4
