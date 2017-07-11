@@ -1,7 +1,7 @@
 Summary:	The Kerberos newtork authentication system
 Name:		krb5
 Version:	1.15.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -84,8 +84,10 @@ unset LIBRARY
 %{_fixperms} %{buildroot}/*
 
 %check
+# krb5 tests require hostname resolve
+echo "127.0.0.1 $HOSTNAME" >> /etc/hosts
 cd src
-make %{?_smp_mflags} check
+make check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -116,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15-2
+-   Fix make check: add /etc/hosts entry, disable parallel check
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
 -   Updated to version 1.51.1
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-6
