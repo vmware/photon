@@ -54,6 +54,9 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
+#%check
+#Commented out %check due to no test existence
+
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/*
@@ -64,6 +67,6 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %changelog
 *   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.3.3-2
--   Removed %check
+-   Removed %check due to no test existence.
 *   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.3.3-1
 -   Initial packaging for Photon.

@@ -23,13 +23,16 @@ make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS="" STRIP="/bin/true"
 %install
 make DESTDIR=%{buildroot} binprefix=%{_prefix} install
 
+#%check
+#Commented out %check due to no test existence
+
 %files
 %defattr(-,root,root)
 %{_sbindir}/hdparm
 %{_mandir}/man8/hdparm.8*
 %changelog
 *	Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 9.51-3
--	Removed %check
+-	Removed %check  due to no test existence.
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.51-2
 -	Ensure non empty debuginfo
 *	Wed Jan 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 9.51-1
