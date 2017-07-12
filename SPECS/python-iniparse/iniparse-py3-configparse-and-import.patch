@@ -1,0 +1,167 @@
+Based on https://github.com/zeyosinc/iniparse
+diff --git a/iniparse/compat.py b/iniparse/compat.py
+index db89ed8..2f31cfd 100644
+--- a/iniparse/compat.py
++++ b/iniparse/compat.py
+@@ -12,7 +12,7 @@ The underlying INIConfig object can be accessed as cfg.data
+ """
+ 
+ import re
+-from ConfigParser import DuplicateSectionError,    \
++from configparser import DuplicateSectionError,    \
+                   NoSectionError, NoOptionError,   \
+                   InterpolationMissingOptionError, \
+                   InterpolationDepthError,         \
+@@ -21,16 +21,16 @@ from ConfigParser import DuplicateSectionError,    \
+ 
+ # These are imported only for compatiability.
+ # The code below does not reference them directly.
+-from ConfigParser import Error, InterpolationError, \
++from configparser import Error, InterpolationError, \
+                   MissingSectionHeaderError, ParsingError
+ 
+-import ini
++from .ini import *
+ 
+ class RawConfigParser(object):
+     def __init__(self, defaults=None, dict_type=dict):
+         if dict_type != dict:
+             raise ValueError('Custom dict types not supported')
+-        self.data = ini.INIConfig(defaults=defaults, optionxformsource=self)
++        self.data = INIConfig(defaults=defaults, optionxformsource=self)
+ 
+     def optionxform(self, optionstr):
+         return optionstr.lower()
+@@ -56,7 +56,7 @@ class RawConfigParser(object):
+         # The default section is the only one that gets the case-insensitive
+         # treatment - so it is special-cased here.
+         if section.lower() == "default":
+-            raise ValueError, 'Invalid section name: %s' % section
++            raise (ValueError, 'Invalid section name: %s' % section)
+ 
+         if self.has_section(section):
+             raise DuplicateSectionError(section)
+@@ -143,7 +143,7 @@ class RawConfigParser(object):
+     def getboolean(self, section, option):
+         v = self.get(section, option)
+         if v.lower() not in self._boolean_states:
+-            raise ValueError, 'Not a boolean: %s' % v
++            raise (ValueError, 'Not a boolean: %s' % v)
+         return self._boolean_states[v.lower()]
+ 
+     def has_option(self, section, option):
+@@ -234,7 +234,7 @@ class ConfigParser(RawConfigParser):
+             if "%(" in value:
+                 try:
+                     value = value % vars
+-                except KeyError, e:
++                except (KeyError, e):
+                     raise InterpolationMissingOptionError(
+                         option, section, rawval, e.args[0])
+             else:
+diff --git a/iniparse/ini.py b/iniparse/ini.py
+index 408354d..dd72ee6 100644
+--- a/iniparse/ini.py
++++ b/iniparse/ini.py
+@@ -42,9 +42,9 @@ Example:
+ # Backward-compatiable with ConfigParser
+ 
+ import re
+-from ConfigParser import DEFAULTSECT, ParsingError, MissingSectionHeaderError
++from configparser import DEFAULTSECT, ParsingError, MissingSectionHeaderError
+ 
+-import config
++from .config import *
+ 
+ class LineType(object):
+     line = None
+@@ -315,7 +315,7 @@ def _make_xform_property(myattrname, srcattrname=None):
+     return property(getfn, setfn)
+ 
+ 
+-class INISection(config.ConfigNamespace):
++class INISection(ConfigNamespace):
+     _lines = None
+     _options = None
+     _defaults = None
+@@ -443,7 +443,7 @@ def lower(x):
+     return x.lower()
+ 
+ 
+-class INIConfig(config.ConfigNamespace):
++class INIConfig(ConfigNamespace):
+     _data = None
+     _sections = None
+     _defaults = None
+@@ -465,7 +465,7 @@ class INIConfig(config.ConfigNamespace):
+         self._sections = {}
+         if defaults is None: defaults = {}
+         self._defaults = INISection(LineContainer(), optionxformsource=self)
+-        for name, value in defaults.iteritems():
++        for name, value in defaults.items():
+             self._defaults[name] = value
+         if fp is not None:
+             self._readfp(fp)
+@@ -514,7 +514,7 @@ class INIConfig(config.ConfigNamespace):
+ 
+     def __str__(self):
+         if self._bom:
+-            fmt = u'\ufeff%s'
++            fmt = '\ufeff%s'
+         else:
+             fmt = '%s'
+         return fmt % self._data.__str__()
+@@ -551,8 +551,8 @@ class INIConfig(config.ConfigNamespace):
+ 
+         for line in readline_iterator(fp):
+             # Check for BOM on first line
+-            if linecount == 0 and isinstance(line, unicode):
+-                if line[0] == u'\ufeff':
++            if linecount == 0:
++                if line[0] == '\ufeff':
+                     line = line[1:]
+                     self._bom = True
+ 
+diff --git a/iniparse/__init__.py b/iniparse/__init__.py
+index 8de756f..da57086 100644
+--- a/iniparse/__init__.py
++++ b/iniparse/__init__.py
+@@ -3,12 +3,12 @@
+ # Copyright (c) 2007 Tim Lauridsen <tla@rasmil.dk>
+ # All Rights Reserved.  See LICENSE-PSF & LICENSE for details.
+ 
+-from ini import INIConfig, change_comment_syntax
+-from config import BasicConfig, ConfigNamespace
+-from compat import RawConfigParser, ConfigParser, SafeConfigParser
+-from utils import tidy
++from .ini import INIConfig, change_comment_syntax
++from .config import BasicConfig, ConfigNamespace
++from .compat import RawConfigParser, ConfigParser, SafeConfigParser
++from .utils import tidy
+ 
+-from ConfigParser import DuplicateSectionError,    \
++from configparser import DuplicateSectionError,    \
+                   NoSectionError, NoOptionError,   \
+                   InterpolationMissingOptionError, \
+                   InterpolationDepthError,         \
+diff --git a/iniparse/utils.py b/iniparse/utils.py
+index 829fc28..9b92bfc 100644
+--- a/iniparse/utils.py
++++ b/iniparse/utils.py
+@@ -1,5 +1,5 @@
+-import compat
+-from ini import LineContainer, EmptyLine
++from .compat import *
++from .ini import LineContainer, EmptyLine
+ 
+ def tidy(cfg):
+     """Clean up blank lines.
+@@ -10,7 +10,7 @@ def tidy(cfg):
+     to be at the end of the file.
+     """
+ 
+-    if isinstance(cfg, compat.RawConfigParser):
++    if isinstance(cfg, RawConfigParser):
+         cfg = cfg.data
+     cont = cfg._data.contents
+     i = 1
