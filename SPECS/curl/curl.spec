@@ -1,19 +1,20 @@
-Summary:	An URL retrieval utility and library
-Name:		curl
-Version:	7.54.0
-Release:	1%{?dist}
-License:	MIT
-URL:		http://curl.haxx.se
-Group:		System Environment/NetworkingLibraries
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
+Summary:        An URL retrieval utility and library
+Name:           curl
+Version:        7.54.0
+Release:        2%{?dist}
+License:        MIT
+URL:            http://curl.haxx.se
+Group:          System Environment/NetworkingLibraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
 %define sha1 curl=a77da3cd2a9876bde3982976245ef2da9ad27847
-Requires:	ca-certificates
-BuildRequires:	ca-certificates
-Requires:	openssl
-BuildRequires:	openssl-devel
-Requires:   libssh2
+Patch0:         CVE-2017-9502.patch
+Requires:       ca-certificates
+BuildRequires:  ca-certificates
+Requires:       openssl
+BuildRequires:  openssl-devel
+Requires:       libssh2
 BuildRequires:  libssh2-devel
 %description
 The cURL package contains an utility and a library used for 
@@ -24,6 +25,7 @@ upload files can be incorporated into other programs to support
 functions like streaming media.
 %prep
 %setup -q
+%patch0 -p1
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 %build
 ./configure \
@@ -62,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 %changelog
+*   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 7.54.0-2
+-   Applied patch for CVE-2017-9502
 *   Wed May 24 2017 Divya Thaluru <dthaluru@vmware.com> 7.54.0-1
 -   Update to 7.54.0
 *   Wed Nov 30 2016 Xiaolin Li <xiaolinl@vmware.com> 7.51.0-2
