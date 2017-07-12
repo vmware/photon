@@ -1,6 +1,6 @@
 Name:           python-pip
 Version:        8.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
@@ -16,6 +16,7 @@ BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-setuptools
+Requires:       python-xml
 
 %description
 The PyPA recommended tool for installing Python packages.
@@ -40,6 +41,8 @@ easy_install freezegun
 %{_bindir}/*
 
 %changelog
+*   Wed Jul 12 2017 Xiaolin Li <xiaolinl@vmware.com> 8.1.2-3
+-   Added python-xml to requires.
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 8.1.2-2
 -   Added python-setuptools to requires.
 *   Fri Sep 2 2016 Xiaolin Li <xiaolinl@vmware.com> 8.1.2-1
