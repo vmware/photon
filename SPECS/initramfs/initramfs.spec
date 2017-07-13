@@ -1,7 +1,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
-Release:	7%{?kernelsubrelease}%{?dist}
+Release:	8%{?kernelsubrelease}%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 Source:		photon-release-1.0.2.tar.gz
@@ -20,7 +20,7 @@ Photon release files such as yum configs and other /etc/ release related files
 
 %prep
 %setup -q -n photon-release-1.0.2
-echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_ballon hv_utils hv_vmbus cn"' >> /etc/dracut.conf
+echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_ballon hv_utils hv_vmbus hv_storvsc hv_netvsc cn"' >> /etc/dracut.conf
 
 echo 'add_dracutmodules+=" ostree systemd "' > /etc/dracut.conf.d/ostree.conf
 
@@ -42,6 +42,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %changelog
+*   Wed Jul 12 2017 Anish Swaminathan <anishs@vmware.com>  1.0-8
+-   Add missing hyperv driver
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-7
 -   Expand uname -r to have release number
 *   Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  1.0-6
