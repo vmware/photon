@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.34
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -181,7 +181,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_balloon cn"
+--add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_balloon hv_storvsc hv_netvsc cn"
 EOF
 
 #    Cleanup dangling symlinks
@@ -268,6 +268,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Jul 12 2017 Anish Swaminathan <anishs@vmware.com> 4.9.34-4
+-   Add missing hyperv driver
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-3
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 4.9.34-2
