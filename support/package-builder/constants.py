@@ -305,7 +305,10 @@ class constants(object):
         "Linux-PAM",
         "unzip",
         "systemd-devel",
-        "gnupg" ]
+        "gnupg",
+        "tcl",
+        "expect",
+        "dejagnu" ]
 
     @staticmethod
     def initialize(options):
