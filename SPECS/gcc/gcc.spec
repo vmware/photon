@@ -16,6 +16,11 @@ Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
 Requires:       libgcc-atomic = %{version}-%{release}
 Requires:       gmp
+%if %{with_check}
+BuildRequires:  autogen
+BuildRequires:  dejagnu
+%endif
+
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
