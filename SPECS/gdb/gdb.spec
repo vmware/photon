@@ -1,17 +1,11 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.12.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 %define sha1    gdb=ef77c5345d6f9fdcdf7a5d8503301242b701936e
-Source1:        http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz
-%define sha1    tcl=9bc452eec453c2ed37625874b9011563db687b07
-Source2:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
-%define sha1    expect=e634992cab35b7c6931e1f21fbb8f74d464bd496
-Source3:         https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz
-%define sha1    dejagnu=d81288e7d7bd38e74b7fee8e570ebfa8c21508d9
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,15 +15,16 @@ BuildRequires:  expat-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+%if %{with_check}
+BuildRequires:  dejagnu
+%endif
+
 %description
 GDB, the GNU Project debugger, allows you to see what is going on 
 `inside' another program while it executes -- or what 
 another program was doing at the moment it crashed. 
 %prep
 %setup -q
-tar xf %{SOURCE1} --no-same-owner
-tar xf %{SOURCE2} --no-same-owner
-tar xf %{SOURCE3} --no-same-owner
 
 %build
 ./configure \
@@ -55,25 +50,6 @@ rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
 %find_lang %{name} --all-name
 
 %check
-pushd tcl8.5.14/unix
-./configure --enable-threads --prefix=/usr
-make
-make install
-popd
-
-pushd expect5.45
-./configure --prefix=/usr
-make
-make install
-ln -svf expect5.45/libexpect5.45.so /usr/lib
-popd
-
-pushd dejagnu-1.5.3
-./configure --prefix=/usr
-make
-make install 
-popd
-
 make %{?_smp_mflags} check
 
 %files -f %{name}.lang
@@ -90,6 +66,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Wed Jul 12 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-3
+-   Get tcl, expect and dejagnu from packages
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 7.12.1-2
 -   Build gdb with python3.
 *   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-1
