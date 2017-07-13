@@ -3,12 +3,12 @@
 
 Summary:        The Python Cryptography Toolkit.
 Name:           pycrypto
-Version:        2.7a1
-Release:        3%{?dist}
-License:        UNKNOWN
-URL: https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-2.7a1.tar.gz
-Source: %{name}-%{version}.tar.gz
-%define         sha1 pycrypto=6326136d88e9a8f6dd8a41b91d56db8490ba2873
+Version:        2.6.1
+Release:        2%{?dist}
+License:        Public Domain and Python
+URL:            http://www.pycrypto.org/
+Source0:        https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/%{name}-%{version}.tar.gz
+%define         sha1 pycrypto=aeda3ed41caf1766409d4efc689b9ca30ad6aeb2
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -48,6 +48,8 @@ python3 setup.py install -O1 --root=%{buildroot} --prefix=/usr
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jul 13 2017 Divya Thaluru <dthaluru@vmware.com> 2.6.1-2
+-   Downgraded to stable version 2.6.1
 *   Mon Feb 27 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7a1-3
 -   Added python3 site-packages.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7a1-2
