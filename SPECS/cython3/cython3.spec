@@ -1,8 +1,8 @@
-%define python3_sitearch /usr/lib/python3.6/site-packages
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        C extensions for Python
 Name:           cython3
 Version:        0.25.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
@@ -22,12 +22,11 @@ Cython is an optimising static compiler for both the Python programming language
 %prep
 %setup -q -n Cython-%{version}
 
-
 %build
-/usr/bin/python3 setup.py build
+python3 setup.py build
 
 %install
-/usr/bin/python3 setup.py install --skip-build --root %{buildroot}
+python3 setup.py install --skip-build --root %{buildroot}
 mv %{buildroot}%{_bindir}/cython %{buildroot}%{_bindir}/cython3
 mv %{buildroot}%{_bindir}/cythonize %{buildroot}%{_bindir}/cythonize3
 mv %{buildroot}%{_bindir}/cygdb %{buildroot}%{_bindir}/cygdb3
@@ -42,13 +41,15 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
-%{python3_sitearch}/*.egg-info
-%{python3_sitearch}/Cython/*
-%{python3_sitearch}/cython.py*
-%{python3_sitearch}/pyximport/*
-%{python3_sitearch}/__pycache__/*
+%{python3_sitelib}/*.egg-info
+%{python3_sitelib}/Cython/*
+%{python3_sitelib}/cython.py*
+%{python3_sitelib}/pyximport/*
+%{python3_sitelib}/__pycache__/*
 
 %changelog
+*   Thu Jul 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.25.2-4
+-   Keeping uniformity across all spec files
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.25.2-3
 -   Add python3-xml to python3 sub package Buildrequires.
 *   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.25.2-2
