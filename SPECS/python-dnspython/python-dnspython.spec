@@ -4,7 +4,7 @@
 Summary:        A DNS toolkit for Python
 Name:           python-dnspython
 Version:        1.15.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/dnspython
 License:        BSD
 Group:          Development/Languages/Python
@@ -12,6 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/d/dnspython/dnspython-%{version}.zip
 %define sha1    dnspython=2a3ffd70c0dbcac5ab60b582b5c53d202a938570
+Patch0:         dnspython-test_zone-testToFileFilename.patch
 BuildArch:      noarch
 
 BuildRequires:  python2
@@ -44,6 +45,7 @@ Python 3 version.
 
 %prep
 %setup -q -n dnspython-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -74,6 +76,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 12 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.0-3
+-   Fix make check issues.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.0-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.0-1
