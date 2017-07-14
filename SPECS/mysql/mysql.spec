@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        5.7.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -44,7 +44,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 %check
-make check
+make test
 
 %files
 %defattr(-,root,root)
@@ -66,5 +66,7 @@ make check
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Fri Jul 14 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-2
+-   Run make test in the %check section
 *   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-1
 -   Initial packaging for Photon
