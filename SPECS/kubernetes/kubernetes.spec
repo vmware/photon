@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.6.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -68,8 +68,8 @@ EOF
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
-cd %{name}-%{version}
-make %{?_smp_mflags} check
+cd %{_builddir}/%{name}-%{version}
+make check WHAT=./pkg/kubectl
 
 %clean
 rm -rf %{buildroot}/*
@@ -113,6 +113,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Fri Jul 14 2017 Sarah Choi <sarahc@vmware.com> 1.6.0-4
+-   make check - fix working folder and restrict testcase
 *   Tue May 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-3
 -   Fix kubernetes dependencies.
 *   Thu May 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-2
