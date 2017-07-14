@@ -13,6 +13,7 @@ class SpecParser(object):
         self.packages={}
         self.specAdditionalContent=""
         self.globalSecurityHardening=""
+        self.conditionalCheckMacroEnabled = False
 
 
     def readPkgNameFromPackageMacro(self,data,basePkgName=None):
@@ -71,6 +72,10 @@ class SpecParser(object):
                 self.readSecurityHardening(line)
             elif self.isChecksum(line):
                 self.readChecksum(line, self.packages[currentPkg])
+            elif self.isConditionalCheckMacro(line):
+                self.conditionalCheckMacroEnabled = True
+            elif self.conditionalCheckMacroEnabled and self.isConditionalMacroCompleted(line):
+                self.conditionalCheckMacroEnabled = False
             else:
                 self.specAdditionalContent+=line+"\n"
             i=i+1
@@ -307,7 +312,10 @@ class SpecParser(object):
             if headerName == 'conflicts':
                 pkg.conflicts.extend(dpkg)
             if headerName == 'buildrequires':
-                pkg.buildrequires.extend(dpkg)
+                if self.conditionalCheckMacroEnabled:
+                    pkg.checkbuildrequires.extend(dpkg)
+                else:
+                    pkg.buildrequires.extend(dpkg)
             if headerName == 'buildprovides':
                 pkg.buildprovides.extend(dpkg)
 
@@ -353,3 +361,23 @@ class SpecParser(object):
             return False
         pkg.checksums[sourceName] = value[1]
         return True;
+
+    def isConditionalCheckMacro(self,line):
+        data = line.strip()
+        words = data.split()
+        nrWords = len(words)
+        if(nrWords != 2):
+            return False
+        if(words[0] != "%if" or words[1] != "%{with_check}"):
+            return False
+        return True
+
+    def isConditionalMacroCompleted(self,line):
+        data = line.strip()
+        words = data.split()
+        nrWords = len(words)
+        if(nrWords != 1):
+            return False
+        if(words[0] != "%endif"):
+            return False
+        return True
