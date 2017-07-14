@@ -1,0 +1,7 @@
+[photon-updates]
+name=VMware Photon Linux $relasever($basearch) Updates
+baseurl=https://dl.bintray.com/vmware/photon_updates_$releasever_$basearch
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=1
+enabled=1
+skip_if_unavailable=True
