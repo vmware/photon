@@ -9,6 +9,7 @@ LOG_LEVEL_DESC = ["emerg", "alert", "crit", "err", "warning", "notice", "info", 
 LOG_FILE_NAME  = "/var/log/installer.log"
 TDNF_LOG_FILE_NAME  = "/var/log/tdnf.log"
 TDNF_CMDLINE_FILE_NAME = "/var/log/tdnf.cmdline"
+KS_POST_INSTALL_LOG_FILE_NAME = "/var/log/installer-kickstart.log"
 SIGNATURE   = "localhost echo"
 LOG_EMERG   = 0
 LOG_ALERT   = 1

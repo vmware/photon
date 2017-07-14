@@ -17,7 +17,7 @@ def execute(name, config, root):
         outfile.write("\n".join(script))
 
     os.chmod(script_file, 0700);
-    with open("/var/log/installer-kickstart.log","w") as logfile:
+    with open(commons.KS_POST_INSTALL_LOG_FILE_NAME,"w") as logfile:
         process = subprocess.Popen(["./mk-run-chroot.sh", '-w', root, "/etc/tmpfiles.d/postinstall.sh"],
             stdout=logfile,stderr=logfile)
         retval = process.wait()
