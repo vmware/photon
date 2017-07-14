@@ -325,14 +325,14 @@ class constants(object):
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
         constants.pullsourcesConfig = options.pullsourcesConfig
         constants.inputRPMSPath=options.inputRPMSPath
-        constants.updateRPMMacros()
         constants.testForceRPMS=[]
         constants.rpmCheck = options.rpmCheck
         constants.rpmCheckStopOnError = options.rpmCheckStopOnError
-	constants.publishBuildDependencies=options.publishBuildDependencies
-	constants.packageWeightsPath=options.packageWeightsPath
+        constants.publishBuildDependencies=options.publishBuildDependencies
+        constants.packageWeightsPath=options.packageWeightsPath
         if constants.rpmCheck:
             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
+        constants.updateRPMMacros()
 
     @staticmethod
     def updateRPMMacros():
@@ -366,6 +366,12 @@ class constants(object):
         if kernelsubrelease:
             kernelsubrelease = "."+kernelsubrelease
             constants.specData.addMacro("kernelsubrelease",kernelsubrelease)
+
+        #adding check rpm macro
+        if constants.rpmCheck:
+            constants.specData.addMacro("with_check","1")
+        else:
+            constants.specData.addMacro("with_check","0")
 
     @staticmethod
     def setTestForceRPMS(listsPackages):
