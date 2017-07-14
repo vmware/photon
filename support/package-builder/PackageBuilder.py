@@ -139,6 +139,10 @@ class PackageBuilder(object):
         listRequiredPackages=constants.specData.getBuildRequiresForPackage(package)
         return listRequiredPackages
 
+    def findBuildTimeCheckRequiredPackages(self,package):
+        listRequiredPackages=constants.specData.getCheckBuildRequiresForPackage(package)
+        return listRequiredPackages
+
     def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
         if package in listInstalledPackages:
             return

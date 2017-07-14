@@ -354,3 +354,5 @@ class constants(object):
         if kernelsubrelease:
             kernelsubrelease = "."+kernelsubrelease
             constants.specData.addMacro("kernelsubrelease",kernelsubrelease) 
+        #adding check rpm macro
+        constants.specData.addMacro("with_check","0")
