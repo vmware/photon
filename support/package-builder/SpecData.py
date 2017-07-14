@@ -11,6 +11,7 @@ class SerializableSpecObject(object):
         self.version=""
         self.release=""
         self.buildRequirePackages=[]
+        self.checkBuildRequirePackages=[]
         self.installRequiresAllPackages=[]
         self.installRequiresPackages={}
         self.specFile=""
@@ -42,6 +43,7 @@ class SerializableSpecObjectsUtils(object):
             specObj.name=specName
             specObj.buildRequirePackages=spec.getBuildRequiresAllPackages()
             specObj.installRequiresAllPackages=spec.getRequiresAllPackages()
+            specObj.checkBuildRequirePackages=spec.getCheckBuildRequiresAllPackages()
             specObj.listPackages=spec.getPackageNames()
             specObj.specFile=specFile
             specObj.version=spec.getVersion()
@@ -89,6 +91,10 @@ class SerializableSpecObjectsUtils(object):
         if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
             return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
         return None
+
+    def getCheckBuildRequiresForPackage(self, package):
+        specName=self.getSpecName(package)
+        return self.mapSerializableSpecObjects[specName].checkBuildRequirePackages
 
     def addMacro(self, macroName, macroValue):
         if macroName == "":

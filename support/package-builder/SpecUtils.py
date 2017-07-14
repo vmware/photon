@@ -167,6 +167,14 @@ class Specutils(object):
                 depedentPackages.remove(pkgName)
         return depedentPackages
 
+    def getCheckBuildRequiresAllPackages(self):
+        depedentPackages=[]
+        for key in self.spec.packages.keys():
+            pkg = self.spec.packages.get(key)
+            for dpkg in pkg.checkbuildrequires:
+                depedentPackages.append(dpkg.package)
+        depedentPackages=list(set(depedentPackages))
+        return depedentPackages
 
     def getRequires(self,pkgName):
         dependentPackages=[]
@@ -183,6 +191,15 @@ class Specutils(object):
             pkg = self.spec.packages.get(key)
             if pkg.name == pkgName:
                 for dpkg in pkg.buildrequires:
+                    dependentPackages.append(dpkg.package)
+        return dependentPackages
+
+    def getCheckBuildRequires(self,pkgName):
+        dependentPackages=[]
+        for key in self.spec.packages.keys():
+            pkg = self.spec.packages.get(key)
+            if pkg.name == pkgName:
+                for dpkg in pkg.checkbuildrequires:
                     dependentPackages.append(dpkg.package)
         return dependentPackages
 
