@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.34
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,6 +12,7 @@ Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.
 %define sha1 linux=d02dc269e67eae329043c9aa7d6c2d6182950c2f
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
+%define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
 Source3:        initramfs.trigger
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
@@ -31,7 +32,7 @@ Patch12:        x86-vmware-sta.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch14:        0002-Added-rap_plugin.patch
 Patch15:        0003-Added-PAX_RANDKSTACK.patch
-# NSX requirements
+# NSX requirements (should be removed)
 Patch16:        LKCM.patch
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -228,6 +229,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jul 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-3
+-   Remove aufs source tarballs from git repo 
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
