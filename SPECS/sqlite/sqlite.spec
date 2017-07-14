@@ -1,15 +1,17 @@
-%define sourcever 3180000
+%define sourcever 3190300
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		sqlite
-Version:	3.18.0
-Release:	2%{?dist}
+Version:	3.19.3
+Release:	1%{?dist}
 License:	Public Domain
 URL:		http://www.sqlite.org
 Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:	http://sqlite.org/2016/%{name}-autoconf-3180000.tar.gz
-%define sha1 sqlite=74559194e1dd9b9d577cac001c0e9d370856671b
+Source0:	http://sqlite.org/2016/%{name}-autoconf-3190300.tar.gz
+%define sha1 sqlite=58f2cabffb3ff4761a3ac7f834d9db7b46307c1f
+#https://sqlite.org/src/vpatch?from=0db20efe201736b3&to=66de6f4a9504ec26
+Patch0:         CVE-2017-10989.patch
 Obsoletes:	sqlite-autoconf
 Requires:	sqlite-libs = %{version}-%{release}
 Provides:	sqlite3
@@ -37,6 +39,8 @@ The sqlite3 library.
 
 %prep
 %setup -q -n %{name}-autoconf-%{sourcever}
+%patch0 -p1
+
 %build
 ./configure \
 	CFLAGS="%{optflags}" \
@@ -86,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Fri Jul 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.19.3-1
+-   Upgrading to version 3.19.0 and adding patch for CVE-2017-10989
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.18.0-2
 -   Added obseletes for deprecated sqlite-autoconf package
 *   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 3.18.0-1
