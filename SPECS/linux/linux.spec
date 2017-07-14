@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.34
-Release:        3%{?dist}
+Version:        4.9.38
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d02dc269e67eae329043c9aa7d6c2d6182950c2f
+%define sha1 linux=d451b026976ee33e469aaa0eb734452b3d17b5d5
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -52,6 +52,7 @@ The Linux package contains the Linux kernel.
 Summary:        Kernel Dev
 Group:          System Environment/Kernel
 Obsoletes:      linux-dev
+Requires:       %{name} = %{version}-%{release}
 Requires:       python2 gawk
 %description devel
 The Linux package contains the Linux kernel dev files
@@ -268,6 +269,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
+-   Fix CVE-2017-11176 and CVE-2017-10911
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-3
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 4.9.34-2
