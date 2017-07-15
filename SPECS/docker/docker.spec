@@ -2,39 +2,45 @@
 %define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
-Version:        1.13.1
-Release:        4%{?dist}
+Version:        17.06.0
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 #Git commits must be in sync with docker/hack/dockerfile/binaries-commits
-Source0:        https://github.com/docker/moby/archive/moby-%{version}.tar.gz
-%define sha1 moby=eb67f8c60bd132d8917335ebf92d90020ba52d27
-%define DOCKER_COMMIT 092cba3
-Source1:        https://github.com/docker/containerd/tree/containerd-aa8187d.tar.gz
-%define CONTAINERD_COMMIT aa8187dbd3b7ad67d8e5e3a15115d3eef43a7ed1
-%define sha1 containerd=b8aac40b423e80028ec6b7ff5cca1ccaab617d86
-Source2:        https://github.com/docker/runc/tree/runc-9df8b30.tar.gz
-%define sha1 runc=35d0c90f634d2327356e7268ff73ecbffdd65d82
-%define RUNC_COMMIT 9df8b306d01f59d3a8029be411de015b7304dd8f
-Source3:        https://github.com/docker/libnetwork/tree/libnetwork-0f53435.tar.gz
-%define sha1 libnetwork=a63774a38bec3aba4b1ff7a0b3e748960da2048b
-%define LIBNETWORK_COMMIT 0f534354b813003a754606689722fe253101bc4e
-Source4:        docker.service
-Source5:        docker-containerd.service
-Source6:        docker-completion.bash
+Source0:        https://github.com/docker/moby/archive/docker-ce-02c1d87.tar.gz
+%define sha1 docker-ce=40deab51330b39d16abc23831063a6123ff0a570
+Source1:        https://github.com/docker/containerd/tree/containerd-cfb82a8.tar.gz
+%define sha1 containerd=2adb56ddd2d89af5c6ab649de93c34d421b62649
+Source2:        https://github.com/docker/runc/tree/runc-2d41c04.tar.gz
+%define sha1 runc=41cd104b168cef29032c268e0d6de1bad5dadc25
+Source3:        https://github.com/docker/libnetwork/tree/libnetwork-7b2b1fe.tar.gz
+%define sha1 libnetwork=0afeb8c802998344753fb933f827427da23975f8
+#Source4:        https://github.com/docker/cli/tree/cli-3dfb834.tar.gz
+#%define sha1 cli=9dd33ca7d8e554fe875138000c6767167228e125
+Source4:        https://github.com/krallin/tini/tree/tini-949e6fa.tar.gz
+%define sha1 tini=e1a0e72ff74e1486e0701dd52983014777a7d949
+Source5:        https://github.com/cpuguy83/go-md2man/tree/go-md2man-a65d4d2.tar.gz
+%define sha1 go-md2man=e3d0865c583150f7c76e385a8b4a3f2432ca8ad8
+Patch0:         remove-firewalld.patch
 
 BuildRequires:  systemd
 BuildRequires:  device-mapper-devel
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
+BuildRequires:  libltdl-devel
+BuildRequires:  libgcc-devel
+BuildRequires:  glibc-devel
 BuildRequires:  unzip
 BuildRequires:  go
-BuildRequires:  findutils
 BuildRequires:  sed
+BuildRequires:  cmake
+BuildRequires:  findutils
+BuildRequires:  git
+Requires:       libltdl
 Requires:       libgcc
 Requires:       glibc
 Requires:       libseccomp
@@ -43,106 +49,139 @@ Requires:       device-mapper-libs
 
 %description
 Docker is a platform for developers and sysadmins to develop, ship and run applications.
+
+%package        doc
+Summary:        Documentation and vimfiles for docker
+Requires:       %{name} = %{version}
+
+%description    doc
+Documentation and vimfiles for docker
+
 %prep
 %setup -q -c
 %setup -T -D -a 1
 %setup -T -D -a 2
 %setup -T -D -a 3
+%setup -T -D -a 4
+%setup -T -D -a 5
 
-#Fix containerd git commit/branch
-find containerd-%{CONTAINERD_COMMIT} -name Makefile \
-  -exec sed -i 's/^GIT_COMMIT :=.*$/GIT_COMMIT := %{CONTAINERD_COMMIT}/g' {} \; \
-  -exec sed -i 's/^GIT_BRANCH :=.*$/GIT_BRANCH := %{name}-%{version}/g' {} \;
+ln -s docker-ce/components/cli cli
+ln -s docker-ce/components/engine engine
+ln -s docker-ce/components/packaging packaging
 
-#Fix runc git commit/branch
-find runc-%{RUNC_COMMIT} -name Makefile \
-  -exec sed -i 's/^GIT_COMMIT :=.*$/GIT_COMMIT := %{RUNC_COMMIT}/g' {} \; \
-  -exec sed -i 's/^COMMIT :=.*$/COMMIT := %{RUNC_COMMIT}/g' {} \; \
-  -exec sed -i 's/^COMMIT_NO :=.*$/COMMIT_NO := %{RUNC_COMMIT}/g' {} \; \
-  -exec sed -i 's/^GIT_BRANCH :=.*$/GIT_BRANCH := %{name}-%{version}/g' {} \;
+%patch0 -p2
 
-#Fix docker git commit/branch
-find moby-%{version} -name Makefile \
-  -exec sed -i 's/^GIT_COMMIT :=.*$/GIT_COMMIT := %{DOCKER_COMMIT}/g' {} \; \
-  -exec sed -i 's/^GIT_BRANCH :=.*$/GIT_BRANCH := %{name}-%{version}/g' {} \;
+mkdir -p /go/src/github.com
+cd /go/src/github.com
+mkdir opencontainers
+mkdir containerd
+mkdir cpuguy83
+mkdir docker
 
-#Fail if there is still "shell git" invocation
-find -name Makefile -exec grep "shell git" {} \; | read && exit 1
+ln -snrf "$OLDPWD/containerd" containerd/
+ln -snrf "$OLDPWD/engine" docker/docker
+ln -snrf "$OLDPWD/runc" opencontainers/
+ln -snrf "$OLDPWD/go-md2man" cpuguy83/
+ln -snrf "$OLDPWD/libnetwork" docker/
+ln -snrf "$OLDPWD/cli" docker/
+
+ln -snrf "$OLDPWD/tini" /go/
+
+sed -i '/^\s*git clone.*$/d' docker/docker/hack/dockerfile/install-binaries.sh
+
+#catch git clone
+git config --global http.proxy http://localhost:0
 
 %build
 
-export GOPATH="${PWD}/gopath"
-mkdir -p gopath/src/github.com
-cd gopath/src/github.com
-mkdir -p docker
-mkdir -p opencontainers
+export GOPATH="/go"
+export PATH="$PATH:$GOPATH/bin"
 
-ln -snrf ../../../runc-%{RUNC_COMMIT} opencontainers/runc
-ln -snrf ../../../containerd-%{CONTAINERD_COMMIT} docker/containerd
-ln -snrf ../../../libnetwork-%{LIBNETWORK_COMMIT} docker/libnetwork
-ln -snrf ../../../moby-%{version} docker/docker
+export DOCKER_BUILDTAGS="pkcs11 seccomp exclude_graphdriver_aufs"
+export RUNC_BUILDTAGS="seccomp"
+
+cd /go/src/github.com
+
+pushd docker/cli
+make VERSION="$(cat VERSION)" dynbinary manpages
+popd
 
 pushd docker/docker
-DOCKER_GITCOMMIT=%{DOCKER_COMMIT} DOCKER_BUILDTAGS='exclude_graphdriver_aufs seccomp' ./hack/make.sh dynbinary
-popd
-
-pushd docker/containerd
-make
-popd
-
-pushd opencontainers/runc
-make BUILDTAGS='seccomp'
-popd
-
-pushd docker/libnetwork
-go build -ldflags="-linkmode=external" -o docker-proxy github.com/docker/libnetwork/cmd/proxy
+TMP_GOPATH="$GOPATH" ./hack/dockerfile/install-binaries.sh runc-dynamic containerd-dynamic proxy-dynamic tini
+DOCKER_GITCOMMIT="$(git rev-parse --short HEAD)" ./hack/make.sh dynbinary
 popd
 
 %install
 
-install -vdm755 %{buildroot}%{_bindir}
-install -vdm755 %{buildroot}%{_unitdir}
-install -vdm755 %{buildroot}%{_datadir}/bash-completion/completions
+install -d -m755 %{buildroot}%{_mandir}/man1
+install -d -m755 %{buildroot}%{_mandir}/man5
+install -d -m755 %{buildroot}%{_mandir}/man8
+install -d -m755 %{buildroot}%{_bindir}
+install -d -m755 %{buildroot}%{_unitdir}
+install -d -m755 %{buildroot}lib/udev/rules.d
+install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
-pushd gopath/src/github.com/docker
-install -m755 docker/bundles/latest/dynbinary-client/%{name}-%{version} %{buildroot}%{_bindir}/%{name}
-install -m755 docker/bundles/latest/dynbinary-daemon/%{name}d-%{version} %{buildroot}%{_bindir}/%{name}d
-install -m755 containerd/bin/containerd %{buildroot}%{_bindir}/%{name}-containerd
-install -m755 containerd/bin/containerd-shim %{buildroot}%{_bindir}/%{name}-containerd-shim
-install -m755 containerd/bin/ctr %{buildroot}%{_bindir}/%{name}-containerd-ctr
-install -m755 libnetwork/docker-proxy %{buildroot}%{_bindir}/%{name}-proxy
-popd
+# install binary
+install -p -m 755 cli/build/docker %{buildroot}%{_bindir}/docker
+install -p -m 755 "$(readlink -f engine/bundles/latest/dynbinary-daemon/dockerd)" %{buildroot}%{_bindir}/dockerd
 
-pushd gopath/src/github.com/opencontainers
-install -m755 runc/runc %{buildroot}%{_bindir}/%{name}-runc
-popd
+# install proxy
+install -p -m 755 /usr/local/bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
 
-install -m644 %{SOURCE4} %{buildroot}%{_unitdir}/docker.service
-install -m644 %{SOURCE5} %{buildroot}%{_unitdir}/docker-containerd.service
-install -m644 %{SOURCE6} %{buildroot}%{_datadir}/bash-completion/completions/docker
+# install containerd
+install -p -m 755 /usr/local/bin/docker-containerd %{buildroot}%{_bindir}/docker-containerd
+install -p -m 755 /usr/local/bin/docker-containerd-shim %{buildroot}%{_bindir}/docker-containerd-shim
+install -p -m 755 /usr/local/bin/docker-containerd-ctr %{buildroot}%{_bindir}/docker-containerd-ctr
 
-#%{_fixperms} %{buildroot}/*
+# install runc
+install -p -m 755 /usr/local/bin/docker-runc %{buildroot}%{_bindir}/docker-runc
+
+# install tini
+install -p -m 755 /usr/local/bin/docker-init %{buildroot}%{_bindir}/docker-init
+
+# install udev rules
+install -p -m 644 engine/contrib/udev/80-docker.rules %{buildroot}lib/udev/rules.d/80-docker.rules
+
+# add init scripts
+install -p -m 644 packaging/rpm/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
+
+# add bash, zsh, and fish completions
+install -p -m 644 engine/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
+
+# install manpages
+install -p -m 644 cli/man/man1/*.1 %{buildroot}%{_mandir}/man1
+install -p -m 644 cli/man/man5/*.5 %{buildroot}%{_mandir}/man5
+install -p -m 644 cli/man/man8/*.8 %{buildroot}%{_mandir}/man8
+
+# add vimfiles
+install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/doc
+install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
+install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/syntax
+install -p -m 644 engine/contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc/dockerfile.txt
+install -p -m 644 engine/contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
+install -p -m 644 engine/contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+
+mkdir -p build-docs
+for engine_file in AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
+    cp "engine/$engine_file" "build-docs/engine-$engine_file"
+done
+for cli_file in LICENSE MAINTAINERS NOTICE README.md; do
+    cp "cli/$cli_file" "build-docs/cli-$cli_file"
+done
 
 %preun
 %systemd_preun docker.service
-%systemd_preun docker-containerd.service
 
 %post
-/sbin/ldconfig
-
 if [ $1 -eq 1 ] ; then
-    getent group  docker  >/dev/null || groupadd -r docker
+    getent group docker >/dev/null || groupadd -r docker
 fi
 
 %postun
-/sbin/ldconfig
-%systemd_postun_with_restart docker-containerd.service
 %systemd_postun_with_restart docker.service
 
 if [ $1 -eq 0 ] ; then
-    if getent group docker >/dev/null; then
-        groupdel docker
-    fi
+    getent group docker >/dev/null && groupdel docker
 fi
 
 %clean
@@ -150,18 +189,32 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_unitdir}/docker-containerd.service
 %{_unitdir}/docker.service
 %{_bindir}/docker
+%{_bindir}/dockerd
 %{_bindir}/docker-containerd
 %{_bindir}/docker-containerd-ctr
 %{_bindir}/docker-containerd-shim
 %{_bindir}/docker-proxy
 %{_bindir}/docker-runc
-%{_bindir}/dockerd
+%{_bindir}/docker-init
 %{_datadir}/bash-completion/completions/docker
 
+%files doc
+%defattr(-,root,root)
+%doc build-docs/engine-AUTHORS build-docs/engine-CHANGELOG.md build-docs/engine-CONTRIBUTING.md build-docs/engine-LICENSE build-docs/engine-MAINTAINERS build-docs/engine-NOTICE build-docs/engine-README.md
+%doc build-docs/cli-LICENSE build-docs/cli-MAINTAINERS build-docs/cli-NOTICE build-docs/cli-README.md
+%doc
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
+%{_datadir}/vim/vimfiles/doc/dockerfile.txt
+%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
+%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+
 %changelog
+*   Tue Jul 18 2017 Bo Gan <ganb@vmware.com> 17.06.0-1
+-   Update to 17.06.0-ce
 *   Mon Jul 10 2017 Bo Gan <ganb@vmware.com> 1.13.1-4
 -   Fix runc/containerd/libnetwork versions
 -   Do not strip binaries
