@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        7.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -50,7 +50,7 @@ for FILE in .gitmodules .gitignore .npmignore .travis.yml \*.py[co]; do
 done
 
 %check
-make  %{?_smp_mflags} test
+make cctest
 
 %post
     /sbin/ldconfig
@@ -70,5 +70,7 @@ make  %{?_smp_mflags} test
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Fri Jul 14 2017 Chang Lee <changlee@vmware.com> 7.7.4-2
+-   Updated %check
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 7.7.4-1
 -   Initial packaging for Photon
