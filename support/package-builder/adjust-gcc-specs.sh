@@ -22,7 +22,7 @@ cat <<EOF > `dirname $(gcc --print-libgcc-file-name)`/../specs
 
 # sec hardening flags require shared libgcc_s during linking.
 *libgcc:
-+ -lgcc_s
++ %{!static:--as-needed -lgcc_s --no-as-needed}
 
 # replace default startfile rules to use crt that PIE code requires.
 *startfile:
@@ -41,7 +41,7 @@ else
 cat <<EOF >> `dirname $(gcc --print-libgcc-file-name)`/../specs
 # add sec hardening flags for linker.
 *link:
-+ %{r|nostdlib|fno-pie|fno-PIE|fno-pic|fno-PIC|shared:;:-pie} %{!norelro:-z relro} %{!nonow:-z now}
++ %{r|nostdlib|fno-pie|fno-PIE|fno-pic|fno-PIC|shared|static:;:-pie} %{!norelro:-z relro} %{!nonow:-z now}
 
 EOF
 fi
