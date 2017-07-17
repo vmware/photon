@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.74
+Version:       4.4.77
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=80b338e4442f57563dceb71be4acc1f5a5c234a0
+%define sha1 linux=19dc4c74fbf09f5fe5f88c32a9524bd94af0ec44
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -180,6 +180,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jul 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.77-1
+-   [feature] IP tunneling support (CONFIG_NET_IPIP=m)
+-   Fix CVE-2017-11176
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.74-1
 -   [feature] DM Delay target support
 -   Fix CVE-2017-1000364 ("stack clash") and CVE-2017-9605
