@@ -4,7 +4,7 @@
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python-daemon
 Version:        2.1.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache-2
 Url:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
@@ -16,7 +16,9 @@ Source0:        https://files.pythonhosted.org/packages/source/p/python-daemon/p
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-docutils
+BuildRequires:  python-lockfile
 Requires:       python2
+Requires:       python-lockfile
 
 BuildArch:      noarch
 
@@ -31,7 +33,9 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-docutils
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-lockfile
 Requires:       python3
+Requires:       python3-lockfile
 
 %description -n python3-daemon
 Python 3 version.
@@ -61,10 +65,18 @@ python3 setup.py install --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 mock
+$easy_install_2 testscenarios
+$easy_install_2 testtools
+python2 -m unittest discover
 
 pushd ../p3dir
-python3 setup.py test
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 mock
+$easy_install_3 testscenarios
+$easy_install_3 testtools
+python3 -m unittest discover
 popd
 
 %files
@@ -75,6 +87,9 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.2-4
+-   Fixed check command to run unit tests
+-   Added packages required to run tests
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.2-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.1.2-2
