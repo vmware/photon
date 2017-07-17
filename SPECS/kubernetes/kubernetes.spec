@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.6.0
-Release:        3%{?dist}
+Version:        1.7.0
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=051b58b8be9e88fe407904a88dc01e2fb1edbab0
+%define sha1    kubernetes-v%{version}.tar.gz=407d7243bc64dc8936194d79b11c8d004bcae55c
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Group:          Development/Tools
@@ -68,7 +68,6 @@ EOF
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
-cd %{name}-%{version}
 make %{?_smp_mflags} check
 
 %clean
@@ -113,6 +112,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %changelog
+*   Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-1
+-   Upgrade kubernetes to v1.7.0.
 *   Tue May 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-3
 -   Fix kubernetes dependencies.
 *   Thu May 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-2
