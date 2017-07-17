@@ -4,7 +4,7 @@
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python-daemon
 Version:        2.1.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache-2
 Url:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
@@ -61,10 +61,10 @@ python3 setup.py install --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
+python2 -m unittest discover
 
 pushd ../p3dir
-python3 setup.py test
+python3 -m unittest discover
 popd
 
 %files
@@ -75,6 +75,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.2-4
+-   Fixed check command to run unit tests
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.2-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.1.2-2
