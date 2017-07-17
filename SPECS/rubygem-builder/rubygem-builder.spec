@@ -5,7 +5,7 @@
 Summary:        Builders for MarkUp
 Name:           rubygem-builder
 Version:        3.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
@@ -32,8 +32,9 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 
 %check
 ./rvm-installer
-pushd /usr/src/photon/BUILDROOT/rubygem-builder-%{version}-%{release}.x86_64/usr/lib/ruby/gems/2.3.0/gems/builder-%{version}/
 export PATH=$PATH:/usr/local/rvm/bin
+GEMPATH=`gem env|grep "INSTALLATION DIRECTORY"| grep -v USER | cut -d':' -f2 | tr -d ' '`
+pushd /usr/src/photon/BUILDROOT/rubygem-builder-%{version}-%{release}.x86_64${GEMPATH}/gems/builder-%{version}/
 rake test
 popd
 
@@ -42,6 +43,8 @@ popd
 %{gemdir}
 
 %changelog
+*   Wed Mar 22 2017 Chang Lee <changlee@vmware.com> 3.2.3-2
+-   Updated %check to dynamic gem version
 *   Wed Mar 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.3-1
 -   Updated to version 3.2.3.
 *   Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 3.2.2-4
