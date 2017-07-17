@@ -4,7 +4,7 @@
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python-automat
 Version:        0.5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -23,16 +23,16 @@ BuildRequires:  python-attrs
 BuildRequires:  python-six
 BuildRequires:  python-docutils
 BuildRequires:  python-mistune
+BuildRequires:  python-graphviz
+BuildRequires:  python-Twisted
 
 
 Requires:       python2
 Requires:       python2-libs
-Requires:       python-m2r
-Requires:       python-setuptools_scm
 Requires:       python-attrs
 Requires:       python-six
-Requires:       python-docutils
-Requires:       python-mistune
+Requires:       python-graphviz
+Requires:       python-Twisted
 
 BuildArch:      noarch
 
@@ -53,15 +53,15 @@ BuildRequires:  python3-docutils
 BuildRequires:  python3-mistune
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-graphviz
+BuildRequires:  python3-Twisted
 
 Requires:       python3
 Requires:       python3-libs
-Requires:       python3-m2r
-Requires:       python3-setuptools_scm
 Requires:       python3-attrs
 Requires:       python3-six
-Requires:       python3-docutils
-Requires:       python3-mistune
+Requires:       python3-graphviz
+Requires:       python3-Twisted
 
 %description -n python3-automat
 Python 3 version.
@@ -101,6 +101,8 @@ popd
 %{_bindir}/automat-visualize3
 
 %changelog
+*   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 0.5.0-4
+-   Fixed run time dependencies
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.5.0-2
