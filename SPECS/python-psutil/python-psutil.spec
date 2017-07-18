@@ -4,7 +4,7 @@
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python-psutil
 Version:        5.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
@@ -28,6 +28,7 @@ Summary:        python-psutil
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
 Requires:       python3
 Requires:       python3-libs
 
@@ -52,9 +53,14 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
+export TRAVIS=1
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 ipaddress mock unittest2
+make test-system test-misc test-posix test-memleaks
 pushd ../p3dir
-python3 setup.py test
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 ipaddress mock unittest2
+make test-system test-misc test-posix test-memleaks
 popd
 
 %files
@@ -66,5 +72,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jul 18 2017 Chang Lee <changlee@vmware.com> 5.2.2-2
+-   Updated %check with removing test-process and test-platform
 *   Wed Apr 26 2017 Xialin Li <xiaolinl@vmware.com> 5.2.2-1
 -   Initial packaging for Photon

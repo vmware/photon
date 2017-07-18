@@ -118,6 +118,7 @@ Summary:        Download, build, install, upgrade, and uninstall Python packages
 Group:          Development/Tools
 BuildArch:      noarch
 Requires:       python3 = %{version}-%{release}
+Requires:       python3-xml = %{version}-%{release}
 
 %description    setuptools
 setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
