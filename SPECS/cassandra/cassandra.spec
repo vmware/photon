@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -117,6 +117,8 @@ fi
 /lib/systemd/system/cassandra.service
 
 %changelog
+*   Tue Jul 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-4
+-   Change cassandra service type as simple
 *   Mon Jul 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10-3
 -   Remove cqlsh and cqlsh.py.
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.10-2
