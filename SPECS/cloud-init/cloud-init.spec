@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -164,6 +164,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Jul 19 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.9-9
+-   Enabled openstack provider
 *   Wed Jun 28 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-8
 -   Restart network service in bring_up_interfaces
 *   Thu Jun 22 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.9-7
