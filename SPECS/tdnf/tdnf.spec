@@ -3,8 +3,8 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        1.2.0
-Release:        5%{?dist}
+Version:        1.2.1
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -20,9 +20,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
 Source0:    %{name}-%{version}.tar.gz
-Patch0:     hy_sack_create.patch
-Patch1:     tdnf_quiet_repo_refresh.patch
-%define sha1 tdnf=56deeb1e89177a4aadfac1ebb85b7c09a452a79e
+%define sha1 tdnf=ebbed639c68316e5a152b0bd277c1b040ee6871f
 Source1:    cache-updateinfo
 Source2:    cache-updateinfo.service
 Source3:    cache-updateinfo.timer
@@ -50,11 +48,10 @@ Library providing cli libs for tdnf like clients.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 
 %build
+sed -i 's/tdnf, 1.2.0/tdnf, 1.2.1/' configure.ac
 autoreconf -i
 ./configure \
     --prefix=%{_prefix} \
@@ -151,6 +148,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Tue Jul 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-1
+-   Update to v1.2.1
 *   Tue May 30 2017 Bo Gan <ganb@vmware.com> 1.2.0-5
 -   Fix cache-updateinfo script again
 *   Fri May 12 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-4
