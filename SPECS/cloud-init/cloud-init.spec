@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -195,6 +195,8 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Wed Jul 19 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.9-2
+-   Enabled openstack provider
 *   Wed May 24 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-1
 -   Migrating to python 3.
 -   Disable networking config by cloud-init
