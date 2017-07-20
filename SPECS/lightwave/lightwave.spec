@@ -33,7 +33,6 @@ BuildRequires: coreutils >= 8.22
 BuildRequires: curl-devel
 BuildRequires: e2fsprogs-devel
 BuildRequires: jansson-devel
-BuildRequires: jaxws-ri = 2.2.10
 BuildRequires: krb5-devel >= 1.14
 BuildRequires: likewise-open-devel >= 6.2.10
 BuildRequires: openjdk8 >= %{JAVA8_VERSION}
@@ -50,7 +49,6 @@ VMware Lightwave Server
 %define _servicedir /lib/systemd/system
 %define _commons_daemon_home /usr/share/java
 %define _tomcat_home /var/opt/apache-tomcat
-%define _jaxws_home /opt/jaxws-ri-2.2.10
 %define _java_home /usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 %define _ant_home /var/opt/apache-ant
 %define _maven_home /var/opt/apache-maven
@@ -160,7 +158,6 @@ autoreconf -mif .. &&
     --with-java=%{_java_home} \
     --with-ant=%{_ant_home} \
     --with-commons-daemon=%{_commons_daemon_home} \
-    --with-jax-ws=%{_jaxws_home} \
     --with-maven=%{_maven_home} \
     --with-tomcat=%{_tomcat_home} \
     --with-boost=/usr \
