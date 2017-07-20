@@ -214,6 +214,10 @@ class Scheduler(object):
         if packageTup[0] == 0 and Scheduler.isPriorityScheduler == 1:
             listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
             Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
+	    if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
+            	Scheduler.logger.info("Released scheduler lock")
+            	Scheduler.lock.release()
+            	return None
             packageTup = Scheduler.listOfPackagesNextToBuild.get()
 
         package = packageTup[1]
