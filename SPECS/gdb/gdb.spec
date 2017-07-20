@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.8.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
@@ -9,9 +9,11 @@ Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         gdb-7.12-pstack.patch
 Requires:       python3
 Requires:       expat
 Requires:       ncurses >= 6.0-3
+Requires:       libstdc++
 BuildRequires:  expat
 BuildRequires:  ncurses-devel >= 6.0-3
 BuildRequires:  python3
@@ -23,6 +25,7 @@ GDB, the GNU Project debugger, allows you to see what is going on
 another program was doing at the moment it crashed. 
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
