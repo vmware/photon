@@ -1,7 +1,7 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.7.2
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
@@ -35,6 +35,8 @@ install -p -d %{buildroot}%{_sysconfdir}/
 install -p -d %{buildroot}%{_sysconfdir}/sysconfig
 install -p -m 644 etc/pgbouncer.ini %{buildroot}%{_sysconfdir}/
 mkdir -p %{buildroot}/etc/systemd/system/
+mkdir -p %{buildroot}/var/run/%{name}
+mkdir -p %{buildroot}/var/log/%{name}
 cat << EOF >> %{buildroot}/etc/systemd/system/%{name}.service
 [Unit]
 Description=Connection poller for PostgreSQL.
@@ -81,8 +83,6 @@ if [ $1 -eq 0 ] ; then
     if getent group %{name} >/dev/null; then
         /sbin/groupdel %{name}
     fi
-    rm -rf /var/log/%{name}
-    rm -rf /var/run/%{name}
 fi
 
 %files
@@ -90,11 +90,15 @@ fi
 %{_bindir}/*
 /etc/systemd/system/%{name}.service
 %config(noreplace) %{_sysconfdir}/%{name}.ini
+%dir /var/run/%{name}
+%dir /var/log/%{name}
 %{_mandir}/man1/%{name}.*
 %{_mandir}/man5/%{name}.*
 /usr/share/doc/pgbouncer/*
 
 %changelog
+*   Thu Jul 20 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-6
+-   add /var/run/pgbouncer and /var/log/pgbouncer in pgbouncer for Bug 1883774
 *   Wed May 31 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-5
 -   Add RuntimeDirectory and Type=forking
 *   Thu Apr 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
