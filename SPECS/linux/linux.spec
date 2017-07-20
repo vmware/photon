@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.38
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -180,7 +180,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_balloon cn"
+--add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_balloon cn"
 EOF
 
 #    Cleanup dangling symlinks
@@ -267,6 +267,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
+-   Add missing hyperv drivers
 *   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
 -   Disable scheduler beef up patch
 *   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
