@@ -1,22 +1,30 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.0.18
-Release:        4%{?dist}
+Version:        2.2.14
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
-Url:            http://go.microsoft.com/fwlink/?LinkId=250998
+Url:            https://github.com/Azure/WALinuxAgent
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
-%define sha1 WALinuxAgent=76238745a0ec598920f37a6445e383dab23c9f1b
+%define sha1 WALinuxAgent=f417009479ea7168ee0f2daa38328c167b4f874b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python-xml
 BuildRequires:  systemd
+
+
+BuildRequires:  vim grep sed 
+
+
+
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-xml
 Requires:       python-pyasn1
 Requires:       openssh
 Requires:       openssl
@@ -36,18 +44,16 @@ VMs in the Windows Azure cloud. This package should be installed on Linux disk
 images that are built to run in the Windows Azure environment.
 
 %prep
-%setup -q
-find . -type f -exec sed -i 's/\r//' {} +
-find . -type f -exec chmod 0644 {} +
-%patch -P 0 -p1
+%setup -q -n WALinuxAgent-2.2.14
+%patch0 -p1
 
 %pre -p /bin/sh
 
 %build
-python2 setup.py build
+python2 setup.py build -b py2
 
 %install
-python2 setup.py install --prefix=%{_prefix} --lnx-distro='photon' --init-system='systemd' --root=%{buildroot}
+python2 -tt setup.py build -b py2 install --prefix=%{_prefix} --lnx-distro='photonos' --root=%{buildroot} --force
 mkdir -p  %{buildroot}/%{_localstatedir}/log
 mkdir -p -m 0700 %{buildroot}/%{_sharedstatedir}/waagent
 touch %{buildroot}/%{_localstatedir}/log/waagent.log
@@ -67,17 +73,18 @@ python2 setup.py check && python2 setup.py test
 
 %files
 /usr/lib/systemd/system/*
-%attr(0755,root,root) %{_sysconfdir}/udev/rules.d/99-azure-product-uuid.rules
 %defattr(0644,root,root,0755)
-%doc Changelog LICENSE-2.0.txt NOTICE README
-%attr(0755,root,root) %{_sbindir}/waagent
-%config(noreplace) %{_sysconfdir}/logrotate.d/waagent
+%doc Changelog
+%attr(0755,root,root) %{_bindir}/waagent
+%attr(0755,root,root) %{_bindir}/waagent2.0
 %config %{_sysconfdir}/waagent.conf
 %ghost %{_localstatedir}/log/waagent.log
 %dir %attr(0700, root, root) %{_sharedstatedir}/waagent
-
+/usr/lib/python2.7/site-packages/*
 
 %changelog
+* Thu Jul 13 2017 Anish Swaminathan <anishs@vmware.com> 2.2.14-1
+- Update to 2.2.14
 * Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.18-4
 - Use python2 explicitly to build
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.18-3
@@ -91,4 +98,4 @@ python2 setup.py check && python2 setup.py test
 * Thu Aug 6 2015 Anish Swaminathan <anishs@vmware.com>
 - Added sha1sum
 * Fri Mar 13 2015 - mbassiouny@vmware.com
-- Initial pacaking for Discus
+- Initial packaging
