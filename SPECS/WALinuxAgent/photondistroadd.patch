@@ -1,151 +1,269 @@
-diff -ru WALinuxAgent-2.0.18/waagent WALinuxAgent-2.0.18-new/waagent
---- WALinuxAgent-2.0.18/waagent	2016-04-01 01:29:50.000000000 -0700
-+++ WALinuxAgent-2.0.18-new/waagent	2016-04-29 01:03:04.294204270 -0700
-@@ -2403,6 +2403,139 @@
-         Run('/sbin/usermod ' + user + ' -G ""')
-         super(fedoraDistro, self).DeleteAccount(user)
+diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/factory.py WALinuxAgent-2.2.14/azurelinuxagent/common/osutil/factory.py
+--- WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/factory.py	2017-06-22 16:00:39.000000000 -0700
++++ WALinuxAgent-2.2.14/azurelinuxagent/common/osutil/factory.py	2017-07-18 12:29:16.642925938 -0700
+@@ -21,6 +21,7 @@ from azurelinuxagent.common.version impo
+ from .default import DefaultOSUtil
+ from .arch import ArchUtil
+ from .clearlinux import ClearLinuxUtil
++from .photonos import PhotonOSUtil
+ from .coreos import CoreOSUtil
+ from .debian import DebianOSUtil
+ from .freebsd import FreeBSDOSUtil
+@@ -44,6 +45,9 @@ def get_osutil(distro_name=DISTRO_NAME,
+     if distro_name == "clear linux software for intel architecture":
+         return ClearLinuxUtil()
  
++    if distro_name == "photonos":
++        return PhotonOSUtil()
 +
-+############################################################    
-+# photonDistro
-+############################################################    
+     if distro_name == "ubuntu":
+         if Version(distro_version) == Version("12.04") or Version(distro_version) == Version("12.10"):
+             return Ubuntu12OSUtil()
+diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/photonos.py WALinuxAgent-2.2.14/azurelinuxagent/common/osutil/photonos.py
+--- WALinuxAgent-2.2.14-old/azurelinuxagent/common/osutil/photonos.py	1969-12-31 16:00:00.000000000 -0800
++++ WALinuxAgent-2.2.14/azurelinuxagent/common/osutil/photonos.py	2017-07-18 12:29:32.146925587 -0700
+@@ -0,0 +1,88 @@
++#
++# Copyright 2017 Microsoft Corporation
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++# Requires Python 2.4+ and Openssl 1.0+
++#
 +
-+class photonDistro(AbstractDistro):
-+    """
-+    photon Distro concrete class
-+    Put photon specific behavior here...
-+    """
-+    CORE_UID = 500
++import os
++import re
++import pwd
++import shutil
++import socket
++import array
++import struct
++import fcntl
++import time
++import base64
++import azurelinuxagent.common.conf as conf
++import azurelinuxagent.common.logger as logger
++import azurelinuxagent.common.utils.fileutil as fileutil
++import azurelinuxagent.common.utils.shellutil as shellutil
++import azurelinuxagent.common.utils.textutil as textutil
++from azurelinuxagent.common.osutil.default import DefaultOSUtil
 +
++class PhotonOSUtil(DefaultOSUtil):
 +    def __init__(self):
-+        super(photonDistro,self).__init__()
-+        self.requiredDeps += [ "/bin/systemctl" ]
-+        self.agent_service_name = 'waagent'
-+        self.init_script_file='/usr/lib/systemd/system/waagent.service'
-+        self.dhcp_client_name='systemd-networkd'
-+        self.getpidcmd='pidof '
-+        self.shadow_file_mode=0640
-+        self.dhcp_enabled=True
++        super(PhotonOSUtil, self).__init__()
++        self.agent_conf_file_path = '/etc/waagent.conf'
 +
-+    def checkPackageInstalled(self,p):
-+        """
-+        There is no package manager in Photon.  Return 1 since it must be preinstalled.
-+        """
-+        return 1
++    def is_dhcp_enabled(self):
++        return True
 +
-+    def checkDependencies(self):
-+        for a in self.requiredDeps:
-+            if Run("which " + a + " > /dev/null 2>&1",chk_err=False):
-+                Error("Missing required dependency: " + a)
-+                return 1
-+        return 0
++    def start_network(self) :
++        return shellutil.run("systemctl start systemd-networkd", chk_err=False)
 +
++    def restart_if(self, iface):
++        shellutil.run("systemctl restart systemd-networkd")
 +
-+    def checkPackageUpdateable(self,p):
-+        """
-+        There is no package manager in Photon.  Return 0 since it can't be updated via package.
-+        """
-+        return 0
++    def restart_ssh_service(self):
++        shellutil.run("systemctl restart sshd")
 +
-+    def startAgentService(self):
-+        return Run('systemctl start ' + self.agent_service_name)
++    def stop_dhcp_service(self):
++        return shellutil.run("systemctl stop systemd-networkd", chk_err=False)
 +
-+    def stopAgentService(self):
-+        return Run('systemctl stop ' + self.agent_service_name)
++    def start_dhcp_service(self):
++        return shellutil.run("systemctl start systemd-networkd", chk_err=False)
 +
-+    def restartSshService(self):
-+        return Run('systemctl restart sshd')
++    def start_agent_service(self):
++        return shellutil.run("systemctl start waagent", chk_err=False)
 +
-+    def sshDeployPublicKey(self,fprint,path):
-+        """
-+        We support PKCS8.
-+        """
-+        if Run("ssh-keygen -i -m PKCS8 -f " + fprint + " >> " + path):
-+            return 1
-+        else :
-+            return 0
++    def stop_agent_service(self):
++        return shellutil.run("systemctl stop waagent", chk_err=False)
 +
-+    def RestartInterface(self, iface):
-+        Run("systemctl restart systemd-networkd")
++    def get_dhcp_pid(self):
++        ret= shellutil.run_get_output("pidof systemd-networkd")
++        return ret[1] if ret[0] == 0 else None
 +
-+    def CreateAccount(self, user, password, expiration, thumbprint):
-+        """
-+        Create a user account, with 'user', 'password', 'expiration', ssh keys
-+        and sudo permissions.
-+        Returns None if successful, error string on failure.
-+        """
-+        userentry = None
++    def conf_sshd(self, disable_password):
++        pass
++
++    def del_root_password(self):
 +        try:
-+            userentry = pwd.getpwnam(user)
-+        except:
-+            pass
-+        uidmin = None
-+        try:
-+            uidmin = int(GetLineStartingWith("UID_MIN", "/etc/login.defs").split()[1])
-+        except:
-+            pass
-+        if uidmin == None:
-+            uidmin = 100
-+        if userentry != None and userentry[2] < uidmin and userentry[2] != self.CORE_UID:
-+            Error("CreateAccount: " + user + " is a system user. Will not set password.")
-+            return "Failed to set password for system user: " + user + " (0x06)."
-+        if userentry == None:
-+            command = "useradd --create-home --password '*' " + user
-+            if expiration != None:
-+                command += " --expiredate " + expiration.split('.')[0]
-+            if Run(command):
-+                Error("Failed to create user account: " + user)
-+                return "Failed to create user account: " + user + " (0x07)."
-+        else:
-+            Log("CreateAccount: " + user + " already exists. Will update password.")
-+        if password != None:
-+            RunSendStdin("chpasswd", user + ":" + password + "\n")
-+        try:
-+            if password == None:
-+                SetFileContents("/etc/sudoers.d/waagent", user + " ALL = (ALL) NOPASSWD: ALL\n")
++            passwd_file_path = conf.get_passwd_file_path()
++            try:
++                passwd_content = fileutil.read_file(passwd_file_path)
++                if not passwd_content:
++                    raise FileNotFoundError
++            except FileNotFoundError:
++                new_passwd = ["root:*LOCK*:14600::::::"]
 +            else:
-+                SetFileContents("/etc/sudoers.d/waagent", user + " ALL = (ALL) ALL\n")
-+            os.chmod("/etc/sudoers.d/waagent", 0440)
-+        except:
-+            Error("CreateAccount: Failed to configure sudo access for user.")
-+            return "Failed to configure sudo privileges (0x08)."
-+        home = MyDistro.GetHome()
-+        if thumbprint != None:
-+            dir = home + "/" + user + "/.ssh"
-+            CreateDir(dir, user, 0700)
-+            pub = dir + "/id_rsa.pub"
-+            prv = dir + "/id_rsa"
-+            Run("ssh-keygen -y -f " + thumbprint + ".prv > " + pub)
-+            SetFileContents(prv, GetFileContents(thumbprint + ".prv"))
-+            for f in [pub, prv]:
-+                os.chmod(f, 0600)
-+                ChangeOwner(f, user)
-+            SetFileContents(dir + "/authorized_keys", GetFileContents(pub))
-+            ChangeOwner(dir + "/authorized_keys", user)
-+        Log("Created user account: " + user)
-+        return None
++                passwd = passwd_content.split('\n')
++                new_passwd = [x for x in passwd if not x.startswith("root:")]
++                new_passwd.insert(0, "root:*LOCK*:14600::::::")
++            fileutil.write_file(passwd_file_path, "\n".join(new_passwd))
++        except IOError as e:
++            raise OSUtilError("Failed to delete root password:{0}".format(e))
++        pass
+diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/pa/deprovision/factory.py WALinuxAgent-2.2.14/azurelinuxagent/pa/deprovision/factory.py
+--- WALinuxAgent-2.2.14-old/azurelinuxagent/pa/deprovision/factory.py	2017-06-22 16:00:39.000000000 -0700
++++ WALinuxAgent-2.2.14/azurelinuxagent/pa/deprovision/factory.py	2017-07-18 12:28:57.158926378 -0700
+@@ -23,6 +23,7 @@ from azurelinuxagent.common.version impo
+ from .default import DeprovisionHandler
+ from .arch import ArchDeprovisionHandler
+ from .clearlinux import ClearLinuxDeprovisionHandler
++from .photonos import PhotonOSDeprovisionHandler
+ from .coreos import CoreOSDeprovisionHandler
+ from .ubuntu import UbuntuDeprovisionHandler
+ 
+@@ -37,6 +38,8 @@ def get_deprovision_handler(distro_name=
+         return CoreOSDeprovisionHandler()
+     if distro_name == "clear linux":
+         return ClearLinuxDeprovisionHandler()
++    if distro_name == "photonos":
++        return PhotonOSDeprovisionHandler()
+ 
+     return DeprovisionHandler()
+ 
+diff -rupN WALinuxAgent-2.2.14-old/azurelinuxagent/pa/deprovision/photonos.py WALinuxAgent-2.2.14/azurelinuxagent/pa/deprovision/photonos.py
+--- WALinuxAgent-2.2.14-old/azurelinuxagent/pa/deprovision/photonos.py	1969-12-31 16:00:00.000000000 -0800
++++ WALinuxAgent-2.2.14/azurelinuxagent/pa/deprovision/photonos.py	2017-07-17 17:34:23.120464181 -0700
+@@ -0,0 +1,31 @@
++# Microsoft Azure Linux Agent
++#
++# Copyright 2017 Microsoft Corporation
++#
++# Licensed under the Apache License, Version 2.0 (the "License");
++# you may not use this file except in compliance with the License.
++# You may obtain a copy of the License at
++#
++#     http://www.apache.org/licenses/LICENSE-2.0
++#
++# Unless required by applicable law or agreed to in writing, software
++# distributed under the License is distributed on an "AS IS" BASIS,
++# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++# See the License for the specific language governing permissions and
++# limitations under the License.
++#
++# Requires Python 2.4+ and Openssl 1.0+
++#
 +
-+    def startDHCP(self):
-+        Run("systemctl start " + self.dhcp_client_name, chk_err=False)
++import azurelinuxagent.common.utils.fileutil as fileutil
++from azurelinuxagent.pa.deprovision.default import DeprovisionHandler, \
++                                                   DeprovisionAction
 +
-+    def stopDHCP(self):
-+        Run("systemctl stop " + self.dhcp_client_name, chk_err=False)
++class PhotonOSDeprovisionHandler(DeprovisionHandler):
++    def __init__(self, distro):
++        self.distro = distro
 +
-+    def translateCustomData(self, data):
-+        return base64.b64decode(data)
++    def setup(self, deluser):
++        warnings, actions = super(PhotonOSDeprovisionHandler, self).setup(deluser)
++        # Probably should just wipe /etc and /var here
++        return warnings, actions
+diff -rupN WALinuxAgent-2.2.14-old/config/photonos/waagent.conf WALinuxAgent-2.2.14/config/photonos/waagent.conf
+--- WALinuxAgent-2.2.14-old/config/photonos/waagent.conf	1969-12-31 16:00:00.000000000 -0800
++++ WALinuxAgent-2.2.14/config/photonos/waagent.conf	2017-07-17 16:21:35.248562852 -0700
+@@ -0,0 +1,81 @@
++#
++# Microsoft Azure Linux Agent Configuration
++#
 +
-+    def getConfigurationPath(self):
-+        return "/etc/waagent.conf"
++# Specified program is invoked with the argument "Ready" when we report ready status
++# to the endpoint server.
++Role.StateConsumer=None
 +
++# Specified program is invoked with XML file argument specifying role
++#  configuration.
++Role.ConfigurationConsumer=None
 +
- ############################################################    
- #	FreeBSD
- ############################################################    
-@@ -6934,6 +7067,7 @@
-     Return MyDistro object.
-     NOTE: Logging is not initialized at this point.
-     """
-+    dist_class_name = 'photonDistro'
-     if dist_class_name == '':
-         if 'Linux' in platform.system():
-             Distro=DistInfo()[0]
++# Specified program is invoked with XML file argument specifying role topology.
++Role.TopologyConsumer=None
++
++# Enable instance creation
++Provisioning.Enabled=y
++
++# Rely on cloud-init to provision
++Provisioning.UseCloudInit=n
++
++# Password authentication for root account will be unavailable.
++Provisioning.DeleteRootPassword=y
++
++# Generate fresh host key pair.
++Provisioning.RegenerateSshHostKeyPair=y
++
++# Supported values are "rsa", "dsa" and "ecdsa".
++Provisioning.SshHostKeyPairType=rsa
++
++# Monitor host name changes and publish changes via DHCP requests.
++Provisioning.MonitorHostName=y
++
++# Decode CustomData from Base64.
++Provisioning.DecodeCustomData=y
++
++# Execute CustomData after provisioning.
++Provisioning.ExecuteCustomData=n
++
++# Allow reset password of sys user
++Provisioning.AllowResetSysUser=n
++
++# Format if unformatted. If 'n', resource disk will not be mounted.
++ResourceDisk.Format=y
++
++# File system on the resource disk
++# Typically ext3 or ext4. FreeBSD images should use 'ufs2' here.
++ResourceDisk.Filesystem=ext4
++
++# Mount point for the resource disk
++ResourceDisk.MountPoint=/mnt/resource
++
++# Create and use swapfile on resource disk.
++ResourceDisk.EnableSwap=n
++
++# Size of the swapfile.
++ResourceDisk.SwapSizeMB=0
++
++# Enable verbose logging (y|n)
++Logs.Verbose=n
++
++# Is FIPS enabled
++OS.EnableFIPS=n
++
++# Root device timeout in seconds.
++OS.RootDeviceScsiTimeout=300
++
++# If "None", the system default version is used.
++OS.OpensslPath=None
++
++# Set the path to SSH keys and configuration files
++OS.SshDir=/etc/ssh
++
++# Enable or disable self-update, default is enabled
++AutoUpdate.Enabled=y
++AutoUpdate.GAFamily=Prod
++
++# Determine if the overprovisioning feature is enabled. If yes, hold extension
++# handling until inVMArtifactsProfile.OnHold is false.
++# Default is disabled
++# EnableOverProvisioning=n
+diff -rupN WALinuxAgent-2.2.14-old/setup.py WALinuxAgent-2.2.14/setup.py
+--- WALinuxAgent-2.2.14-old/setup.py	2017-06-22 16:00:39.000000000 -0700
++++ WALinuxAgent-2.2.14/setup.py	2017-07-18 12:29:36.550925488 -0700
+@@ -112,6 +112,12 @@ def get_data_files(name, version, fullna
+                        src=["config/clearlinux/waagent.conf"])
+         set_systemd_files(data_files, dest='/usr/lib/systemd/system',
+                           src=["init/clearlinux/waagent.service"])
++    elif name == 'photonos':
++        set_bin_files(data_files, dest="/usr/bin")
++        set_conf_files(data_files, dest="/etc",
++                       src=["config/photonos/waagent.conf"])
++        set_systemd_files(data_files, dest='/usr/lib/systemd/system',
++                          src=["init/waagent.service"])        
+     elif name == 'ubuntu':
+         set_bin_files(data_files)
+         set_conf_files(data_files, src=["config/ubuntu/waagent.conf"])
