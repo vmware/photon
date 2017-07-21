@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.12.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -9,6 +9,7 @@ Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         gdb-7.12-pstack.patch
 Requires:       expat
 Requires:       ncurses
 BuildRequires:  expat-devel
@@ -25,6 +26,7 @@ GDB, the GNU Project debugger, allows you to see what is going on
 another program was doing at the moment it crashed. 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./configure \
@@ -66,6 +68,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+*   Fri Jul 21 2017 Rui Gu <ruig@vmware.com> 7.12.1-4
+-   Add pstack wrapper which will invoke gdb.
 *   Wed Jul 12 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-3
 -   Get tcl, expect and dejagnu from packages
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 7.12.1-2
