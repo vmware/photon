@@ -1,0 +1,8 @@
+# Photon Base Build Container
+
+FROM vmware/photon:1.0
+
+MAINTAINER kulkarniv@vmware.com
+
+ADD tmp/k8dns/usr/bin/kube-dns /kube-dns
+ENTRYPOINT ["/kube-dns"]
