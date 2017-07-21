@@ -3,23 +3,27 @@
 
 Summary:        Markdown to reStructuredText converter.
 Name:           python-m2r
-Version:        0.1.5
-Release:        3%{?dist}
+Version:        0.1.7
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/m2r
-Source0:        https://files.pythonhosted.org/packages/source/m/m2r/m2r-%{version}.tar.gz
-%define         sha1 m2r=9c5aa6fa791ff53c5007774159d4d0d2ffb4e36a
+Source0:        https://github.com/miyakogi/m2r/archive/v%{version}/m2r-%{version}.tar.gz
+%define         sha1 m2r=0b4ce1ba98d380e641657a673675568cc692f0c8
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python-mistune
+BuildRequires:  python-docutils
 
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-mistune
+Requires:       python-docutils
 
 BuildArch:      noarch
 
@@ -36,9 +40,13 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-mistune
+BuildRequires:  python3-docutils
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-mistune
+Requires:       python3-docutils
 
 %description -n python3-m2r
 Python 3 version.
@@ -62,9 +70,15 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-python2 setup.py test
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 Pygments
+$easy_install_2 mock
+python2 setup.py test -s tests
 pushd ../p3dir
-python3 setup.py test
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 Pygments
+$easy_install_3 mock
+python3 setup.py test -s tests
 popd
 
 %files
@@ -78,6 +92,9 @@ popd
 %{_bindir}/m2r3
 
 %changelog
+*   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 0.1.7-1
+-   Updated version to 0.1.7
+-   Fixed make check errors
 *   Mon Jun 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.5-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.1.5-2
