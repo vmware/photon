@@ -48,11 +48,8 @@ echo "Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,
 echo "Tunnel no" >> /etc/ssh/ssh_config
 echo "ServerAliveInterval 180" >> /etc/ssh/ssh_config
 
-sed -i 's/net.ifnames=0//' /boot/grub/grub.cfg
-sed -i 's/$photon_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0 earlyprintk=ttyS0 rootdelay=30/' /boot/grub/grub.cfg
+sed -i 's/$photon_cmdline $systemd_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=tty1 console=ttyS0,115200n8 earlyprintk=ttyS0,115200 rootdelay=300/' /boot/grub/grub.cfg
 
-# Disable loading/unloading of modules
-echo 1 > /proc/sys/kernel/modules_disabled
 
 # Remove kernel symbols
 rm /boot/system.map*
