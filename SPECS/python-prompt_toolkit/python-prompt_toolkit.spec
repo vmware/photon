@@ -4,7 +4,7 @@
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python-prompt_toolkit
 Version:        1.0.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,11 +17,18 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python-Pygments
+BuildRequires:  python-wcwidth
+BuildRequires:  python-six
 %if %{with_check}
-BuildRequires:  python-pytest, python-six, python-wcwidth
+BuildRequires:  python-pytest
 %endif
+
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-Pygments
+Requires:       python-six
+Requires:       python-wcwidth
 
 BuildArch:      noarch
 
@@ -34,11 +41,18 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-Pygments
+BuildRequires:  python3-wcwidth
+BuildRequires:  python3-six
 %if %{with_check}
-BuildRequires:  python3-pytest, python3-six, python3-wcwidth
+BuildRequires:  python3-pytest
 %endif
+
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-Pygments
+Requires:       python3-six
+Requires:       python3-wcwidth
 
 %description -n python3-prompt_toolkit
 Python 3 version.
@@ -62,12 +76,11 @@ popd
 
 %check
 export PYTHONPATH="%{buildroot}%{python2_sitelib}"
-sed -i 's/assert/#assert/g' tests/test_print_tokens.py
 py.test2
 pushd ../p3dir
 export PYTHONPATH="%{buildroot}%{python3_sitelib}"
-sed -i 's/assert/#assert/g' tests/test_print_tokens.py
 py.test3
+popd
 
 %files
 %defattr(-,root,root)
@@ -78,6 +91,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.14-4
+-   Added packages which are required during runtime
 *   Wed Jul 12 2017 Chang Lee <changlee@vmware.com> 1.0.14-3
 -   Updated %check and added six, wcwidth, and pytest in BuildRequires
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0.14-2
