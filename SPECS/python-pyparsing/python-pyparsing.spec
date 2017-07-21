@@ -4,7 +4,7 @@
 Summary:        Python parsing module.
 Name:           python-pyparsing
 Version:        2.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pyparsing/%{version}
 License:        MIT
 Group:          Development/Languages/Python
@@ -56,11 +56,8 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
-%check
-python2 setup.py test
-pushd ../p3dir
-python3 setup.py test
-popd
+#%check
+#Tests are not available
 
 %files
 %defattr(-,root,root)
@@ -71,6 +68,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 2.2.0-3
+-   Disabled check section as tests are not available
 *   Tue Jun 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.2.0-2
 -   Add build dependency with python-setuptools to handle 1.0 update
 *   Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 2.2.0-1
