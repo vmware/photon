@@ -3,7 +3,7 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python-pyOpenSSL
 Version:        16.2.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -21,6 +21,7 @@ Requires:       python2-libs
 Requires:       python-cryptography
 Requires:       python-enum
 Requires:       python-ipaddress
+Requires:       python-six
 
 BuildArch:      noarch
 
@@ -37,6 +38,7 @@ BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cryptography
+Requires:       python3-six
 
 %description -n python3-pyOpenSSL
 Python 3 version.
@@ -65,6 +67,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 16.2.0-5
+-   Fixed runtime dependencies
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 16.2.0-4
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 16.2.0-3
