@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.38
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -24,7 +24,6 @@ Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
 Patch5:         double-tcp_mem-limits.patch
 Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch8:         linux-4.9-REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch11:        net-9p-vsock.patch
@@ -105,7 +104,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
@@ -269,6 +267,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
+-   Disable scheduler beef up patch
 *   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
 -   Fix CVE-2017-11176 and CVE-2017-10911
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-3
