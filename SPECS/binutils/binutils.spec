@@ -1,16 +1,14 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
-Version:	2.28
-Release:	2%{?dist}
+Version:	2.28.90
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
-%define sha1 binutils=f8b033731f6baa437d429c60e2623570f1ef9d6b
-Patch0:         binutils-CVE-2017-6969.patch
-Patch1:         binutils-CVE-2017-8421.patch
+Source0:        http://ftp.mirrorservice.org/sites/sourceware.org/pub/%{name}/snapshots/%{name}-%{version}.tar.bz2
+%define sha1 binutils=bedc2bb58630a0e15c4798ad3d4e505b35a23706
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -22,8 +20,7 @@ It contains the libraries and header files to create applications
 for handling compiled objects.
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
+
 %build
 install -vdm 755 ../binutils-build
 cd ../binutils-build
@@ -191,6 +188,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*	Fri Jul 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.28.90-1
+-	Update to 2.28.90
 *	Tue May 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.28-2
 -	Patch for CVE-2017-8421
 *       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 2.28-1
