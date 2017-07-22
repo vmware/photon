@@ -5,6 +5,7 @@ Summary:        XML bomb protection for Python stdlib modules
 Name:           python-defusedxml
 Version:        0.5.0
 Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/defusedxml
 License:        PSFL
 Group:          Development/Languages/Python
@@ -22,6 +23,7 @@ BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-xml
 
 %description
 The results of an attack on a vulnerable XML library can be fairly dramatic. With just a few hundred Bytes of XML data an attacker can occupy several Gigabytes of memory within seconds. An attacker can also keep CPUs busy for a long time with a small to medium size request. Under some circumstances it is even possible to access local files on your server, to circumvent a firewall, or to abuse services to rebound attacks to third parties.
@@ -31,7 +33,7 @@ The attacks use and abuse less common features of XML and its parsers. The major
 None of the issues is new. They have been known for a long time. Billion laughs was first reported in 2003. Nevertheless some XML libraries and applications are still vulnerable and even heavy users of XML are surprised by these features. It's hard to say whom to blame for the situation. It's too short sighted to shift all blame on XML parsers and XML libraries for using insecure default settings. After all they properly implement XML specifications. Application developers must not rely that a library is always configured for security and potential harmful data by default.
 
 %package -n     python3-defusedxml
-Summary:        python-defusedxml
+Summary:        python3-defusedxml
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -40,6 +42,7 @@ BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-xml
 
 %description -n python3-defusedxml
 
@@ -77,6 +80,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 21 2017 Rongrong Qiu <rqiu@vmware.com> 0.5.0-3
+-   Add python-xml and python3-xml to package requires for bug 1922067.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Mar 09 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-1
