@@ -1,5 +1,5 @@
 diff --git a/client/init.c b/client/init.c
-index 0269446..dc765e4 100644
+index b7e88ff..417b995 100644
 --- a/client/init.c
 +++ b/client/init.c
 @@ -284,9 +284,12 @@ TDNFRefreshRepo(
@@ -18,34 +18,16 @@ index 0269446..dc765e4 100644
          dwError = TDNFRepoRemoveCache(pTdnf, pRepo->pszId);
          if(dwError == ERROR_TDNF_FILE_NOT_FOUND)
          {
-diff --git a/client/repo.c b/client/repo.c
-index 5f0acdb..0f0baa1 100644
---- a/client/repo.c
-+++ b/client/repo.c
-@@ -339,7 +339,7 @@ TDNFGetRepoMD(
-                       pRepoData->pszId,
-                       pszRepoMDUrl,
-                       pszRepoMDFile,
--                      pRepoData->pszId);
-+                      pTdnf->pArgs->nQuiet ? NULL : pRepoData->pszId);
-         BAIL_ON_TDNF_ERROR(dwError);
-     }
+diff --git a/client/remoterepo.c b/client/remoterepo.c
+index 12b4d2d..946aafd 100644
+--- a/client/remoterepo.c
++++ b/client/remoterepo.c
+@@ -137,7 +137,7 @@ TDNFDownloadFile(
+     dwError = curl_easy_setopt(pCurl, CURLOPT_FOLLOWLOCATION, 1L);
+     BAIL_ON_TDNF_CURL_ERROR(dwError);
  
-@@ -418,7 +418,7 @@ TDNFEnsureRepoMDParts(
-                       pRepoMDRel->pszRepo,
-                       pszTempUrl,
-                       pRepoMD->pszPrimary,
--                      pRepoMDRel->pszRepo);
-+                      pTdnf->pArgs->nQuiet ? NULL : pRepoMDRel->pszRepo);
+-    if(pszProgressData)
++    if(!pTdnf->pArgs->nQuiet && pszProgressData)
+     {
+         dwError = set_progress_cb(pCurl, pszProgressData);
          BAIL_ON_TDNF_ERROR(dwError);
-     }
- 
-@@ -447,7 +447,7 @@ TDNFEnsureRepoMDParts(
-                       pRepoMDRel->pszRepo,
-                       pszTempUrl,
-                       pRepoMD->pszFileLists,
--                      pRepoMDRel->pszRepo);
-+                      pTdnf->pArgs->nQuiet ? NULL : pRepoMDRel->pszRepo);
-         BAIL_ON_TDNF_ERROR(dwError);
-     }
-     *ppRepoMD = pRepoMD;
