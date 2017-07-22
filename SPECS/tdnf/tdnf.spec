@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -20,6 +20,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
 Source0:    %{name}-%{version}.tar.gz
+Patch0:     tdnf_quiet_repo_refresh.patch
 %define sha1 tdnf=ebbed639c68316e5a152b0bd277c1b040ee6871f
 Source1:    cache-updateinfo
 Source2:    cache-updateinfo.service
@@ -48,6 +49,7 @@ Library providing cli libs for tdnf like clients.
 
 %prep
 %setup -q
+%patch0 -p1
 
 
 %build
@@ -148,6 +150,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Fri Jul 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
+-   Modify quiet patch.
 *   Tue Jul 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-1
 -   Update to v1.2.1
 *   Tue May 30 2017 Bo Gan <ganb@vmware.com> 1.2.0-5
