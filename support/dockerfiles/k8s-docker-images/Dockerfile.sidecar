@@ -1,0 +1,10 @@
+# Photon Base Build Container
+
+FROM vmware/photon
+
+MAINTAINER kulkarniv@vmware.com
+
+ADD tmp/k8dns/usr/bin/sidecar /sidecar
+
+USER nobody:nobody
+ENTRYPOINT ["/sidecar"]
