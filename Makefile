@@ -86,7 +86,7 @@ clean-install clean-chroot build-updated-packages check generate-yaml-files
 
 THREADS?=1
 
-all: iso docker-image live-iso cloud-image-all src-iso
+all: iso photon-docker-image k8s-docker-images live-iso cloud-image-all src-iso
 
 micro: micro-iso
 	@:
@@ -379,7 +379,7 @@ generate-dep-lists:
 		--input-type=json --file $$f -d json -a $(PHOTON_DATA_DIR); \
 	done
 
-docker-image:
+photon-docker-image:
 	createrepo $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
@@ -393,7 +393,13 @@ docker-image:
 		photon-build \
 		./support/dockerfiles/photon/make-docker-image.sh tdnf
 
-install-docker-image: docker-image
+k8s-docker-images:
+	systemctl start docker && \
+	cd ./support/dockerfiles/k8s-docker-images && \
+	./build-k8s-dns-docker-images.sh && \
+	./build-k8s-dashboard-docker-images.sh
+
+install-photon-docker-image: photon-docker-image
 	sudo docker build -t photon:tdnf .
 
 clean: clean-install clean-chroot
