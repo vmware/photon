@@ -4,16 +4,15 @@
 Summary:        Python SSH module
 Name:           paramiko
 Version:        1.16.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL: http://www.paramiko.org/
-
-Source0: https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
+URL:            http://www.paramiko.org/
+Source0:        https://github.com/paramiko/paramiko/archive/paramiko-%{version}.tar.gz
 %define sha1 paramiko=adf3afcc9e5a3f299a20639771f587a803924443
-
+Patch0:         paramiko-dont-pass-IV-in-AES-CTR-mode.patch
 BuildArch:      noarch
 
 BuildRequires:  python-setuptools
@@ -42,6 +41,7 @@ Requires:       python3-ecdsa > 0.11
 Python 3 version.
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 python setup.py build
@@ -71,6 +71,8 @@ python3 setup.py install -O1 --skip-build \
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Jul 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.16.0-4
+-   Added patch to fix issues with pycrypto 2.6.1
 *   Mon Feb 27 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16.0-3
 -   Added python3 site-packages.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.16.0-2

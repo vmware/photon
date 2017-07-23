@@ -1,0 +1,23 @@
+From 9c6bc36be24e4c90abd3ef2033223fab97ca5341 Mon Sep 17 00:00:00 2001
+From: jhall150 <jhall150@bloomberg.net>
+Date: Thu, 31 Mar 2016 10:15:47 -0400
+Subject: [PATCH] Don't pass IV to pycrypto when using MODE_CTR
+
+* Fixes #713
+---
+ paramiko/transport.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/paramiko/transport.py b/paramiko/transport.py
+index 8eaa094..b286fc5 100644
+--- a/paramiko/transport.py
++++ b/paramiko/transport.py
+@@ -1667,7 +1667,7 @@ def _get_cipher(self, name, key, iv):
+         elif name.endswith("-ctr"):
+             # CTR modes, we need a counter
+             counter = Counter.new(nbits=self._cipher_info[name]['block-size'] * 8, initial_value=util.inflate_long(iv, True))
+-            return self._cipher_info[name]['class'].new(key, self._cipher_info[name]['mode'], iv, counter)
++            return self._cipher_info[name]['class'].new(key, self._cipher_info[name]['mode'], '', counter)
+         else:
+             return self._cipher_info[name]['class'].new(key, self._cipher_info[name]['mode'], iv)
+ 
