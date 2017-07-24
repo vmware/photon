@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -83,7 +83,7 @@ After=network.target sshd-keygen.service
 
 [Service]
 ExecStart=%{_sbindir}/sshd -D
-ExecReload=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP \$MAINPID
 KillMode=process
 Restart=always
 
@@ -195,6 +195,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.5p1-3
+-   Added escape character in the service file creation
 *   Wed May 3  2017 Bo Gan <ganb@vmware.com> 7.5p1-2
 -   Fixed openssh-server dependency on coreutils
 *   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.5p1-1
