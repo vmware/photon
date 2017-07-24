@@ -47,7 +47,9 @@ def unmountmountpoints(listmountpoints):
     return True
 
 def findmountpoints(chrootPath):
-    cmd="mount | grep -w "+chrootPath+" | cut -d' ' -s -f3"
+    if not chrootPath.endswith("/"):
+        chrootPath = chrootPath + "/"
+    cmd="mount | grep "+chrootPath+" | cut -d' ' -s -f3"
     process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     retval = process.wait()
     if retval!=0:
