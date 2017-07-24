@@ -1,15 +1,15 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
-Version:    2.4.25
-Release:    3%{?dist}
+Version:    2.4.27
+Release:    1%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:        http://archive.apache.org/dist/httpd/%{name}-%{version}.tar.bz2
-%define sha1 httpd=bd6d138c31c109297da2346c6e7b93b9283993d2
-Patch0: http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.25-blfs_layout-1.patch
+%define sha1 httpd=699e4e917e8fb5fd7d0ce7e009f8256ed02ec6fc
+Patch0: http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.27-blfs_layout-1.patch
 Patch1: httpd-uncomment-ServerName.patch 
 BuildRequires: openssl
 BuildRequires: openssl-devel
@@ -175,6 +175,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Jul 24 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-1
+-   Updated to version 2.4.27
 *   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.25-3
 -   Removed packaging of debug files
 *   Thu Apr 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
