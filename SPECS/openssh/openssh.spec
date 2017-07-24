@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -11,6 +11,8 @@ Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{v
 %define sha1    openssh=5e8f185d00afb4f4f89801e9b0f8b9cee9d87ebd
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
+Source2:        sshd.service
+Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
 Patch1:         openssh-7.5p1-fips.patch
 Patch2:         openssh-7.5p1-configure-fips.patch
@@ -76,37 +78,8 @@ pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} install-sshd
 popd
 
-cat << EOF > %{buildroot}/lib/systemd/system/sshd.service
-[Unit]
-Description=OpenSSH Daemon
-After=network.target sshd-keygen.service
-
-[Service]
-ExecStart=%{_sbindir}/sshd -D
-ExecReload=/bin/kill -HUP $MAINPID
-KillMode=process
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-cat << EOF >> %{buildroot}/lib/systemd/system/sshd-keygen.service
-[Unit]
-Description=Generate sshd host keys
-ConditionPathExists=|!/etc/ssh/ssh_host_rsa_key
-ConditionPathExists=|!/etc/ssh/ssh_host_ecdsa_key
-ConditionPathExists=|!/etc/ssh/ssh_host_ed25519_key
-Before=sshd.service
-
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=%{_bindir}/ssh-keygen -A
-[Install]
-WantedBy=multi-user.target
-EOF
-
+install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/sshd.service
+install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/sshd-keygen.service
 install -m755 contrib/ssh-copy-id %{buildroot}/%{_bindir}/
 install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 
@@ -195,6 +168,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.5p1-3
+-   Seperate the service file from the spec file
 *   Wed May 3  2017 Bo Gan <ganb@vmware.com> 7.5p1-2
 -   Fixed openssh-server dependency on coreutils
 *   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.5p1-1
