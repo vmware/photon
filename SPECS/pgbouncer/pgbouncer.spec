@@ -1,11 +1,12 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.7.2
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
 %define sha1 pgbouncer=d9bb29da15d90713e2399af3ebf5019da5cbe2d6
+Source1:        pgbouncer.service
 Group:		Application/Databases.
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -35,24 +36,7 @@ install -p -d %{buildroot}%{_sysconfdir}/
 install -p -d %{buildroot}%{_sysconfdir}/sysconfig
 install -p -m 644 etc/pgbouncer.ini %{buildroot}%{_sysconfdir}/
 mkdir -p %{buildroot}/etc/systemd/system/
-cat << EOF >> %{buildroot}/etc/systemd/system/%{name}.service
-[Unit]
-Description=Connection poller for PostgreSQL.
-After=syslog.target network.target
-
-[Service]
-Type=forking
-ExecStart=/usr/bin/pgbouncer --quiet --user pgbouncer /etc/pgbouncer.ini
-ExecReload=/bin/kill -USR2 $MAINPID
-User=pgbouncer
-Group=pgbouncer
-RuntimeDirectory=pgbouncer
-RuntimeDirectoryMode=0755
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-EOF
+install -m 0644 %{SOURCE1} %{buildroot}/etc/systemd/system/%{name}.service
 
 %check
 pushd test
@@ -95,6 +79,8 @@ fi
 /usr/share/doc/pgbouncer/*
 
 %changelog
+*   Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.7.2-6
+-   Seperate the service file from the spec file
 *   Wed May 31 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-5
 -   Add RuntimeDirectory and Type=forking
 *   Thu Apr 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
