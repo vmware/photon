@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.38
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -28,6 +28,19 @@ Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch11:        net-9p-vsock.patch
 Patch12:        x86-vmware-sta.patch
+#HyperV patches
+Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch14:        0005-Drivers-hv-utils-Fix-the-mapping-between-host-versio.patch
+Patch15:        0006-Drivers-hv-vss-Improve-log-messages.patch
+Patch16:        0007-Drivers-hv-vss-Operation-timeouts-should-match-host-.patch
+Patch17:        0008-Drivers-hv-vmbus-Use-all-supported-IC-versions-to-ne.patch
+Patch18:        0009-Drivers-hv-Log-the-negotiated-IC-versions.patch
+Patch19:        0010-vmbus-fix-missed-ring-events-on-boot.patch
+Patch20:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
+Patch21:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
+Patch22:        0013-vmbus-fix-the-missed-signaling-in-hv_signal_on_read.patch
+Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
+
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -108,6 +121,16 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
 
 %build
 make mrproper
@@ -267,6 +290,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-4
+-   Add patches in Hyperv codebase
 *   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
 -   Add missing hyperv drivers
 *   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
