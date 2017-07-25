@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.38
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -31,8 +31,20 @@ Patch12:        x86-vmware-sta.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch14:        0002-Added-rap_plugin.patch
 Patch15:        0003-Added-PAX_RANDKSTACK.patch
+# HyperV Patches
+Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch17:        0005-Drivers-hv-utils-Fix-the-mapping-between-host-versio.patch
+Patch18:        0006-Drivers-hv-vss-Improve-log-messages.patch
+Patch19:        0007-Drivers-hv-vss-Operation-timeouts-should-match-host-.patch
+Patch20:        0008-Drivers-hv-vmbus-Use-all-supported-IC-versions-to-ne.patch
+Patch21:        0009-Drivers-hv-Log-the-negotiated-IC-versions.patch
+Patch22:        0010-vmbus-fix-missed-ring-events-on-boot.patch
+Patch23:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
+Patch24:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
+Patch25:        0013-vmbus-fix-the-missed-signaling-in-hv_signal_on_read.patch
+Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 # NSX requirements (should be removed)
-Patch16:        LKCM.patch
+Patch99:        LKCM.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -113,8 +125,19 @@ EOF
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+
 pushd ..
-%patch16 -p0
+%patch99 -p0
 popd
 
 %build
@@ -180,7 +203,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_balloon cn"
+--add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn"
 EOF
 
 # cleanup dangling symlinks
@@ -227,6 +250,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-4
+-   Add patches in Hyperv codebase
 *   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
 -   Add missing hyperv drivers
 *   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
