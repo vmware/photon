@@ -4,7 +4,7 @@
 Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        1.8.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -28,8 +28,9 @@ Requires:       python-pyasn1
 Requires:       python-ipaddress
 Requires:       python-setuptools
 Requires:       python-packaging
-Requires:       python-enum
+Requires:       python-enum34
 Requires:       python-asn1crypto
+Requires:       python-six
 
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
@@ -97,6 +98,9 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.1-4
+-   Added missing requires python-six and python-enum34
+-   Removed python-enum from requires
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.1-2
