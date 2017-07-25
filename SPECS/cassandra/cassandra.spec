@@ -3,19 +3,20 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/3.10/apache-%{name}-%{version}-src.tar.gz
-%define sha1 apache-cassandra=fa2bbeb62f930f5ff6fccee60cfb837d0794633a
+%define sha1    apache-cassandra=fa2bbeb62f930f5ff6fccee60cfb837d0794633a
 Source1:        cassandra.service
 Patch0:         build-fix.patch
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
+BuildRequires:  wget
 Requires:       openjre8
 
 %description
@@ -24,9 +25,18 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 %prep
 %setup -qn apache-%{name}-%{version}-src
 %patch0 -p1
+sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
+sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
+rm lib/logback-*
+mv lib/licenses/logback-core-1.1.3.txt lib/licenses/logback-core-1.2.0.txt
+mv lib/licenses/logback-classic-1.1.3.txt lib/licenses/logback-classic-1.2.0.txt
+
+wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar -P lib
+wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar -P lib
 
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
+
 ant jar javadoc -Drelease=true
 
 %install
@@ -39,6 +49,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/cassandra
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}/etc/profile.d
 mkdir -p %{buildroot}/var/opt/cassandra
+
+rm build/lib/jars/hadoop-*
+rm build/classes/main/org/apache/cassandra/hadoop/HadoopCompat.class
 
 cp bin/%{name} %{buildroot}%{_sbindir}
 cp bin/%{name}.in.sh %{buildroot}%{_datadir}/cassandra/
@@ -106,6 +119,7 @@ fi
 %files
 %defattr(-,root,root)
 %doc README.asc CHANGES.txt NEWS.txt conf/cqlshrc.sample LICENSE.txt NOTICE.txt
+%dir /var/opt/cassandra
 %{_bindir}/*
 %{_datadir}/cassandra
 /var/opt/cassandra
@@ -116,6 +130,8 @@ fi
 /lib/systemd/system/cassandra.service
 
 %changelog
+*   Tue Jul 25 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-4
+-   Remove hadoop jars, upgrade logback jars and change service type to simple
 *   Mon Jul 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10-3
 -   Remove cqlsh and cqlsh.py.
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.10-2
