@@ -3,17 +3,21 @@
 
 Name:           python-netaddr
 Version:        0.7.19
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A network address manipulation library for Python
 License:        BSD
 Group:          Development/Languages/Python
 Url:            https://files.pythonhosted.org/packages/source/n/netaddr/netaddr-%{version}.tar.gz
 Source0:        netaddr-%{version}.tar.gz
 %define sha1    netaddr=00e0ce7d7ebc1d6e7943e884aa51ccb7becdc9ea
+Patch0:         0001-fixed-broken-tests-in-issue-149-python-3-regression.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+%if %{with_check}
+BuildRequires:  python-pytest
+%endif
 
 Requires:       python2
 Requires:       python2-libs
@@ -29,11 +33,15 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  python3-pytest
+%endif
 %description -n python3-netaddr
 Python 3 version.
 
 %prep
 %setup -n netaddr-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -51,10 +59,9 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install py
-python2 test_netadr.py
+PYTHONPATH=./ py.test2
 pushd ../p3dir
-python3 test_netadr.py
+LANG=en_US.UTF-8 PYTHONPATH=./ py.test3
 popd
 
 %files
@@ -68,6 +75,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.19-5
+-   Fixed test command and added patch to fix test issues.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.19-4
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.19-3
