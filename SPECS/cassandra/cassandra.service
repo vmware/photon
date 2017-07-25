@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 EnvironmentFile=/etc/sysconfig/cassandra
-Type=forking
+Type=simple
 PIDFile=/var/run/cassandra.pid
 ExecStart=/usr/sbin/cassandra -f -p /var/run/cassandra.pid
 User=cassandra
