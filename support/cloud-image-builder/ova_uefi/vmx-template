@@ -18,6 +18,4 @@ ide1:0.autodetect = "TRUE"
 ide1:0.deviceType = "cdrom-raw"
 ide1:0.startConnected = "FALSE"
 firmware = "efi"
-
-
-
+vmxnet3.rev.30 = "FALSE"
