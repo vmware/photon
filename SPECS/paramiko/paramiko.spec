@@ -3,7 +3,7 @@
 Summary:        Python SSH module
 Name:           paramiko
 Version:        2.1.2
-Release:        4%{?dist}
+Release:        6%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -64,8 +64,8 @@ python3 setup.py install -O1 --skip-build \
     --single-version-externally-managed
 
 %check
-python2  test.py
-python3   test.py
+LANG=en_US.UTF-8 python2 test.py
+LANG=en_US.UTF-8 python3 test.py
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -81,6 +81,8 @@ python3   test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.2-5
+-   Fixed test command
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.2-4
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.1.2-3
