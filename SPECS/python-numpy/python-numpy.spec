@@ -4,7 +4,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
 Version:        1.12.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -50,9 +50,20 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install py
-python2 setup.py test
-python3 setup.py test
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 nose
+mkdir test
+pushd test
+PYTHONPATH=%{buildroot}%{python2_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python2 -c "import numpy; numpy.test()"
+popd
+
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 nose
+pushd test
+PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python3 -c "import numpy; numpy.test()"
+popd
+
+rm -rf test
 
 %files
 %defattr(-,root,root,-)
@@ -65,6 +76,8 @@ python3 setup.py test
 %{_bindir}/f2py3
 
 %changelog
+*   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.12.1-4
+-   Fixed rpm check errors
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu May 04 2017 Sarah Choi <sarahc@vmware.com> 1.12.1-2

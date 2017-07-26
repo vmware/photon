@@ -4,7 +4,7 @@
 Summary:        Core utilities for Python packages
 Name:           python-packaging
 Version:        16.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
@@ -15,9 +15,16 @@ Source0:        pypi.python.org/packages/source/p/packaging/packaging-%{version}
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
+%if %{with_check}
+BuildRequires:  python-pytest
+BuildRequires:  python-pyparsing
+BuildRequires:  python-six
+%endif
 
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-pyparsing
+Requires:       python-six
 
 BuildArch:      noarch
 
@@ -29,9 +36,18 @@ Summary:        python-packaging
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+%if %{with_check}
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+BuildRequires:  python3-pytest
+BuildRequires:  python3-pyparsing
+BuildRequires:  python3-six
+%endif
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-pyparsing
+Requires:       python3-six
 
 %description -n python3-packaging
 
@@ -55,8 +71,13 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
-python3 setup.py test
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 pretend
+PYTHONPATH=./ py.test2
+
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pretend
+PYTHONPATH=./ py.test3
 
 %files
 %defattr(-,root,root)
@@ -67,6 +88,9 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 16.8-4
+-   Fixed rpm check errors
+-   Fixed runtime dependencies
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 16.8-3
 -   Fix arch
 *   Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 16.8-2
