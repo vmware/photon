@@ -4,7 +4,7 @@
 Summary:        The Swiss Army knife of Python web development
 Name:           python-werkzeug
 Version:        0.12.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,10 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-incremental
+%if %{with_check}
+BuildRequires:  python-pytest
+BuildRequires:  python-requests
+%endif
 
 Requires:       python2
 Requires:       python2-libs
@@ -31,6 +35,12 @@ Werkzeug started as simple collection of various utilities for WSGI applications
 Summary:        python-werkzeug
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  python3-pytest
+BuildRequires:  python3-requests
+%endif
 
 Requires:       python3
 Requires:       python3-libs
@@ -50,8 +60,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-python2 setup.py test
-python3 setup.py test
+PYTHONPATH=./ py.test2
+LANG=en_US.UTF-8 PYTHONPATH=./ py.test3
 
 %files
 %defattr(-,root,root)
@@ -62,6 +72,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 0.12.1-2
+-   Fixed rpm check errors
 *   Thu Mar 30 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.12.1-1
 -   Updating package to latest
 *   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.11.15-1
