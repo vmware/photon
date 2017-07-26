@@ -4,7 +4,7 @@
 Summary:        Python Atomic file writes
 Name:           python-atomicwrites
 Version:        1.1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -16,7 +16,9 @@ Source0:        https://pypi.python.org/packages/a1/e1/2d9bc76838e6e6667fde5814a
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  python-xml
+%if %{with_check}
 BuildRequires:  python-pytest
+%endif
 Requires:       python2
 BuildArch:      noarch
 
@@ -28,7 +30,9 @@ Summary:        Python Atomic file writes
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if %{with_check}
 BuildRequires:  python3-pytest
+%endif
 Requires:       python3
 
 %description -n python3-atomicwrites
@@ -52,9 +56,9 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-py.test-2
+PYTHONPATH=./ py.test2
 pushd ../p3dir
-py.test-3
+PYTHONPATH=./ py.test3
 popd
 
 %files
@@ -70,5 +74,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.1.5-2
+-   Fixed rpm check errors
 *   Fri Jul 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.1.5-1
 -   Initial packaging for Photon
