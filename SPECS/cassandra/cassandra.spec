@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -16,6 +16,7 @@ Patch0:         build-fix.patch
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk
+BuildRequires:  wget
 Requires:       openjre
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
@@ -23,6 +24,11 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 %prep
 %setup -qn apache-%{name}-%{version}-src
 %patch0 -p1
+sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
+sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
+rm lib/logback-*
+wget http://central.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar -P lib
+wget http://central.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar -P lib
 
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
@@ -39,6 +45,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}/var/run/cassandra
 mkdir -p %{buildroot}/etc/profile.d
 mkdir -p %{buildroot}/var/opt/cassandra
+
+rm build/lib/jars/hadoop-*
+rm build/classes/main/org/apache/cassandra/hadoop/HadoopCompat.class
 
 cp bin/%{name} %{buildroot}%{_sbindir}
 cp bin/%{name}.in.sh %{buildroot}%{_datadir}/cassandra/
@@ -117,6 +126,8 @@ fi
 /lib/systemd/system/cassandra.service
 
 %changelog
+*   Thu Jul 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-5
+*   Update logback jar (dependency) & remove hadoop jars
 *   Tue Jul 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-4
 -   Change cassandra service type as simple
 *   Mon Jul 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10-3
