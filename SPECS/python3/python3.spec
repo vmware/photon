@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -27,6 +27,8 @@ Provides:       python(abi)
 Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
+#Conflicts with pyconfig.h file from earlier devel package
+Conflicts: python3-devel < %{version}-%{release}
 
 %description
 The Python 3 package contains a new version of Python development environment.
@@ -151,6 +153,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/python-3.5.pc
 %{_libdir}/pkgconfig/python-3.5m.pc
 %{_libdir}/pkgconfig/python3.pc
+%{_includedir}/python3.5m/pyconfig.h
 
 %exclude %{_libdir}/python3.5/ctypes/test
 %exclude %{_libdir}/python3.5/distutils/tests
@@ -173,6 +176,7 @@ rm -rf %{buildroot}/*
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
+%exclude %{_includedir}/python3.5m/pyconfig.h
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %{_libdir}/libpython3.so
@@ -187,6 +191,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-5
+-   Fixed dependencies for easy_install-3.5
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-4
 -   Bump release to built with latest toolchain
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
