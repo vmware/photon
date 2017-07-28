@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -82,7 +82,7 @@ mkdir -p %{buildroot}/lib/systemd/system
 cat << EOF >> %{buildroot}/lib/systemd/system/ntpd.service
 [Unit]
 Description=Network Time Service
-After=syslog.target network.target
+After=network.target
 Documentation=man:ntpd
 Conflicts=systemd-timesyncd.service
 
@@ -138,6 +138,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Thu Jul 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.2.8p10-3
+-   Remove syslog.target from service file
 *   Mon Apr 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.8p10-2
 -   add noquery to conf
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 4.2.8p10-1

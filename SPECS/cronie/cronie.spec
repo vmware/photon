@@ -1,7 +1,7 @@
 Summary:        Cron Daemon
 Name:           cronie
 Version:        1.5.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
 URL:            https://fedorahosted.org/cronie
 Source0:        https://fedorahosted.org/releases/c/r/cronie/%{name}-%{version}.tar.gz
@@ -62,6 +62,7 @@ touch %{buildroot}/var/spool/anacron/cron.monthly
 install -vdm755 %{buildroot}/%{_sysconfdir}/pam.d
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -m 644 contrib/cronie.systemd %{buildroot}%{_libdir}/systemd/system/crond.service
+sed -i 's/ypbind.service//g' %{buildroot}%{_libdir}/systemd/system/crond.service
 install -c -m755  %{SOURCE1} %{buildroot}/%{_bindir}/run-parts
 
 ln -sfv ./crond.service %{buildroot}/usr/lib/systemd/system/cron.service
@@ -106,6 +107,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /var/spool/anacron/cron.monthly
 /var/spool/anacron/cron.weekly
 %changelog
+*   Fri Jul 28 2017 Dheerajs Shetty <dheerajs@vmware.com>  1.5.0-12
+-   Remove ypbind.service from crond.service file
 *   Mon Aug 29 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-11
 -   Fixed pam configuration for crond
 *   Thu Aug 4 2016 Divya Thaluru <dthaluru@vmware.com>  1.5.0-10

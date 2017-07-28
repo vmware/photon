@@ -1,7 +1,7 @@
 Summary:  	xinetd -- A better inetd.
 Name:		xinetd
 Version:	2.3.15
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD
 Group:		System Environment/Daemons
 Vendor:     	VMware, Inc.
@@ -69,6 +69,8 @@ fi
 /lib/systemd/system/xinetd.service
 
 %changelog
+*   Thu Jul 27 2017 Dheeraj Shetty <dheerajs@vmware.com>  2.3.15-7
+-   Removed syslog.target from service file 
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.3.15-6
 -   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.3.15-5
