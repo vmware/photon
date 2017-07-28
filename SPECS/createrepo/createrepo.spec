@@ -3,7 +3,7 @@
 Summary: 	Creates a common metadata repository
 Name: 		createrepo
 Version: 	0.10.4
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 License:	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.
@@ -16,6 +16,7 @@ Requires: python2 >= 2.1, rpm-devel, rpm >= 0:4.1.1, libxml2
 Requires: yum-metadata-parser, yum >= 3.2.7
 Requires: bash
 Requires: deltarpm
+Requires: deltarpm-python
 BuildRequires: bash
 BuildRequires: deltarpm
 BuildRequires: yum-metadata-parser, yum, rpm-devel, rpm, libxml2, python2, python2-libs
@@ -49,8 +50,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{python_sitelib}/createrepo
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.4-2
--	GA - Bump release of all rpms
+*   Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 0.10.4-3
+-   Added deltarpm-python required for runtime dependency
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.10.4-2
+-   GA - Bump release of all rpms
 * Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.10.4
 - Updating to new version.
 * Thu Dec 20 2007 Seth Vidal <skvidal at fedoraproject.org>
