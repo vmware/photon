@@ -1,7 +1,7 @@
 Summary:    Ruby
 Name:       ruby
 Version:    2.4.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSDL
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
@@ -14,6 +14,7 @@ Patch1:     ruby-CVE-2017-9226.patch
 Patch2:     ruby-CVE-2017-9227.patch
 Patch3:     ruby-CVE-2017-9229.patch
 Patch4:     ruby-CVE-2017-9228.patch
+Patch4:     ruby-CVE-2017-11465.patch
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -33,6 +34,7 @@ This is useful for object-oriented scripting.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 %build
 ./configure \
     --prefix=%{_prefix}   \
@@ -60,6 +62,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Fri Jul 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.1-4
+-   [security] CVE-2017-11465
 *   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.1-3
 -   [security] CVE-2017-9228
 *   Tue Jun 13 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.1-2
