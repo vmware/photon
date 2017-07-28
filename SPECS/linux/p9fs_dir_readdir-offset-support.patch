@@ -1,0 +1,69 @@
+From 83adb57ec7ca18b9c5d1290e88b1fe139b280f66 Mon Sep 17 00:00:00 2001
+From: Wenguang Wang <wenguangw@vmware.com>
+Date: Fri, 28 Jul 2017 16:19:44 -0700
+Subject: [PATCH] p9fs_dir_readdir offset support
+
+In the linux 9p client fs module, in readdir implementation, we do not check
+for current offset position (which could have been changed by a seek call), and
+keep returning (now incorrect) data from the already read and remaining buffer.
+---
+ fs/9p/vfs_dir.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/fs/9p/vfs_dir.c b/fs/9p/vfs_dir.c
+index 5cc00e56206e..a876cc9a473a 100644
+--- a/fs/9p/vfs_dir.c
++++ b/fs/9p/vfs_dir.c
+@@ -45,6 +45,7 @@
+  * struct p9_rdir - readdir accounting
+  * @head: start offset of current dirread buffer
+  * @tail: end offset of current dirread buffer
++ * @pos: expected dir offset to read the dirread buffer @head
+  * @buf: dirread buffer
+  *
+  * private structure for keeping track of readdir
+@@ -54,6 +55,7 @@
+ struct p9_rdir {
+ 	int head;
+ 	int tail;
++	off_t pos;
+ 	uint8_t buf[];
+ };
+ 
+@@ -130,7 +132,7 @@ static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
+ 	kvec.iov_len = buflen;
+ 
+ 	while (1) {
+-		if (rdir->tail == rdir->head) {
++		if (rdir->tail == rdir->head || rdir->pos != ctx->pos) {
+ 			struct iov_iter to;
+ 			int n;
+ 			iov_iter_kvec(&to, READ | ITER_KVEC, &kvec, 1, buflen);
+@@ -162,6 +164,7 @@ static int v9fs_dir_readdir(struct file *file, struct dir_context *ctx)
+ 				return 0;
+ 
+ 			rdir->head += reclen;
++			rdir->pos += reclen;
+ 			ctx->pos += reclen;
+ 		}
+ 	}
+@@ -191,7 +194,7 @@ static int v9fs_dir_readdir_dotl(struct file *file, struct dir_context *ctx)
+ 		return -ENOMEM;
+ 
+ 	while (1) {
+-		if (rdir->tail == rdir->head) {
++		if (rdir->tail == rdir->head || rdir->pos != ctx->pos) {
+ 			err = p9_client_readdir(fid, rdir->buf, buflen,
+ 						ctx->pos);
+ 			if (err <= 0)
+@@ -218,6 +221,7 @@ static int v9fs_dir_readdir_dotl(struct file *file, struct dir_context *ctx)
+ 				return 0;
+ 
+ 			ctx->pos = curdirent.d_off;
++			rdir->pos = curdirent.d_off;
+ 			rdir->head += err;
+ 		}
+ 	}
+-- 
+2.11.0
+
