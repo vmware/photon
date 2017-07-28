@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.77
+Version:       4.4.79
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=19dc4c74fbf09f5fe5f88c32a9524bd94af0ec44
+%define sha1 linux=5b249aa3410b464515178df8f9a1ff0e3ba3f67e
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -34,6 +34,7 @@ Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
+Patch23:       p9fs_dir_readdir-offset-support.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -92,6 +93,7 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -180,6 +182,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jul 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-1
+-   [feature] p9fs_dir_readdir() offset support
+-   Fix CVE-2017-11473
 *   Mon Jul 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.77-1
 -   [feature] IP tunneling support (CONFIG_NET_IPIP=m)
 -   Fix CVE-2017-11176

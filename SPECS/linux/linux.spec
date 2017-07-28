@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.77
-Release:    	2%{?dist}
+Version:    	4.4.79
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=19dc4c74fbf09f5fe5f88c32a9524bd94af0ec44
+%define sha1 linux=5b249aa3410b464515178df8f9a1ff0e3ba3f67e
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -277,6 +277,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Aug 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-1
+-   Fix CVE-2017-11473
 *   Tue Aug 01 2017 Anish Swaminathan <anishs@vmware.com> 4.4.77-2
 -   Allow some algorithms in FIPS mode
 -   Reverts 284a0f6e87b0721e1be8bca419893902d9cf577a and backports
