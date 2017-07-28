@@ -72,6 +72,19 @@ class Specutils(object):
                 break
         return rpmName
 
+    def getDebuginfoRPMName(self, pkgName):
+        rpmName=None
+        for key in self.spec.packages.keys():
+            pkg = self.spec.packages.get(key)
+            if pkg.name == pkgName:
+                if pkg.basePkgName:
+                    rpmName=pkg.basePkgName+"-debuginfo-"+pkg.version+"-"+pkg.release
+                    break
+                else:
+                    rpmName=pkg.name+"-debuginfo-"+pkg.version+"-"+pkg.release
+                    break
+        return rpmName
+
     def getRPMVersion(self, pkgName):
         version=None
         for key in self.spec.packages.keys():
@@ -143,7 +156,6 @@ class Specutils(object):
         return dependentPackages
     
     def getBuildRequiresAllPackages(self):
-    
         depedentPackages=[]
         for key in self.spec.packages.keys():
             pkg = self.spec.packages.get(key)
