@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -80,6 +80,8 @@ mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 # Disable networking config by cloud-init
 cp -p %{SOURCE2} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d/
+sed -i 's/Before=NetworkManager.service//g'  %{buildroot}/lib/systemd/system/cloud-init-local.service
+sed -i 's/After=networking.service//g'  %{buildroot}/lib/systemd/system/cloud-init.service
 
 %check
 openssl req \
@@ -195,6 +197,9 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Fri Jul 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.9-3
+-   Removed networking.service and NetworkManger.service from
+-   cloud-init and cloud-init-local service files
 *   Wed Jul 19 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.9-2
 -   Enabled openstack provider
 *   Wed May 24 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-1

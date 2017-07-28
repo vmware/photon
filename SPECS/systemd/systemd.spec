@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          35%{?dist}
+Release:          36%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -132,8 +132,24 @@ sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/lib/systemd/network/99-default.link
 sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
+sed -i 's/systemd-sysusers.service//g' %{buildroot}/lib/systemd/system/systemd-networkd.service
+sed -i 's/systemd-sysusers.service//g' %{buildroot}/lib/systemd/system/systemd-udevd.service
+sed -i 's/After=systemd-sysusers.service//g' %{buildroot}/lib/systemd/system/systemd-tmpfiles-setup-dev.service
+sed -i 's/systemd-sysusers.service//g' %{buildroot}/lib/systemd/system/systemd-tmpfiles-setup.service
+sed -i 's/systemd-sysusers.service//g' %{buildroot}/lib/systemd/system/systemd-timesyncd.service
+sed -i 's/plymouth-start.service//g' %{buildroot}/lib/systemd/system/systemd-ask-password-console.service
+sed -i 's/After=plymouth-start.service//g' %{buildroot}/lib/systemd/system/systemd-ask-password-console.path
+sed -i 's/plymouth-start.service//g' %{buildroot}/lib/systemd/system/rescue.service
+sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/container-getty@.service
+sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/getty@.service
+sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/autovt@.service
+sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/serial-getty@.service
+sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/console-getty.service
+sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/console-shell.service
+
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
+
 
 #cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
@@ -202,7 +218,11 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 %dir %{_localstatedir}/log/journal
 
+
 %changelog
+*    Fri Jul 28 2017 Dheeraj Shetty <dheerajs@vmware.com>  228-36
+-    Removed systemd-sysusers.service,plymouth-quit-wait.service and
+-    plymouth-start.service from all service files.
 *    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-35
 -    Fix for CVE-2017-9445.
 *    Sat Jan 22 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-34

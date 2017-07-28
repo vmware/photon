@@ -1,7 +1,7 @@
 Summary:	Irqbalance daemon
 Name:		irqbalance
 Version:	1.1.0
-Release:	4%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		https://github.com/Irqbalance/irqbalance
 Group:		System Environment/Services
@@ -28,7 +28,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -D -m 0644 misc/irqbalance.env %{buildroot}/etc/sysconfig/irqbalance
 sed -i 's#/path/to/irqbalance.env#/etc/sysconfig/irqbalance#' misc/irqbalance.service
-sed -i 's/After=syslog.target//g' misc/irqbalance.service
+sed -i 's/syslog.target//g' misc/irqbalance.service
 install -D -m 0644 misc/irqbalance.service %{buildroot}%{_prefix}/lib/systemd/system/irqbalance.service
 
 %post
@@ -47,8 +47,6 @@ install -D -m 0644 misc/irqbalance.service %{buildroot}%{_prefix}/lib/systemd/sy
 %{_datadir}/*
 
 %changelog
-*  Thu Jul 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.1.0-4
--  Remove syslog.target from the service file
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-3
 -	GA - Bump release of all rpms
 *  Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.0-2
