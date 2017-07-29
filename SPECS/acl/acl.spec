@@ -1,7 +1,7 @@
 Summary:	Access control list utilities
 Name:		acl
 Version:	2.2.52
-Release:	4%{?dist}
+Release:	5%{?dist}
 Source0:	http://download.savannah.gnu.org/releases-noredirect/acl/acl-%{version}.src.tar.gz
 %define sha1 acl=537dddc0ee7b6aa67960a3de2d36f1e2ff2059d9
 License:	GPLv2+
@@ -59,12 +59,10 @@ chmod 0755 %{buildroot}%{_libdir}/libacl.so.*.*.*
 %find_lang %{name}
 
 %check
-#sed -i 's/| sed \x27s\/\\\.\$\/\/g\x27//g' test/sbits-restore.test test/cp.test test/getfacl-recursive.test
-
-if test 0 = `id -u`; then
-   make  %{?_smp_mflags} root-tests
+if ./setfacl/setfacl -m u:`id -u`:rwx .; then
+    make  %{?_smp_mflags} root-tests
 else
-   make  %{?_smp_mflags} tests
+    echo '*** The chroot file system does not support all ACL options***'
 fi
 
 %post -n libacl 
@@ -96,6 +94,8 @@ fi
 %{_libdir}/libacl.so.*
 
 %changelog
+* Fri Jul 28 2017 Chang Lee <changlee@vmware.com> 2.2.52-5
+- Fixed %check for filtering unsupported check env
 * Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.2.52-4
 - BuildRequired attr-devel.
 * Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.2.52-3
