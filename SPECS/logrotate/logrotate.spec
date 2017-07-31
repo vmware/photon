@@ -1,7 +1,7 @@
 Summary:	Logrotate
 Name:		logrotate
 Version:	3.11.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPL+
 URL:		https://github.com/logrotate/logrotate/
 Source0:	https://github.com/logrotate/logrotate/archive/%{name}-%{version}.tar.gz
@@ -31,17 +31,23 @@ install -p -m 755 examples/logrotate.cron %{buildroot}%{_sysconfdir}/cron.daily/
 install -vd %{buildroot}%{_localstatedir}/lib/logrotate
 touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/cron.daily/logrotate
 %config(noreplace) %{_sysconfdir}/logrotate.conf
+%config(noreplace) %{_sysconfdir}/logrotate.d
 %{_sbindir}/logrotate
 %{_mandir}/man5/logrotate.conf.5.gz
 %{_mandir}/man8/logrotate.8.gz
 /var/lib/logrotate/logrotate.status
+
 %changelog
+*       Mon Jul 31 2017 Kumar Kaushik <kaushikk@vmware.com> 3.11.0-3
+-       Creating /etc/logrotate.d folder as part of package installation, Bug#1878180.
 *       Wed Jun 14 2017 Anish Swaminathan <anishs@vmware.com> 3.11.0-2
 -       Mark config files as noreplace
 *       Fri Apr 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.11.0-1
