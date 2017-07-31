@@ -1,7 +1,7 @@
 Summary:	This package contains programs to find files
 Name:		findutils
 Version:	4.6.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/findutils
 Group:		Applications/File
@@ -39,7 +39,9 @@ rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 
 %check
-make %{?_smp_mflags} check
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test make check && userdel test -r -f
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -55,6 +57,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*       Mon Jul 31 2017 Chang Lee <changlee@vmware.com> 4.6.0-4
+-       Fix %check
 *       Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 4.6.0-3
 -       Add lang package.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.6.0-2
