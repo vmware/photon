@@ -1,7 +1,7 @@
 Summary:	Programs that show the differences between files or directories
 Name:		diffutils
 Version:	3.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/diffutils
 Group:		System Environment/Base
@@ -28,13 +28,17 @@ rm -rf %{buildroot}%{_infodir}
 
 %check
 sed -i 's/test-update-copyright.sh //' gnulib-tests/Makefile
-make %{?_smp_mflags} check
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test make check && userdel test -r -f
 
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*       Mon Jul 31 2017 Chang Lee <changlee@vmware.com> 3.5-2
+-       fixed %check
 *       Wed Apr 19 2017 Bo Gan <ganb@vmware.com> 3.5-1
 -       Update to 3.5
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 3.3-4
