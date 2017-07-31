@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.29.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -10,6 +10,9 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    util-linux=b488f185e74187a63b55baef9d3f48d5b1780118
 BuildRequires:  ncurses-devel
+%if %{with_check}
+BuildRequires:  ncurses-terminfo
+%endif
 Requires: %{name}-libs = %{version}-%{release}
 %description
 Utilities for handling file systems, consoles, partitions,
@@ -55,6 +58,10 @@ find %{buildroot} -name '*.la' -delete
 
 %check
 chown -Rv nobody .
+chmod 666 /dev/ptmx
+mkdir -p /dev/pts
+echo "none  /dev/pts devpts" >> /etc/fstab
+mount /dev/pts
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 
 %post   -p /sbin/ldconfig
@@ -91,6 +98,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Jul 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.29.2-3
+-   Fixed rpm check errors.
 *   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29.2-2
 -   Added -libs subpackage to strip docker image.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.29.2-1
