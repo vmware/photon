@@ -14,6 +14,7 @@ SHASUM=/usr/bin/shasum
 PACKER=/usr/local/bin/packer
 VAGRANT=/usr/bin/vagrant
 VAGRANT_BUILD=vagrant
+GIT=/usr/bin/git
 
 SRCROOT := $(realpath $(SRCROOT))
 MAKEROOT := $(realpath $(MAKEROOT))
@@ -48,6 +49,7 @@ endif
 PHOTON_PULL_PUBLISH_RPMS=$(PHOTON_PULL_PUBLISH_RPMS_DIR)/pullpublishrpms.sh
 PHOTON_PULL_PUBLISH_X_RPMS=$(PHOTON_PULL_PUBLISH_RPMS_DIR)/pullpublishXrpms.sh
 PHOTON_CLOUD_IMAGE_BUILDER=$(PHOTON_CLOUD_IMAGE_BUILDER_DIR)/cloud-image-build.sh
+PHOTON_PULL_DAILY_BUILD_RPMS=$(PHOTON_PULL_PUBLISH_RPMS_DIR)/pulldailybuildrpms.sh
 
 PHOTON_CHROOT_CLEANER=$(PHOTON_PKG_BUILDER_DIR)/clean-up-chroot.py
 PHOTON_RPMS_DIR_NOARCH=$(PHOTON_RPMS_DIR)/noarch
