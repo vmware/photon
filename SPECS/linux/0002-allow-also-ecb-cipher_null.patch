@@ -1,0 +1,24 @@
+From c1deec443b0ee878078ac3b60b8123a7728c0e43 Mon Sep 17 00:00:00 2001
+From: Ansis Atteka <aatteka@ovn.org>
+Date: Tue, 1 Aug 2017 09:37:18 -0700
+Subject: [PATCH] allow also ecb(cipher_null)
+
+---
+ crypto/testmgr.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index 7acf747..e6c0177 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -3037,6 +3037,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "ecb(cipher_null)",
+ 		.test = alg_test_null,
++        .fips_allowed = 1,
+ 	}, {
+ 		.alg = "ecb(des)",
+ 		.test = alg_test_skcipher,
+-- 
+2.7.4
+
