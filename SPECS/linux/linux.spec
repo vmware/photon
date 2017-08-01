@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.38
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -267,6 +267,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Jul 26 2017 Bo Gan <ganb@vmware.com> 4.9.38-4
+-   Fix initramfs triggers
 *   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
 -   Add missing hyperv drivers
 *   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2

@@ -1,7 +1,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	2.0
-Release:	2%{?dist}
+Release:	4%{?dist}
 Source0:	fscks.conf
 License:	Apache License
 Group:		System Environment/Base
@@ -18,53 +18,72 @@ mkdir -p %{buildroot}%{_sysconfdir}/dracut.conf.d
 install -D -m644 %{SOURCE0} %{buildroot}%{_sysconfdir}/dracut.conf.d/
 install -d -m755 %{buildroot}%{_localstatedir}/lib/initramfs/kernel
 
-%define watched_path %{_sbindir} %{_libdir}/udev/rules.d %{_libdir}/systemd/system  /lib/modules
+%define watched_path %{_sbindir} %{_libdir}/udev/rules.d %{_libdir}/systemd/system /lib/modules %{_sysconfdir}/dracut.conf.d
 %define watched_pkgs e2fsprogs, ostree, systemd, kpartx, device-mapper-multipath
 
-%define removal_action \
-rm -rf %{_localstatedir}/lib/rpm-state/initramfs.regenerate \
-rm -rf %{_localstatedir}/lib/rpm-state/initramfs.pending
+%define removal_action() rm -rf %{_localstatedir}/lib/rpm-state/initramfs
 
-%define pkgs_trigger_action \
-[ -f %{_localstatedir}/lib/rpm-state/initramfs.regenerate ] && exit 0 \
-mkdir -p %{_localstatedir}/lib/rpm-state \
-touch %{_localstatedir}/lib/rpm-state/initramfs.regenerate \
-echo "initramfs (re)generation triggered" >&2
+%define pkgs_trigger_action() \
+[ -f %{_localstatedir}/lib/rpm-state/initramfs/regenerate ] && exit 0 \
+mkdir -p %{_localstatedir}/lib/rpm-state/initramfs \
+touch %{_localstatedir}/lib/rpm-state/initramfs/regenerate \
+echo "initramfs (re)generation" %* >&2
 
-%define file_trigger_action \
+%define file_trigger_action() \
 cat > /dev/null \
-if [ -f %{_localstatedir}/lib/rpm-state/initramfs.regenerate ]; then \
-    echo "(re)generate initramfs for all kernels" >&2 \
+if [ -f %{_localstatedir}/lib/rpm-state/initramfs/regenerate ]; then \
+    echo "(re)generate initramfs for all kernels," %* >&2 \
     mkinitrd -q \
-elif [ -d %{_localstatedir}/lib/rpm-state/initramfs.pending ]; then \
-    for k in `ls %{_localstatedir}/lib/rpm-state/initramfs.pending/`; do \
-        echo "generate initramfs for $k" >&2 \
+elif [ -d %{_localstatedir}/lib/rpm-state/initramfs/pending ]; then \
+    for k in `ls %{_localstatedir}/lib/rpm-state/initramfs/pending/`; do \
+        echo "(re)generate initramfs for $k," %* >&2 \
         mkinitrd -q /boot/initrd.img-$k $k \
     done; \
 fi \
-%{removal_action}
-
-%post
-%{pkgs_trigger_action}
-
-%postun
-[ $1 -eq 0 ] || exit 0
-%{removal_action}
+%removal_action
 
 %posttrans
-%{file_trigger_action}
+echo "initramfs" %{version}-%{release} "posttrans" >&2
+%removal_action
+mkinitrd -q
+
+%postun
+echo "initramfs" %{version}-%{release} "postun" >&2
+#cleanup the states
+%removal_action
 
 %triggerin -- %{watched_pkgs}
-%{pkgs_trigger_action}
+[ $1 -gt 1 ] && exit 0
+#Upgrading, let the posttrans of new initramfs handles it
+%pkgs_trigger_action triggerin $* %{version}-%{release}
 
 %triggerun -- %{watched_pkgs}
-%{pkgs_trigger_action}
+[ $1 -eq 0 ] && exit 0
+#Uninstalling, let the linux.rpm removes initrd for themselves
+%pkgs_trigger_action triggerun $* %{version}-%{release}
 
 %transfiletriggerin -- %{watched_path}
-%{file_trigger_action}
+%file_trigger_action transfilertriggerin %{version}-%{release}
 
 %transfiletriggerpostun -- %{watched_path}
-%{file_trigger_action}
+%file_trigger_action transfiletriggerpostun %{version}-%{release}
+
+# How it works:
+# Two sets of triggers:
+#
+# package triggers for setting the `regenerate` flag
+# upon critical package install/upgrade/uninstall
+#
+# file transcation triggers which watches a super set of the files
+# in those packages so that we have an opportunity to check for the flag
+# and (re)generate initrd for all the kernels.
+#
+# All the flags will be put in /var/lib/rpm-state/initramfs
+#
+# This ensures the easy removal of the intermediate state,
+# postun is essential here, as it guarantees that no intermediate states
+# will be left over for the new initramfs rpm, since triggerin/un
+# in the new rpm will execute after the postun in the old rpm
 
 %files
 %defattr(-,root,root,-)
@@ -72,6 +91,8 @@ fi \
 %dir %{_localstatedir}/lib/initramfs/kernel
 
 %changelog
+*   Thu Jul 27 2017 Bo Gan <ganb@vmware.com> 2.0-3
+-   Move all states to one directory
 *   Fri May 26 2017 Bo Gan <ganb@vmware.com> 2.0-2
 -   Discard stdin before dracut
 *   Wed Apr 12 2017 Bo Gan <ganb@vmware.com> 2.0-1
