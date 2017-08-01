@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.38
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -250,6 +250,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jul 26 2017 Bo Gan <ganb@vmware.com> 4.9.38-5
+-   Fix initramfs triggers
 *   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-4
 -   Add patches in Hyperv codebase
 *   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
