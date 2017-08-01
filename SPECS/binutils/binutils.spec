@@ -1,16 +1,17 @@
-Summary:	Contains a linker, an assembler, and other tools
-Name:		binutils
-Version:	2.28
-Release:	2%{?dist}
-License:	GPLv2+
-URL:		http://www.gnu.org/software/binutils
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
+Summary:    Contains a linker, an assembler, and other tools
+Name:       binutils
+Version:    2.25.1
+Release:    1%{?dist}
+License:    GPLv2+
+URL:        http://www.gnu.org/software/binutils
+Group:      System Environment/Base
+Vendor:     VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
-%define sha1 binutils=f8b033731f6baa437d429c60e2623570f1ef9d6b
-Patch0:         binutils-CVE-2017-6969.patch
-Patch1:         binutils-CVE-2017-8421.patch
+Source0:    http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
+%define sha1 binutils=1d597ae063e3947a5f61e23ceda8aebf78405fcd
+Patch0:     http://www.linuxfromscratch.org/patches/downloads/binutils/binutils-2.25.1-gold_export_symbols-1.patch
+Patch1:     binutils-CVE-2014-9939.patch
+Patch2:     binutils-CVE-2017-6969.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -24,17 +25,15 @@ for handling compiled objects.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+rm -fv etc/standards.info
+sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
 %build
 install -vdm 755 ../binutils-build
 cd ../binutils-build
 ../%{name}-%{version}/configure \
 	     --prefix=%{_prefix} \
-             --enable-gold       \
-             --enable-ld=default \
-             --enable-plugins    \
              --enable-shared     \
-             --disable-werror    \
-             --with-system-zlib  \
              --disable-silent-rules
 make %{?_smp_mflags} tooldir=%{_prefix}
 %install
@@ -48,17 +47,14 @@ popd
 
 %check
 cd ../binutils-build
-make %{?_smp_mflags} check
-
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
 %files -f %{name}.lang
 %defattr(-,root,root)
-%{_bindir}/dwp
 %{_bindir}/gprof
 %{_bindir}/ld.bfd
-%{_bindir}/ld.gold
 %{_bindir}/c++filt
 %{_bindir}/objdump
 %{_bindir}/as
@@ -143,19 +139,6 @@ make %{?_smp_mflags} check
 %{_libdir}/ldscripts/elf_l1om.xbn
 %{_libdir}/ldscripts/elf_x86_64.xbn
 %{_libdir}/ldscripts/elf_l1om.xdw
-%{_libdir}/ldscripts/elf_iamcu.x
-%{_libdir}/ldscripts/elf_iamcu.xbn
-%{_libdir}/ldscripts/elf_iamcu.xc
-%{_libdir}/ldscripts/elf_iamcu.xd
-%{_libdir}/ldscripts/elf_iamcu.xdc
-%{_libdir}/ldscripts/elf_iamcu.xdw
-%{_libdir}/ldscripts/elf_iamcu.xn
-%{_libdir}/ldscripts/elf_iamcu.xr
-%{_libdir}/ldscripts/elf_iamcu.xs
-%{_libdir}/ldscripts/elf_iamcu.xsc
-%{_libdir}/ldscripts/elf_iamcu.xsw
-%{_libdir}/ldscripts/elf_iamcu.xu
-%{_libdir}/ldscripts/elf_iamcu.xw
 %{_mandir}/man1/readelf.1.gz
 %{_mandir}/man1/windmc.1.gz
 %{_mandir}/man1/ranlib.1.gz
@@ -191,6 +174,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*	Tue Aug 1 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25.1-1
+-	Downgrade to 2.25.1 - no CVE fix for 2.28
 *	Tue May 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.28-2
 -	Patch for CVE-2017-8421
 *       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 2.28-1
