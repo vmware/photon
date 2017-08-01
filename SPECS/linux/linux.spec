@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.77
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -33,6 +33,10 @@ Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
 Patch16:        net-9p-vsock.patch
+#allow some algorithms in FIPS mode
+Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
+Patch18:        0002-allow-also-ecb-cipher_null.patch
+
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -119,6 +123,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
+%patch18 -p1
 
 %build
 make mrproper
@@ -271,6 +277,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Aug 01 2017 Anish Swaminathan <anishs@vmware.com> 4.4.77-2
+-   Allow some algorithms in FIPS mode
+-   Reverts 284a0f6e87b0721e1be8bca419893902d9cf577a and backports
+-   bcf741cb779283081db47853264cc94854e7ad83 in the kernel tree
 *   Mon Jul 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.77-1
 -   Fix CVE-2017-11176
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.74-1
