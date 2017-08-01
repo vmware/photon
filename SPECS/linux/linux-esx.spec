@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.38
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -187,6 +187,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jul 26 2017 Bo Gan <ganb@vmware.com> 4.9.38-3
+-   Fix initramfs triggers
 *   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
 -   Disable scheduler beef up patch
 *   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
