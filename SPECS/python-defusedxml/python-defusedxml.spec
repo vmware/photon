@@ -4,7 +4,7 @@
 Summary:        XML bomb protection for Python stdlib modules
 Name:           python-defusedxml
 Version:        0.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/defusedxml
 License:        PSFL
 Group:          Development/Languages/Python
@@ -22,6 +22,7 @@ BuildRequires:  python-setuptools
 
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-xml
 
 %description
 The results of an attack on a vulnerable XML library can be fairly dramatic. With just a few hundred Bytes of XML data an attacker can occupy several Gigabytes of memory within seconds. An attacker can also keep CPUs busy for a long time with a small to medium size request. Under some circumstances it is even possible to access local files on your server, to circumvent a firewall, or to abuse services to rebound attacks to third parties.
@@ -38,6 +39,7 @@ BuildRequires:  python3-libs
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-xml
 
 %description -n python3-defusedxml
 
@@ -75,5 +77,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Aug 01 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-2
+-   Added python-xml to requires of python-defusedxml.
+-   Added python3-xml to requires of python3-defusedxml.
 *   Thu Mar 09 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-1
 -   Initial packaging for Photon
