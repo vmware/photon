@@ -169,7 +169,7 @@ class SerializedSpecObjects(object):
         elif (inputType == "who-needs-build"):
             if (packageFound == True):
                 self.findTotalWhoNeedsToBuild(depQue, whoBuildDeps, whoBuildDepSet, displayOption)
-                print whoBuildDepSet
+                print ' '.join(list(whoBuildDepSet))
             else:
                 print "No spec file builds a package named", inputValue
             return
