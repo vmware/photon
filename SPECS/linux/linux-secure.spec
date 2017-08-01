@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.38
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -255,6 +255,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Aug 04 2017 Bo Gan <ganb@vmware.com> 4.9.38-6
+-   Fix initramfs triggers
 *   Tue Aug 01 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-5
 -   Allow some algorithms in FIPS mode
 -   Reverts 284a0f6e87b0721e1be8bca419893902d9cf577a and backports
