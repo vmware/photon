@@ -46,6 +46,12 @@ else
 PHOTON_PUBLISH_XRPMS := publish-x-rpms
 endif
 
+ifdef PHOTON_DAILY_BUILD_RPMS_PATH
+PHOTON_DAILY_BUILD_RPMS := daily-build-rpms
+else
+PHOTON_DAILY_BUILD_RPMS := daily-build-rpms-cached
+endif
+
 # Tri state RPMCHECK:
 # 1) RPMCHECK is not specified:  just build
 # 2) RPMCHECK=enable: build and run %check section. do not stop on error. will generate report file.
@@ -248,6 +254,30 @@ packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_R
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
 
+inc-packages: check-tools check-git $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists $(PHOTON_DAILY_BUILD_RPMS) remove-affected-rpms
+	@echo "Incrementally building the modified packages and the packages being affected..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -a $(PHOTON_SRPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                -c $(PHOTON_PULLSOURCES_CONFIG) \
+                -d $(PHOTON_DIST_TAG) \
+                -n $(PHOTON_BUILD_NUMBER) \
+                -v $(PHOTON_RELEASE_VERSION) \
+                -w $(PHOTON_STAGE)/pkg_info.json \
+                -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                $(PHOTON_RPMCHECK_FLAGS) \
+		$(PUBLISH_BUILD_DEPENDENCIES) \
+		$(PACKAGE_WEIGHTS_PATH) \
+                -t ${THREADS}
+
+
 updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -332,6 +362,11 @@ publish-x-rpms:
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
 	$(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR)
 
+daily-build-rpms:
+	@echo "Pulling daily build rpms from photon-filer..."
+	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
+	$(PHOTON_PULL_DAILY_BUILD_RPMS) $(PHOTON_RPMS_DIR)
+
 publish-rpms-cached:
 	@echo "Using cached publish rpms..."
 	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR) && \
@@ -341,6 +376,11 @@ publish-x-rpms-cached:
 	@echo "Using ..."
 	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR) && \
         $(CP) -rf $(PHOTON_PUBLISH_XRPMS_PATH)/* $(PHOTON_PUBLISH_XRPMS_DIR)/
+
+daily-build-rpms-cached:
+	@echo "Using cached daily build rpms..."
+	@$(MKDIR) -p $(PHOTON_RPMS_DIR) && \
+	 $(CP) -rf $(PHOTON_DAILY_BUILD_RPMS_PATH)/* $(PHOTON_RPMS_DIR)/
 
 $(PHOTON_STAGE):
 	@echo "Creating staging folder..."
@@ -377,6 +417,20 @@ generate-dep-lists:
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
 		--input-type=json --file $$f -d json -a $(PHOTON_DATA_DIR); \
+	done
+
+remove-affected-rpms:
+	@for f in $$(cd $(SRCROOT) && $(GIT) diff --name-only HEAD~1..HEAD | grep spec | rev | cut -d'/' -f-1 | rev | cut -f 1 -d '.') ; \
+	do \
+		echo "Generating list of packages who need $$f to build"; \
+		$(PHOTON_PKG_BUILDER_DIR)/util-check.py -p $$f && { echo "ToolChain has been modified, delete all RPMS..."; \
+		$(RMDIR) $(PHOTON_RPMS_DIR_NOARCH)/* $(PHOTON_RPMS_DIR_X86_64)/* $(PHOTON_SRPMS_DIR)/* $(PHOTON_UPDATED_RPMS_DIR_NOARCH)/* $(PHOTON_UPDATED_RPMS_DIR_X86_64)/* ; break; } ; \
+		cd $(PHOTON_SPECDEPS_DIR) && \
+		for ff in $$($(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -t $(PHOTON_STAGE) --input-type=build-deps --pkg $$f) ; \
+		do \
+			echo "Removing $$ff"; \
+			cd $(PHOTON_RPMS_DIR) && find . -name $$ff\* -exec rm -f {} + ;\
+		done; \
 	done
 
 photon-docker-image:
@@ -498,6 +552,9 @@ check-kpartx:
 
 check-vagrant: check-packer
 	@command -v $(VAGRANT) >/dev/null 2>&1 || { echo "Vagrant not installed or wrong path, expecting $(VAGRANT). Aborting" >&2; exit 1; }
+
+check-git:
+	@command -v git >/dev/null 2>&1 || { echo "Package git not installed. Aborting." >&2; exit 1; }
 
 check-sanity:
 	$(SRCROOT)/support/sanity_check.sh
