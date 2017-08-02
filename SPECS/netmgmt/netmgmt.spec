@@ -54,7 +54,8 @@ make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
-make %{?_smp_mflags} -k check
+# Disable check. It requires docker which does not run in chroot.
+# Make check for netmgr should be run in vmware/netmgmt project.
 
 %post
 /sbin/ldconfig
