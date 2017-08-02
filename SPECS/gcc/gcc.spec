@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -93,6 +93,9 @@ sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 install -vdm 755 ../gcc-build
 %build
+# Fix compilation issue for glibc-2.26
+sed -i 's/struct ucontext/ucontext_t/' libgcc/config/i386/linux-unwind.h
+
 cd ../gcc-build
 SED=sed \
 ../%{name}-%{version}/configure \
@@ -241,6 +244,8 @@ make %{?_smp_mflags} check
 %endif
 
 %changelog
+*   Thu Aug 3 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-2
+-   Fix compilation issue for glibc-2.26
 *   Thu Mar 9 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-1
 -   Update version to 6.3
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 5.3.0-6
