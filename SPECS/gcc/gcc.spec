@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -93,6 +93,20 @@ sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 install -vdm 755 ../gcc-build
 %build
+
+# Fix compilation issue for glibc-2.26.
+# TODO: remove these lines after gcc update to 7.2+
+#
+# 1. "typedef struct ucontext ucontext_t" was renamed to
+#    "typedef struct ucontext_t ucontext_t"
+sed -i 's/struct ucontext/ucontext_t/g' libgcc/config/i386/linux-unwind.h
+# 2. struct sigaltstack removed
+sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.cc
+sed -i '/struct sigaltstack;/d' libsanitizer/sanitizer_common/sanitizer_linux.h
+sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.h
+sed -i 's/struct sigaltstack/stack_t/g' libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
+sed -i 's/__res_state/struct __res_state/g' libsanitizer/tsan/tsan_platform_linux.cc
+
 cd ../gcc-build
 SED=sed \
 ../%{name}-%{version}/configure \
@@ -244,6 +258,8 @@ make %{?_smp_mflags} check-gcc
 %endif
 
 %changelog
+*   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-3
+-   Fix compilation issue for glibc-2.26
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-2
 -   Improve make check
 *   Thu Mar 9 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-1
