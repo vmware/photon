@@ -1,7 +1,7 @@
 Summary:	Management tools and libraries relating to cryptography
 Name:		openssl
 Version:	1.0.2k
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	OpenSSL
 URL:		http://www.openssl.org
 Group:		System Environment/Security
@@ -112,6 +112,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Fri Jul 28 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-3
+-   Allow system file take precedence over kernel parameter for FIPS
 *   Fri Jul 28 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-2
 -   Patch to support enabling FIPS_mode through kernel parameter
 *   Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-1
