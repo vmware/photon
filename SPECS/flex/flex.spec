@@ -68,19 +68,19 @@ make %{?_smp_mflags} check
 %{_includedir}/*
 
 %changelog
-*   Tue May 11 2017 Chang Lee <changlee@vmware.com> 2.6.4-1
+*   Thu May 11 2017 Chang Lee <changlee@vmware.com> 2.6.4-1
 -   Updated to version 2.6.4
 *   Tue Apr 04 2017 Chang Lee <changlee@vmware.com> 2.6.0-1
 -   Updated to version 2.6.0
-*       Thu Oct 13 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.39-3
--       Fixing Security bug CVE-2016-6354.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5.39-2
--	GA - Bump release of all rpms
-* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5.39-1
-- 	Updated to version 2.5.39
-*       Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.5.38-3
--       Moving static lib files to devel package.
-*	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 2.5.38-2
--	Adding m4 package to build and run time required package 
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.5.38-1
--	Initial build.	First version
+*   Thu Oct 13 2016 Kumar Kaushik <kaushikk@vmware.com> 2.5.39-3
+-   Fixing Security bug CVE-2016-6354.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5.39-2
+-   GA - Bump release of all rpms
+*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5.39-1
+-   Updated to version 2.5.39
+*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 2.5.38-3
+-   Moving static lib files to devel package.
+*   Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 2.5.38-2
+-   Adding m4 package to build and run time required package
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.5.38-1
+-   Initial build. First version
