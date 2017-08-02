@@ -1,7 +1,7 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
 Version:	4.16
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://sourceforge.net/p/strace/code/ci/master/tree/
 Group:		Development/Debuggers
@@ -23,6 +23,9 @@ all the arugments and return values from the system calls. This is useful in deb
 ./configure \
 	--prefix=%{_prefix} \
 
+# to resolve build issue with glibc-2.26
+sed -i 's/struct ucontext/ucontext_t/g' linux/x86_64/arch_sigreturn.c
+
 make %{?_smp_mflags}
 
 %install
@@ -41,13 +44,15 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
-*	Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.16-1
--	Update to version 4.16
-*	Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11-3
--	Exclude perl dependency
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11-2
--	GA - Bump release of all rpms
-*   	Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.11-1
--   	Upgrade version.
-*	Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 4.10-1
--	Initial build.	First version
+*   Wed Aug 23 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
+-   Fix compilation issue for glibc-2.26
+*   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.16-1
+-   Update to version 4.16
+*   Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11-3
+-   Exclude perl dependency
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11-2
+-   GA - Bump release of all rpms
+*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.11-1
+-   Upgrade version.
+*   Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 4.10-1
+-   Initial build. First version

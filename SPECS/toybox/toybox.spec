@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.7.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
 %define sha1 toybox=f3d9f5396a210fb2ad7d6309acb237751c50812f
 Source1:	config-%{version}
+Patch0:         config2help_use_after_free_fix.patch
 %description
 Toybox combines common Linux command line utilities together into a single
 BSD-licensed executable that's simple, small, fast, reasonably
@@ -18,6 +19,7 @@ environment.
 
 %prep
 %setup -q -n toybox-%{version}
+%patch0 -p1
 
 %build
 cp %{SOURCE1} .config
@@ -46,6 +48,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %{_sbindir}/*
 
 %changelog
+*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-4
+-   Fix compilation issue for glibc-2.26
 *   Thu Jun 01 2017 Chang Lee <changlee@vmware.com> 0.7.3-3
 -   Remove pkill test in %check
 *   Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.3-2
