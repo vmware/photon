@@ -1,7 +1,7 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group: 		Development/Libraries
 Vendor:         VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
@@ -47,6 +47,8 @@ This package provides files for developing against the Likewise APIs
 %setup -q
 
 %build
+# hack against glibc-2.26 to avoid getopt declaration mismatch
+sed -i '/stdio.h/a#define _GETOPT_CORE_H 1' dcerpc/demos/echo_server/echo_server.c
 cd release
 export CWD=`pwd`
 
@@ -286,6 +288,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-2
+-   Fix compilation issue for glibc-2.26
 *   Wed Aug 09 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11.4-1
 -   Update to 6.2.11.4.
 *   Wed Mar 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11-1
