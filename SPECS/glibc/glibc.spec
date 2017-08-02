@@ -3,15 +3,15 @@
 
 Summary:	Main C library
 Name:		glibc
-Version:	2.25
-Release:	3%{?dist}
+Version:	2.26
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1 glibc=5fff5a94ef4470bf48fe1b79093185f19f5c827a
+%define sha1 glibc=7cf7d521f5ebece5dd27cfb3ca5e5f6b84da4bfd
 Source1:	locale-gen.sh
 Source2:	locale-gen.conf
 Patch0:   	http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
@@ -253,6 +253,8 @@ sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
 
 %changelog
+*   Wed Aug 2 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-1
+-   Version update
 *   Thu May 4  2017 Bo Gan <ganb@vmware.com> 2.25-3
 -   Remove bash dependency in post/postun script
 *   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-2
