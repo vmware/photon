@@ -1,0 +1,57 @@
+From: "Gabriel F dot  T dot  Gomes" <gftg at linux dot vnet dot ibm dot com>
+To: libc-alpha at sourceware dot org
+Subject: [PATCH 2/3] Provide a C++ version of issignaling that does not use __MATH_TG
+Date: Tue, 15 Aug 2017 14:45:00 -0300
+
+The macro __MATH_TG contains the logic to select between long double and
+_Float128, when these types are ABI-distinct.  This logic relies on
+__builtin_types_compatible_p, which is not available in C++ mode.
+
+On the other hand, C++ function overloading provides the means to
+distinguish between the floating-point types.  The overloading
+resolution will match the correct parameter regardless of type
+qualifiers, i.e.: const and volatile.
+
+Tested for powerpc64le.
+
+	* math/math.h [defined __cplusplus] (issignaling): Provide a C++
+	definition for issignaling that does not rely on __MATH_TG,
+	since __MATH_TG uses __builtin_types_compatible_p, which is only
+	available in C mode.
+---
+ math/math.h | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/math/math.h b/math/math.h
+index dea8dbe1ae..1d6cdb0685 100644
+--- a/math/math.h
++++ b/math/math.h
+@@ -474,7 +474,24 @@ enum
+ # include <bits/iscanonical.h>
+ 
+ /* Return nonzero value if X is a signaling NaN.  */
+-# define issignaling(x) __MATH_TG ((x), __issignaling, (x))
++# ifndef __cplusplus
++#  define issignaling(x) __MATH_TG ((x), __issignaling, (x))
++# else
++   /* In C++ mode, __MATH_TG cannot be used, because it relies on
++      __builtin_types_compatible_p, which is a C-only builtin.  On the
++      other hand, overloading provides the means to distinguish between
++      the floating-point types.  The overloading resolution will match
++      the correct parameter (regardless of type qualifiers (i.e.: const
++      and volatile).  */
++extern "C++" {
++int issignaling (float __val) { return __issignalingf (__val); }
++int issignaling (double __val) { return __issignaling (__val); }
++int issignaling (long double __val) { return __issignalingl (__val); }
++#if __HAVE_DISTINCT_FLOAT128
++int issignaling (_Float128  __val) { return __issignalingf128 (__val); }
++#endif
++} /* extern C++ */
++# endif
+ 
+ /* Return nonzero value if X is subnormal.  */
+ # define issubnormal(x) (fpclassify (x) == FP_SUBNORMAL)
+-- 
+2.13.5
+
