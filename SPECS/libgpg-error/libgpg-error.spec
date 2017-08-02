@@ -1,13 +1,12 @@
-
 Summary:      	libgpg-error
 Name:         	libgpg-error
-Version:      	1.21
-Release:      	2%{?dist}
+Version:      	1.27
+Release:      	1%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/
 Group:		Development/Libraries
 Source0:	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/%{name}-%{version}.tar.bz2
-%define sha1 libgpg-error=ef1dfb2f8761f019091180596e9e638d8cc37513
+%define sha1 libgpg-error=a428758999ff573e62d06892e3d2c0b0f335787c
 Vendor:		VMware, Inc.
 Distribution:	Photon
 
@@ -27,11 +26,12 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 echo $%{_libdir}
 echo $%{_bindir}
-#mkdir -p %{buildroot}%{_libdir}
-#cp %{buildroot}/usr/local/lib/* %{buildroot}%{_libdir}/
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
+
+%check
+make %{?_smp_mflags} check
 
 %post 
 /sbin/ldconfig
@@ -40,16 +40,20 @@ rm -rf %{buildroot}/%{_infodir}
 /sbin/ldconfig
 
 echo %{_libdir}
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*gpg-error.so*
-%{_includedir}/gpg-error.h
+%{_includedir}/*.h
+%{_datadir}/libgpg-error/errorref.txt
 %{_datadir}/aclocal/gpg-error.m4
 %{_mandir}/man1/*
 %{_datarootdir}/common-lisp/*
 
 %changelog
+*       Tue Aug 01 2017 Kumar Kaushik <kaushikk@vmware.com> 1.27-1
+-       Upgrading version, fixing bug # 1907079.
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
 -	GA - Bump release of all rpms
 * 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
