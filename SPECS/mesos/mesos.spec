@@ -3,7 +3,7 @@
 Summary:        Mesos
 Name:           mesos
 Version:        1.2.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -56,6 +56,8 @@ Requires:   %{name} = %{version}
 %build
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.am
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.am
+sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
+
 ./configure \
     CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
     CXXFLAGS="%{optflags} -Wno-deprecated-declarations -Wno-strict-aliasing" \
@@ -103,6 +105,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-5
+-   Fix compilation issue for glibc-2.26
 *   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.0-4
 -   Disable make check because Segfault in ProcessTest.Spawn with GCC 6+.
 -   For more details, please refer to https://issues.apache.org/jira/browse/MESOS-4983.
