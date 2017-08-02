@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          6%{?dist}
+Release:          7%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -71,6 +71,10 @@ BLKID_CFLAGS="-I/usr/include/blkid"
 cc_cv_CFLAGS__flto=no
 EOF
 sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
+# xlocale.h has been removed from glibc 2.26
+# The above include of locale.h is sufficient
+# Further details: https://sourceware.org/git/?p=glibc.git;a=commit;h=f0be25b6336db7492e47d2e8e72eb8af53b5506d */
+sed -i "/xlocale.h/d" src/basic/parse-util.c
 
 %patch0 -p1
 %patch1 -p1
@@ -230,6 +234,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 233-7
+-    Fix compilation issue for glibc-2.26
 *    Fri Jul 20 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
 -    Fix for CVE-2017-1000082.
 *    Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-5
