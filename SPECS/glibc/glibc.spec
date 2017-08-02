@@ -3,20 +3,23 @@
 
 Summary:	Main C library
 Name:		glibc
-Version:	2.25
-Release:	4%{?dist}
+Version:	2.26
+Release:	1%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1 glibc=5fff5a94ef4470bf48fe1b79093185f19f5c827a
+%define sha1 glibc=7cf7d521f5ebece5dd27cfb3ca5e5f6b84da4bfd
 Source1:	locale-gen.sh
 Source2:	locale-gen.conf
 Patch0:   	http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
 Patch1:		glibc-2.24-bindrsvport-blacklist.patch
-Patch2:         glibc-fix-CVE-2017-1000366.patch
+# disable these patches temporarily to try
+#Patch2:         0001-Do-not-use-__builtin_types_compatible_p-in-C++-mode.patch
+#Patch3:         0002-Provide-a-C++-version-of-issignaling-that-does-not-use-__MATH_TG.patch
+#Patch4:         0003-Do-not-use-generic-selection-in-C++-mode.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -72,7 +75,9 @@ Name Service Cache Daemon
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
+#%patch2 -p1
+#%patch3 -p1
+#%patch4 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -115,6 +120,8 @@ cd %{_builddir}/%{name}-build
 make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
 
 %check
+# disable security hardening for tests
+rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 cd %{_builddir}/glibc-build
 make %{?_smp_mflags} check
 
@@ -255,6 +262,8 @@ sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
 
 %changelog
+*   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-1
+-   Version update
 *   Tue Aug 08 2017 Anish Swaminathan <anishs@vmware.com> 2.25-4
 -   Apply fix for CVE-2017-1000366
 *   Thu May 4  2017 Bo Gan <ganb@vmware.com> 2.25-3
