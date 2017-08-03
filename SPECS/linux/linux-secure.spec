@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.38
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -43,6 +43,9 @@ Patch23:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
 Patch24:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
 Patch25:        0013-vmbus-fix-the-missed-signaling-in-hv_signal_on_read.patch
 Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
+#FIPS patches - allow some algorithms
+Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
+Patch28:        0002-allow-also-ecb-cipher_null.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 BuildRequires:  bc
@@ -135,6 +138,8 @@ EOF
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
+%patch28 -p1
 
 pushd ..
 %patch99 -p0
@@ -250,6 +255,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 01 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-5
+-   Allow some algorithms in FIPS mode
+-   Reverts 284a0f6e87b0721e1be8bca419893902d9cf577a and backports
+-   bcf741cb779283081db47853264cc94854e7ad83 in the kernel tree
+-   Enable additional NF features
 *   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-4
 -   Add patches in Hyperv codebase
 *   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
