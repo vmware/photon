@@ -1,0 +1,146 @@
+From a47b26cd49d01a2e2f914ff9e59ee7e25bc30148 Mon Sep 17 00:00:00 2001
+From: Ansis Atteka <aatteka@ovn.org>
+Date: Mon, 31 Jul 2017 09:56:37 -0700
+Subject: [PATCH] Revert "crypto: testmgr - Disable fips-allowed for authenc()
+ and des() ciphers"
+
+This reverts commit 284a0f6e87b0721e1be8bca419893902d9cf577a.
+---
+ crypto/testmgr.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index ae8c57fd8bc7..235e984d9772 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -2091,6 +2091,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(md5),ecb(cipher_null))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2106,6 +2107,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),cbc(aes))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2119,6 +2121,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),cbc(des))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2132,6 +2135,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),cbc(des3_ede))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2145,6 +2149,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),ecb(cipher_null))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2164,6 +2169,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha224),cbc(des))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2177,6 +2183,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha224),cbc(des3_ede))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2190,6 +2197,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha256),cbc(aes))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2203,6 +2211,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha256),cbc(des))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2216,6 +2225,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha256),cbc(des3_ede))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2229,6 +2239,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha384),cbc(des))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2242,6 +2253,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha384),cbc(des3_ede))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2255,6 +2267,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha512),cbc(aes))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2268,6 +2281,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha512),cbc(des))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2281,6 +2295,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha512),cbc(des3_ede))",
+ 		.test = alg_test_aead,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -3007,6 +3022,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "ecb(des)",
+ 		.test = alg_test_skcipher,
++		.fips_allowed = 1,
+ 		.suite = {
+ 			.cipher = {
+ 				.enc = {
+-- 
+2.11.0
+
