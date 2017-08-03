@@ -13,7 +13,7 @@ K8S_DASH_VER=`cat ${SPEC_DIR}/kubernetes-dashboard/kubernetes-dashboard.spec | g
 K8S_DASH_VER_REL=${K8S_DASH_VER}-`cat ${SPEC_DIR}/kubernetes-dashboard/kubernetes-dashboard.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 K8S_DASH_RPM=kubernetes-dashboard-${K8S_DASH_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_DASH_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${K8S_DASH_RPM}
-K8S_DASH_TAR=k8s-dashboard.tar
+K8S_DASH_TAR=kubernetes-dashboard.tar
 
 if [ ! -f ${K8S_DASH_RPM_FILE} ]
 then
@@ -21,7 +21,7 @@ then
     exit 1
 fi
 
-IMG_NAME=vmware/k8s-dashboard-${DIST_VER}:v${K8S_DASH_VER}
+IMG_NAME=vmware_photon/kubernetes-dashboard-amd64:v${K8S_DASH_VER}
 
 IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
 if [[ ! -z "${IMG_ID}" ]]; then
