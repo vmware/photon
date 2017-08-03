@@ -305,7 +305,8 @@ class constants(object):
         "Linux-PAM",
         "unzip",
         "systemd-devel",
-        "gnupg" ]
+        "gnupg",
+        "ncurses-terminfo" ]
 
     @staticmethod
     def initialize(options):
