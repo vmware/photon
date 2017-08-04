@@ -1,7 +1,7 @@
 Summary:        Programs for finding and viewing man pages
 Name:           man-db
 Version:        2.7.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.nongnu.org/man-db
 Group:          Applications/System
@@ -43,6 +43,9 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %find_lang %{name} --all-name
 
 %check
+getent group man >/dev/null || groupadd -r man
+getent passwd man >/dev/null || useradd -c "man" -d /var/cache/man -g man \
+        -s /bin/false -M -r man
 make %{?_smp_mflags} check
 
 %pre
@@ -71,6 +74,8 @@ fi
 %{_libdir}/tmpfiles.d/man-db.conf
 
 %changelog
+*   Fri Aug 04 2017 Chang Lee <changlee@vmware.com> 2.7.6-3
+-   Setup a testing environment before %check
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.6-2
 -   Add gdbm-devel to BuildRequires
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 2.7.6-1
