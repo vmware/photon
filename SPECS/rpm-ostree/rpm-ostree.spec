@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2017.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 %define sha1    rpm-ostree=d34882a455afbf0b57617c0962725276967e838a
 Source1:        libglnx-0c52d85.tar.gz
@@ -43,13 +43,14 @@ BuildRequires:  gperf
 BuildRequires:  which
 BuildRequires:  popt-devel
 
-Requires:   libcap
-Requires:   librepo
-Requires:   openssl
-Requires:   ostree
-Requires:	libgsystem
-Requires:   json-glib
-Requires:   libsolv >= 0.6.26-3
+Requires:       libcap
+Requires:       librepo
+Requires:       openssl
+Requires:       ostree
+Requires:       libgsystem
+Requires:       json-glib
+Requires:       libsolv >= 0.6.26-3
+Requires:       bubblewrap
 
 %description
 This tool takes a set of packages, and commits them to an OSTree
@@ -101,8 +102,10 @@ make %{?_smp_mflags}  check
 %{_datadir}/gir-1.0/*-1.0.gir
 
 %changelog
-*	Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2017.4-2
--	Use libgsystem-devel to build instead of libgsystem.
+*   Thu Aug 03 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.4-3
+-   Added bubblewrap to requires.
+*   Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2017.4-2
+-   Use libgsystem-devel to build instead of libgsystem.
 *   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2017.4-1
 -   Update to 2017.4
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 2015.7-5
