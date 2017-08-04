@@ -1,4 +1,3 @@
-
 class rpmMacro(object):
 
     def __init__(self):
@@ -79,6 +78,15 @@ class Package(object):
         if content.find("%{dist}") != -1:
             content = content.replace('%{dist}',self.distribution)
         
+        # TODO: A temporary hack here. The reason is this macro
+        # can't be subsitute properly.
+        # At this file level, we won't be able to obtain any other
+        # packages' information. This macro requires the information
+        # of package linux. Besides, there is a huge diversion
+        # between package-builder and SpecDeps.
+        if content.find("%{?kernelsubrelease}") != -1:
+            content = content.replace('%{?kernelsubrelease}',"")
+
         return content
     
     def updatePackageMacro(self,macro):
