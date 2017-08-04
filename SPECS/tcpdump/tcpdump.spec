@@ -1,11 +1,11 @@
 Summary:	Packet Analyzer
 Name:		tcpdump
-Version:	4.9.0	
+Version:	4.9.1
 Release:	1%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 tcpdump=2c4193685edb1040506a9ec0f15cd85825085697
+%define sha1 tcpdump=9cad93f6dd2cc52bc6ef90765d278b9fa090e027
 Group:		Networking
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -32,6 +32,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_sbindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Thu Aug 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-1
+-   Updating version to 4.9.1
 *       Thu Feb 02 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.0-1
 -       Adding latest version to handle following CVEs
 -       CVE-2016-7922, CVE-2016-7923, CVE-2016-7924, CVE-2016-7925,
