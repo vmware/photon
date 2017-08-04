@@ -57,18 +57,10 @@ iptables -t nat -X
 iptables -t mangle -F
 iptables -t mangle -X
 
-# Allow local-only connections
-iptables -A INPUT  -i lo -j ACCEPT
+#restore ipv4 rules
+iptables-restore < /etc/systemd/scripts/ip4save
 
-# Free output on any interface to any ip for any service
-# (equal to -P ACCEPT)
-iptables -A OUTPUT -j ACCEPT
+#restore ipv6 rules
+ip6tables-restore < /etc/systemd/scripts/ip6save
 
-# Permit answers on already established connections
-# and permit new connections related to established ones
-# (e.g. port mode ftp)
-iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
-
-#Enable ssh connections
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 # End /etc/systemd/scripts/iptables

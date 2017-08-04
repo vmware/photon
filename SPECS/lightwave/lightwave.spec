@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.2.1
-Release:       4%{?dist}
+Release:       5%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -33,7 +33,6 @@ BuildRequires: coreutils >= 8.22
 BuildRequires: curl-devel
 BuildRequires: e2fsprogs-devel
 BuildRequires: jansson-devel
-BuildRequires: jaxws-ri = 2.2.10
 BuildRequires: krb5-devel >= 1.14
 BuildRequires: likewise-open-devel >= 6.2.10
 BuildRequires: openjdk8 >= %{JAVA8_VERSION}
@@ -50,7 +49,6 @@ VMware Lightwave Server
 %define _servicedir /lib/systemd/system
 %define _commons_daemon_home /usr/share/java
 %define _tomcat_home /var/opt/apache-tomcat
-%define _jaxws_home /opt/jaxws-ri-2.2.10
 %define _java_home /usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 %define _ant_home /var/opt/apache-ant
 %define _maven_home /var/opt/apache-maven
@@ -160,7 +158,6 @@ autoreconf -mif .. &&
     --with-java=%{_java_home} \
     --with-ant=%{_ant_home} \
     --with-commons-daemon=%{_commons_daemon_home} \
-    --with-jax-ws=%{_jaxws_home} \
     --with-maven=%{_maven_home} \
     --with-tomcat=%{_tomcat_home} \
     --with-boost=/usr \
@@ -459,27 +456,6 @@ fi
 
     /bin/mkdir -m 755 -p %{_logdir}
 
-    # add libgssapi_srp.so to GSSAPI plugin directory
-    if [ ! -h %{_krb5_lib_dir}/gss/libgssapi_srp.so ]; then
-        /bin/ln -s %{_lib64dir}/libgssapi_srp.so %{_krb5_lib_dir}/gss/libgssapi_srp.so
-    fi
-
-    # Add GSSAPI SRP plugin configuration to GSS mech file
-    if [ -f %{_krb5_gss_conf_dir}/mech ]; then
-        if [ `grep -c  "1.2.840.113554.1.2.10" %{_krb5_gss_conf_dir}/mech` -lt 1 ]; then
-            echo "srp  1.2.840.113554.1.2.10 libgssapi_srp.so" >> %{_krb5_gss_conf_dir}/mech
-        fi
-    fi
-
-    # Restore commented out NTLM mech oid if found
-    if [ `grep -c  "#ntlm " %{_krb5_gss_conf_dir}/mech` -ge 1 ]; then
-        /bin/mv %{_krb5_gss_conf_dir}/mech %{_krb5_gss_conf_dir}/mech-$$
-        /bin/cat %{_krb5_gss_conf_dir}/mech-$$ | sed 's|^#ntlm|ntlm|' > %{_krb5_gss_conf_dir}/mech
-        if [ -s %{_krb5_gss_conf_dir}/mech ]; then
-            /bin/rm %{_krb5_gss_conf_dir}/mech-$$
-        fi
-    fi
-
     /bin/mkdir -m 700 -p %{_vmafd_dbdir}
     /bin/mkdir -m 700 -p %{_vecsdir}
     /bin/mkdir -m 700 -p %{_crlsdir}
@@ -511,6 +487,8 @@ fi
                 %{_likewise_open_bindir}/lwregshell import %{_datadir}/config/vmafd.reg
                 %{_likewise_open_bindir}/lwregshell import %{_datadir}/config/vmdir-client.reg
                 %{_likewise_open_bindir}/lwregshell import %{_datadir}/config/vmdns-client.reg
+                %{_likewise_open_bindir}/lwsm -q refresh
+                sleep 2
             else
                 started_lwregd=false
                 if [ -z "`pidof lwregd`" ]; then
@@ -656,6 +634,28 @@ fi
             ;;
     esac
 
+%post client-libs
+    # add libgssapi_srp.so to GSSAPI plugin directory
+    if [ ! -h %{_krb5_lib_dir}/gss/libgssapi_srp.so ]; then
+        /bin/ln -s %{_lib64dir}/libgssapi_srp.so %{_krb5_lib_dir}/gss/libgssapi_srp.so
+    fi
+
+    # Add GSSAPI SRP plugin configuration to GSS mech file
+    if [ -f %{_krb5_gss_conf_dir}/mech ]; then
+        if [ `grep -c  "1.2.840.113554.1.2.10" %{_krb5_gss_conf_dir}/mech` -lt 1 ]; then
+            echo "srp  1.2.840.113554.1.2.10 libgssapi_srp.so" >> %{_krb5_gss_conf_dir}/mech
+        fi
+    fi
+
+    # Restore commented out NTLM mech oid if found
+    if [ `grep -c  "#ntlm " %{_krb5_gss_conf_dir}/mech` -ge 1 ]; then
+        /bin/mv %{_krb5_gss_conf_dir}/mech %{_krb5_gss_conf_dir}/mech-$$
+        /bin/cat %{_krb5_gss_conf_dir}/mech-$$ | sed 's|^#ntlm|ntlm|' > %{_krb5_gss_conf_dir}/mech
+        if [ -s %{_krb5_gss_conf_dir}/mech ]; then
+            /bin/rm %{_krb5_gss_conf_dir}/mech-$$
+        fi
+    fi
+
 %preun
 
     # First argument is 0 => Uninstall
@@ -750,20 +750,6 @@ fi
                 %{_likewise_open_bindir}/lwsm autostart
             fi
 
-            # Cleanup GSSAPI SRP symlink
-            if [ -h %{_krb5_lib_dir}/gss/libgssapi_srp.so ]; then
-                /bin/rm -f %{_krb5_lib_dir}/gss/libgssapi_srp.so
-            fi
-
-            # Remove GSSAPI SRP Plugin configuration from GSS mech file
-            if [ -f %{_krb5_gss_conf_dir}/mech ]; then
-                if [ `grep -c "1.2.840.113554.1.2.10" %{_krb5_gss_conf_dir}/mech` -gt 0 ]; then
-                    /bin/cat %{_krb5_gss_conf_dir}/mech | sed '/1.2.840.113554.1.2.10/d' > "/tmp/mech-$$"
-                    if [ -s /tmp/mech-$$ ]; then
-                        /bin/mv "/tmp/mech-$$" %{_krb5_gss_conf_dir}/mech
-                    fi
-                fi
-            fi
 
             if [ -h %{_logconfdir}/vmafdd-syslog-ng.conf ]; then
                 /bin/rm -f %{_logconfdir}/vmafdd-syslog-ng.conf
@@ -793,6 +779,39 @@ fi
                 %{_likewise_open_bindir}/lwregshell delete_tree 'HKEY_THIS_MACHINE\Services\lwraft'
                 /bin/systemctl restart lwsmd
                 %{_likewise_open_bindir}/lwsm autostart
+            fi
+            ;;
+
+        1)
+            #
+            # Upgrade
+            #
+            ;;
+    esac
+
+%preun client-libs
+
+    # First argument is 0 => Uninstall
+    # First argument is 1 => Upgrade
+
+    case "$1" in
+        0)
+            #
+            # Uninstall
+            #
+            # Cleanup GSSAPI SRP symlink
+            if [ -h %{_krb5_lib_dir}/gss/libgssapi_srp.so ]; then
+                /bin/rm -f %{_krb5_lib_dir}/gss/libgssapi_srp.so
+            fi
+
+            # Remove GSSAPI SRP Plugin configuration from GSS mech file
+            if [ -f %{_krb5_gss_conf_dir}/mech ]; then
+                if [ `grep -c "1.2.840.113554.1.2.10" %{_krb5_gss_conf_dir}/mech` -gt 0 ]; then
+                    /bin/cat %{_krb5_gss_conf_dir}/mech | sed '/1.2.840.113554.1.2.10/d' > "/tmp/mech-$$"
+                    if [ -s /tmp/mech-$$ ]; then
+                        /bin/mv "/tmp/mech-$$" %{_krb5_gss_conf_dir}/mech
+                    fi
+                fi
             fi
             ;;
 
@@ -1120,6 +1139,9 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Jul 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-5
+-   making sure client-libs install gss mechs
+-   make sure domainjoin works with just client installed.
 *   Mon Jul 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-4
 -   Updated the commons-daemon directory path to its new location
 *   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3

@@ -2,18 +2,18 @@
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.131
-Release:	4%{?dist}
+Version:	1.8.0.141
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.bz2
-%define sha1 openjdk=ae01c24fe5247d5aa246a60c0272ba92188a7d55
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.gz
+%define sha1 openjdk=e74417bc0bfcdb8f6b30a63bb26dbf35515ec562
 Patch0:		Awt_build_headless_only.patch
-Patch1:		Fix-memory-leak.patch
-Patch2:		check-system-ca-certs.patch
+Patch1:		check-system-ca-certs.patch
+Patch2:         remove-cups.patch
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -64,7 +64,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -q -n openjdk
+%setup -qn openjdk-1.8.0-141
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -233,6 +233,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
+-   Upgraded to version 1.8.0.141-1
 *   Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4
 -   Build AWT libraries as well.
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.0.131-3

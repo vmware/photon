@@ -1,0 +1,14 @@
+# Photon Base Build Container
+
+FROM vmware/photon
+
+MAINTAINER kulkarniv@vmware.com
+
+RUN tdnf install -y dnsmasq
+RUN echo "user=root" > /etc/dnsmasq.conf
+RUN mkdir -p /var/run/
+STOPSIGNAL SIGCONT
+
+RUN mkdir -p /etc/k8s/dns/dnsmasq-nanny
+ADD tmp/k8dns/usr/bin/dnsmasq-nanny /dnsmasq-nanny
+ENTRYPOINT ["/dnsmasq-nanny"]

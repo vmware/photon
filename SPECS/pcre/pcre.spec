@@ -1,7 +1,7 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.40
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
@@ -50,8 +50,10 @@ This package contains minimal set of shared pcre libraries.
             --enable-pcregrep-libz            \
             --enable-pcregrep-libbz2          \
             --enable-pcretest-libreadline     \
+            --with-match-limit-recursion=16000 \
             --disable-static
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 mv -v %{buildroot}/usr/lib/libpcre.so.* %{buildroot}/lib &&
@@ -89,6 +91,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+*   Wed Jul 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.40-4
+-   Added fix for CVE-2017-11164 by adding stack recursion limit
 *   Wed May 24 2017 Divya Thaluru <dthaluru@vmware.com> 8.40-3
 -   Added fixes for CVE-2017-7244, CVE-2017-7245, CVE-2017-7246, CVE-2017-7186
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 8.40-2

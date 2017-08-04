@@ -8,7 +8,7 @@
 
 Summary:	Photon Management Daemon
 Name:		pmd
-Version:	0.0.2
+Version:	0.0.3
 Release:	1%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -35,7 +35,7 @@ BuildRequires:	netmgmt-devel
 BuildRequires:	tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 pmd=2a5299ed3e4f330dc8fc874ba9fb4fc3ffa4a5c6
+%define sha1 pmd=db86a13cc82c4daff2f329d25a9e8d22c2184c3a
 Source1:        pmd.service
 
 %description
@@ -80,7 +80,7 @@ Python3 bindings for photon management daemon
 %setup -q
 
 %build
-sed -i 's/pmd, 0.0.1/pmd, 0.0.2/' configure.ac
+sed -i 's/pmd, 0.0.1/pmd, 0.0.3/' configure.ac
 sed -i 's,-lcrypto,-lcrypto @LWBASE_LIBS@ -lgssapi_krb5,' server/Makefile.am
 autoreconf -mif
 ./configure \
@@ -260,6 +260,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*       Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
+-       Fix REST param handling, CLI locale.
 *       Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
 -       Fix python3 string issues.
 *       Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
