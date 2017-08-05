@@ -1,0 +1,7 @@
+Code-Review+2: Rui Gu <ruig@vmware.com>
+Verified+1: gerrit-photon <photon-checkins@vmware.com>
+Submitted-by: Rui Gu <ruig@vmware.com>
+Submitted-at: Fri, 04 Aug 2017 17:36:37 -0700
+Reviewed-on: http://photon-jenkins.eng.vmware.com:8082/3417
+Project: photon
+Branch: refs/heads/dev_buildcontainer
