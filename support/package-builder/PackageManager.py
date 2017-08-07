@@ -32,6 +32,7 @@ class PackageManager(object):
         self.listAvailableCyclicPackages=[]
         self.listBuildOptionPackages=[]
         self.pkgBuildOptionFile=""
+        self.pkgBuildType=""
 
     def readPackageBuildData(self, listPackages):
         try:
@@ -145,9 +146,10 @@ class PackageManager(object):
         self.buildToolChain()
         self.buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
 
-    def buildPackages(self,listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
+    def buildPackages(self,listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType):
         self.listBuildOptionPackages = listBuildOptionPackages
         self.pkgBuildOptionFile = pkgBuildOptionFile
+        self.pkgBuildType = pkgBuildType
         if constants.rpmCheck:
             constants.rpmCheck=False
             self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
@@ -166,6 +168,7 @@ class PackageManager(object):
         ThreadPool.pkgBuildOptionFile=self.pkgBuildOptionFile
         ThreadPool.logger=self.logger
         ThreadPool.statusEvent=statusEvent
+        ThreadPool.pkgBuildType=self.pkgBuildType
 
     def initializeScheduler(self,statusEvent):
         Scheduler.setLog(self.logName, self.logPath)
