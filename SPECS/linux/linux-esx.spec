@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.38
-Release:        2%{?dist}
+Version:        4.9.41
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d451b026976ee33e469aaa0eb734452b3d17b5d5
+%define sha1 linux=74fe70e8c119fbf67f7f131e92a45a2046ca1908
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -187,6 +187,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Aug  7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
+-   Version update
 *   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
 -   Disable scheduler beef up patch
 *   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
