@@ -1,11 +1,12 @@
 from BuildContainer import BuildContainer
+from PackageBuilder import PackageBuilder
 import threading
 import Scheduler
 import ThreadPool
  
 class WorkerThread(threading.Thread):
     
-    def __init__(self,event,name,mapPackageToCycle,listAvailableCyclicPackages,logger,listBuildOptionPackages,pkgBuildOptionFile):
+    def __init__(self,event,name,mapPackageToCycle,listAvailableCyclicPackages,logger,listBuildOptionPackages,pkgBuildOptionFile,pkgBuildType):
         threading.Thread.__init__(self)
         self.statusEvent=event
         self.name=name
@@ -14,6 +15,7 @@ class WorkerThread(threading.Thread):
         self.logger=logger
         self.listBuildOptionPackages=listBuildOptionPackages
         self.pkgBuildOptionFile=pkgBuildOptionFile
+        self.pkgBuildType=pkgBuildType
         
     def run(self):
         buildThreadFailed=False
@@ -25,7 +27,10 @@ class WorkerThread(threading.Thread):
             if pkg is None:
                 break
             self.logger.info("Thread "+self.name+" is building package:"+ pkg)
-            pkgBuilder = BuildContainer(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
+            if self.pkgBuildType == "chroot":
+                pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
+            elif self.pkgBuildType == "container":
+                pkgBuilder = BuildContainer(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
             t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))
             t.start()
             t.join()
