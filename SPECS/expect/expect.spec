@@ -1,7 +1,7 @@
 Summary:        Expect is a tool for automating interactive applications
 Name:           expect
 Version:        5.45
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://sourceforge.net/projects/expect
 Source0:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
@@ -38,7 +38,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 %check
-make %{?_smp_mflags} check
+make %{?_smp_mflags} test
 
 %files
 %defattr(-,root,root)
@@ -54,5 +54,7 @@ make %{?_smp_mflags} check
 
 
 %changelog
+*   Tue Aug 8 2017 Alexey Makhalov <amakhalov@vmware.com> 5.45-2
+-   Fix %check section
 *   Wed Jul 12 2017 Alexey Makhalov <amakhalov@vmware.com> 5.45-1
 -   Initial build. First version
