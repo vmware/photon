@@ -7,6 +7,8 @@ import tarfile
 import fileinput
 from optparse import OptionParser
 from utils import Utils
+import subprocess
+import json
 
 def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     output_path = os.path.dirname(os.path.realpath(raw_image_name))
@@ -215,10 +217,13 @@ if __name__ == '__main__':
             tgzout.add(raw_image, arcname=os.path.basename(raw_image))
             tgzout.close()
         elif config['artifacttype'] == 'vhd':
-            imgconverter = options.tools_bin_path + '/imgconverter'
             vhdname = img_path + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.vhd'
             print "Converting raw disk to vhd ..."
-            utils.runshellcommand("{} -i {} -v vhd -o {}".format(imgconverter, raw_image, vhdname))
+            info_output=utils.runshellcommand("docker run -v /:/mnt:rw anishs/qemu-img info -f raw --output json {}".format('/mnt' + raw_image))
+            mbsize = 1024 * 1024
+            mbroundedsize = (int(json.loads(info_output)["virtual-size"])/mbsize + 1) * mbsize
+            utils.runshellcommand("docker run -v /:/mnt:rw anishs/qemu-img resize -f raw {} {}".format('/mnt' + raw_image, mbroundedsize)) 
+            utils.runshellcommand("docker run -v /:/mnt:rw anishs/qemu-img convert {} -O vpc -o subformat=fixed {}".format('/mnt' + raw_image, '/mnt' + vhdname))
         elif config['artifacttype'] == 'ova':
             create_ova_image(raw_image, options.tools_bin_path, options.build_scripts_path + '/' + options.image_name, config)
             if 'customartifacts' in config:
