@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.27
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -25,6 +25,7 @@ Requires:   apr-util
 Requires:   openssl
 Requires:   openldap
 Requires:   lua
+Requires:   shadow
 Provides:   apache2
 %description
 The Apache HTTP Server.
@@ -175,6 +176,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Tue Aug 08 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-2
+-   Add shadow to requires
 *   Mon Jul 24 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-1
 -   Updated to version 2.4.27
 *   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.25-3
