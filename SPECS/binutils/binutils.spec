@@ -1,7 +1,7 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
 Version:	2.29
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
 Group:		System Environment/Base
@@ -48,6 +48,7 @@ popd
 
 %check
 cd ../binutils-build
+sed -i 's/testsuite/ /g' gold/Makefile
 make %{?_smp_mflags} check
 
 
@@ -191,6 +192,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Tue Aug 8 2017 Rongrong Qiu <rqiu@vmware.com> 2.29-2
+-   fix for make check for bug 1900247
 *   Wed Aug 2 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29-1
 -   Version update
 *   Tue May 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.28-2
