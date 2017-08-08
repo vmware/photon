@@ -229,6 +229,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
+								-bt $(PHOTON_BUILD_TYPE) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -a $(PHOTON_SRPMS_DIR) \

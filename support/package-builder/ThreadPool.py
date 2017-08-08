@@ -9,6 +9,7 @@ class ThreadPool(object):
     listAvailableCyclicPackages=[]
     listBuildOptionPackages=[]
     pkgBuildOptionFile=""
+    pkgBuildType=""
     logger=None
     statusEvent=None
     
@@ -36,7 +37,8 @@ class ThreadPool(object):
                 ThreadPool.listAvailableCyclicPackages,
                 ThreadPool.logger,
                 ThreadPool.listBuildOptionPackages,
-                ThreadPool.pkgBuildOptionFile)
+                ThreadPool.pkgBuildOptionFile,
+                ThreadPool.pkgBuildType)
         ThreadPool.mapWorkerThreads[workerThreadName]=workerThread
    
     @staticmethod
