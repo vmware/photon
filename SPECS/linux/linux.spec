@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.79
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -36,6 +36,10 @@ Patch16:        net-9p-vsock.patch
 #allow some algorithms in FIPS mode
 Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
+# Fix CVE-2017-10911
+Patch19:        xen-blkback-dont-leak-stack-data-via-response-ring.patch
+# Fix CVE-2017-7542
+Patch20:        ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -125,6 +129,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
+%patch20 -p1
 
 %build
 make mrproper
@@ -277,6 +283,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Aug 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-2
+-   Fix CVE-2017-10911, CVE-2017-7542
+-   [bugfix] Added ccm,gcm,ghash,zlib,lzo crypto modules to avoid
+    panic on modprobe tcrypt
 *   Wed Aug 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-1
 -   Fix CVE-2017-11473
 *   Tue Aug 01 2017 Anish Swaminathan <anishs@vmware.com> 4.4.77-2

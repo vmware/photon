@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.79
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -35,6 +35,9 @@ Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
+# Fix CVE-2017-7542
+Patch24:        ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -94,6 +97,7 @@ The Linux package contains the Linux kernel doc files
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
 
 %build
 # patch vmw_balloon driver
@@ -182,6 +186,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-2
+-   [bugfix] Do not fallback to syscall from VDSO on clock_gettime(MONOTONIC)
+-   Fix CVE-2017-7542
 *   Fri Jul 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-1
 -   [feature] p9fs_dir_readdir() offset support
 -   Fix CVE-2017-11473
