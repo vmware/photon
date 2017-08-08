@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.4
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -20,6 +20,7 @@ Patch2:         cve-2016-9318.patch
 Patch3:         libxml2-fix-buffer-size-checks.patch
 # Fix for CVE-2017-9049 and CVE-2017-9050
 Patch4:         libxml2-fix-handling-of-parameter-entity-references.patch
+Patch5:         libxml2-fix-handling-of-parameter-entity-references-test.patch
 %define sha1    libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
 Provides:       pkgconfig(libxml-2.0)
 
@@ -62,6 +63,7 @@ Static libraries and header files for the support library for libxml
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -127,6 +129,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon Aug 07 2017 Danut Moraru <dmoraru@vmware.com> 2.9.4-10
+-   Change expected parsing error for test for upstream bug 781205 introduced by CVE-2017-9049
 *   Mon Jul 10 2017 Divya Thaluru <dthaluru@vmware.com> 2.9.4-9
 -   Apply patch for CVE-2017-9047, CVE-2017-9048, CVE-2017-9049 and CVE-2017-9050
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-8
