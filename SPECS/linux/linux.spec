@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.41
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -43,6 +43,8 @@ Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
+# Fix CVE-2017-7542
+Patch26:        ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -136,6 +138,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
+%patch26 -p1
 
 %build
 make mrproper
@@ -295,6 +298,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
+-   Fix CVE-2017-7542
+-   [bugfix] Added ccm,gcm,ghash,lzo crypto modules to avoid
+    panic on modprobe tcrypt
 *   Mon Aug 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
 -   Version update
 *   Fri Aug 04 2017 Bo Gan <ganb@vmware.com> 4.9.38-6

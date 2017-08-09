@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.41
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -35,6 +35,8 @@ Patch18:        05-pv-ops-clocksource.patch
 Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
 Patch21:        vmware-balloon-late-initcall.patch
+# Fix CVE-2017-7542
+Patch22:        ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -91,6 +93,7 @@ The Linux package contains the Linux kernel doc files
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
+%patch22 -p1
 
 %build
 # patch vmw_balloon driver
@@ -187,6 +190,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
+-   [bugfix] Do not fallback to syscall from VDSO on clock_gettime(MONOTONIC)
+-   Fix CVE-2017-7542
 *   Mon Aug 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
 -   Version update
 *   Wed Jul 26 2017 Bo Gan <ganb@vmware.com> 4.9.38-3
