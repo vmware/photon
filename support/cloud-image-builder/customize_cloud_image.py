@@ -100,6 +100,7 @@ if __name__ == '__main__':
     parser.add_option("-i",  "--image-name",  dest="image_name")
     parser.add_option("-t",  "--tools-bin-path",  dest="tools_bin_path")
     parser.add_option("-b",  "--build-scripts-path",  dest="build_scripts_path")
+    parser.add_option("-s",  "--src-root",  dest="src_root")
 
     (options,  args) = parser.parse_args()
     utils = Utils()
@@ -216,13 +217,15 @@ if __name__ == '__main__':
             tgzout.add(raw_image, arcname=os.path.basename(raw_image))
             tgzout.close()
         elif config['artifacttype'] == 'vhd':
-            vhdname = img_path + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.vhd'
+            relrawpath = os.path.relpath(raw_image, options.src_root)
+            vhdname = os.path.dirname(relrawpath) + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.vhd'
             print "Converting raw disk to vhd ..."
-            info_output=utils.runshellcommand("docker run -v /:/mnt:rw anishs/qemu-img info -f raw --output json {}".format('/mnt' + raw_image))
+            info_output=utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img info -f raw --output json {}".format(options.src_root, '/mnt/' + relrawpath))
             mbsize = 1024 * 1024
-            mbroundedsize = (int(json.loads(info_output)["virtual-size"])/mbsize + 1) * mbsize
-            utils.runshellcommand("docker run -v /:/mnt:rw anishs/qemu-img resize -f raw {} {}".format('/mnt' + raw_image, mbroundedsize))
-            utils.runshellcommand("docker run -v /:/mnt:rw anishs/qemu-img convert {} -O vpc -o subformat=fixed {}".format('/mnt' + raw_image, '/mnt' + vhdname))
+            #qemu-img adds an extra 512 bytes to the raw image
+            mbroundedsize = ((int(json.loads(info_output)["virtual-size"])/mbsize + 1) * mbsize) - 512
+            utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img resize -f raw {} {}".format(options.src_root, '/mnt/' + relrawpath, mbroundedsize))
+            utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img convert {} -O vpc -o subformat=fixed,force_size {}".format(options.src_root, '/mnt/' + relrawpath, '/mnt/' + vhdname))
         elif config['artifacttype'] == 'ova':
             create_ova_image(raw_image, options.tools_bin_path, options.build_scripts_path + '/' + options.image_name, config)
             if 'customartifacts' in config:
