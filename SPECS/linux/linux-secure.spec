@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.41
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -46,6 +46,8 @@ Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
 Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch28:        0002-allow-also-ecb-cipher_null.patch
+# Fix CVE-2017-7542
+Patch29:        ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 BuildRequires:  bc
@@ -140,6 +142,7 @@ EOF
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
 
 pushd ..
 %patch99 -p0
@@ -255,6 +258,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
+-   Fix CVE-2017-7542
+-   [bugfix] Added ccm,gcm,ghash,lzo crypto modules to avoid
+    panic on modprobe tcrypt
 *   Mon Aug 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
 -   Version update
 *   Fri Aug 04 2017 Bo Gan <ganb@vmware.com> 4.9.38-6
