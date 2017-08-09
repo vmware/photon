@@ -1,0 +1,51 @@
+From 6399f1fae4ec29fab5ec76070435555e256ca3a6 Mon Sep 17 00:00:00 2001
+From: Sabrina Dubroca <sd@queasysnail.net>
+Date: Wed, 19 Jul 2017 22:28:55 +0200
+Subject: [PATCH] ipv6: avoid overflow of offset in ip6_find_1stfragopt
+
+In some cases, offset can overflow and can cause an infinite loop in
+ip6_find_1stfragopt(). Make it unsigned int to prevent the overflow, and
+cap it at IPV6_MAXPLEN, since packets larger than that should be invalid.
+
+This problem has been here since before the beginning of git history.
+
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Acked-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ net/ipv6/output_core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
+index e9065b8d3af85..abb2c307fbe83 100644
+--- a/net/ipv6/output_core.c
++++ b/net/ipv6/output_core.c
+@@ -78,7 +78,7 @@ EXPORT_SYMBOL(ipv6_select_ident);
+ 
+ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
+ {
+-	u16 offset = sizeof(struct ipv6hdr);
++	unsigned int offset = sizeof(struct ipv6hdr);
+ 	unsigned int packet_len = skb_tail_pointer(skb) -
+ 		skb_network_header(skb);
+ 	int found_rhdr = 0;
+@@ -86,6 +86,7 @@ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
+ 
+ 	while (offset <= packet_len) {
+ 		struct ipv6_opt_hdr *exthdr;
++		unsigned int len;
+ 
+ 		switch (**nexthdr) {
+ 
+@@ -111,7 +112,10 @@ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
+ 
+ 		exthdr = (struct ipv6_opt_hdr *)(skb_network_header(skb) +
+ 						 offset);
+-		offset += ipv6_optlen(exthdr);
++		len = ipv6_optlen(exthdr);
++		if (len + offset >= IPV6_MAXPLEN)
++			return -EINVAL;
++		offset += len;
+ 		*nexthdr = &exthdr->nexthdr;
+ 	}
+ 
