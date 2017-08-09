@@ -5,5 +5,5 @@
                   "libffi","expat","linux","cpio","Linux-PAM","attr","libcap", "systemd","dbus",
                   "gzip", "sqlite","nspr","nss","popt","lua","rpm","gptfdisk","tar", "librepo",
                   "hawkey", "python2","python2-libs","pcre","glib", "tdnf", "python-requests",
-                  "grub2-pc", "grub2-efi", "dracut", "curl", "ostree", "dosfstools"]
+                  "grub2-pc", "grub2-efi", "dracut", "curl", "ostree", "dosfstools", "open-vm-tools"]
 }
