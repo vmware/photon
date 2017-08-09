@@ -72,7 +72,8 @@ cd $BUILD_SCRIPTS_PATH
  -a $PHOTON_STAGE_PATH/RPMS/additional \
  -i $IMG_NAME \
  -t $SRC_ROOT/tools/bin/ \
- -b $BUILD_SCRIPTS_PATH
+ -b $BUILD_SCRIPTS_PATH \
+ -s $SRC_ROOT
 
 rm -rf $WORKING_DIR/installer
 
