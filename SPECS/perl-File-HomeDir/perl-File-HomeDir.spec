@@ -1,7 +1,7 @@
 Summary:        File-HomeDir
 Name:           perl-File-HomeDir
 Version:        1.00
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-HomeDir/
@@ -11,6 +11,9 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
 BuildRequires:	perl
+%if %{with_check}
+BuildRequires:  perl-File-Which
+%endif
 Requires:	perl
 Requires:   perl-File-Which
 
@@ -55,6 +58,8 @@ make test
 %{_mandir}/man3/File::HomeDir::Windows.3.gz
 
 %changelog
+*	Tue Aug 08 2017 Chang Lee <changlee@vmware.com> 1.00-3
+-	Add perl-File-Which for make check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.00-2
 -	GA - Bump release of all rpms
 *	Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.00-1
