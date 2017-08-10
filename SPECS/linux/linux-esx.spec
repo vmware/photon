@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.79
-Release:       2%{?dist}
+Version:       4.4.81
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5b249aa3410b464515178df8f9a1ff0e3ba3f67e
+%define sha1 linux=b13679a3a9fc9f38c67bdbe321b426e3f19373ad
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -35,8 +35,6 @@ Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
-# Fix CVE-2017-7542
-Patch24:        ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -97,7 +95,6 @@ The Linux package contains the Linux kernel doc files
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
-%patch24 -p1
 
 %build
 # patch vmw_balloon driver
@@ -186,6 +183,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Aug 11 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.81-1
+-   Version update
 *   Tue Aug 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-2
 -   [bugfix] Do not fallback to syscall from VDSO on clock_gettime(MONOTONIC)
 -   Fix CVE-2017-7542
