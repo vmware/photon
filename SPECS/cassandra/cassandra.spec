@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -18,7 +18,7 @@ BuildRequires:  unzip zip
 BuildRequires:  openjdk8
 BuildRequires:  wget
 Requires:       openjre8
-
+Requires:       gawk
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
@@ -50,9 +50,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}/etc/profile.d
 mkdir -p %{buildroot}/var/opt/cassandra
 
-rm build/lib/jars/hadoop-*
-rm build/classes/main/org/apache/cassandra/hadoop/HadoopCompat.class
-
 cp bin/%{name} %{buildroot}%{_sbindir}
 cp bin/%{name}.in.sh %{buildroot}%{_datadir}/cassandra/
 cp bin/nodetool %{buildroot}%{_bindir}/
@@ -71,6 +68,8 @@ cp conf/logback.xml %{buildroot}%{_sysconfdir}/cassandra/
 cp conf/metrics-reporter-config-sample.yaml %{buildroot}%{_sysconfdir}/cassandra/
 cp -r lib %{buildroot}/var/opt/cassandra/
 cp -r build %{buildroot}/var/opt/cassandra/
+cp build/tools/lib/stress.jar %{buildroot}/var/opt/cassandra/lib
+cp build/apache-cassandra-%{version}.jar %{buildroot}/var/opt/cassandra/lib
 cp tools/bin/cassandra-stress %{buildroot}%{_bindir}
 cp tools/bin/cassandra-stressd %{buildroot}%{_bindir}
 cp tools/bin/sstabledump %{buildroot}%{_bindir}/
@@ -82,8 +81,6 @@ cp tools/bin/sstablerepairedset %{buildroot}%{_bindir}/sstablerepairedset
 cp tools/bin/sstablesplit %{buildroot}%{_bindir}/sstablesplit
 cp tools/bin/cassandra-stress %{buildroot}%{_bindir}/
 cp tools/bin/cassandra-stressd %{buildroot}%{_bindir}/
-
-
 
 mkdir -p %{buildroot}/lib/systemd/system
 install -p -D -m 644 %{SOURCE1}  %{buildroot}/lib/systemd/system/%{name}.service
@@ -128,8 +125,11 @@ fi
 %{_sysconfdir}/sysconfig/cassandra
 /etc/profile.d/cassandra.sh
 /lib/systemd/system/cassandra.service
+%exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Thu Aug 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-5
+-   Remove the build/libs directory from the cassandra package
 *   Tue Jul 25 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-4
 -   Remove hadoop jars, upgrade logback jars and change service type to simple
 *   Mon Jul 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10-3
