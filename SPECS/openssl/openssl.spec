@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2k
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -13,6 +13,9 @@ Patch0:         c_rehash.patch
 Patch1:         openssl-1.0.2f-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
+%if %{with_check}
+BuildRequires: zlib-devel
+%endif
 Requires:       bash glibc libgcc
 
 %description
@@ -73,7 +76,7 @@ ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
 ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
 %check
-make %{?_smp_mflags} tests
+make tests
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -112,6 +115,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Thu Aug 10 2017 Chang Lee <changlee@vmware.com> 1.0.2k-4
+-   Add zlib-devel for %check
 *   Fri Jul 28 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-3
 -   Patch to support enabling FIPS_mode through kernel parameter
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 1.0.2k-2
