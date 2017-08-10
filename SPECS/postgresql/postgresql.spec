@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        9.6.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -76,6 +76,7 @@ cd contrib && make install DESTDIR=%{buildroot}
 %{_fixperms} %{buildroot}/*
 
 %check
+sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 
@@ -150,6 +151,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.3-3
+-   add sleep 5 when initdb in make check for bug 1900371
 *   Wed Jul 05 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-2
 -   Added postgresql-devel
 *   Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
