@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -93,7 +93,10 @@ if [ ! -d /var/lib/sshd ]; then
    mkdir /var/lib/sshd
    chmod 0755 /var/lib/sshd
 fi
-make %{?_smp_mflags} tests
+cp %{buildroot}/usr/bin/scp /usr/bin
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test -s /bin/bash -c "PATH=$PATH make tests"
 
 %pre server
 getent group sshd >/dev/null || groupadd -g 50 sshd
@@ -168,6 +171,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Thu Aug 10 2017 Chang Lee <changlee@vmware.com> 7.5p1-4
+-   Fixed %check
 *   Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.5p1-3
 -   Seperate the service file from the spec file
 *   Wed May 3  2017 Bo Gan <ganb@vmware.com> 7.5p1-2
