@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.79
-Release:       2%{?dist}
+Version:       4.4.80
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5b249aa3410b464515178df8f9a1ff0e3ba3f67e
+%define sha1 linux=ac52482a9548949f56f568e2e9e9180b302d21bb
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -186,6 +186,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.80-1
+-   Version update
 *   Tue Aug 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-2
 -   [bugfix] Do not fallback to syscall from VDSO on clock_gettime(MONOTONIC)
 -   Fix CVE-2017-7542

@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.79
-Release:    	2%{?dist}
+Version:    	4.4.80
+Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=5b249aa3410b464515178df8f9a1ff0e3ba3f67e
+%define sha1 linux=ac52482a9548949f56f568e2e9e9180b302d21bb
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -283,6 +283,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.80-1
+-   Version update
 *   Tue Aug 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.79-2
 -   Fix CVE-2017-10911, CVE-2017-7542
 -   [bugfix] Added ccm,gcm,ghash,zlib,lzo crypto modules to avoid
