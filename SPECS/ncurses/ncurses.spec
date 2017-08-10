@@ -115,7 +115,6 @@ make
 %files
 %defattr(-,root,root)
 %{_bindir}/captoinfo
-%{_bindir}/ncursesw6-config
 %{_bindir}/clear
 %{_bindir}/tabs
 %{_bindir}/tic
@@ -140,6 +139,7 @@ make
 %{_bindir}/ncursesw5-config
 
 %files devel
+%{_bindir}/ncursesw6-config
 %{_includedir}/*.h
 %{_libdir}/libncurses.a
 %{_libdir}/libformw.a
@@ -182,6 +182,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Thu Aug 10 2017 Bo Gan <ganb@vmware.com> 6.0-10
+-   Move ncursesw6-config to devel
 *   Thu Jul 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.0-9
 -   Fix for CVE-2017-10684 and CVE-2017-10685
 *   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 6.0-8
