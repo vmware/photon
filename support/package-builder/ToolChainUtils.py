@@ -114,7 +114,11 @@ class ToolChainUtils(object):
         packages = ""
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            rpmFile = None
+            if packageName not in constants.listToolChainRPMsToInstall:
+                rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            elif constants.listToolChainRPMsToInstall.index(packageName) > constants.listToolChainRPMsToInstall.index(package):
+                rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
                 if package == "sqlite":
@@ -138,7 +142,7 @@ class ToolChainUtils(object):
             raise Exception("RPM installation failed")
         self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
         print "Building Package:"+ packageName
-	print constants.perPackageToolChain
+        print constants.perPackageToolChain
         if packageName in constants.perPackageToolChain:
             print constants.perPackageToolChain[packageName]
             self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName], packageName);
@@ -149,7 +153,7 @@ class ToolChainUtils(object):
         packages = ""
         for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-	    print "DEBUG:" + package
+            print "DEBUG:" + package
             if "openjre8" in packageName or "openjdk8" in packageName:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             else:
@@ -161,8 +165,8 @@ class ToolChainUtils(object):
             packages += " " + package
 
         self.logger.debug("Installing rpms:"+packages)
-	cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
-	print "Command Executed:" + cmd 
+        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+        print "Command Executed:" + cmd 
         process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
         retval = process.wait()
         if retval != 0:
