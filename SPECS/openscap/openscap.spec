@@ -62,7 +62,7 @@ make
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
-%check
+#%check
 #make check need BuildRequires per-XML-XPATH and bzip2
 #no per-XML-XPATH so disable make check
 #make %{?_smp_mflags} -k check
