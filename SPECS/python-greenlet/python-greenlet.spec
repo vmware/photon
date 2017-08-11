@@ -4,7 +4,7 @@
 Summary:        Lightweight in-process concurrent programming
 Name:           python-greenlet
 Version:        0.4.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -50,7 +50,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 python2 setup.py test
-python3 setup.py test
+#make check test code only support python2
+#python3 setup.py test
 
 %files
 %defattr(-,root,root,-)
@@ -63,6 +64,8 @@ python3 setup.py test
 /usr/include/python3.6m/greenlet/greenlet.h
 
 %changelog
+*   Fri Aug 11 2017 Rongrong Qiu <rqiu@vmware.com> 0.4.12-3
+-   make check only support python3 for bug 1937030
 *   Thu Apr 27 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.4.12-2
 -   updated python version
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4.12-1
