@@ -3,7 +3,7 @@
 
 Name:           pygobject
 Version:        3.24.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -20,6 +20,12 @@ BuildRequires:  python2-libs
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  glib-devel
 BuildRequires:  which
+%if %{with_check}
+BuildRequires:  gobject-introspection-python
+BuildRequires:  python3-test
+BuildRequires:  python2-test
+BuildRequires:  glib-schemas
+%endif
 
 %description
 Python bindings for GLib and GObject.
@@ -66,6 +72,7 @@ pushd ../p3dir
     --with-python=/usr/bin/python3
 make
 popd
+blah
 
 %install
 make install DESTDIR=%{buildroot}
@@ -95,6 +102,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.24.1-2
+-   Fix make check
 *   Fri Apr 14 2017 Xiaolin Li <xiaolinl@vmware.com> 3.24.1-1
 -   Updated to version 3.24.1 and added python3 package.
 *   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.10.2-3
