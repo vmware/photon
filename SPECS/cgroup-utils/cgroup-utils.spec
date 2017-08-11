@@ -3,7 +3,7 @@
 Summary:        Utility tools for control groups of Linux
 Name:           cgroup-utils
 Version:        0.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 Group:          Development/Libraries
 URL:            https://pypi.python.org/pypi/cgroup-utils/0.6
@@ -51,7 +51,7 @@ python2 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %check
 python test_all.py
 pushd ../p3dir
-python3 test_all.py
+python test_all.py
 popd
 
 %clean
@@ -68,6 +68,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 11 2017 Rongrong Qiu <rqiu@vmware.com> 0.6-6
+-   fix make check for bug 1900249 
 *   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-5
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Fri Jun 09 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-4
