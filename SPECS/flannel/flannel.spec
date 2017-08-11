@@ -36,6 +36,10 @@ popd
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ %{name}/dist/flanneld
 
+install -vdm 0755 %{buildroot}/opt/flannel
+install -vpm 0755 -t %{buildroot}/opt/flannel/ %{name}/dist/mk-docker-opts.sh
+
+
 install -vdm 0755 %{buildroot}%{_sysconfdir}/flannel
 cat << EOF >> %{buildroot}%{_sysconfdir}/flannel/flanneld
 ###
@@ -91,6 +95,7 @@ popd
 %{_bindir}/flanneld
 %{_libdir}/systemd/system/flanneld.service
 %{_sysconfdir}/flannel/flanneld
+/opt/flannel/mk-docker-opts.sh
 %config(noreplace) %{_sysconfdir}/flannel/flanneld
 
 %changelog

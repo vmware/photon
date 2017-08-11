@@ -1,0 +1,12 @@
+FROM vmware/photon
+
+MAINTAINER kulkarniv@vmware.com
+
+ENV FLANNEL_ARCH=amd64
+
+RUN tdnf install -y iproute2 net-tools iptables
+ADD tmp/flannel/usr/bin/flanneld /opt/bin/flanneld
+COPY tmp/flannel/opt/flannel/mk-docker-opts.sh /opt/bin/
+RUN ln -s /usr/sbin/iptables /usr/local/bin/iptables
+
+ENTRYPOINT ["/opt/bin/flanneld"]
