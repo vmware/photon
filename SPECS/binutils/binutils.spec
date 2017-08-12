@@ -1,41 +1,57 @@
 Summary:    Contains a linker, an assembler, and other tools
 Name:       binutils
-Version:    2.25.1
-Release:    5%{?dist}
+Version:    2.29
+Release:    1%{?dist}
 License:    GPLv2+
 URL:        http://www.gnu.org/software/binutils
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
-%define sha1 binutils=1d597ae063e3947a5f61e23ceda8aebf78405fcd
-Patch0:     http://www.linuxfromscratch.org/patches/downloads/binutils/binutils-2.25.1-gold_export_symbols-1.patch
-Patch1:     binutils-CVE-2014-9939.patch
-Patch2:     binutils-CVE-2017-6969.patch
+Source0:    http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
+%define sha1 binutils=47817089b3867baf307365004c51677174a27000
+Patch0:     check-elf-section-header-only-for-elf-output.patch
+Patch1:         elf-checks-for-orphan-placement.patch
+Patch2:         CVE-2017-12448.patch
+Patch3:         CVE-2017-12449_12455_12457_12458_12459.patch
+Patch4:         CVE-2017-12450.patch
+Patch5:         CVE-2017-12451.patch
+Patch6:         CVE-2017-12452_12453_12454_12456.patch
+
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
 %package    devel
 Summary:    Header and development files for binutils
 Requires:   %{name} = %{version}
+
 %description    devel
 It contains the libraries and header files to create applications 
 for handling compiled objects.
+
 %prep
 %setup -q
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-rm -fv etc/standards.info
-sed -i.bak '/^INFO/s/standards.info //' etc/Makefile.in
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+
 %build
 install -vdm 755 ../binutils-build
 cd ../binutils-build
 ../%{name}-%{version}/configure \
-    --prefix=%{_prefix} \
-    --enable-shared \
-    --disable-silent-rules
+         --prefix=%{_prefix} \
+         --enable-gold       \
+         --enable-ld=default \
+         --enable-plugins    \
+         --enable-shared     \
+         --disable-werror    \
+         --with-system-zlib  \
+         --disable-silent-rules
 make %{?_smp_mflags} tooldir=%{_prefix}
+
 %install
 pushd ../binutils-build
 make DESTDIR=%{buildroot} tooldir=%{_prefix} install
@@ -44,15 +60,21 @@ find %{buildroot} -name '*.la' -delete
 rm -rf %{buildroot}/%{_infodir}
 popd
 %find_lang %{name} --all-name
+
 %check
 cd ../binutils-build
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+sed -i 's/testsuite/ /g' gold/Makefile
+make %{?_smp_mflags} check
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files -f %{name}.lang
 %defattr(-,root,root)
+%{_bindir}/dwp
 %{_bindir}/gprof
 %{_bindir}/ld.bfd
+%{_bindir}/ld.gold
 %{_bindir}/c++filt
 %{_bindir}/objdump
 %{_bindir}/as
@@ -137,6 +159,19 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/ldscripts/elf_l1om.xbn
 %{_libdir}/ldscripts/elf_x86_64.xbn
 %{_libdir}/ldscripts/elf_l1om.xdw
+%{_libdir}/ldscripts/elf_iamcu.x
+%{_libdir}/ldscripts/elf_iamcu.xbn
+%{_libdir}/ldscripts/elf_iamcu.xc
+%{_libdir}/ldscripts/elf_iamcu.xd
+%{_libdir}/ldscripts/elf_iamcu.xdc
+%{_libdir}/ldscripts/elf_iamcu.xdw
+%{_libdir}/ldscripts/elf_iamcu.xn
+%{_libdir}/ldscripts/elf_iamcu.xr
+%{_libdir}/ldscripts/elf_iamcu.xs
+%{_libdir}/ldscripts/elf_iamcu.xsc
+%{_libdir}/ldscripts/elf_iamcu.xsw
+%{_libdir}/ldscripts/elf_iamcu.xu
+%{_libdir}/ldscripts/elf_iamcu.xw
 %{_mandir}/man1/readelf.1.gz
 %{_mandir}/man1/windmc.1.gz
 %{_mandir}/man1/ranlib.1.gz
@@ -172,6 +207,11 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Fri Aug 11 2017 Anish Swaminathan <anishs@vmware.com> 2.29-1
+-   Version update
+-   Apply patches for CVE-2017-12448,CVE-2017-12449,CVE-2017-12450,CVE-2017-12451,
+-   CVE-2017-12452,CVE-2017-12453,CVE-2017-12454,CVE-2017-12455,CVE-2017-12456,
+-   CVE-2017-12457,CVE-2017-12458,CVE-2017-12459
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 2.25.1-5
 -   Bump release to built with latest toolchain
 *   Tue Apr 04 2017 Anish Swaminathan <anishs@vmware.com> 2.25.1-4
