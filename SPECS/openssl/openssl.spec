@@ -1,19 +1,19 @@
-Summary:	Management tools and libraries relating to cryptography
-Name:		openssl
-Version:	1.0.2k
-Release:	3%{?dist}
-License:	OpenSSL
-URL:		http://www.openssl.org
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=5f26a624479c51847ebd2f22bb9f84b3b44dcb44
-Patch0:		c_rehash.patch
-Patch1:         openssl-1.0.2f-ipv6apps.patch
-Patch2:         openssl-init-conslidate.patch
-Patch3:         openssl-drbg-default-read-system-fips.patch
-Requires:	bash glibc libgcc 
+Summary:    Management tools and libraries relating to cryptography
+Name:       openssl
+Version:    1.0.2l
+Release:    1%{?dist}
+License:    OpenSSL
+URL:        http://www.openssl.org
+Group:      System Environment/Security
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:    http://www.openssl.org/source/%{name}-%{version}.tar.gz
+%define sha1 openssl=b58d5d0e9cea20e571d903aafa853e2ccd914138
+Patch0:     c_rehash.patch
+Patch1:     openssl-1.0.2f-ipv6apps.patch
+Patch2:     openssl-init-conslidate.patch
+Patch3:     openssl-drbg-default-read-system-fips.patch
+Requires:   bash glibc libgcc 
 
 %description
 The OpenSSL package contains management tools and libraries relating
@@ -57,13 +57,13 @@ Perl scripts that convert certificates and keys to various formats.
 %build
 export CFLAGS="%{optflags}"
 ./config \
-	--prefix=%{_prefix} \
-	--libdir=lib \
-	--openssldir=/%{_sysconfdir}/ssl \
-	shared \
-	zlib-dynamic \
+    --prefix=%{_prefix} \
+    --libdir=lib \
+    --openssldir=/%{_sysconfdir}/ssl \
+    shared \
+    zlib-dynamic \
         %{?_with_fips} \
-	-Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
+    -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
 make
 %install
@@ -74,8 +74,8 @@ ln -sf %{_libdir}/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 
@@ -112,6 +112,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Fri Aug 11 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2l-1
+-   Upgrade to 1.0.2l
 *   Fri Jul 28 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-3
 -   Allow system file take precedence over kernel parameter for FIPS
 *   Fri Jul 28 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-2
@@ -146,5 +148,5 @@ rm -rf %{buildroot}/*
 -   Split perl scripts to a different package.
 *   Fri Jul 24 2015 Chang Lee <changlee@vmware.com> 1.0.2d-1
 -   Update new version.
-*	Wed Mar 25 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2a-1
--	Initial build.	First version
+*   Wed Mar 25 2015 Divya Thaluru <dthaluru@vmware.com> 1.0.2a-1
+-   Initial build.  First version
