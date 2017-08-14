@@ -222,8 +222,7 @@ if __name__ == '__main__':
             print "Converting raw disk to vhd ..."
             info_output=utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img info -f raw --output json {}".format(options.src_root, '/mnt/' + relrawpath))
             mbsize = 1024 * 1024
-            #qemu-img adds an extra 512 bytes to the raw image
-            mbroundedsize = ((int(json.loads(info_output)["virtual-size"])/mbsize + 1) * mbsize) - 512
+            mbroundedsize = ((int(json.loads(info_output)["virtual-size"])/mbsize + 1) * mbsize)
             utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img resize -f raw {} {}".format(options.src_root, '/mnt/' + relrawpath, mbroundedsize))
             utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img convert {} -O vpc -o subformat=fixed,force_size {}".format(options.src_root, '/mnt/' + relrawpath, '/mnt/' + vhdname))
         elif config['artifacttype'] == 'ova':
