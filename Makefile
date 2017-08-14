@@ -525,6 +525,7 @@ check: packages
 	@echo "Testing all RPMS ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
+                -bt $(PHOTON_BUILD_TYPE) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -a $(PHOTON_SRPMS_DIR) \
@@ -532,7 +533,7 @@ check: packages
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-		-e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -548,13 +549,14 @@ check: packages
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
+                              -bt $(PHOTON_BUILD_TYPE) \
                               -b $(PHOTON_CHROOT_PATH) \
                               -s $(PHOTON_SPECS_DIR) \
                               -r $(PHOTON_RPMS_DIR) \
                               -a $(PHOTON_SRPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
-			      -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                               -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -d $(PHOTON_DIST_TAG) \
                               -n $(PHOTON_BUILD_NUMBER) \
