@@ -107,9 +107,15 @@ class BuildContainer(object):
 
     def buildPackage(self, package):
         #do not build if RPM is already built
+        #test only if the package is in the testForceRPMS with rpmCheck
+        #build only if the package is not in the testForceRPMS with rpmCheck
         if self.checkIfPackageIsAlreadyBuilt(package):
-            self.logger.info("Skipping building the package:"+package)
-            return
+            if not constants.rpmCheck:
+                self.logger.info("Skipping building the package:"+package)
+                return
+            elif constants.rpmCheck and package not in constants.testForceRPMS:
+                self.logger.info("Skipping testing the package:"+package)
+                return
 
         #should initialize a logger based on package name
         containerTaskName = "build-" + package
@@ -132,6 +138,11 @@ class BuildContainer(object):
             listInstalledPackages, listInstalledRPMs = self.findInstalledPackages(containerID)
             self.logger.info(listInstalledPackages)
             listDependentPackages = self.findBuildTimeRequiredPackages(package)
+            if constants.rpmCheck and package in constants.testForceRPMS:
+                listDependentPackages.extend(self.findBuildTimeCheckRequiredPackages(package))
+                testPackages=set(constants.listMakeCheckRPMPkgtoInstall)-set(listInstalledPackages)-set([package])
+                listDependentPackages.extend(testPackages)
+                listDependentPackages=list(set(listDependentPackages))
 
             pkgUtils = PackageUtils(self.logName,self.logPath)
             if len(listDependentPackages) != 0:
@@ -177,6 +188,10 @@ class BuildContainer(object):
 
     def findBuildTimeRequiredPackages(self, package):
         listRequiredPackages = constants.specData.getBuildRequiresForPackage(package)
+        return listRequiredPackages
+
+    def findBuildTimeCheckRequiredPackages(self,package):
+        listRequiredPackages=constants.specData.getCheckBuildRequiresForPackage(package)
         return listRequiredPackages
 
     def installPackage(self, pkgUtils, package, containerID, destLogPath, listInstalledPackages, listInstalledRPMs):
