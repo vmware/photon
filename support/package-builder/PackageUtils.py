@@ -587,21 +587,52 @@ class PackageUtils(object):
         rpmbuildDistOption = '--define \"dist %s\"' % constants.dist
         rpmBuildCmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption \
                           + " " + rpmbuildDistOption
-        if not constants.rpmCheck:
-            rpmBuildCmd += " " + self.rpmbuildNocheckOption
+
+        if constants.rpmCheck and package in constants.testForceRPMS:
+            self.logger.info("#"*(68+2*len(package)))
+            if not constants.specData.isCheckAvailable(package):
+                self.logger.info("####### "+package+" MakeCheck is not available. Skipping MakeCheck TEST for "+package+ " #######")
+                rpmBuildCmd=self.rpmbuildBinary+" --clean"
+            else:
+                self.logger.info("####### "+package+" MakeCheck is available. Running MakeCheck TEST for "+package+ " #######")
+                rpmBuildCmd=self.rpmbuildBinary+" "+self.rpmbuildCheckOption
+            self.logger.info("#"*(68+2*len(package)))
+        else:
+           rpmBuildCmd+=" "+self.rpmbuildNocheckOption
+
         for macro in macros:
             rpmBuildCmd += ' --define \"%s\"' % macro
         rpmBuildCmd += " " + specFile
         rpmBuildCmd = "/bin/bash -l -c '" + rpmBuildCmd + " > " + rpmLogFile + " 2>&1'"
+        rpmBuildCmd = "docker exec " + str(containerID.short_id) + " " + rpmBuildCmd
 
         cmdUtils = CommandUtils()
         self.logger.info("Building rpm for package: " + package)
         #TODO: Show running log of rpmbuildcmd
         #TODO: Get exit status of rpmBuildCmd
-        containerID.exec_run(rpmBuildCmd)
+        #containerID.exec_run(rpmBuildCmd)
+        returnVal = cmdUtils.runCommandInShell(rpmBuildCmd)
+
         if not os.path.isfile(destLogFile):
             self.logger.error("RPM build not file not found. Building rpm failed for: " + specFile)
             raise Exception("RPM Build failed")
+
+        if constants.rpmCheck and package in constants.testForceRPMS:
+            if not constants.specData.isCheckAvailable(package):
+                constants.testLogger.info(package+" : N/A")
+            elif returnVal:
+                constants.testLogger.info(package+" : PASS")
+            else:
+                constants.testLogger.error(package+" : FAIL" )
+
+        if constants.rpmCheck:
+            if not returnVal and constants.rpmCheckStopOnError:
+                self.logger.error("Checking rpm is failed "+specFile)
+                raise Exception("RPM check failed")
+        else:
+            if not returnVal:
+                self.logger.error("Building rpm is failed "+specFile)
+                raise Exception("RPM build failed")
 
         #Extracting rpms created from log file
         listRPMFiles=[]
@@ -616,7 +647,7 @@ class PackageUtils(object):
                     listRPMFiles.append(listcontents[1])
                 if (len(listcontents) == 2) and listcontents[1].strip()[-8:] == ".src.rpm" and listcontents[1].find("/SRPMS/") != -1:
                     listSRPMFiles.append(listcontents[1])
-        if not listRPMFiles:
-            self.logger.error("Building rpm failed for " + specFile)
-            raise Exception("RPM Build failed")
+        #if not listRPMFiles:
+        #    self.logger.error("Building rpm failed for " + specFile)
+        #    raise Exception("RPM Build failed")
         return listRPMFiles, listSRPMFiles
