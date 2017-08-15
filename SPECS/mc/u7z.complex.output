@@ -1,0 +1,27 @@
+-rw-r--r--   1  <<uid>>  <<gid>>       6144 2007-07-07 07:07:07 $PLUGINSDIR/AdvSplash.dll
+-rw-r--r--   1  <<uid>>  <<gid>>       8005 2007-07-07 07:07:07 $PLUGINSDIR/InstallOptions.dll
+-rw-r--r--   1  <<uid>>  <<gid>>       3328 2007-07-07 07:07:07 $PLUGINSDIR/StartMenu.dll
+-rw-r--r--   1  <<uid>>  <<gid>>        134 2007-11-15 01:12:38 $PLUGINSDIR/ioSpecial.ini
+-rw-r--r--   1  <<uid>>  <<gid>>       1886 2003-09-24 00:34:00 $PLUGINSDIR/modern-wizard.bmp
+-rw-r--r--   1  <<uid>>  <<gid>>      28016 2006-08-11 23:49:28 $PLUGINSDIR/splash.bmp
+-rw-r--r--   1  <<uid>>  <<gid>>       4014 2011-11-03 02:23:16 $_OUTDIR/html/ui/bg-repeat.gif
+-rw-r--r--   1  <<uid>>  <<gid>>      12817 2011-11-03 02:23:16 $_OUTDIR/html/ui/callout-bg-bottom.gif
+-rw-r--r--   1  <<uid>>  <<gid>>      14648 2011-11-03 02:23:16 $_OUTDIR/html/ui/callout-bg-top.gif
+-rw-r--r--   1  <<uid>>  <<gid>>        120 2011-11-03 02:23:16 $_OUTDIR/html/ui/graph-background.png
+-rw-r--r--   1  <<uid>>  <<gid>>        861 2011-11-03 02:23:16 $_OUTDIR/html/ui/heading-bg-left.gif
+-rw-r--r--   1  <<uid>>  <<gid>>       9854 2011-11-03 02:23:16 $_OUTDIR/html/ui/heading-bg.gif
+-rw-r--r--   1  <<uid>>  <<gid>>      30401 2011-11-03 02:23:16 $_OUTDIR/html/ui/logo.gif
+-rw-r--r--   1  <<uid>>  <<gid>>       1431 2011-11-03 02:23:16 $_OUTDIR/html/ui/nav-arrow-down.gif
+-rw-r--r--   1  <<uid>>  <<gid>>       1446 2011-11-03 02:23:16 $_OUTDIR/html/ui/nav-arrow-up.gif
+-rw-r--r--   1  <<uid>>  <<gid>>       1425 2011-11-03 02:23:16 $_OUTDIR/html/ui/nav-arrows-bg.gif
+-rw-r--r--   1  <<uid>>  <<gid>>       3841 2011-11-03 02:23:16 $_OUTDIR/html/ui/table-wrapper-bg-repeat-x.gif
+-rw-r--r--   1  <<uid>>  <<gid>>       2885 2011-11-03 02:23:16 $_OUTDIR/html/ui/table-wrapper-bg-repeat.gif
+-rw-r--r--   1  <<uid>>  <<gid>>     142162 2011-11-03 02:23:16 $_OUTDIR/ux/splash-screen.png
+-rw-r--r--   1  <<uid>>  <<gid>>    1178084 2011-11-03 02:33:04 Geekbench22.exe
+-rw-r--r--   1  <<uid>>  <<gid>>     445814 2011-11-03 02:33:04 cpuidsdk.dll
+-rw-r--r--   1  <<uid>>  <<gid>>     469920 2011-11-03 02:33:04 cpuidsdk64.dll
+-rw-r--r--   1  <<uid>>  <<gid>>     101652 2011-11-03 02:33:04 geekbench.exe
+-rw-r--r--   1  <<uid>>  <<gid>>     737580 2011-11-03 02:33:04 geekbench.plar
+-rw-r--r--   1  <<uid>>  <<gid>>    1058731 2011-11-03 02:33:06 geekbench_x86_32.exe
+-rw-r--r--   1  <<uid>>  <<gid>>    1192155 2011-11-03 02:33:06 geekbench_x86_64.exe
+-rw-r--r--   1  <<uid>>  <<gid>>          0 2007-07-07 07:07:07 plugins/shared memory/uninstall.exe

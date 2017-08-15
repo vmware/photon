@@ -1,0 +1,9 @@
+drwxr-xr-x   1  <<uid>>  <<gid>>          0 2011-11-02 02:23:16 $_OUTDIR/html/ui
+-rw-r--r--   1  <<uid>>  <<gid>>      17897 2011-11-05 05:23:16 $_OUTDIR/html/ui/callout-bg-bottom.gif
+-rw-r--r--   1  <<uid>>  <<gid>>     469920 2011-11-01 01:33:04 cpuidsdk64.dll
+drwxr-xr-x   1  <<uid>>  <<gid>>          0 2007-07-07 07:07:07 no-date-$_OUTDIR/html/ui
+-rw-r--r--   1  <<uid>>  <<gid>>   17770090 2007-07-07 07:07:07 no-date-cpuidsdk64.dll
+drwxr-xr-x   1  <<uid>>  <<gid>>          0 2007-07-07 07:07:07 no-date-test
+-rw-r--r--   1  <<uid>>  <<gid>>          0 2007-07-07 07:07:07 no-date-test.dll
+drwxr-xr-x   1  <<uid>>  <<gid>>          0 2011-11-04 04:23:16 test
+-rw-r--r--   1  <<uid>>  <<gid>>          0 2011-11-03 03:33:04 test.dll

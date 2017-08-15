@@ -1,0 +1,9 @@
+drwx------   1  <<uid>>  <<gid>>          0 2016-06-07 20:43:00 ./.dosbox
+-rw-rw-r--   1  <<uid>>  <<gid>>      10730 2016-06-07 20:43:00 ./.dosbox/dosbox-0.74.conf
+-rw-------   1  <<uid>>  <<gid>>      11032 2016-11-23 07:10:00 ./.viminfo
+-rw-rw-r--   1  <<uid>>  <<gid>>        205 2016-10-26 13:14:00 ./.wget-hsts
+-rw-rw-r--   1  <<uid>>  <<gid>>       7527 2016-04-17 01:21:00 ./.xboardrc
+-rw-rw-r--   1  <<uid>>  <<gid>>        559 2016-09-29 01:08:00 ./.xchm
+-rw-rw-r--   1  <<uid>>  <<gid>>        130 2015-12-27 17:08:00 ./.xinputrc
+-rw-r--r--   1  <<uid>>  <<gid>>          6 2016-11-23 07:39:00 ./filename with spaces.txt
+-rw-rw-r--   1  <<uid>>  <<gid>>    5869937 2016-11-23 07:43:00 ./log.txt
