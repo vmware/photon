@@ -1,16 +1,16 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
-Version:	2.28
+Version:	2.29
 Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.bz2
-%define sha1 binutils=f8b033731f6baa437d429c60e2623570f1ef9d6b
-Patch0:         binutils-CVE-2017-6969.patch
-Patch1:         binutils-CVE-2017-8421.patch
+Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
+%define sha1 binutils=47817089b3867baf307365004c51677174a27000
+Patch0:         check-elf-section-header-only-for-elf-output.patch
+Patch1:         elf-checks-for-orphan-placement.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -48,6 +48,7 @@ popd
 
 %check
 cd ../binutils-build
+sed -i 's/testsuite/ /g' gold/Makefile
 make %{?_smp_mflags} check
 
 
@@ -191,18 +192,22 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
-*	Tue May 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.28-2
--	Patch for CVE-2017-8421
-*       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 2.28-1
--       Upgraded to version 2.28
--       Apply patch for CVE-2017-6969
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25.1-2
--	GA - Bump release of all rpms
-*       Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.25.1-1
--       Updated to version 2.25.1
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.25-2
--	Handled locale files with macro find_lang
-*	Mon Apr 6 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25-1
--	Updated to 2.25
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24-1
--	Initial build. First version
+*   Tue Aug 8 2017 Rongrong Qiu <rqiu@vmware.com> 2.29-2
+-   fix for make check for bug 1900247
+*   Wed Aug 2 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29-1
+-   Version update
+*   Tue May 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.28-2
+-   Patch for CVE-2017-8421
+*   Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 2.28-1
+-   Upgraded to version 2.28
+-   Apply patch for CVE-2017-6969
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25.1-2
+-   GA - Bump release of all rpms
+*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 2.25.1-1
+-   Updated to version 2.25.1
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 2.25-2
+-   Handled locale files with macro find_lang
+*   Mon Apr 6 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.25-1
+-   Updated to 2.25
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24-1
+-   Initial build. First version
