@@ -1,6 +1,6 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
-Version:	2.29
+Version:	2.28
 Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
