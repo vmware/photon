@@ -1,14 +1,13 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
-Version: 	6.2.11
+Version: 	6.2.11.4
 Release:        1%{?dist}
 Group: 		Development/Libraries
 Vendor:         VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 likewise-open=88ba9280b062a3ed4830dd2e875084d2357a44f7
-Patch0:         gcc-6.3-compile-fix.patch
+%define sha1 likewise-open=6aa4cf11de6747d5f8940666c21adc3e1f7b6a4b
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       coreutils >= 8.22
@@ -46,7 +45,6 @@ This package provides files for developing against the Likewise APIs
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 cd release
@@ -277,6 +275,7 @@ rm -rf %{buildroot}/*
 /usr/lib64/gss/*.so
 /opt/likewise/lib64/lwsm-loader/*.so
 /opt/likewise/lib64/*.so
+/opt/likewise/lib64/krb5/plugins/libkrb5/liblwnet_service_locator.so
 %dir /var/lib/likewise
 %dir /var/lib/likewise/db
 %dir /var/lib/likewise/rpc
@@ -287,5 +286,7 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Wed Aug 09 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11.4-1
+-   Update to 6.2.11.4.
 *   Wed Mar 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11-1
 -   Initial - spec modified for Photon from likewise-open git repo.

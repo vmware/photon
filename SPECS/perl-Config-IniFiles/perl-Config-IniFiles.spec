@@ -2,7 +2,7 @@
 Summary:        A module for reading .ini-style configuration files
 Name:           perl-Config-IniFiles
 Version:        2.94
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        GPL+ or Artistic
 URL:            http://search.cpan.org/dist/Config-IniFiles/
@@ -37,6 +37,10 @@ find %{buildroot} -type d -depth -exec rmdir {} 2>/dev/null ';'
 chmod -R u+w %{buildroot}/*
 
 %check
+# Upstream: make test fails with chrooted environment at t/34trailing-comments-double-delimeter.t.
+if [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
+rm t/34trailing-comments-double-delimeter.t
+fi
 make test
 
 %files
@@ -44,6 +48,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Aug 8 2017 Chang Lee <changlee@vmware.com> 2.94-2
+-   Remove 34trailing-comments-double-delimeter test in a chrooted environment
 *   Mon Apr 3 2017 Robert Qi <qij@vmware.com> 2.94-1
 -   Updated to 2.94
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.88-2

@@ -9,7 +9,7 @@ import traceback
 import shutil
 
 class ToolChainUtils(object):
-    
+
     def __init__(self,logName=None,logPath=None):
         if logName is None:
             logName = "Toolchain Utils"
@@ -45,7 +45,7 @@ class ToolChainUtils(object):
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/LOGS")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/BUILD")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/BUILDROOT")
-        
+
         prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID
         logFile=constants.logPath+"/prepareBuildRoot.log"
         returnVal=cmdUtils.runCommandInShell(prepareChrootCmd,logFile)
@@ -72,7 +72,7 @@ class ToolChainUtils(object):
         if len(listFilterRPMFiles) > 1 :
             self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
             return None
-    
+
     def buildCoreToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile):
         self.logger.info("Building core tool chain packages.....")
         chrootID=None
@@ -108,7 +108,7 @@ class ToolChainUtils(object):
             traceback.print_exc()
             raise e
         return pkgCount
-                
+
     def installToolChainRPMS(self,chrootID, packageName):
         cmdUtils = CommandUtils()
         self.prepareBuildRoot(chrootID)
@@ -117,7 +117,10 @@ class ToolChainUtils(object):
         packages = ""
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            rpmFile = None
+            if (packageName not in constants.listToolChainRPMsToInstall or
+                    constants.listToolChainRPMsToInstall.index(packageName) > constants.listToolChainRPMsToInstall.index(package)):
+                rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
                 if package == "sqlite":
@@ -141,18 +144,18 @@ class ToolChainUtils(object):
             raise Exception("RPM installation failed")
         self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
         print "Building Package:"+ packageName
-	print constants.perPackageToolChain
+        print constants.perPackageToolChain
         if packageName in constants.perPackageToolChain:
             print constants.perPackageToolChain[packageName]
             self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName], packageName);
-   
+
     def installCustomToolChainRPMS(self, chrootID, listOfToolChainPkgs, packageName):
         self.logger.info("Installing package specific tool chain RPMs for " + packageName + ".......")
         rpmFiles = ""
         packages = ""
         for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-	    print "DEBUG:" + package
+            print "DEBUG:" + package
             if "openjre8" in packageName or "openjdk8" in packageName:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             else:
@@ -164,8 +167,8 @@ class ToolChainUtils(object):
             packages += " " + package
 
         self.logger.debug("Installing rpms:"+packages)
-	cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
-	print "Command Executed:" + cmd 
+        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+        print "Command Executed:" + cmd
         process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
         retval = process.wait()
         if retval != 0:
