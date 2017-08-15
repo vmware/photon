@@ -1,14 +1,14 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2k
-Release:        4%{?dist}
+Version:        1.0.2l
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=5f26a624479c51847ebd2f22bb9f84b3b44dcb44
+%define sha1    openssl=b58d5d0e9cea20e571d903aafa853e2ccd914138
 Patch0:         c_rehash.patch
 Patch1:         openssl-1.0.2f-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
@@ -65,7 +65,7 @@ export CFLAGS="%{optflags}"
     --openssldir=/%{_sysconfdir}/ssl \
     shared \
     zlib-dynamic \
-        %{?_with_fips} \
+    %{?_with_fips} \
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
 make
@@ -115,6 +115,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Fri Aug 11 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2l-1
+-   Upgrade to 1.0.2l
 *   Thu Aug 10 2017 Chang Lee <changlee@vmware.com> 1.0.2k-4
 -   Add zlib-devel for %check
 *   Fri Jul 28 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-3
