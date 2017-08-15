@@ -1,7 +1,7 @@
 Summary:	library for configuring and customizing font access.
 Name:		fontconfig
 Version:	2.12.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD/GPL
 URL:		https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:		System Environment/Libraries
@@ -10,6 +10,7 @@ Distribution:	Photon
 Source0:	https://www.freedesktop.org/software/fontconfig/release/%{name}-%{version}.tar.gz
 %define sha1 fontconfig=57a5323ebdb58b3f8062a735e0927b0f5b9a7729
 Patch0:		0001-Avoid-conflicts-with-integer-width-macros-from-TS-18.patch
+Patch1:     fontconfig-runtest-expect.patch
 BuildRequires:	freetype2-devel
 BuildRequires:	libxml2
 BuildRequires:	expat-devel
@@ -27,6 +28,7 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 ./configure \
@@ -42,7 +44,7 @@ make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
-make %{?_smp_mflags} -k check
+make -k check
 
 %post
 /sbin/ldconfig
@@ -68,6 +70,8 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.12.1-3
+-   Add a patch for run-test. This issue was introduced by freetype 2.7.1
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.12.1-2
 -   Requires expat-devel
 *   Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.12.1-1

@@ -1,13 +1,14 @@
 Summary:        A simplified, portable interface to several low-level networking routines
 Name:           libdnet
 Version:        1.11
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            http://prdownloads.sourceforge.net/libdnet/libdnet-1.11.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/libdnet/%{name}-%{version}.tar.gz
+Patch0:         DisableMakeCheckCases.patch
 %define sha1    libdnet=e2ae8c7f0ca95655ae9f77fd4a0e2235dc4716bf
 %description
 libdnet provides a simplified, portable interface to several low-level networking routines.
@@ -20,6 +21,7 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure --prefix=/usr "CFLAGS=-fPIC" \
             --mandir=%{_mandir}
@@ -48,6 +50,8 @@ make  %{?_smp_mflags} check
 %{_libdir}/libdnet.a
 
 %changelog
+*   Thu Aug 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.11-5
+-   Applying patch for makecheck bug #1633615.
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.11-4
 -   Move man files to /usr/share, add devel package
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 1.11-3
