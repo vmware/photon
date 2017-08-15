@@ -4,7 +4,7 @@
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python-urllib3
 Version:        1.20
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
@@ -61,6 +61,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
+nofiles=$(ulimit -n)
+ulimit -n 5000
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
 $easy_install_2 mock
 $easy_install_2 PySocks
@@ -74,6 +76,7 @@ $easy_install_3 PySocks
 $easy_install_3 nose
 $easy_install_3 tornado
 PYTHONPATH=./ py.test3
+ulimit -n $nofiles
 
 %files
 %defattr(-,root,root)
@@ -84,6 +87,8 @@ PYTHONPATH=./ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-5
+-   Increased number of open files per process to 5000 before run make check.
 *   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-4
 -   Fixed rpm check errors
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-3
