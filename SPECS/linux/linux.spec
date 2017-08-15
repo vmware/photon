@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.41
-Release:        2%{?dist}
+Version:        4.9.43
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=74fe70e8c119fbf67f7f131e92a45a2046ca1908
+%define sha1 linux=e61d542f88a842b43ae8daacecf7d854458f57d5
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -45,6 +45,7 @@ Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 # Fix CVE-2017-7542
 Patch26:        ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
+Patch27:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -139,6 +140,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
 
 %build
 make mrproper
@@ -298,6 +300,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1
+-   Version update
+-   [feature] new sysctl option unprivileged_userns_clone
 *   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
 -   Fix CVE-2017-7542
 -   [bugfix] Added ccm,gcm,ghash,lzo crypto modules to avoid

@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.41
-Release:        2%{?dist}
+Version:        4.9.43
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=74fe70e8c119fbf67f7f131e92a45a2046ca1908
+%define sha1 linux=e61d542f88a842b43ae8daacecf7d854458f57d5
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -37,6 +37,7 @@ Patch20:        07-vmware-only.patch
 Patch21:        vmware-balloon-late-initcall.patch
 # Fix CVE-2017-7542
 Patch22:        ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
+Patch23:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -94,6 +95,7 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -190,6 +192,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1
+-   Version update
+-   [feature] new sysctl option unprivileged_userns_clone
 *   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
 -   [bugfix] Do not fallback to syscall from VDSO on clock_gettime(MONOTONIC)
 -   Fix CVE-2017-7542
