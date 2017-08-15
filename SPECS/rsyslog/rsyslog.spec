@@ -1,13 +1,15 @@
 Summary:	Rocket-fast system for log processing
 Name:		rsyslog
 Version:	8.15.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+ and ASL 2.0
 URL:		http://www.rsyslog.com/
 Source0:	http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
 %define sha1 rsyslog=e1d5ff63c96bce9945dc65581c8e195950256d3c
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
+# Downloaded patch from https://github.com/rsyslog/rsyslog/pull/1565
+Patch0:		CVE-2017-12588.patch
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -31,6 +33,7 @@ RSYSLOG is the rocket-fast system for log processing.
 It offers high-performance, great security features and a modular design. While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging, being able to accept inputs from a wide variety of sources, transform them, and output to the results to diverse destinations.
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -72,6 +75,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/systemd/system/rsyslog.service
 %{_sysconfdir}/systemd/journald.conf.d/*
 %changelog
+*   Tue Aug 15 2017 Dheeraj Shetty <dheerajs@vmware.com>  8.15.0-6
+-   Fixed CVE-2017-12588 
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  8.15.0-5
 -   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.0-4
