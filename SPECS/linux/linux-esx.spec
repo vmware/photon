@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.82
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -35,6 +35,7 @@ Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
+Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -95,6 +96,7 @@ The Linux package contains the Linux kernel doc files
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
 
 %build
 # patch vmw_balloon driver
@@ -183,6 +185,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Aug 16 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.82-2
+-   Implement the f*xattrat family of syscalls
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.82-1
 -   Version update
 *   Fri Aug 11 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.81-1
