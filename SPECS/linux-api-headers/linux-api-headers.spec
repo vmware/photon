@@ -1,7 +1,7 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
 Version:	4.4.82
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
@@ -10,10 +10,14 @@ Distribution: Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
 %define sha1 linux=27a2c7d466ec5b93712a9e17fa564652a0c06142
 BuildArch:	noarch
+# From SPECS/linux and used by linux-esx only
+# It provides f*xattrat syscalls
+Patch0:       Implement-the-f-xattrat-family-of-functions.patch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
 %setup -q -n linux-%{version}
+%patch0 -p1
 %build
 make mrproper
 make headers_check
@@ -25,6 +29,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Wed Aug 16 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.82-2
+-   Implement the f*xattrat family of syscalls
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.82-1
 -   Version update
 *   Fri Aug 11 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.81-1
