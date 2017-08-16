@@ -1,8 +1,7 @@
-%define debug_package %{nil}
 Summary:	Operating system utility that allows programs to run as non-previleged user.
 Name:		authbind
 Version:	2.1.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPL
 URL:		http://www.gnu.org/software/grep
 Group:		Applications/utils
@@ -16,7 +15,8 @@ The authbind software allows a program that would normally require superuser pri
 %prep
 %setup -qn authbind
 sed -i 's#-Wall#-Wall -Wno-unused-result#g' Makefile
-sed 's#\/usr\/local#%{_prefix}#g' Makefile
+sed -i 's#\/usr\/local#%{_prefix}#g' Makefile
+sed -i 's#755 -s#755#g' Makefile
 %build
 make %{?_smp_mflags}
 
@@ -27,11 +27,10 @@ mkdir -p %{buildroot}%{_libdir}
 mkdir -p %{buildroot}%{_sysconfdir}
 mkdir -p %{buildroot}%{_mandir}/man1
 mkdir -p %{buildroot}%{_mandir}/man8
-make install DESTDIR=%{buildroot}
-make install_man DESTDIR=%{buildroot}
-install -vsm 755 authbind %{buildroot}%{_bindir}
-install -vsm 755 helper %{buildroot}%{_libdir}
-install -vsm 755 libauthbind.so.1.0 %{buildroot}%{_libdir}
+make install DESTDIR=%{buildroot} STRIP=/bin/true
+install -vm 755 authbind %{buildroot}%{_bindir}
+install -vm 755 helper %{buildroot}%{_libdir}
+install -vm 755 libauthbind.so.1.0 %{buildroot}%{_libdir}
 cp -r %{_sysconfdir}/%{name} %{buildroot}%{_sysconfdir}
 cp authbind.1* %{buildroot}%{_mandir}/man1
 cp authbind-helper.8* %{buildroot}%{_mandir}/man8
@@ -43,5 +42,7 @@ cp authbind-helper.8* %{buildroot}%{_mandir}/man8
 %{_sysconfdir}/authbind
 %{_mandir}
 %changelog
+*    Fri Jul 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.1.2-2
+-    Generate debuginfo package.
 *    Fri Jul 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.1.2-1
 -    Initial build. First version
