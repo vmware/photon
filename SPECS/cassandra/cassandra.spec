@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -18,6 +18,7 @@ BuildRequires:  unzip zip
 BuildRequires:  openjdk
 BuildRequires:  wget
 Requires:       openjre
+Requires:       gawk
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
@@ -47,9 +48,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}/var/run/cassandra
 mkdir -p %{buildroot}/etc/profile.d
 mkdir -p %{buildroot}/var/opt/cassandra
-
-rm build/lib/jars/hadoop-*
-rm build/classes/main/org/apache/cassandra/hadoop/HadoopCompat.class
 
 cp bin/%{name} %{buildroot}%{_sbindir}
 cp bin/%{name}.in.sh %{buildroot}%{_datadir}/cassandra/
@@ -127,10 +125,13 @@ fi
 %{_sysconfdir}/sysconfig/cassandra
 /etc/profile.d/cassandra.sh
 /lib/systemd/system/cassandra.service
+%exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Tue Aug 15 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-6
+-   Remove build/libs directory from cassandra, add gawk requires
 *   Thu Jul 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-5
-*   Update logback jar (dependency) & remove hadoop jars
+-   Update logback jar (dependency) & remove hadoop jars
 *   Tue Jul 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-4
 -   Change cassandra service type as simple
 *   Mon Jul 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10-3
