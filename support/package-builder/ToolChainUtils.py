@@ -115,9 +115,12 @@ class ToolChainUtils(object):
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile = None
-            if (packageName not in constants.listToolChainRPMsToInstall or
-                    constants.listToolChainRPMsToInstall.index(packageName) > constants.listToolChainRPMsToInstall.index(package)):
+            if constants.rpmCheck:
                 rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            else:
+                if (packageName not in constants.listToolChainRPMsToInstall or
+                        constants.listToolChainRPMsToInstall.index(packageName) > constants.listToolChainRPMsToInstall.index(package)):
+                    rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
                 if package == "sqlite":
