@@ -14,6 +14,7 @@ StandardOutput=journal
 Restart=always
 RestartSec=30
 LimitNOFILE=infinity
+SuccessExitStatus=143
 
 [Install]
 WantedBy=multi-user.target
