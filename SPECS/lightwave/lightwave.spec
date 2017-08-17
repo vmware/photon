@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -109,14 +109,14 @@ Client utils to communicate with Lightwave Services
 
 %package devel
 Summary: Lightwave Client Development Library
-Requires: lightwave-client = %{version}
+Requires: lightwave-client = %{version}-%{release}
 
 %description devel
 Development Libraries to communicate with Lightwave Services
 
 %package post
 Summary: Lightwave POST Service
-Requires: lightwave-client = %{_version}
+Requires: lightwave-client = %{version}-%{release}
 %description post
 Lightwave POST service
 
@@ -1114,6 +1114,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Thu Aug 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-2
+-   Fix version requirement for lightwave-post
 *   Wed Aug 9 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-1
 -   update to 1.3.1
 *   Tue Jul 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-5
