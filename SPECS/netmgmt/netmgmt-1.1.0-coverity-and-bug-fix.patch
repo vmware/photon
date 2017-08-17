@@ -1,0 +1,110 @@
++283380093ca4669ba4c65ebade4fe8b98e62582c
+diff -uNr nm1/src/netmgr.c nm2/src/netmgr.c
+--- nm1/src/netmgr.c	2017-08-09 22:30:17.449535947 +0000
++++ nm2/src/netmgr.c	2017-08-09 22:29:57.662725748 +0000
+@@ -328,9 +328,15 @@
+                                    SECTION_MATCH,
+                                    KEY_NAME,
+                                    &pszMatchName);
++            if ((err == NM_ERR_VALUE_NOT_FOUND) ||
++                (err == NM_ERR_BAD_CONFIG_FILE))
++            {
++                /* Ignore cfg file with invalid/missing Match section */
++                err = 0;
++            }
+             bail_on_error(err);
+ 
+-            if (nm_regex_match_ifname(pszIfName, pszMatchName) == 0)
++            if (pszMatchName && !nm_regex_match_ifname(pszIfName, pszMatchName))
+             {
+                 if (pszCfgFileName == NULL)
+                 {
+@@ -2121,11 +2127,20 @@
+     {
+         rtMsg = (struct rtmsg *)NLMSG_DATA(((struct nlmsghdr *)nlMsg));
+         // TODO: Figure out IPv6
+-        if ((rtMsg->rtm_table != RT_TABLE_MAIN) ||
++        if (rtMsg->rtm_table != RT_TABLE_MAIN)
++        {
++            continue;
++        }
++        if (((addrType == STATIC_IPV4) || (addrType == DHCP_IPV4)) &&
+             (rtMsg->rtm_family != AF_INET))
+         {
+             continue;
+         }
++        if (((addrType == STATIC_IPV6) || (addrType == DHCP_IPV6) ||
++             (addrType == AUTO_IPV6)) && (rtMsg->rtm_family != AF_INET6))
++        {
++            continue;
++        }
+         rtAttr = (struct rtattr *)RTM_RTA(rtMsg);
+         rtLen = RTM_PAYLOAD(nlMsg);
+         for (; RTA_OK(rtAttr, rtLen); rtAttr = RTA_NEXT(rtAttr, rtLen))
+@@ -2136,27 +2151,36 @@
+                     if_indextoname(*(int *)RTA_DATA(rtAttr), szIfName);
+                     break;
+                 case RTA_GATEWAY:
+-                    gw4.s_addr = *(uint32_t *)RTA_DATA(rtAttr);
++                    if (rtMsg->rtm_family == AF_INET)
++                    {
++                        gw4.s_addr = *(uint32_t *)RTA_DATA(rtAttr);
++                    }
+                     break;
+                 case RTA_DST:
+-                    dst4.s_addr = *(uint32_t *)RTA_DATA(rtAttr);
++                    if (rtMsg->rtm_family == AF_INET)
++                    {
++                        dst4.s_addr = *(uint32_t *)RTA_DATA(rtAttr);
++                    }
+                     break;
+                 default:
+                     break;
+             }
+         }
+-        if ((dst4.s_addr == 0) && !strcmp(szIfName, pszInterfaceName))
++        if ((addrType == STATIC_IPV4) || (addrType == DHCP_IPV4))
+         {
+-            if (inet_ntop(AF_INET, &gw4, szGateway, INET6_ADDRSTRLEN) != NULL)
+-            {
+-                err = netmgr_alloc_string(szGateway, &pszGateway);
+-            }
+-            else
++            if ((dst4.s_addr == 0) && !strcmp(szIfName, pszInterfaceName))
+             {
+-                err = errno;
++                if (inet_ntop(AF_INET, &gw4, szGateway, INET6_ADDRSTRLEN) != NULL)
++                {
++                    err = netmgr_alloc_string(szGateway, &pszGateway);
++                }
++                else
++                {
++                    err = errno;
++                }
++                bail_on_error(err);
++                break;
+             }
+-            bail_on_error(err);
+-            break;
+         }
+     }
+ 
+@@ -3054,10 +3078,18 @@
+     {
+         *ppszIPv4AddrPrefix = pszIPv4AddrPrefix;
+     }
++    else
++    {
++        netmgr_free(pszIPv4AddrPrefix);
++    }
+     if (ppszIPv4Gateway)
+     {
+         *ppszIPv4Gateway = pszIPv4Gateway;
+     }
++    else
++    {
++        netmgr_free(pszIPv4Gateway);
++    }
+ 
+ cleanup:
+     netmgr_list_free(ipCount, (void **)ppszIpAddrList);

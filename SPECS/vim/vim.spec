@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -61,6 +61,7 @@ au BufEnter,BufNew *.py set tabstop=4 shiftwidth=4 expandtab
 EOF
 
 %check
+sed -i '/source test_recover.vim/d' src/testdir/test_alot.vim
 make test
 
 %files extra
@@ -164,6 +165,8 @@ make test
 %{_bindir}/vimdiff
 
 %changelog
+*   Mon Aug 14 2017 Chang Lee <changlee@vmware.com>  8.0.0533-3
+-   Disabled Test_recover_root_dir in %check
 *   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com>  8.0.0533-2
 -   Remove tcsh requires
 *   Fri Apr 14 2017 Xiaolin Li <xiaolinl@vmware.com> 8.0.0533-1

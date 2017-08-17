@@ -4,7 +4,7 @@
 Summary:        WebOb provides objects for HTTP requests and responses..
 Name:           python-webob
 Version:        1.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,9 @@ BuildArch:      noarch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+%if %{with_check}
+BuildRequires:  python-pytest
+%endif
 
 Requires:       python2
 Requires:       python2-libs
@@ -34,6 +37,9 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  python3-pytest
+%endif
 Requires:       python3
 Requires:       python3-libs
 
@@ -43,19 +49,26 @@ Python 3 version.
 %prep
 %setup -q -n WebOb-%{version}
 %{__rm} -f tests/performance_test.py
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
 python2 setup.py build
+pushd ../p3dir
 python3 setup.py build
+popd
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+pushd ../p3dir
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+popd
 
 %check
-easy_install py
 python2 setup.py test
+pushd ../p3dir
 python3 setup.py test
+popd
 
 %files
 %defattr(-,root,root,-)
@@ -66,6 +79,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-3
+-   Fixed make check errors
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.2-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Mar 30 2017 Siju Maliakkal <smaliakkal@vmware.com> 1.7.2-1

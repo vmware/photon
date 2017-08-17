@@ -4,7 +4,7 @@
 Summary:        A collection of ASN.1-based protocols modules.
 Name:           python-pyasn1-modules
 Version:        0.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pyasn1-modules
 License:        BSD
 Group:          Development/Languages/Python
@@ -19,7 +19,10 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
-
+%if %{with_check}
+BuildRequires:  python-pyasn1
+%endif
+Requires:       python-pyasn1
 Requires:       python2
 Requires:       python2-libs
 
@@ -39,9 +42,12 @@ Summary:        python-pyasn1-modules
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-
+%if %{with_check}
+BuildRequires:  python3-pyasn1
+%endif
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-pyasn1
 
 %description -n python3-pyasn1-modules
 
@@ -51,6 +57,7 @@ Python 3 version.
 %setup -q -n pyasn1-modules-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
+find ../p3dir -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
 
 %build
 python2 setup.py build
@@ -65,9 +72,16 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
-pushd ../p3dir
-python3 setup.py test
+pushd tools
+for file in ../test/*.sh; do
+    [ -f "$file" ] && chmod +x "$file" && PYTHONPATH=%{buildroot}%{python2_sitelib} "$file"
+done
+
+popd
+pushd ../p3dir/tools
+for file in ../test/*.sh; do
+    [ -f "$file" ] && chmod +x "$file" && PYTHONPATH=%{buildroot}%{python3_sitelib} "$file"
+done
 popd
 
 %files
@@ -79,5 +93,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.8-2
+-   Fixed make check.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.8-1
 -   Initial packaging for Photon
