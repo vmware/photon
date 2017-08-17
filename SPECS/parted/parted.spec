@@ -1,4 +1,4 @@
-Summary:	My summary.
+Summary:	Manipulates disk partition tables
 Name:		parted
 Version:	3.2
 Release:	4%{?dist}
