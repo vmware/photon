@@ -363,6 +363,8 @@ $(PHOTON_STAGE):
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
 	@echo "Creating COPYING file..."
 	install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
+	@echo "Creating open_source_license.txt file..."
+	install -m 444 $(SRCROOT)/installer/open_source_license.txt $(PHOTON_STAGE)/open_source_license.txt
 	@echo "Creating NOTICE file..."
 	install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
 
