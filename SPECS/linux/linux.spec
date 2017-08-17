@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.82
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -280,6 +280,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Aug 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.82-2
+-   .config: disable XEN_BALLOON_MEMORY_HOTPLUG
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.82-1
 -   Version update
 *   Fri Aug 11 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.81-1
