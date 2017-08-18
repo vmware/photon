@@ -6,7 +6,7 @@
 Summary:        World timezone definitions, modern and historical
 Name:           python-pytz
 Version:        2017.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
@@ -39,6 +39,11 @@ BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-pytest
+%if %{with_check}
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+%endif
+
 Requires:       python3
 Requires:       python3-libs
 Requires:       tzdata
@@ -82,6 +87,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 2017.2-3
+-   add BuildRequires for make check bug 1937039
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.2-2
 -   Requires tzdata
 *   Tue Apr 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.2-1
