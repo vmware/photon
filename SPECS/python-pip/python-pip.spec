@@ -45,13 +45,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-easy_install_2 freezegun
-easy_install_2 mock
-easy_install_2 pretend
-easy_install_2 virtualenv
-easy_install_2 scripttest
-easy_install_2 pytest
-easy_install_2 pytest-capturelog
+$easy_install_2 freezegun mock pretend virtualenv scripttest pytest pytest-capturelog
 
 #Disabled svn, bazaar, git related tests
 #Disabled non_local_distutils test
