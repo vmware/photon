@@ -65,7 +65,7 @@ python2 setup.py test
 
 %changelog
 *   Fri Aug 11 2017 Rongrong Qiu <rqiu@vmware.com> 0.4.12-3
--   make check only support python3 for bug 1937030
+-   make check only support python2 for bug 1937030
 *   Thu Apr 27 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.4.12-2
 -   updated python version
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4.12-1
