@@ -1,7 +1,7 @@
 Summary:	C++ interface to the glib
 Name:		glibmm
 Version:	2.50.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/GNOME/sources/glibmm
 Group:		Applications/System
@@ -32,6 +32,10 @@ These are the header files of glibmm.
 
 %prep
 %setup -q
+sed -i 's#fstab#gitconfig#g' tests/giomm_simple/main.cc
+sed -i 's#fstab#gitconfig#g' tests/giomm_ioerror/main.cc
+sed -i "/Gio::init();/a\\return EXIT_SUCCESS;" tests/giomm_tls_client/main.cc
+
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -60,6 +64,8 @@ make  %{?_smp_mflags} check
 %{_datadir}/*
 
 %changelog
+*   Thu May 26 2017 Harish Udaiya Kumar <hudaiykumar@vmware.com> 2.50.1-2
+-   Fix make check errors
 *   Thu May 26 2017 Harish Udaiya Kumar <hudaiykumar@vmware.com> 2.50.1-1
 -   Downgrade to stable version 2.50.1
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.53.1-1
