@@ -1,0 +1,27 @@
+diff -dupr a/Makefile.in b/Makefile.in
+--- a/Makefile.in	2017-07-31 10:46:52.000000000 +0000
++++ b/Makefile.in	2017-08-18 22:36:18.256889111 +0000
+@@ -17404,7 +17404,7 @@ modules/graphite mod-graphite: modules/g
+ @ENABLE_PYTHON_TRUE@	rm -rf "$(PYLIB_BUILDDIR)/build"
+ @ENABLE_PYTHON_TRUE@	rm -rf "$(SETUPPY_MANIFEST)"
+ 
+-@ENABLE_PYTHON_TRUE@python-checks: python-unit python-pep8 python-pylint
++@ENABLE_PYTHON_TRUE@python-checks: python-unit python-pep8
+ 
+ @ENABLE_PYTHON_TRUE@python-unit:
+ @ENABLE_PYTHON_TRUE@	nosetests $(PYLIB_SRCDIR)/syslogng
+@@ -17412,13 +17412,10 @@ modules/graphite mod-graphite: modules/g
+ @ENABLE_PYTHON_TRUE@python-pep8:
+ @ENABLE_PYTHON_TRUE@	pep8 --ignore=E501 $(PYLIB_SRCDIR)/syslogng
+ 
+-@ENABLE_PYTHON_TRUE@python-pylint:
+-@ENABLE_PYTHON_TRUE@	pylint -r n --rcfile=$(PYLIB_SRCDIR)/pylintrc $(PYLIB_SRCDIR)/syslogng
+-
+ .PHONY: install-pylib
+ .PHONY: uninstall-pylib
+ .PHONY: clean-pylib
+-.PHONY: python-checks python-unit python-pep8 python-pylint
++.PHONY: python-checks python-unit python-pep8
+ 
+ .PHONY: modules/python mod-python
+ 
