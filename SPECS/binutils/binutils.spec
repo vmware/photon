@@ -1,7 +1,7 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
 Version:	2.29
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
 Group:		System Environment/Base
@@ -11,6 +11,12 @@ Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 %define sha1 binutils=47817089b3867baf307365004c51677174a27000
 Patch0:         check-elf-section-header-only-for-elf-output.patch
 Patch1:         elf-checks-for-orphan-placement.patch
+Patch2:         CVE-2017-12448.patch
+Patch3:         CVE-2017-12449_12455_12457_12458_12459.patch
+Patch4:         CVE-2017-12450.patch
+Patch5:         CVE-2017-12451.patch
+Patch6:         CVE-2017-12452_12453_12454_12456.patch
+
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -24,6 +30,11 @@ for handling compiled objects.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
 %build
 install -vdm 755 ../binutils-build
 cd ../binutils-build
@@ -192,6 +203,10 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Fri Aug 11 2017 Anish Swaminathan <anishs@vmware.com> 2.29-3
+-   Apply patches for CVE-2017-12448,CVE-2017-12449,CVE-2017-12450,CVE-2017-12451,
+-   CVE-2017-12452,CVE-2017-12453,CVE-2017-12454,CVE-2017-12455,CVE-2017-12456,
+-   CVE-2017-12457,CVE-2017-12458,CVE-2017-12459
 *   Tue Aug 8 2017 Rongrong Qiu <rqiu@vmware.com> 2.29-2
 -   fix for make check for bug 1900247
 *   Wed Aug 2 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29-1

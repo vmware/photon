@@ -8,3 +8,4 @@ stage
 discus-cache/
 output-*/
 tools/bin/
+common/data/pkg_info.json
