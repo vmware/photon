@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf3
 Version:        3.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
 Provides:       protobuf
+Conflicts:      protobuf < %{version}
 Obsoletes:      protobuf < %{version}
 
 %description
@@ -29,6 +30,7 @@ Summary:        Development files for protobuf
 Group:          Development/Libraries
 Requires:       protobuf3 = %{version}-%{release}
 Provides:       protobuf-devel
+Conflicts:      protobuf-devel < %{version}
 Obsoletes:      protobuf-devel < %{version}
 
 %description    devel
@@ -40,6 +42,7 @@ Summary:        protobuf3 static lib
 Group:          Development/Libraries
 Requires:       protobuf3 = %{version}-%{release}
 Provides:       protobuf-static
+Conflicts:      protobuf-static < %{version}
 Obsoletes:      protobuf-static < %{version}
 
 %description    static
@@ -56,6 +59,7 @@ Requires:       python2
 Requires:       python2-libs
 Requires:       protobuf3 = %{version}-%{release}
 Provides:       protobuf-python
+Conflicts:      protobuf-python < %{version}
 Obsoletes:      protobuf-python < %{version}
 
 %description    python
@@ -72,6 +76,7 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       protobuf3 = %{version}-%{release}
 Provides:       protobuf-python3
+Conflicts:      protobuf-python3 < %{version}
 Obsoletes:      protobuf-python3 < %{version}
 
 %description    python3
@@ -86,6 +91,7 @@ BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:  apache-maven >= 3.3.3
 Requires:       openjre >= %{JAVA_VERSION}
 Provides:       protobuf-java
+Conflicts:      protobuf-java < %{version}
 Obsoletes:      protobuf-java < %{version}
 
 %description    java
