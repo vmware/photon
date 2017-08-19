@@ -20,13 +20,13 @@ Glide is a tool for managing the vendor directory within a Go package.
 %setup
 
 %build
-mkdir -p /usr/share/gocode/src/github.com/Masterminds/glide
-cp -r * /usr/share/gocode/src/github.com/Masterminds/glide/.
-pushd /usr/share/gocode/src/github.com/Masterminds/glide
+mkdir -p ${GOPATH}/src/github.com/Masterminds/glide
+cp -r * ${GOPATH}/src/github.com/Masterminds/glide/.
+pushd ${GOPATH}/src/github.com/Masterminds/glide
 make VERSION=%{version} build
 
 %install
-pushd /usr/share/gocode/src/github.com/Masterminds/glide
+pushd ${GOPATH}/src/github.com/Masterminds/glide
 make install
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
