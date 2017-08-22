@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -39,6 +39,7 @@ BuildRequires: openjdk8 >= %{JAVA8_VERSION}
 BuildRequires: openssl-devel >= 1.0.2
 BuildRequires: python2-devel >= 2.7.8
 BuildRequires: sqlite-devel >= 3.14
+BuildRequires: go
 
 %description
 VMware Lightwave Server
@@ -1114,6 +1115,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Aug 22 2017 Rui Gu <ruig@vmware.com> 1.3.1-3
+-   Add 'go' to BuildRequires
 *   Thu Aug 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-2
 -   Fix version requirement for lightwave-post
 *   Wed Aug 9 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-1
