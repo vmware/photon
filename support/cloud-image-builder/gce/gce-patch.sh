@@ -76,11 +76,11 @@ echo "ServerAliveInterval 420" >> /etc/ssh/ssh_config
 # Disable root login
 usermod -L root
 
-#disable ipv6
+# Disable ipv6
 echo "net.ipv6.conf.all.disable_ipv6 = 1" > /etc/sysctl.d/ipv6-disable.conf
 
 # Disable loading/unloading of modules
-echo 1 > /proc/sys/kernel/modules_disabled
+#echo "kernel.modules_disabled = 1" > /etc/sysctl.d/modules_disabled.conf
 
 # Remove kernel symbols
 rm /boot/system.map*
