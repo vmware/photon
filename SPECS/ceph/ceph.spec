@@ -13,7 +13,7 @@
 #################################################################################
 Name:       ceph
 Version:    11.2.0
-Release:    8%{?dist}
+Release:    9%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -426,12 +426,12 @@ descriptions, and submitting the command to the appropriate daemon.
 Summary:    Compatibility package for Cephs python libraries
 Group:      System Environment/Libraries
 License:    LGPL-2.0
-Obsoletes:  python-ceph
+Obsoletes:  python-ceph < %{epoch}:%{version}-%{release}
 Requires:   python-rados = %{epoch}:%{version}-%{release}
 Requires:   python-rbd = %{epoch}:%{version}-%{release}
 Requires:   python-cephfs = %{epoch}:%{version}-%{release}
 Requires:   python-rgw = %{epoch}:%{version}-%{release}
-Provides:   python-ceph
+Provides:   python-ceph = %{epoch}:%{version}-%{release}
 %description -n python-ceph-compat
 This is a compatibility package to accommodate python-ceph split into
 python-rados, python-rbd, python-rgw and python-cephfs. Packages still
@@ -997,6 +997,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Tue Aug 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 11.2.0-9
+-   Add version and release number to python-ceph
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 11.2.0-8
 -   Add gdbm-devel to BuildRequires
 *   Thu Jun 08 2017 Xiaolin Li <xiaolinl@vmware.com> 11.2.0-7
