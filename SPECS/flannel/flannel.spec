@@ -1,7 +1,7 @@
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
 Version:        0.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
 Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
@@ -68,9 +68,8 @@ Before=docker.service
 [Service]
 Type=notify
 EnvironmentFile=-/etc/flannel/flanneld
-ExecStartPre=/usr/bin/etcdctl mk /vmware/network/config \${FLANNEL_NETWORK_CONF}
+ExecStartPre=-/usr/bin/etcdctl mk /vmware/network/config \${FLANNEL_NETWORK_CONF}
 ExecStart=/usr/bin/flanneld -etcd-prefix=/vmware/network -etcd-endpoints=\${ETCD_ENDPOINTS} --kube-api-url=\${KUBE_API_URL} \${FLANNEL_OPTIONS}
-ExecStopPost=/usr/bin/etcdctl rm /vmware/network/config
 Restart=on-failure
 
 [Install]
@@ -98,6 +97,8 @@ popd
 %config(noreplace) %{_sysconfdir}/flannel/flanneld
 
 %changelog
+*   Mon Aug 21 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.8.0-2
+-   Create flannel network config if not exist, tolerate errcode if exists.
 *   Fri Aug 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.8.0-1
 -   Flannel 0.8.0 and systemd service file.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.5.5-2
