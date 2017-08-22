@@ -44,4 +44,5 @@ $CHROOT_CMD "${BUILDROOT}" \
 	SHELL=/bin/bash \
 	/bin/bash --login +h -c "$*"
 
+sysctl kernel.modules_disabled | grep 1 && exit 1
 exit 0
