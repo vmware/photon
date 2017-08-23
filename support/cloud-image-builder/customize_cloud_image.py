@@ -7,12 +7,13 @@ import tarfile
 import fileinput
 from optparse import OptionParser
 from utils import Utils
+import json
 
 def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     output_path = os.path.dirname(os.path.realpath(raw_image_name))
     utils = Utils()
     # Remove older artifacts
-    files = os.listdir(output_path)    
+    files = os.listdir(output_path)
     for file in files:
         if file.endswith(".vmdk"):
             os.remove(os.path.join(output_path, file))
@@ -24,7 +25,8 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     ovf_path = output_path + '/photon-ova.ovf'
     mf_path = output_path + '/photon-ova.mf'
     ovfinfo_path = build_scripts_path + '/ovfinfo.txt'
-    utils.runshellcommand("{} -convert {} -cap 16000 {}".format(vixdiskutil_path, raw_image_name, vmdk_path))
+    vmdk_capacity = (int(config['size']['root']) + int(config['size']['swap'])) * 1024
+    utils.runshellcommand("{} -convert {} -cap {} {}".format(vixdiskutil_path, raw_image_name, vmdk_capacity, vmdk_path))
     utils.runshellcommand("{} -wmeta toolsVersion 2147483647 {}".format(vixdiskutil_path, vmdk_path))
 
     utils.runshellcommand("ovftool {} {}".format(vmx_path, ovf_path))
@@ -55,14 +57,14 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     for name in ["photon-ova.ovf", "photon-ova.mf", "photon-ova-disk1.vmdk"]:
         ovatar.add(name, arcname=os.path.basename(name))
     ovatar.close()
-    os.remove(vmx_path)    
+    os.remove(vmx_path)
     os.remove(mf_path)
 
     if 'additionalhwversion' in config:
         for addlversion in config['additionalhwversion']:
             new_ovf_path = output_path + "/photon-ova-hw{}.ovf".format(addlversion)
             mf_path = output_path + "/photon-ova-hw{}.mf".format(addlversion)
-            utils.replaceandsaveasnewfile(ovf_path, new_ovf_path, "vmx-.*<", "vmx-{}<".format(addlversion)) 
+            utils.replaceandsaveasnewfile(ovf_path, new_ovf_path, "vmx-.*<", "vmx-{}<".format(addlversion))
             out = utils.runshellcommand("openssl sha1 photon-ova-disk1.vmdk photon-ova-hw{}.ovf".format(addlversion))
             with open(mf_path, "w") as source:
                 source.write(out)
@@ -77,13 +79,13 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
 
             os.remove(new_ovf_path)
             os.remove(mf_path)
-    os.chdir(cwd)    
+    os.chdir(cwd)
     os.remove(ovf_path)
     os.remove(vmdk_path)
-    files = os.listdir(output_path)    
+    files = os.listdir(output_path)
     for file in files:
         if file.endswith(".vmdk"):
-            os.remove(os.path.join(output_path, file))    
+            os.remove(os.path.join(output_path, file))
 
 
 if __name__ == '__main__':
@@ -98,6 +100,7 @@ if __name__ == '__main__':
     parser.add_option("-i",  "--image-name",  dest="image_name")
     parser.add_option("-t",  "--tools-bin-path",  dest="tools_bin_path")
     parser.add_option("-b",  "--build-scripts-path",  dest="build_scripts_path")
+    parser.add_option("-s",  "--src-root",  dest="src_root")
 
     (options,  args) = parser.parse_args()
     utils = Utils()
@@ -214,10 +217,14 @@ if __name__ == '__main__':
             tgzout.add(raw_image, arcname=os.path.basename(raw_image))
             tgzout.close()
         elif config['artifacttype'] == 'vhd':
-            imgconverter = options.tools_bin_path + '/imgconverter'
-            vhdname = img_path + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.vhd'
+            relrawpath = os.path.relpath(raw_image, options.src_root)
+            vhdname = os.path.dirname(relrawpath) + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.vhd'
             print "Converting raw disk to vhd ..."
-            utils.runshellcommand("{} -i {} -v vhd -o {}".format(imgconverter, raw_image, vhdname))
+            info_output=utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img info -f raw --output json {}".format(options.src_root, '/mnt/' + relrawpath))
+            mbsize = 1024 * 1024
+            mbroundedsize = ((int(json.loads(info_output)["virtual-size"])/mbsize + 1) * mbsize)
+            utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img resize -f raw {} {}".format(options.src_root, '/mnt/' + relrawpath, mbroundedsize))
+            utils.runshellcommand("docker run -v {}:/mnt:rw anishs/qemu-img convert {} -O vpc -o subformat=fixed,force_size {}".format(options.src_root, '/mnt/' + relrawpath, '/mnt/' + vhdname))
         elif config['artifacttype'] == 'ova':
             create_ova_image(raw_image, options.tools_bin_path, options.build_scripts_path + '/' + options.image_name, config)
             if 'customartifacts' in config:
@@ -258,7 +265,7 @@ if __name__ == '__main__':
                         raw_image = raw_image_custom
                         index = index + 1
 
-                    shutil.rmtree(custom_path)                 
+                    shutil.rmtree(custom_path)
 
         else:
             raise ValueError("Unknown output format")

@@ -1,0 +1,10 @@
+--- a/result/errors10/781205.xml.err	2017-08-08 01:05:33.913654381 +0000
++++ b/result/errors10/781205.xml.err	2017-08-08 01:17:16.715694488 +0000
+@@ -16,6 +16,6 @@
+     ^
+ <:0000
+       ^
+-./test/errors10/781205.xml:4: parser error : Couldn't find end of Start Tag :0000 line 1
++./test/errors10/781205.xml:4: parser error : Start tag doesn't start and stop in the same entity
+ 
+ ^

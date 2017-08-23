@@ -1,7 +1,7 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
 Version:    2.1.9
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
@@ -9,6 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://www.samba.org/ftp/talloc/talloc-2.1.9.tar.gz
 %define sha1 talloc=e1e79fec4c0b6bd92be904a9c03b0a168478711a
+Patch0:      wscript-test_magic_differs.patch
 BuildRequires: libxslt
 BuildRequires: docbook-xsl
 
@@ -41,6 +42,7 @@ Development libraries for python-talloc
 
 %prep
 %setup -q -n talloc-%{version}
+%patch0 -p1
 
 %build
 %configure --disable-rpath \
@@ -57,6 +59,8 @@ rm -f %{buildroot}/%{_libdir}/libtalloc.a
 rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
 %check
+cp %{buildroot}/usr/lib/libtalloc.so.2 /usr/lib/
+cp %{buildroot}/usr/lib/libpytalloc-util.so.2 /usr/lib/
 make check
 
 %post -p /sbin/ldconfig
@@ -81,5 +85,7 @@ make check
 %{_libdir}/libpytalloc-util.so
 
 %changelog
+*   Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.1.9-2
+-   Copy libraries and add a patch for path regarding %check
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 2.1.9-1
 -   Initial packaging

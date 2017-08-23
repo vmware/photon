@@ -61,10 +61,7 @@ sed -i 's/net.ifnames=0//' /boot/grub/grub.cfg
 sed -i 's/$photon_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0 earlyprintk=ttyS0/' /boot/grub/grub.cfg
 
 # Disable loading/unloading of modules
-echo 1 > /proc/sys/kernel/modules_disabled
+#echo "kernel.modules_disabled = 1" > /etc/sysctl.d/modules_disabled.conf
 
 # Remove kernel symbols
-if [ -f /boot/system.map* ]
-	then
-		rm /boot/system.map*
-fi
+rm -f /boot/System.map*
