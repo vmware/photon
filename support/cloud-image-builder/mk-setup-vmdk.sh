@@ -27,6 +27,7 @@ LFS_OPTION=""
 VMDK_IMAGE_NAME=mydisk.vmdk
 ROOT_PARTITION_SIZE=8
 SWAP_PARTITION_SIZE=2
+BOOT_FIRM_WARE="bios"
 
 while [[ $# > 0 ]]
 do
@@ -41,6 +42,11 @@ do
 		-sp|--SWAP_PARTITION_SIZE)
 		SWAP_PARTITION_SIZE="$1"
 		shift
+	;;
+		-fm|--firmware)
+		BOOT_FIRM_WARE="$1"
+		shift
+
 	;;
 		-a|--all)
 		LFS_OPTION="all"
@@ -59,6 +65,7 @@ do
 		echo '-a|--all                  :installs all available packages'
 		echo '-n|--IMG_NAME             :sets name of the vmdk image'
 		echo '-m|--minimal              :installs basic packages'
+		echo '-fm|--firmware            :firmware'
 		exit 0
 	;;
 	*)
@@ -86,8 +93,14 @@ else
       sgdisk -n 1::+3M -n 2: -p $DISK_DEVICE >> $LOGFILE
 fi
 
-sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
-
+if [ $BOOT_FIRM_WARE = "efi" ]
+then
+    echo "EFI boot partition"
+    sgdisk -t1:ef00 $DISK_DEVICE >> $LOGFILE
+else
+    echo "BIOS boot partition"
+    sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
+fi
 echo "Mapping device partition to loop device"
 kpartx -avs $DISK_DEVICE >> $LOGFILE
 
