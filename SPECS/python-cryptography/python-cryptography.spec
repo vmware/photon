@@ -3,15 +3,15 @@
 
 Summary:        Python cryptography library
 Name:           python-cryptography
-Version:        2.0.3
-Release:        1%{?dist}
+Version:        1.8.1
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha1    cryptography=918c788a03142e5058e23c3711fc3e6618f38a61
+%define sha1    cryptography=d15ffd42ca41260a61bc80cbeccf24e2dbf44253
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -98,8 +98,6 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
-*   Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.3-1
--   Updated to version 2.0.3.
 *   Tue Jul 25 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.1-4
 -   Added missing requires python-six and python-enum34
 -   Removed python-enum from requires
