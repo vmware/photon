@@ -1,0 +1,75 @@
+diff -rup 1/linux-4.9.38/crypto/testmgr.c linux-4.9.38-old/crypto/testmgr.c
+--- 1/linux-4.9.38/crypto/testmgr.c	2017-07-15 03:17:55.000000000 -0700
++++ linux-4.9.38-old/crypto/testmgr.c	2017-08-03 17:21:08.979019958 -0700
+@@ -2184,6 +2184,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "authenc(hmac(md5),ecb(cipher_null))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2199,6 +2200,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),cbc(aes))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2212,6 +2214,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2243,6 +2246,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),ecb(cipher_null))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2266,6 +2270,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "authenc(hmac(sha224),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2307,6 +2312,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "authenc(hmac(sha256),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2342,6 +2348,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "authenc(hmac(sha384),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -2391,6 +2398,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "authenc(hmac(sha512),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = {
+@@ -3149,6 +3157,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "ecb(des)",
+ 		.test = alg_test_skcipher,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.cipher = {
+ 				.enc = {

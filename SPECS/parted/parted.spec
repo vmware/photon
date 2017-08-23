@@ -1,7 +1,7 @@
-Summary:	My summary.
+Summary:	GNU Parted manipulates partition tables
 Name:		parted
 Version:	3.2
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:		Applications/System
@@ -10,7 +10,10 @@ Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
 %define sha1 parted=8cabb2d6789badec15c857dcc003d0dd931a818b
 %description
-My lib
+This is useful for creating space for new operating systems,
+reorganizing disk usage, copying data on hard disks and disk imaging.
+The package contains a library, libparted, as well as well as a
+command-line frontend, parted, which can also be used in scripts.
 %prep
 %setup -q
 %build
@@ -40,6 +43,8 @@ make DESTDIR=%{buildroot} install
 %{_infodir}/%{name}-%{version}/*
 %{_datadir}/*
 %changelog
+*       Wed Aug 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-5
+-       Fix summary and description
 *       Tue Jun 06 2017 ChangLee <changlee@vmware.com> 3.2-4
 -       Remove %check
 *       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 3.2-3

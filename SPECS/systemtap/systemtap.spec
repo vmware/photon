@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       3.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -86,6 +86,7 @@ SystemTap runtime is the runtime component of an instrumentation system for syst
 %package sdt-devel
 Group:         System/Tools
 Summary:       Static probe support tools
+Requires:      %{name} = %{?epoch:%epoch:}%{version}-%{release}
 
 %description sdt-devel
 Support tools to allow applications to use static probes.
@@ -346,6 +347,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
+-   systemtap-sdt-devel requires systemtap
 *   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1-1
 -   Update to version 3.1
 *   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-4

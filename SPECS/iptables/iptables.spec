@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-4
+-   fix ip4save script for upgrade issues.
 *   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-3
 -   use iptables-restore to reload rules.
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.6.1-2
