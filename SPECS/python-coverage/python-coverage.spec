@@ -6,7 +6,7 @@
 Summary:        Code coverage measurement for Python.
 Name:           python-coverage
 Version:        4.3.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +19,10 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+%if %{with_check}
+BuildRequires:  python-pytest
+BuildRequires:  python-six
+%endif
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-xml
@@ -33,6 +37,10 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  python3-pytest
+BuildRequires:  python3-six
+%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-xml
@@ -58,9 +66,11 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
+easy_install tox
+easy_install PyContracts
+LANG=en_US.UTF-8 tox -e py27
 pushd ../p3dir
-python3 setup.py test
+LANG=en_US.UTF-8 tox -e py36
 popd
 
 %files
@@ -77,6 +87,8 @@ popd
 %{_bindir}/coverage-%{python3_version}
 
 %changelog
+*   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-5
+-   Fixed make check errors
 *   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 4.3.4-4
 -   Add python-xml and pyhton3-xml to  Requires.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-3

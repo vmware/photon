@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.2.1
-Release:        12%{?dist}
+Release:        13%{?dist}
 URL:            http://pkg-shadow.alioth.debian.org/
 License:        BSD
 Group:          Applications/System
@@ -12,6 +12,8 @@ Source0:        http://pkg-shadow.alioth.debian.org/releases/%{name}-%{version}.
 Source1:        PAM-Configuration-Files-1.5.tar.gz
 %define sha1    PAM=08052511f985e3b3072c194ac1287e036d9299fb
 Patch0:         chkname-allowcase.patch
+Patch1:         shadow-4.2.1-CVE-2016-6252-fix.patch
+Patch2:         shadow-4.2.1-CVE-2017-12424.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -33,6 +35,8 @@ These are the additional language files of shadow.
 %setup -q -n %{name}-%{version}
 %setup -q -T -D -a 1
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -137,6 +141,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 4.2.1-13
+-   Added fix for CVE-2017-12424, CVE-2016-6252
 *   Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-12
 -   Allow '.' in username
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.1-11

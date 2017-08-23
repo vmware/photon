@@ -3,7 +3,7 @@
 Summary:        XML and HTML with Python
 Name:           python-lxml
 Version:        3.7.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
@@ -40,17 +40,28 @@ Python 3 version.
 
 %prep
 %setup -q -n lxml-%{version}
+rm -rf ../p3dir
+cp -a . ../p3dir
 
 %build
 python2 setup.py build
+pushd ../p3dir
 python3 setup.py build
+popd
 
 %install
 python2 setup.py install --skip-build --root %{buildroot}
+pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+popd
 
 %check
+export LC_ALL=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
 make test
+pushd ../p3dir
+make test
+popd
 
 %clean
 rm -rf %{buildroot}
@@ -65,6 +76,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.7.3-3
+-   set LC_ALL and LANGUAGE for the tests to pass
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.7.3-2
 -   Use python2_sitelib
 *   Mon Apr 03 2017 Sarah Choi <sarahc@vmware.com> 3.7.3-1

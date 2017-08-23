@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        4.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -36,6 +36,7 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -DCMAKE_BUILD_TYPE=Release            \
       -DLLVM_BUILD_LLVM_DYLIB=ON            \
       -DLLVM_TARGETS_TO_BUILD="host;AMDGPU" \
+      -DLLVM_INCLUDE_GO_TESTS=No            \
       -Wno-dev ..
 
 make %{?_smp_mflags}
@@ -48,7 +49,10 @@ make DESTDIR=%{buildroot} install
 %postun -p /sbin/ldconfig
 
 %check
-make %{?_smp_mflags} check
+# disable security hardening for tests
+rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
+cd build
+make %{?_smp_mflags} check-llvm
 
 %clean
 rm -rf %{buildroot}/*
@@ -65,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-3
+-   Make check fix
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-2
 -   BuildRequires libffi-devel
 *   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1

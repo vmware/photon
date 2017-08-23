@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.19.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -11,6 +11,10 @@ Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
 %define sha1    wget=cde25e99c144191644406793cbd1c69c102c6970
 Requires:       openssl
 BuildRequires:  openssl-devel
+%if %{with_check}
+BuildRequires:  perl
+%endif
+
 %description
 The Wget package contains a utility useful for non-interactive 
 downloading of files from the Web.
@@ -40,7 +44,10 @@ rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
 %check
+export PERL_MM_USE_DEFAULT=1
+cpan HTTP::Daemon
 make  %{?_smp_mflags} check
+
 %clean
 rm -rf %{buildroot}/*
 %files -f %{name}.lang
@@ -49,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.19.1-2
+-   Install HTTP::Daemon perl module for the tests to pass.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-1
 -   Updated to version 1.19.1.
 *   Tue Nov 29 2016 Anish Swaminathan <anishs@vmware.com>  1.18-1
