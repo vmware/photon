@@ -1,7 +1,8 @@
+%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        C extensions for Python
 Name:           cython
 Version:        0.25.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
@@ -20,12 +21,11 @@ Cython is an optimising static compiler for both the Python programming language
 %prep
 %setup -q -n Cython-%{version}
 
-
 %build
-%{__python} setup.py build
+python2 setup.py build
 
 %install
-%{__python} setup.py install --skip-build --root %{buildroot}
+python2 setup.py install --skip-build --root %{buildroot}
 
 %check
 make %{?_smp_mflags} test
@@ -33,17 +33,18 @@ make %{?_smp_mflags} test
 %clean
 rm -rf %{buildroot}
 
-
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
-%{python_sitearch}/Cython-%{version}-*.egg-info
-%{python_sitearch}/Cython/*
-%{python_sitearch}/cython.py*
-%{python_sitearch}/pyximport/*
+%{python2_sitelib}/Cython-%{version}-*.egg-info
+%{python2_sitelib}/Cython/*
+%{python2_sitelib}/cython.py*
+%{python2_sitelib}/pyximport/*
 
 
 %changelog
+*       Thu Jul 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.25.2-2
+-       Build using python2 explicity
 *       Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 0.25.2-1
 -       Update to 0.25.2
 *       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.23.4-3

@@ -4,7 +4,7 @@
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python-Pygments
 Version:        2.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -38,6 +38,8 @@ it is usable as a command-line tool and as a library.
 Summary:        python-Pygments
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -63,9 +65,13 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
 %check
-python2 setup.py test
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 nose
+PYTHON=python2 make test
 pushd ../p3dir
-python3 setup.py test
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 nose
+PYTHON=python3 make test
 popd
 
 %files
@@ -78,5 +84,7 @@ popd
 %{_bindir}/*
 
 %changelog
+*   Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 2.2.0-2
+-   Fixed make check errors
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2.2.0-1
 -   Initial packaging for Photon

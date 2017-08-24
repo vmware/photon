@@ -18,7 +18,7 @@ LOG_FILE_DIR = "../../stage/LOGS"
 
 
 def main():
-    usage = os.path.basename(__file__) + "--input-type=[json/pkg/who-needs] --pkg=[pkg_name] --file=<JSON_FILE_NAME> --disp=[tree/list/json]"
+    usage = os.path.basename(__file__) + "--input-type=[json/pkg/who-needs/who-needs-build] --pkg=[pkg_name] --file=<JSON_FILE_NAME> --disp=[tree/list/json]"
     parser = OptionParser(usage)
     parser.add_option("-i", "--input-type", dest="input_type", default=DEFAULT_INPUT_TYPE)
     parser.add_option("-p", "--pkg", dest="pkg")
@@ -38,7 +38,8 @@ def main():
     dir_name = os.path.dirname(abs_path)
     os.chdir(dir_name)
 
-    if(options.input_type == "pkg" or options.input_type == "who-needs"): # To display/print package dependencies on console
+    # To display/print package dependencies on console
+    if(options.input_type == "pkg" or options.input_type == "who-needs" or options.input_type == "who-needs-build"):
         targetName = options.pkg
         specDeps.readSpecsAndConvertToSerializableObjects(options.spec_dir, options.input_type, targetName, displayOption)
     elif(options.input_type == "json"):# Generate the expanded package dependencies json file based on package_list_file 

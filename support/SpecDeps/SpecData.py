@@ -46,6 +46,22 @@ class SerializedSpecObjects(object):
                     parent[depPkg] = specPkg
                     depQue.put(depPkg)
 
+    def findTotalWhoNeedsToBuild(self, depQue, whoBuildDeps, whoBuildDepSet, displayOption):
+        while not depQue.empty():
+            specPkg = depQue.get()
+            specName = self.getSpecName(specPkg)
+            spec=Specutils(self.getSpecFile(specPkg))
+            RPMName=spec.getRPMName(specPkg)
+            debuginfoRPMName=spec.getDebuginfoRPMName(specPkg)
+            whoBuildDepSet.add(RPMName)
+            whoBuildDepSet.add(debuginfoRPMName)
+            if specName is None:
+                print specPkg + " is missing"
+            if not whoBuildDeps.has_key(specPkg):
+                continue
+            for depPkg in whoBuildDeps[specPkg]:
+                depQue.put(depPkg)
+
     def printTree(self, allDeps, children, curParent , depth):
         if (children.has_key(curParent)):
             for child in children[curParent]:
@@ -73,7 +89,9 @@ class SerializedSpecObjects(object):
         children = {}
         listSpecFiles=[]
         whoNeedsList=[]
+        whoBuildDepSet= set()
         independentRPMS=[] # list of all RPMS not built from photon and that must be blindly copied.
+        whoBuildDeps = {}
         allDeps={}
         parent={}
         depQue = Queue.Queue()
@@ -102,8 +120,20 @@ class SerializedSpecObjects(object):
                             allDeps[depPkg] = 0
                             parent[depPkg] = ""
                             depQue.put(depPkg)
-                if (inputType == "who-needs" and (inputValue in specObj.installRequiresPackages[specPkg])):
+                elif (inputType == "who-needs" and (inputValue in specObj.installRequiresPackages[specPkg])):
                     whoNeedsList.append(specPkg)
+                elif (inputType == "who-needs-build"):
+                    for bdrq in specObj.buildRequirePackages:
+                        if (whoBuildDeps.has_key(bdrq)):
+                            whoBuildDeps[bdrq].add(specPkg)
+                        else:
+                            whoBuildDeps[bdrq] = set()
+                            whoBuildDeps[bdrq].add(specPkg)
+                    if(inputValue == specPkg):
+                        packageFound = True
+                        for depPkg in specObj.listPackages:
+                            depQue.put(depPkg)
+
                 self.mapPackageToSpec[specPkg]=specName
             self.mapSerializableSpecObjects[specName]=specObj
 
@@ -133,6 +163,15 @@ class SerializedSpecObjects(object):
         #Generating the list of packages that requires the given input package at install time
         elif (inputType == "who-needs"):
             print whoNeedsList
+            return
+
+        #Generating the list of packages that the modified package will affect at build time
+        elif (inputType == "who-needs-build"):
+            if (packageFound == True):
+                self.findTotalWhoNeedsToBuild(depQue, whoBuildDeps, whoBuildDepSet, displayOption)
+                print whoBuildDepSet
+            else:
+                print "No spec file builds a package named", inputValue
             return
 
         # construct the sorted list of all packages (sorted by dependency)

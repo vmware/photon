@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.6.0
+Version:        1.7.0
 Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=051b58b8be9e88fe407904a88dc01e2fb1edbab0
+%define sha1    kubernetes-v%{version}.tar.gz=407d7243bc64dc8936194d79b11c8d004bcae55c
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Group:          Development/Tools
@@ -27,6 +27,19 @@ Requires:       util-linux
 %description
 Kubernetes is an open source implementation of container cluster management.
 
+%package        kubeadm
+Summary:        kubeadm deployment tool
+Group:          Development/Tools
+Requires:       %{name} = %{version}
+%description    kubeadm
+kubeadm is a tool that enables quick and easy deployment of a kubernetes cluster.
+
+%package        pause
+Summary:        pause binary
+Group:          Development/Tools
+%description    pause
+A pod setup process that holds a pod's namespace.
+
 %prep -p exit
 %setup -qn %{name}-%{version}
 cd ..
@@ -36,16 +49,29 @@ cd %{name}-%{version}
 
 %build
 make
+pushd build/pause
+mkdir -p bin
+gcc -Os -Wall -Werror -static -o bin/pause-amd64 pause.c
+strip bin/pause-amd64
+popd
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
 
-binaries=(cloud-controller-manager hyperkube kubeadm kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl kubefed)
+binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl kubefed)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/${bin}
 done
+install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-amd64
+
+# kubeadm install
+install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
+install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/kubeadm
+install -p -m 755 -t %{buildroot}/etc/systemd/system build/rpms/kubelet.service
+install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d build/rpms/10-kubeadm.conf
+sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 cd ..
 # install config files
@@ -68,7 +94,6 @@ EOF
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
-cd %{name}-%{version}
 make %{?_smp_mflags} check
 
 %clean
@@ -85,17 +110,43 @@ fi
 %post
 chown -R kube:kube /var/lib/kubelet
 chown -R kube:kube /var/run/kubernetes
+systemctl daemon-reload
+
+%post kubeadm
+systemctl daemon-reload
+systemctl stop kubelet
+systemctl enable kubelet
+
+%preun kubeadm
+if [ $1 -eq 0 ]; then
+    systemctl stop kubelet
+fi
 
 %postun
 if [ $1 -eq 0 ]; then
     # Package deletion
     userdel kube
     groupdel kube
+    systemctl daemon-reload
+fi
+
+%postun kubeadm
+if [ $1 -eq 0 ]; then
+    systemctl daemon-reload
 fi
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
+%{_bindir}/cloud-controller-manager
+%{_bindir}/hyperkube
+%{_bindir}/kube-aggregator
+%{_bindir}/kube-apiserver
+%{_bindir}/kube-controller-manager
+%{_bindir}/kubelet
+%{_bindir}/kube-proxy
+%{_bindir}/kube-scheduler
+%{_bindir}/kubectl
+%{_bindir}/kubefed
 %{_lib}/systemd/system/kube-apiserver.service
 %{_lib}/systemd/system/kubelet.service
 %{_lib}/systemd/system/kube-scheduler.service
@@ -112,7 +163,23 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/kubelet
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
+%files kubeadm
+%defattr(-,root,root)
+%{_bindir}/kubeadm
+/etc/systemd/system/kubelet.service
+/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+
+%files pause
+%defattr(-,root,root)
+%{_bindir}/pause-amd64
+
 %changelog
+*   Thu Aug 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-3
+-   PhotonOS based k8s pause container.
+*   Sat Jul 22 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
+-   Split kubeadm into its own pkg.
+*   Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-1
+-   Upgrade kubernetes to v1.7.0.
 *   Tue May 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-3
 -   Fix kubernetes dependencies.
 *   Thu May 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-2

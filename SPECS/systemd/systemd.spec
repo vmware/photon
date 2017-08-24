@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          5%{?dist}
+Release:          6%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -22,6 +22,8 @@ Patch5:           systemd-macros.patch
 Patch6:           systemd-233-resolv-conf-symlink.patch
 Patch7:           systemd-233-CVE-2017-9217.patch
 Patch8:           systemd-233-CVE-2017-9445-dns-oob.patch
+Patch9:           systemd-233-CVE-2017-1000082-1.patch
+Patch10:          systemd-233-CVE-2017-1000082-2.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -79,6 +81,8 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
+%patch10 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -226,6 +230,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Fri Jul 20 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
+-    Fix for CVE-2017-1000082.
 *    Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-5
 -    Fix default-dns-from-env patch.
 *    Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 233-4

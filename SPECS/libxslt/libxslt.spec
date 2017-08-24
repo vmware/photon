@@ -1,7 +1,7 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
 Version:        1.1.29
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -9,10 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    libxslt=edcaeabb3555ae44853bdc406ee9521fb65c620d
+Patch0:         libxslt-CVE-2017-5029.patch
+Patch1:         libxslt-CVE-2015-9019.patch
 Requires:       libxml2-devel
 BuildRequires:  libxml2-devel
 %description
-The libxslt package contains XSLT libraries used for extending libxml2 libraries to support XSLT files. 
+The libxslt package contains XSLT libraries used for extending libxml2 libraries to support XSLT files.
 
 %package devel
 Summary:        Development Libraries for libxslt
@@ -23,6 +25,8 @@ Header files for doing development with libxslt.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -62,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 1.1.29-4
+-   Applied patches for CVE-2015-9019 and CVE-2017-5029.
 *   Tue May 23 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1.29-3
 -   Build does not requires python.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.29-2

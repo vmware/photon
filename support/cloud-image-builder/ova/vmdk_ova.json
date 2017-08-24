@@ -6,10 +6,9 @@
             "text": "PASSWORD"
         },
     "type": "minimal",
-    "size": { "root": "8", "swap": "0" },
+    "size": { "root": "16", "swap": "0" },
     "public_key":"<ssh-key-here>",
     "customartifacts": { "postinstallscripts": ["ova-custom-patch.sh"] },
-    "additionalhwversion": [ "10" ],
     "artifacttype": "ova",
     "keeprawdisk": "false"
 }

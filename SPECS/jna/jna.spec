@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.4.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache
 URL:            http://github.com/twall/jna
 Group:          Applications/System
@@ -13,6 +13,7 @@ Distribution:   Photon
 BuildArch:      x86_64
 Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha1 jna=d9b54e98393a696f458468bc8f3167f701a9ea9f
+Patch0:         jna_remove_clover_jar.patch
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -32,8 +33,8 @@ Requires:   jna = %{version}-%{release}
 Sources for JNA
 
 %prep
-
 %setup -q
+%patch0 -p1
 
 %clean
 rm -rf %{buildroot}
@@ -71,6 +72,8 @@ ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*.aar
 
 %changelog
+*   Thu Aug 17 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-6
+-   Removed clover.jar from jna-devel source-full.zip file
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-5
 -   Removed dependency on ANT_HOME
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-4

@@ -8,6 +8,9 @@ ln -s ../docker.service docker.service
 ln -s ../waagent.service waagent.service
 ln -s ../sshd-keygen.service sshd-keygen.service
 
+#Disable cloud-init
+rm -rf /etc/systemd/system/cloud-init.target.wants
+
 # Remove ssh host keys and add script to regenerate them at boot time.
 
 rm -f /etc/ssh/ssh_host_*
@@ -15,7 +18,7 @@ rm -f /etc/ssh/ssh_host_*
 sudo groupadd docker
 sudo groupadd sudo
 
-rm /root/.ssh/authorized_keys   
+rm /root/.ssh/authorized_keys
 
 # ssh server config
 # Override old values
@@ -48,15 +51,11 @@ echo "Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,
 echo "Tunnel no" >> /etc/ssh/ssh_config
 echo "ServerAliveInterval 180" >> /etc/ssh/ssh_config
 
-sed -i 's/net.ifnames=0//' /boot/grub/grub.cfg
-sed -i 's/$photon_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=ttyS0 earlyprintk=ttyS0 rootdelay=30/' /boot/grub/grub.cfg
+sed -i 's/$photon_cmdline $systemd_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=tty1 console=ttyS0,115200n8 earlyprintk=ttyS0,115200 fsck.repair=yes rootdelay=300/' /boot/grub/grub.cfg
 
-# Disable loading/unloading of modules
-echo 1 > /proc/sys/kernel/modules_disabled
 
 # Remove kernel symbols
 rm /boot/system.map*
 
-sudo waagent -force -deprovision
+waagent -force -deprovision+user
 export HISTSIZE=0
-systemctl enable waagent.service

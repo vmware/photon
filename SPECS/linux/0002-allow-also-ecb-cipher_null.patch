@@ -1,0 +1,11 @@
+diff -rup linux-4.9.38-old/crypto/testmgr.c linux-4.9.38/crypto/testmgr.c
+--- linux-4.9.38-old/crypto/testmgr.c	2017-08-03 17:21:08.979019958 -0700
++++ linux-4.9.38/crypto/testmgr.c	2017-08-03 17:22:19.349507173 -0700
+@@ -3154,6 +3154,7 @@ static const struct alg_test_desc alg_te
+ 	}, {
+ 		.alg = "ecb(cipher_null)",
+ 		.test = alg_test_null,
++                .fips_allowed = 1,
+ 	}, {
+ 		.alg = "ecb(des)",
+ 		.test = alg_test_skcipher,

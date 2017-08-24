@@ -142,31 +142,39 @@ class Specutils(object):
         return buildArch
 
     def getRequiresAllPackages(self):
-        depedentPackages=[]
+        dependentPackages=[]
         for key in self.spec.packages.keys():
             pkg = self.spec.packages.get(key)
             for dpkg in pkg.requires:
-                depedentPackages.append(dpkg.package)
-        depedentPackages=list(set(depedentPackages))
+                dependentPackages.append(dpkg.package)
+        dependentPackages=list(set(dependentPackages))
         packageNames=self.getPackageNames()
         for pkgName in packageNames:
-            if pkgName in depedentPackages:
-                depedentPackages.remove(pkgName)
-        return depedentPackages
+            if pkgName in dependentPackages:
+                dependentPackages.remove(pkgName)
+        return dependentPackages
 
     def getBuildRequiresAllPackages(self):
-        depedentPackages=[]
+        dependentPackages=[]
         for key in self.spec.packages.keys():
             pkg = self.spec.packages.get(key)
             for dpkg in pkg.buildrequires:
-                depedentPackages.append(dpkg.package)
-        depedentPackages=list(set(depedentPackages))
+                dependentPackages.append(dpkg.package)
+        dependentPackages=list(set(dependentPackages))
         packageNames=self.getPackageNames()
         for pkgName in packageNames:
-            if pkgName in depedentPackages:
-                depedentPackages.remove(pkgName)
-        return depedentPackages
+            if pkgName in dependentPackages:
+                dependentPackages.remove(pkgName)
+        return dependentPackages
 
+    def getCheckBuildRequiresAllPackages(self):
+        dependentPackages=[]
+        for key in self.spec.packages.keys():
+            pkg = self.spec.packages.get(key)
+            for dpkg in pkg.checkbuildrequires:
+                dependentPackages.append(dpkg.package)
+        dependentPackages=list(set(dependentPackages))
+        return dependentPackages
 
     def getRequires(self,pkgName):
         dependentPackages=[]
@@ -186,8 +194,17 @@ class Specutils(object):
                     dependentPackages.append(dpkg.package)
         return dependentPackages
 
+    def getCheckBuildRequires(self,pkgName):
+        dependentPackages=[]
+        for key in self.spec.packages.keys():
+            pkg = self.spec.packages.get(key)
+            if pkg.name == pkgName:
+                for dpkg in pkg.checkbuildrequires:
+                    dependentPackages.append(dpkg.package)
+        return dependentPackages
+
     def getProvides(self,packageName):
-        depedentPackages=[]
+        dependentPackages=[]
         defaultPkgName=self.spec.packages['default'].name
         pkg = None
         if self.spec.packages.has_key(packageName):
@@ -196,10 +213,10 @@ class Specutils(object):
             pkg=self.spec.packages['default']
         if pkg is not None:
             for dpkg in pkg.provides:
-                depedentPackages.append(dpkg.package)
+                dependentPackages.append(dpkg.package)
         else:
             print "package not found"
-        return depedentPackages
+        return dependentPackages
 
     def getVersion(self):
         pkg = self.spec.packages.get('default')

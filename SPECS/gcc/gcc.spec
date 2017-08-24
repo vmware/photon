@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -16,6 +16,11 @@ Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
 Requires:       libgcc-atomic = %{version}-%{release}
 Requires:       gmp
+%if %{with_check}
+BuildRequires:  autogen
+BuildRequires:  dejagnu
+%endif
+
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
@@ -121,9 +126,12 @@ popd
 %find_lang %{name} --all-name
 
 %check
-cd ../gcc-build
 ulimit -s 32768
-make %{?_smp_mflags} check
+# disable security hardening for tests
+rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
+# run only gcc tests
+cd ../gcc-build/gcc
+make %{?_smp_mflags} check-gcc
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -236,6 +244,8 @@ make %{?_smp_mflags} check
 %endif
 
 %changelog
+*   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-2
+-   Improve make check
 *   Thu Mar 9 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-1
 -   Update version to 6.3
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 5.3.0-6

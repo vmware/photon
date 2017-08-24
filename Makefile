@@ -86,7 +86,7 @@ clean-install clean-chroot build-updated-packages check generate-yaml-files
 
 THREADS?=1
 
-all: iso docker-image live-iso cloud-image-all src-iso
+all: iso photon-docker-image k8s-docker-images live-iso cloud-image-all src-iso
 
 micro: micro-iso
 	@:
@@ -334,13 +334,15 @@ publish-x-rpms:
 
 publish-rpms-cached:
 	@echo "Using cached publish rpms..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR) && \
-	 $(CP) -rf $(PHOTON_PUBLISH_RPMS_PATH)/* $(PHOTON_PUBLISH_RPMS_DIR)/
+	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR)/{x86_64,noarch} && \
+	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
+        $(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR) $(PHOTON_PUBLISH_RPMS_PATH)
 
 publish-x-rpms-cached:
 	@echo "Using ..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR) && \
-        $(CP) -rf $(PHOTON_PUBLISH_XRPMS_PATH)/* $(PHOTON_PUBLISH_XRPMS_DIR)/
+	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR)/{x86_64,noarch} && \
+	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
+        $(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR) $(PHOTON_PUBLISH_XRPMS_PATH)
 
 $(PHOTON_STAGE):
 	@echo "Creating staging folder..."
@@ -361,6 +363,8 @@ $(PHOTON_STAGE):
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
 	@echo "Creating COPYING file..."
 	install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
+	@echo "Creating open_source_license.txt file..."
+	install -m 444 $(SRCROOT)/installer/open_source_license.txt $(PHOTON_STAGE)/open_source_license.txt
 	@echo "Creating NOTICE file..."
 	install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
 
@@ -379,7 +383,7 @@ generate-dep-lists:
 		--input-type=json --file $$f -d json -a $(PHOTON_DATA_DIR); \
 	done
 
-docker-image:
+photon-docker-image:
 	createrepo $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
@@ -393,7 +397,14 @@ docker-image:
 		photon-build \
 		./support/dockerfiles/photon/make-docker-image.sh tdnf
 
-install-docker-image: docker-image
+k8s-docker-images:
+	systemctl start docker && \
+	cd ./support/dockerfiles/k8s-docker-images && \
+	./build-k8s-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-dns-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-dashboard-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)
+
+install-photon-docker-image: photon-docker-image
 	sudo docker build -t photon:tdnf .
 
 clean: clean-install clean-chroot

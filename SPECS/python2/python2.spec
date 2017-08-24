@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -100,6 +100,13 @@ Requires: python2 = %{version}-%{release}
 The Python package includes several development tools that are used
 to build python programs.
 
+%package test
+Summary: Regression tests package for Python.
+Group: Development/Tools
+Requires: python2 = %{version}-%{release}
+
+%description test
+The test package contains all regression tests for Python as well as the modules test.support and test.regrtest. test.support is used to enhance your tests while test.regrtest drives the testing suite.
 
 %prep
 %setup -q -n Python-%{version}
@@ -222,7 +229,12 @@ rm -rf %{buildroot}/*
 %exclude %{_bindir}/smtpd.py
 %exclude %{_bindir}/idle*
 
+%files test
+%{_libdir}/python2.7/test/*
+
 %changelog
+*   Wed Jul 12 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-7
+-   Add python2-test package.
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.7.13-6
 -   Fix dependency for libs
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 2.7.13-5

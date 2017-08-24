@@ -5,6 +5,6 @@
         "visible" : false,
         "include" : [],
         "live-cd" : true,
-        "additional-files" : ["COPYING","NOTICE"]
+        "additional-files" : ["open_source_license.txt","NOTICE"]
     }
 }

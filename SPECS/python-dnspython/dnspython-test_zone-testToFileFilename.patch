@@ -1,0 +1,23 @@
+From 0add1649c91b4f56b32e73c3a6327519c6eb532e Mon Sep 17 00:00:00 2001
+From: Avram Lubkin <git_hub@avram.us>
+Date: Tue, 4 Oct 2016 07:32:20 -0400
+Subject: [PATCH] Test creates file in wrong location
+
+test_zone.ZoneTestCase.testToFileFilename fails with OSError: [Errno 2] No such file or directory
+---
+ tests/test_zone.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/test_zone.py b/tests/test_zone.py
+index dbc67c7..3c497a6 100644
+--- a/tests/test_zone.py
++++ b/tests/test_zone.py
+@@ -177,7 +177,7 @@ def testToFileBinary(self):
+     def testToFileFilename(self):
+         z = dns.zone.from_file(here('example'), 'example')
+         try:
+-            z.to_file('example3-filename.out')
++            z.to_file(here('example3-filename.out'))
+             ok = filecmp.cmp(here('example3-filename.out'),
+                              here('example3.good'))
+         finally:

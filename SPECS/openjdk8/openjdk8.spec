@@ -1,20 +1,19 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
-Summary:	OpenJDK 
+Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.131
-Release:	3%{?dist}
+Version:	1.8.0.141
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.bz2
-%define sha1 openjdk=ae01c24fe5247d5aa246a60c0272ba92188a7d55
-Patch0:		disable-awt-lib.patch
-Patch1:		fix-lcms.patch 
-Patch2:		Fix-memory-leak.patch
-Patch3:		check-system-ca-certs.patch
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.gz
+%define sha1 openjdk=e74417bc0bfcdb8f6b30a63bb26dbf35515ec562
+Patch0:		Awt_build_headless_only.patch
+Patch1:		check-system-ca-certs.patch
+Patch2:         remove-cups.patch
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -28,7 +27,7 @@ Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
 %define bootstrapjdkversion 1.8.0.112
 %description
-The OpenJDK package installs java class library and javac java compiler. 
+The OpenJDK package installs java class library and javac java compiler.
 
 %package	-n openjre8
 Summary:	Java runtime environment
@@ -41,7 +40,7 @@ It contains the libraries files for Java runtime environment
 
 
 %package	sample
-Summary:	Sample java applications. 
+Summary:	Sample java applications.
 Group:          Development/Languages/Java
 Obsoletes:      openjdk-sample <= %{version}
 Requires:       %{name} = %{version}-%{release}
@@ -65,29 +64,31 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -q -n openjdk
+%setup -qn openjdk-1.8.0-141
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
+sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
+sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
 
 %build
 chmod a+x ./configure
 unset JAVA_HOME &&
 ./configure \
-	FREETYPE_NOT_NEEDED=yes \
 	CUPS_NOT_NEEDED=yes \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
-	--enable-headful=no \
+	--disable-headful \
 	--with-cacerts-file=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre/lib/security/cacerts \
 	--with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
 	--with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+	--with-freetype-include=/usr/include/freetype2 \
+	--with-freetype-lib=/usr/lib \
 	--with-stdc++lib=dynamic
 
 make \
     DEBUG_BINARIES=true \
-    BUILD_HEADLESS_ONLY=yes \
+    BUILD_HEADLESS_ONLY=1 \
     OPENJDK_TARGET_OS=linux \
     JAVAC_FLAGS=-g \
     STRIP_POLICY=no_strip \
@@ -152,7 +153,7 @@ alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{version}/jr
   --slave %{_bindir}/rmiregistry rmiregistry %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/rmiregistry \
   --slave %{_bindir}/servertool servertool %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/servertool \
   --slave %{_bindir}/tnameserv tnameserv %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/tnameserv \
-  --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/unpack200 
+  --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/unpack200
 
 %postun
 alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{version}/bin/javac
@@ -204,7 +205,7 @@ rm -rf %{buildroot}/*
 
 %files	-n openjre8
 %defattr(-,root,root)
-
+%dir %{_libdir}/jvm/OpenJDK-%{version}
 %{_libdir}/jvm/OpenJDK-%{version}/jre/
 %{_libdir}/jvm/OpenJDK-%{version}/bin/java
 %{_libdir}/jvm/OpenJDK-%{version}/bin/keytool
@@ -232,12 +233,16 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
-*	Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.0.131-3
--	Added obseletes for deprecated openjdk package
-*	Tue Jun 06 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
--	Add requires for libstdc++
-*	Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1
--	Upgraded to version 1.8.0.131 and building Java from sources
+*   Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
+-   Upgraded to version 1.8.0.141-1
+*   Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4
+-   Build AWT libraries as well.
+*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.0.131-3
+-   Added obseletes for deprecated openjdk package
+*   Tue Jun 06 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
+-   Add requires for libstdc++
+*   Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1
+-   Upgraded to version 1.8.0.131 and building Java from sources
 *   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
 -   add java rpm macros
 *   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-1
@@ -246,24 +251,24 @@ rm -rf %{buildroot}/*
 -   Update to 1.8.0.102, minor fixes in url, spelling.
 -   addresses CVE-2016-3598, CVE-2016-3606, CVE-2016-3610
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-3
--	Added version constraint to runtime dependencies
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.92-2
--	GA - Bump release of all rpms
+-   Added version constraint to runtime dependencies
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.92-2
+-   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-1
--	Updated to version 1.8.0.92
+-   Updated to version 1.8.0.92
 *   Mon May 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.72-3
 -   Move tools like javac to openjdk
 *   Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.72-2
 -   Adding openjre as run time dependency for openjdk package
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.8.0.72-1
 -   Updating Version.
-*	Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.8.0.51-3
--	Change to use /var/opt path
-*	Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
--	Split the openjdk into multiple sub-packages to reduce size. 
-*	Mon Aug 17 2015 Sharath George <sarahc@vmware.com> 1.8.0.51-1
--	Moved to the next version
-*	Tue Jun 30 2015 Sarah Choi <sarahc@vmware.com> 1.8.0.45-2
--	Add JRE path 
-*	Mon May 18 2015 Sharath George <sharathg@vmware.com> 1.8.0.45-1
--	Initial build.	First version
+*   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.8.0.51-3
+-   Change to use /var/opt path
+*   Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
+-   Split the openjdk into multiple sub-packages to reduce size.
+*   Mon Aug 17 2015 Sharath George <sarahc@vmware.com> 1.8.0.51-1
+-   Moved to the next version
+*   Tue Jun 30 2015 Sarah Choi <sarahc@vmware.com> 1.8.0.45-2
+-   Add JRE path
+*   Mon May 18 2015 Sharath George <sharathg@vmware.com> 1.8.0.45-1
+-   Initial build. First version

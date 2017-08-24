@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        8%{?dist}
+Release:        10%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -19,6 +19,7 @@ Patch3:         photon-hosts-template.patch
 Patch4:         resizePartitionUUID.patch
 Patch5:         datasource-guestinfo.patch
 Patch6:         systemd-service-changes.patch
+Patch7:         makecheck.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -62,6 +63,7 @@ ssh keys and to let the user run various scripts.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -85,42 +87,10 @@ cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 cp -p %{SOURCE2} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
 
 %check
-openssl req \
-    -new \
-    -newkey rsa:4096 \
-    -days 365 \
-    -nodes \
-    -x509 \
-    -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=photon.com" \
-    -keyout photon.key \
-    -out photon.cert
-     openssl rsa -in photon.key -out photon.pem
-mv photon.pem /etc/ssl/certs   
-
-easy_install pip
-easy_install -U setuptools
-easy_install HTTPretty 
-easy_install mocker
-easy_install mock
-easy_install nose
-easy_install pep8
-easy_install pyflakes
-easy_install pyyaml
-easy_install pyserial
-easy_install oauth2
-easy_install oauth
-easy_install cheetah
-easy_install jinja2
-easy_install PrettyTable
-easy_install argparse
-easy_install requests
-easy_install jsonpatch
-easy_install configobj
-
-sed -i '38,43d' tests/unittests/test_handler/test_handler_set_hostname.py
-mkdir -p /etc/sysconfig
-echo "HOSTNAME=test.com" >/etc/sysconfig/network
-make test
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+ln -s /usr/bin/pip3 /usr/bin/pip
+$easy_install_3 tox
+tox -e py36
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -164,6 +134,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Tue Aug 22 2017 Chang Lee <changlee@vmware.com> 0.7.9-10
+-   Fixed %check
+*   Wed Jul 19 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.9-9
+-   Enabled openstack provider
 *   Wed Jun 28 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-8
 -   Restart network service in bring_up_interfaces
 *   Thu Jun 22 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.9-7
