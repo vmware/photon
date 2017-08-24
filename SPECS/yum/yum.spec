@@ -1,12 +1,13 @@
 Summary:        RPM installer/updater
 Name:           yum
 Version:        3.4.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         yumconf.patch
 Patch1:         parser.patch
+Patch2:         yum-repo-name.patch
 %define sha1    yum=8ec5d339e4518a7908fd4db0721740288a3d8b6c
 URL:            http://yum.baseurl.org/
 Vendor:         VMware, Inc.
@@ -78,6 +79,7 @@ automatically, prompting the user for permission as necessary.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 make
@@ -200,6 +202,8 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %exclude %{_mandir}/man*/yum-updatesd*
 
 %changelog
+*   Wed Aug 23 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.3-8
+-   Replaced variables in repo name.
 *   Wed Mar 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.3-7
 -   Added python-rpm to requires.
 *   Mon Jun 06 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.3-6

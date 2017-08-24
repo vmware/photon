@@ -1,0 +1,12 @@
+diff --git a/yum/__init__.py b/yum/__init__.py
+index 99039e0..003adda 100644
+--- a/yum/__init__.py
++++ b/yum/__init__.py
+@@ -491,6 +491,7 @@ class YumBase(depsolve.Depsolve):
+             self.logger.error(_('Repository %r is missing name in configuration, '
+                     'using id') % section)
+         repo.name = to_unicode(repo.name)
++        repo.name = varReplace(repo.name, self.conf.yumvar)
+ 
+         # Set attributes not from the config file
+         repo.basecachedir = self.conf.cachedir

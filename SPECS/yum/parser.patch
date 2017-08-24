@@ -5,7 +5,7 @@
  
  
 -_KEYCRE = re.compile(r"\$(\w+)")
-+_KEYCRE = re.compile(r"\$([^-_]+)")
++_KEYCRE = re.compile(r"\$([a-zA-Z0-9]+)")
  
  def varReplace(raw, vars):
      '''Perform variable replacement
