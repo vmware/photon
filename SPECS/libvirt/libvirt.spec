@@ -1,7 +1,7 @@
 Summary:	Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:		libvirt
 Version:	3.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPL
 URL:		http://libvirt.org/
 Source0:	http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -48,6 +48,7 @@ The contains libvirt package doc files.
 %package devel
 Summary:        libvirt devel
 Group:          Development/Tools
+Requires:       %{name} = %{version}-%{release}
 %description devel
 This contains development tools and libraries for libvirt.
 
@@ -95,6 +96,12 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libvirt*
 %{_libdir}/libvirt/storage-backend/*
 
+%dir %{_datadir}/libvirt/api/
+%{_datadir}/libvirt/api/libvirt-api.xml
+%{_datadir}/libvirt/api/libvirt-admin-api.xml
+%{_datadir}/libvirt/api/libvirt-qemu-api.xml
+%{_datadir}/libvirt/api/libvirt-lxc-api.xml
+
 %files docs
 /usr/share/augeas/lenses/*
 /usr/share/doc/%{name}-%{version}/*
@@ -104,6 +111,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
+*    Wed Aug 23 2017 Rui Gu <ruig@vmware.com> 3.2.0-2
+-    Fix missing deps in devel package 
 *    Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
 -    Upgrading version to 3.2.0
 *    Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
