@@ -4,7 +4,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.52.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -22,6 +22,7 @@ BuildRequires:  libffi-devel
 BuildRequires:  go
 Requires:       libffi
 Requires:       glib >= 2.52.1
+Patch0:         disableFaultyTest.patch
 %description
 GObject Introspection can scan C header and source files in order to
 generate introspection "typelib" files.  It also provides an API to examine
@@ -66,6 +67,7 @@ Libraries and headers for gobject-introspection.
 
 %prep
 %setup -q
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -133,6 +135,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Thu Aug 24 2017 Kumar Kaushik <kaushikk@vmware.com> 1.52.1-4
+-   Disabling make check for Regress-1.0.gir test, bug#1635886
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.52.1-3
 -   Add python3-xml to python3 sub package Buildrequires.
 *   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.52.1-2
