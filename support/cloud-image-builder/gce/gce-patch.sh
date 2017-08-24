@@ -79,7 +79,7 @@ usermod -L root
 echo "net.ipv6.conf.all.disable_ipv6 = 1" > /etc/sysctl.d/ipv6-disable.conf
 
 # Disable loading/unloading of modules
-echo "kernel.modules_disabled = 1" > /etc/sysctl.d/modules_disabled.conf
+#echo "kernel.modules_disabled = 1" > /etc/sysctl.d/modules_disabled.conf
 
 # Remove kernel symbols
 rm -f /boot/System.map*
