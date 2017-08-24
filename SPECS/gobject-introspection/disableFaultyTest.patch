@@ -1,0 +1,30 @@
+diff -ru gobject-introspection-1.52.1/tests/scanner/Makefile.am gobject-introspection-1.52.1-modified/tests/scanner/Makefile.am
+--- gobject-introspection-1.52.1/tests/scanner/Makefile.am	2015-07-01 00:23:55.000000000 -0700
++++ gobject-introspection-1.52.1-modified/tests/scanner/Makefile.am	2017-08-24 16:18:57.714105073 -0700
+@@ -89,16 +89,16 @@
+ SLetter_1_0_gir_SCANNERFLAGS = $(INTROSPECTION_SCANNER_ARGS) --identifier-prefix=S --c-include="sletter.h" --warn-error
+ GIRS += SLetter-1.0.gir
+ 
+-Regress-1.0.gir: $(top_builddir)/Gio-2.0.gir Utility-1.0.gir libregress.la
+-Regress_1_0_gir_LIBS = libregress.la
+-Regress_1_0_gir_CFLAGS = $(libregress_la_CPPFLAGS) $(libregress_la_CFLAGS) -include "glib.h"
+-Regress_1_0_gir_INCLUDES = Gio-2.0 Utility-1.0
+-if HAVE_CAIRO
+-Regress_1_0_gir_INCLUDES += cairo-1.0 
+-endif
+-Regress_1_0_gir_FILES = $(libregress_la_SOURCES)
+-Regress_1_0_gir_SCANNERFLAGS = $(INTROSPECTION_SCANNER_ARGS) --c-include="regress.h" --warn-error
+-GIRS += Regress-1.0.gir
++#Regress-1.0.gir: $(top_builddir)/Gio-2.0.gir Utility-1.0.gir libregress.la
++#Regress_1_0_gir_LIBS = libregress.la
++#Regress_1_0_gir_CFLAGS = $(libregress_la_CPPFLAGS) $(libregress_la_CFLAGS) -include "glib.h"
++#Regress_1_0_gir_INCLUDES = Gio-2.0 Utility-1.0
++#if HAVE_CAIRO
++#Regress_1_0_gir_INCLUDES += cairo-1.0 
++#endif
++#Regress_1_0_gir_FILES = $(libregress_la_SOURCES)
++#Regress_1_0_gir_SCANNERFLAGS = $(INTROSPECTION_SCANNER_ARGS) --c-include="regress.h" --warn-error
++#GIRS += Regress-1.0.gir
+ 
+ WarnLib-1.0.gir: $(top_builddir)/Gio-2.0.gir libwarnlib.la
+ WarnLib_1_0_gir_LIBS = libwarnlib.la
