@@ -1,7 +1,7 @@
 Summary:	Programs for searching through files
 Name:		grep
 Version:	3.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grep
 Group:		Applications/File
@@ -34,6 +34,9 @@ rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 
 %check
+#disable grep -P, not suppported.
+sed -i '1474d' tests/Makefile
+sed -i '2352,2358d' tests/Makefile
 make  %{?_smp_mflags} check
 
 %files
@@ -45,6 +48,8 @@ make  %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*       Wed Aug 23 2017 Rongrong Qiu <rqiu@vmware.com> 3.0-3
+-       Disable grep -P for make check bug 1900287
 *       Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 3.0-2
 -       Add lang package.
 *       Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.0-1
