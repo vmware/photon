@@ -1,7 +1,7 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
 Version:        10.1.24
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -14,7 +14,7 @@ BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
-
+Conflicts:      mysql
 %description
 MariaDB Server is one of the most popular database servers in the world. It’s made by the original developers of MySQL and guaranteed to stay open source. Notable users include Wikipedia, WordPress.com and Google.
 
@@ -23,6 +23,7 @@ MariaDB turns data into structured information in a wide array of applications, 
 %package devel
 Summary:        Development headers for mariadb
 Requires:       %{name} = %{version}-%{release}
+Conflicts:      mysql-devel
 
 %description devel
 Development headers for developing applications linking to maridb
@@ -114,5 +115,7 @@ make check
 %{_datadir}/aclocal/mysql.m4
 
 %changelog
+*   Fri Aug 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 10.1.24-2
+-   Specify MariaDB conflicts with MySQL
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.24-1
 -   Initial packaging for Photon
