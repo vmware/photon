@@ -379,11 +379,8 @@ class constants(object):
         constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
 
         #adding kernelsubrelease rpm macro
-        kernelversion = kernelversion.replace(".","")
-        if kernelversion.isdigit():
-            kernelversion = int(kernelversion) << 8
-        kernelsubrelease = str(kernelversion)+kernelrelease
-        kernelsubrelease = kernelsubrelease.replace(constants.dist,"")
+        a,b,c = kernelversion.split(".")
+        kernelsubrelease = '%02d%02d%03d%03d' % (int(a),int(b),int(c),int(kernelrelease.replace(constants.dist,"")))
         if kernelsubrelease:
             kernelsubrelease = "."+kernelsubrelease
             constants.specData.addMacro("kernelsubrelease",kernelsubrelease)
