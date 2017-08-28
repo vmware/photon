@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.9.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 %define sha1    subversion=8bd6a44a1aed30c4c6b6b068488dafb44eaa6adf
+Patch0:         subversion-CVE-2017-9800.patch
 Requires:       apr
 Requires:       apr-util
 BuildRequires:  apr-devel
@@ -21,14 +22,15 @@ BuildRequires:  expat-devel
 %description
 The Apache version control system.
 
-%package    devel
-Summary:    Header and development files for mesos
-Requires:   %{name} = %{version}
+%package        devel
+Summary:        Header and development files for mesos
+Requires:       %{name} = %{version}
 %description    devel
  subversion-devel package contains header files, libraries.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix}         \
@@ -62,6 +64,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Mon Aug 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.5-3
+-   Apply patch for CVE-2017-9800
 *   Thu Jun 15 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.5-2
 -   Fix make check issues.
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.5-1
@@ -81,7 +85,7 @@ sudo -u test make check && userdel test -r -f
 *   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-5
 -   Handled locale files with macro find_lang
 *   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.13-4
--   Updated build-requires after creating devel package for apr. 
+-   Updated build-requires after creating devel package for apr.
 *   Mon Sep 21 2015 Xiaolin Li <xiaolinl@vmware.com> 1.8.13-3
 -   Move .a, and .so files to devel pkg.
 *   Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.13-2
