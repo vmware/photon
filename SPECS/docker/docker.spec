@@ -1,9 +1,10 @@
+%global security_hardening nopie
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -214,6 +215,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 17.06.0-2
+-   Use nopie option to build
 *   Tue Jul 18 2017 Bo Gan <ganb@vmware.com> 17.06.0-1
 -   Update to 17.06.0-ce
 *   Thu May 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-4
