@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -154,6 +154,10 @@ find %{buildroot}%{_libdir} -name '*.pyo' -delete
 %clean
 rm -rf %{buildroot}/*
 
+%check
+mount -t devpts -o gid=4,mode=620 none /dev/pts
+make test
+
 %files 
 %defattr(-, root, root)
 %doc LICENSE README
@@ -233,6 +237,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Mon Aug 28 2017 Chang Lee <changlee@vmware.com> 2.7.13-8
+-   Add %check with pty
 *   Wed Jul 12 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-7
 -   Add python2-test package.
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.7.13-6
