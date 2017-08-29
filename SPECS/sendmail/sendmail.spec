@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 URL:            http://www.sendmail.org/
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          Email/Server/Library
@@ -104,7 +104,7 @@ cat > %{buildroot}/etc/systemd/system/sendmail.service <<- "EOF"
 [Unit]
 Description=Sendmail Mail Transport Agent
 Wants=network-online.target
-After=network-online.target network.target
+After=network-online.target network.target systemd-resolved.service
 
 [Service]
 Environment=QUEUE=1h
@@ -187,6 +187,8 @@ fi
 
 
 %changelog
+*       Tue Aug 29 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-11
+-       Adding resolved service as After dependency in service file.
 *       Thu Jul 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 8.15.2-10
 -       Remove syslog.target from the service file
 *       Fri Mar 24 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-9
@@ -207,4 +209,3 @@ fi
 -       Changing permission and owner of clientmqueue.
 *       Tue Jan 05 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-1
 -       Initial build.  First version
-
