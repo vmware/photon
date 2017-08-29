@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -143,11 +143,16 @@ popd
 
 %check
 ulimit -s 32768
+# disable PCH tests is ASLR is on (due to bug in pch)
+test `cat /proc/sys/kernel/randomize_va_space` -ne 0 && rm gcc/testsuite/gcc.dg/pch/pch.exp
 # disable security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 # run only gcc tests
 cd ../gcc-build/gcc
 make %{?_smp_mflags} check-gcc
+# Only 1 FAIL is OK
+[ `grep ^FAIL testsuite/gcc/gcc.sum | wc -l` -ne 1 -o `grep ^XPASS testsuite/gcc/gcc.sum | wc -l` -ne 0 ] && exit 1 ||:
+[ `grep "^FAIL: gcc.dg/cpp/trad/include.c (test for excess errors)" testsuite/gcc/gcc.sum | wc -l` -ne 1 ] && exit 1 ||:
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -260,6 +265,8 @@ make %{?_smp_mflags} check-gcc
 %endif
 
 %changelog
+*   Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-4
+-   Fix makecheck
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-3
 -   Fix compilation issue for glibc-2.26
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-2
