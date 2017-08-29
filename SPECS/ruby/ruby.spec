@@ -1,7 +1,7 @@
 Summary:    Ruby
 Name:       ruby
 Version:    2.4.1
-Release:    3%{?dist}
+Release:    5%{?dist}
 License:    BSDL
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
@@ -42,7 +42,9 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
+dddd
 %check
+
 make  %{?_smp_mflags} check
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
