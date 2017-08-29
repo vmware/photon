@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.5.2
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org/
 Group:            System Environment/Security
@@ -20,6 +20,7 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 
 %build
 ./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
+sed -i '/stdlib.h/a #include <stdint.h>' src/libstrongswan/utils/utils.h &&
 make %{?_smp_mflags}
 
 %install
@@ -45,6 +46,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/strongswan/*
 
 %changelog
+*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 5.5.2-2
+-   Fix compilation issue for glibc-2.26
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 5.5.2-1
 -   Update to version 5.5.2
 *   Wed Dec 21 2016 Xiaolin Li <xiaolinl@vmware.com>  5.5.1-1

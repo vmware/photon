@@ -44,9 +44,6 @@ systemctl enable google-network-setup.service
 systemctl enable google-shutdown-scripts.service
 systemctl enable google-startup-scripts.service
 
-/usr/bin/google_instance_setup
-/usr/bin/google_network_setup
-
 systemctl start --no-block google-accounts-daemon
 systemctl start --no-block google-clock-skew-daemon
 systemctl start --no-block google-ip-forwarding-daemon

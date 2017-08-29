@@ -3,7 +3,7 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        2.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
@@ -78,6 +78,7 @@ SELinux applications.
 %setup -qn %{name}-%{version}
 
 %build
+sed '/unistd.h/a#include <sys/uio.h>' -i src/setrans_client.c
 make clean
 make %{?_smp_mflags} swigify
 make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python2 pywrap
@@ -129,9 +130,11 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 2.6-4
+-   Fix compilation issue for glibc-2.26
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6-3
 -   Include pytho3 packages.
-*   Wed May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-2
+*   Mon May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-2
 -   Include python subpackage.
 *   Wed May 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-1
 -   Upgraded to version 2.6

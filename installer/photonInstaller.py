@@ -41,8 +41,10 @@ def query_yes_no(question, default="no"):
 
 def create_vmdk_and_partition(config, vmdk_path):
     partitions_data = {}
-
-    process = subprocess.Popen(['./mk-setup-vmdk.sh', '-rp', config['size']['root'], '-sp', config['size']['swap'], '-n', vmdk_path, '-m'], stdout=subprocess.PIPE)
+    firmware = "bios"
+    if 'boot' in config and config['boot'] == 'efi':
+        firmware = "efi"
+    process = subprocess.Popen(['./mk-setup-vmdk.sh', '-rp', config['size']['root'], '-sp', config['size']['swap'], '-n', vmdk_path, '-fm', firmware, '-m'], stdout=subprocess.PIPE)
     count = 0
     for line in iter(process.stdout.readline, ''):
         sys.stdout.write(line)
