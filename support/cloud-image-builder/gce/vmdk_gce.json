@@ -11,8 +11,7 @@
     "postinstallscripts": [ "gce-patch.sh", "../password-expiry.sh" ],
     "additionalfiles": [
                             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"},
-                            {"ntpd.service": "/usr/lib/systemd/system/ntpd.service"},
-                            {"eth0.service": "/usr/lib/systemd/system/eth0.service"}
+                            {"ntpd.service": "/usr/lib/systemd/system/ntpd.service"}
                        ],
     "artifacttype": "tgz",
     "keeprawdisk": "false"

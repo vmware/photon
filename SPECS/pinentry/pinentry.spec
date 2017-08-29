@@ -1,7 +1,7 @@
 Summary:	A collection of PIN or passphrase entry dialogs
 Name:		pinentry
 Version:	1.0.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/software/pinentry/index.html
 Group:		Applications/Cryptography.
@@ -26,7 +26,8 @@ They utilize the Assuan protocol as specified in the Libassuan manual.
 %build
 ./configure --prefix=%{_prefix}      \
             --sysconfdir=%{_sysconfdir} \
-            --with-libusb=no
+            --with-libusb=no \
+            --enable-pinentry-tty
 
 make
 %install
@@ -39,5 +40,7 @@ make DESTDIR=%{buildroot} install
 %exclude %{_infodir}/dir
 
 %changelog
+*       Wed Aug 16 2017 Danut Moraru <dmoraru@vmware.com> 1.0.0-2
+        Build pinentry-tty
 *       Wed Jun 07 2017 Danut Moraru <dmoraru@vmware.com> 1.0.0-1
 -       Initial Build.

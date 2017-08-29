@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.9.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -56,7 +56,10 @@ install -m 0644 contrib/completion/git-completion.bash %{buildroot}/usr/share/ba
 %{_fixperms} %{buildroot}/*
 
 %check
-make %{?_smp_mflags} test
+# git expect nonroot user to run tests
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test make %{?_smp_mflags} test
 
 %post
 if [ $1 -eq 1 ];then
@@ -89,6 +92,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Mon Aug 21 2017 Rui Gu <ruig@vmware.com> 2.9.3-4
+-   Fix make check with non-root mode.
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-3
 -   Remove python2 from requires.
 *   Tue Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
