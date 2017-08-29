@@ -23,23 +23,6 @@ class PackageBuilder(object):
         self.listBuildOptionPackages=listBuildOptionPackages
         self.pkgBuildOptionFile=pkgBuildOptionFile
 
-    def prepareBuildRoot(self,chrootName, packageName):
-        chrootID=None
-        try:
-            chrUtils = ChrootUtils(self.logName,self.logPath)
-            returnVal,chrootID = chrUtils.createChroot(chrootName)
-            self.logger.debug("Created new chroot: " + chrootID)
-            if not returnVal:
-                raise Exception("Unable to prepare build root")
-            tUtils=ToolChainUtils(self.logName,self.logPath)
-            tUtils.installToolChainRPMS(chrootID, packageName)
-        except Exception as e:
-            if chrootID is not None:
-                self.logger.debug("Deleting chroot: " + chrootID)
-                chrUtils.destroyChroot(chrootID)
-            raise e
-        return chrootID
-
     def findPackageNameFromRPMFile(self,rpmfile):
         rpmfile=os.path.basename(rpmfile)
         releaseindex=rpmfile.rfind("-")
@@ -94,16 +77,20 @@ class PackageBuilder(object):
                 self.logger.info("Skipping testing the package:"+package)
                 return
 
-        #should initialize a logger based on package name
-        chrUtils = ChrootUtils(self.logName,self.logPath)
-        chrootName="build-"+package
-        chrootID=None
         try:
-            chrootID = self.prepareBuildRoot(chrootName, package)
             destLogPath=constants.logPath+"/build-"+package
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()
                 cmdUtils.runCommandInShell("mkdir -p "+destLogPath)
+
+            chrUtils = ChrootUtils("chrootUtils", destLogPath)
+            returnVal,chrootID = chrUtils.createChroot("build-"+package)
+            self.logger.debug("Created new chroot: " + chrootID)
+            if not returnVal:
+                raise Exception("Unable to prepare build root")
+
+            tUtils=ToolChainUtils(self.logName,destLogPath)
+            tUtils.installToolChainRPMS(chrootID, package)
 
             listInstalledPackages=self.findInstalledPackages(chrootID)
             listDependentPackages=self.findBuildTimeRequiredPackages(package)
@@ -113,7 +100,7 @@ class PackageBuilder(object):
                 listDependentPackages.extend(testPackages)
                 listDependentPackages=list(set(listDependentPackages))
 
-            pkgUtils = PackageUtils(self.logName,self.logPath)
+            pkgUtils = PackageUtils(self.logName,destLogPath)
             if len(listDependentPackages) != 0:
                 self.logger.info("Installing the build time dependent packages......")
                 for pkg in listDependentPackages:
