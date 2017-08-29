@@ -1,14 +1,14 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.9.5
-Release:        2%{?dist}
+Version:        1.9.7
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    subversion=8bd6a44a1aed30c4c6b6b068488dafb44eaa6adf
+%define sha1    subversion=874b81749cdc3e88152d103243c3623ac6338388
 Requires:       apr
 Requires:       apr-util
 BuildRequires:  apr-devel
@@ -62,6 +62,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Mon Aug 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.7-1
+-   Update to version 1.9.7.
 *   Thu Jun 15 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.5-2
 -   Fix make check issues.
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.5-1
