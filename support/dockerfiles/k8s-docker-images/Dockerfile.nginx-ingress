@@ -1,0 +1,22 @@
+FROM vmware/photon
+
+MAINTAINER kulkarniv@vmware.com
+
+RUN tdnf install -y openssl nginx
+
+# forward nginx access and error logs to stdout and stderr
+RUN ln -sf /proc/1/fd/1 /var/log/nginx/access.log && \
+    ln -sf /proc/1/fd/2 /var/log/nginx/error.log
+
+COPY [ "./tmp/nginxinc/usr/share/nginx-ingress/docker/nginx.ingress.tmpl", \
+       "./tmp/nginxinc/usr/share/nginx-ingress/docker/nginx.tmpl", \
+       "./tmp/nginxinc/usr/bin/nginx-ingress", \
+       "/" ]
+
+RUN mkdir -p /etc/nginx/secrets && \
+    cd /etc/nginx/secrets && \
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout default.key -out default.crt -subj "/CN=NGINXIngressController" && \
+    cat default.key default.crt > default.pem && \
+    rm default.key default.crt
+
+ENTRYPOINT ["/nginx-ingress"]
