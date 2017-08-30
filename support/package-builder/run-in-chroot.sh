@@ -42,6 +42,7 @@ $CHROOT_CMD "${BUILDROOT}" \
 	PS1='\u:\w\$ ' \
 	PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin \
 	SHELL=/bin/bash \
+	MALLOC_ARENA_STICKINESS=0x100000 \
 	/bin/bash --login +h -c "$*"
 
 exit 0
