@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.26
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -16,6 +16,8 @@ Source1:	locale-gen.sh
 Source2:	locale-gen.conf
 Patch0:   	http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
 Patch1:		glibc-2.24-bindrsvport-blacklist.patch
+Patch2:		0001-Fix-range-check-in-do_tunable_update_val.patch
+Patch3:		0002-malloc-arena-fix.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -71,6 +73,8 @@ Name Service Cache Daemon
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -113,12 +117,6 @@ cd %{_builddir}/%{name}-build
 # Sometimes we have false "out of memory" make error
 # just rerun/continue make to workaroung it.
 make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
-
-%check
-# disable security hardening for tests
-rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
-cd %{_builddir}/glibc-build
-make %{?_smp_mflags} check
 
 %install
 #	Do not remove static libs
@@ -168,6 +166,16 @@ popd
 # to do not depend on /bin/bash
 sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}/usr/bin/ldd
 sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
+
+%check
+cd %{_builddir}/glibc-build
+make %{?_smp_mflags} check
+# 0/1 failures and only 2 false positives are OK
+[ `grep ^FAIL tests.sum | wc -l` -gt 1 -o `grep ^XPASS tests.sum | wc -l` -ne 2 ] && exit 1
+# 1 FAIL (intermittent) for posix/tst-spawn3
+[ `grep ^FAIL tests.sum | wc -l` -eq 1 -a `grep "^FAIL: posix/tst-spawn3" tests.sum | wc -l` -ne 1 ] && exit 1
+# 2 XPASS for: elf/tst-protected1a and elf/tst-protected1b
+[ `grep "^XPASS: elf/tst-protected1[ab]" tests.sum | wc -l` -ne 2 ] && exit 1
 
 
 %post -p /sbin/ldconfig
@@ -257,6 +265,10 @@ sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
 
 %changelog
+*   Tue Aug 29 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-2
+-   Fix tunables setter.
+-   Add malloc arena fix.
+-   Fix makecheck.
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-1
 -   Version update
 *   Tue Aug 08 2017 Anish Swaminathan <anishs@vmware.com> 2.25-4
