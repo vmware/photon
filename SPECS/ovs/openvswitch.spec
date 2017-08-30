@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.7.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -27,6 +27,10 @@ BuildRequires:  systemd
 Requires:       libgcc-atomic
 Requires:       libcap-ng
 Requires:       openssl
+Requires:       python2
+Requires:       python2-libs
+Requires:       python-six
+Requires:       python-xml
 
 %description
 Open vSwitch provides standard network bridging functions and
@@ -272,6 +276,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Tue Aug 29 2017 Sarah Choi <sarahc@vmware.com> 2.7.0-6
+-   Add python2/python-six/python-xml to Requires
 *   Thu Jul 13 2017 Nishant Nelogal <nnelogal@vmware.com> 2.7.0-5
 -   Created OVN packages and systemd service scripts
 *   Fri Jun 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-4
