@@ -3,15 +3,17 @@
 
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
-Version:        17.1.0
-Release:        6%{?dist}
+Version:        17.5.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://twistedmatrix.com
-Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{version}.tar.bz2
-%define sha1 Twisted=1cd9e3e39323f555a89d882cbbcf001015bd3113
+Source0:        https://pypi.python.org/packages/source/T/Twisted/twisted-%{version}.tar.gz
+%define sha1 twisted=2c7331971b37095faa4d232c402cd7571ce45b37
+Patch0:        extra_dependency.patch 
+Patch1:        no_packet.patch 
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -19,6 +21,9 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-incremental
 BuildRequires:  python-zope.interface
+BuildRequires:  python-cryptography
+BuildRequires:  python-pyOpenSSL
+BuildRequires:  python-six
 
 Requires:       python2
 Requires:       python2-libs
@@ -54,7 +59,9 @@ Requires:       python3-constantly
 Python 3 version.
 
 %prep
-%setup -q -n Twisted-%{version}
+%setup -q -n twisted-twisted-%{version}
+%patch0 -p1
+%patch1 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -79,8 +86,21 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install tox
-tox -e py27-tests
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+mount -t devpts -o gid=4,mode=620 none /dev/pts
+route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
+$easy_install_2 pip
+pip install --upgrade tox
+chmod g+w . -R
+useradd test -G root -m
+LANG=en_US.UTF-8 sudo -u test tox -e py27-tests
+pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 pip
+pip install --upgrade tox
+chmod g+w . -R
+LANG=en_US.UTF-8 sudo -u test tox -e py36-tests
+popd
 
 %files
 %defattr(-,root,root)
@@ -108,6 +128,8 @@ tox -e py27-tests
 %{_bindir}/cftp3
 
 %changelog
+*   Tue Aug 29 2017 Dheeraj Shetty <dheerajs@vmware.com> 17.5.0-1
+-   Upgrade version
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 17.1.0-6
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 17.1.0-5
