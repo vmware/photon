@@ -2,7 +2,10 @@ from PackageBuildDataGenerator import PackageBuildDataGenerator
 from Logger import Logger
 import threading
 from constants import constants
+import docker
 import os
+from ChrootUtils import ChrootUtils
+from CommandUtils import CommandUtils
 from PackageUtils import PackageUtils
 from ToolChainUtils import ToolChainUtils
 from Scheduler import Scheduler
@@ -18,6 +21,7 @@ class PackageManager(object):
         self.logName=logName
         self.logPath=logPath
         self.logger=Logger.getLogger(logName,logPath)
+        self.dockerClient = docker.from_env(version="auto")
         self.mapCyclesToPackageList={}
         self.mapPackageToCycle={}
         self.sortedPackageList=[]
@@ -28,6 +32,7 @@ class PackageManager(object):
         self.listAvailableCyclicPackages=[]
         self.listBuildOptionPackages=[]
         self.pkgBuildOptionFile=""
+        self.pkgBuildType="chroot"
 
     def readPackageBuildData(self, listPackages):
         try:
@@ -116,25 +121,37 @@ class PackageManager(object):
         return True
 
     def buildToolChain(self):
+        pkgCount = 0
         try:
             tUtils=ToolChainUtils()
-            tUtils.buildCoreToolChainPackages(self.listBuildOptionPackages, self.pkgBuildOptionFile)
+            pkgCount = tUtils.buildCoreToolChainPackages(self.listBuildOptionPackages, self.pkgBuildOptionFile)
         except Exception as e:
             self.logger.error("Unable to build tool chain")
             self.logger.error(e)
             raise e
+        return pkgCount
 
     def buildToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
-        self.buildToolChain()
+        pkgCount = self.buildToolChain()
+        if self.pkgBuildType == "container":
+            # Stage 1 build container
+            #TODO image name constants.buildContainerImageName
+            if pkgCount > 0 or not self.dockerClient.images.list("photon_build_container:latest"):
+                self.createBuildContainer()
         self.buildGivenPackages(constants.listToolChainPackages, buildThreads)
+        if self.pkgBuildType == "container":
+            # Stage 2 build container
+            #TODO: rebuild container only if anything in listToolChainPackages was built
+            self.createBuildContainer()
 
     def buildTestPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
         self.buildToolChain()
         self.buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
 
-    def buildPackages(self,listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
+    def buildPackages(self,listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType):
         self.listBuildOptionPackages = listBuildOptionPackages
         self.pkgBuildOptionFile = pkgBuildOptionFile
+        self.pkgBuildType = pkgBuildType
         if constants.rpmCheck:
             constants.rpmCheck=False
             self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
@@ -153,6 +170,7 @@ class PackageManager(object):
         ThreadPool.pkgBuildOptionFile=self.pkgBuildOptionFile
         ThreadPool.logger=self.logger
         ThreadPool.statusEvent=statusEvent
+        ThreadPool.pkgBuildType=self.pkgBuildType
 
     def initializeScheduler(self,statusEvent):
         Scheduler.setLog(self.logName, self.logPath)
@@ -210,3 +228,50 @@ class PackageManager(object):
 
         self.logger.info("Terminated")
 
+    def createBuildContainer(self):
+        self.logger.info("Generating photon build container..")
+        try:
+            #TODO image name constants.buildContainerImageName
+            self.dockerClient.images.remove("photon_build_container:latest", force=True)
+        except Exception as e:
+            #TODO - better handling
+            self.logger.debug("Photon build container image not found.")
+
+        # Create toolchain chroot and install toolchain RPMs
+        chrootID=None
+        try:
+            #TODO: constants.tcrootname
+            chrUtils = ChrootUtils("toolchain-chroot", self.logPath)
+            returnVal, chrootID = chrUtils.createChroot("toolchain-chroot")
+            self.logger.debug("Created tool-chain chroot: " + chrootID)
+            if not returnVal:
+                raise Exception("Unable to prepare tool-chain chroot")
+            tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
+            tcUtils.installToolChainRPMS(chrootID, "dummy")
+        except Exception as e:
+            if chrootID is not None:
+                self.logger.debug("Deleting chroot: " + chrootID)
+                chrUtils.destroyChroot(chrootID)
+            raise e
+        self.logger.info("VDBG-PU-createBuildContainer: chrootID: " + chrootID)
+
+        # Create photon build container using toolchain chroot
+        #TODO: Coalesce logging
+        cmdUtils = CommandUtils()
+        cmd = "./umount-build-root.sh " + chrootID
+        cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot1.log")
+        cmd = "cd " + chrootID + " && tar -czvf ../tcroot.tar.gz ."
+        cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot2.log")
+        cmd = "mv " + chrootID + "/../tcroot.tar.gz ."
+        cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot3.log")
+        #TODO: Container name, docker file name from constants.
+        self.dockerClient.images.build(tag="photon_build_container:latest",
+                                       path=".",
+                                       rm=True,
+                                       dockerfile="Dockerfile.photon_build_container")
+
+        # Cleanup
+        cmd = "rm -f ./tcroot.tar.gz"
+        cmdUtils.runCommandInShell(cmd, self.logPath + "/toolchain-chroot4.log")
+        chrUtils.destroyChroot(chrootID)
+        self.logger.info("Photon build container successfully created.")

@@ -28,14 +28,16 @@ class PackageUtils(object):
         self.rpmbuildBuildallOption = "-ba --clean"
         self.rpmbuildNocheckOption = "--nocheck"
         self.rpmbuildCheckOption ="-bi --clean"
-        self.rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
         self.queryRpmPackageOptions = "-qa"
         self.forceRpmPackageOptions = "--force"
+        self.replaceRpmPackageOptions = "--replacepkgs"
         self.adjustGCCSpecScript="adjust-gcc-specs.sh"
         self.rpmFilesToInstallInAOneShot=""
         self.packagesToInstallInAOneShot=""
         self.noDepsRPMFilesToInstallInAOneShot=""
         self.noDepsPackagesToInstallInAOneShot=""
+        self.rpmFilesToReInstallInAOneShot=""
+        self.noDepsRPMFilesToReInstallInAOneShot=""
 
     def getRPMArch(self,rpmName):
         arch=""
@@ -105,32 +107,35 @@ class PackageUtils(object):
                 self.logger.error("Unable to install rpms")
                 raise Exception("RPM installation failed")
 
+    def verifyShaAndGetSourcePath(self, source, package):
+        cmdUtils = CommandUtils()
+        # Fetch/verify sources if sha1 not None.
+        sha1 = constants.specData.getSHA1(package, source)
+        if sha1 is not None:
+            PullSources.get(source, sha1, constants.sourcePath, constants.pullsourcesConfig, self.logger)
+
+        sourcePath = cmdUtils.findFile(source,constants.sourcePath)
+        if sourcePath is None or len(sourcePath) == 0:
+            sourcePath = cmdUtils.findFile(source,constants.specPath)
+            if sourcePath is None or len(sourcePath) == 0:
+                if sha1 is None:
+                    self.logger.error("No sha1 found or missing source for "+source)
+                    raise Exception("No sha1 found or missing source for "+source)
+                else:
+                    self.logger.error("Missing source: "+source+". Cannot find sources for package: "+package)
+                    raise Exception("Missing source")
+        else:
+            if sha1 is None:
+                self.logger.error("No sha1 found for "+source)
+                raise Exception("No sha1 found")
+        if len(sourcePath) > 1:
+            self.logger.error("Multiple sources found for source:"+source+"\n"+ ",".join(sourcePath) +"\nUnable to determine one.")
+            raise Exception("Multiple sources found")
+        return sourcePath
 
     def copySourcesTobuildroot(self,listSourceFiles,package,destDir):
-        cmdUtils = CommandUtils()
         for source in listSourceFiles:
-            # Fetch/verify sources if sha1 not None.
-            sha1 = constants.specData.getSHA1(package, source)
-            if sha1 is not None:
-                PullSources.get(source, sha1, constants.sourcePath, constants.pullsourcesConfig, self.logger)
-
-            sourcePath = cmdUtils.findFile(source,constants.sourcePath)
-            if sourcePath is None or len(sourcePath) == 0:
-                sourcePath = cmdUtils.findFile(source,constants.specPath)
-                if sourcePath is None or len(sourcePath) == 0:
-                    if sha1 is None:
-                        self.logger.error("No sha1 found or missing source for "+source)
-                        raise Exception("No sha1 found or missing source for "+source)
-                    else:
-                        self.logger.error("Missing source: "+source+". Cannot find sources for package: "+package)
-                        raise Exception("Missing source")
-            else:
-                if sha1 is None:
-                    self.logger.error("No sha1 found for "+source)
-                    raise Exception("No sha1 found")
-            if len(sourcePath) > 1:
-                self.logger.error("Multiple sources found for source:"+source+"\n"+ ",".join(sourcePath) +"\nUnable to determine one.")
-                raise Exception("Multiple sources found")
+            sourcePath = self.verifyShaAndGetSourcePath(source, package)
             self.logger.info("Copying... Source path :" + source + " Source filename: " + sourcePath[0])
             shutil.copy2(sourcePath[0], destDir)
 
@@ -144,6 +149,24 @@ class PackageUtils(object):
                     shutil.copy(source, destDir)
                 else:
                     shutil.copytree(source, destDir)
+
+    def getAdditionalBuildFiles(self, package, pkgBuildOptionFile):
+        listAdditionalFiles = []
+        macros = []
+        jsonData = open(pkgBuildOptionFile)
+        pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+        jsonData.close()
+        pkgs_sorted = pkg_build_option_json.items()
+        for pkg in pkgs_sorted:
+            p = str(pkg[0].encode('utf-8'))
+            if p == package:
+                filelist = pkg[1]["files"]
+                for f in filelist:
+                    listAdditionalFiles.append(f)
+                macrolist = pkg[1]["macros"]
+                for macro in macrolist:
+                    macros.append(str(macro.encode('utf-8')))
+        return listAdditionalFiles, macros
 
     def buildRPMSForGivenPackage(self,package,chrootID,listBuildOptionPackages,pkgBuildOptionFile,destLogPath=None):
         self.logger.info("Building rpm's for package:"+package)
@@ -164,23 +187,9 @@ class PackageUtils(object):
         self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
         self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
 
-        listAdditionalFiles = []
         macros = []
         if package in listBuildOptionPackages:
-            jsonData = open(pkgBuildOptionFile)
-            pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
-            jsonData.close()
-            pkgs_sorted = pkg_build_option_json.items()
-            for pkg in pkgs_sorted:
-                p = str(pkg[0].encode('utf-8'))
-                if p == package:
-                    filelist = pkg[1]["files"]
-                    for f in filelist:
-                        listAdditionalFiles.append(f)
-                    macrolist = pkg[1]["macros"]
-                    for macro in macrolist:
-                        macros.append(str(macro.encode('utf-8')))
-
+            listAdditionalFiles, macros = self.getAdditionalBuildFiles(package, pkgBuildOptionFile)
             self.copyAdditionalBuildFiles(listAdditionalFiles,chrootID)
 
         #Adding rpm macros
@@ -216,7 +225,8 @@ class PackageUtils(object):
 
     def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
 
-        rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+self.rpmbuildDistOption
+        rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
+        rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+rpmbuildDistOption
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.info("#"*(68+2*len(package)))
@@ -347,3 +357,297 @@ class PackageUtils(object):
 
         self.logger.error("Failed while adjusting gcc specs")
         raise Exception("Failed while adjusting gcc specs")
+
+    def copySourcesToContainer(self, listSourceFiles, package, containerID, destDir):
+        cmdUtils = CommandUtils()
+        for source in listSourceFiles:
+            sourcePath = self.verifyShaAndGetSourcePath(source, package)
+            self.logger.info("Copying source file: " + sourcePath[0])
+            copyCmd = "docker cp " + sourcePath[0] + " " + containerID.short_id + ":" + destDir
+            cmdUtils.runCommandInShell(copyCmd)
+
+    def copyAdditionalBuildFilesToContainer(self, listAdditionalFiles, containerID):
+        cmdUtils = CommandUtils()
+        #self.logger.debug("VDBG-PU-copyAdditionalBuildFilesToContainer id: " +containerID.short_id)
+        #self.logger.debug(listAdditionalFiles)
+        for additionalFile in listAdditionalFiles:
+            source = additionalFile["src"].encode('utf-8')
+            destDir = additionalFile["dst"].encode('utf-8')
+            destPath = containerID.short_id + ":" + destDir
+            #TODO: exit status of exec_run
+            containerID.exec_run("mkdir -p " + destDir)
+            if os.path.exists(source):
+                copyCmd = "docker cp " + source
+                if os.path.isfile(source):
+                    self.logger.info("Copying addl source file: " + source)
+                    copyCmd += " " + destPath
+                else:
+                    self.logger.info("Copying addl source file tree: " + source)
+                    copyCmd +=  "/. " + destPath
+                #TODO: cmd error code
+                cmdUtils.runCommandInShell(copyCmd)
+
+    def getRPMPathInContainer(self, rpmFile, containerID):
+        rpmName = os.path.basename(rpmFile)
+        #TODO: Container path from constants
+        if "PUBLISHRPMS" in rpmFile:
+            rpmPath = "/publishrpms/"
+        elif "PUBLISHXRPMS" in rpmFile:
+            rpmPath = "/publishxrpms/"
+        else:
+            rpmPath = constants.topDirPath + "/RPMS/"
+        if "noarch" in rpmFile:
+            rpmPath += "noarch/"
+        else:
+            rpmPath += "x86_64/"
+        rpmPath += rpmName
+        return rpmPath
+
+    def prepRPMforInstallInContainer(self, package, containerID, noDeps=False, destLogPath=None):
+        rpmfile = self.findRPMFileForGivenPackage(package)
+        if rpmfile is None:
+            self.logger.error("No rpm file found for package: " + package)
+            raise Exception("Missing rpm file")
+
+        rpmDestFile = self.getRPMPathInContainer(rpmfile, containerID)
+        if noDeps:
+            self.noDepsRPMFilesToInstallInAOneShot += " " + rpmDestFile
+            self.noDepsPackagesToInstallInAOneShot += " " + package
+            if package in constants.listReInstallPackages:
+                self.noDepsRPMFilesToReInstallInAOneShot += " " + rpmDestFile
+        else:
+            self.rpmFilesToInstallInAOneShot += " " + rpmDestFile
+            self.packagesToInstallInAOneShot += " " + package
+            if package in constants.listReInstallPackages:
+                self.rmpFilesToReInstallInAOneShot += " " + rpmDestFile
+
+    def installRPMSInAOneShotInContainer(self, containerID, destLogPath):
+        rpmInstallcmd = self.rpmBinary + " " + self.installRPMPackageOptions + " " + self.forceRpmPackageOptions
+
+        if self.noDepsRPMFilesToInstallInAOneShot != "":
+            self.logger.info("PackageUtils-installRPMSInAOneShotInContainer: Installing nodeps rpms: " + \
+                             self.noDepsPackagesToInstallInAOneShot)
+            logFile = destLogPath + "/install_rpms_nodeps.log"
+            cmd = rpmInstallcmd + " " + self.nodepsRPMPackageOptions + " " + self.noDepsRPMFilesToInstallInAOneShot
+            cmd = "/bin/bash -l -c '" + cmd + "'"
+            #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: Install nodeps cmd: " + cmd)
+            #TODO: Error code from exec_run
+            installLog = containerID.exec_run(cmd)
+            if not installLog:
+                self.logger.error("Unable to install nodeps rpms")
+                raise Exception("nodeps RPM installation failed")
+            logfile = open(logFile, 'w')
+            logfile.write(installLog)
+            logfile.close()
+
+            if self.noDepsRPMFilesToReInstallInAOneShot != "":
+                cmd = rpmInstallcmd + " " + self.nodepsRPMPackageOptions + " " + self.forceRpmPackageOptions + " " + self.noDepsRPMFilesToReInstallInAOneShot
+                cmd = "/bin/bash -l -c '" + cmd + "'"
+                #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: ReInstall nodeps cmd: " + cmd)
+                #TODO: Error code from exec_run
+                installLog = containerID.exec_run(cmd)
+                if not installLog:
+                    self.logger.error("Unable to re-install nodeps rpms")
+                    raise Exception("nodeps RPM re-installation failed")
+                logfile = open(logFile, 'a')
+                logfile.write(installLog)
+                logfile.close()
+
+        if self.rpmFilesToInstallInAOneShot != "":
+            self.logger.info("PackageUtils-installRPMSInAOneShotInContainer: Installing rpms: " + \
+                             self.packagesToInstallInAOneShot)
+            logFile = destLogPath + "/install_rpms.log"
+            cmd = rpmInstallcmd + " " + self.rpmFilesToInstallInAOneShot
+            cmd = "/bin/bash -l -c '" + cmd + "'"
+            #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: Install cmd: " + cmd)
+            #TODO: Error code from exec_run
+            installLog = containerID.exec_run(cmd)
+            if not installLog:
+                self.logger.error("Unable to install rpms")
+                raise Exception("RPM installation failed")
+            logfile = open(logFile, 'w')
+            logfile.write(installLog)
+            logfile.close()
+
+            if self.rpmFilesToReInstallInAOneShot != "":
+                cmd = rpmInstallcmd + " " + self.forceRpmPackageOptions + " " + self.rpmFilesToReInstallInAOneShot
+                cmd = "/bin/bash -l -c '" + cmd + "'"
+                #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: ReInstall cmd: " + cmd)
+                #TODO: Error code from exec_run
+                installLog = containerID.exec_run(cmd)
+                if not installLog:
+                    self.logger.error("Unable to re-install rpms")
+                    raise Exception("RPM re-installation failed")
+                logfile = open(logFile, 'a')
+                logfile.write(installLog)
+                logfile.close()
+
+    def findInstalledRPMPackagesInContainer(self, containerID):
+        cmd = self.rpmBinary + " " + self.queryRpmPackageOptions
+        cmd = "/bin/bash -l -c '" + cmd + "'"
+        #TODO: Error code from exec_run
+        result = containerID.exec_run(cmd)
+        if result is not None:
+            return result.split()
+        return result
+
+    def adjustGCCSpecsInContainer(self, package, containerID, logPath):
+        opt = " " + constants.specData.getSecurityHardeningOption(package)
+        adjustCmd = "/tmp/" + self.adjustGCCSpecScript + opt
+        adjustCmd = "/bin/bash -l -c '" + adjustCmd + "'"
+        logFile = logPath + "/adjustGCCSpecScript.log"
+
+        #TODO: Error code from exec_run
+        scriptLog = containerID.exec_run(adjustCmd)
+        if scriptLog:
+            logfile = open(logFile, 'w')
+            logfile.write(scriptLog)
+            logfile.close()
+            return
+
+        self.logger.debug(containerID.exec_run("ls -la /tmp/" + self.adjustGCCSpecScript))
+        self.logger.debug(containerID.exec_run("lsof /tmp/" + self.adjustGCCSpecScript))
+        self.logger.debug(containerID.exec_run("ps ax"))
+        self.logger.error("Failed while adjusting gcc specs")
+        raise Exception("Failed while adjusting gcc specs")
+
+    def buildRPMSForGivenPackageInContainer(self, package, containerID, listBuildOptionPackages,
+                                            pkgBuildOptionFile, destLogPath=None):
+        self.logger.info("Building rpm's for package " + package + " in container " + containerID.short_id)
+
+        listSourcesFiles = constants.specData.getSources(package)
+        listPatchFiles = constants.specData.getPatches(package)
+        specFile = constants.specData.getSpecFile(package)
+        specName = constants.specData.getSpecName(package) + ".spec"
+        sourcePath = constants.topDirPath + "/SOURCES/"
+        specPath = constants.topDirPath + "/SPECS/"
+        rpmLogFile = constants.topDirPath + "/LOGS/" + package + ".log"
+        destLogFile = destLogPath + "/" + package + ".log"
+        cmdUtils = CommandUtils()
+
+        #TODO: mount it in, don't copy
+        cpSpecCmd = "docker cp " + specFile + " " + containerID.short_id \
+                        + ":" + specPath + specName
+        returnVal = cmdUtils.runCommandInShell(cpSpecCmd)
+        if not returnVal:
+            self.logger.error("Error copying source SPEC file to container")
+            raise Exception("Failed copying source SPEC to container")
+
+# FIXME: some sources are located in SPECS/.. how to mount?
+#        if os.geteuid()==0:
+        #TODO: mount it in, don't copy
+        macros = []
+        self.copySourcesToContainer(listSourcesFiles, package, containerID, sourcePath)
+        #TODO: mount it in, don't copy
+        self.copySourcesToContainer(listPatchFiles, package, containerID, sourcePath)
+        if package in listBuildOptionPackages:
+            listAdditionalFiles, macros = self.getAdditionalBuildFiles(package, pkgBuildOptionFile)
+            self.copyAdditionalBuildFilesToContainer(listAdditionalFiles, containerID)
+
+        # Add rpm macros
+        listRPMMacros = constants.specData.getRPMMacros()
+        for macroName in listRPMMacros.keys():
+            macros.append(macroName + " " + listRPMMacros[macroName])
+
+        # Build RPMs
+        listRPMFiles=[]
+        listSRPMFiles=[]
+        try:
+            listRPMFiles, listSRPMFiles = self.buildRPMinContainer(
+                                                    specPath + specName,
+                                                    rpmLogFile,
+                                                    destLogFile,
+                                                    containerID,
+                                                    package,
+                                                    macros)
+        except Exception as e:
+            self.logger.error("Failed while building rpm: " + package)
+            raise e
+        self.logger.info("RPM build is successful")
+
+        # Verify RPM and SRPM files exist as success criteria
+        for rpmFile in listRPMFiles:
+            rpmName = os.path.basename(rpmFile)
+            rpmDestDir = self.getRPMDestDir(rpmName, constants.rpmPath)
+            rpmDestFile = rpmDestDir + "/" + rpmName
+            if not os.path.isfile(rpmDestFile):
+                self.logger.error("Could not find RPM file: " + rpmDestFile)
+                raise Exception("Built RPM file not found.")
+
+        for srpmFile in listSRPMFiles:
+            srpmName = os.path.basename(srpmFile)
+            srpmDestDir = self.getRPMDestDir(os.path.basename(srpmFile), constants.sourceRpmPath)
+            srpmDestFile = srpmDestDir + "/" + srpmName
+            if not os.path.isfile(srpmDestFile):
+                self.logger.error("Could not find RPM file: " + srpmDestFile)
+                raise Exception("Built SRPM file not found.")
+
+    def buildRPMinContainer(self, specFile, rpmLogFile, destLogFile, containerID, package, macros):
+
+        rpmbuildDistOption = '--define \"dist %s\"' % constants.dist
+        rpmBuildCmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption \
+                          + " " + rpmbuildDistOption
+
+        if constants.rpmCheck and package in constants.testForceRPMS:
+            self.logger.info("#"*(68+2*len(package)))
+            if not constants.specData.isCheckAvailable(package):
+                self.logger.info("####### "+package+" MakeCheck is not available. Skipping MakeCheck TEST for "+package+ " #######")
+                rpmBuildCmd=self.rpmbuildBinary+" --clean"
+            else:
+                self.logger.info("####### "+package+" MakeCheck is available. Running MakeCheck TEST for "+package+ " #######")
+                rpmBuildCmd=self.rpmbuildBinary+" "+self.rpmbuildCheckOption
+            self.logger.info("#"*(68+2*len(package)))
+        else:
+           rpmBuildCmd+=" "+self.rpmbuildNocheckOption
+
+        for macro in macros:
+            rpmBuildCmd += ' --define \"%s\"' % macro
+        rpmBuildCmd += " " + specFile
+        rpmBuildCmd = "/bin/bash -l -c '" + rpmBuildCmd + " > " + rpmLogFile + " 2>&1'"
+        rpmBuildCmd = "docker exec " + str(containerID.short_id) + " " + rpmBuildCmd
+
+        cmdUtils = CommandUtils()
+        self.logger.info("Building rpm for package: " + package)
+        #TODO: Show running log of rpmbuildcmd
+        #TODO: Get exit status of rpmBuildCmd
+        #containerID.exec_run(rpmBuildCmd)
+        returnVal = cmdUtils.runCommandInShell(rpmBuildCmd)
+
+        if not os.path.isfile(destLogFile):
+            self.logger.error("RPM build not file not found. Building rpm failed for: " + specFile)
+            raise Exception("RPM Build failed")
+
+        if constants.rpmCheck and package in constants.testForceRPMS:
+            if not constants.specData.isCheckAvailable(package):
+                constants.testLogger.info(package+" : N/A")
+            elif returnVal:
+                constants.testLogger.info(package+" : PASS")
+            else:
+                constants.testLogger.error(package+" : FAIL" )
+
+        if constants.rpmCheck:
+            if not returnVal and constants.rpmCheckStopOnError:
+                self.logger.error("Checking rpm is failed "+specFile)
+                raise Exception("RPM check failed")
+        else:
+            if not returnVal:
+                self.logger.error("Building rpm is failed "+specFile)
+                raise Exception("RPM build failed")
+
+        #Extracting rpms created from log file
+        listRPMFiles=[]
+        listSRPMFiles=[]
+        logfile = open(destLogFile, 'r')
+        rpmBuildLogLines = logfile.readlines()
+        logfile.close()
+        for i in range(0, len(rpmBuildLogLines)):
+            if re.search("^Wrote:", rpmBuildLogLines[i]):
+                listcontents = rpmBuildLogLines[i].split()
+                if (len(listcontents) == 2) and listcontents[1].strip()[-4:] == ".rpm" and listcontents[1].find("/RPMS/") != -1:
+                    listRPMFiles.append(listcontents[1])
+                if (len(listcontents) == 2) and listcontents[1].strip()[-8:] == ".src.rpm" and listcontents[1].find("/SRPMS/") != -1:
+                    listSRPMFiles.append(listcontents[1])
+        #if not listRPMFiles:
+        #    self.logger.error("Building rpm failed for " + specFile)
+        #    raise Exception("RPM Build failed")
+        return listRPMFiles, listSRPMFiles

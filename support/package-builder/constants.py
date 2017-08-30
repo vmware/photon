@@ -19,9 +19,22 @@ class constants(object):
     inputRPMSPath=""
     rpmCheck=False
     sourceRpmPath=""
-    noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","go"]
     publishBuildDependencies=False
     packageWeightsPath=None
+
+    noDepsPackageList=[
+        "texinfo",
+        "bzip2",
+        "bzip2-libs",
+        "gettext",
+        "nspr",
+        "xz",
+        "bison",
+        "go",
+        "sqlite",
+        "sqlite-devel",
+        "sqlite-libs"]
+
     # These packages will be built in first order as build-core-toolchain stage
     listCoreToolChainPackages=[
         "filesystem",
@@ -80,6 +93,7 @@ class constants(object):
         "lua",
         "popt",
         "nspr",
+        "nspr-devel",
         "sqlite",
         "nss",
         "elfutils",
@@ -92,6 +106,7 @@ class constants(object):
         "autoconf",
         "automake",
         "openssl",
+        "openssl-devel",
         "python2",
         "libdb",
         "rpm",
@@ -309,6 +324,9 @@ class constants(object):
         "systemd-devel",
         "gnupg",
         "ncurses-terminfo" ]
+
+    listReInstallPackages=[
+        "go"]
 
     @staticmethod
     def initialize(options):
