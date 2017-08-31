@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -71,6 +71,13 @@ make
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/var/lib/sshd
+echo "AllowTcpForwarding no" >> %{buildroot}/etc/ssh/sshd_config
+echo "ClientAliveCountMax 2" >> %{buildroot}/etc/ssh/sshd_config
+echo "Compression no" >> %{buildroot}/etc/ssh/sshd_config
+echo "MaxAuthTries 2" >> %{buildroot}/etc/ssh/sshd_config
+echo "MaxSessions 2" >> %{buildroot}/etc/ssh/sshd_config
+echo "TCPKeepAlive no" >> %{buildroot}/etc/ssh/sshd_config
+echo "AllowAgentForwarding no" >> %{buildroot}/etc/ssh/sshd_config
 echo "PermitRootLogin no" >> %{buildroot}/etc/ssh/sshd_config
 echo "UsePAM yes" >> %{buildroot}/etc/ssh/sshd_config
 #   Install daemon script
@@ -171,6 +178,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Thu Aug 31 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-5
+-   sshd config hardening based on lynis recommendations
 *   Thu Aug 10 2017 Chang Lee <changlee@vmware.com> 7.5p1-4
 -   Fixed %check
 *   Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.5p1-3
