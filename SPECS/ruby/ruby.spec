@@ -1,7 +1,7 @@
 Summary:    Ruby
 Name:       ruby
 Version:    2.4.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSDL
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
@@ -38,12 +38,16 @@ This is useful for object-oriented scripting.
     --prefix=%{_prefix}   \
         --enable-shared \
         --docdir=%{_docdir}/%{name}-%{version}
-make %{?_smp_mflags}
+make %{?_smp_mflags}  COPY="cp -p"
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
+
 %check
-make  %{?_smp_mflags} check
+chmod g+w . -R
+useradd test -G root -m
+sudo -u test  make check TESTS="-v"
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %clean
@@ -60,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Tue Aug 31 2017 Chang Lee <changlee@vmware.com> 2.4.1-4
+-   Fixed %check
 *   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.1-3
 -   [security] CVE-2017-9228
 *   Tue Jun 13 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.1-2
