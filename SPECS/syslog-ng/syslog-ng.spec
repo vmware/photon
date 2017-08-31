@@ -3,7 +3,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -87,6 +87,7 @@ cp -a . ../p3dir
     --with-jsonc=system \
     --disable-java \
     --disable-redis \
+    --disable-static \
     --with-python=2 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 make %{?_smp_mflags}
@@ -106,6 +107,7 @@ pushd ../p3dir
     --with-jsonc=system \
     --disable-java \
     --disable-redis \
+    --disable-static \
     --with-python=3 \
     PYTHON=/bin/python3 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
@@ -177,7 +179,7 @@ rm -rf %{buildroot}/*
 /usr/sbin/syslog-ng-ctl
 /usr/sbin/syslog-ng-debun
 %{_libdir}/libsyslog-ng-3.11.so.*
-%{_libdir}/libevtlog-3.11.so.*
+%exclude %{_libdir}/libevtlog-3.11.so.*
 %{_libdir}/syslog-ng/lib*.so
 /usr/share/syslog-ng/*
 
@@ -193,11 +195,13 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/syslog-ng/*
 %{_libdir}/libsyslog-ng.so
-%{_libdir}/libevtlog.so
+%exclude %{_libdir}/libevtlog.so
 %{_libdir}/libsyslog-ng-native-connector.a
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Wed Aug 30 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-2
+-   Exclude packaging libevtlog.so files.
 *   Fri Aug 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-1
 -   Update to version 3.11.1
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  3.9.1-3
