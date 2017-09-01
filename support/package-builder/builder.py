@@ -43,6 +43,7 @@ def main():
     parser.add_argument("-y",  "--generate-pkg-yaml-files",  dest="generatePkgYamlFiles",  default=False, action ="store_true")
     parser.add_argument("-j",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
     parser.add_argument("-f",  "--pkg-blacklist-file",  dest="pkgBlacklistFile",  default=None)
+    parser.add_argument("-bt", "--build-type",  dest="pkgBuildType",  default="chroot")
     parser.add_argument("PackageName", nargs='?')
     options = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -147,9 +148,9 @@ def main():
             pkgManager = PackageManager()
             pkgManager.buildToolChainPackages(options.buildThreads)
         elif options.installPackage:
-            buildAPackage(package, listBuildOptionPackages, options.pkgBuildOptionFile, options.buildThreads)
+            buildAPackage(package, listBuildOptionPackages, options.pkgBuildOptionFile, options.buildThreads, options.pkgBuildType)
         else:
-            buildPackagesForAllSpecs(listBuildOptionPackages, options.pkgBuildOptionFile, logger, options.buildThreads, pkgInfoJsonFile)
+            buildPackagesForAllSpecs(listBuildOptionPackages, options.pkgBuildOptionFile, logger, options.buildThreads, pkgInfoJsonFile, options.pkgBuildType)
     except Exception as e:
         logger.error("Caught an exception")
         logger.error(str(e))
@@ -285,15 +286,15 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
         yamlFile.close()
     logger.info("Generated srpm yaml files for all packages")
 
-def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
+def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType):
     listPackages=[]
     listPackages.append(package)
     pkgManager = PackageManager()
     if constants.rpmCheck:
         constants.setTestForceRPMS(listPackages[:])
-    pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+    pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType)
 
-def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger, buildThreads, pkgInfoJsonFile):
+def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger, buildThreads, pkgInfoJsonFile, pkgBuildType):
     listPackages = constants.specData.getListPackages()
 
     logger.info("List of packages to build:")
@@ -301,7 +302,7 @@ def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger
     if constants.rpmCheck:
         constants.setTestForceRPMS(listPackages[:])
     pkgManager = PackageManager()
-    pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+    pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType)
 
     #Generating package info file which is required by installer
     logger.info("Writing Package info to the file:"+pkgInfoJsonFile)

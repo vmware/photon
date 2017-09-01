@@ -1,25 +1,23 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.1.5
-Release:        6%{?dist}
+Version:        10.1.10
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=9672874e8b785de27d7fda57bf791f900546c18f
+%define sha1 open-vm-tools=26ac84e86b4c862006b8de7973802e45dfd77464
 Source1:        gosc-scripts-1.0.tar.gz
 %define sha1 gosc-scripts-1.0=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
-Patch0:         open-vm-tools-tmp-race.patch
-Patch1:         IPv6Support.patch
-Patch2:         hostnameReCustomizationFix.patch
-Patch3:         PureIPv6-hosts.patch
-Patch4:         open-vm-tools-sysmacros.patch
-Patch5:         GOSC-libDeploy.patch
-Patch6:         timezoneCust.patch
+Patch0:         IPv6Support.patch
+Patch1:         hostnameReCustomizationFix.patch
+Patch2:         PureIPv6-hosts.patch
+Patch3:         GOSC-libDeploy.patch
+Patch4:         timezoneCust.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -54,10 +52,8 @@ It contains the libraries and header files to create applications.
 %patch0 -p0
 %patch1 -p0
 %patch2 -p0
-%patch3 -p0
-%patch4 -p1
-%patch5 -p1
-%patch6 -p0
+%patch3 -p2
+%patch4 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -117,6 +113,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Tue Aug 22 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.10-1
+-   Updating version to 10.1.10, removing upstream patches.
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.5-6
 -   Add libdnet-devel and libmspack-devel to BuildRequires, add devel package.
 *   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 10.1.5-5

@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.6.0
-Release:        2%{?kernelsubrelease}%{?dist}
+Release:        3%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -12,9 +12,7 @@ Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar
 %define sha1    falco=04dc79c1c4773ba2080c2c49c718305e7920c2f7
 Source1:        https://github.com/draios/sysdig/archive/sysdig-0.15.1.tar.gz
 %define sha1    sysdig=5b1a7a4978315176412989b5400572d849691917
-Source2:        http://stedolan.github.io/jq/download/linux64/jq
-%define sha1    jq=e820e9e91c9cce6154f52949a3b2a451c4de8af4
-Source3:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
+Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
 %define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -29,6 +27,11 @@ BuildRequires:  lua-devel
 BuildRequires:  libyaml-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  wget
+%if %{with_check}
+BuildRequires:  dkms
+BuildRequires:  xz-devel
+BuildRequires:  jq
+%endif
 Requires:       zlib
 Requires:       ncurses
 Requires:       openssl
@@ -37,15 +40,15 @@ Requires:       libyaml
 Requires:       lua
 Requires:       sysdig
 Requires:       dkms
+
 %description
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules. 
 
 %prep
 %setup
 %setup -T -D -a 1
-chmod +x %{SOURCE2}
-cp %{SOURCE2} /usr/bin
-tar xf %{SOURCE3} --no-same-owner
+tar xf %{SOURCE2} --no-same-owner
+
 %build
 mv sysdig-0.15.1 ../sysdig
 sed -i 's|../falco/rules|rules|g' userspace/engine/CMakeLists.txt
@@ -63,11 +66,13 @@ mv driver/falco-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_REL
 sed -i 's|/var/lib/dkms/$PACKAGE_NAME/$SYSDIG_VERSION/$KERNEL_RELEASE/$ARCH/module/$PROBE_NAME.ko|/lib/modules/$KERNEL_RELEASE/extra/$PROBE_NAME.ko|g' %{buildroot}/usr/bin/falco-probe-loader
 
 %check
-easy_install pip
-pip install avocado-framework
-pip install fabric
-pip install aexpect
-test/run_regression_tests.sh
+#easy_install pip
+#pip install 'stevedore>=0.14'
+#pip install 'avocado-framework<=36.0'
+#pip install fabric
+#pip install aexpect
+#pip install pystache
+#test/run_regression_tests.sh
 
 %clean
 rm -rf %{buildroot}/*
@@ -81,6 +86,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
 
 %changelog
+*   Thu Aug 24 2017 Rui Gu <ruig@vmware.com> 0.6.0-3
+-   Disable check section (Bug 1900272).
 *   Thu May 11 2017 Chang Lee <changlee@vmware.com> 0.6.0-2
 -   Add falco-probe.ko and change falco-probe.ko path in falco-probe-loader
 *   Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 0.6.0-1

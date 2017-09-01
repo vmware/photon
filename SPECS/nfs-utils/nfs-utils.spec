@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.1.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -31,6 +31,7 @@ The nfs-utils package contains simple nfs client service
 %setup -q -n %{name}-%{version}
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
+sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
 find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
 
 %build
@@ -79,6 +80,8 @@ make check
 /lib/systemd/system/*
 
 %changelog
+*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-5
+-   Fix compilation issue for glibc-2.26
 *   Wed Aug 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.1-4
 -   Add check and ignore test that fails.
 *   Tue Aug 8 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.1-3
