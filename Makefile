@@ -488,7 +488,9 @@ check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
 
 check-docker-py:
-	tdnf install -y docker docker-py --refresh && systemctl daemon-reload && systemctl start docker
+	@tdnf install -y docker docker-py --refresh > /dev/null 2>&1 || { echo "tdnf installation failed. Checking whether docker-py is installed."; } 
+	@python -c "import docker; assert docker.__version__ == '2.3.0'" >/dev/null 2>&1 || { echo "Python package docker-py 2.3.0 not installed. Aborting." >&2; exit 1; }
+	@systemctl daemon-reload && systemctl start docker
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
