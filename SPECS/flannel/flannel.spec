@@ -1,7 +1,7 @@
 Summary:        Overlay network for containers based on etcd
 Name:           flannel
 Version:        0.8.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/coreos/flannel
 Source0:        https://github.com/coreos/flannel/archive/%{name}-%{version}.tar.gz
@@ -78,11 +78,8 @@ RequiredBy=docker.service
 EOF
 
 %check
-pushd %{name}
-go get golang.org/x/tools/cmd/cover
-sed -e 's:^func TestRemote:func _TestRemote:' -i remote/remote_test.go || die
-./test
-popd
+cd %{name}
+GOPATH=%{_builddir} make test
 
 %post
 
@@ -96,6 +93,8 @@ popd
 %config(noreplace) %{_sysconfdir}/flannel/flanneld.conf
 
 %changelog
+*   Fri Sep 01 2017 Chang Lee <changlee@vmware.com> 0.8.0-2
+-   Fixed %check according to version upgrade
 *   Tue Aug 08 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.8.0-1
 -   Flannel 0.8.0 and systemd service file.
 *   Fri May 05 2017 Chang Lee <changlee@vmware.com> 0.7.1-1
