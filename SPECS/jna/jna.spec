@@ -4,7 +4,7 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.4.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache
 URL:            http://github.com/twall/jna
 Group:          Applications/System
@@ -41,9 +41,16 @@ rm -rf %{buildroot}
 
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
-#disabling all tests
+
+# Intermittent issue happens:
+#
+# BUILD FAILED
+# /usr/src/photon/BUILD/jna-4.4.0/build.xml:717: API for native code has changed, or javah output is inconsistent.
+# Re-run this build after checking /usr/src/photon/BUILD/jna-4.4.0/build/native-linux-x86-64/jni.checksum or updating jni.version and jni.md5 in build.xml
+#
+# Rerun the build will pass it
+ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true || \
 ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
-#$ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/LibraryLoadTest.java" -Drelease=true
 
 %install
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
@@ -72,6 +79,8 @@ ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*.aar
 
 %changelog
+*   Tue Sep 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-7
+-   Rerun the build on failure
 *   Thu Aug 17 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-6
 -   Removed clover.jar from jna-devel source-full.zip file
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-5
