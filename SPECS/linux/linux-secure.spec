@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.43
-Release:        2%{?dist}
+Version:        4.9.47
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e61d542f88a842b43ae8daacecf7d854458f57d5
+%define sha1 linux=49110526c8e572513bd3295495ccd28754b5292d
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -47,6 +47,8 @@ Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2017-11600
+Patch30:        xfrm-policy-check-policy-direction-value.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 BuildRequires:  bc
@@ -142,6 +144,7 @@ EOF
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
 
 pushd ..
 %patch99 -p0
@@ -257,6 +260,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1
+-   Fix CVE-2017-11600
 *   Tue Aug 22 2017 Anish Swaminathan <anishs@vmware.com> 4.9.43-2
 -   Add missing xen block drivers
 *   Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1
