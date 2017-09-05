@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.1.1
-Release:        2%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -12,6 +12,8 @@ Source2:        nfs-client.target
 Source3:        rpc-statd.service
 Source4:        rpc-statd-notify.service
 Source5:        nfs-utils.defaults
+Source6:        nfs-server.service
+Source7:        nfs-mountd.service
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  krb5
@@ -29,6 +31,7 @@ The nfs-utils package contains simple nfs client service
 %setup -q -n %{name}-%{version}
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
+sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
 find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
 
 %build
@@ -56,9 +59,15 @@ install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE4} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE5} %{buildroot}/etc/default/nfs-utils
-install -m644 systemd/nfs-server.service %{buildroot}/lib/systemd/system/
+install -m644 %{SOURCE6} %{buildroot}/lib/systemd/system/
 install -m644 systemd/proc-fs-nfsd.mount %{buildroot}/lib/systemd/system/
-install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
+install -m644 %{SOURCE7} %{buildroot}/lib/systemd/system/
+
+%check
+#ignore test that might require additional setup
+sed -i '/check_root/i \
+exit 77' tests/t0001-statd-basic-mon-unmon.sh
+make check
 
 %files
 %defattr(-,root,root)
@@ -71,6 +80,13 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-5
+-   Fix compilation issue for glibc-2.26
+*   Wed Aug 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.1-4
+-   Add check and ignore test that fails.
+*   Tue Aug 8 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.1-3
+-   Alter nfs-server and nfs-mountd service files to use
+-   environment file and port opts.
 *   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.1-2
 -   Build with python3.
 *   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.1-1

@@ -53,6 +53,9 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
+#%check
+#Commented out %check due to no test existence
+
 %files
 %defattr(-,root,root,-)
 %{python2_sitelib}/*
@@ -63,7 +66,7 @@ popd
 
 %changelog
 *   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.22.0-3
--   Removed %check
+-   Removed %check because the source does not include the test module
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.22.0-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.22.0-1

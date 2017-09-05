@@ -86,7 +86,7 @@ clean-install clean-chroot build-updated-packages check generate-yaml-files
 
 THREADS?=1
 
-all: iso docker-image live-iso cloud-image-all src-iso
+all: iso photon-docker-image k8s-docker-images live-iso cloud-image-all src-iso
 
 micro: micro-iso
 	@:
@@ -225,10 +225,11 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
+                -bt $(PHOTON_BUILD_TYPE) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -a $(PHOTON_SRPMS_DIR) \
@@ -334,13 +335,15 @@ publish-x-rpms:
 
 publish-rpms-cached:
 	@echo "Using cached publish rpms..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR) && \
-	 $(CP) -rf $(PHOTON_PUBLISH_RPMS_PATH)/* $(PHOTON_PUBLISH_RPMS_DIR)/
+	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR)/{x86_64,noarch} && \
+	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
+        $(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR) $(PHOTON_PUBLISH_RPMS_PATH)
 
 publish-x-rpms-cached:
 	@echo "Using ..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR) && \
-        $(CP) -rf $(PHOTON_PUBLISH_XRPMS_PATH)/* $(PHOTON_PUBLISH_XRPMS_DIR)/
+	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR)/{x86_64,noarch} && \
+	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
+        $(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR) $(PHOTON_PUBLISH_XRPMS_PATH)
 
 $(PHOTON_STAGE):
 	@echo "Creating staging folder..."
@@ -361,6 +364,8 @@ $(PHOTON_STAGE):
 	@test -d $(PHOTON_LOGS_DIR) || $(MKDIR) -p $(PHOTON_LOGS_DIR)
 	@echo "Creating COPYING file..."
 	install -m 444 $(SRCROOT)/COPYING $(PHOTON_STAGE)/COPYING
+	@echo "Creating open_source_license.txt file..."
+	install -m 444 $(SRCROOT)/installer/open_source_license.txt $(PHOTON_STAGE)/open_source_license.txt
 	@echo "Creating NOTICE file..."
 	install -m 444 $(SRCROOT)/NOTICE $(PHOTON_STAGE)/NOTICE
 
@@ -379,7 +384,7 @@ generate-dep-lists:
 		--input-type=json --file $$f -d json -a $(PHOTON_DATA_DIR); \
 	done
 
-docker-image:
+photon-docker-image:
 	createrepo $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
@@ -393,7 +398,17 @@ docker-image:
 		photon-build \
 		./support/dockerfiles/photon/make-docker-image.sh tdnf
 
-install-docker-image: docker-image
+k8s-docker-images:
+	systemctl start docker && \
+	cd ./support/dockerfiles/k8s-docker-images && \
+	./build-k8s-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-dns-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-dashboard-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-flannel-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-calico-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-nginx-ingress.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)
+
+install-photon-docker-image: photon-docker-image
 	sudo docker build -t photon:tdnf .
 
 clean: clean-install clean-chroot
@@ -472,6 +487,11 @@ check-tools: check-bison check-g++ check-gawk check-createrepo check-texinfo che
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
 
+check-docker-py:
+	@tdnf install -y docker docker-py --refresh > /dev/null 2>&1 || { echo "tdnf installation failed. Checking whether docker-py is installed."; } 
+	@python -c "import docker; assert docker.__version__ == '2.3.0'" >/dev/null 2>&1 || { echo "Python package docker-py 2.3.0 not installed. Aborting." >&2; exit 1; }
+	@systemctl daemon-reload && systemctl start docker
+
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
 
@@ -515,6 +535,7 @@ check: packages
 	@echo "Testing all RPMS ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
+                -bt $(PHOTON_BUILD_TYPE) \
                 -s $(PHOTON_SPECS_DIR) \
                 -r $(PHOTON_RPMS_DIR) \
                 -a $(PHOTON_SRPMS_DIR) \
@@ -522,7 +543,7 @@ check: packages
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-		-e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -538,13 +559,14 @@ check: packages
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) -i $(PKG_NAME)\
+                              -bt $(PHOTON_BUILD_TYPE) \
                               -b $(PHOTON_CHROOT_PATH) \
                               -s $(PHOTON_SPECS_DIR) \
                               -r $(PHOTON_RPMS_DIR) \
                               -a $(PHOTON_SRPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
-			      -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                               -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -d $(PHOTON_DIST_TAG) \
                               -n $(PHOTON_BUILD_NUMBER) \

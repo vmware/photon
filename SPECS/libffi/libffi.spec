@@ -1,7 +1,7 @@
 Summary:	A portable, high level programming interface to various calling conventions
 Name:		libffi
 Version:	3.2.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD
 URL:		http://sourceware.org/libffi/
 Group:		System Environment/GeneralLibraries
@@ -9,13 +9,11 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://sourceware.org/pub/libffi/%{name}-%{version}.tar.gz
 %define sha1 libffi=280c265b789e041c02e5c97815793dfc283fb1e6
-Source1:        https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz
-%define sha1 dejagnu=d81288e7d7bd38e74b7fee8e570ebfa8c21508d9
-Source2:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
-%define sha1 expect=e634992cab35b7c6931e1f21fbb8f74d464bd496
-Source3:        http://heanet.dl.sourceforge.net/sourceforge/tcl/tcl8.5.14-src.tar.gz
-%define sha1 tcl=9bc452eec453c2ed37625874b9011563db687b07
 Provides:	pkgconfig(libffi)
+%if %{with_check}
+BuildRequires:  dejagnu
+%endif
+
 %description
 The libffi library provides a portable, high level programming interface
 to various calling conventions. This allows a programmer to call any 
@@ -29,9 +27,7 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q
-tar xf %{SOURCE1} --no-same-owner
-tar xf %{SOURCE2} --no-same-owner
-tar xf %{SOURCE3} --no-same-owner
+
 %build
 sed -e '/^includesdir/ s:$(libdir)/@PACKAGE_NAME@-@PACKAGE_VERSION@/include:$(includedir):' \
     -i include/Makefile.in &&
@@ -57,24 +53,8 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %endif
 rm -rf %{buildroot}/%{_infodir}
 %{_fixperms} %{buildroot}/*
+
 %check
-pushd tcl8.5.14/unix
-./configure --enable-threads --prefix=/usr
-make install
-popd
-
-pushd expect5.45
-./configure --prefix=/usr
-make
-make install
-ln -svf expect5.45/libexpect5.45.so /usr/lib
-popd
-
-pushd dejagnu-1.5.3
-./configure --prefix=/usr
-make install
-popd
-
 make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
@@ -98,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jul 12 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-5
+-   Get tcl, expect and dejagnu from packages
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-4
 -   Added -devel subpackage
 *   Thu Oct 06 2016 ChangLee <changlee@vmware.com> 3.2.1-3

@@ -108,8 +108,10 @@ class PackageBuilder(object):
             listInstalledPackages=self.findInstalledPackages(chrootID)
             listDependentPackages=self.findBuildTimeRequiredPackages(package)
             if constants.rpmCheck and package in constants.testForceRPMS:
+                listDependentPackages.extend(self.findBuildTimeCheckRequiredPackages(package))
                 testPackages=set(constants.listMakeCheckRPMPkgtoInstall)-set(listInstalledPackages)-set([package])
                 listDependentPackages.extend(testPackages)
+                listDependentPackages=list(set(listDependentPackages))
 
             pkgUtils = PackageUtils(self.logName,self.logPath)
             if len(listDependentPackages) != 0:
@@ -139,6 +141,10 @@ class PackageBuilder(object):
 
     def findBuildTimeRequiredPackages(self,package):
         listRequiredPackages=constants.specData.getBuildRequiresForPackage(package)
+        return listRequiredPackages
+
+    def findBuildTimeCheckRequiredPackages(self,package):
+        listRequiredPackages=constants.specData.getCheckBuildRequiresForPackage(package)
         return listRequiredPackages
 
     def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):

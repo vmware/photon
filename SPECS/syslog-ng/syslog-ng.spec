@@ -2,16 +2,17 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
-Version:        3.9.1
-Release:        3%{?dist}
+Version:        3.11.1
+Release:        1%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    syslog-ng=1ca437393d8895654452bef8ac0b996fe73284f8
+%define sha1    syslog-ng=81bb726c9823a3af9701a4297311e71f68050ccb
 Source1:        60-syslog-ng-journald.conf
+Patch0:         disable-pylint-test.patch
 Requires:       glib
 Requires:       json-glib
 Requires:       json-c
@@ -25,6 +26,9 @@ BuildRequires:  systemd-devel
 BuildRequires:  python2-devel
 BuildRequires:  python2
 BuildRequires:  python2-libs
+%if %{with_check}
+BuildRequires:  curl-devel
+%endif
 
 %description
  The syslog-ng application is a flexible and highly scalable
@@ -63,6 +67,7 @@ Requires:       %{name} = %{version}
 
 %prep
 %setup -q
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 %build
@@ -130,8 +135,18 @@ install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable syslog-ng.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-syslog-ng.preset
 
 %check
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 unittest2
+$easy_install_2 nose
+$easy_install_2 ply
+$easy_install_2 pep8
 make %{?_smp_mflags} check
 pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 unittest2
+$easy_install_3 nose
+$easy_install_3 ply
+$easy_install_3 pep8
 make %{?_smp_mflags} check
 popd
 
@@ -139,13 +154,13 @@ popd
 if [ $1 -eq 1 ] ; then
   mkdir -p /usr/var/
 fi
-%systemd_post syslog-ng.service
+%systemd_post syslog-ng@\*.service
 
 %preun
-%systemd_preun syslog-ng.service
+%systemd_preun syslog-ng@\*.service
 
 %postun
-%systemd_postun_with_restart syslog-ng.service
+%systemd_postun_with_restart syslog-ng@\*.service
 
 %clean
 rm -rf %{buildroot}/*
@@ -155,12 +170,14 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/syslog-ng/syslog-ng.conf
 %config(noreplace) %{_sysconfdir}/syslog-ng/scl.conf
 %{_sysconfdir}/systemd/journald.conf.d/*
-%{_libdir}/systemd/system/syslog-ng.service
+%{_libdir}/systemd/system/syslog-ng@.service
 %{_libdir}/systemd/system-preset/50-syslog-ng.preset
 /usr/bin/*
 /usr/sbin/syslog-ng
 /usr/sbin/syslog-ng-ctl
-%{_libdir}/libsyslog-ng-3.9.so.*
+/usr/sbin/syslog-ng-debun
+%{_libdir}/libsyslog-ng-3.11.so.*
+%{_libdir}/libevtlog-3.11.so.*
 %{_libdir}/syslog-ng/lib*.so
 /usr/share/syslog-ng/*
 
@@ -176,10 +193,13 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/syslog-ng/*
 %{_libdir}/libsyslog-ng.so
+%{_libdir}/libevtlog.so
 %{_libdir}/libsyslog-ng-native-connector.a
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Fri Aug 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-1
+-   Update to version 3.11.1
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  3.9.1-3
 -   Disabled syslog-ng service by default
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 3.9.1-2

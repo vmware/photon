@@ -4,7 +4,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
 Version:        1.12.1
-Release:        3%{?dist}
+Release:        5%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -42,6 +42,10 @@ Python 3 version.
 %setup -q -n numpy-%{version}
 
 %build
+# xlocale.h has been removed from glibc 2.26
+# The above include of locale.h is sufficient
+# Further details: https://sourceware.org/git/?p=glibc.git;a=commit;h=f0be25b6336db7492e47d2e8e72eb8af53b5506d */
+sed -i "/xlocale.h/d" numpy/core/src/multiarray/numpyos.c
 python2 setup.py build
 python3 setup.py build
 
@@ -50,9 +54,20 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install py
-python2 setup.py test
-python3 setup.py test
+easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
+$easy_install_2 nose
+mkdir test
+pushd test
+PYTHONPATH=%{buildroot}%{python2_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python2 -c "import numpy; numpy.test()"
+popd
+
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 nose
+pushd test
+PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python3 -c "import numpy; numpy.test()"
+popd
+
+rm -rf test
 
 %files
 %defattr(-,root,root,-)
@@ -65,6 +80,10 @@ python3 setup.py test
 %{_bindir}/f2py3
 
 %changelog
+*   Fri Aug 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.12.1-5
+-   Fix compilation issue for glibc-2.26
+*   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.12.1-4
+-   Fixed rpm check errors
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu May 04 2017 Sarah Choi <sarahc@vmware.com> 1.12.1-2

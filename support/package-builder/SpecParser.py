@@ -14,6 +14,7 @@ class SpecParser(object):
         self.specAdditionalContent=""
         self.globalSecurityHardening=""
         self.defs={}
+        self.conditionalCheckMacroEnabled = False
 
 
     def readPkgNameFromPackageMacro(self,data,basePkgName=None):
@@ -74,6 +75,10 @@ class SpecParser(object):
                 self.readChecksum(line, self.packages[currentPkg])
             elif self.isDefinition(line):
                 self.readDefinition(line)
+            elif self.isConditionalCheckMacro(line):
+                self.conditionalCheckMacroEnabled = True
+            elif self.conditionalCheckMacroEnabled and self.isConditionalMacroCompleted(line):
+                self.conditionalCheckMacroEnabled = False
             else:
                 self.specAdditionalContent+=line+"\n"
             i=i+1
@@ -327,7 +332,10 @@ class SpecParser(object):
             if headerName == 'conflicts':
                 pkg.conflicts.extend(dpkg)
             if headerName == 'buildrequires':
-                pkg.buildrequires.extend(dpkg)
+                if self.conditionalCheckMacroEnabled:
+                    pkg.checkbuildrequires.extend(dpkg)
+                else:
+                    pkg.buildrequires.extend(dpkg)
             if headerName == 'buildprovides':
                 pkg.buildprovides.extend(dpkg)
 
@@ -341,7 +349,7 @@ class SpecParser(object):
         if (nrWords != 3):
             print "Error: Unable to parse line: "+line
             return False
-        if (words[2] != "none" and words[2] != "nonow") :
+        if (words[2] != "none" and words[2] != "nonow" and words[2] != "nopie") :
             print "Error: Invalid security_hardening value: " + words[2]
             return False
         self.globalSecurityHardening = words[2]
@@ -373,3 +381,23 @@ class SpecParser(object):
             return False
         pkg.checksums[sourceName] = value[1]
         return True;
+
+    def isConditionalCheckMacro(self,line):
+        data = line.strip()
+        words = data.split()
+        nrWords = len(words)
+        if(nrWords != 2):
+            return False
+        if(words[0] != "%if" or words[1] != "%{with_check}"):
+            return False
+        return True
+
+    def isConditionalMacroCompleted(self,line):
+        data = line.strip()
+        words = data.split()
+        nrWords = len(words)
+        if(nrWords != 1):
+            return False
+        if(words[0] != "%endif"):
+            return False
+        return True

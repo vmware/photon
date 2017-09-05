@@ -3,19 +3,23 @@
 
 Name:           python-iniparse
 Version:        0.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 License:        MIT
 URL:            http://code.google.com/p/iniparse/
 Source0:        http://iniparse.googlecode.com/files/iniparse-%{version}.tar.gz
 %define sha1 iniparse=2b2af8a19f3e5c212c27d7c524cd748fa0b38650
-Patch0:         iniparse-py3-build.patch
+Patch0:         0001-Add-python-3-compatibility.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+BuildArch:      noarch
+
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
-BuildArch:      noarch
+BuildRequires:  python2-test
+
 Requires:       python2
 
 %description
@@ -30,18 +34,23 @@ Summary:        python-iniparse
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-six
+BuildRequires:  python3-test
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pycparser
+Requires:       python3-six
 
 %description -n python3-iniparse
 Python 3 version.
 
 %prep
 %setup -q -n iniparse-%{version}
-%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
+pushd ../p3dir
+%patch0 -p1
+popd
 
 %build
 python2 setup.py build
@@ -60,24 +69,10 @@ mv %{buildroot}/usr/share/doc/iniparse-%{version} %{buildroot}/usr/share/doc/pyt
 
 
 %check
-cp -r iniparse/ tests/
-cd tests
-python2 test_misc.py
-python2 test_tidy.py
-python2 test_fuzz.py
-python2 test_ini.py
-python2 test_multiprocessing.py
-python2 test_unicode.py
+python2 runtests.py
 
 pushd ../p3dir
-cp -r iniparse/ tests/
-cd tests
-python3 test_misc.py
-python3 test_tidy.py
-python3 test_fuzz.py
-python3 test_ini.py
-python3 test_multiprocessing.py
-python3 test_unicode.py
+python3 runtests.py
 popd
 
 
@@ -92,6 +87,8 @@ popd
 
 
 %changelog
+*   Tue Jul 11 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4-6
+-   Fix python3 and make check issues.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.4-5
 -   Use python2 explicitly to build
 *   Mon May 22 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4-4

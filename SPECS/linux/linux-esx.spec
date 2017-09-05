@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.34
-Release:        2%{?dist}
+Version:        4.9.43
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d02dc269e67eae329043c9aa7d6c2d6182950c2f
+%define sha1 linux=e61d542f88a842b43ae8daacecf7d854458f57d5
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -21,7 +21,6 @@ Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
 Patch5:         double-tcp_mem-limits.patch
 Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch8:         linux-4.9-REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch11:        net-9p-vsock.patch
@@ -36,6 +35,7 @@ Patch18:        05-pv-ops-clocksource.patch
 Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
 Patch21:        vmware-balloon-late-initcall.patch
+Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -79,7 +79,6 @@ The Linux package contains the Linux kernel doc files
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
@@ -93,6 +92,7 @@ The Linux package contains the Linux kernel doc files
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
+%patch22 -p1
 
 %build
 # patch vmw_balloon driver
@@ -189,6 +189,21 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1
+-   Version update
+-   [feature] new sysctl option unprivileged_userns_clone
+*   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
+-   [bugfix] Do not fallback to syscall from VDSO on clock_gettime(MONOTONIC)
+-   Fix CVE-2017-7542
+*   Mon Aug 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
+-   Version update
+*   Wed Jul 26 2017 Bo Gan <ganb@vmware.com> 4.9.38-3
+-   Fix initramfs triggers
+*   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
+-   Disable scheduler beef up patch
+*   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
+-   [feature] IP tunneling support (CONFIG_NET_IPIP=m)
+-   Fix CVE-2017-11176 and CVE-2017-10911
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1

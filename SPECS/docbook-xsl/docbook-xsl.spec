@@ -1,7 +1,7 @@
 Summary:	Docbook-xsl-1.79.1
 Name:		docbook-xsl
 Version:	1.79.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
@@ -38,9 +38,11 @@ install -v -m644 -D README \
                     %{buildroot}%{_docdir}/%{name}-%{version}/README.txt &&
 install -v -m644    RELEASE-NOTES* NEWS* \
                     %{buildroot}%{_docdir}/%{name}-%{version}
-%check
-chmod 777 tests -R  
-make %{?_smp_mflags} check 
+
+#There is no source code for make check
+#%check
+#chmod 777 tests -R  
+#make %{?_smp_mflags} check 
 
 %post
 if [ ! -d /etc/xml ]; then install -v -m755 -d /etc/xml; fi &&
@@ -80,6 +82,8 @@ fi
 %{_docdir}/*
 
 %changelog
+*	Thu Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 1.79.1-5
+-	Update make check for bug 1635477
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-4
 -	Fix arch
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-3

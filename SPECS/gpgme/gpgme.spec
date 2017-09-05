@@ -1,7 +1,7 @@
 Summary:	High-Level Crypto API
 Name:		gpgme
 Version:	1.9.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		https://www.gnupg.org/(it)/related_software/gpgme/index.html
 Group:		System Environment/Security
@@ -11,6 +11,8 @@ Source0:	https://www.gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
 %define sha1 gpgme=870719cd3d2ef6a7fcb1d6af9ce5446edba7bfc3
 Requires:	libassuan
 Requires:	libgpg-error
+# gpgme uses gnupg binaries only at runtime
+Requires:	gnupg
 BuildRequires:	libgpg-error-devel
 BuildRequires:	libassuan >= 2.2.0
 
@@ -63,6 +65,8 @@ cd tests && make check-TESTS
 %{_datadir}/common-lisp/source/gpgme/*
 
 %changelog
+*   Wed Aug 30 2017 Alexey Makhalov <amakhalov@vmware.com> 1.9.0-3
+-   Add requires gnupg
 *   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 1.9.0-2
 -   Disabe C++ bindings
 *   Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 1.9.0-1

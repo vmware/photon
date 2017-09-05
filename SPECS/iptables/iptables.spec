@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.6.1
-Release:        2%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -12,6 +12,8 @@ Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{versi
 Source1:        iptables.service
 Source2:        iptables
 Source3:        iptables.stop
+Source4:        ip4save
+Source5:        ip6save
 BuildRequires:  systemd
 Requires:       systemd
 %description
@@ -53,6 +55,8 @@ install -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
 install -vdm755 %{buildroot}/etc/systemd/scripts
 install -m 755 %{SOURCE2} %{buildroot}/etc/systemd/scripts
 install -m 755 %{SOURCE3} %{buildroot}/etc/systemd/scripts
+install -m 644 %{SOURCE4} %{buildroot}/etc/systemd/scripts
+install -m 644 %{SOURCE5} %{buildroot}/etc/systemd/scripts
 
 find %{buildroot} -name '*.a'  -delete
 find %{buildroot} -name '*.la' -delete
@@ -75,6 +79,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %config(noreplace) /etc/systemd/scripts/iptables
 %config(noreplace) /etc/systemd/scripts/iptables.stop
+%config(noreplace) /etc/systemd/scripts/ip4save
+%config(noreplace) /etc/systemd/scripts/ip6save
 /lib/systemd/system/iptables.service
 /sbin/*
 %{_bindir}/*
@@ -91,6 +97,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-4
+-   fix ip4save script for upgrade issues.
+*   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-3
+-   use iptables-restore to reload rules.
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.6.1-2
 -   Add devel package.
 *   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.1-1

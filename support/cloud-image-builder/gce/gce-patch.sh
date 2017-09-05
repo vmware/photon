@@ -8,14 +8,13 @@ for i in ../google*; do  ln -s $i `basename $i`; done
 
 ln -s ../ntpd.service ntpd.service
 ln -s ../docker.service docker.service
-ln -s ../eth0.service eth0.service
-
 
 # Update /etc/hosts file with GCE values
 echo "169.254.169.254 metadata.google.internal metadata" >> /etc/hosts
 
 # Remove all servers from ntp.conf and add Google's ntp server.
 sed -i -e "/server/d" /etc/ntp.conf
+echo "server metadata.google.internal iburst" >> /etc/ntp.conf
 echo "server 169.254.169.254" >> /etc/ntp.conf
 
 
@@ -76,14 +75,17 @@ echo "ServerAliveInterval 420" >> /etc/ssh/ssh_config
 # Disable root login
 usermod -L root
 
-#disable ipv6
+# Disable ipv6
 echo "net.ipv6.conf.all.disable_ipv6 = 1" > /etc/sysctl.d/ipv6-disable.conf
 
 # Disable loading/unloading of modules
-echo 1 > /proc/sys/kernel/modules_disabled
+#echo "kernel.modules_disabled = 1" > /etc/sysctl.d/modules_disabled.conf
 
 # Remove kernel symbols
-rm /boot/system.map*
+rm -f /boot/System.map*
+
+echo "[Link]" >> /etc/systemd/network/*.network
+echo "MTUBytes=1460" >> /etc/systemd/network/*.network
 
 cat > /usr/bin/gcloud << "EOF"
 docker inspect google/cloud-sdk &> /dev/null

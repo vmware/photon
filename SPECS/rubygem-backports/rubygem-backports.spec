@@ -5,7 +5,7 @@
 
 Name: rubygem-backports
 Version:        3.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
 License:        MIT
@@ -13,6 +13,17 @@ URL:            http://github.com/marcandre/backports
 Source0:        https://rubygems.org/gems/backports-%{version}.gem
 %define sha1    backports=66c9d715726d3fa2d6dbb818f4d09c652ae7cbc9
 BuildRequires:  ruby
+BuildRequires:  rubygem-activesupport
+BuildRequires:  rubygem-i18n
+BuildRequires:  rubygem-tzinfo
+BuildRequires:  rubygem-thread_safe
+BuildRequires:  rubygem-concurrent-ruby
+Requires:       rubygem-activesupport
+Requires:       rubygem-i18n
+Requires:       rubygem-tzinfo
+Requires:       rubygem-thread_safe
+Requires:       rubygem-concurrent-ruby
+
 
 %description
 Essential backports that enable many of the nice features of Ruby 1.8.7 up to
@@ -28,6 +39,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Aug 2 2017 Kumar Kaushik <kaushikk@vmware.com> 3.7.0-2
+-   Adding requires for test support.
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
 -   Updated to version 3.7.0.
 *   Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 3.6.8-3

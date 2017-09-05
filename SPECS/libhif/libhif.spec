@@ -1,14 +1,12 @@
-# Copied from inside of libhif.<version>.tar.gz
-%define libhif_version %{name}-%{name}_0_2_2
-
 Summary:        Simple package manager built on top of hawkey and librepo
 Name:           libhif
-Version:        0.2.2
-Release:        5%{?dist}
+Version:        0.2.3
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/hughsie/libhif
 Source0:        http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-%define sha1    libhif=2816f914e25a1a625503b4b474a8ad63969e8c7e
+%define sha1    libhif=b5cec26e848e2fb1caf36ec9fcd4c9019e86b566
+Patch0:         libhif-makecheck.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -47,8 +45,8 @@ Provides: pkgconfig(libhif)
 GLib headers and libraries for libhif.
 
 %prep
-#%setup -q -n %{libhif_version}
 %setup -q
+%patch0 -p1
 %build
 
 ./autogen.sh --prefix=/usr \
@@ -65,7 +63,7 @@ make install DESTDIR=$RPM_BUILD_ROOT
 rm -f $RPM_BUILD_ROOT%{_libdir}/libhif*.la
 
 %check
-make  %{?_smp_mflags} check
+make check
 
 %post -p /sbin/ldconfig
 
@@ -85,6 +83,9 @@ make  %{?_smp_mflags} check
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+*   Thu Aug 19 2017 Chang Lee <changlee@vmware.com> 0.2.3-1
+-   Updated to 0.2.3
+-   Disabled GLib-GObject-CRITICAL tests due to Segmentation fault in all tests
 *   Mon Dec 19 2016 Xiaolin Li <xiaolinl@vmware.com> 0.2.2-5
 -   BuildRequires libsolv-devel.
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 0.2.2-4

@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        1%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -16,6 +16,11 @@ Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
 Requires:       libgcc-atomic = %{version}-%{release}
 Requires:       gmp
+%if %{with_check}
+BuildRequires:  autogen
+BuildRequires:  dejagnu
+%endif
+
 %description
 The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
@@ -88,6 +93,22 @@ sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 install -vdm 755 ../gcc-build
 %build
+
+# Fix compilation issue for glibc-2.26.
+# TODO: remove these lines after gcc update to 7.2+
+#
+# 1. "typedef struct ucontext ucontext_t" was renamed to
+#    "typedef struct ucontext_t ucontext_t"
+sed -i 's/struct ucontext/ucontext_t/g' libgcc/config/i386/linux-unwind.h
+# 2. struct sigaltstack removed
+sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.cc
+sed -i '/struct sigaltstack;/d' libsanitizer/sanitizer_common/sanitizer_linux.h
+sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.h
+sed -i 's/struct sigaltstack/stack_t/g' libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
+sed -i 's/__res_state/struct __res_state/g' libsanitizer/tsan/tsan_platform_linux.cc
+
+export glibcxx_cv_c99_math_cxx98=yes glibcxx_cv_c99_math_cxx11=yes
+
 cd ../gcc-build
 SED=sed \
 ../%{name}-%{version}/configure \
@@ -121,9 +142,17 @@ popd
 %find_lang %{name} --all-name
 
 %check
-cd ../gcc-build
 ulimit -s 32768
-make %{?_smp_mflags} check
+# disable PCH tests is ASLR is on (due to bug in pch)
+test `cat /proc/sys/kernel/randomize_va_space` -ne 0 && rm gcc/testsuite/gcc.dg/pch/pch.exp
+# disable security hardening for tests
+rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
+# run only gcc tests
+cd ../gcc-build/gcc
+make %{?_smp_mflags} check-gcc
+# Only 1 FAIL is OK
+[ `grep ^FAIL testsuite/gcc/gcc.sum | wc -l` -ne 1 -o `grep ^XPASS testsuite/gcc/gcc.sum | wc -l` -ne 0 ] && exit 1 ||:
+[ `grep "^FAIL: gcc.dg/cpp/trad/include.c (test for excess errors)" testsuite/gcc/gcc.sum | wc -l` -ne 1 ] && exit 1 ||:
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -236,6 +265,12 @@ make %{?_smp_mflags} check
 %endif
 
 %changelog
+*   Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-4
+-   Fix makecheck
+*   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-3
+-   Fix compilation issue for glibc-2.26
+*   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-2
+-   Improve make check
 *   Thu Mar 9 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-1
 -   Update version to 6.3
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 5.3.0-6

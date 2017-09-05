@@ -1,7 +1,7 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
 Version:        10.1.24
-Release:        1%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -14,7 +14,11 @@ BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
-
+BuildRequires:  pcre-devel
+%if %{with_check}
+BuildRequires:  krb5-devel
+%endif
+Conflicts:      mysql
 %description
 MariaDB Server is one of the most popular database servers in the world. It’s made by the original developers of MySQL and guaranteed to stay open source. Notable users include Wikipedia, WordPress.com and Google.
 
@@ -23,6 +27,7 @@ MariaDB turns data into structured information in a wide array of applications, 
 %package devel
 Summary:        Development headers for mariadb
 Requires:       %{name} = %{version}-%{release}
+Conflicts:      mysql-devel
 
 %description devel
 Development headers for developing applications linking to maridb
@@ -33,31 +38,38 @@ Development headers for developing applications linking to maridb
 
 %build
 cmake . \
-      -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DCMAKE_BUILD_TYPE=Release    \
-      -DINSTALL_MANDIR=share/man \
-      -DINSTALL_DOCDIR=share/doc \
-      -DINSTALL_DOCREADMEDIR=share/doc/%{name} \
+      -DCMAKE_INSTALL_PREFIX=/usr                   \
+      -DCMAKE_BUILD_TYPE=Release                    \
+      -DINSTALL_MANDIR=share/man                    \
+      -DINSTALL_DOCDIR=share/doc                    \
+      -DINSTALL_DOCREADMEDIR=share/doc/%{name}      \
       -DINSTALL_SUPPORTFILESDIR=share/support-files \
-      -DINSTALL_SYSCONFDIR="%{_sysconfdir}" \
-      -Wno-dev
+      -DINSTALL_SYSCONFDIR="%{_sysconfdir}"         \
+      -DINSTALL_MYSQLSHAREDIR=share                 \
+      -DINSTALL_MYSQLTESTDIR=share/mysql/test       \
+      -DINSTALL_PLUGINDIR=lib/mysql/plugin          \
+      -DINSTALL_SBINDIR=bin                         \
+      -DINSTALL_SCRIPTDIR=bin                       \
+      -DINSTALL_SQLBENCHDIR=share/mysql/bench       \
+      -DWITH_EXTRA_CHARSETS=complex                 \
+      -DSKIP_TESTS=ON                               \
+      -DTOKUDB_OK=0
 
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 
 %check
-make check
+make test
 
 %files
 %defattr(-,root,root)
-%{_libdir}/plugin/*
+%{_libdir}/mysql/plugin/*
 %{_libdir}/libmysqlclient.so.*
 %{_libdir}/libmysqlclient_r.so.*
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_mandir}/man8/*
-/usr/scripts/mysql_install_db
 %config(noreplace) %{_sysconfdir}/logrotate.d/mysql
 %config(noreplace) %{_sysconfdir}/my.cnf
 %{_datadir}/charsets/*
@@ -101,8 +113,8 @@ make check
 %doc COPYING CREDITS README
 
 %exclude %{_sysconfdir}/init.d/*
-%exclude /usr/sql-bench
-%exclude /usr/mysql-test
+%exclude /usr/share/mysql/bench
+%exclude /usr/share/mysql/test
 %exclude /usr/data/test/*
 %exclude /usr/share/doc
 
@@ -114,5 +126,9 @@ make check
 %{_datadir}/aclocal/mysql.m4
 
 %changelog
+*   Thu Aug 31 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.24-3
+-   Fixed make check issue.
+*   Fri Aug 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 10.1.24-2
+-   Specify MariaDB conflicts with MySQL
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.24-1
 -   Initial packaging for Photon

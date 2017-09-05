@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.4
-Release:        8%{?dist}
+Release:        11%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -16,6 +16,12 @@ Patch1:         libxml2-2.9.4-cve-2016-5131.patch
 # Proposed patch from https://bugzilla.gnome.org/show_bug.cgi?id=772726#c17
 # Fix for CVE-2016-9318
 Patch2:         cve-2016-9318.patch
+# Fix for CVE-2017-9047 and CVE-2017-9048
+Patch3:         libxml2-fix-buffer-size-checks.patch
+# Fix for CVE-2017-9049 and CVE-2017-9050
+Patch4:         libxml2-fix-handling-of-parameter-entity-references.patch
+Patch5:         libxml2-fix-handling-of-parameter-entity-references-test.patch
+Patch6:         CVE-2017-8872.patch
 %define sha1    libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
 Provides:       pkgconfig(libxml-2.0)
 
@@ -56,6 +62,10 @@ Static libraries and header files for the support library for libxml
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -121,6 +131,12 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.4-11
+-   Apply patch for CVE-2017-8872
+*   Mon Aug 07 2017 Danut Moraru <dmoraru@vmware.com> 2.9.4-10
+-   Change expected parsing error for test for upstream bug 781205 introduced by CVE-2017-9049
+*   Mon Jul 10 2017 Divya Thaluru <dthaluru@vmware.com> 2.9.4-9
+-   Apply patch for CVE-2017-9047, CVE-2017-9048, CVE-2017-9049 and CVE-2017-9050
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.4-8
 -   Move python2 requires to python subpackage.
 *   Wed Apr 26 2017 Siju Maliakkal <smaliakkal@vmware.com> 2.9.4-7

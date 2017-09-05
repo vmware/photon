@@ -44,6 +44,9 @@ mkdir -p %{buildroot}/%{_mandir}/man8
 mkdir -p %{buildroot}%{_sbindir}
 make install
 
+#%check
+#Commented out %check due to no test existence
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -61,7 +64,7 @@ rm -rf %{buildroot}/*
 
 %changelog
 *   Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 0.17-3
--   Removed %check
+-   Removed %check due to no test existence
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.17-2
 -   Ensure non empty debuginfo
 *   Mon Jan 09 2017 Xiaolin Li <xiaolinl@vmware.com> 0.17-1

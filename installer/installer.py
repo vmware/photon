@@ -179,6 +179,8 @@ class Installer(object):
         if not self.install_config['iso_system']:
             # Execute post installation modules
             self.execute_modules(modules.commons.POST_INSTALL)
+            if os.path.exists(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME):
+                shutil.copy(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME, self.photon_root + '/var/log/')
 
             if self.iso_installer and os.path.isdir("/sys/firmware/efi"):
                 self.install_config['boot'] = 'efi'

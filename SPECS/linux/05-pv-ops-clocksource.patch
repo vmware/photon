@@ -11,7 +11,7 @@ diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
 index 70b8c4614e22..987ac571d16c 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -155,6 +155,26 @@ static void __init vmware_cyc2ns_setup(void)
+@@ -155,6 +155,27 @@ static void __init vmware_cyc2ns_setup(void)
  	pr_info("using clock offset of %llu ns\n", d->cyc2ns_offset);
  }
  
@@ -26,6 +26,7 @@ index 70b8c4614e22..987ac571d16c 100644
 +	.rating = 400,
 +	.mask = CLOCKSOURCE_MASK(64),
 +	.flags = CLOCK_SOURCE_IS_CONTINUOUS,
++	.archdata = { .vclock_mode = VCLOCK_TSC },
 +};
 +
 +/* We want to use clocksource_vmware from the beginning to avoid drifting in

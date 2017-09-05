@@ -19,9 +19,22 @@ class constants(object):
     inputRPMSPath=""
     rpmCheck=False
     sourceRpmPath=""
-    noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","go"]
     publishBuildDependencies=False
     packageWeightsPath=None
+
+    noDepsPackageList=[
+        "texinfo",
+        "bzip2",
+        "bzip2-libs",
+        "gettext",
+        "nspr",
+        "xz",
+        "bison",
+        "go",
+        "sqlite",
+        "sqlite-devel",
+        "sqlite-libs"]
+
     # These packages will be built in first order as build-core-toolchain stage
     listCoreToolChainPackages=[
         "filesystem",
@@ -80,6 +93,7 @@ class constants(object):
         "lua",
         "popt",
         "nspr",
+        "nspr-devel",
         "sqlite",
         "nss",
         "elfutils",
@@ -92,6 +106,7 @@ class constants(object):
         "autoconf",
         "automake",
         "openssl",
+        "openssl-devel",
         "python2",
         "libdb",
         "rpm",
@@ -268,6 +283,7 @@ class constants(object):
         "libyaml",
         "libffi",
         "python-setuptools",
+        "python3-setuptools",
         "ca-certificates",
         "linux",
         "createrepo",
@@ -299,13 +315,18 @@ class constants(object):
         "rpm",
         "libxml2",
         "python-xml",
+        "python3-xml",
         "libacl",
         "tzdata",
         "libgcrypt-devel",
         "Linux-PAM",
         "unzip",
         "systemd-devel",
-        "gnupg" ]
+        "gnupg",
+        "ncurses-terminfo" ]
+
+    listReInstallPackages=[
+        "go"]
 
     @staticmethod
     def initialize(options):
@@ -325,14 +346,14 @@ class constants(object):
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
         constants.pullsourcesConfig = options.pullsourcesConfig
         constants.inputRPMSPath=options.inputRPMSPath
-        constants.updateRPMMacros()
         constants.testForceRPMS=[]
         constants.rpmCheck = options.rpmCheck
         constants.rpmCheckStopOnError = options.rpmCheckStopOnError
-	constants.publishBuildDependencies=options.publishBuildDependencies
-	constants.packageWeightsPath=options.packageWeightsPath
+        constants.publishBuildDependencies=options.publishBuildDependencies
+        constants.packageWeightsPath=options.packageWeightsPath
         if constants.rpmCheck:
             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
+        constants.updateRPMMacros()
 
     @staticmethod
     def updateRPMMacros():
@@ -358,14 +379,17 @@ class constants(object):
         constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
 
         #adding kernelsubrelease rpm macro
-        kernelversion = kernelversion.replace(".","")
-        if kernelversion.isdigit():
-            kernelversion = int(kernelversion) << 8
-        kernelsubrelease = str(kernelversion)+kernelrelease
-        kernelsubrelease = kernelsubrelease.replace(constants.dist,"")
+        a,b,c = kernelversion.split(".")
+        kernelsubrelease = '%02d%02d%03d%03d' % (int(a),int(b),int(c),int(kernelrelease.replace(constants.dist,"")))
         if kernelsubrelease:
             kernelsubrelease = "."+kernelsubrelease
             constants.specData.addMacro("kernelsubrelease",kernelsubrelease)
+
+        #adding check rpm macro
+        if constants.rpmCheck:
+            constants.specData.addMacro("with_check","1")
+        else:
+            constants.specData.addMacro("with_check","0")
 
     @staticmethod
     def setTestForceRPMS(listsPackages):

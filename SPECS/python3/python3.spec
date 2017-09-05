@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        5%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -122,6 +122,14 @@ Requires:       python3 = %{version}-%{release}
 %description    setuptools
 setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
 
+%package test
+Summary: Regression tests package for Python.
+Group: Development/Tools
+Requires: python3 = %{version}-%{release}
+
+%description test
+The test package contains all regression tests for Python as well as the modules test.support and test.regrtest. test.support is used to enhance your tests while test.regrtest drives the testing suite.
+
 %prep
 %setup -q -n Python-%{version}
 %patch0 -p1
@@ -156,6 +164,7 @@ find %{buildroot}%{_libdir} -name '*.o' -delete
 rm %{buildroot}%{_bindir}/2to3
 
 %check
+mount -t devpts -o gid=4,mode=620 none /dev/pts
 make  %{?_smp_mflags} test
 
 %post -p /sbin/ldconfig
@@ -251,7 +260,14 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.6/site-packages/setuptools-28.8.0.dist-info/*
 %{_bindir}/easy_install-3.6
 
+%files test
+%{_libdir}/python3.6/test/*
+
 %changelog
+*   Mon Aug 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-7
+-   Add pty for tests to pass
+*   Wed Jul 12 2017 Xiaolin Li <xiaolinl@vmware.com> 3.6.1-6
+-   Add python3-test package.
 *   Fri Jun 30 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-5
 -   Remove the imaplib tests.
 *   Mon Jun 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.6.1-4

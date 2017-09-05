@@ -1,17 +1,18 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.34
+Version:        4.9.43
 Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d02dc269e67eae329043c9aa7d6c2d6182950c2f
+Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
+%define sha1 linux=e61d542f88a842b43ae8daacecf7d854458f57d5
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
+%define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
 Source3:        initramfs.trigger
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
@@ -22,7 +23,6 @@ Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
 Patch5:         double-tcp_mem-limits.patch
 Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch8:         linux-4.9-REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch11:        net-9p-vsock.patch
@@ -31,8 +31,24 @@ Patch12:        x86-vmware-sta.patch
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch14:        0002-Added-rap_plugin.patch
 Patch15:        0003-Added-PAX_RANDKSTACK.patch
-# NSX requirements
-Patch16:        LKCM.patch
+# HyperV Patches
+Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
+Patch17:        0005-Drivers-hv-utils-Fix-the-mapping-between-host-versio.patch
+Patch18:        0006-Drivers-hv-vss-Improve-log-messages.patch
+Patch19:        0007-Drivers-hv-vss-Operation-timeouts-should-match-host-.patch
+Patch20:        0008-Drivers-hv-vmbus-Use-all-supported-IC-versions-to-ne.patch
+Patch21:        0009-Drivers-hv-Log-the-negotiated-IC-versions.patch
+Patch22:        0010-vmbus-fix-missed-ring-events-on-boot.patch
+Patch23:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
+Patch24:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
+Patch25:        0013-vmbus-fix-the-missed-signaling-in-hv_signal_on_read.patch
+Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
+#FIPS patches - allow some algorithms
+Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
+Patch28:        0002-allow-also-ecb-cipher_null.patch
+Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# NSX requirements (should be removed)
+Patch99:        LKCM.patch
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -106,7 +122,6 @@ EOF
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
@@ -114,8 +129,22 @@ EOF
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
+
 pushd ..
-%patch16 -p0
+%patch99 -p0
 popd
 
 %build
@@ -181,7 +210,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_balloon cn"
+--add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn"
 EOF
 
 # cleanup dangling symlinks
@@ -228,6 +257,34 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 22 2017 Anish Swaminathan <anishs@vmware.com> 4.9.43-2
+-   Add missing xen block drivers
+*   Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1
+-   Version update
+-   [feature] new sysctl option unprivileged_userns_clone
+*   Wed Aug 09 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-2
+-   Fix CVE-2017-7542
+-   [bugfix] Added ccm,gcm,ghash,lzo crypto modules to avoid
+    panic on modprobe tcrypt
+*   Mon Aug 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.41-1
+-   Version update
+*   Fri Aug 04 2017 Bo Gan <ganb@vmware.com> 4.9.38-6
+-   Fix initramfs triggers
+*   Tue Aug 01 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-5
+-   Allow some algorithms in FIPS mode
+-   Reverts 284a0f6e87b0721e1be8bca419893902d9cf577a and backports
+-   bcf741cb779283081db47853264cc94854e7ad83 in the kernel tree
+-   Enable additional NF features
+*   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-4
+-   Add patches in Hyperv codebase
+*   Fri Jul 21 2017 Anish Swaminathan <anishs@vmware.com> 4.9.38-3
+-   Add missing hyperv drivers
+*   Thu Jul 20 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-2
+-   Disable scheduler beef up patch
+*   Tue Jul 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.38-1
+-   Fix CVE-2017-11176 and CVE-2017-10911
+*   Fri Jul 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-3
+-   Remove aufs source tarballs from git repo 
 *   Mon Jul 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.9.34-2
 -   Add libdnet-devel, kmod-devel and libmspack-devel to BuildRequires
 *   Wed Jun 28 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.34-1
