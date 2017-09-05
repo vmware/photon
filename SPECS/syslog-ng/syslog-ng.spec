@@ -3,7 +3,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -12,11 +12,11 @@ Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 %define sha1    syslog-ng=81bb726c9823a3af9701a4297311e71f68050ccb
 Source1:        60-syslog-ng-journald.conf
+Source2:        syslog-ng.service
 Patch0:         disable-pylint-test.patch
 Requires:       glib
 Requires:       json-glib
 Requires:       json-c
-Requires:       eventlog
 Requires:       systemd
 BuildRequires:  eventlog
 BuildRequires:  glib-devel
@@ -29,6 +29,7 @@ BuildRequires:  python2-libs
 %if %{with_check}
 BuildRequires:  curl-devel
 %endif
+Conflicts:	eventlog
 
 %description
  The syslog-ng application is a flexible and highly scalable
@@ -119,15 +120,19 @@ make DESTDIR=%{buildroot} install
 find %{buildroot} -name "*.la" -exec rm -f {} \;
 rm %{buildroot}/%{_libdir}/pkgconfig/syslog-ng-test.pc
 rm %{buildroot}/%{_libdir}/syslog-ng/libtest/libsyslog-ng-test.a
+rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
 rm -rf %{buildroot}/%{_infodir}
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
+install -p -m 644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/
 %{_fixperms} %{buildroot}/*
 pushd ../p3dir
 make DESTDIR=%{buildroot} install
 rm %{buildroot}/%{_libdir}/pkgconfig/syslog-ng-test.pc
 rm %{buildroot}/%{_libdir}/syslog-ng/libtest/libsyslog-ng-test.a
+rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
 rm -rf %{buildroot}/%{_infodir}
+sed -i 's/eventlog//g'  %{buildroot}%{_libdir}/pkgconfig/syslog-ng.pc
 find %{buildroot} -name "*.la" -exec rm -f {} \;
 popd
 
@@ -154,13 +159,13 @@ popd
 if [ $1 -eq 1 ] ; then
   mkdir -p /usr/var/
 fi
-%systemd_post syslog-ng@\*.service
+%systemd_post syslog-ng.service
 
 %preun
-%systemd_preun syslog-ng@\*.service
+%systemd_preun syslog-ng.service
 
 %postun
-%systemd_postun_with_restart syslog-ng@\*.service
+%systemd_postun_with_restart syslog-ng.service
 
 %clean
 rm -rf %{buildroot}/*
@@ -170,7 +175,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/syslog-ng/syslog-ng.conf
 %config(noreplace) %{_sysconfdir}/syslog-ng/scl.conf
 %{_sysconfdir}/systemd/journald.conf.d/*
-%{_libdir}/systemd/system/syslog-ng@.service
+%{_libdir}/systemd/system/syslog-ng.service
 %{_libdir}/systemd/system-preset/50-syslog-ng.preset
 /usr/bin/*
 /usr/sbin/syslog-ng
@@ -198,6 +203,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Sep 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-2
+-   Use old service file.
 *   Fri Aug 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-1
 -   Update to version 3.11.1
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  3.9.1-3
