@@ -135,7 +135,6 @@
         "httpd",
         "openvswitch",
         "openvswitch-doc",
-        "eventlog",
         "syslog-ng",
         "zookeeper",
         "fuse",
