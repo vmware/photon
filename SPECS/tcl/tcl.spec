@@ -2,7 +2,7 @@ Summary:        Tool Command Language - the language and library.
 Name:           tcl
 Version:        8.6.6
 %define majorver 8.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://tcl.sourceforge.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -12,6 +12,7 @@ Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{versi
 %define sha1    tcl-core=6a1bc424faeef44fed5e44d32198c7ff4ff05658
 
 BuildRequires:  cmake
+Obsoletes:      tcl < 8.6.6-3
 
 %description
 Tcl provides a powerful platform for creating integration applications that
@@ -24,7 +25,8 @@ powerful command languages for applications.
 %package devel
 Summary: Headers and development libraries for tcl
 Group: Development/Libraries
-Requires: %{name} = %{version}
+Requires: %{name} = %{version}-%{release}
+Obsoletes:      tcl-devel < 8.6.6-3
 
 %description devel
 Headers and development libraries for tcl
@@ -98,6 +100,9 @@ make test
 
 
 %changelog
+*   Wed Sep 06 2017 Danut Moraru <dmoraru@vmware.com> 8.6.6-3
+-   Release 3 obsoletes 1 and 2, as upgrade from rel 1 to rel 2 may bring in conflict files in tcl-devel rel 1 that have 
+    been moved to tcl rel 2.
 *   Mon Aug 28 2017 Danut Moraru <dmoraru@vmware.com> 8.6.6-2
 -   Ported previous change from dev to 1.0 branch
 *   Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com>  8.6.6-2
