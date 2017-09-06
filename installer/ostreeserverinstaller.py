@@ -39,7 +39,6 @@ class OstreeServerInstaller(Installer):
         self.run("ln -s /etc/yum.repos.d/photon-iso.repo {}/srv/rpm-ostree/photon-iso-ostree.repo".format(self.photon_root))
         self.run("ln -s /etc/yum.repos.d/photon-updates.repo {}/srv/rpm-ostree/photon-updates-ostree.repo".format(self.photon_root))
         self.run("ln -s /etc/yum.repos.d/photon-extras.repo {}/srv/rpm-ostree/photon-extras-ostree.repo".format(self.photon_root))
-        self.run("ln -s /etc/yum.repos.d/lightwave.repo {}/srv/rpm-ostree/lightwave-ostree.repo".format(self.photon_root))
         self.run("cp ./ostree-httpd.conf {}/srv/rpm-ostree/".format(self.photon_root))
         # Use a custom httpd service file for ostree server
         self.run("mkdir {}/etc/systemd/system/httpd.service.d".format(self.photon_root))

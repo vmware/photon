@@ -3,9 +3,9 @@
 
     "osname": "photon",
 
-    "ref": "photon/1.0/x86_64/minimal",
+    "ref": "photon/2.0/x86_64/minimal",
 
-    "automatic_version_prefix": "1.0_minimal",
+    "automatic_version_prefix": "2.0_minimal",
 
     "repos": ["photon", "photon-updates"],
 
@@ -17,17 +17,30 @@
 
     "documentation": false,
 
-    "packages": ["glibc", "zlib", "binutils", "gmp", "mpfr", "libgcc", "libstdc++","libgomp",
-                "pkg-config", "ncurses", "bash", "bzip2", "cracklib", "cracklib-dicts", "shadow",
-                "procps-ng", "iana-etc", "readline", "coreutils", "bc", "libtool", "net-tools",
-                "findutils", "xz", "grub2", "iproute2", "util-linux", "linux",
-                "attr", "libcap", "kmod", "expat", "dbus", "file",
-                "sed", "grep", "cpio", "gzip",
-                "openssl", "ca-certificates", "curl",
-                "systemd",
-                "openssh", "iptables",
-                "photon-release",
+    "packages": [
+                "attr",
+                "bash", "bc", "binutils", "bridge-utils", "bzip2",
+                "ca-certificates", "coreutils", "cpio", "cracklib", "cracklib-dicts", "curl",
+                "dbus", "docker", "dracut", "dracut-tools",
+                "expat",
+                "file", "findutils",
+                "glibc", "gmp", "grep", "grub2", "gzip",
+                "iana-etc", "iproute2", "iptables",
+                "kmod",
+                "libcap", "libgcc", "libgomp", "libstdc++", "libtool", "linux",
+                "mpfr",
+                "ncurses", "net-tools", "nss-altfiles",
+                "openssh", "openssl",
+                "photon-release", "pkg-config", "procps-ng",
+                "readline", "rpm-ostree",
+                "sed", "shadow", "systemd",
+                "util-linux",
                 "vim",
-                "docker", "bridge-utils",
-                "dracut", "dracut-tools", "rpm-ostree", "nss-altfiles", "which"]
+                "which",
+                "xz",
+                "zlib"
+    ]
+
+
 }
+

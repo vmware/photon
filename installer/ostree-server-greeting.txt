@@ -2,12 +2,6 @@
 
 \r \s \v
 
-An RPM-OSTree repo is created at '/srv/rpm-ostree/repo' directory with
-the default Refspec 'photon/1.0/x86_64/minimal'.
-This repo is exposed via web server for RPM-OSTree Host installations.
-Point your RPM-OSTree Host to 'http://<this server's address>' for pulling the repo.
-
-
-[1;31mExperimental - do not use in production.[0m
-
+Follow Photon RPM-OSTree guide to compose an OSTree repo.
+RPM-OSTree hosts will point to 'http://<this server's IP address>' to install and upgrade.
 
