@@ -1,4 +1,4 @@
-[1;32mWelcome to Photon 1.0 RPM-OSTree Server[0m
+[1;32mWelcome to Photon 2.0 RPM-OSTree Server[0m
 
 \r \s \v
 
