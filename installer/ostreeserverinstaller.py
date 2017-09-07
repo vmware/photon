@@ -35,6 +35,8 @@ class OstreeServerInstaller(Installer):
 
         self.run("mkdir -p {}/srv/rpm-ostree/repo".format(self.photon_root))
         self.run("cp ./photon-base.json {}/srv/rpm-ostree/".format(self.photon_root))
+        self.run("cp ./photon-minimal.json {}/srv/rpm-ostree/".format(self.photon_root))
+        self.run("cp ./photon-full.json {}/srv/rpm-ostree/".format(self.photon_root))
         self.run("ln -s /etc/yum.repos.d/photon.repo {}/srv/rpm-ostree/photon-ostree.repo".format(self.photon_root))
         self.run("ln -s /etc/yum.repos.d/photon-iso.repo {}/srv/rpm-ostree/photon-iso-ostree.repo".format(self.photon_root))
         self.run("ln -s /etc/yum.repos.d/photon-updates.repo {}/srv/rpm-ostree/photon-updates-ostree.repo".format(self.photon_root))
