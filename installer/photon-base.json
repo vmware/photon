@@ -1,11 +1,11 @@
 {
-    "comment": "Photon Minimal OSTree",
+    "comment": "Photon Base OSTree",
 
     "osname": "photon",
 
-    "ref": "photon/2.0/x86_64/minimal",
+    "ref": "photon/2.0/x86_64/base",
 
-    "automatic_version_prefix": "2.0_minimal",
+    "automatic_version_prefix": "2.0_base",
 
     "repos": ["photon", "photon-updates"],
 
@@ -18,8 +18,7 @@
     "documentation": false,
 
     "packages": [
-                "attr",
-                "bash", "bc", "binutils", "bridge-utils", "bzip2",
+                "bash", "bc", "bridge-utils", "bzip2",
                 "ca-certificates", "coreutils", "cpio", "cracklib", "cracklib-dicts", "curl",
                 "dbus", "docker", "dracut", "dracut-tools",
                 "expat",
@@ -27,8 +26,7 @@
                 "glibc", "gmp", "grep", "grub2", "gzip",
                 "iana-etc", "iproute2", "iptables",
                 "kmod",
-                "libcap", "libgcc", "libgomp", "libstdc++", "libtool", "linux",
-                "mpfr",
+                "libcap", "libgcc", "libstdc++", "libtool", "linux",
                 "ncurses", "net-tools", "nss-altfiles",
                 "openssh", "openssl",
                 "photon-release", "pkg-config", "procps-ng",
@@ -39,8 +37,5 @@
                 "which",
                 "xz",
                 "zlib"
-    ]
-
-
+		]
 }
-
