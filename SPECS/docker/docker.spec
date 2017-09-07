@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -175,6 +175,7 @@ done
 %systemd_preun docker.service
 
 %post
+%systemd_post docker.service
 if [ $1 -eq 1 ] ; then
     getent group docker >/dev/null || groupadd -r docker
 fi
@@ -215,6 +216,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri Sep 08 2017 Bo Gan <ganb@vmware.com> 17.06.0-3
+-   Fix post scriptlet to invoke systemd_post
 *   Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 17.06.0-2
 -   Use nopie option to build
 *   Tue Jul 18 2017 Bo Gan <ganb@vmware.com> 17.06.0-1
