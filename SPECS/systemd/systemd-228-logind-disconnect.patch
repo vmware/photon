@@ -1,0 +1,28 @@
+From b007626897e73603dd57d31f83b53eaafd89f13e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Michal=20Koutn=C3=BD?= <Werkov@users.noreply.github.com>
+Date: Fri, 23 Jun 2017 02:26:04 +0200
+Subject: [PATCH] core: dbus: Interpret released names properly (#6175)
+
+When a DBus name is released, NameOwnerChanged signal contains an empty string
+as new_owner. Commit bbc2908 changed interpretation of the empty string to a
+valid name, which is not consistent with values that are sent by dbus-daemon.
+
+As a side effect, this masks symptoms of systemd-logind dbus disconnections
+(#2925) by completely restarting it so it can freshly reconnect to dbus.
+---
+ src/core/unit.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/core/unit.c b/src/core/unit.c
+index 1919278301..db4934a82f 100644
+--- a/src/core/unit.c
++++ b/src/core/unit.c
+@@ -2638,6 +2638,9 @@ static int signal_name_owner_changed(sd_bus_message *message, void *userdata, sd
+                 return 0;
+         }
+ 
++        old_owner = isempty(old_owner) ? NULL : old_owner;
++        new_owner = isempty(new_owner) ? NULL : new_owner;
++
+         if (UNIT_VTABLE(u)->bus_name_owner_change)
+                 UNIT_VTABLE(u)->bus_name_owner_change(u, name, old_owner, new_owner);

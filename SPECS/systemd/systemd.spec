@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          36%{?dist}
+Release:          37%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -37,6 +37,7 @@ Patch21:          systemd-macros.patch
 Patch22:          systemd-228-vm-watchdog-timer.patch
 Patch23:          systemd-228-CVE-2016-10156-suid-fix.patch
 Patch24:          systemd-228-CVE-2017-9445-dns-oob.patch
+Patch25:          systemd-228-logind-disconnect.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -94,6 +95,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -220,6 +222,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Thu Sep 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-37
+-    Fix systemd-logind dbus disconnection issue.
 *    Fri Jul 28 2017 Dheeraj Shetty <dheerajs@vmware.com>  228-36
 -    Removed systemd-sysusers.service,plymouth-quit-wait.service and
 -    plymouth-start.service from all service files.
