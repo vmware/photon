@@ -1,7 +1,7 @@
 Summary:    AsciiDoc is a human readable text document format
 Name:       asciidoc
 Version:    8.6.9
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://asciidoc.org/
 Group:      System Environment/Development
@@ -19,7 +19,7 @@ AsciiDoc is a human readable text document format that can be easily converted t
 
 %build
 export CFLAGS="%{optflags}"
-./configure  --prefix=%{_prefix}
+./configure  --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
 
 make %{?_smp_mflags}
 
@@ -36,14 +36,16 @@ python tests/testasciidoc.py run
 
 %files
 %defattr(-,root,root)
-/usr/bin/*
-/usr/etc/*
-/usr/share/man/*
+%{_bindir}/*
+%{_sysconfdir}/*
+%{_mandir}/*
 
 %changelog
-*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.6.9-3
--	Fix arch
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.6.9-2
--	GA - Bump release of all rpms
+*   Wed Sep 06 2017 Anish Swaminathan <anishs@vmware.com> 8.6.9-4
+-   Use system sysconfdir
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.6.9-3
+-   Fix arch
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.6.9-2
+-   GA - Bump release of all rpms
 *   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 8.6.9-1
 -   Initial build.  First version

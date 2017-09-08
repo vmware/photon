@@ -3,7 +3,7 @@
 Summary:        Mesos
 Name:           mesos
 Version:        1.2.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -23,7 +23,7 @@ BuildRequires:  apr-util-devel >= 1.5.4
 BuildRequires:  subversion >= 1.8.13
 BuildRequires:  subversion-devel >= 1.8.13
 BuildRequires:  cyrus-sasl >= 2.1.26
-BuildRequires:	which
+BuildRequires:  which
 BuildRequires:  python2 >= 2.6
 BuildRequires:  python2-libs
 BuildRequires:  python-xml
@@ -64,7 +64,8 @@ sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
     --disable-silent-rules \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
-    --libdir=%{_libdir}
+    --libdir=%{_libdir} \
+    --sysconfdir=%{_sysconfdir}
 make
 
 #%check
@@ -83,7 +84,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_sbindir}/mesos-*
 %{_libdir}/libmesos*
 %{_libexecdir}/mesos/mesos-*
-%{_prefix}/etc/mesos/*
+%{_sysconfdir}/mesos/*
 %{_prefix}/share/mesos/*
 %{_libdir}/libload_qos_controller-*.so
 %{_libdir}/libload_qos_controller.so
@@ -101,10 +102,11 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_libdir}/libfixed_resource_estimator*
 %{_libdir}/pkgconfig/mesos.pc
 %{python2_sitelib}/*
-%{_prefix}/etc/mesos/*
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Wed Sep 06 2017 Anish Swaminathan <anishs@vmware.com> 1.2.0-6
+-   Use system sysconfdir
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-5
 -   Fix compilation issue for glibc-2.26
 *   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.0-4
