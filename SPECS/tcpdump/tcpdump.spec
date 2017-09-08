@@ -1,7 +1,7 @@
 Summary:	Packet Analyzer
 Name:		tcpdump
 Version:	4.9.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://www.tcpdump.org
 Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
@@ -11,12 +11,14 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires: 	libpcap
 Requires:	libpcap
+Patch0:		CVE-2017-11541-CVE-2017-11542-CVE-2017-11543.patch
 %description
 Tcpdump is a common packet analyzer that runs under the command line. 
 It allows the user to display TCP/IP and other packets being 
 transmitted or received over a network to which the computer is attached.
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix}
@@ -33,6 +35,8 @@ make %{?_smp_mflags} check
 %{_sbindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Thu Sep 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-2
+-   Fix for CVE-2017-11541 CVE-2017-11542 and CVE-2017-11543
 *   Thu Aug 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.1-1
 -   Updating version to 4.9.1
 *       Thu Feb 02 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.9.0-1
