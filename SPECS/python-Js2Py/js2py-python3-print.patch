@@ -1,0 +1,92 @@
+diff --git a/js2py/internals/byte_trans.py b/js2py/internals/byte_trans.py
+index eb042fb..8842fdb 100644
+--- a/js2py/internals/byte_trans.py
++++ b/js2py/internals/byte_trans.py
+@@ -682,19 +682,19 @@ def main():
+     #
+     # }
+     a.emit(d)
+-    print a.declared_vars
+-    print a.exe.tape
+-    print len(a.exe.tape)
++    print(a.declared_vars)
++    print(a.exe.tape)
++    print(len(a.exe.tape))
+ 
+ 
+     a.exe.compile()
+ 
+     def log(this, args):
+-        print args[0]
++        print(args[0])
+         return 999
+ 
+ 
+-    print a.exe.run(a.exe.space.GlobalObj)
++    print(a.exe.run(a.exe.space.GlobalObj))
+ 
+ 
+ if __name__=='__main__':
+
+diff --git a/js2py/internals/speed.py b/js2py/internals/speed.py
+index 82f9e62..02c59a3 100644
+--- a/js2py/internals/speed.py
++++ b/js2py/internals/speed.py
+@@ -47,7 +47,7 @@ t = []
+ 
+ Type = None
+ try:
+-    print timeit(
++    print(timeit(
+ """
+ 
+ t.append(4)
+@@ -55,6 +55,6 @@ t.pop()
+ 
+ 
+ 
+-""", "from __main__ import X,Y,namedtuple,array,t,add,Type, izip", number=1000000)
++""", "from __main__ import X,Y,namedtuple,array,t,add,Type, izip", number=1000000))
+ except:
+-    raise
+\ No newline at end of file
++    raise
+
+diff --git a/js2py/internals/opcodes.py b/js2py/internals/opcodes.py
+index 686bca1..184d39e 100644
+--- a/js2py/internals/opcodes.py
++++ b/js2py/internals/opcodes.py
+@@ -650,7 +650,7 @@ class WITH(OP_CODE):
+ 
+         val, typ, spec = status
+         if typ!=3:
+-            print typ
++            print(typ)
+             ctx.stack.pop()
+ 
+         if typ == 0:  # normal
+
+diff --git a/js2py/internals/constructors/jsfunction.py b/js2py/internals/constructors/jsfunction.py
+index bfe631c..ef39b44 100644
+--- a/js2py/internals/constructors/jsfunction.py
++++ b/js2py/internals/constructors/jsfunction.py
+@@ -65,5 +65,5 @@ def _eval(this, args):
+     return executable_code(code_str, args.space, global_context=True)()
+ 
+ def log(this, args):
+-    print ' '.join(map(to_string, args))
+-    return undefined
+\ No newline at end of file
++    print(' '.join(map(to_string, args)))
++    return undefined
+
+diff --git a/js2py/test_internals.py b/js2py/test_internals.py
+index 12cf4ad..546ae18 100644
+--- a/js2py/test_internals.py
++++ b/js2py/test_internals.py
+@@ -6,4 +6,4 @@ x = r'''
+ function g() {var h123 = 11; return [function g1() {return h123}, new Function('return h123')]}
+ g()[1]()
+ '''
+-print seval.eval_js_vm(x)
++print(seval.eval_js_vm(x))
