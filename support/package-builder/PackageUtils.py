@@ -560,9 +560,21 @@ class PackageUtils(object):
                                                     containerID,
                                                     package,
                                                     macros)
+            self.logger.info("Successfully built rpm:"+package)
         except Exception as e:
             self.logger.error("Failed while building rpm: " + package)
             raise e
+        finally:
+            if destLogPath is not None:
+                rpmLog = destLogPath + "/" + package + ".log"
+                if constants.rpmCheck and package in constants.testForceRPMS and constants.specData.isCheckAvailable(package):
+                    cmd="sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' "+ rpmLog
+                    logFile = destLogPath+"/adjustTestFile.log"
+                    returnVal = CommandUtils().runCommandInShell(cmd, logFile)
+                    testLogFile = destLogPath+"/"+package+"-test.log"
+                    shutil.copyfile(rpmLog, testLogFile)
+                else:
+                    shutil.copy2(rpmLog, destLogPath)
         self.logger.info("RPM build is successful")
 
         # Verify RPM and SRPM files exist as success criteria
