@@ -5,7 +5,7 @@
 			"crypted": false,
 			"text": "PASSWORD"
 		},
-	"type": "uefi",
+	"type": "minimal",
     "size": {"root": "16", "swap": "0"},
     "boot":"efi",
     "public_key":"<ssh-key-here>",
