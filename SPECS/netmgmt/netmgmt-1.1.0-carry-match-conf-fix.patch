@@ -1,0 +1,195 @@
+diff -uNr nm1/include/public/netmgr.h nm2/include/public/netmgr.h
+--- nm1/include/public/netmgr.h	2017-09-09 00:36:41.949701415 +0000
++++ nm2/include/public/netmgr.h	2017-09-09 00:37:35.775549798 +0000
+@@ -42,6 +42,7 @@
+ #define NM_ERR_BAD_CONFIG_FILE                 (NM_BASE_ERROR + 9)
+ #define NM_ERR_WRITE_FAILED                    (NM_BASE_ERROR + 10)
+ #define NM_ERR_TIME_OUT                        (NM_BASE_ERROR + 11)
++#define NM_ERR_DHCP_TIME_OUT                   (NM_BASE_ERROR + 12)
+ #define NM_MAX_ERROR                           (NM_BASE_ERROR + 100)
+ 
+ 
+diff -uNr nm1/src/netmgr.c nm2/src/netmgr.c
+--- nm1/src/netmgr.c	2017-09-09 00:36:41.949701415 +0000
++++ nm2/src/netmgr.c	2017-09-09 00:37:35.779550037 +0000
+@@ -106,6 +106,8 @@
+             return "write failed";
+         case NM_ERR_TIME_OUT:
+             return "timed out";
++        case NM_ERR_DHCP_TIME_OUT:
++            return "dhcp timed out";
+         default:
+             return strerror(nmErrCode);
+     }
+@@ -411,7 +413,7 @@
+     uint32_t err = 0;
+     size_t ifNameLen, matchLen = 0;
+     char fName[IFNAMSIZ+strlen(SYSTEMD_NET_PATH)+strlen("00-.network")+1];
+-    char *pszFilename = NULL;
++    char *pszFilename = NULL, *pszNewFilename = NULL, *pszCmd = NULL;
+ 
+     // TODO: IS VALID_INTERFACE_NAME needs to check if device actually exists
+     if (!IS_VALID_INTERFACE_NAME(pszIfName) || !ppszFilename)
+@@ -430,9 +432,6 @@
+     ifNameLen = strlen(pszIfName);
+     if ((pszFilename == NULL) || (matchLen < ifNameLen))
+     {
+-        netmgr_free(pszFilename);
+-        pszFilename = NULL;
+-
+         sprintf(fName, "%s00-%s.network", SYSTEMD_NET_PATH, pszIfName);
+         if (access(fName, F_OK) == 0)
+         {
+@@ -441,21 +440,40 @@
+             bail_on_error(err);
+         }
+ 
+-        err = netmgr_alloc_string(fName, &pszFilename);
++        err = netmgr_alloc_string(fName, &pszNewFilename);
+         bail_on_error(err);
+ 
+-        /* Create a conf file dedicated to the interface name */
+-        err = nm_set_key_value(pszFilename,
++        /* Create dedicated conf for interface based on best match conf file */
++        if (pszFilename != NULL)
++        {
++            err = netmgr_alloc_string_printf(&pszCmd,
++                                             "/usr/bin/cp -f -p %s %s",
++                                             pszFilename,
++                                             pszNewFilename);
++            bail_on_error(err);
++
++            err = nm_run_command(pszCmd);
++            bail_on_error(err);
++        }
++
++        err = nm_set_key_value(pszNewFilename,
+                                SECTION_MATCH,
+                                KEY_NAME,
+                                pszIfName,
+                                F_CREATE_CFG_FILE);
+         bail_on_error(err);
+     }
++    else
++    {
++        err = netmgr_alloc_string(pszFilename, &pszNewFilename);
++        bail_on_error(err);
++    }
+ 
+-    *ppszFilename = pszFilename;
++    *ppszFilename = pszNewFilename;
+ 
+ cleanup:
++    netmgr_free(pszFilename);
++    netmgr_free(pszCmd);
+     return err;
+ 
+ error:
+@@ -463,7 +481,6 @@
+     {
+         *ppszFilename = NULL;
+     }
+-    netmgr_free(pszFilename);
+     goto cleanup;
+ }
+ 
+@@ -661,6 +678,12 @@
+  * Interface configuration APIs
+  */
+ static uint32_t
++nm_update_link_state(
++    const char *pszInterfaceName,
++    NET_LINK_STATE linkState
++);
++
++static uint32_t
+ nm_update_mac_address(
+     const char *pszInterfaceName,
+     const char *pszMacAddress
+@@ -699,7 +722,7 @@
+         bail_on_error(err);
+     }
+ 
+-    err = nm_ifdown(pszInterfaceName);
++    err = nm_update_link_state(pszInterfaceName, LINK_DOWN);
+     bail_on_error(err);
+ 
+     err = ioctl(sockFd, SIOCSIFHWADDR, &ifr);
+@@ -709,7 +732,7 @@
+         bail_on_error(err);
+     }
+ 
+-    err = nm_ifup(pszInterfaceName);
++    err = nm_update_link_state(pszInterfaceName, LINK_UP);
+     bail_on_error(err);
+ 
+ cleanup:
+@@ -1033,6 +1056,7 @@
+     goto cleanup;
+ }
+ 
++
+ static uint32_t
+ nm_update_link_mtu(
+     const char *pszInterfaceName,
+@@ -1068,7 +1092,7 @@
+         ifr.ifr_mtu = DEFAULT_MTU_VALUE;
+     }
+ 
+-    err = nm_ifdown(pszInterfaceName);
++    err = nm_update_link_state(pszInterfaceName, LINK_DOWN);
+     bail_on_error(err);
+ 
+     err = ioctl(sockFd, SIOCSIFMTU, &ifr);
+@@ -1078,7 +1102,7 @@
+         bail_on_error(err);
+     }
+ 
+-    err = nm_ifup(pszInterfaceName);
++    err = nm_update_link_state(pszInterfaceName, LINK_UP);
+     bail_on_error(err);
+ 
+ cleanup:
+@@ -2506,6 +2530,11 @@
+     bail_on_error(err);
+ 
+     err = nm_get_ipv6_enable(pszInterfaceName, &v6enabled);
++    if ((err == ENOENT) || (err == NM_ERR_VALUE_NOT_FOUND))
++    {
++        err = 0;
++        v6enabled = 0;
++    }
+     bail_on_error(err);
+ 
+     if (!v6enabled)
+@@ -2520,9 +2549,13 @@
+     bail_on_error(err);
+ 
+     err = nm_get_sysctl_procfs_value(pszProcfsAutov6Path, &pszAutov6Value);
++    if ((err == ENOENT) || (err == NM_ERR_VALUE_NOT_FOUND))
++    {
++        err = 0;
++    }
+     bail_on_error(err);
+ 
+-    if (!strcmp(pszAutov6Value, "1"))
++    if ((pszAutov6Value != NULL) && !strcmp(pszAutov6Value, "1"))
+     {
+         mode |= fAUTO_IPV6;
+     }
+@@ -6124,7 +6157,14 @@
+         }
+         else
+         {
+-            err = NM_ERR_TIME_OUT;
++            if (TEST_FLAG(addrTypes, DHCP_IPV4) || TEST_FLAG(addrTypes, DHCP_IPV6))
++            {
++                err = NM_ERR_DHCP_TIME_OUT;
++            }
++            else
++            {
++                err = NM_ERR_TIME_OUT;
++            }
+         }
+         bail_on_error(err);
+ 
