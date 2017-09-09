@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.1.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -9,13 +9,16 @@ URL:           http://www.vmware.com
 Source0:       %{name}-%{version}.tar.gz
 Patch0:        netmgmt-1.1.0-2.patch
 Patch1:        netmgmt-1.1.0-coverity-and-bug-fix.patch
+Patch2:        netmgmt-1.1.0-carry-match-conf-fix.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: check >= 0.9.4
 BuildRequires: docker >= 1.12
 BuildRequires: glib-devel
 Requires:      glib
+Requires:      iputils
 Requires:      libgcc
+RequiresL      ntp
 Requires:      pcre
 Requires:      systemd >= 228
 %define sha1 netmgmt=d1e4b5700e7f3a6a6b674c9db41d4adfe5f54c00
@@ -43,6 +46,7 @@ header files and libraries for netmgmt cli
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 autoreconf -mif
@@ -84,6 +88,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*    Sat  Sep 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-5
+-    Retain current match conf when creating interface specific conf.
 *    Tue  Aug 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-4
 -    Fix coverity issues.
 *    Thu  May 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-3
