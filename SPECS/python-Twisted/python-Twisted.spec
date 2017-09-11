@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
 Version:        17.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -31,6 +31,7 @@ Requires:       python-zope.interface
 Requires:       python-netaddr
 Requires:       python-incremental
 Requires:       python-constantly
+Requires:       python-hyperlink
 
 BuildArch:      x86_64
 
@@ -54,6 +55,7 @@ Requires:       python3-zope.interface
 Requires:       python3-netaddr
 Requires:       python3-incremental
 Requires:       python3-constantly
+Requires:       python3-hyperlink
 
 %description -n python3-Twisted
 Python 3 version.
@@ -128,6 +130,9 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 17.5.0-2
+-   Added python-automat, python-hyperlink and its python3 version to the
+-   requires.
 *   Tue Aug 29 2017 Dheeraj Shetty <dheerajs@vmware.com> 17.5.0-1
 -   Upgrade version
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 17.1.0-6
