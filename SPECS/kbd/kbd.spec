@@ -1,7 +1,7 @@
 Summary:	Key table files, console fonts, and keyboard utilities
 Name:		kbd
 Version:	2.0.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://ftp.altlinux.org/pub/people/legion/kbd
 Group:		Applications/System
@@ -29,6 +29,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 cp -R -v docs/doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
+rm -f %{buildroot}%{_defaultdocdir}/%{name}-%{version}/kbd.FAQ*
 %find_lang %{name}
 
 %check
@@ -46,6 +47,8 @@ make %{?_smp_mflags} check
 %{_datarootdir}/unimaps/*
 %{_mandir}/*/*
 %changelog
+*   Mon Sep 11 2017 Anish Swaminathan <anishs@vmware.com> 2.0.4-2
+-   Remove FAQs from main package
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 2.0.4-1
 -   Updated to version 2.0.4
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.3-2
