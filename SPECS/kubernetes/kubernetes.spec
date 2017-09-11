@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.7.0
-Release:        2%{?dist}
+Version:        1.7.5
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=407d7243bc64dc8936194d79b11c8d004bcae55c
+%define sha1    kubernetes-v%{version}.tar.gz=8010b6709278cf8b3d5e6aad151dcf89d504350e
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Group:          Development/Tools
@@ -160,6 +160,8 @@ fi
 /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 %changelog
+*   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-1
+-   k8s v1.7.5.
 *   Sat Aug 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
 -   Split kubeadm into its own pkg.
 *   Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-1
