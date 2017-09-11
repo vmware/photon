@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.7.0
-Release:        3%{?dist}
+Version:        1.7.5
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=407d7243bc64dc8936194d79b11c8d004bcae55c
+%define sha1    kubernetes-v%{version}.tar.gz=8010b6709278cf8b3d5e6aad151dcf89d504350e
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Group:          Development/Tools
@@ -174,6 +174,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-1
+-   k8s v1.7.5.
 *   Thu Aug 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-3
 -   PhotonOS based k8s pause container.
 *   Sat Jul 22 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
