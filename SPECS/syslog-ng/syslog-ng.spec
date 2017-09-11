@@ -3,7 +3,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.11.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -29,7 +29,7 @@ BuildRequires:  python2-libs
 %if %{with_check}
 BuildRequires:  curl-devel
 %endif
-Conflicts:	eventlog
+Obsoletes:	eventlog
 
 %description
  The syslog-ng application is a flexible and highly scalable
@@ -203,6 +203,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-3
+-   Obsolete eventlog.
 *   Mon Sep 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-2
 -   Use old service file.
 *   Fri Aug 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-1
