@@ -1,11 +1,11 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
-Version:        1.14.2
-Release:        2%{?dist}
+Version:        1.14.4
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
-%define sha1    kubernetes-dns-%{version}.tar.gz=a737305f579d6baf3369c5e232b5f49834a1695c
+%define sha1    kubernetes-dns-%{version}.tar.gz=62020dc207ff3db9e6a7b7c3c64564d4cc5d5c66
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+*   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.4-1
+-   kubernetes-dns 1.14.4.
 *   Tue Jul 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.2-2
 -   Add check section for kubernetes-dns.
 *   Wed Jun 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.2-1
