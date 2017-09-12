@@ -23,6 +23,11 @@ CALICO_BGP_VER_REL=${CALICO_BGP_VER}-`cat ${SPEC_DIR}/calico-bgp-daemon/calico-b
 CALICO_BGP_RPM=calico-bgp-daemon-${CALICO_BGP_VER_REL}${DIST_TAG}.${ARCH}.rpm
 CALICO_BGP_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${CALICO_BGP_RPM}
 
+GO_BGP_VER=`cat ${SPEC_DIR}/gobgp/gobgp.spec | grep Version | cut -d: -f2 | tr -d ' '`
+GO_BGP_VER_REL=${GO_BGP_VER}-`cat ${SPEC_DIR}/gobgp/gobgp.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+GO_BGP_RPM=gobgp-${GO_BGP_VER_REL}${DIST_TAG}.${ARCH}.rpm
+GO_BGP_RPM_FILE=${STAGE_DIR}/RPMS/x86_64/${GO_BGP_RPM}
+
 CALICO_BIRD_VER=`cat ${SPEC_DIR}/calico-bird/calico-bird.spec | grep Version | cut -d: -f2 | tr -d ' '`
 CALICO_BIRD_VER_REL=${CALICO_BIRD_VER}-`cat ${SPEC_DIR}/calico-bird/calico-bird.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 CALICO_BIRD_RPM=calico-bird-${CALICO_BIRD_VER_REL}${DIST_TAG}.${ARCH}.rpm
@@ -67,6 +72,12 @@ fi
 if [ ! -f ${CALICO_BGP_RPM_FILE} ]
 then
     echo "Calico BGP RPM ${CALICO_BGP_RPM_FILE} not found. Exiting.."
+    exit 1
+fi
+
+if [ ! -f ${GO_BGP_RPM_FILE} ]
+then
+    echo "GoBGP RPM ${GO_BGP_RPM_FILE} not found. Exiting.."
     exit 1
 fi
 
@@ -131,6 +142,7 @@ fi
 mkdir -p tmp/calico
 cp ${CALICO_RPM_FILE} tmp/calico/
 cp ${CALICO_BGP_RPM_FILE} tmp/calico/
+cp ${GO_BGP_RPM_FILE} tmp/calico/
 cp ${CALICO_BIRD_RPM_FILE} tmp/calico/
 cp ${CALICO_CONFD_RPM_FILE} tmp/calico/
 cp ${CALICO_FELIX_RPM_FILE} tmp/calico/
@@ -141,6 +153,7 @@ cp ${CALICO_K8S_POLICY_RPM_FILE} tmp/calico/
 pushd ./tmp/calico
 rpm2cpio ${CALICO_RPM} | cpio -vid
 rpm2cpio ${CALICO_BGP_RPM} | cpio -vid
+rpm2cpio ${GO_BGP_RPM} | cpio -vid
 rpm2cpio ${CALICO_BIRD_RPM} | cpio -vid
 rpm2cpio ${CALICO_CONFD_RPM} | cpio -vid
 rpm2cpio ${CALICO_FELIX_RPM} | cpio -vid
