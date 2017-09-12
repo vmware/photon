@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.26
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -170,14 +170,17 @@ sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 %check
 cd %{_builddir}/glibc-build
 make %{?_smp_mflags} check ||:
-# 2 intermittent failures and 2 stable false positives are OK
+# These 2 persistant false positives are OK
 # XPASS for: elf/tst-protected1a and elf/tst-protected1b
 [ `grep ^XPASS tests.sum | wc -l` -ne 2 -a `grep "^XPASS: elf/tst-protected1[ab]" tests.sum | wc -l` -ne 2 ] && exit 1 ||:
 
-# FAIL (intermittent) for posix/tst-spawn3 and stdio-common/test-vfprintf
+# FAIL (intermittent) in chroot but PASS in container:
+# posix/tst-spawn3 and stdio-common/test-vfprintf
 n=0
 grep "^FAIL: posix/tst-spawn3" tests.sum >/dev/null && n=$((n+1)) ||:
 grep "^FAIL: stdio-common/test-vfprintf" tests.sum >/dev/null && n=$((n+1)) ||:
+# FAIL always on overlayfs/aufs (in container)
+grep "^FAIL: posix/tst-dir" tests.sum >/dev/null && n=$((n+1)) ||:
 # check for exact 'n' failures
 [ `grep ^FAIL tests.sum | wc -l` -ne $n ] && exit 1 ||:
 
@@ -268,6 +271,8 @@ grep "^FAIL: stdio-common/test-vfprintf" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Tue Sep 12 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-3
+-   Fix makecheck for run in docker.
 *   Tue Aug 29 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-2
 -   Fix tunables setter.
 -   Add malloc arena fix.

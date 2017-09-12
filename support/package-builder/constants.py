@@ -331,7 +331,8 @@ class constants(object):
     # List of packages that requires privileged docker
     # to run make check.
     listReqPrivilegedDockerForTest=[
-        "gdb"]
+        "gdb",
+        "glibc" ]
 
     @staticmethod
     def initialize(options):
@@ -356,6 +357,7 @@ class constants(object):
         constants.rpmCheckStopOnError = options.rpmCheckStopOnError
         constants.publishBuildDependencies=options.publishBuildDependencies
         constants.packageWeightsPath=options.packageWeightsPath
+        constants.tmpDirPath = "/dev/shm"
         if constants.rpmCheck:
             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
         constants.updateRPMMacros()
