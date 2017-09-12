@@ -35,6 +35,12 @@ else
     CHROOT_CMD="contain -b $RPMS:usr/src/photon/RPMS -c -n"
 fi
 
+
+# Close all fds except stdin, stdout and stderr
+for fd in $(ls /proc/$$/fd/); do
+    [ $fd -gt 2 ] && exec {fd}<&-
+done
+
 $CHROOT_CMD "${BUILDROOT}" \
 	/usr/bin/env -i \
 	HOME=/root \
