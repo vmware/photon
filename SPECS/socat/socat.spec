@@ -1,7 +1,7 @@
 Summary:          Multipurpose relay (SOcket CAT)
 Name:             socat
 Version:          1.7.3.2
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          GPL2
 URL:              http://www.dest-unreach.org/socat
 Group:            Applications/Internet
@@ -27,7 +27,7 @@ find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
 %check
-make %{?_smp_mflags} check
+make %{?_smp_mflags} test
 
 %clean
 rm -rf %{buildroot}/*
@@ -38,6 +38,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Tue Sep 12 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.3.2-3
+-   Fix make check issue.
 *   Tue May 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.3.2-2
 -   Correct the GPL license version.
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.3.2-1
