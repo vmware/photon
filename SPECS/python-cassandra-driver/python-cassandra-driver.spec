@@ -6,7 +6,7 @@
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python-cassandra-driver
 Version:        3.10.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -37,6 +37,7 @@ BuildRequires:  python3
 BuildRequires:  cython3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  python3-pip
 BuildRequires:  python3-pytest
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -66,8 +67,36 @@ popd
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
 $easy_install_2 nose
+$easy_install_2 scales
+$easy_install_2 mock
+$easy_install_2 ccm
+$easy_install_2 unittest2
+$easy_install_2 pytz
+$easy_install_2 sure
+$easy_install_2 pure-sasl
+$easy_install_2 twisted
+$easy_install_2 gevent
+$easy_install_2 eventlet
+$easy_install_2 packaging
 pip install eventlet
-python setup.py nosetests -w tests/unit/
+python2 setup.py nosetests -w tests/unit/
+pushd ../p3dir
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 nose
+$easy_install_3 scales
+$easy_install_3 mock
+$easy_install_3 ccm
+$easy_install_3 unittest2
+$easy_install_3 pytz
+$easy_install_3 sure
+$easy_install_3 pure-sasl
+$easy_install_3 twisted
+$easy_install_3 gevent
+$easy_install_3 eventlet
+$easy_install_3 packaging
+pip3 install eventlet
+python3 setup.py nosetests -w tests/unit/
+popd
 
 %files
 %defattr(-,root,root)
@@ -78,6 +107,8 @@ python setup.py nosetests -w tests/unit/
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 12 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.10.0-4
+-   Do make check for python3 subpackage
 *   Wed Aug 16 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10.0-3
 -   Fix make check.
 *   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10.0-2
