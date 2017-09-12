@@ -328,6 +328,11 @@ class constants(object):
     listReInstallPackages=[
         "go"]
 
+    # List of packages that requires privileged docker
+    # to run make check.
+    listReqPrivilegedDockerForTest=[
+        "gdb"]
+
     @staticmethod
     def initialize(options):
         constants.dist = options.dist

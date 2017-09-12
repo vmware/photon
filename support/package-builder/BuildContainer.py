@@ -48,12 +48,21 @@ class BuildContainer(object):
         try:
             self.logger.info("BuildContainer-prepareBuildContainer: Starting build container: " + containerName)
             #TODO: Is init=True equivalent of --sig-proxy?
-            containerID = self.dockerClient.containers.run(self.buildContainerImage,
-                                                           detach=True,
-                                                           name=containerName,
-                                                           network_mode="host",
-                                                           volumes=mountVols,
-                                                           command="/bin/bash -l -c /wait.sh")
+            if packageName in constants.listReqPrivilegedDockerForTest:
+                containerID = self.dockerClient.containers.run(self.buildContainerImage,
+                                                               detach=True,
+                                                               privileged=True,
+                                                               name=containerName,
+                                                               network_mode="host",
+                                                               volumes=mountVols,
+                                                               command="/bin/bash -l -c /wait.sh")
+            else:
+                containerID = self.dockerClient.containers.run(self.buildContainerImage,
+                                                               detach=True,
+                                                               name=containerName,
+                                                               network_mode="host",
+                                                               volumes=mountVols,
+                                                               command="/bin/bash -l -c /wait.sh")
             self.logger.debug("Started Photon build container for task " + containerTaskName
                                + " ID: " + containerID.short_id)
             if not containerID:
