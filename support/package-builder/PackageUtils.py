@@ -573,8 +573,6 @@ class PackageUtils(object):
                     returnVal = CommandUtils().runCommandInShell(cmd, logFile)
                     testLogFile = destLogPath+"/"+package+"-test.log"
                     shutil.copyfile(rpmLog, testLogFile)
-                else:
-                    shutil.copy2(rpmLog, destLogPath)
         self.logger.info("RPM build is successful")
 
         # Verify RPM and SRPM files exist as success criteria
