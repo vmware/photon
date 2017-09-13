@@ -34,17 +34,16 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-mkdir -p -m 700 %{_prefix}
 ant -Dbase.path="." deploy dist-prepare dist-source javadoc
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
 install -vdm 755 %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}
-install -vdm 644 %{buildroot}%{_confdir}
-install -vdm 644 %{buildroot}%{_webappsdir}
-install -vdm 644 %{buildroot}%{_logsdir}
-install -vdm 644 %{buildroot}%{_tempdir}
+install -vdm 755 %{buildroot}%{_confdir}
+install -vdm 755 %{buildroot}%{_webappsdir}
+install -vdm 755 %{buildroot}%{_logsdir}
+install -vdm 755 %{buildroot}%{_tempdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/lib/* %{buildroot}%{_libdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/conf/* %{buildroot}%{_confdir}
