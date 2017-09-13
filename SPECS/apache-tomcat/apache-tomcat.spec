@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.20
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -38,13 +38,13 @@ mkdir -p -m 700 %{_prefix}
 ant -Dbase.path="." deploy dist-prepare dist-source javadoc
 
 %install
-mkdir -p -m 700 %{buildroot}%{_prefix}
-mkdir -p -m 700 %{buildroot}%{_bindir}
-mkdir -p -m 700 %{buildroot}%{_libdir}
-mkdir -p -m 700 %{buildroot}%{_confdir}
-mkdir -p -m 700 %{buildroot}%{_webappsdir}
-mkdir -p -m 700 %{buildroot}%{_logsdir}
-mkdir -p -m 700 %{buildroot}%{_tempdir}
+install -vdm 755 %{buildroot}%{_prefix}
+install -vdm 755 %{buildroot}%{_bindir}
+install -vdm 755 %{buildroot}%{_libdir}
+install -vdm 644 %{buildroot}%{_confdir}
+install -vdm 644 %{buildroot}%{_webappsdir}
+install -vdm 644 %{buildroot}%{_logsdir}
+install -vdm 644 %{buildroot}%{_tempdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/lib/* %{buildroot}%{_libdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/conf/* %{buildroot}%{_confdir}
@@ -57,7 +57,7 @@ touch %{buildroot}%{_logsdir}/catalina.out
 rm -rf %{buildroot}%{_prefix}/webapps/examples
 rm -rf %{buildroot}%{_prefix}/webapps/docs
 
-mkdir -p %{buildroot}%{_datadir}/java/tomcat
+install -vdm 644 %{buildroot}%{_datadir}/java/tomcat
 
 for jar in %{buildroot}/%{_libdir}/*.jar
 do
@@ -87,6 +87,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
+-   Updated the permissions on directories packaged 
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 8.5.20-1
 -   Upgraded to version 8.5.20
 *   Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 8.5.16-1
