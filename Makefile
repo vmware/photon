@@ -398,9 +398,12 @@ photon-docker-image:
 		photon-build \
 		./support/dockerfiles/photon/make-docker-image.sh tdnf
 
-k8s-docker-images:
-	systemctl start docker && \
+start-docker: check-docker
+	systemctl start docker
+
+k8s-docker-images: start-docker photon-docker-image
 	cd ./support/dockerfiles/k8s-docker-images && \
+	./build-k8s-base-image.sh $(PHOTON_RELEASE_VERSION) $(PHOTON_BUILD_NUMBER) $(PHOTON_STAGE)  && \
 	./build-k8s-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
 	./build-k8s-dns-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
 	./build-k8s-dashboard-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
