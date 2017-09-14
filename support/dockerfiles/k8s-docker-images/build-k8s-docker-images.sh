@@ -24,7 +24,7 @@ fi
 
 K8S_BINS=(kube-apiserver kube-controller-manager kube-proxy kube-scheduler)
 for K8S_BIN in ${K8S_BINS[*]}; do
-    IMG_NAME=vmware_photon2/${K8S_BIN}-amd64:v${K8S_VER}
+    IMG_NAME=vmware_photon_${DIST_VER}/${K8S_BIN}-amd64:v${K8S_VER}
     IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
     if [[ ! -z "${IMG_ID}" ]]; then
         echo "Removing image ${IMG_NAME}"
@@ -41,7 +41,7 @@ rpm2cpio ${K8S_PAUSE_RPM} | cpio -vid
 popd
 
 for K8S_BIN in ${K8S_BINS[*]}; do
-    IMG_NAME=vmware_photon2/${K8S_BIN}-amd64:v${K8S_VER}
+    IMG_NAME=vmware_photon_${DIST_VER}/${K8S_BIN}-amd64:v${K8S_VER}
     K8S_TAR_NAME=${K8S_BIN}.tar
     docker build --rm -t ${IMG_NAME} -f ./Dockerfile.${K8S_BIN} .
     docker save -o ${K8S_TAR_NAME} ${IMG_NAME}
@@ -52,7 +52,7 @@ done
 #
 # K8S Pause container
 #
-PAUSE_IMG_NAME=vmware_photon2/pause-amd64:2.0
+PAUSE_IMG_NAME=vmware_photon_${DIST_VER}/pause-amd64:2.0
 PAUSE_TAR_NAME=k8s-pause.tar
 
 PAUSE_IMG_ID=`docker images -q ${PAUSE_IMG_NAME} 2> /dev/null`
