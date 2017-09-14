@@ -21,7 +21,7 @@ then
     exit 1
 fi
 
-IMG_NAME=vmware_photon2/nginx-ingress:v${NGINX_INC_VER}
+IMG_NAME=vmware_photon_${DIST_VER}/nginx-ingress:v${NGINX_INC_VER}
 
 IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
 if [[ ! -z "${IMG_ID}" ]]; then
