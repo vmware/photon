@@ -123,9 +123,9 @@ then
     exit 1
 fi
 
-CALICO_NODE_IMG_NAME=vmware_photon2/calico-node:v${CALICO_VER}
-CALICO_CNI_IMG_NAME=vmware_photon2/calico-cni:v${CALICO_CNI_VER}
-CALICO_K8S_POLICY_IMG_NAME=vmware_photon2/calico-kube-policy-controller:v${CALICO_K8S_POLICY_VER}
+CALICO_NODE_IMG_NAME=vmware_photon_${DIST_VER}/calico-node:v${CALICO_VER}
+CALICO_CNI_IMG_NAME=vmware_photon_${DIST_VER}/calico-cni:v${CALICO_CNI_VER}
+CALICO_K8S_POLICY_IMG_NAME=vmware_photon_${DIST_VER}/calico-kube-policy-controller:v${CALICO_K8S_POLICY_VER}
 
 NODE_IMG_ID=`docker images -q ${CALICO_NODE_IMG_NAME} 2> /dev/null`
 if [[ ! -z "${NODE_IMG_ID}" ]]; then
