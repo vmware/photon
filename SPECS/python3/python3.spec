@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define         sha1 Python=127121fdca11e735b3686e300d66f73aba663e93
 Patch0:         cgi3.patch
+Patch1:         sockWarning.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel >= 6.0-3
@@ -87,6 +88,7 @@ to build python programs.
 %prep
 %setup -q -n Python-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -191,6 +193,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Thu Sep 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.3-6
+-   Adding patch for socket cleanup issue, Bug # 1956257. 
 *   Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-5
 -   Fixed dependencies for easy_install-3.5
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-4
