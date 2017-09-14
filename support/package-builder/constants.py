@@ -331,6 +331,7 @@ class constants(object):
     # List of packages that requires privileged docker
     # to run make check.
     listReqPrivilegedDockerForTest=[
+        "elfutils", # SYS_PTRACE
         "gdb",
         "glibc" ]
 
