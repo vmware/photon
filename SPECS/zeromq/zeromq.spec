@@ -1,7 +1,7 @@
 Summary:        library for fast, message-based applications
 Name:           zeromq
 Version:        4.1.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.zeromq.org
 License:        LGPLv3+
 Group:          System Environment/Libraries
@@ -38,8 +38,7 @@ make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
-mount -t devpts -o gid=4,mode=620 none /dev/pts
-ulimit -n 1200 && make check
+make check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -58,6 +57,8 @@ ulimit -n 1200 && make check
 %{_mandir}/*
 
 %changelog
+*   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 4.1.4-3
+-   Remove devpts mount
 *   Mon Aug 07 2017 Chang Lee <changlee@vmware.com> 4.1.4-2
 -   Fixed %check
 *   Thu Apr 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.1.4-1
