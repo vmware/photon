@@ -1,0 +1,13 @@
+diff --git a/src/sack.c b/src/sack.c
+index 1f09807..83e0a0e 100644
+--- a/src/sack.c
++++ b/src/sack.c
+@@ -344,7 +344,7 @@ load_ext(HySack sack, HyRepo hrepo, int which_repodata,
+     int previous_last = repo->nrepodata - 1;
+     ret = cb(repo, fp);
+     fclose(fp);
+-    assert(ret == 0);
++    /* assert(ret == 0); */
+     if (ret == 0) {
+ 	repo_update_state(hrepo, which_repodata, _HY_LOADED_FETCH);
+ 	assert(previous_last == repo->nrepodata - 2); (void)previous_last;
