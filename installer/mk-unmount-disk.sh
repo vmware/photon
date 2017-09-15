@@ -23,7 +23,6 @@ LOGFILE=/var/log/"${PRGNAME}-${LOGFILE}"    #   set log file name
 if mountpoint ${BUILDROOT}/run >/dev/null 2>&1; then umount ${BUILDROOT}/run; fi
 if mountpoint ${BUILDROOT}/sys >/dev/null 2>&1; then umount ${BUILDROOT}/sys; fi
 if mountpoint ${BUILDROOT}/proc    >/dev/null 2>&1; then umount ${BUILDROOT}/proc; fi
-if mountpoint ${BUILDROOT}/dev/pts >/dev/null 2>&1; then umount ${BUILDROOT}/dev/pts; fi
 if mountpoint ${BUILDROOT}/dev >/dev/null 2>&1; then umount ${BUILDROOT}/dev; fi
 
 while [[ $# > 0 ]]

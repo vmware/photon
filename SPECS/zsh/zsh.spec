@@ -3,7 +3,7 @@
 Summary:      Z shell
 Name:         zsh
 Version:      5.3.1
-Release:      2%{?dist}
+Release:      3%{?dist}
 License:      MIT
 URL:          http://zsh.sourceforge.net/
 Group:        System Environment/Shells
@@ -68,15 +68,8 @@ export LIBLDFLAGS='-z lazy'
 make all html
 
 %check
-#Ubuntu dev machine can have different test failures like Y01completion.ztst, Y02compmatch.ztst, and Y03arguments.ztst
-if `uname -a | grep photon`;then
-    mount -t devpts -o gid=4,mode=620 none /dev/pts
-    #Skip the C02cond.ztst that failed in Phootn OS chroot.
-    rm -f Test/C02cond.ztst
-    make check
-else
-    echo '*** The chroot file system from other OSes does not support all zsh test cases ***'
-fi
+rm -f Test/C02cond.ztst
+make check
 %install
 rm -rf $RPM_BUILD_ROOT
 
@@ -151,6 +144,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 5.3.1-3
+-   Clean up check
 *   Wed Aug 02 2017 Chang Lee <changlee@vmware.com> 5.3.1-2
 -   Skip a test case that is not supported from photon OS chroot
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.3.1-1
