@@ -1,7 +1,7 @@
 Summary:	Hawkey
 Name:		hawkey
 Version:	2014.1
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+
 URL:		http://fedoraproject.org/wiki/Features/Hawkey
 Source0:	https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:	https://github.com/rpm-software-management/hawkey/archive/%{name}-%{ver
 Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
+Patch0:         hawkey-corrupt-metadata.patch
 BuildRequires: 	libsolv
 BuildRequires: 	check
 BuildRequires: 	cmake
@@ -42,6 +43,7 @@ Python 2 bindings for the hawkey library.
 
 %prep
 %setup -qn %{name}
+%patch0 -p1
 %build
 cmake \
 	-DCMAKE_INSTALL_PREFIX=%{_prefix}
@@ -68,11 +70,13 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %exclude %{python_sitearch}/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2014.1-4
--	GA - Bump release of all rpms
-*	Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 2014.1-3
--	Add pkgconfig Provides directive
+*   Thu Sep 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2014.1-5
+-   Fix core dump caused by corrupt metadata (repomd.xml).
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2014.1-4
+-   GA - Bump release of all rpms
+*   Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 2014.1-3
+-   Add pkgconfig Provides directive
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2014.1.1-2
 -   Updated group.
-*	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.1-1
--	Initial build. First version
+*   Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 2014.1-1
+-   Initial build. First version
