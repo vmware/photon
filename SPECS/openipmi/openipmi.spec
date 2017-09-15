@@ -1,7 +1,7 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.24
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -27,6 +27,7 @@ basic tools used with OpenIPMI.
 Summary:        Development files for OpenIPMI
 Group:          Utilities
 Requires:       openipmi = %{version}
+Requires:       ncurses-devel
 
 %description devel
 Contains additional files need for a developer to create applications
@@ -177,6 +178,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-2
+-   openipmi-devel requires ncurses-devel
 *   Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-1
 -   Initial build.  First version
 
