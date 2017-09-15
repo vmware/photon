@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -164,7 +164,6 @@ find %{buildroot}%{_libdir} -name '*.o' -delete
 rm %{buildroot}%{_bindir}/2to3
 
 %check
-mount -t devpts -o gid=4,mode=620 none /dev/pts
 make  %{?_smp_mflags} test
 
 %post -p /sbin/ldconfig
@@ -264,6 +263,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.6/test/*
 
 %changelog
+*   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 3.6.1-8
+-   Remove devpts mount in check
 *   Mon Aug 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-7
 -   Add pty for tests to pass
 *   Wed Jul 12 2017 Xiaolin Li <xiaolinl@vmware.com> 3.6.1-6
