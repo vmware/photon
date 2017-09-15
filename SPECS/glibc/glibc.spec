@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.26
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -181,6 +181,12 @@ grep "^FAIL: posix/tst-spawn3" tests.sum >/dev/null && n=$((n+1)) ||:
 grep "^FAIL: stdio-common/test-vfprintf" tests.sum >/dev/null && n=$((n+1)) ||:
 # FAIL always on overlayfs/aufs (in container)
 grep "^FAIL: posix/tst-dir" tests.sum >/dev/null && n=$((n+1)) ||:
+
+#https://sourceware.org/glibc/wiki/Testing/Testsuite
+grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
+#This happens because the kernel fails to reap exiting threads fast enough,
+#eventually resulting an EAGAIN when pthread_create is called within the test.
+
 # check for exact 'n' failures
 [ `grep ^FAIL tests.sum | wc -l` -ne $n ] && exit 1 ||:
 
@@ -271,6 +277,8 @@ grep "^FAIL: posix/tst-dir" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 2.26-4
+-   exclude tst-eintr1 per official wiki recommendation.
 *   Tue Sep 12 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-3
 -   Fix makecheck for run in docker.
 *   Tue Aug 29 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-2
