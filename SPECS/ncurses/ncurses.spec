@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -27,6 +27,7 @@ compatibility.
 %package	devel
 Summary:	Header and development files for ncurses
 Requires:	%{name} = %{version}
+Provides:	pkgconfig(ncurses)
 %description	devel
 It contains the libraries and header files to create applications 
 %prep
@@ -154,6 +155,8 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
 %changelog
+*   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-6
+-   ncurses-devel provides pkgconfig(ncurses)
 *   Thu Jul 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.0-5
 -   Fix for CVE-2017-10684 and CVE-2017-10685
 *   Wed Jun 07 2017 Bo Gan <ganb@vmware.com> 6.0-4
