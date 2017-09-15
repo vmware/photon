@@ -1,7 +1,7 @@
 Summary:    Ruby
 Name:       ruby
 Version:    2.4.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    BSDL
 URL:        https://www.ruby-lang.org/en/
 Group:      System Environment/Security
@@ -14,6 +14,8 @@ Patch1:     ruby-CVE-2017-9226.patch
 Patch2:     ruby-CVE-2017-9227.patch
 Patch3:     ruby-CVE-2017-9229.patch
 Patch4:     ruby-CVE-2017-9228.patch
+#https://github.com/flori/json/commit/8f782fd8e181d9cfe9387ded43a5ca9692266b85
+Patch5:     ruby-CVE-2017-14064.patch
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -33,6 +35,7 @@ This is useful for object-oriented scripting.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 %build
 ./configure \
     --prefix=%{_prefix}   \
@@ -63,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.1-5
+-   [security] CVE-2017-14064
 *   Tue Sep 05 2017 Chang Lee <changlee@vmware.com> 2.4.1-4
 -   Built with copy preserve mode and fixed %check
 *   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.1-3
