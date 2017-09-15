@@ -1,7 +1,7 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	10%{?dist}
+Release:	11%{?dist}
 License:	MIT
 URL:		http://www.gnu.org/software/ncurses
 Group:		Applications/System
@@ -35,6 +35,7 @@ compatibility.
 %package	devel
 Summary:	Header and development files for ncurses
 Requires:	%{name} = %{version}-%{release}
+Provides:	pkgconfig(ncurses)
 %description	devel
 It contains the libraries and header files to create applications 
 
@@ -182,6 +183,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-11
+-   ncurses-devel provides pkgconfig(ncurses)
 *   Thu Aug 10 2017 Bo Gan <ganb@vmware.com> 6.0-10
 -   Move ncursesw6-config to devel
 *   Thu Jul 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.0-9
