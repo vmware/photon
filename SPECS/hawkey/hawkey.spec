@@ -4,7 +4,7 @@
 Summary:        Hawkey
 Name:           hawkey
 Version:        2017.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
 Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -12,6 +12,7 @@ Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         hawkey-corrupt-metadata.patch
 BuildRequires:  libsolv-devel
 BuildRequires:  check
 BuildRequires:  cmake
@@ -59,6 +60,7 @@ Python 3 bindings for the hawkey library.
 
 %prep
 %setup -qn hawkey-hawkey-0.6.4-1
+%patch0 -p1
 sed -i 's/ADD_SUBDIRECTORY (doc)//' CMakeLists.txt
 mkdir build
 mkdir build-py3
@@ -114,6 +116,8 @@ popd
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Thu Sep 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-4
+-   Fix core dump caused by corrupt metadata (repomd.xml).
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-3
 -   Fix check issues.
 *   Mon May 22 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-2
