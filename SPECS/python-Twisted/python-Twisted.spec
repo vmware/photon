@@ -89,7 +89,6 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-mount -t devpts -o gid=4,mode=620 none /dev/pts
 route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
 $easy_install_2 pip
 pip install --upgrade tox

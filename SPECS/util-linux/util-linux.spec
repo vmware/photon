@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.29.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -59,10 +59,7 @@ find %{buildroot} -name '*.la' -delete
 
 %check
 chown -Rv nobody .
-echo "none  /dev/pts devpts" >> /etc/fstab
-mount /dev/pts
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
-umount /dev/pts
 rm -rf %{buildroot}/lib/systemd/system
 
 %post   -p /sbin/ldconfig
@@ -99,6 +96,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 2.29.2-4
+-   Cleanup check
 *   Mon Jul 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.29.2-3
 -   Fixed rpm check errors.
 *   Thu Apr 20 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29.2-2
