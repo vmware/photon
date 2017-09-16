@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
-Version:	1.0
-Release:	10%{?dist}
+Version:	1.1
+Release:	1%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -26,7 +26,6 @@ install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/etc/opt
 install -vdm 755 %{buildroot}/etc/profile.d
 install -vdm 755 %{buildroot}/etc/sysconfig
-install -vdm 755 %{buildroot}/etc/systemd/network
 install -vdm 755 %{buildroot}/home
 install -vdm 755 %{buildroot}/mnt
 install -vdm 755 %{buildroot}/mnt/cdrom
@@ -178,16 +177,7 @@ users:x:100:
 sudo:x:27:
 wheel:x:28:
 EOF
-#
-#	7.2.2. Creating Network Interface Configuration Files"
-#
-cat > %{buildroot}/etc/systemd/network/99-dhcp-en.network <<- "EOF"
-[Match]
-Name=e*
 
-[Network]
-DHCP=yes
-EOF
 #
 #   Creating Proxy Configuration"
 #
@@ -515,8 +505,6 @@ EOF
 %config(noreplace) /etc/sysconfig/clock
 %config(noreplace) /etc/sysconfig/console
 %config(noreplace) /etc/sysconfig/proxy
-%dir /etc/systemd/network
-%config(noreplace) /etc/systemd/network/99-dhcp-en.network
 %dir /etc/profile.d
 %config(noreplace) /etc/profile.d/proxy.sh
 #	media filesystem
@@ -601,6 +589,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  1.1-1
+-   Move network file from filesystem package
 *   Tue Mar 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0-10
 -   Create default DHCP net config in 99-dhcp-en.network instead of 10-dhcp-en.network
 *   Mon Jan 9 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-9
@@ -609,8 +599,8 @@ EOF
 -   Removing multiple entries of localhost in /etc/hosts file
 *   Fri May 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-7
 -   Fixed nobody user uid and group gid
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-6
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-6
+-   GA - Bump release of all rpms
 *   Wed May 4 2016 Divya Thaluru <dthaluru@vmware.com> 1.0-5
 -   Removing non-existent users from /etc/group file
 *   Fri Apr 29 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.0-4
