@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2017.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 %define sha1    rpm-ostree=d34882a455afbf0b57617c0962725276967e838a
 Source1:        libglnx-0c52d85.tar.gz
@@ -9,6 +9,8 @@ Source1:        libglnx-0c52d85.tar.gz
 Source2:        libdnf-2086268.tar.gz
 %define sha1    libdnf=4e913da416c61a5525f94ef09f38c658179e3e25
 Patch0:         rpm-ostree-libdnf-build.patch
+Patch1:         Set-arch.patch
+Patch2:         Makefile-test.patch
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -42,6 +44,12 @@ BuildRequires:  libarchive-devel
 BuildRequires:  gperf
 BuildRequires:  which
 BuildRequires:  popt-devel
+BuildRequires:  createrepo
+BuildRequires:  jq
+BuildRequires:  photon-release
+BuildRequires:  photon-repos
+BuildRequires:  bubblewrap
+BuildRequires:  dbus
 
 Requires:       libcap
 Requires:       librepo
@@ -69,6 +77,8 @@ Includes the header files for the rpm-ostree library.
 tar xf /usr/src/photon/SOURCES/libglnx-0c52d85.tar.gz --no-same-owner
 tar xf /usr/src/photon/SOURCES/libdnf-2086268.tar.gz --no-same-owner
 %patch0 -p0
+%patch1 -p1
+%patch2 -p1
 
 %build
 sed -i '/-DBUILD_SHARED_LIBS/a -DWITH_MAN=OFF \\' configure.ac
@@ -81,7 +91,7 @@ make install DESTDIR=%{buildroot} INSTALL="install -p -c"
 find %{buildroot} -name '*.la' -delete
 
 %check
-make %{?_smp_mflags}  check
+make check
 
 %files
 %{_bindir}/*
@@ -102,6 +112,8 @@ make %{?_smp_mflags}  check
 %{_datadir}/gir-1.0/*-1.0.gir
 
 %changelog
+*   Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.4-4
+-   Changes for Makecheck
 *   Thu Aug 03 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.4-3
 -   Added bubblewrap to requires.
 *   Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2017.4-2
