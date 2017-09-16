@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          37%{?dist}
+Release:          38%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -43,6 +43,7 @@ Requires:         libcap
 Requires:         xz
 Requires:         kmod
 Requires:         glib
+Requires:         filesystem >= 1.1
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -160,6 +161,17 @@ install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
+install -vdm 755 %{buildroot}/%{_sysconfdir}/systemd/network
+#
+#	7.2.2. Creating Network Interface Configuration Files"
+#
+cat > %{buildroot}/%{_sysconfdir}/systemd/network/99-dhcp-en.network <<- "EOF"
+[Match]
+Name=e*
+
+[Network]
+DHCP=yes
+EOF
 
 %post
 /sbin/ldconfig
@@ -198,7 +210,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/systemd/bootchart.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
-
+%dir %{_sysconfdir}/systemd/network
+%config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 %dir %{_sysconfdir}/udev
 %dir %{_sysconfdir}/udev/rules.d
 %dir %{_sysconfdir}/udev/hwdb.d
@@ -222,6 +235,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  228-38
+-    Move network file to systemd package
 *    Thu Sep 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-37
 -    Fix systemd-logind dbus disconnection issue.
 *    Fri Jul 28 2017 Dheeraj Shetty <dheerajs@vmware.com>  228-36
