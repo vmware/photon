@@ -5,6 +5,6 @@ MAINTAINER kulkarniv@vmware.com
 
 ADD tcroot.tar.gz /
 ADD wait.sh /
-ADD adjust-gcc-specs.sh /tmp/
+ADD adjust-gcc-specs.sh /
 
 CMD ["/usr/bin/bash", "--login"]
