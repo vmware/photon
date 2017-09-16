@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          7%{?dist}
+Release:          8%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -12,6 +12,7 @@ Source0:          %{name}-%{version}.tar.gz
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
+Source4:          99-dhcp-en.network
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
@@ -30,6 +31,7 @@ Requires:         libcap
 Requires:         xz
 Requires:         kmod
 Requires:         glib
+Requires:         filesystem >= 1.1
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
@@ -130,8 +132,6 @@ sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
 
-#cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
-#cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
@@ -139,6 +139,8 @@ install -dm 0755 %{buildroot}/boot/
 install -m 0644 %{SOURCE3} %{buildroot}/boot/
 rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
+install -dm 0755 %{buildroot}/%{_sysconfdir}/systemd/network
+install -m 0644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/systemd/network
 %find_lang %{name}
 
 %post
@@ -177,6 +179,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
+%config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 
 %dir %{_sysconfdir}/udev
 %dir %{_sysconfdir}/udev/rules.d
@@ -234,6 +237,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  233-8
+-    Move network file to systemd package
 *    Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 233-7
 -    Fix compilation issue for glibc-2.26
 *    Fri Jul 20 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
