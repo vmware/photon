@@ -493,7 +493,7 @@ class PackageUtils(object):
 
     def adjustGCCSpecsInContainer(self, package, containerID, logPath):
         opt = " " + constants.specData.getSecurityHardeningOption(package)
-        adjustCmd = "/tmp/" + self.adjustGCCSpecScript + opt
+        adjustCmd = "/" + self.adjustGCCSpecScript + opt
         adjustCmd = "/bin/bash -l -c '" + adjustCmd + "'"
         logFile = logPath + "/adjustGCCSpecScript.log"
 
