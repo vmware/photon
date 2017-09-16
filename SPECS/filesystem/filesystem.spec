@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
-Version:	1.0
-Release:	13%{?dist}
+Version:	1.1
+Release:	1%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -21,7 +21,6 @@ for the directories. This version is for a system configured with systemd.
 #
 install -vdm 755 %{buildroot}/{dev,proc,run/{media/{floppy,cdrom},lock},sys}
 install -vdm 755 %{buildroot}/{boot,etc/{opt,sysconfig},home,mnt}
-install -vdm 755 %{buildroot}/etc/systemd/network
 install -vdm 755 %{buildroot}/{var}
 install -dv -m 0750 %{buildroot}/root
 install -dv -m 1777 %{buildroot}/tmp %{buildroot}/var/tmp
@@ -119,16 +118,6 @@ nogroup:x:65533:
 users:x:100:
 sudo:x:27:
 wheel:x:28:
-EOF
-#
-#	7.2.2. Creating Network Interface Configuration Files"
-#
-cat > %{buildroot}/etc/systemd/network/99-dhcp-en.network <<- "EOF"
-[Match]
-Name=e*
-
-[Network]
-DHCP=yes
 EOF
 #
 #   Creating Proxy Configuration"
@@ -459,8 +448,6 @@ EOF
 %config(noreplace) /etc/sysconfig/clock
 %config(noreplace) /etc/sysconfig/console
 %config(noreplace) /etc/sysconfig/proxy
-%dir /etc/systemd/network
-%config(noreplace) /etc/systemd/network/99-dhcp-en.network
 %dir /etc/profile.d
 %config(noreplace) /etc/profile.d/proxy.sh
 #	media filesystem
@@ -554,6 +541,8 @@ EOF
 /usr/lib/debug/usr/lib64
 %endif
 %changelog
+*   Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  1.1-1
+-   Move network file from filesystem package
 *   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-13
 -   make /var/run symlink to /run and keep it in rpm
 *   Thu Apr 20 2017 Bo Gan <ganb@vmware.com> 1.0-12
