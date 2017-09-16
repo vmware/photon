@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.3.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -9,7 +9,9 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
 %define sha1 libarchive=d5616f81804aba92547629c08a3ccff86c2844ae
-
+BuildRequires:  xz-libs
+BuildRequires:  xz-devel
+Requires:       xz-libs
 %description
 Multi-format archive and compression library
 
@@ -52,6 +54,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.3.1-2
+-   Add xz-libs and xz-devel to BuildRequires and Requires
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.1-1
 -   Upgrade version to 3.3.1
 *   Tue Sep 27 2016 Alexey Makhalov <amakhalov@vmware.com> 3.2.1-1
