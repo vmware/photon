@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.20
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -34,15 +34,14 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 
 %build
-mkdir -p -m 700 %{_prefix}
 ant -Dbase.path="." deploy dist-prepare dist-source javadoc
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
 install -vdm 755 %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}
-install -vdm 644 %{buildroot}%{_confdir}
-install -vdm 644 %{buildroot}%{_webappdir}
+install -vdm 755 %{buildroot}%{_confdir}
+install -vdm 755 %{buildroot}%{_webappdir}
 install -vdm 644 %{buildroot}%{_logsdir}
 install -vdm 644 %{buildroot}%{_tempdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
@@ -87,6 +86,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Sep 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-3
+-   Updated the permissions on _prefix.
 *   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
 -   Updated the permissions on directories packaged
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 8.5.20-1
