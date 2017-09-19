@@ -1,0 +1,13 @@
+diff --git a/memcheck/tests/linux/stack_changes.c b/memcheck/tests/linux/stack_changes.c
+index a978fc2..1566830 100644
+--- a/memcheck/tests/linux/stack_changes.c
++++ b/memcheck/tests/linux/stack_changes.c
+@@ -10,7 +10,7 @@
+ // This test is checking the libc context calls (setcontext, etc.) and
+ // checks that Valgrind notices their stack changes properly.
+ 
+-typedef  struct ucontext  mycontext;
++typedef  struct ucontext_t  mycontext;
+ 
+ mycontext ctx1, ctx2, oldc;
+ int count;
