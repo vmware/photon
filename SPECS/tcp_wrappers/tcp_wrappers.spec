@@ -8,6 +8,7 @@ URL: 		ftp://ftp.porcupine.org/pub/security/index.html
 Source0: 	ftp://ftp.porcupine.org/pub/security/%{name}_%{version}.tar.gz
 %define sha1 tcp_wrappers=61689ec85b80f4ca0560aef3473eccd9e9e80481
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/6.3/tcp_wrappers-7.6-shared_lib_plus_plus-1.patch
+Requires:       finger
 
 %description
 The TCP Wrapper package provides daemon wrapper programs that report the name of the client requesting network services and the requested service. 
@@ -53,6 +54,8 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*.h
 
 %changelog
+* Mon Sep 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 7.6-4
+- Add finger to Requires
 * Wed Aug 23 2017 Alexey Makhalov <amakhalov@vmware.com> 7.6-3
 - Fix compilation issue for glibc-2.26
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.6-2
