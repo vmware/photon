@@ -52,7 +52,7 @@ done
 #
 # K8S Pause container
 #
-PAUSE_IMG_NAME=vmware_photon_${DIST_VER}/pause-amd64:2.0
+PAUSE_IMG_NAME=vmware_photon_${DIST_VER}/pause-amd64:v${K8S_VER}
 PAUSE_TAR_NAME=k8s-pause.tar
 
 PAUSE_IMG_ID=`docker images -q ${PAUSE_IMG_NAME} 2> /dev/null`
