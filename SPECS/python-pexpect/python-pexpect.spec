@@ -4,7 +4,7 @@
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python-pexpect
 Version:        4.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
@@ -17,6 +17,7 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
+Requires:       python-ptyprocess
 
 BuildArch:      noarch
 
@@ -31,6 +32,7 @@ Summary:        Python3 package for pexpect
 BuildRequires:  python3-devel
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-ptyprocess
 
 %description -n python3-pexpect
 Python 3 version of pexpect
@@ -64,6 +66,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 19 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-2
+-   Adding requires on ptyprocess
 *   Mon Sep 11 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
 -   Initial packaging for Photon
 
