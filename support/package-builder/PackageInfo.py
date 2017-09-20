@@ -4,6 +4,7 @@ from constants import constants
 import os.path
 from CommandUtils import CommandUtils
 from PackageUtils import PackageUtils
+from SpecData import SPECS
 
 class PackageInfo(object):
 
@@ -18,14 +19,14 @@ class PackageInfo(object):
         self.pkgList = {}
 
     def loadPackagesData(self):
-        listPackages =  constants.specData.getListPackages()
+        listPackages =  SPECS.getData().getListPackages()
         listPackages.sort()
         listRPMFiles = []
         cmdUtils = CommandUtils()
         for package in listPackages:
-            release = constants.specData.getRelease(package)
-            version = constants.specData.getVersion(package)
-            listRPMPackages = constants.specData.getRPMPackages(package)
+            release = SPECS.getData().getRelease(package)
+            version = SPECS.getData().getVersion(package)
+            listRPMPackages = SPECS.getData().getRPMPackages(package)
             srpmFileName = package+"-"+version+"-"+release+".src.rpm"
             srpmFiles = cmdUtils.findFile(srpmFileName, constants.sourceRpmPath)
             srpmFile = None

@@ -2,12 +2,17 @@ import re
 
 class StringUtils(object):
 
-    def getStringInBrackets(self, inputstring):
+    # Opens conditional brackets from
+    # (aaa <= 3.1 or bbb) ccc (ddd or fff > 4.5.6)
+    # into
+    # aaa <= 3.1 ccc ddd
+    def getStringInConditionalBrackets(self,inputstring):
         inputstring=inputstring.strip()
-        m = re.search(r"^\(([A-Za-z0-9_.-]+)\)",  inputstring)
-        if m is None:
-            return inputstring
-        return m.group(1)
+        items = re.findall(r"([(][A-Za-z0-9 _\.\-<>=]+[)])",  inputstring)
+        for m in items:
+            out = m[m.find("(")+1 : m.find(" or ")].strip()
+            inputstring = inputstring.replace(m, out);
+        return inputstring
 
     def getFileNameFromURL(self,inputstring):
         index=inputstring.rfind("/")

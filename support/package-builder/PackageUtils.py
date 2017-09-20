@@ -8,6 +8,7 @@ from time import sleep
 import PullSources
 import json
 import collections
+from SpecData import SPECS
 
 class PackageUtils(object):
 
@@ -110,7 +111,7 @@ class PackageUtils(object):
     def verifyShaAndGetSourcePath(self, source, package):
         cmdUtils = CommandUtils()
         # Fetch/verify sources if sha1 not None.
-        sha1 = constants.specData.getSHA1(package, source)
+        sha1 = SPECS.getData().getSHA1(package, source)
         if sha1 is not None:
             PullSources.get(source, sha1, constants.sourcePath, constants.pullsourcesConfig, self.logger)
 
@@ -171,10 +172,10 @@ class PackageUtils(object):
     def buildRPMSForGivenPackage(self,package,chrootID,listBuildOptionPackages,pkgBuildOptionFile,destLogPath=None):
         self.logger.info("Building rpm's for package:"+package)
 
-        listSourcesFiles = constants.specData.getSources(package)
-        listPatchFiles =  constants.specData.getPatches(package)
-        specFile = constants.specData.getSpecFile(package)
-        specName = constants.specData.getSpecName(package) + ".spec"
+        listSourcesFiles = SPECS.getData().getSources(package)
+        listPatchFiles =  SPECS.getData().getPatches(package)
+        specFile = SPECS.getData().getSpecFile(package)
+        specName = SPECS.getData().getSpecName(package) + ".spec"
 
         chrootSourcePath=chrootID+constants.topDirPath+"/SOURCES/"
         chrootSpecPath=constants.topDirPath+"/SPECS/"
@@ -193,7 +194,7 @@ class PackageUtils(object):
             self.copyAdditionalBuildFiles(listAdditionalFiles,chrootID)
 
         #Adding rpm macros
-        listRPMMacros = constants.specData.getRPMMacros()
+        listRPMMacros = SPECS.getData().getRPMMacros()
         for macroName in listRPMMacros.keys():
             macros.append(macroName+" "+listRPMMacros[macroName])
 
@@ -207,7 +208,7 @@ class PackageUtils(object):
             raise e
         finally:
             if destLogPath is not None:
-                if constants.rpmCheck and package in constants.testForceRPMS and constants.specData.isCheckAvailable(package):
+                if constants.rpmCheck and package in constants.testForceRPMS and SPECS.getData().isCheckAvailable(package):
                     cmd="sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' "+ chrootLogsFilePath
                     logFile = destLogPath+"/adjustTestFile.log"
                     returnVal = CommandUtils().runCommandInShell(cmd, logFile)
@@ -230,7 +231,7 @@ class PackageUtils(object):
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.info("#"*(68+2*len(package)))
-            if not constants.specData.isCheckAvailable(package):
+            if not SPECS.getData().isCheckAvailable(package):
                 self.logger.info("####### "+package+" MakeCheck is not available. Skipping MakeCheck TEST for "+package+ " #######")
                 rpmBuildcmd=self.rpmbuildBinary+" --clean"
             else:
@@ -249,7 +250,7 @@ class PackageUtils(object):
         self.logger.info(rpmBuildcmd)
         returnVal = cmdUtils.runCommandInShell(rpmBuildcmd, logFile, chrootCmd)
         if constants.rpmCheck and package in constants.testForceRPMS:
-            if not constants.specData.isCheckAvailable(package):
+            if not SPECS.getData().isCheckAvailable(package):
                 constants.testLogger.info(package+" : N/A")
             elif returnVal:
                 constants.testLogger.info(package+" : PASS")
@@ -282,8 +283,8 @@ class PackageUtils(object):
 
     def findRPMFileForGivenPackage(self,package):
         cmdUtils = CommandUtils()
-        version = constants.specData.getVersion(package)
-        release = constants.specData.getRelease(package)
+        version = SPECS.getData().getVersion(package)
+        release = SPECS.getData().getRelease(package)
         listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+".x86_64.rpm",constants.rpmPath),
                             cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
         if constants.inputRPMSPath is not None:
@@ -337,7 +338,7 @@ class PackageUtils(object):
         return result
 
     def adjustGCCSpecs(self, package, chrootID, logPath):
-        opt = " " + constants.specData.getSecurityHardeningOption(package)
+        opt = " " + SPECS.getData().getSecurityHardeningOption(package)
         cmdUtils=CommandUtils()
         cpcmd="cp "+ self.adjustGCCSpecScript+" "+chrootID+"/tmp/"+self.adjustGCCSpecScript
         cmd = "/tmp/"+self.adjustGCCSpecScript+opt
@@ -492,7 +493,7 @@ class PackageUtils(object):
         return result
 
     def adjustGCCSpecsInContainer(self, package, containerID, logPath):
-        opt = " " + constants.specData.getSecurityHardeningOption(package)
+        opt = " " + SPECS.getData().getSecurityHardeningOption(package)
         adjustCmd = "/" + self.adjustGCCSpecScript + opt
         adjustCmd = "/bin/bash -l -c '" + adjustCmd + "'"
         logFile = logPath + "/adjustGCCSpecScript.log"
@@ -515,10 +516,10 @@ class PackageUtils(object):
                                             pkgBuildOptionFile, destLogPath=None):
         self.logger.info("Building rpm's for package " + package + " in container " + containerID.short_id)
 
-        listSourcesFiles = constants.specData.getSources(package)
-        listPatchFiles = constants.specData.getPatches(package)
-        specFile = constants.specData.getSpecFile(package)
-        specName = constants.specData.getSpecName(package) + ".spec"
+        listSourcesFiles = SPECS.getData().getSources(package)
+        listPatchFiles = SPECS.getData().getPatches(package)
+        specFile = SPECS.getData().getSpecFile(package)
+        specName = SPECS.getData().getSpecName(package) + ".spec"
         sourcePath = constants.topDirPath + "/SOURCES/"
         specPath = constants.topDirPath + "/SPECS/"
         rpmLogFile = constants.topDirPath + "/LOGS/" + package + ".log"
@@ -545,7 +546,7 @@ class PackageUtils(object):
             self.copyAdditionalBuildFilesToContainer(listAdditionalFiles, containerID)
 
         # Add rpm macros
-        listRPMMacros = constants.specData.getRPMMacros()
+        listRPMMacros = SPECS.getData().getRPMMacros()
         for macroName in listRPMMacros.keys():
             macros.append(macroName + " " + listRPMMacros[macroName])
 
@@ -567,7 +568,7 @@ class PackageUtils(object):
         finally:
             if destLogPath is not None:
                 rpmLog = destLogPath + "/" + package + ".log"
-                if constants.rpmCheck and package in constants.testForceRPMS and constants.specData.isCheckAvailable(package):
+                if constants.rpmCheck and package in constants.testForceRPMS and SPECS.getData().isCheckAvailable(package):
                     cmd="sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' "+ rpmLog
                     logFile = destLogPath+"/adjustTestFile.log"
                     returnVal = CommandUtils().runCommandInShell(cmd, logFile)
@@ -600,7 +601,7 @@ class PackageUtils(object):
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.info("#"*(68+2*len(package)))
-            if not constants.specData.isCheckAvailable(package):
+            if not SPECS.getData().isCheckAvailable(package):
                 self.logger.info("####### "+package+" MakeCheck is not available. Skipping MakeCheck TEST for "+package+ " #######")
                 rpmBuildCmd=self.rpmbuildBinary+" --clean"
             else:
@@ -628,7 +629,7 @@ class PackageUtils(object):
             raise Exception("RPM Build failed")
 
         if constants.rpmCheck and package in constants.testForceRPMS:
-            if not constants.specData.isCheckAvailable(package):
+            if not SPECS.getData().isCheckAvailable(package):
                 constants.testLogger.info(package+" : N/A")
             elif returnVal:
                 constants.testLogger.info(package+" : PASS")

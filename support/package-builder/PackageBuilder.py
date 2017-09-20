@@ -6,6 +6,7 @@ from CommandUtils import CommandUtils
 import os.path
 from constants import constants
 import shutil
+from SpecData import SPECS
 
 class PackageBuilder(object):
 
@@ -72,8 +73,8 @@ class PackageBuilder(object):
             outputMap[threadName]=False
 
     def checkIfPackageIsAlreadyBuilt(self, package):
-        basePkg=constants.specData.getSpecName(package)
-        listRPMPackages=constants.specData.getRPMPackages(basePkg)
+        basePkg=SPECS.getData().getSpecName(package)
+        listRPMPackages=SPECS.getData().getRPMPackages(basePkg)
         packageIsAlreadyBuilt=True
         pkgUtils = PackageUtils(self.logName,self.logPath)
         for pkg in listRPMPackages:
@@ -136,15 +137,15 @@ class PackageBuilder(object):
 
 
     def findRunTimeRequiredRPMPackages(self,rpmPackage):
-        listRequiredPackages=constants.specData.getRequiresForPackage(rpmPackage)
+        listRequiredPackages=SPECS.getData().getRequiresForPackage(rpmPackage)
         return listRequiredPackages
 
     def findBuildTimeRequiredPackages(self,package):
-        listRequiredPackages=constants.specData.getBuildRequiresForPackage(package)
+        listRequiredPackages=SPECS.getData().getBuildRequiresForPackage(package)
         return listRequiredPackages
 
     def findBuildTimeCheckRequiredPackages(self,package):
-        listRequiredPackages=constants.specData.getCheckBuildRequiresForPackage(package)
+        listRequiredPackages=SPECS.getData().getCheckBuildRequiresForPackage(package)
         return listRequiredPackages
 
     def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):

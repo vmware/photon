@@ -1,6 +1,7 @@
 import re
 from StringUtils import StringUtils
 from SpecStructures import *
+from constants import constants
 
 class SpecParser(object):
     def __init__(self):
@@ -185,6 +186,8 @@ class SpecParser(object):
             return True
         elif re.search('^'+'requires:',line,flags=re.IGNORECASE) :
             return True
+        elif re.search('^'+'requires\((pre|post|preun|postun)\):',line,flags=re.IGNORECASE) :
+            return True
         elif re.search('^'+'provides:',line,flags=re.IGNORECASE) :
             return True
         elif re.search('^'+'obsoletes:',line,flags=re.IGNORECASE) :
@@ -245,16 +248,21 @@ class SpecParser(object):
         listPackages=line.split(",")
         listdependentpkgs=[]
         for line in listPackages:
-            line=strUtils.getStringInBrackets(line)
+            line=strUtils.getStringInConditionalBrackets(line)
             listContents=line.split()
             totalContents = len(listContents)
             i=0
             while i < totalContents:
                 dpkg = dependentPackageData()
                 compare=None
+                packageName=listContents[i]
                 if listContents[i].startswith("/"):
+                    provider=constants.providedBy.get(listContents[i], None)
                     i=i+1
-                    continue
+                    if provider is not None:
+                        packageName=provider
+                    else:
+                        continue
                 if i+2 < len(listContents):
                     if listContents[i+1] == ">=":
                         compare="gte"
@@ -270,12 +278,12 @@ class SpecParser(object):
                         compare="eq"
 
                 if compare is not None:
-                    dpkg.package=listContents[i]
+                    dpkg.package=packageName
                     dpkg.compare=compare
                     dpkg.version=listContents[i+2]
                     i=i+3
                 else:
-                    dpkg.package=listContents[i]
+                    dpkg.package=packageName
                     i=i+1
                 listdependentpkgs.append(dpkg)
         return listdependentpkgs
@@ -319,11 +327,11 @@ class SpecParser(object):
         if headerName.find('patch') != -1:
             pkg.patches.append(headerContent)
             return True
-        if headerName == 'requires' or headerName == 'provides' or headerName == 'obsoletes' or headerName == 'conflicts' or headerName == 'buildrequires' or headerName == 'buildprovides':
+        if headerName.startswith('requires') or headerName == 'provides' or headerName == 'obsoletes' or headerName == 'conflicts' or headerName == 'buildrequires' or headerName == 'buildprovides':
             dpkg=self.readDependentPackageData(headerContent)
             if dpkg is None:
                 return False
-            if headerName == 'requires':
+            if headerName.startswith('requires'):
                 pkg.requires.extend(dpkg)
             if headerName == 'provides':
                 pkg.provides.extend(dpkg)
