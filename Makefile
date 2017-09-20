@@ -249,6 +249,30 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
 
+packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+	@echo "Building all RPMS..."
+	@cd $(PHOTON_PKG_BUILDER_DIR) && \
+        $(PHOTON_PACKAGE_BUILDER) \
+                -bt $(PHOTON_BUILD_TYPE) \
+                -s $(PHOTON_SPECS_DIR) \
+                -r $(PHOTON_RPMS_DIR) \
+                -a $(PHOTON_SRPMS_DIR) \
+                -x $(PHOTON_SRCS_DIR) \
+                -b $(PHOTON_CHROOT_PATH) \
+                -l $(PHOTON_LOGS_DIR) \
+                -p $(PHOTON_PUBLISH_RPMS_DIR) \
+                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
+                -c $(PHOTON_PULLSOURCES_CONFIG) \
+                -d $(PHOTON_DIST_TAG) \
+                -n $(PHOTON_BUILD_NUMBER) \
+                -v $(PHOTON_RELEASE_VERSION) \
+                -w $(PHOTON_STAGE)/pkg_info.json \
+                -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                $(PHOTON_RPMCHECK_FLAGS) \
+		$(PUBLISH_BUILD_DEPENDENCIES) \
+		$(PACKAGE_WEIGHTS_PATH) \
+                -t ${THREADS}
+
 updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -488,10 +512,11 @@ check-tools: check-bison check-g++ check-gawk check-createrepo check-texinfo che
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
 
+check-docker-service:
+	@docker ps >/dev/null 2>&1 || { echo "Docker service is not running. Aborting." >&2; exit 1; }
+
 check-docker-py:
-	@tdnf install -y docker docker-py --refresh > /dev/null 2>&1 || { echo "tdnf installation failed. Checking whether docker-py is installed."; } 
-	@python -c "import docker; assert docker.__version__ == '2.3.0'" >/dev/null 2>&1 || { echo "Python package docker-py 2.3.0 not installed. Aborting." >&2; exit 1; }
-	@systemctl daemon-reload && systemctl start docker
+	@python -c "import docker; assert docker.__version__ == '2.3.0'" >/dev/null 2>&1 || { echo "Error: Python package docker-py 2.3.0 not installed.\nPlease use: pip install docker==2.3.0" >&2; exit 1; }
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
