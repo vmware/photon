@@ -22,7 +22,7 @@ class License(object):
         self.text_height = self.win_height - 6
         self.text_width = self.win_width - 6
 
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Welcome to the Photon installer', False, items=[])
+        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Welcome to the Photon OS installer', False, items=[])
 
     def display(self, params):
         accept_decline_items =  [
