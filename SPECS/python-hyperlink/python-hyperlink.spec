@@ -4,7 +4,7 @@
 Summary:        provides a pure-Python implementation of immutable URLs
 Name:           python-hyperlink
 Version:        17.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -63,16 +63,8 @@ popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_2=$(ls /usr/bin |grep easy_install |grep 2)
-$easy_install_2 pip
-pip install --upgrade tox
-pip install --upgrade pytest-cov
 pytest2
 pushd ../p3dir
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pip
-pip install --upgrade tox
-pip install --upgrade pytest-cov
 pytest3
 popd
 
@@ -85,5 +77,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Sep 20 2017 Bo Gan <ganb@vmware.com> 17.3.1-2
+-   Fix make check issues
 *   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 17.3.1-1
 -   Initial packaging for Photon
