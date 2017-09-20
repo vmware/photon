@@ -2,6 +2,7 @@ from Logger import Logger
 from constants import constants
 from sets import Set
 import copy
+from SpecData import SPECS
 
 
 
@@ -46,7 +47,7 @@ class PackageBuildDataGenerator(object):
         sortListForPkg=[]
         
         for p in runTimeDepPkgList:
-            basePkg=constants.specData.getSpecName(p)
+            basePkg=SPECS.getData().getSpecName(p)
             for bPkg in self.__sortedBuildDependencyGraph[basePkg]:
                 if bPkg not in sortListForPkg:
                     sortListForPkg.append(bPkg)
@@ -121,7 +122,7 @@ class PackageBuildDataGenerator(object):
         self.__sortedPackageList=sortedList
     
     def __constructBuildAndRunTimeDependencyGraph(self,package):
-        basePackage=constants.specData.getSpecName(package)
+        basePackage=SPECS.getData().getSpecName(package)
 
         addBuildTimeGraph=True
         addRunTimeGraph=True
@@ -132,19 +133,19 @@ class PackageBuildDataGenerator(object):
         
         nextPackagesToConstructGraph=[]
         if addBuildTimeGraph:
-            listDependentRpmPackages=constants.specData.getBuildRequiresForPackage(basePackage)
+            listDependentRpmPackages=SPECS.getData().getBuildRequiresForPackage(basePackage)
             listDependentPackages=[]
             for rpmPkg in listDependentRpmPackages:
-                basePkg=constants.specData.getSpecName(rpmPkg)
+                basePkg=SPECS.getData().getSpecName(rpmPkg)
                 if basePkg not in listDependentPackages:
                     listDependentPackages.append(basePkg)
             self.__buildDependencyGraph[basePackage]=listDependentPackages
             nextPackagesToConstructGraph.extend(listDependentPackages)
         
         if addRunTimeGraph:
-            listRpmPackages=constants.specData.getPackages(basePackage)
+            listRpmPackages=SPECS.getData().getPackages(basePackage)
             for rpmPkg in listRpmPackages:
-                listDependentRpmPackages=constants.specData.getRequiresAllForPackage(rpmPkg)
+                listDependentRpmPackages=SPECS.getData().getRequiresAllForPackage(rpmPkg)
                 self.__runTimeDependencyGraph[rpmPkg]=listDependentRpmPackages[:]
                 nextPackagesToConstructGraph.extend(listDependentRpmPackages)
 

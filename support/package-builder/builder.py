@@ -8,6 +8,7 @@ from constants import constants
 from PackageManager import PackageManager
 import json
 import sys
+from SpecData import SPECS
 from SpecUtils import Specutils
 from StringUtils import StringUtils
 import collections
@@ -135,6 +136,8 @@ def main():
 
     try:
         constants.initialize(options)
+        # parse SPECS folder
+        SPECS();
         if package == "packages_list":
             buildPackagesList(options.buildRootPath+"/../packages_list.csv")
         elif options.generatePkgYamlFiles:
@@ -162,15 +165,15 @@ def main():
 def buildPackagesList(csvFilename):
     csvFile = open(csvFilename, "w")
     csvFile.write("Package,Version,License,URL,Sources,Patches\n")
-    listPackages =  constants.specData.getListPackages()
+    listPackages =  SPECS.getData().getListPackages()
     listPackages.sort()
     for package in listPackages:
         name = package
-        version = constants.specData.getVersion(package)
-        license = constants.specData.getLicense(package)
-        listPatches = constants.specData.getPatches(package)
-        url = constants.specData.getURL(package)
-        listSourceNames = constants.specData.getSources(package)
+        version = SPECS.getData().getVersion(package)
+        license = SPECS.getData().getLicense(package)
+        listPatches = SPECS.getData().getPatches(package)
+        url = SPECS.getData().getURL(package)
+        listSourceNames = SPECS.getData().getSources(package)
         sources = ""
         patches = ""
         if listPatches is not None:
@@ -196,27 +199,27 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
         cmdUtils.runCommandInShell("mkdir -p "+yamlSourceDir)
     if singleFile:
         yamlFile = open(yamlSourceDir+"/sources_list.yaml", "w")
-    listPackages =  constants.specData.getListPackages()
+    listPackages =  SPECS.getData().getListPackages()
     listPackages.sort()
     import PullSources
     for package in listPackages:
         if package in blackListPkgs:
             continue
         ossname = package
-        ossversion = constants.specData.getVersion(package)
+        ossversion = SPECS.getData().getVersion(package)
         modified = False
-        listPatches = constants.specData.getPatches(package)
+        listPatches = SPECS.getData().getPatches(package)
         if listPatches is not None and len(listPatches) > 0 :
             modified = True
-        url = constants.specData.getSourceURL(package)
+        url = SPECS.getData().getSourceURL(package)
         if url is None:
-            url = constants.specData.getURL(package)
+            url = SPECS.getData().getURL(package)
 
         sourceName = None
-        listSourceNames = constants.specData.getSources(package)
+        listSourceNames = SPECS.getData().getSources(package)
         if len(listSourceNames) >0:
             sourceName=listSourceNames[0]
-            sha1 = constants.specData.getSHA1(package, sourceName)
+            sha1 = SPECS.getData().getSHA1(package, sourceName)
             if sha1 is not None:
                 PullSources.get(sourceName, sha1, yamlSourceDir, constants.pullsourcesConfig, logger)
 
@@ -247,14 +250,14 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
         cmdUtils.runCommandInShell("mkdir -p "+yamlSrpmDir)
     if singleFile:
         yamlFile = open(yamlSrpmDir+"/srpm_list.yaml", "w")
-    listPackages =  constants.specData.getListPackages()
+    listPackages =  SPECS.getData().getListPackages()
     listPackages.sort()
     for package in listPackages:
         if package in blackListPkgs:
             continue
         ossname = package
-        ossversion = constants.specData.getVersion(package)
-        ossrelease = constants.specData.getRelease(package)
+        ossversion = SPECS.getData().getVersion(package)
+        ossrelease = SPECS.getData().getRelease(package)
 
         listFoundSRPMFiles = cmdUtils.findFile(ossname+"-"+ossversion+"-"+ossrelease+".src.rpm",srpmPath)
         srpmName = None
@@ -295,7 +298,7 @@ def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThr
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType)
 
 def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger, buildThreads, pkgInfoJsonFile, pkgBuildType):
-    listPackages = constants.specData.getListPackages()
+    listPackages = SPECS.getData().getListPackages()
 
     logger.info("List of packages to build:")
     logger.info(listPackages)

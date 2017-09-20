@@ -10,7 +10,6 @@ from RepoDeps import RepoQueryDependency
 import sys
 import os
 from optparse import OptionParser
-from jsonwrapper import JsonWrapper
 
 DEFAULT_INPUT_TYPE      =    "json"
 DEFAULT_DISPLAY_OPTION  =    "tree"

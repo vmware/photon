@@ -4,6 +4,7 @@ from constants import constants
 from Logger import Logger
 import threading
 from Queue import PriorityQueue
+from SpecData import SPECS
 
 class Scheduler(object):
     
@@ -34,12 +35,12 @@ class Scheduler(object):
     @staticmethod
     def getBuildRequiredPackages(package):
         listRequiredRPMPackages = []
-        listRequiredRPMPackages.extend(constants.specData.getBuildRequiresForPackage(package))
+        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
 
         listRequiredPackages = []
 
         for pkg in listRequiredRPMPackages:
-            basePkg = constants.specData.getSpecName(pkg)
+            basePkg = SPECS.getData().getSpecName(pkg)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
 
@@ -148,13 +149,13 @@ class Scheduler(object):
     @staticmethod
     def getRequiredPackages(package):
         listRequiredRPMPackages=[]
-        listRequiredRPMPackages.extend(constants.specData.getBuildRequiresForPackage(package))
-        listRequiredRPMPackages.extend(constants.specData.getRequiresAllForPackage(package))
+        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
+        listRequiredRPMPackages.extend(SPECS.getData().getRequiresAllForPackage(package))
         
         listRequiredPackages=[]
 
         for pkg in listRequiredRPMPackages:
-            basePkg=constants.specData.getSpecName(pkg)
+            basePkg=SPECS.getData().getSpecName(pkg)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
         
