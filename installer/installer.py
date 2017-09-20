@@ -59,7 +59,7 @@ class Installer(object):
             self.progress_width = self.width - self.progress_padding
             self.starty = (self.maxy - self.height) / 2
             self.startx = (self.maxx - self.width) / 2
-            self.window = Window(self.height, self.width, self.maxy, self.maxx, 'Installing Photon', False, items =[])
+            self.window = Window(self.height, self.width, self.maxy, self.maxx, 'Installing Photon OS', False, items =[])
             self.progress_bar = ProgressBar(self.starty + 3, self.startx + self.progress_padding / 2, self.progress_width)
 
         signal.signal(signal.SIGINT, self.exit_gracefully)
@@ -232,7 +232,7 @@ class Installer(object):
 
         if self.iso_installer:
             self.progress_bar.hide()
-            self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
+            self.window.addstr(0, 0, 'Congratulations, Photon OS has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
             eject_cdrom = True
             if 'ui_install' in self.install_config:
                 self.window.content_window().getch()

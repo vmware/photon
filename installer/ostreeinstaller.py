@@ -164,7 +164,7 @@ class OstreeInstaller(Installer):
         self.run("{} {} {}".format(self.unmount_disk_command, '-w', self.photon_root))
         self.progress_bar.update_loading_message("Ready to restart")
         self.progress_bar.hide()
-        self.window.addstr(0, 0, 'Congratulations, Photon RPM-OSTree Host has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
+        self.window.addstr(0, 0, 'Congratulations, Photon OS RPM-OSTree Host has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
         if 'ui_install' in self.install_config:
             self.window.content_window().getch()
         return ActionResult(True, None)
