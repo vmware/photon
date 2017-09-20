@@ -156,8 +156,8 @@ if __name__ == '__main__':
             shutil.rmtree(additional_rpms_path, ignore_errors=True)
 
         utils.runshellcommand("mount -o bind /proc {}".format(options.mount_path + "/proc"))
-        utils.runshellcommand("mount -o rbind /dev {}".format(options.mount_path + "/dev"))
-        utils.runshellcommand("mount --make-rslave {}".format(options.mount_path + "/dev"))
+        utils.runshellcommand("mount -o bind /dev {}".format(options.mount_path + "/dev"))
+        utils.runshellcommand("mount -o bind /dev/pts {}".format(options.mount_path + "/dev/pts"))
         utils.runshellcommand("mount -o bind /sys {}".format(options.mount_path + "/sys"))
 
         if 'additionalfiles' in config:
@@ -179,7 +179,8 @@ if __name__ == '__main__':
             shutil.rmtree(options.mount_path + "/tempscripts", ignore_errors=True)
 
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/sys"))
-        utils.runshellcommand("umount -R -l {}".format(options.mount_path + "/dev"))
+        utils.runshellcommand("umount -l {}".format(options.mount_path + "/dev/pts"))
+        utils.runshellcommand("umount -l {}".format(options.mount_path + "/dev"))
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/proc"))
         utils.runshellcommand("umount -l {}".format(options.mount_path))
 
