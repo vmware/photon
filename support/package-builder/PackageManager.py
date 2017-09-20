@@ -10,6 +10,7 @@ from PackageUtils import PackageUtils
 from ToolChainUtils import ToolChainUtils
 from Scheduler import Scheduler
 from ThreadPool import ThreadPool
+from SpecData import SPECS
 
 class PackageManager(object):
 
@@ -63,17 +64,17 @@ class PackageManager(object):
         pkgUtils = PackageUtils(self.logName,self.logPath)
         for rpmfile in listRPMFiles:
             package,version,release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
-            if constants.specData.isRPMPackage(package):
-                specVersion=constants.specData.getVersion(package)
-                specRelease=constants.specData.getRelease(package)
+            if SPECS.getData().isRPMPackage(package):
+                specVersion=SPECS.getData().getVersion(package)
+                specRelease=SPECS.getData().getRelease(package)
                 if version == specVersion and release == specRelease:
                     listFoundRPMPackages.append(package)
         #Mark package available only if all sub packages are available
         for package in listFoundRPMPackages:
-            basePkg = constants.specData.getSpecName(package)
+            basePkg = SPECS.getData().getSpecName(package)
             if basePkg in listAvailablePackages:
                 continue;
-            listRPMPackages = constants.specData.getRPMPackages(basePkg)
+            listRPMPackages = SPECS.getData().getRPMPackages(basePkg)
             packageIsAlreadyBuilt = True
             for rpmpkg in listRPMPackages:
                 if rpmpkg not in listFoundRPMPackages:
@@ -102,7 +103,7 @@ class PackageManager(object):
             updateBuiltRPMSList = True
             listOfPackagesAlreadyBuilt = self.listOfPackagesAlreadyBuilt[:]
             for pkg in listOfPackagesAlreadyBuilt:
-                listDependentRpmPackages = constants.specData.getRequiresAllForPackage(pkg)
+                listDependentRpmPackages = SPECS.getData().getRequiresAllForPackage(pkg)
                 needToRebuild = False
                 for dependentPkg in listDependentRpmPackages:
                     if dependentPkg not in self.listOfPackagesAlreadyBuilt:

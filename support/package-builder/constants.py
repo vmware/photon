@@ -1,4 +1,3 @@
-from SpecData import SerializableSpecObjectsUtils
 from Logger import Logger
 
 class constants(object):
@@ -10,7 +9,6 @@ class constants(object):
     buildNumber="0000000"
     releaseVersion="NNNnNNN"
     topDirPath=""
-    specData=None
     buildRootPath="/mnt"
     prevPublishRPMRepo=""
     prevPublishXRPMRepo=""
@@ -335,6 +333,15 @@ class constants(object):
         "gdb",
         "glibc" ]
 
+    # .spec file might contain lines such as
+    # Requires(post):/sbin/useradd
+    # Build system should interpret it as
+    # Requires: shadow
+    providedBy={
+        "/sbin/useradd":"shadow",
+        "/sbin/groupadd":"shadow"
+    }
+
     @staticmethod
     def initialize(options):
         constants.dist = options.dist
@@ -349,8 +356,6 @@ class constants(object):
         constants.prevPublishRPMRepo = options.publishRPMSPath
         constants.prevPublishXRPMRepo = options.publishXRPMSPath
         constants.buildRootPath=options.buildRootPath
-        constants.specData = SerializableSpecObjectsUtils(constants.logPath)
-        constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
         constants.pullsourcesConfig = options.pullsourcesConfig
         constants.inputRPMSPath=options.inputRPMSPath
         constants.testForceRPMS=[]
@@ -361,44 +366,4 @@ class constants(object):
         constants.tmpDirPath = "/dev/shm"
         if constants.rpmCheck:
             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
-        constants.updateRPMMacros()
 
-    @staticmethod
-    def updateRPMMacros():
-        #adding distribution rpm macro
-        constants.specData.addMacro("dist",constants.dist)
-
-        #adding buildnumber rpm macro
-        constants.specData.addMacro("photon_build_number",constants.buildNumber)
-
-        #adding releasenumber rpm macro
-        constants.specData.addMacro("photon_release_version",constants.releaseVersion)
-
-        #adding kernelversion rpm macro
-        kernelversion = constants.specData.getVersion("linux")
-        constants.specData.addMacro("KERNEL_VERSION",kernelversion)
-
-        #adding openjre8 version rpm macro
-        java8version = constants.specData.getVersion("openjre8")
-        constants.specData.addMacro("JAVA8_VERSION",java8version)
-
-        #adding kernelrelease rpm macro
-        kernelrelease = constants.specData.getRelease("linux")
-        constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
-
-        #adding kernelsubrelease rpm macro
-        a,b,c = kernelversion.split(".")
-        kernelsubrelease = '%02d%02d%03d%03d' % (int(a),int(b),int(c),int(kernelrelease.replace(constants.dist,"")))
-        if kernelsubrelease:
-            kernelsubrelease = "."+kernelsubrelease
-            constants.specData.addMacro("kernelsubrelease",kernelsubrelease)
-
-        #adding check rpm macro
-        if constants.rpmCheck:
-            constants.specData.addMacro("with_check","1")
-        else:
-            constants.specData.addMacro("with_check","0")
-
-    @staticmethod
-    def setTestForceRPMS(listsPackages):
-         constants.testForceRPMS=listsPackages
