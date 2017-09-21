@@ -615,7 +615,7 @@ class PackageUtils(object):
             rpmBuildCmd += ' --define \"%s\"' % macro
         rpmBuildCmd += " " + specFile
         rpmBuildCmd = "/bin/bash -l -c '" + rpmBuildCmd + " > " + rpmLogFile + " 2>&1'"
-        rpmBuildCmd = "docker exec " + str(containerID.short_id) + " " + rpmBuildCmd
+        rpmBuildCmd = "docker exec -t " + str(containerID.short_id) + " " + rpmBuildCmd
 
         cmdUtils = CommandUtils()
         self.logger.info("Building rpm for package: " + package)
