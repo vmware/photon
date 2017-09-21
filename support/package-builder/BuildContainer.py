@@ -2,6 +2,7 @@ from PackageUtils import PackageUtils
 from Logger import Logger
 from ToolChainUtils import ToolChainUtils
 from CommandUtils import CommandUtils
+from ChrootUtils import ChrootUtils
 import os.path
 import sys
 from constants import constants
@@ -27,6 +28,17 @@ class BuildContainer(object):
         self.pkgBuildOptionFile = pkgBuildOptionFile
 
     def prepareBuildContainer(self, containerTaskName, packageName, isToolChainPackage=False):
+        # Prepare an empty chroot environment to let docker use the BUILD folder.
+        # This avoids docker using overlayFS which will cause make check failure.
+        chrootName="build-"+packageName
+        chrUtils = ChrootUtils(self.logName,self.logPath)
+        returnVal,chrootID = chrUtils.createChroot(chrootName)
+        if not returnVal:
+            raise Exception("Unable to prepare build root")
+        cmdUtils = CommandUtils()
+        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath)
+        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/BUILD")
+
         containerID = None
         mountVols = {
                         constants.prevPublishRPMRepo: {'bind': '/publishrpms', 'mode': 'ro'},
@@ -35,6 +47,7 @@ class BuildContainer(object):
                         constants.rpmPath: {'bind': constants.topDirPath + "/RPMS", 'mode': 'rw'},
                         constants.sourceRpmPath: {'bind': constants.topDirPath + "/SRPMS", 'mode': 'rw'},
                         constants.logPath + "/" + self.logName: {'bind': constants.topDirPath + "/LOGS", 'mode': 'rw'},
+                        chrootID + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD", 'mode': 'rw'}
                     }
 
         containerName = containerTaskName
@@ -49,21 +62,20 @@ class BuildContainer(object):
         try:
             self.logger.info("BuildContainer-prepareBuildContainer: Starting build container: " + containerName)
             #TODO: Is init=True equivalent of --sig-proxy?
+            privilegedDocker = False
+            cap_list = ['SYS_PTRACE']
             if packageName in constants.listReqPrivilegedDockerForTest:
-                containerID = self.dockerClient.containers.run(self.buildContainerImage,
+                privilegedDocker = True
+
+            containerID = self.dockerClient.containers.run(self.buildContainerImage,
                                                                detach=True,
-                                                               privileged=True,
+                                                               cap_add=cap_list,
+                                                               privileged=privilegedDocker,
                                                                name=containerName,
                                                                network_mode="host",
                                                                volumes=mountVols,
                                                                command="/bin/bash -l -c /wait.sh")
-            else:
-                containerID = self.dockerClient.containers.run(self.buildContainerImage,
-                                                               detach=True,
-                                                               name=containerName,
-                                                               network_mode="host",
-                                                               volumes=mountVols,
-                                                               command="/bin/bash -l -c /wait.sh")
+
             self.logger.debug("Started Photon build container for task " + containerTaskName
                                + " ID: " + containerID.short_id)
             if not containerID:
@@ -71,7 +83,7 @@ class BuildContainer(object):
         except Exception as e:
             self.logger.debug("Unable to start Photon build container for task " + containerTaskName)
             raise e
-        return containerID
+        return containerID, chrootID
 
     def findPackageNameFromRPMFile(self, rpmfile):
         rpmfile = os.path.basename(rpmfile)
@@ -130,12 +142,13 @@ class BuildContainer(object):
         #should initialize a logger based on package name
         containerTaskName = "build-" + package
         containerID = None
+        chrootID = None
         isToolChainPackage = False
         if package in constants.listToolChainPackages:
             isToolChainPackage = True
         destLogPath = constants.logPath + "/build-"+package
         try:
-            containerID = self.prepareBuildContainer(containerTaskName, package, isToolChainPackage)
+            containerID, chrootID = self.prepareBuildContainer(containerTaskName, package, isToolChainPackage)
             if not os.path.isdir(destLogPath):
                 cmdUtils = CommandUtils()
                 cmdUtils.runCommandInShell("mkdir -p "+destLogPath)
@@ -191,6 +204,10 @@ class BuildContainer(object):
         # Remove the container
         if containerID is not None:
             containerID.remove(force=True)
+        # Remove the dummy chroot
+        if chrootID is not None:
+            chrUtils = ChrootUtils(self.logName,self.logPath)
+            chrUtils.destroyChroot(chrootID)
 
     def findRunTimeRequiredRPMPackages(self, rpmPackage):
         listRequiredPackages = constants.specData.getRequiresForPackage(rpmPackage)
