@@ -59,7 +59,7 @@ class Installer(object):
             self.progress_width = self.width - self.progress_padding
             self.starty = (self.maxy - self.height) / 2
             self.startx = (self.maxx - self.width) / 2
-            self.window = Window(self.height, self.width, self.maxy, self.maxx, 'Installing Photon', False, items =[])
+            self.window = Window(self.height, self.width, self.maxy, self.maxx, 'Installing Photon', False)
             self.progress_bar = ProgressBar(self.starty + 3, self.startx + self.progress_padding / 2, self.progress_width)
 
         signal.signal(signal.SIGINT, self.exit_gracefully)

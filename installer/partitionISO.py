@@ -31,7 +31,7 @@ class PartitionISO(object):
         for index, device in enumerate(self.devices):
             self.disk_size.append((device.path, int(device.size) / 1048576))     
 
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Welcome to the Photon installer', False, items=[], can_go_next=False)
+        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Welcome to the Photon installer', False, can_go_next=False)
         Device.refresh_devices()
 
     def display(self, params):

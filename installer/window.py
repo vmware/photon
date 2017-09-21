@@ -10,7 +10,7 @@ from action import Action
 
 class Window(Action):
 
-    def __init__(self, height, width, maxy, maxx, title, can_go_back, action_panel = None, items = [], menu_helper = None, position = 0, tab_enabled = True, can_go_next = False, read_text=False):
+    def __init__(self, height, width, maxy, maxx, title, can_go_back, action_panel = None, items = None, menu_helper = None, position = 0, tab_enabled = True, can_go_next = False, read_text=False):
         self.can_go_back = can_go_back
         self.can_go_next = can_go_next
         self.height = height
@@ -27,7 +27,10 @@ class Window(Action):
         self.read_text=read_text
 
         self.position = position
-        self.items = items
+        if items:
+            self.items = items
+        else:
+            self.items = []
         self.menu_helper = menu_helper
         self.contentwin.addstr(0, (width - 1 - len(title)) / 2 , title)#
         newy = 5;
@@ -39,9 +42,8 @@ class Window(Action):
 
         self.dist = 0
 
-        if items:
-        #To select items, we need to identify up left right keys
-
+        if len(self.items) > 0:
+            #To select items, we need to identify up left right keys
             self.dist=self.width-11
             self.dist-=len('<Go Back>')
             count=0

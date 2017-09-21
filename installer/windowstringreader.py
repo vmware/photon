@@ -25,7 +25,7 @@ class WindowStringReader(object):
         self.tab_enabled=False
         self.can_go_next=True
 
-        self.window = Window(self.height, self.width, self.maxy, self.maxx, self.title, True, items=[], tab_enabled=self.tab_enabled, position=1, can_go_next=self.can_go_next, read_text=self.can_go_next)
+        self.window = Window(self.height, self.width, self.maxy, self.maxx, self.title, True, tab_enabled=self.tab_enabled, position=1, can_go_next=self.can_go_next, read_text=self.can_go_next)
         self.read_text = ReadText(maxy, maxx, self.window.content_window(), self.inputy, install_config, field, confirmation_err_msg, echo_char, accepted_chars, validation_fn, conversion_fn, default_string, tab_enabled=self.tab_enabled)
         self.window.set_action_panel(self.read_text)
         self.window.addstr(0, 0, self.display_string)
