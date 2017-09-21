@@ -3,7 +3,7 @@
 
 Name:           python-ConcurrentLogHandler
 Version:        0.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Concurrent logging handler (drop-in replacement for RotatingFileHandler) Python 2.6+
 License:        Apache-2.0
 Group:          Development/Languages/Python
@@ -58,11 +58,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
-%check
-python2 setup.py test
-pushd ../p3dir
-python3 setup.py test
-popd
+#No test case available for this package
 
 %files
 %defattr(-,root,root,-)
@@ -77,5 +73,7 @@ popd
 %exclude /usr/tests/stresstest.py
 
 %changelog
+*   Thu Sep 21 2017 Bo Gan <ganb@vmware.com> 0.9.2-1
+-   Disable test as no tests are available
 *   Fri Aug 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.9.1-1
 -   Initial version of python-ConcurrentLogHandler package for Photon.
