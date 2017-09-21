@@ -55,6 +55,14 @@ class ToolChainUtils(object):
 
         self.logger.info("Successfully prepared chroot:"+chrootID)
 
+    def prepareDummyBuildRoot(self,chrootID):
+        self.logger.info("Preparing build environment")
+        cmdUtils = CommandUtils()
+        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath)
+        cmdUtils.runCommandInShell("mkdir -p " + chrootID + constants.topDirPath + "/BUILD")
+
+        self.logger.info("Successfully prepared dummy chroot:" + chrootID)
+
     def findRPMFileInGivenLocation(self,package,rpmdirPath):
         cmdUtils = CommandUtils()
         listFoundRPMFiles = cmdUtils.findFile(package+"-*.rpm",rpmdirPath)
