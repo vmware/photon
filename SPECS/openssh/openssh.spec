@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -38,7 +38,7 @@ This provides the ssh client utilities.
 %package server
 Summary: openssh server applications
 Requires:   Linux-PAM
-Requires:   shadow
+Requires:   (shadow or toybox)
 Requires:   ncurses-terminfo
 Requires:   openssh-clients = %{version}-%{release}
 Requires(post): /bin/chown
@@ -178,6 +178,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-7
+-   Requires shadow or toybox
 *   Thu Sep 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-6
 -   sshd config: revert MaxSessions to original value
 *   Thu Aug 31 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-5
