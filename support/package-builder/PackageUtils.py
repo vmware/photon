@@ -85,26 +85,23 @@ class PackageUtils(object):
     def installRPMSInAOneShot(self,chrootID,destLogPath):
         chrootCmd=self.runInChrootCommand+" "+chrootID
         rpmInstallcmd=self.rpmBinary+" "+ self.installRPMPackageOptions
+        cmdUtils = CommandUtils()
         if self.noDepsRPMFilesToInstallInAOneShot != "":
             self.logger.info("Installing nodeps rpms: " + self.noDepsPackagesToInstallInAOneShot)
-            logFile=chrootID+constants.topDirPath+"/LOGS/install_rpms_nodeps.log"
-            cmdUtils = CommandUtils()
+            logFile=destLogPath+"/install_rpms_nodeps.log"
             cmd = rpmInstallcmd+" "+self.nodepsRPMPackageOptions + " " + self.noDepsRPMFilesToInstallInAOneShot
             returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
-            if destLogPath is not None:
-                shutil.copy2(logFile, destLogPath)
             if not returnVal:
+                self.logger.debug("Command Executed:" + cmd)
                 self.logger.error("Unable to install rpms")
                 raise Exception("RPM installation failed")
         if self.rpmFilesToInstallInAOneShot != "":
             self.logger.info("Installing rpms: " + self.packagesToInstallInAOneShot)
-            logFile=chrootID+constants.topDirPath+"/LOGS/install_rpms.log"
-            cmdUtils = CommandUtils()
+            logFile=destLogPath+"/install_rpms.log"
             cmd=rpmInstallcmd+" "+self.rpmFilesToInstallInAOneShot
             returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
-            if destLogPath is not None:
-                shutil.copy2(logFile, destLogPath)
             if not returnVal:
+                self.logger.debug("Command Executed:" + cmd)
                 self.logger.error("Unable to install rpms")
                 raise Exception("RPM installation failed")
 
@@ -226,8 +223,7 @@ class PackageUtils(object):
 
     def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
 
-        rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
-        rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+rpmbuildDistOption
+        rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.info("#"*(68+2*len(package)))
@@ -595,9 +591,7 @@ class PackageUtils(object):
 
     def buildRPMinContainer(self, specFile, rpmLogFile, destLogFile, containerID, package, macros):
 
-        rpmbuildDistOption = '--define \"dist %s\"' % constants.dist
-        rpmBuildCmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption \
-                          + " " + rpmbuildDistOption
+        rpmBuildCmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.info("#"*(68+2*len(package)))
