@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.47
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -49,7 +49,8 @@ BuildRequires: libmspack-devel
 BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
-Requires:      filesystem kmod coreutils
+Requires:      filesystem (kmod or toybox)
+Requires(post):(coreutils or toybox)
 %define uname_r %{version}-%{release}-esx
 
 %description
@@ -192,6 +193,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-2
+-   Requires coreutils/kmod or toybox
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1
 -   Fix CVE-2017-11600
 *   Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1

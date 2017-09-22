@@ -1,7 +1,7 @@
 Summary: A New Scripting Dynamic Tracing Tool For Linux
 Name:    ktap
 Version: 0.4
-Release: 7%{?kernelsubrelease}%{?dist}
+Release: 8%{?kernelsubrelease}%{?dist}
 License: GPLv2
 URL: https://github.com/ktap/ktap
 Source: %{name}-master.zip
@@ -14,7 +14,7 @@ BuildRequires: elfutils-devel
 BuildRequires: linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires: linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires: unzip
-Requires: kmod
+Requires: (kmod or toybox)
 Requires: linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %description
@@ -48,6 +48,8 @@ make install DESTDIR=%{buildroot} KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/ktapvm.ko
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.4-8
+-   Requires ktap or toybox
 *   Fri Jun 09 2017 Chang Lee <changlee@vmware.com> 0.4-7
 -   Remove %check
 *   Thu Dec 15 2016 Alexey Makhalov <amakhalov@vmware.com> 0.4-6

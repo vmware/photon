@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -32,7 +32,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 
 Requires:       systemd
-Requires:       net-tools
+Requires:       (net-tools or toybox)
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-configobj
@@ -134,7 +134,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-*   Wed Sep 21 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-11
+*   Wed Sep 20 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.9-12
+-   Requires net-tools or toybox
+*   Wed Sep 20 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-11
 -   Fix the interface id returned from vmxguestinfo
 *   Tue Aug 22 2017 Chang Lee <changlee@vmware.com> 0.7.9-10
 -   Fixed %check
