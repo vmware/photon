@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.8.20p2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -12,7 +12,7 @@ Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 Requires:       Linux-PAM
-Requires:       shadow
+Requires:       (shadow or toybox)
 
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users) 
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-3
+-   Requires shadow or toybox
 *   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 1.8.20p2-2
 -   Including /usr/lib/tmpfiles.d/sudo.conf from %files
 *   Thu Jun 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.20p2-1
