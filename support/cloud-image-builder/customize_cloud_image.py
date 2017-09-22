@@ -37,10 +37,11 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
         with open(ovfinfo_path) as f:
             lines = f.readlines()
             for line in fileinput.input(ovf_path, inplace=True):
-                if line.strip() == '</VirtualSystem>':
+                if line.strip() == '</VirtualHardwareSection>':
                     for ovfinfoline in lines:
                         print ovfinfoline,
-                print line,
+                else:
+                    print line,
 
     if os.path.exists(mf_path):
         os.remove(mf_path)

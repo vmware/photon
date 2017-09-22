@@ -1,3 +1,4 @@
+        </VirtualHardwareSection>
  	<ProductSection> 
  		<Info>Information about the installed software</Info> 
  		<Product>Photon OS</Product> 
