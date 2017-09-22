@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.47
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -59,7 +59,8 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:	audit-devel
-Requires:       filesystem kmod coreutils
+Requires:       filesystem (kmod or toybox)
+Requires(post):(coreutils or toybox)
 %define uname_r %{version}-%{release}
 
 %description
@@ -300,6 +301,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-2
+-   Requires coreutils/kmod or toybox
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1
 -   Fix CVE-2017-11600
 *   Tue Aug 22 2017 Anish Swaminathan <anishs@vmware.com> 4.9.43-2

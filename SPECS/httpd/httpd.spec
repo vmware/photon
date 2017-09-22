@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.27
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -25,7 +25,8 @@ Requires:       apr-util
 Requires:       openssl
 Requires:       openldap
 Requires:       lua
-Requires:       shadow
+Requires(pre):  /sbin/useradd /sbin/groupadd
+Requires(postun):/sbin/userdel /sbin/groupdel
 Provides:       apache2
 %description
 The Apache HTTP Server.
@@ -180,6 +181,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.27-3
+-   Remove shadow from requires and use explicit tools for post actions
 *   Mon Aug 07 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-2
 -   Add shadow to requires for useradd/groupadd
 *   Mon Jul 24 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-1
