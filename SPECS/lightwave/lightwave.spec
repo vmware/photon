@@ -1,12 +1,13 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL: 	       https://github.com/vmware/lightwave
 Source0:       lightwave-%{version}.tar.gz
+Patch0:        lightwave-gssapi-unix-creds-separation.patch
 %define sha1 lightwave=e8cc3582ffe0586b9b21ef87d9abe4160854e9c4
 Distribution:  Photon
 
@@ -123,6 +124,7 @@ Lightwave POST service
 
 %prep
 %setup -qn lightwave-%{version}
+%patch0 -p1
 sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/lib64/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
 sed -i 's,/opt/vmware/bin/ic-join,/usr/bin/ic-join,' config/scripts/domainjoin.sh
@@ -970,6 +972,7 @@ fi
 %{_lib64dir}/libgssapi_ntlm.so*
 %{_lib64dir}/libgssapi_srp.so*
 %{_lib64dir}/libgssapi_unix.so*
+%{_lib64dir}/libgssapi_unix_creds.so*
 %{_lib64dir}/libvmdnsclient.so*
 %{_lib64dir}/libcfgutils.so*
 
@@ -1062,6 +1065,7 @@ fi
 %{_includedir}/vmdns.h
 %{_includedir}/vmdnstypes.h
 %{_includedir}/vmmetrics.h
+%{_includedir}/gssapi_creds_plugin.h
 
 # TBD - not sure if these should be included or excluded
 #
@@ -1115,6 +1119,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Fri Sep 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-4
+-   Patch for unix gsssapi creds separation
 *   Tue Aug 22 2017 Rui Gu <ruig@vmware.com> 1.3.1-3
 -   Add 'go' to BuildRequires
 *   Thu Aug 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-2
