@@ -367,3 +367,6 @@ class constants(object):
         if constants.rpmCheck:
             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
 
+    @staticmethod
+    def setTestForceRPMS(listsPackages):
+        constants.testForceRPMS=listsPackages
