@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p10
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -20,7 +20,7 @@ BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 Requires:       systemd
-Requires:       shadow
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
 %description
@@ -144,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.8p10-4
+-   Remove shadow from requires and use explicit tools for post actions
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  4.2.8p10-3
 -   Disabled ntpd service by default
 *   Mon Apr 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.8p10-2

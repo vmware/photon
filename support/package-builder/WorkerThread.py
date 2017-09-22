@@ -28,7 +28,7 @@ class WorkerThread(threading.Thread):
                 break
             self.logger.info("Thread "+self.name+" is building package:"+ pkg)
             if self.pkgBuildType == "chroot":
-                pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
+                pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile)
             elif self.pkgBuildType == "container":
                 pkgBuilder = BuildContainer(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
             t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))

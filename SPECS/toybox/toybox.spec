@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.7.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -22,6 +22,8 @@ environment.
 %patch0 -p1
 
 %build
+# Move sed to /bin
+sed -i 's#TOYFLAG_USR|TOYFLAG_BIN#TOYFLAG_BIN#' toys/posix/sed.c
 cp %{SOURCE1} .config
 NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g"
 
@@ -48,6 +50,9 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %{_sbindir}/*
 
 %changelog
+*   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-5
+-   Move sed to /bin
+-   Remove kmod and systemd toys due to incomplete
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-4
 -   Fix compilation issue for glibc-2.26
 *   Thu Jun 01 2017 Chang Lee <changlee@vmware.com> 0.7.3-3
