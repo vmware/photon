@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -19,7 +19,6 @@ BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  readline-devel
 BuildRequires:  xz-devel
-Requires:       bzip2
 Requires:       ncurses
 Requires:       openssl
 Requires:       python3-libs = %{version}-%{release}
@@ -44,11 +43,12 @@ BuildRequires:  expat-devel >= 2.1.0
 BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  ncurses-devel
 BuildRequires:  sqlite-devel
-Requires:       coreutils
+Requires:       (coreutils or toybox)
 Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
 Requires:       sqlite-libs
+Requires:       bzip2-libs
 
 
 %description    libs
@@ -263,6 +263,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.6/test/*
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.1-9
+-   Requires coreutils or toybox
+-   Requires bzip2-libs
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 3.6.1-8
 -   Remove devpts mount in check
 *   Mon Aug 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-7

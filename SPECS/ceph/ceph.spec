@@ -13,7 +13,7 @@
 #################################################################################
 Name:       ceph
 Version:    11.2.0
-Release:    9%{?dist}
+Release:    10%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -57,7 +57,7 @@ BuildRequires:  python3-xml
 BuildRequires:  python-requests
 BuildRequires:  python-sphinx
 BuildRequires:  snappy-devel
-BuildRequires:  util-linux
+BuildRequires:  (util-linux or toybox)
 BuildRequires:  valgrind
 BuildRequires:  xfsprogs
 BuildRequires:  xfsprogs-devel
@@ -99,12 +99,12 @@ Requires:      librgw2 = %{epoch}:%{version}-%{release}
 Requires:      python2
 Requires:      python-requests
 Requires:      python-setuptools
-Requires:      grep
+Requires:      /bin/grep
 Requires:      xfsprogs
 Requires:      logrotate
-Requires:      util-linux
-Requires:      findutils
-Requires:      which
+Requires:      (util-linux or toybox)
+Requires:      (findutils or toybox)
+Requires:      /bin/which
 %description base
 Base is the package that includes all the files shared amongst ceph servers
 
@@ -997,6 +997,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 11.2.0-10
+-   Requires /bin/grep, /bin/which, or toybox
 *   Tue Aug 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 11.2.0-9
 -   Add version and release number to python-ceph
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 11.2.0-8

@@ -47,7 +47,7 @@ class ToolChainUtils(object):
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/BUILDROOT")
 
         prepareChrootCmd=self.prepareBuildRootCmd+" "+chrootID
-        logFile=constants.logPath+"/prepareBuildRoot.log"
+        logFile=self.logPath+"/prepareBuildRoot.log"
         returnVal=cmdUtils.runCommandInShell(prepareChrootCmd,logFile)
         if not returnVal:
             self.logger.error("Prepare build root script failed.Unable to prepare chroot.")
@@ -74,7 +74,7 @@ class ToolChainUtils(object):
             return None
 
     def buildCoreToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile):
-        self.logger.info("Building core tool chain packages.....")
+        self.logger.info("Building core toolchain packages.....")
         chrootID=None
         pkgCount = 0
         try:
@@ -83,8 +83,9 @@ class ToolChainUtils(object):
                 rpmPkg=pkgUtils.findRPMFileForGivenPackage(package)
                 if rpmPkg is not None:
                     continue
+                self.logger.info("Building core toolchain package: " + package)
                 chrUtils = ChrootUtils(self.logName,self.logPath)
-                chrootName="build-core-toolchain"
+                chrootName="build-"+package
                 destLogPath=constants.logPath+"/build-"+package
                 if not os.path.isdir(destLogPath):
                     cmdUtils = CommandUtils()
@@ -93,7 +94,7 @@ class ToolChainUtils(object):
                 if not returnVal:
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
-                self.installToolChainRPMS(chrootID, package)
+                self.installToolChainRPMS(chrootID, package, destLogPath)
                 pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
                 pkgUtils.buildRPMSForGivenPackage(package, chrootID, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
                 pkgCount += 1
@@ -109,7 +110,9 @@ class ToolChainUtils(object):
             raise e
         return pkgCount
                 
-    def installToolChainRPMS(self,chrootID, packageName):
+    def installToolChainRPMS(self,chrootID, packageName, logPath=None):
+        if logPath is None:
+            logPath=self.logPath
         cmdUtils = CommandUtils()
         self.prepareBuildRoot(chrootID)
         self.logger.info("Installing Tool Chain RPMS.......")
@@ -138,11 +141,11 @@ class ToolChainUtils(object):
             rpmFiles += " " + rpmFile
             packages += " " + package
 
-        self.logger.debug("Installing rpms:"+packages)
-        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
-        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
+        self.logger.debug("Installing toolchain rpms:"+packages)
+        cmd=self.rpmCommand + " -i -v --nodeps --noorder --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+        retVal = cmdUtils.runCommandInShell(cmd, logPath+"/install_toolchain_rpms.log")
+        if not retVal:
+            self.logger.debug("Command Executed:" + cmd)
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
         self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
@@ -156,6 +159,7 @@ class ToolChainUtils(object):
         self.logger.info("Installing package specific tool chain RPMs for " + packageName + ".......")
         rpmFiles = ""
         packages = ""
+        cmdUtils = CommandUtils()
         for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             print "DEBUG:" + package
@@ -169,12 +173,11 @@ class ToolChainUtils(object):
             rpmFiles += " " + rpmFile
             packages += " " + package
 
-        self.logger.debug("Installing rpms:"+packages)
-        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
-        print "Command Executed:" + cmd
-        process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
-        retval = process.wait()
-        if retval != 0:
+        self.logger.debug("Installing custom rpms:"+packages)
+        cmd=self.rpmCommand + " -i -v --nodeps --noorder --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+        retVal = cmdUtils.runCommandInShell(cmd, logPath+"/install_custom_toolchain_rpms.log")
+        if not retVal:
+            self.logger.debug("Command Executed:" + cmd)
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
         self.logger.info("Successfully installed all Tool Chain X RPMS")
