@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -25,6 +25,7 @@ Source4:        https://github.com/krallin/tini/tree/tini-949e6fa.tar.gz
 %define sha1 tini=e1a0e72ff74e1486e0701dd52983014777a7d949
 Source5:        https://github.com/cpuguy83/go-md2man/tree/go-md2man-a65d4d2.tar.gz
 %define sha1 go-md2man=e3d0865c583150f7c76e385a8b4a3f2432ca8ad8
+Source6:        default-disable.preset
 Patch0:         remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -171,14 +172,16 @@ for cli_file in LICENSE MAINTAINERS NOTICE README.md; do
     cp "cli/$cli_file" "build-docs/cli-$cli_file"
 done
 
+install -v -D -m 0644 %{SOURCE6} %{buildroot}%{_presetdir}/50-docker.preset
+
 %preun
 %systemd_preun docker.service
 
 %post
-%systemd_post docker.service
 if [ $1 -eq 1 ] ; then
     getent group docker >/dev/null || groupadd -r docker
 fi
+%systemd_post docker.service
 
 %postun
 %systemd_postun_with_restart docker.service
@@ -193,6 +196,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_unitdir}/docker.service
+%{_presetdir}/50-docker.preset
 %{_bindir}/docker
 %{_bindir}/dockerd
 %{_bindir}/docker-containerd
@@ -216,6 +220,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri Sep 22 2017 Bo Gan <ganb@vmware.com> 17.06.0-4
+-   disable docker service by default
 *   Fri Sep 08 2017 Bo Gan <ganb@vmware.com> 17.06.0-3
 -   Fix post scriptlet to invoke systemd_post
 *   Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 17.06.0-2
