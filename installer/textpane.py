@@ -95,29 +95,30 @@ class TextPane(Action):
     def read_file(self, text_file_path, line_width):
         with open(text_file_path, "r") as f:
             for line in f:
-                # remove the trailing white space.
-                line = line.rstrip()
                 # expand tab to 8 spaces.
                 line = line.expandtabs()
+                indent = len(line) - len(line.lstrip())
+                actual_line_width = line_width - indent
+                line = line.strip()
                 # Adjust the words on the lines
-                while len(line) > line_width:
-                    sep_index = line_width
+                while len(line) > actual_line_width:
+                    sep_index = actual_line_width
 
                     while sep_index > 0 and line[sep_index-1] != ' ' and line[sep_index] != ' ':
                         sep_index = sep_index - 1
 
                     current_line_width=sep_index
                     if sep_index == 0:
-                        current_line_width = line_width
+                        current_line_width = actual_line_width
                     currLine = line[:current_line_width]
                     line = line[current_line_width:]
                     line = line.strip()
 
                     # Lengthen the line with spaces
-                    self.lines.append(currLine + ' ' * (line_width - len(currLine)))
+                    self.lines.append(' ' * indent + currLine + ' ' *(actual_line_width - len(currLine)))
 
                 # lengthen the line with spaces
-                self.lines.append(line + ' ' * (line_width - len(line)))
+                self.lines.append(' ' * indent + line + ' ' *(actual_line_width - len(line)))
 
     def navigate(self, n):
         if self.show_scroll:
