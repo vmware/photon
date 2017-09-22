@@ -1,3 +1,4 @@
+        </VirtualHardwareSection>
  	<ProductSection> 
  		<Info>Information about the installed software</Info> 
  		<Product>Photon OS</Product> 
@@ -102,8 +103,8 @@ IF YOU DO NOT AGREE TO THE TERMS OF THIS BETA LICENSE AGREEMENT, THEN DO *NOT* C
 
     <AnnotationSection>
         <Info>Description of the Product</Info>
-        <Annotation>This OVA provides a minimal installed profile of PhotonOS.
-   Default password for root user is changeme. However user will be prompted to change the password during first login.
+        <Annotation>This OVA provides a micro installed profile of PhotonOS.
+   Default password for root user is changeme.
         </Annotation>
 
     </AnnotationSection>
