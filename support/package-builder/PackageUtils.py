@@ -226,8 +226,7 @@ class PackageUtils(object):
 
     def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
 
-        rpmbuildDistOption = '--define \\\"dist %s\\\"' % constants.dist
-        rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption+" "+rpmbuildDistOption
+        rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.info("#"*(68+2*len(package)))
@@ -595,9 +594,7 @@ class PackageUtils(object):
 
     def buildRPMinContainer(self, specFile, rpmLogFile, destLogFile, containerID, package, macros):
 
-        rpmbuildDistOption = '--define \"dist %s\"' % constants.dist
-        rpmBuildCmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption \
-                          + " " + rpmbuildDistOption
+        rpmBuildCmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             self.logger.info("#"*(68+2*len(package)))

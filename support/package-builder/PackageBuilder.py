@@ -33,7 +33,7 @@ class PackageBuilder(object):
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
-            tUtils.installToolChainRPMS(chrootID, packageName)
+            tUtils.installToolChainRPMS(chrootID, packageName,self.logPath)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)

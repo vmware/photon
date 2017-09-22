@@ -1,13 +1,12 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.0.4
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
 URL:           http://www.github.com/vmware/c-rest-engine
 BuildArch:     x86_64
-Requires:      coreutils >= 8.22
 Requires:      openssl >= 1.0.1
 BuildRequires: coreutils >= 8.22
 BuildRequires: openssl-devel >= 1.0.1
@@ -22,7 +21,6 @@ API support for C daemons.
 
 %package devel
 Summary: c-rest-engine dev files
-Requires:  coreutils >= 8.22
 Requires:  openssl-devel >= 1.0.1
 Requires:  %{name} = %{version}-%{release}
 
@@ -64,6 +62,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.4-3
+-  Remove coreutils runtime dependency.
 *  Tue Sep 12 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.4-2
 -  Making default log level as ERROR.
 *  Mon Sep 11 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.4-1

@@ -2,7 +2,7 @@
 Summary:        An enhanced version of csh, the C shell
 Name:           tcsh
 Version:        6.20.00
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Group:          System Environment/Shells
 Source:         http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.xz
@@ -16,8 +16,8 @@ Provides:       csh = %{version}
 Provides:       /bin/tcsh, /bin/csh
 BuildRequires:  ncurses-devel
 Requires:       ncurses
-Requires(post): grep
-Requires(postun): coreutils, grep
+Requires(post): /bin/grep
+Requires(postun): (coreutils or toybox) /bin/grep
 
 %description
 Tcsh is an enhanced but completely compatible version of csh, the C
@@ -115,6 +115,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-4
+-   Requires coreutils or toybox and /bin/grep
 *   Tue Jun 6 2017 Alexey Makhalov <amakhalov@vmware.com> 6.20.00-3
 -   Fix make check issues.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.20.00-2

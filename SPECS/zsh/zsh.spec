@@ -3,7 +3,7 @@
 Summary:      Z shell
 Name:         zsh
 Version:      5.3.1
-Release:      3%{?dist}
+Release:      4%{?dist}
 License:      MIT
 URL:          http://zsh.sourceforge.net/
 Group:        System Environment/Shells
@@ -28,8 +28,8 @@ BuildRequires: libcap-devel
 BuildRequires: texinfo
 BuildRequires: gawk
 BuildRequires: elfutils
-Requires(post): grep
-Requires(postun): coreutils grep
+Requires(post): /bin/grep
+Requires(postun): (coreutils or toybox) /bin/grep
 
 Provides: /bin/zsh
 
@@ -144,6 +144,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.1-4
+-   Requires coreutils or toybox and /bin/grep
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 5.3.1-3
 -   Clean up check
 *   Wed Aug 02 2017 Chang Lee <changlee@vmware.com> 5.3.1-2

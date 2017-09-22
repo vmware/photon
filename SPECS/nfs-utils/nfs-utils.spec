@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.1.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -21,7 +21,7 @@ BuildRequires:  libtirpc-devel
 BuildRequires:  python3-devel
 Requires:       libtirpc
 Requires:       rpcbind
-Requires:       shadow
+Requires:       (shadow or toybox)
 Requires:       python3-libs
 
 %description
@@ -80,6 +80,8 @@ make check
 /lib/systemd/system/*
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-6
+-   Requires shadow or toybox
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-5
 -   Fix compilation issue for glibc-2.26
 *   Wed Aug 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.1-4
