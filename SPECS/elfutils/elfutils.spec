@@ -2,7 +2,7 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.169
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
@@ -14,7 +14,7 @@ Distribution:	Photon
 Obsoletes:	libelf libelf-devel
 Requires:	elfutils-libelf = %{version}-%{release}
 Requires:	glibc >= 2.7
-Requires:	bzip2
+Requires:	bzip2-libs
 # ExcludeArch: xxx
 
 BuildRequires:	gcc >= 4.1.2-33
@@ -195,6 +195,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.169.2
+- Requires bzip2-libs
 * Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 0.169-1
 - Updated to 0.169
 * Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 0.168-1

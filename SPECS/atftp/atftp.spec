@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -13,7 +13,8 @@ Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{na
 
 BuildRequires:  systemd
 Requires:       systemd
-Requires:	shadow
+Requires(pre):  /sbin/useradd /sbin/groupadd
+Requires(postun):/sbin/userdel /sbin/groupdel
 Provides: tftp-server
 Obsoletes: tftp-server
 
@@ -129,10 +130,12 @@ fi
 
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-8
+-   Remove shadow from requires and use explicit tools for post actions
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-7
 -   Fixed logic to restart the active services after upgrade 
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-6
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-6
+-   GA - Bump release of all rpms
 *   Fri May 6 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-5
 -   Adding post-install run time dependencies
 *   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-4
@@ -140,8 +143,8 @@ fi
 *   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  0.7.1-3
 -   Add systemd to Requires and BuildRequires.
 -   Use systemctl to enable/disable service.
-*	Mon Nov 23 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.1-2
--	Chang tftpd from xinetd service to systemd service.
-*       Thu Nov 12 2015 Kumar Kaushik <kaushikk@vmware.com> 0.7.1-1
--       Initial build.  First version
+*   Mon Nov 23 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.1-2
+-   Chang tftpd from xinetd service to systemd service.
+*   Thu Nov 12 2015 Kumar Kaushik <kaushikk@vmware.com> 0.7.1-1
+-   Initial build.  First version
 

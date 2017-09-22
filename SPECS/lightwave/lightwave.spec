@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -13,7 +13,7 @@ Distribution:  Photon
 Requires:  apache-tomcat >= 8.5.8
 Requires:  boost = 1.63.0
 Requires:  commons-daemon >= 1.0.15
-Requires:  coreutils >= 8.22
+Requires:  (coreutils >= 8.22 or toybox)
 Requires:  cyrus-sasl >= 2.1
 Requires:  e2fsprogs
 Requires:  gawk >= 4.1.3
@@ -1115,6 +1115,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1-4
+-   Requires coreutils or toybox
 *   Tue Aug 22 2017 Rui Gu <ruig@vmware.com> 1.3.1-3
 -   Add 'go' to BuildRequires
 *   Thu Aug 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-2

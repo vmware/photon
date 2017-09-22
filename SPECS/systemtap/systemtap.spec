@@ -8,7 +8,7 @@
 
 Name:          systemtap
 Version:       3.1
-Release:       2%{?dist}
+Release:       4%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -48,7 +48,8 @@ Requires:      linux-devel
 Requires:      make
 Requires:      elfutils
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
-Requires:      shadow
+Requires(pre):  /sbin/useradd /sbin/groupadd
+Requires(postun):/sbin/userdel /sbin/groupdel
 
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
@@ -96,7 +97,7 @@ Group:         System/Tools
 Summary:       Instrumentation System Server
 Requires:      %{name} = %{?epoch:%epoch:}%{version}-%{release}
 Requires:      %{name}-runtime = %{?epoch:%epoch:}%{version}-%{release}
-Requires:      coreutils
+Requires:      (coreutils or toybox)
 Requires:      nss
 Requires:      unzip
 Requires:      gzip
@@ -347,6 +348,10 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1.3-4
+-   Remove shadow from requires and use explicit tools for post actions
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-3
+-   Requires coreutils or toybox
 *   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
 -   systemtap-sdt-devel requires systemtap
 *   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1-1

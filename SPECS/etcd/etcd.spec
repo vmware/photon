@@ -1,7 +1,7 @@
 Summary:        Etcd-3.1.5
 Name:           etcd
 Version:        3.1.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
 Group:          System Environment/Security
@@ -11,7 +11,6 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1 etcd=a020efbd8bc7777e77b960b461886d26b2cedecd
 Source1:        etcd.service
 BuildRequires:  go >= 1.7
-Requires:       shadow
 
 %description
 A highly-available key value store for shared configuration and service discovery.
@@ -60,6 +59,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1.5-4
+-   Remove shadow requires
 *   Sun Aug 27 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1.5-3
 -   File based configuration for etcd service.
 *   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.5-2

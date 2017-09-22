@@ -339,7 +339,9 @@ class constants(object):
     # Requires: shadow
     providedBy={
         "/sbin/useradd":"shadow",
-        "/sbin/groupadd":"shadow"
+        "/sbin/groupadd":"shadow",
+        "/bin/which":"which",
+        "/bin/sed":"sed"
     }
 
     @staticmethod

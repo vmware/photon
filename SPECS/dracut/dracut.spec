@@ -5,7 +5,7 @@
 
 Name:           dracut
 Version:        045
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -27,14 +27,14 @@ BuildRequires:  bash git
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 Requires:       bash >= 4
-Requires:       coreutils
-Requires:       util-linux
+Requires:       (coreutils or toybox)
+Requires:       (kmod or toybox)
+Requires:       (util-linux or toybox)
 Requires:       systemd
-Requires:       sed
-Requires:       grep
-Requires:       findutils
-Requires:       cpio
-Requires:       kmod
+Requires:       /bin/sed
+Requires:       /bin/grep
+Requires:       (findutils or toybox)
+Requires:       (cpio or toybox)
 
 %description
 dracut contains tools to create a bootable initramfs for 2.6 Linux kernels.
@@ -165,6 +165,9 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 045-5
+-   Requires coreutils/kmod/util-linux/findutils or toybox,
+    /bin/grep, /bin/sed
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 045-4
 -   Add kmod-devel to BuildRequires
 *   Fri May 26 2017 Bo Gan <ganb@vmware.com> 045-3
@@ -175,14 +178,14 @@ rm -rf -- $RPM_BUILD_ROOT
 -   Updated to 045
 *   Wed Jan 25 2017 Harish Udaiya Kumar <hudaiyakumr@vmware.com> 044-6
 -   Added the patch for bash 4.4 support.
-*       Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  044-5
--       Add systemd initrd root device target to list of modules
-*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 044-4
--       Modified %check
+*   Wed Nov 23 2016 Anish Swaminathan <anishs@vmware.com>  044-5
+-   Add systemd initrd root device target to list of modules
+*   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 044-4
+-   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 044-3
 -   GA - Bump release of all rpms
-*       Thu Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
--       Fix incorrect systemd directory.
+*   Thu Apr 25 2016 Gengsheng Liu <gengshengl@vmware.com> 044-2
+-   Fix incorrect systemd directory.
 *   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
--       Updating Version.
+-   Updating Version.
 
