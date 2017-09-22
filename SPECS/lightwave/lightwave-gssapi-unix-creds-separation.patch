@@ -1,0 +1,1165 @@
+diff --git a/build/package/rpm/lightwave.spec b/build/package/rpm/lightwave.spec
+index d0949c8..262d77a 100644
+--- a/build/package/rpm/lightwave.spec
++++ b/build/package/rpm/lightwave.spec
+@@ -1075,6 +1075,7 @@ Lightwave POST service
+ %{_lib64dir}/libgssapi_ntlm.so*
+ %{_lib64dir}/libgssapi_srp.so*
+ %{_lib64dir}/libgssapi_unix.so*
++%{_lib64dir}/libgssapi_unix_creds.so*
+ %{_lib64dir}/libvmdnsclient.so*
+ %{_lib64dir}/libcfgutils.so*
+ %{_lib64dir}/libidm.so*
+@@ -1164,6 +1165,7 @@ Lightwave POST service
+ %{_includedir}/vmdns.h
+ %{_includedir}/vmdnstypes.h
+ %{_includedir}/vmmetrics.h
++%{_includedir}/gssapi_creds_plugin.h
+ 
+ %{_lib64dir}/libcdcjni.a
+ %{_lib64dir}/libcdcjni.la
+diff --git a/configure.ac b/configure.ac
+index 374c252..72a5510 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1597,6 +1597,9 @@ AC_CONFIG_FILES([Makefile
+                  vmdir/thirdparty/heimdal/ntlm/Makefile
+                  vmdir/thirdparty/csrp/Makefile
+                  vmdir/gssapi-plugins/Makefile
++                 vmdir/gssapi-plugins/include/Makefile
++                 vmdir/gssapi-plugins/include/public/Makefile
++                 vmdir/gssapi-plugins/common/Makefile
+                  vmdir/gssapi-plugins/ntlm/Makefile
+                  vmdir/gssapi-plugins/srp/Makefile
+                  vmdir/gssapi-plugins/unix/Makefile
+diff --git a/vmdir/gssapi-plugins/Makefile.am b/vmdir/gssapi-plugins/Makefile.am
+index 577f179..1d39035 100644
+--- a/vmdir/gssapi-plugins/Makefile.am
++++ b/vmdir/gssapi-plugins/Makefile.am
+@@ -1,4 +1,6 @@
+ SUBDIRS = \
++    include \
++    common \
+     ntlm \
+     srp
+ 
+diff --git a/vmdir/gssapi-plugins/common/Makefile.am b/vmdir/gssapi-plugins/common/Makefile.am
+new file mode 100644
+index 0000000..2631b62
+--- /dev/null
++++ b/vmdir/gssapi-plugins/common/Makefile.am
+@@ -0,0 +1,13 @@
++noinst_LTLIBRARIES = libgssapi_common.la
++
++libgssapi_common_la_CPPFLAGS = \
++   -I$(top_srcdir)/vmdir/gssapi-plugins/include/public
++
++libgssapi_common_la_SOURCES = \
++    creds_plugin.c
++
++libgssapi_common_la_LIBADD = \
++    -ldl
++
++libgssapi_common_la_LDFLAGS = \
++    -static
+diff --git a/vmdir/gssapi-plugins/common/creds_plugin.c b/vmdir/gssapi-plugins/common/creds_plugin.c
+new file mode 100644
+index 0000000..edd6cad
+--- /dev/null
++++ b/vmdir/gssapi-plugins/common/creds_plugin.c
+@@ -0,0 +1,273 @@
++/*
++ * Copyright © 2012-2015 VMware, Inc.  All Rights Reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the “License”); you may not
++ * use this file except in compliance with the License.  You may obtain a copy
++ * of the License at http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an “AS IS” BASIS, without
++ * warranties or conditions of any kind, EITHER EXPRESS OR IMPLIED.  See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++#include "includes.h"
++
++//free plugin struct
++static
++void
++free_creds_plugin(
++    PCREDS_PLUGIN pPlugin
++    )
++{
++    if(!pPlugin)
++    {
++        return;
++    }
++    if(pPlugin->pHandle)
++    {
++        dlclose(pPlugin->pHandle);
++    }
++    free(pPlugin);
++}
++
++/*
++ Load credentials plugin and initialize interface.
++*/
++static
++int
++load_creds_plugin(
++    const char *creds_plugin,
++    PCREDS_PLUGIN *ppPlugin
++    )
++{
++    int sts = 0;
++    char *error_str = NULL;
++    PCREDS_PLUGIN pPlugin = NULL;
++
++    if(!creds_plugin || !ppPlugin)
++    {
++        sts = EINVAL;
++        goto error;
++    }
++
++    srp_debug_printf("load_creds_plugin : %s\n", creds_plugin);
++
++    pPlugin = (PCREDS_PLUGIN)malloc(sizeof(CREDS_PLUGIN));
++    if(!pPlugin)
++    {
++        sts = ENOMEM;
++        goto error;
++    }
++
++    //clear error
++    dlerror();
++
++    pPlugin->pHandle = dlopen(creds_plugin, RTLD_NOW);
++    if(!pPlugin->pHandle)
++    {
++        sts = ENOENT;
++        goto error;
++    }
++
++    pPlugin->pfnLoad = dlsym(pPlugin->pHandle, CREDS_PLUGIN_LOAD_INTERFACE);
++    if(!pPlugin->pfnLoad)
++    {
++        sts = ENOSYS;
++        goto error;
++    }
++
++    sts = pPlugin->pfnLoad(&pPlugin->pInterface);
++    if(sts)
++    {
++        goto error;
++    }
++
++    *ppPlugin = pPlugin;
++
++cleanup:
++    return sts;
++
++error:
++    srp_debug_printf("creds plugin error: %d\n", sts);
++
++    if(ppPlugin)
++    {
++        *ppPlugin = NULL;
++    }
++    free_creds_plugin(pPlugin);
++
++    error_str = dlerror();
++    if(error_str)
++    {
++        srp_debug_printf("creds plugin load: %s\n", error_str);
++    }
++    goto cleanup;
++}
++
++int
++get_creds_plugin_for_type(
++    int plugin_type,
++    const char **pcreds_plugin
++    )
++{
++    int sts = 0;
++    const char *creds_plugin = NULL;
++    #define ACCESS_TYPES 2//privileged and non privileged
++    const int PRIVILEGED = 0;
++    const int NON_PRIVILEGED = 1;
++    int access_type = PRIVILEGED;
++    struct stPluginTable
++    {
++        const char *plugin_override_env;
++        const char *default_plugin_name;
++    }
++    all_plugins_array[][ACCESS_TYPES] =
++    {
++        //privileged access path
++        {
++            {GSSAPI_UNIX_CREDS_OVERRIDE, GSSAPI_UNIX_CREDS_DEFAULT_SO},
++            {GSSAPI_SRP_CREDS_OVERRIDE, GSSAPI_SRP_CREDS_DEFAULT_SO}
++        },
++        //non privileged access path
++        {
++            {GSSAPI_UNIX_PRIVSEP_CREDS_OVERRIDE,
++             GSSAPI_UNIX_PRIVSEP_CREDS_DEFAULT_SO},
++            {GSSAPI_SRP_PRIVSEP_CREDS_OVERRIDE,
++             GSSAPI_SRP_PRIVSEP_CREDS_DEFAULT_SO}
++        }
++    };
++    struct stPluginTable *plugins_array = NULL;
++
++    if(!pcreds_plugin ||
++       (plugin_type <= PLUGIN_TYPE_MIN || plugin_type >= PLUGIN_TYPE_MAX))
++    {
++        sts = EINVAL;
++        goto error;
++    }
++
++    //determine which access type
++    access_type = getuid() == 0 ? PRIVILEGED : NON_PRIVILEGED;
++    plugins_array = all_plugins_array[access_type];
++
++    srp_debug_printf(
++        "creds plugin type: %s\n",
++        access_type == PRIVILEGED ? "Privileged" : "Non Privileged");
++
++    //If there is an override, use it
++    creds_plugin = getenv(plugins_array[plugin_type].plugin_override_env);
++
++    //if not, use the default.
++    if(!creds_plugin)
++    {
++        creds_plugin = plugins_array[plugin_type].default_plugin_name;
++    }
++
++    if(!creds_plugin)
++    {
++        sts = EINVAL;
++        goto error;
++    }
++
++    *pcreds_plugin = creds_plugin;
++
++cleanup:
++    return sts;
++
++error:
++    if(pcreds_plugin)
++    {
++        *pcreds_plugin = NULL;
++    }
++    goto cleanup;
++}
++
++/*
++  Do implementation specific creds lookup and return
++  salt and srp v and s values as applicable.
++*/
++int
++get_hashed_creds(
++    int plugin_type,
++    const char *username,
++    char **ret_salt,
++    unsigned char **ret_bytes_s,
++    int *ret_len_s,
++    unsigned char **ret_bytes_v,
++    int *ret_len_v
++    )
++{
++    int sts = 0;
++    char *username_salt = NULL;
++    PCREDS_PLUGIN pPlugin = NULL;
++    PCREDS_PLUGIN_INTERFACE pInterface = NULL;
++    unsigned char *bytes_s = NULL;
++    int len_s = 0;
++    unsigned char *bytes_v = NULL;
++    int len_v = 0;
++    const char *creds_plugin = NULL;
++
++    if(!username ||
++       !ret_salt ||
++       !ret_bytes_s ||
++       !ret_len_s ||
++       !ret_bytes_v ||
++       !ret_len_v)
++    {
++        sts = -1;
++        goto error;
++    }
++
++    sts = get_creds_plugin_for_type(plugin_type, &creds_plugin);
++    if(sts)
++    {
++        goto error;
++    }
++
++    sts = load_creds_plugin(creds_plugin, &pPlugin);
++    if(sts)
++    {
++        goto error;
++    }
++
++    pInterface = pPlugin->pInterface;
++
++    if(!pInterface->pfnGetHashedCreds)
++    {
++        sts = -1;
++        goto error;
++    }
++
++    sts = pInterface->pfnGetHashedCreds(
++              plugin_type,
++              username,
++              &username_salt,
++              &bytes_s,
++              &len_s,
++              &bytes_v,
++              &len_v);
++    if(sts)
++    {
++        goto error;
++    }
++
++    *ret_salt = username_salt;
++    *ret_bytes_s = bytes_s;
++    *ret_len_s = len_s;
++    *ret_bytes_v = bytes_v;
++    *ret_len_v = len_v;
++
++cleanup:
++    if(pPlugin)
++    {
++        free_creds_plugin(pPlugin);
++    }
++    return sts;
++error:
++    if(username_salt)
++    {
++        free(username_salt);
++    }
++    goto cleanup;
++}
+diff --git a/vmdir/gssapi-plugins/common/defines.h b/vmdir/gssapi-plugins/common/defines.h
+new file mode 100644
+index 0000000..2ce12a3
+--- /dev/null
++++ b/vmdir/gssapi-plugins/common/defines.h
+@@ -0,0 +1,16 @@
++/*
++ * Copyright © 2012-2015 VMware, Inc.  All Rights Reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the “License”); you may not
++ * use this file except in compliance with the License.  You may obtain a copy
++ * of the License at http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an “AS IS” BASIS, without
++ * warranties or conditions of any kind, EITHER EXPRESS OR IMPLIED.  See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++#pragma once
++
+diff --git a/vmdir/gssapi-plugins/common/includes.h b/vmdir/gssapi-plugins/common/includes.h
+new file mode 100644
+index 0000000..abf4151
+--- /dev/null
++++ b/vmdir/gssapi-plugins/common/includes.h
+@@ -0,0 +1,23 @@
++/*
++ * Copyright © 2012-2015 VMware, Inc.  All Rights Reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the “License”); you may not
++ * use this file except in compliance with the License.  You may obtain a copy
++ * of the License at http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an “AS IS” BASIS, without
++ * warranties or conditions of any kind, EITHER EXPRESS OR IMPLIED.  See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++#pragma once
++
++#include "stdio.h"
++#include <stdlib.h>
++#include <errno.h>
++#include <dlfcn.h>
++
++#include "defines.h"
++#include <gssapi_creds_plugin.h>
+diff --git a/vmdir/gssapi-plugins/include/Makefile.am b/vmdir/gssapi-plugins/include/Makefile.am
+new file mode 100644
+index 0000000..5248dac
+--- /dev/null
++++ b/vmdir/gssapi-plugins/include/Makefile.am
+@@ -0,0 +1,3 @@
++
++SUBDIRS = public
++
+diff --git a/vmdir/gssapi-plugins/include/public/Makefile.am b/vmdir/gssapi-plugins/include/public/Makefile.am
+new file mode 100644
+index 0000000..70737d8
+--- /dev/null
++++ b/vmdir/gssapi-plugins/include/public/Makefile.am
+@@ -0,0 +1,2 @@
++vmwincludedir=$(includedir)
++vmwinclude_HEADERS=gssapi_creds_plugin.h
+diff --git a/vmdir/gssapi-plugins/include/public/gssapi_creds_plugin.h b/vmdir/gssapi-plugins/include/public/gssapi_creds_plugin.h
+new file mode 100644
+index 0000000..bb36037
+--- /dev/null
++++ b/vmdir/gssapi-plugins/include/public/gssapi_creds_plugin.h
+@@ -0,0 +1,114 @@
++/*
++ * Copyright © 2017 VMware, Inc.  All Rights Reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the “License”); you may not
++ * use this file except in compliance with the License.  You may obtain a copy
++ * of the License at http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an “AS IS” BASIS, without
++ * warranties or conditions of any kind, EITHER EXPRESS OR IMPLIED.  See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++
++#pragma once
++
++//default name for unix creds lib
++#define GSSAPI_UNIX_CREDS_DEFAULT_SO         "libgssapi_unix_creds.so"
++
++//env variable to override default unix creds lib
++#define GSSAPI_UNIX_CREDS_OVERRIDE           "GSSAPI_UNIX_CREDS_OVERRIDE"
++
++//default name for unix creds lib that will provide privilege separation
++//for processes that use gssapi_unix without privileges for shadow apis
++#define GSSAPI_UNIX_PRIVSEP_CREDS_DEFAULT_SO "libgssapi_unix_privsep_creds.so"
++
++//env variable to override default unix privilege separation creds lib
++#define GSSAPI_UNIX_PRIVSEP_CREDS_OVERRIDE   "GSSAPI_UNIX_PRIVSEP_CREDS_OVERRIDE"
++
++//default name for srp creds lib
++#define GSSAPI_SRP_CREDS_DEFAULT_SO         "libgssapi_srp_creds.so"
++
++//env variable to override default srp creds lib
++#define GSSAPI_SRP_CREDS_OVERRIDE           "GSSAPI_SRP_CREDS_OVERRIDE"
++
++//default name for srp creds lib that will provide privilege separation
++//for processes that use gssapi_srp without privileges for shadow apis
++#define GSSAPI_SRP_PRIVSEP_CREDS_DEFAULT_SO "libgssapi_unix_privsep_creds.so"
++
++//env variable to override default srp rivilege separation creds lib
++#define GSSAPI_SRP_PRIVSEP_CREDS_OVERRIDE   "GSSAPI_SRP_PRIVSEP_CREDS_OVERRIDE"
++
++//supported types. used to lookup creds lib
++typedef enum
++{
++    PLUGIN_TYPE_MIN = -1,
++    PLUGIN_TYPE_UNIX,
++    PLUGIN_TYPE_SRP,
++    //Add new types before PLUGIN_TYPE_MAX
++    PLUGIN_TYPE_MAX
++}GSSAPI_PLUGIN_TYPE;
++
++//creds lib implements this function.
++//takes in plugin type, username,
++//returns salt and srp s and v values.
++typedef
++int
++(*PFN_GET_HASHED_CREDS)(
++    int plugin_type,
++    const char *user_name,
++    char **ret_salt,
++    unsigned char **ret_bytes_s,
++    int *ret_len_s,
++    unsigned char **ret_bytes_v,
++    int *ret_len_v
++    );
++
++typedef struct _CREDS_PLUGIN_INTERFACE_
++{
++    PFN_GET_HASHED_CREDS pfnGetHashedCreds;
++}CREDS_PLUGIN_INTERFACE, *PCREDS_PLUGIN_INTERFACE;
++
++//Function name defs
++#define CREDS_PLUGIN_LOAD_INTERFACE   "creds_plugin_load_interface"
++#define CREDS_PLUGIN_UNLOAD_INTERFACE "creds_plugin_unload_interface"
++
++//load
++typedef int
++(*PFN_CREDS_PLUGIN_LOAD_INTERFACE)(
++    PCREDS_PLUGIN_INTERFACE *ppCredsInterface
++    );
++
++//unload
++typedef int
++(*PFN_CREDS_PLUGIN_UNLOAD_INTERFACE)(
++    PCREDS_PLUGIN_INTERFACE pCredsInterface
++    );
++
++typedef struct _CREDS_PLUGIN_
++{
++    //dlopen handle
++    void *pHandle;
++
++    //Mandatory entry point
++    PFN_CREDS_PLUGIN_LOAD_INTERFACE pfnLoad;
++    //Optional unload
++    PFN_CREDS_PLUGIN_UNLOAD_INTERFACE pfnUnload;
++
++    //interface fn table returned by load.
++    PCREDS_PLUGIN_INTERFACE pInterface;
++}CREDS_PLUGIN, *PCREDS_PLUGIN;
++
++
++
++int
++get_hashed_creds(
++    int nPluginType,
++    const char *username,
++    char **ret_salt,
++    unsigned char **ret_bytes_s,
++    int *ret_len_s,
++    unsigned char **ret_bytes_v,
++    int *ret_len_v
++    );
+diff --git a/vmdir/gssapi-plugins/unix/Makefile.am b/vmdir/gssapi-plugins/unix/Makefile.am
+index a70c240..778876c 100644
+--- a/vmdir/gssapi-plugins/unix/Makefile.am
++++ b/vmdir/gssapi-plugins/unix/Makefile.am
+@@ -13,12 +13,36 @@ unix_srp_CPPFLAGS = \
+ 
+ unix_srp_LDADD = \
+     $(top_builddir)/vmdir/thirdparty/csrp/libcsrp.la \
+-    $(top_builddir)/vmdir/thirdparty/csrp/libcsrp.la \
+     @CRYPT_LIBS@ \
+     @OPENSSL_LDFLAGS@ \
+     @CRYPTO_LIBS@
+ 
+-lib_LTLIBRARIES = libgssapi_unix.la
++lib_LTLIBRARIES = libgssapi_unix.la libgssapi_unix_creds.la
++
++libgssapi_unix_creds_la_CPPFLAGS = \
++   -D_MIT_KRB5_1_11 \
++   -D_MIT_KRB5_1_12 \
++   -I. \
++   -I$(top_srcdir)/vmdir/gssapi-plugins/include/public \
++   -I$(top_srcdir)/vmdir/thirdparty \
++    @OPENSSL_INCLUDES@ \
++    @LW_INCLUDES@
++
++libgssapi_unix_creds_la_SOURCES = \
++        unix_creds_plugin.c \
++        unix_crypt.c
++
++libgssapi_unix_creds_la_LIBADD = \
++    $(top_builddir)/vmdir/client/libvmdirclient.la \
++    $(top_builddir)/vmdir/thirdparty/csrp/libcsrp.la \
++    $(top_builddir)/vmdir/client/libvmdirclient_la-srp_verifier_cstub.lo \
++    @OPENSSL_LDFLAGS@ \
++    @CRYPT_LIBS@ \
++    @CRYPTO_LIBS@ \
++    @PTHREAD_LIBS@
++
++libgssapi_unix_creds_la_LDFLAGS = \
++    @LW_LDFLAGS@
+ 
+ libgssapi_unix_la_CPPFLAGS = \
+    -D_MIT_KRB5_1_11 \
+@@ -30,6 +54,7 @@ libgssapi_unix_la_CPPFLAGS = \
+    -I$(top_srcdir)/vmdir/include/public \
+    -I$(top_srcdir)/vmdir/thirdparty \
+    -I$(top_builddir)/vmdir/client \
++   -I$(top_srcdir)/vmdir/gssapi-plugins/include/public \
+     @OPENSSL_INCLUDES@ \
+     @LW_INCLUDES@
+ 
+@@ -48,10 +73,10 @@ libgssapi_unix_la_SOURCES = \
+ 	unix_unwrap_iov.c \
+ 	unix_util.c \
+         unixregutils.c \
+-        unixreg.c \
+-        unix_crypt.c
++        unixreg.c
+ 
+ libgssapi_unix_la_LIBADD = \
++    $(top_builddir)/vmdir/gssapi-plugins/common/libgssapi_common.la \
+     $(top_builddir)/vmdir/client/libvmdirclient.la \
+     $(top_builddir)/vmdir/thirdparty/csrp/libcsrp.la \
+     $(top_builddir)/vmdir/client/libvmdirclient_la-srp_verifier_cstub.lo \
+diff --git a/vmdir/gssapi-plugins/unix/gssapiP_unix.h b/vmdir/gssapi-plugins/unix/gssapiP_unix.h
+index 41a69f6..7dd9da9 100644
+--- a/vmdir/gssapi-plugins/unix/gssapiP_unix.h
++++ b/vmdir/gssapi-plugins/unix/gssapiP_unix.h
+@@ -165,10 +165,13 @@ typedef struct {
+ #endif
+         HMAC_CTX          hmac_ctx;
+         char              *unix_username; /* UNIX username */
+-        char              *username_hash; /* user shadow pwd file hash */
+         char              *upn_name;     /* Kerberos UPN Name */
+         unsigned char     *srp_session_key;
+         int               srp_session_key_len;
++        unsigned char     *bytes_v;
++        int               len_v;
++        unsigned char     *bytes_s;
++        int               len_s;
+ } srp_gss_ctx_id_rec, *srp_gss_ctx_id_t;
+ 
+ 
+diff --git a/vmdir/gssapi-plugins/unix/unix_accept_sec_ctx.c b/vmdir/gssapi-plugins/unix/unix_accept_sec_ctx.c
+index 2df7ce2..a6f8b80 100644
+--- a/vmdir/gssapi-plugins/unix/unix_accept_sec_ctx.c
++++ b/vmdir/gssapi-plugins/unix/unix_accept_sec_ctx.c
+@@ -33,9 +33,9 @@
+ 
+ #include <vmdirdefines.h>
+ #include "includes.h"
+-#include "unix_crypt.h"
+ 
+ #include <config.h>
++#include <gssapi_creds_plugin.h>
+ 
+ #ifdef _WIN32
+ 
+@@ -176,55 +176,6 @@ error:
+ }
+ 
+ 
+-/* Create the temporary SRP secret using username shadow pwd entry */
+-static int
+-_srpVerifierInit(
+-    char *username,
+-    char *password,
+-    unsigned char **ret_bytes_s,
+-    int *ret_len_s,
+-    unsigned char **ret_bytes_v,
+-    int *ret_len_v)
+-{
+-    int sts = 0;
+-    const unsigned char *bytes_s = NULL;
+-    int len_s = 0;
+-    const unsigned char *bytes_v = NULL;
+-    int len_v = 0;
+-
+-    if (!username || !password || !ret_bytes_s || !ret_bytes_v)
+-    {
+-        sts = -1;
+-        goto error;
+-    }
+-
+-    srp_create_salted_verification_key(
+-        G_alg,
+-        G_ng_type,
+-        username,
+-        (const unsigned char *) password,
+-        (int) strlen(password),
+-        &bytes_s,
+-        &len_s,
+-        &bytes_v,
+-        &len_v,
+-        G_n_hex,
+-        G_g_hex);
+-    
+-    srp_print_hex(bytes_s, len_s, 
+-                  "_srpVerifierInit(accept_sec_context): bytes_s");
+-    srp_print_hex(bytes_v, len_v, 
+-                  "_srpVerifierInit(accept_sec_context): bytes_v");
+-
+-    *ret_bytes_s = (unsigned char *) bytes_s;
+-    *ret_len_s   = len_s;
+-
+-    *ret_bytes_v = (unsigned char *) bytes_v;
+-    *ret_len_v = len_v;
+-
+-error:
+-    return 0;
+-}
+ 
+ static
+ struct SRPVerifier *
+@@ -300,6 +251,7 @@ error:
+     return sts;
+ }
+ 
++
+ /*
+  * Read SRP_AUTH_INIT token, verify version is compatible. Retrieve
+  * user salt value from the /etc/shadow password file, then format
+@@ -328,7 +280,10 @@ _unix_gss_auth_init(
+     int berror = 0;
+     char *unix_username = NULL;
+     char *username_salt = NULL;
+-    char *username_hash = NULL;
++    unsigned char *bytes_v = NULL;
++    int len_v = 0;
++    unsigned char *bytes_s = NULL;
++    int len_s = 0;
+ 
+     ber_ctx.bv_val = (void *) input_token->value;
+     ber_ctx.bv_len = input_token->length;
+@@ -392,18 +347,33 @@ _unix_gss_auth_init(
+     srp_debug_printf("_unix_gss_auth_init(): username=%s\n", unix_username);
+ 
+     /* Retrieve the salt value from the shadow password file */
+-    sts = get_sp_salt(unix_username, &username_salt, &username_hash);
++    //sts = get_sp_salt(unix_username, &username_salt, &username_hash);
++    //Retrieve salt value and "V" verifier value in one go
++    //This is done via a credentials provider plugin
++    sts = get_hashed_creds(
++              PLUGIN_TYPE_UNIX,
++              unix_username,
++              &username_salt,
++              &bytes_s,
++              &len_s,
++              &bytes_v,
++              &len_v);
+     if (sts)
+     {
+         maj = GSS_S_FAILURE;
+         goto error;
+     }
+-    srp_debug_printf("_unix_gss_auth_init(): salt=%s hash=%s\n",
+-                     username_salt, username_hash);
+-    srp_context_handle->username_hash = username_hash;
++    srp_debug_printf("_unix_gss_auth_init(): salt=%s\n", username_salt);
+     srp_context_handle->unix_username = unix_username;
+-    username_hash = NULL;
++    srp_context_handle->bytes_v = bytes_v;
++    srp_context_handle->len_v = len_v;
++    srp_context_handle->bytes_s = bytes_s;
++    srp_context_handle->len_s = len_s;
+     unix_username = NULL;
++    bytes_v = NULL;
++    len_v = 0;
++    bytes_s = NULL;
++    len_s = 0;
+ 
+     ber_resp = ber_alloc_t(LBER_USE_DER);
+     if (!ber_resp)
+@@ -462,6 +432,14 @@ error:
+         free(username_salt);
+     }
+ 
++    if (bytes_v)
++    {
++        free(bytes_v);
++    }
++    if (bytes_s)
++    {
++        free(bytes_s);
++    }
+     ber_bvfree(flatten);
+     ber_free(ber, 1);
+     ber_free(ber_resp, 1);
+@@ -485,10 +463,6 @@ _unix_gss_salt_resp(
+ {
+     OM_uint32 maj = 0;
+     OM_uint32 min = 0;
+-    unsigned char *bytes_s = NULL;
+-    int len_s = 0;
+-    unsigned char *bytes_v = NULL;
+-    int len_v = 0;
+     struct berval *flatten = NULL;
+     BerElement *ber = NULL;
+     BerElement *ber_resp = NULL;
+@@ -503,28 +477,10 @@ _unix_gss_salt_resp(
+     int len_B = 0;
+     int sts = 0;
+ 
+-    /*
+-     * This call creates the temporary server-side SRP secret
+-     *
+-     * bytes_s: SRP salt, publically known to client/server
+-     * bytes_v: SRP secret, privately known only by server
+-     */
+-    sts = _srpVerifierInit(
+-              srp_context_handle->unix_username,
+-              srp_context_handle->username_hash,
+-              &bytes_s,
+-              &len_s,
+-              &bytes_v,
+-              &len_v);
+-    if (sts)
+-    {
+-        maj = GSS_S_FAILURE;
+-        goto error;
+-    }
+-    srp_debug_printf("_unix_gss_salt_resp(): salt len=%d", len_s);
+-    srp_print_hex(bytes_s, len_s, 
++    srp_debug_printf("_unix_gss_salt_resp(): salt len=%d", srp_context_handle->len_s);
++    srp_print_hex(srp_context_handle->bytes_s, srp_context_handle->len_s,
+                   "_srp_gss_auth_init(accept_sec_context): bytes_s");
+-    srp_print_hex(bytes_v, len_v, 
++    srp_print_hex(srp_context_handle->bytes_v, srp_context_handle->len_v,
+                   "_srp_gss_auth_init(accept_sec_context): bytes_v");
+ 
+ 
+@@ -567,10 +523,10 @@ _unix_gss_salt_resp(
+ 
+     ver = _srpServerNew(
+               srp_context_handle->unix_username,
+-              bytes_s,
+-              len_s,
+-              bytes_v,
+-              len_v,
++              srp_context_handle->bytes_s,
++              srp_context_handle->len_s,
++              srp_context_handle->bytes_v,
++              srp_context_handle->len_v,
+               ber_bytes_A->bv_val,
+               (int) ber_bytes_A->bv_len,
+               &bytes_B,
+@@ -593,8 +549,8 @@ _unix_gss_salt_resp(
+ /* TBD: Make this a macro */
+                  "SHA-1",
+                  (ber_len_t) strlen("SHA-1"),
+-                 bytes_s,
+-                 (ber_len_t) len_s,
++                 srp_context_handle->bytes_s,
++                 (ber_len_t) srp_context_handle->len_s,
+                  bytes_B,
+                  (ber_len_t) len_B);
+     if (berror == -1)
+@@ -664,14 +620,6 @@ error:
+     ber_bvfree(flatten);
+     ber_free(ber, 1);
+     ber_free(ber_resp, 1);
+-    if (bytes_v)
+-    {
+-        free(bytes_v);
+-    }
+-    if (bytes_s)
+-    {
+-        free(bytes_s);
+-    }
+ 
+     if (maj)
+     {
+diff --git a/vmdir/gssapi-plugins/unix/unix_creds_plugin.c b/vmdir/gssapi-plugins/unix/unix_creds_plugin.c
+new file mode 100644
+index 0000000..b4a6a97
+--- /dev/null
++++ b/vmdir/gssapi-plugins/unix/unix_creds_plugin.c
+@@ -0,0 +1,61 @@
++/*
++ * Copyright © 2012-2015 VMware, Inc.  All Rights Reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the “License”); you may not
++ * use this file except in compliance with the License.  You may obtain a copy
++ * of the License at http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an “AS IS” BASIS, without
++ * warranties or conditions of any kind, EITHER EXPRESS OR IMPLIED.  See the
++ * License for the specific language governing permissions and limitations
++ * under the License.
++ */
++#include <stdio.h>
++#include <stdlib.h>
++#include <errno.h>
++#include "unix_crypt.h"
++#include <gssapi_creds_plugin.h>
++
++/*
++ * plugin load
++*/
++int
++creds_plugin_load_interface(
++    PCREDS_PLUGIN_INTERFACE *ppInterface
++    )
++{
++    int sts = 0;
++    PCREDS_PLUGIN_INTERFACE pInterface = NULL;
++
++    if(!ppInterface)
++    {
++        sts = EINVAL;
++        goto error;
++    }
++
++    pInterface = (PCREDS_PLUGIN_INTERFACE)
++                 malloc(sizeof(CREDS_PLUGIN_INTERFACE));
++    if(!pInterface)
++    {
++        sts = ENOMEM;
++        goto error;
++    }
++
++    pInterface->pfnGetHashedCreds = get_salt_and_v_value;
++    *ppInterface = pInterface;
++
++cleanup:
++    return sts;
++
++error:
++    if(ppInterface)
++    {
++        *ppInterface = NULL;
++    }
++    if(pInterface)
++    {
++        free(pInterface);
++    }
++    goto cleanup;
++}
+diff --git a/vmdir/gssapi-plugins/unix/unix_crypt.c b/vmdir/gssapi-plugins/unix/unix_crypt.c
+index 7a5d6f9..c5af2b8 100644
+--- a/vmdir/gssapi-plugins/unix/unix_crypt.c
++++ b/vmdir/gssapi-plugins/unix/unix_crypt.c
+@@ -28,6 +28,8 @@
+ 
+ #include <crypt.h>
+ #include <stdio.h>
++#include <csrp/srp.h>
++#include <dlfcn.h>
+ 
+ #define CRYPT_MD5         "$1$"
+ #define CRYPT_BLOWFISH_2A "$2a$"
+@@ -37,25 +39,16 @@
+ #define CRYPT_SHA_256     "$5$"
+ #define CRYPT_SHA_512     "$6$"
+ 
+-#ifdef _WIN32
+-int get_sp_salt(const char *username,
+-                char **ret_salt,
+-                char **ret_encpwd)
+-{
+-    /*
+-     * This cannot be supported on Windows, as there is no
+-     * /etc shadow password file. The equivalent "local provider"
+-     * hash is not accessable, making this functionality impossible to 
+-     * support on Win32 platforms.
+-     */
+-    return ERROR_NOT_SUPPORTED;
+-}
+-#else
++static SRP_HashAlgorithm G_alg     = SRP_SHA1;
++static SRP_NGType        G_ng_type = SRP_NG_2048;
++static const char        *G_n_hex  = 0;
++static const char        *G_g_hex  = 0;
++
+ /*
+  * This function looks up "username" in the shadow password file, determines
+  * the hash algorithm type, and returns the salt and the password
+  * hash for that user.
+- * 
++ *
+  * Given the salt and the user password, then the hash can be created.
+  * The generated hash is used as an SRP password (client side), and
+  * the generator for the SRP secret (server side).
+@@ -98,7 +91,7 @@ int get_sp_salt(const char *username,
+     char *encpwd = NULL;
+     char *sp = NULL;
+     int cur_uid = 0;
+-    
++
+     if (!username || !ret_salt || !ret_encpwd)
+     {
+         st = -1;
+@@ -153,7 +146,7 @@ int get_sp_salt(const char *username,
+     ulckpwdf();
+     seteuid(cur_uid);
+     is_locked = 0;
+-   
++
+     /* CRYPT_DES hash is not supported; how to test? */
+ 
+     /* Determine the hash algorithn, and therefore the salt length */
+@@ -212,4 +205,132 @@ error:
+     }
+     return st;
+ }
+-#endif
++
++/* Create the temporary SRP secret using username shadow pwd entry */
++static int
++_srpVerifierInit(
++    char *username,
++    char *password,
++    unsigned char **ret_bytes_s,
++    int *ret_len_s,
++    unsigned char **ret_bytes_v,
++    int *ret_len_v)
++{
++    int sts = 0;
++    const unsigned char *bytes_s = NULL;
++    int len_s = 0;
++    const unsigned char *bytes_v = NULL;
++    int len_v = 0;
++
++    if (!username ||
++        !password ||
++        !ret_bytes_s ||
++        !ret_len_s ||
++        !ret_bytes_v ||
++        !ret_len_v)
++    {
++        sts = -1;
++        goto error;
++    }
++
++    srp_create_salted_verification_key(
++        G_alg,
++        G_ng_type,
++        username,
++        (const unsigned char *) password,
++        (int) strlen(password),
++        &bytes_s,
++        &len_s,
++        &bytes_v,
++        &len_v,
++        G_n_hex,
++        G_g_hex);
++
++    *ret_bytes_s = (unsigned char *) bytes_s;
++    *ret_len_s   = len_s;
++
++    *ret_bytes_v = (unsigned char *) bytes_v;
++    *ret_len_v = len_v;
++
++error:
++    return sts;
++}
++
++int
++get_salt_and_v_value(
++    int plugin_type,
++    const char *username,
++    char **ret_salt,
++    unsigned char **ret_bytes_s,
++    int *ret_len_s,
++    unsigned char **ret_bytes_v,
++    int *ret_len_v
++    )
++{
++    int sts = 0;
++    char *user_salt = NULL;
++    char *encpwd = NULL;
++    unsigned char *bytes_s = NULL;
++    int len_s = 0;
++    unsigned char *bytes_v = NULL;
++    int len_v = 0;
++
++    if(!username ||
++       !ret_salt ||
++       !ret_bytes_s ||
++       !ret_len_s ||
++       !ret_bytes_v ||
++       !ret_len_v)
++    {
++        sts = EINVAL;
++        goto error;
++    }
++
++    //Check if we have privileges
++    if(getuid() != 0)
++    {
++        sts = EPERM;
++        goto error;
++    }
++
++    sts = get_sp_salt(username, &user_salt, &encpwd);
++    if(sts)
++    {
++        goto error;
++    }
++
++    /*
++     * This call creates the temporary server-side SRP secret
++     *
++     * bytes_s: SRP salt, publically known to client/server
++     * bytes_v: SRP secret, privately known only by server
++     */
++    sts = _srpVerifierInit(
++              (char *)username,
++              encpwd,
++              &bytes_s,
++              &len_s,
++              &bytes_v,
++              &len_v);
++    if (sts)
++    {
++        goto error;
++    }
++
++    *ret_salt = user_salt;
++    *ret_bytes_s = bytes_s;
++    *ret_len_s = len_s;
++    *ret_bytes_v = bytes_v;
++    *ret_len_v = len_v;
++cleanup:
++    return sts;
++
++error:
++    if(ret_salt)
++    {
++        *ret_salt = NULL;
++    }
++    free(user_salt);
++    free(encpwd);
++    goto cleanup;
++}
+diff --git a/vmdir/gssapi-plugins/unix/unix_crypt.h b/vmdir/gssapi-plugins/unix/unix_crypt.h
+index 243d453..dbd5a52 100644
+--- a/vmdir/gssapi-plugins/unix/unix_crypt.h
++++ b/vmdir/gssapi-plugins/unix/unix_crypt.h
+@@ -19,4 +19,14 @@ int get_sp_salt(const char *username,
+                 char **ret_salt,
+                 char **ret_encpwd);
+ 
++int
++get_salt_and_v_value(
++    int plugin_type,
++    const char *username,
++    char **ret_salt,
++    unsigned char **ret_bytes_s,
++    int *ret_len_s,
++    unsigned char **ret_bytes_v,
++    int *ret_len_v
++    );
+ #endif
+diff --git a/vmdir/gssapi-plugins/unix/unix_del_sec_ctx.c b/vmdir/gssapi-plugins/unix/unix_del_sec_ctx.c
+index deb0715..d946f13 100644
+--- a/vmdir/gssapi-plugins/unix/unix_del_sec_ctx.c
++++ b/vmdir/gssapi-plugins/unix/unix_del_sec_ctx.c
+@@ -42,7 +42,7 @@ srp_gss_delete_sec_context(
+     OM_uint32 tmp_minor = GSS_S_COMPLETE;
+     OM_uint32 ret = GSS_S_COMPLETE;
+ 
+-    if (context_handle == NULL)
++    if (context_handle == NULL || *context_handle == NULL)
+     {
+         return (GSS_S_FAILURE);
+     }
+@@ -58,10 +58,6 @@ srp_gss_delete_sec_context(
+     {
+         free(srp_ctx->unix_username);
+     }
+-    if (srp_ctx->username_hash)
+-    {
+-        free(srp_ctx->username_hash);
+-    }
+ 
+     if (srp_ctx->srp_session_key)
+     {
+@@ -110,6 +106,14 @@ srp_gss_delete_sec_context(
+     }
+ #endif
+ 
++    if (srp_ctx->bytes_v)
++    {
++        free(srp_ctx->bytes_v);
++    }
++    if (srp_ctx->bytes_s)
++    {
++        free(srp_ctx->bytes_s);
++    }
+     free(*context_handle);
+     *context_handle = NULL;
+     return (ret);
