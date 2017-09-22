@@ -1,7 +1,7 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group: 		Development/Libraries
 Vendor:         VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
@@ -10,15 +10,15 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1 likewise-open=6aa4cf11de6747d5f8940666c21adc3e1f7b6a4b
 Distribution:   Photon
 Requires:       Linux-PAM
-Requires:       coreutils >= 8.22
-Requires:       grep
+Requires:       (coreutils >= 8.22 or toybox)
+Requires:       /bin/grep
 Requires:       krb5 >= 1.12
 Requires:       libxml2
 Requires:       haveged >= 1.9
 Requires:       openldap >= 2.4
 Requires:       openssl >= 1.0.1
-Requires:       procps-ng
-Requires:       sed >= 4.2
+Requires:       (procps-ng or toybox)
+Requires:       /bin/sed
 Requires:       sqlite-libs
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  e2fsprogs-devel
@@ -288,6 +288,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3
+-   Requires coreutils/procps-ng or toybox, /bin/grep, /bin/sed
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-2
 -   Fix compilation issue for glibc-2.26
 *   Wed Aug 09 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11.4-1

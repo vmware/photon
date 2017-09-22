@@ -1,7 +1,7 @@
 Summary:        Programs for finding and viewing man pages
 Name:           man-db
 Version:        2.7.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.nongnu.org/man-db
 Group:          Applications/System
@@ -13,7 +13,11 @@ Requires:       libpipeline
 Requires:       gdbm
 Requires:       xz
 Requires:       groff
-Requires:       shadow
+Requires(pre):  /sbin/useradd /sbin/groupadd
+Requires(postun):/sbin/userdel /sbin/groupdel
+%if %{with_check}
+BuildRequires:  shadow
+%endif
 BuildRequires:  libpipeline
 BuildRequires:  gdbm-devel
 BuildRequires:  xz
@@ -74,6 +78,8 @@ fi
 %{_libdir}/tmpfiles.d/man-db.conf
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.6-4
+-   Remove shadow from requires and use explicit tools for post actions
 *   Fri Aug 04 2017 Chang Lee <changlee@vmware.com> 2.7.6-3
 -   Setup a testing environment before %check
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.6-2
