@@ -4,7 +4,7 @@
 Summary:        Coroutine-based network library
 Name:           python-gevent
 Version:        1.2.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -58,26 +58,26 @@ Python 3 version.
 
 %prep
 %setup -q -n gevent-%{version}
-#python2 don't raise ssl.SSLWantWriteError
 %patch0 -p1
+cp -a . ../p3dir
 
 %build
 python2 setup.py build
+cd ../p3dir
 python3 setup.py build
 
 %install
-python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+cd ../p3dir
+python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 python2 setup.py develop
 cd src/greentest
 PYTHONPATH=.. python2 testrunner.py --config known_failures.py
-cd ../../
+cd ../../../p3dir
 python3 setup.py develop
 cd src/greentest
-cp 3.6/test_socket.py ./
-cp 3.6/test_subprocess.py ./
 PYTHONPATH=.. python3 testrunner.py --config known_failures.py
 
 %files
@@ -89,6 +89,8 @@ PYTHONPATH=.. python3 testrunner.py --config known_failures.py
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Sep 20 2017 Bo Gan <ganb@vmware.com> 1.2.1-6
+-   Fix build and make check issues
 *   Wed Sep 13 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.1-5
 -   Update make check for bug 1900401
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-4

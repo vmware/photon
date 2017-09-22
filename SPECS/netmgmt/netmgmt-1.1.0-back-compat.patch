@@ -1,0 +1,203 @@
+diff -uNr nm_dev/cli/netmgrcli.c nm_dev2/cli/netmgrcli.c
+--- nm_dev/cli/netmgrcli.c	2017-09-21 04:01:44.873130240 +0000
++++ nm_dev2/cli/netmgrcli.c	2017-09-21 04:00:15.821125994 +0000
+@@ -807,6 +807,91 @@
+     goto cleanup;
+ }
+ 
++static uint32_t
++cli_set_duid(
++    int argc,
++    char **argv,
++    PNETMGR_CMD pCmd
++    )
++{
++    uint32_t err = 0;
++
++    pCmd->id = CMD_DHCP_DUID;
++    pCmd->op = OP_SET;
++
++    if (argc < 3)
++    {
++        fprintf(stderr, "Usage: set_duid <duid>\n");
++        err = EDOM;
++        bail_on_error(err);
++    }
++
++    if (strlen(argv[2]) > 0)
++    {
++        err = netmgrcli_alloc_keyvalue("duid", argv[2], pCmd);
++    }
++    else
++    {
++        err = netmgrcli_alloc_keyvalue("duid", "", pCmd);
++    }
++    bail_on_error(err);
++
++cleanup:
++    return err;
++
++error:
++    pCmd->op = OP_INVALID;
++    goto cleanup;
++}
++
++static uint32_t
++cli_set_iaid(
++    int argc,
++    char **argv,
++    PNETMGR_CMD pCmd
++    )
++{
++    uint32_t err = 0;
++
++    pCmd->id = CMD_IF_IAID;
++    pCmd->op = OP_SET;
++
++    if (argc < 4)
++    {
++        fprintf(stderr, "Usage: set_iaid <ifname> <iaid>\n");
++        err = EDOM;
++        bail_on_error(err);
++    }
++
++    if (strlen(argv[2]) > 0)
++    {
++        err = netmgrcli_alloc_keyvalue("interface", argv[2], pCmd);
++    }
++    else
++    {
++        fprintf(stderr, "Invalid interface name.\n");
++        err = EDOM;
++    }
++    bail_on_error(err);
++
++    if (strlen(argv[3]) > 0)
++    {
++        err = netmgrcli_alloc_keyvalue("iaid", argv[3], pCmd);
++    }
++    else
++    {
++        err = netmgrcli_alloc_keyvalue("iaid", "", pCmd);
++    }
++    bail_on_error(err);
++
++cleanup:
++    return err;
++
++error:
++    pCmd->op = OP_INVALID;
++    goto cleanup;
++}
++
+ 
+ static struct option dnsServerOptions[] =
+ {
+@@ -919,6 +1004,18 @@
+     goto cleanup;
+ }
+ 
++static uint32_t
++cli_get_dns_servers(
++    int argc,
++    char **argv,
++    PNETMGR_CMD pCmd
++    )
++{
++    pCmd->id = CMD_DNS_SERVERS;
++    pCmd->op = OP_GET;
++    return 0;
++}
++
+ 
+ static struct option dnsDomainsOptions[] =
+ {
+@@ -1598,7 +1695,7 @@
+      "--set --duid <DUID string> --interface <interface name>",
+      "get or set DHCP DUID, optionally per interface"
+     },
+-    {"if_iaid",
++    {"if_iaid ",
+      cli_if_iaid,
+      "--set --iaid <IAID value> --interface <interface name>",
+      "get or set interface IAID"
+@@ -1635,6 +1732,21 @@
+      "--paramvalue <value>",
+      "get or set network configuration parameters"
+     },
++    {"set_duid",
++     cli_set_duid,
++     "",
++     "This is deprecated, will be removed in the future. Please use 'dhcp_duid --set'",
++    },
++    {"set_iaid",
++     cli_set_iaid,
++     "",
++     "This is deprecated, will be removed in the future. Please use 'if_iaid --set'",
++    },
++    {"get_dns_servers",
++     cli_get_dns_servers,
++     "",
++     "This is deprecated, will be removed in the future. Please use 'dns_servers --get'",
++    },
+ };
+ 
+ static uint32_t
+@@ -1653,7 +1765,7 @@
+ 
+     for(i = 0; i < nCmdCount; ++i)
+     {
+-        fprintf(stdout, "%s \t%s\n",
++        fprintf(stdout, "%s\t %s\n",
+                 cmdMap[i].pszCmdName,
+                 cmdMap[i].pszHelpMessage);
+     }
+diff -uNr nm_dev/src/netmgr.c nm_dev2/src/netmgr.c
+--- nm_dev/src/netmgr.c	2017-09-21 04:01:41.517130080 +0000
++++ nm_dev2/src/netmgr.c	2017-09-21 04:00:15.825125994 +0000
+@@ -481,6 +481,7 @@
+     {
+         *ppszFilename = NULL;
+     }
++    netmgr_free(pszNewFilename);
+     goto cleanup;
+ }
+ 
+diff -uNr nm_dev/src/utils.c nm_dev2/src/utils.c
+--- nm_dev/src/utils.c	2017-09-21 04:01:44.873130240 +0000
++++ nm_dev2/src/utils.c	2017-09-21 04:00:15.825125994 +0000
+@@ -61,10 +61,19 @@
+         err = NM_ERR_BAD_CONFIG_FILE;
+         bail_on_error(err);
+     }
+-    else if ((dwNumSections == 0) && (pszValue != NULL))
++    else if (dwNumSections == 0)
+     {
+-        err = ini_cfg_add_section(pConfig, pszSection, &pSection);
+-        bail_on_error(err);
++        if (pszValue != NULL)
++        {
++            err = ini_cfg_add_section(pConfig, pszSection, &pSection);
++            bail_on_error(err);
++        }
++        else
++        {
++            /* Bug out with success - nothing to set, no section found. */
++            err = 0;
++            goto error;
++        }
+     }
+     else
+     {
+diff -uNr nm_dev/tests/Makefile.am nm_dev2/tests/Makefile.am
+--- nm_dev/tests/Makefile.am	2017-09-21 04:01:44.873130240 +0000
++++ nm_dev2/tests/Makefile.am	2017-09-21 04:00:15.825125994 +0000
+@@ -44,7 +44,7 @@
+ 	docker build --build-arg NMROOT=$(ABSTOPDIR) -t netmgr_ut . && \
+ 	docker run -d --name netmgr_unittest --privileged --cap-add=SYS_ADMIN \
+             --cap-add=NET_ADMIN --security-opt seccomp=unconfined \
+-            --stop-signal=SIGRTMIN+3 --tmpfs --cap-add=/run --tmpfs /run/lock \
++            --stop-signal=SIGRTMIN+3 --tmpfs /run --tmpfs /run/lock \
+             -v /sys/fs/cgroup:/sys/fs/cgroup:ro netmgr_ut && sleep 2 && \
+ 	docker exec -ti netmgr_unittest /netmgr/unittest/run_tests.sh && \
+ 	docker kill netmgr_unittest && docker rm netmgr_unittest && \

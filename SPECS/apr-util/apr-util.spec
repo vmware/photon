@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.5.4
-Release:    11%{?dist}
+Release:    12%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -82,7 +82,8 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 %check
-make  %{?_smp_mflags} check
+# Disable smp_flag because of race condition
+make check
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -120,6 +121,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+*   Mon Sep 18 2017 Rui Gu <ruig@vmware.com> 1.5.4-12
+-   Disable smp_flag on make check because of race condition
 *   Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 1.5.4-11
 -   Added build requires on postgresql-devel
 *   Wed May 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.4-10
