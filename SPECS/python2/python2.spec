@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -22,7 +22,6 @@ BuildRequires:  libffi-devel >= 3.0.13
 BuildRequires:  sqlite-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
-Requires:       bzip2
 Requires:       openssl
 Requires:       python2-libs = %{version}-%{release}
 Provides:       python-sqlite
@@ -43,8 +42,9 @@ Requires:       sqlite-libs
 Requires:       expat >= 2.1.0
 Requires:       libffi >= 3.0.13
 Requires:       ncurses
-Requires:       coreutils
+Requires:       (coreutils or toybox)
 Requires:       gdbm
+Requires:       bzip2-libs
 
 # Needed for ctypes, to load libraries, worked around for Live CDs size
 # Requires: binutils
@@ -236,6 +236,9 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.13-10
+-   Requires coreutils or toybox
+-   Requires bzip2-libs
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 2.7.13-9
 -   Remove devpts mount in check
 *   Mon Aug 28 2017 Chang Lee <changlee@vmware.com> 2.7.13-8

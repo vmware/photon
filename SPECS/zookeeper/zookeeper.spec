@@ -1,7 +1,7 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
 Version:        3.4.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -14,8 +14,9 @@ Source2:        zkEnv.sh
 Patch0:	        zookeeper-3.4.8-server.patch
 BuildRequires:  systemd
 Requires:       systemd
-Requires:       shadow
 Requires:       openjre8
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 %description
 ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. All of these kinds of services are used in some form or another by distributed applications. Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable. Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them ,which make them brittle in the presence of change and difficult to manage. Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
@@ -104,6 +105,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 3.4.10-6
+-   Remove shadow from requires and use explicit tools for post actions
 *   Mon Sep 25 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-5
 -   Removed the java-export.sh script reference.
 *   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-4

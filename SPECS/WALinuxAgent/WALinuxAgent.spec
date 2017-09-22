@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.2.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
@@ -23,9 +23,9 @@ Requires:       python-xml
 Requires:       python-pyasn1
 Requires:       openssh
 Requires:       openssl
-Requires:       util-linux
-Requires:       sed
-Requires:       grep
+Requires:       (util-linux or toybox)
+Requires:       /bin/sed
+Requires:       /bin/grep
 Requires:       sudo
 Requires:       iptables
 Requires:       systemd
@@ -78,6 +78,8 @@ python2 setup.py check && python2 setup.py test
 /usr/lib/python2.7/site-packages/*
 
 %changelog
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.2.14-2
+- Requires /bin/grep, /bin/sed and util-linux or toybox
 * Thu Jul 13 2017 Anish Swaminathan <anishs@vmware.com> 2.2.14-1
 - Update to 2.2.14
 * Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.18-4
