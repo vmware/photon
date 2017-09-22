@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.47
+Version:        4.9.51
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=49110526c8e572513bd3295495ccd28754b5292d
+%define sha1 linux=cbdf8253cabbd236f2ab52b12f2ba484a038b81d
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -36,8 +36,6 @@ Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
 Patch21:        vmware-balloon-late-initcall.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11600
-Patch23:        xfrm-policy-check-policy-direction-value.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -95,7 +93,6 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -192,6 +189,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Sep 22 2017 Srivatsa S. Bhat <srivatsab@vmware.com> 4.9.51-1
+-   Version update
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1
 -   Fix CVE-2017-11600
 *   Mon Aug 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.43-1
