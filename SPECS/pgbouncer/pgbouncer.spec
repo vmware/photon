@@ -1,7 +1,7 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.7.2
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
@@ -16,7 +16,8 @@ BuildRequires:  systemd
 BuildRequires:  pkg-config
 Requires:		libevent
 Requires:		openssl
-Requires:		shadow
+Requires(pre):  /sbin/useradd /sbin/groupadd
+Requires(postun):/sbin/userdel /sbin/groupdel
 %description
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 
@@ -79,6 +80,8 @@ fi
 /usr/share/doc/pgbouncer/*
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.2-7
+-   Remove shadow from requires and use explicit tools for post actions
 *   Mon Jul 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.7.2-6
 -   Seperate the service file from the spec file
 *   Wed May 31 2017 Rongrong Qiu <rqiu@vmware.com> 1.7.2-5
