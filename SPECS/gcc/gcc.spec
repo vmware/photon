@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -134,8 +134,10 @@ ln -sv gcc %{buildroot}%{_bindir}/cc
 install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 %ifarch x86_64
     mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+    chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
 %else
     mv -v %{buildroot}%{_libdir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+    chmod 755 %{buildroot}/%{_lib}/libgcc_s.so.1
 %endif
 rm -rf %{buildroot}%{_infodir}
 popd
@@ -265,6 +267,8 @@ make %{?_smp_mflags} check-gcc
 %endif
 
 %changelog
+*   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-5
+-   Enable elfdeps for libgcc_s to generate libgcc_s.so.1(*)(64bit) provides
 *   Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-4
 -   Fix makecheck
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-3

@@ -1,7 +1,7 @@
 Summary:	advanced key-value store
 Name:		redis
 Version:	3.2.8
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
@@ -14,7 +14,7 @@ BuildRequires:  gcc
 BuildRequires:  systemd
 BuildRequires:  make
 Requires:	systemd
-Requires:	shadow
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 	
 %description
 Redis is an in-memory data structure store, used as database, cache and message broker.
@@ -78,11 +78,13 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
-*	Wed May 31 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-3
--	Fix DB persistence,log file,grace-ful shutdown issues
-*       Tue May 16 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-2
--       Added systemd service unit
-*       Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-1
--       Updating to latest version
-*	Mon Oct 3 2016 Dheeraj Shetty <dheerajs@vmware.com> 3.2.4-1
--	initial version
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.8-4
+- Remove shadow from requires and use explicit tools for post actions
+* Wed May 31 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-3
+- Fix DB persistence,log file,grace-ful shutdown issues
+* Tue May 16 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-2
+- Added systemd service unit
+* Wed Apr 5 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-1
+- Updating to latest version
+* Mon Oct 3 2016 Dheeraj Shetty <dheerajs@vmware.com> 3.2.4-1
+- initial version

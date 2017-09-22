@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.7.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -20,9 +20,10 @@ Requires:       etcd >= 3.0.4
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
-Requires:       shadow
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
-Requires:       util-linux
+Requires:       (util-linux or toybox)
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -174,6 +175,9 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.5-2
+-   Requires util-linux or toybox
+-   Remove shadow from requires and use explicit tools for post actions
 *   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-1
 -   k8s v1.7.5.
 *   Thu Aug 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-3

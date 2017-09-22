@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -15,7 +15,7 @@ BuildRequires: openjdk8
 BuildRequires: apache-ant
 BuildRequires: wget >= 1.15
 Requires: openjre8
-Requires: which
+Requires: /usr/bin/which
 
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
@@ -77,6 +77,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-4
+-   Requires /usr/bin/which
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.0-3
 -   Removed dependency on ANT_HOME
 -   Removed apache-maven profile file
