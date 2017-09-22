@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        7.7.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -12,7 +12,8 @@ Source0:        node-%{version}.tar.gz
 BuildArch:      x86_64
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
-Requires:       coreutils >= 8.22, openssl >= 1.0.1
+Requires:       (coreutils >= 8.22 or toybox)
+Requires:       openssl >= 1.0.1
 
 %description
 Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient. The Node.js package ecosystem, npm, is the largest ecosystem of open source libraries in the world.
@@ -52,8 +53,7 @@ done
 %check
 make cctest
 
-%post
-    /sbin/ldconfig
+%post -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -70,6 +70,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-3
+-   Requires coreutils or toybox
 *   Fri Jul 14 2017 Chang Lee <changlee@vmware.com> 7.7.4-2
 -   Updated %check
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 7.7.4-1

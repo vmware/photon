@@ -1,7 +1,7 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        4.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz 
@@ -16,7 +16,8 @@ BuildRequires:  systemd-devel
 Requires:       systemd
 Requires:       openjre8
 Requires:       commons-daemon
-Requires:       shadow
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildArch:      noarch
 
 %description
@@ -102,5 +103,7 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
-*   Tue Jul 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-1
--   first version
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
+- Remove shadow from requires and use explicit tools for post actions
+* Tue Jul 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-1
+- first version

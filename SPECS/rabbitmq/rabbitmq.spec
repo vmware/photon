@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.6.10
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -11,9 +11,9 @@ Source0:       http://www.rabbitmq.com/releases/rabbitmq-server/v%{version}/%{na
 %define sha1 rabbitmq=0d879f998683079a31c1e872ce4c5640ebd35406
 Source1:       rabbitmq.config
 Requires:      erlang
-Requires:      shadow
-Requires:      sed
+Requires:      /bin/sed
 Requires:      socat
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 BuildRequires: erlang
 BuildRequires: rsync
 BuildRequires: zip
@@ -95,6 +95,8 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.10-2
+- Remove shadow from requires and use explicit tools for post actions
 * Wed May 31 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.10-1
 - Updated to latest and fixed service start issue
 * Wed Apr 26 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6.9-2

@@ -113,8 +113,9 @@ class constants(object):
         "cpio"]
 
     # List or RPMS that will be installed in a chroot prior to build each
-    # package. On a stage1 and stage2 published rpms will/might be used
-    # after stage2 only local RPMS will be used
+    # package. This list should be ordered by install order. On a stage1
+    # and stage2 published rpms will/might be used after stage2 only local
+    # RPMS will be used
     listToolChainRPMsToInstall=[
         "filesystem",
         "linux-api-headers",
@@ -338,8 +339,10 @@ class constants(object):
     # Build system should interpret it as
     # Requires: shadow
     providedBy={
-        "/sbin/useradd":"shadow",
-        "/sbin/groupadd":"shadow"
+        "/usr/sbin/useradd":"shadow",
+        "/usr/sbin/groupadd":"shadow",
+        "/usr/bin/which":"which",
+        "/bin/sed":"sed"
     }
 
     @staticmethod

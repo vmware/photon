@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://www.sendmail.org/
 License:        BSD and CDDL1.1 and MIT
 Group:          Email/Server/Library
@@ -13,13 +13,14 @@ BuildRequires:  openldap
 BuildRequires:  openssl-devel
 BuildRequires:  libdb-devel
 BuildRequires:  shadow
-Requires:       coreutils
+Requires:       (coreutils or toybox)
 Requires:       systemd
 Requires:       m4
 Requires:       openldap
-Requires:       shadow
-Requires:       sed
-Requires:       net-tools
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+Requires:       /bin/sed
+Requires:       (net-tools or toybox)
 Requires:       libdb
 
 %define sha1 sendmail=5801d4b06f4e38ef228a5954a44d17636eaa5a16
@@ -196,30 +197,33 @@ fi
 
 
 %changelog
-*	Mon Jun 12 2017 Darren Hart (VMware) <dvhart@infradead.org> 8.15.2-13
--	Update the sendmail License meta-data
-*	Tue Apr 4 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-12
--       Update requires to use libdb and build to use libdb-devel
-*       Fri Mar 24 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-11
--       Fixing sendmail upgrade config no replace.
-*       Mon Mar 06 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-10
--       Adding dependency to start after network-online.
-*	Wed Dec 14 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-9
--       Replace obsoleted dependency inetutils with net-tools
-*	Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-8
--	fix pre script, add coreutils,inetutils,sed,shadow to requires
-*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 8.15.2-7
--       Modified %check
-*       Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 8.15.2-6
--       Fixed logic to restart the active services after upgrade 
-*       Wed May 25 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-5
--       Adding dependencies and fixing post section installation bug.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-4
--	GA - Bump release of all rpms
-*   	Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-3
--   	Fix for upgrade issues
-*       Wed Feb 17 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-2
--       Changing permission and owner of clientmqueue.
-*       Tue Jan 05 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-1
--       Initial build.  First version
+*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 8.15.2-14
+-   Requires coreutils/net-tools or toybox, /bin/sed
+-   Remove shadow from requires and use explicit tools for post actions
+*   Mon Jun 12 2017 Darren Hart (VMware) <dvhart@infradead.org> 8.15.2-13
+-   Update the sendmail License meta-data
+*   Tue Apr 4 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-12
+-   Update requires to use libdb and build to use libdb-devel
+*   Fri Mar 24 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-11
+-   Fixing sendmail upgrade config no replace.
+*   Mon Mar 06 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-10
+-   Adding dependency to start after network-online.
+*   Wed Dec 14 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-9
+-   Replace obsoleted dependency inetutils with net-tools
+*   Mon Nov 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-8
+-   fix pre script, add coreutils,inetutils,sed,shadow to requires
+*   Mon Oct 10 2016 ChangLee <changlee@vmware.com> 8.15.2-7
+-   Modified %check
+*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 8.15.2-6
+-   Fixed logic to restart the active services after upgrade
+*   Wed May 25 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-5
+-   Adding dependencies and fixing post section installation bug.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-4
+-   GA - Bump release of all rpms
+*   Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-3
+-   Fix for upgrade issues
+*   Wed Feb 17 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-2
+-   Changing permission and owner of clientmqueue.
+*   Tue Jan 05 2016 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-1
+-   Initial build.  First version
 
