@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.51
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -47,6 +47,8 @@ Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2017-11472
+Patch30:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 BuildRequires:  bc
@@ -142,6 +144,7 @@ EOF
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
 
 pushd ..
 %patch99 -p0
@@ -257,6 +260,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Sep 22 2017 Srivatsa S. Bhat <srivatsab@vmware.com> 4.9.51-2
+-   Fix CVE-2017-11472 (ACPICA: Namespace: fix operand cache leak)
 *   Fri Sep 22 2017 Srivatsa S. Bhat <srivatsab@vmware.com> 4.9.51-1
 -   Version update
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1

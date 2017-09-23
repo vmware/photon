@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.51
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -36,6 +36,8 @@ Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
 Patch21:        vmware-balloon-late-initcall.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2017-11472
+Patch23:        ACPICA-Namespace-fix-operand-cache-leak.patch
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -93,6 +95,7 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 
 %build
 # patch vmw_balloon driver
@@ -189,6 +192,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Sep 22 2017 Srivatsa S. Bhat <srivatsab@vmware.com> 4.9.51-2
+-   Fix CVE-2017-11472 (ACPICA: Namespace: fix operand cache leak)
 *   Fri Sep 22 2017 Srivatsa S. Bhat <srivatsab@vmware.com> 4.9.51-1
 -   Version update
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1
