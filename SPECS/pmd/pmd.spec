@@ -8,7 +8,7 @@
 
 Summary:	Photon Management Daemon
 Name:		pmd
-Version:	0.0.3
+Version:	0.0.4
 Release:	1%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -23,6 +23,8 @@ Requires:       netmgmt
 Requires:	systemd
 Requires:	tdnf >= 1.2.0
 Requires:       lightwave-client-libs
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       shadow
 BuildRequires:  copenapi-devel
 BuildRequires:	c-rest-engine-devel
 BuildRequires:	curl-devel
@@ -35,11 +37,17 @@ BuildRequires:	netmgmt-devel
 BuildRequires:	tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 pmd=db86a13cc82c4daff2f329d25a9e8d22c2184c3a
-Source1:        pmd.service
+%define sha1 pmd=e623169975219751d944c9bd925134949548e2d4
 
 %description
 Photon Management Daemon
+
+%package libs
+Summary: photon management daemon libs
+Requires: likewise-open >= 6.2.0
+
+%description libs
+photon management daemon libs used by server and clients
 
 %package cli
 Summary: photon management daemon cmd line cli
@@ -80,8 +88,8 @@ Python3 bindings for photon management daemon
 %setup -q
 
 %build
-sed -i 's/pmd, 0.0.1/pmd, 0.0.3/' configure.ac
-sed -i 's,-lcrypto,-lcrypto @LWBASE_LIBS@ -lgssapi_krb5,' server/Makefile.am
+sed -i 's/pmd, 0.0.1/pmd, 0.0.4/' configure.ac
+sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
 autoreconf -mif
 ./configure \
     --prefix=%{_prefix} \
@@ -89,7 +97,6 @@ autoreconf -mif
     --libdir=%{_libdir} \
     --sysconfdir=/etc \
     --with-likewise=/opt/likewise \
-    --with-vmware-rest=/usr/lib \
     --enable-python=no \
     --disable-static
 make
@@ -102,6 +109,7 @@ popd
 %install
 cd $RPM_BUILD_DIR/%{name}-%{version}
 make DESTDIR=%{buildroot} install
+rm -f %{buildroot}%{_libdir}/*.la
 
 pushd python
 python2 setup.py install --skip-build --root %{buildroot}
@@ -111,18 +119,20 @@ popd
 
 install -d $RPM_BUILD_ROOT/var/log/pmd
 install -vdm755 %{buildroot}%{_unitdir}
-install -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}
+install -D -m 444 pmd.service %{buildroot}%{_unitdir}
+install -D -m 444 pmdprivsepd.service %{buildroot}%{_unitdir}
 install -D -m 444 conf/restapispec.json %{buildroot}/etc/pmd/restapispec.json
 install -D -m 444 conf/api_sddl.conf %{buildroot}/etc/pmd/api_sddl.conf
 install -D -m 444 conf/restconfig.txt %{buildroot}/etc/pmd/restconfig.txt
-install -D -m 444 conf/server.crt  %{buildroot}/etc/pmd/server.crt
-install -D -m 444 conf/server.key %{buildroot}/etc/pmd/server.key
 
 # Pre-install
 %pre
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
+if ! getent group %{name} >/dev/null; then
+    /sbin/groupadd -r %{name}
+fi
+if ! getent passwd %{name} >/dev/null; then
+    /sbin/useradd -g %{name} %{name} -s /sbin/nologin
+fi
 
 # Post-install
 %post
@@ -132,6 +142,7 @@ install -D -m 444 conf/server.key %{buildroot}/etc/pmd/server.key
     sed -i "s/IPADDRESS_MARKER/`ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'`/g" /etc/pmd/restapispec.json
     /sbin/ldconfig
     %systemd_post pmd.service
+    %systemd_post pmdprivsepd.service
 
     if [ ! -d "%{_libdir}/gss" ] ; then
         mkdir %{_libdir}/gss
@@ -147,6 +158,25 @@ install -D -m 444 conf/server.key %{buildroot}/etc/pmd/server.key
             echo "unix %{_mech_id} libgssapi_unix.so" >> "%{_mech_file}"
         fi
     fi
+    chown %{name} /var/lib/likewise/rpc
+
+    if [ "$1" = 1 ]; then
+      openssl req \
+          -new \
+          -newkey rsa:2048 \
+          -days 365 \
+          -nodes \
+          -x509 \
+          -subj "/C=US/ST=WA/L=Bellevue/O=vmware/CN=photon-pmd-default" \
+          -keyout /etc/pmd/server.key \
+          -out /etc/pmd/server.crt
+      chmod 0400 /etc/pmd/server.key
+      chown %{name} /etc/pmd/server.key
+      openssl genrsa -out /etc/pmd/privsep_priv.key 2048
+      openssl rsa -in /etc/pmd/privsep_priv.key -pubout > /etc/pmd/privsep_pub.key
+      chmod 0400 /etc/pmd/privsep*.key
+      chown %{name} /etc/pmd/privsep_pub.key
+    fi
 
 # Pre-uninstall
 %preun
@@ -154,6 +184,7 @@ install -D -m 444 conf/server.key %{buildroot}/etc/pmd/server.key
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
     %systemd_preun pmd.service
+    %systemd_preun pmdprivsepd.service
 if [ "$1" = 0 ]; then
     if [ ! -e %{_bindir}/pmd-cli ]; then
         # Cleanup GSSAPI UNIX symlink
@@ -178,9 +209,20 @@ fi
 
     /sbin/ldconfig
 
+    %systemd_postun_with_restart pmd.service
+    %systemd_postun_with_restart pmdprivsepd.service
+
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
-    %systemd_postun_with_restart pmd.service
+if [ $1 -eq 0 ] ; then
+    if getent passwd %{name} >/dev/null; then
+        chown root /var/lib/likewise/rpc
+        /sbin/userdel %{name}
+    fi
+    if getent group %{name} >/dev/null; then
+        /sbin/groupdel %{name}
+    fi
+fi
 
 # Post pmd-cli
 %post cli
@@ -232,23 +274,23 @@ rm -rf %{buildroot}/*
 %files
     %defattr(-,root,root,0755)
     %{_bindir}/pmd
+    %{_bindir}/pmdprivsepd
     /lib/systemd/system/pmd.service
+    /lib/systemd/system/pmdprivsepd.service
     /etc/pmd/pmd.conf
     /etc/pmd/api_sddl.conf
     /etc/pmd/restapispec.json
     /etc/pmd/restconfig.txt
-    /etc/pmd/server.crt
-    /etc/pmd/server.key
-    %dir /var/log/pmd
+    %attr(0766, %{name}, %{name}) %dir /var/log/%{name}
+
+%files libs
+    %{_libdir}/libpmdclient.so*
 
 %files cli
     %{_bindir}/pmd-cli
-    %{_libdir}/libpmdclient.so.*
 
 %files devel
     %{_includedir}/pmd/*.h
-    %{_libdir}/*.la
-    %{_libdir}/libpmdclient.so
     %{_libdir}/pkgconfig/pmdclient.pc
 
 %files python2
@@ -260,6 +302,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*       Sat Sep 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.4-1
+-       Add privilege separation
 *       Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
 -       Fix REST param handling, CLI locale.
 *       Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
