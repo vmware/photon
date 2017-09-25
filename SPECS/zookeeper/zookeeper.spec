@@ -1,7 +1,7 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
 Version:        3.4.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -64,7 +64,6 @@ getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --
 if [ $1 -eq 1 ] ; then
     # Initial installation
     # Enabled by default per "runs once then goes away" exception
-    source %{_sysconfdir}/profile.d/java-exports.sh
     bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
@@ -77,7 +76,6 @@ fi
  
 %preun
 if [ $1 -eq 0 ] ; then
-source %{_sysconfdir}/profile.d/java-exports.sh
 bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
@@ -106,6 +104,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Mon Sep 25 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-5
+-   Removed the java-export.sh script reference.
 *   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-4
 -   Renamed openjdk to openjdk8.
 *   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-3
