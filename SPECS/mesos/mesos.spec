@@ -3,7 +3,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	1.2.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -38,8 +38,6 @@ Requires:	cyrus-sasl >= 2.1.26
 Requires:	expat
 Requires:	openjre >= 1.8.0.45
 Requires:	subversion >= 1.8.13
-Requires:       python-pip
-Requires:       protobuf-python
 
 
 %description
@@ -48,10 +46,17 @@ Requires:       protobuf-python
 
 %package	devel
 Summary:	Header and development files for mesos
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 %description    devel
  mesos-devel package contains header files, pkfconfig files, and libraries
  needed to build applications for mesos.
+
+%package	python
+Summary:	python bindings for mesos
+Requires:       python2
+Requires:       protobuf-python
+%description    python
+ python bindings for mesos
 
 %prep
 %setup -q
@@ -78,6 +83,10 @@ make check
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
+mv %{buildroot}%{python2_sitelib}/mesos %{buildroot}/python-mesos
+rm -rf %{buildroot}%{python2_sitelib}/*
+mv %{buildroot}/python-mesos %{buildroot}%{python2_sitelib}/mesos
+find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 
 %files
@@ -105,11 +114,15 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_includedir}/*
 %{_libdir}/libfixed_resource_estimator*
 %{_libdir}/pkgconfig/mesos.pc
-%{python2_sitelib}/*
 %{_prefix}/etc/mesos/*
 %exclude %{_libdir}/debug/
 
+%files python
+%{python2_sitelib}/mesos/*
+
 %changelog
+*	Thu Sep 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-2
+-	for python files, package only mesos python files.
 *	Fri Sep 1 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
 -	Update to 1.2.0-1
 *	Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.28.2-3
