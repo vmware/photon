@@ -23,7 +23,7 @@
                 "dbus", "docker", "dracut", "dracut-tools",
                 "expat",
                 "file", "findutils",
-                "glibc", "gmp", "grep", "grub2", "gzip",
+                "glibc", "gmp", "grep", "grub2", "grub2-pc", "gzip",
                 "iana-etc", "iproute2", "iptables",
                 "kmod",
                 "libcap", "libgcc", "libstdc++", "libtool", "linux",
