@@ -1,0 +1,18 @@
+diff --git a/client/goal.c b/client/goal.c
+index bad589e..54d29a5 100644
+--- a/client/goal.c
++++ b/client/goal.c
+@@ -329,11 +329,11 @@ TDNFGoalReportProblems(
+     nCount = hy_goal_count_problems(hGoal);
+     if(nCount > 0)
+     {
+-        fprintf(stdout, "Found %d problem(s) while resolving\n", nCount);
++        fprintf(stderr, "Found %d problem(s) while resolving\n", nCount);
+         for(; i < nCount; ++i)
+         {
+             pszProblem = hy_goal_describe_problem(hGoal, i);
+-            fprintf(stdout, "%d. %s\n", i+1, pszProblem);
++            fprintf(stderr, "%d. %s\n", i+1, pszProblem);
+ 
+             hy_free(pszProblem);
+             pszProblem = NULL;
