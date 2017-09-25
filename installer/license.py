@@ -1,4 +1,3 @@
-#! /usr/bin/python2
 #
 #    Copyright (C) 2015 vmware inc.
 #
@@ -44,6 +43,3 @@ class License(object):
 
     def exit_function(self):
         exit(0)
-
-
-
