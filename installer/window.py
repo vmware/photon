@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 #
 #    Copyright (C) 2015 vmware inc.
 #
@@ -15,8 +14,8 @@ class Window(Action):
         self.can_go_next = can_go_next
         self.height = height
         self.width = width;
-        self.y = (maxy - height) / 2
-        self.x = (maxx - width ) / 2
+        self.y = (maxy - height) // 2
+        self.x = (maxx - width ) // 2
         title = ' ' + title + ' '
 
         self.contentwin = curses.newwin(height - 1, width -1)
@@ -29,7 +28,7 @@ class Window(Action):
         self.position = position
         self.items = items
         self.menu_helper = menu_helper
-        self.contentwin.addstr(0, (width - 1 - len(title)) / 2 , title)#
+        self.contentwin.addstr(0, (width - 1 - len(title)) // 2 , title)#
         newy = 5;
 
         if self.can_go_back:
@@ -48,7 +47,7 @@ class Window(Action):
             for item in self.items:
                 self.dist-=len(item[0])
                 count+=1
-            self.dist=self.dist/count
+            self.dist=self.dist//count
             self.contentwin.keypad(1)
             newy += len('<Go Back>')
             newy += self.dist

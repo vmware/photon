@@ -109,7 +109,7 @@ class IsoInstaller(object):
     def validate_password(text):
         try:
             p = cracklib.VeryFascistCheck(text)
-        except ValueError, message:
+        except ValueError as message:
             p = str(message)
         return p == text, "Error: " + p
 

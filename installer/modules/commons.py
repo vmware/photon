@@ -38,7 +38,7 @@ def partition_disk(disk, partitions):
     output = open(os.devnull, 'w')
 
     # Clear the disk
-    process = subprocess.Popen(['sgdisk', '-o', '-g', disk], stdout = output)
+    process = subprocess.Popen(['sgdisk', '-o', '-g', disk], stderr = output, stdout = output)
     retval = process.wait()
     if retval != 0:
         log(LOG_ERROR, "Failed clearing disk {0}".format(disk))
@@ -72,23 +72,23 @@ def partition_disk(disk, partitions):
         prefix = ''
         if 'nvme' in disk:
             prefix = 'p'
-        partition['path'] = disk + prefix + `partition_number`
+        partition['path'] = disk + prefix + repr(partition_number)
         partition_number = partition_number + 1
 
     # Adding the last extendible partition
     if extensible_partition:
-        partition_cmd.extend(['-n', `extensible_partition['partition_number']`])
+        partition_cmd.extend(['-n', repr(extensible_partition['partition_number'])])
 
     partition_cmd.extend(['-p', disk])
 
     # Run the partitioning command
-    process = subprocess.Popen(partition_cmd, stdout = output)
+    process = subprocess.Popen(partition_cmd, stderr = output, stdout = output)
     retval = process.wait()
     if retval != 0:
         log(LOG_ERROR, "Faild partition disk, command: {0}". format(partition_cmd))
         return None
 
-    process = subprocess.Popen(['sgdisk', '-t1' + grub_flag, disk], stdout = output)
+    process = subprocess.Popen(['sgdisk', '-t1' + grub_flag, disk], stderr = output, stdout = output)
     retval = process.wait()
     if retval != 0:
         log(LOG_ERROR, "Failed to setup grub partition")
@@ -105,13 +105,14 @@ def partition_disk(disk, partitions):
                 partitions_data['boot_partition_number'] = partition['partition_number']
                 partitions_data['bootdirectory'] = '/'
         if partition['filesystem'] == "swap":
-            process = subprocess.Popen(['mkswap', partition['path']], stdout = output)
+            process = subprocess.Popen(['mkswap', partition['path']], stderr = output, stdout = output)
             retval = process.wait()
             if retval != 0:
                 log(LOG_ERROR, "Failed to create swap partition @ {}".format(partition['path']))
                 return None
         else:
-            process = subprocess.Popen(['mkfs', '-t', partition['filesystem'], partition['path']], stdout = output)
+            mkfs_cmd = ['mkfs', '-t', partition['filesystem'], partition['path']]
+            process = subprocess.Popen(mkfs_cmd, stderr = output, stdout = output)
             retval = process.wait()
             if retval != 0:
                 log(LOG_ERROR, "Failed to format {} partition @ {}".format(partition['filesystem'], partition['path']))
@@ -137,7 +138,7 @@ def replace_string_in_file(filename,  search_string,  replace_string):
 
     with open(filename, "w") as destination:
         for line in lines:
-            destination.write(re.sub(search_string,  replace_string,  line))
+            destination.write(re.sub(search_string, replace_string, line))
 
 def log(type, message):
     command = 'systemd-cat echo \"<{}> {} : {}\"'.format(type, LOG_LEVEL_DESC[type], message)
