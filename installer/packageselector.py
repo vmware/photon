@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 #
 #    Copyright (C) 2015 vmware inc.
 #
@@ -7,7 +6,6 @@
 import json
 import os
 import curses
-from sets import Set
 from jsonwrapper import JsonWrapper
 from menu import Menu
 from window import Window
@@ -21,8 +19,8 @@ class PackageSelector(object):
         self.win_width = 50
         self.win_height = 13
 
-        self.win_starty = (self.maxy - self.win_height) / 2
-        self.win_startx = (self.maxx - self.win_width) / 2
+        self.win_starty = (self.maxy - self.win_height) // 2
+        self.win_startx = (self.maxx - self.win_width) // 2
 
         self.menu_starty = self.win_starty + 3
 
@@ -50,7 +48,7 @@ class PackageSelector(object):
         additional_files = []
         for install_option in options:
             if install_option[0] == config_type:
-                if install_option[1].has_key("additional-files"):
+                if "additional-files" in install_option[1]:
                     additional_files = install_option[1]["additional-files"]
                 break
         return additional_files

@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 #
 #    Copyright (C) 2015 vmware inc.
 #

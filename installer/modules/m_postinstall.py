@@ -16,7 +16,7 @@ def execute(name, config, root):
     with open(script_file,  'wb') as outfile:
         outfile.write("\n".join(script))
 
-    os.chmod(script_file, 0700);
+    os.chmod(script_file, 0o700);
     with open(commons.KS_POST_INSTALL_LOG_FILE_NAME,"w") as logfile:
         process = subprocess.Popen(["./mk-run-chroot.sh", '-w', root, "/etc/tmpfiles.d/postinstall.sh"],
             stdout=logfile,stderr=logfile)
