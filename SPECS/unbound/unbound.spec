@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -85,5 +85,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 1.6.0-2
+-  Release bump for expat version update
 *  Fri Jan 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-1
 -  Initial

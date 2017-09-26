@@ -1,7 +1,7 @@
 Summary:	Libsolv-0.6.19
 Name:		libsolv
 Version:	0.6.19
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD
 URL:		https://github.com/openSUSE/libsolv
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -40,6 +40,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/*
 %{_includedir}/*
 %changelog
+*   Sat Sep 30 2017 Anish Swaminathan <anishs@vmware.com> 0.6.19-4
+-   Release bump for expat version update
 *   Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.19-3
 -   added compile flag to support rich dependencies
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-2
@@ -52,5 +54,5 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 -   Updated build-requires after creating devel package for db. 
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 0.6.6-2
 -   Updated group.
-*	Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 0.6.6-1
--	Initial build. First version
+*   Tue Nov 25 2014 Divya Thaluru <dthaluru@vmware.com> 0.6.6-1
+-   Initial build. First version
