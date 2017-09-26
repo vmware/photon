@@ -57,7 +57,7 @@ class TextPane(Action):
         self.window.keypad(1)
         self.panel = curses.panel.new_panel(self.window)
 
-        self.panel.move(starty, (maxx - self.width) / 2)
+        self.panel.move(starty, (maxx - self.width) // 2)
         self.panel.hide()
         curses.panel.update_panels()
 

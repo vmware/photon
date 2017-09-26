@@ -1,4 +1,3 @@
-#! /usr/bin/python2
 #
 #    Copyright (C) 2015 vmware inc.
 #
@@ -85,8 +84,8 @@ class ProgressBar(object):
     def render_progress(self):
         if self.num_items == 0:
             return
-        completed = self.progress * 100 / self.num_items
-        completed_width = completed * self.width / 100
+        completed = self.progress * 100 // self.num_items
+        completed_width = completed * self.width // 100
         completed_str, remaining_str = self.get_spaces(completed_width, self.width, completed)
 
         self.window.addstr(0, 0, completed_str, curses.color_pair(3))
@@ -162,7 +161,7 @@ class ProgressBar(object):
     def get_spaces(self, completed_width, total_width, per):
         per = str(per) + '%'
 
-        start = (total_width + 2 - len(per)) / 2
+        start = (total_width + 2 - len(per)) // 2
         end = start + len(per)
 
         index = 0
