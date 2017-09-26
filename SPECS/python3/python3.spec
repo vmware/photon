@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -40,12 +40,12 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary:        The libraries for python runtime
 Group:          Applications/System
-BuildRequires:  expat >= 2.1.0
+BuildRequires:  expat >= 2.2.4
 BuildRequires:  libffi >= 3.0.13
 BuildRequires:  ncurses-devel >= 6.0-3
 BuildRequires:  sqlite-autoconf
 Requires:       coreutils
-Requires:       expat >= 2.1.0
+Requires:       expat >= 2.2.4
 Requires:       libffi >= 3.0.13
 Requires:       ncurses >= 6.0-3
 Requires:       sqlite-autoconf
@@ -193,6 +193,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 3.5.3-7
+-   Release bump for expat version update
 *   Thu Sep 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.3-6
 -   Adding patch for socket cleanup issue, Bug # 1956257. 
 *   Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-5

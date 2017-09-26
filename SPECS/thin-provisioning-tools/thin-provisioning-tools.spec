@@ -4,7 +4,7 @@
 Summary: 	Thin provisioning tools
 Name:		thin-provisioning-tools
 Version:	0.6.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 Group:		System Environment/Base
 URL:		https://github.com/jthornber/thin-provisioning-tools
@@ -76,8 +76,10 @@ make DESTDIR=%{buildroot} MANDIR=%{_mandir} install
 %{_sbindir}/thin_trim
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.1-2
--	GA - Bump release of all rpms
+*   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 0.6.1-3
+-   Release bump for expat version update
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.1-2
+- GA - Bump release of all rpms
 * Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 0.6.1-1
 - Updating version
 * Tue Mar 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.4.1-1
