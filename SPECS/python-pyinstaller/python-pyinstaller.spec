@@ -4,7 +4,7 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python-pyinstaller
 Version:        3.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller/3.2.1
 License:        GPLv2+
 Group:          Development/Languages/Python
@@ -21,6 +21,7 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-six
 BuildRequires:  python-pytest
 BuildRequires:  python-psutil
+BuildRequires:  python-pip
 %endif
 Requires:       python2
 Requires:       python2-libs
@@ -80,10 +81,16 @@ python2 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 
 
 %check
-py.test2 tests/unit tests/functional
-pushd ../p3dir
-python3 setup.py test
-popd
+# future is required for python2 make check
+pip2 install -U future
+
+# Skip tkinter and idlelib related test
+# as our python is not compiled with Tcl/Tk.
+# We don't have Tk.
+LANG=en_US.UTF-8 py.test2 tests/unit tests/functional \
+    -k "not test_tkinter and not test_idlelib"
+
+# Skip python3 make check, as python3.6 is not supported by 3.2.1
 
 %files
 %defattr(-,root,root)
@@ -116,5 +123,7 @@ popd
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Mon Sep 25 2017 Bo Gan <ganb@vmware.com> 3.2.1-2
+-   Fix make check issues.
 *   Tue Feb 14 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1
 -   Initial packaging for Photon
