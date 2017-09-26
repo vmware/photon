@@ -1,7 +1,7 @@
 Summary:	XML-Parser perl module
 Name:		XML-Parser
 Version:	2.44
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPL+
 URL:		http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
@@ -31,13 +31,15 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/perl5/*
 %{_mandir}/man3/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.44-2
--	GA - Bump release of all rpms
+*   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 2.44-3
+-   Release bump for expat version update
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.44-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.44-1
 -   Upgraded to version 2.44
-*	Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 2.41-3
--	Fix for multithreaded perl
-*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.41-2
--	Fix for new perl
-*	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.41-1
--	Initial build. First version
+*   Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 2.41-3
+-   Fix for multithreaded perl
+*   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.41-2
+-   Fix for new perl
+*   Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.41-1
+-   Initial build. First version

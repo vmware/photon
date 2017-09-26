@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.8.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
@@ -60,6 +60,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 
 %changelog
+*   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 7.8.2-8
+-   Release bump for expat version update
 *   Fri Aug 25 2017 Anish Swaminathan <anishs@vmware.com> 7.8.2-7
 -   Remove locale files that conflict with binutils locale files
 *   Thu Jul 20 2017 Rui Gu <ruig@vmware.com> 7.8.2-6
