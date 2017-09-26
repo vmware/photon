@@ -1,7 +1,7 @@
 Summary:    The Apache HTTP Server
 Name:       httpd
 Version:    2.4.27
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache License 2.0
 URL:        http://httpd.apache.org/
 Group:      Applications/System
@@ -176,6 +176,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 2.4.27-3
+-   Release bump for expat version update
 *   Tue Aug 08 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-2
 -   Add shadow to requires
 *   Mon Jul 24 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-1

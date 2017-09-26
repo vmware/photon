@@ -1,7 +1,7 @@
 Summary:	library for configuring and customizing font access.
 Name:		fontconfig
 Version:	2.12.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD/GPL
 URL:		https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:		System Environment/Libraries
@@ -67,5 +67,7 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
-*       Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.12.1-1
--       Initial version
+*   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 2.12.1-2
+-   Release bump for expat version update
+*   Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.12.1-1
+-   Initial version
