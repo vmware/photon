@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -15,7 +15,7 @@ Patch2:         added-pyopenssl-ipaddress-certificate-validation.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  openssl-devel
-BuildRequires:  expat >= 2.1.0
+BuildRequires:  expat >= 2.2.4
 BuildRequires:  libffi >= 3.0.13
 BuildRequires:  sqlite-autoconf
 BuildRequires:  ncurses-devel >= 6.0-3
@@ -38,7 +38,7 @@ version is for backward compatibility with other dependent packages.
 Summary: The libraries for python runtime
 Group: Applications/System
 Requires:   sqlite-autoconf
-Requires:   expat >= 2.1.0
+Requires:   expat >= 2.2.4
 Requires:   libffi >= 3.0.13
 Requires:   ncurses >= 6.0-3
 Requires:   coreutils
@@ -219,6 +219,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 2.7.13-3
+-   Release bump for expat version update
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.13-2
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
