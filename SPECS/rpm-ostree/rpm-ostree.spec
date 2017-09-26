@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2017.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 %define sha1    rpm-ostree=d34882a455afbf0b57617c0962725276967e838a
 Source1:        libglnx-0c52d85.tar.gz
@@ -128,6 +128,8 @@ make check
 %{_bindir}/rpm-ostree-host/function.inc
 
 %changelog
+*   Tue Sep 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.4-6
+-   Fix unmount in the mk-ostree-host
 *   Fri Sep 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.4-5
 -   Add support to generate rpm-ostree host
 *   Fri Sep 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.4-4

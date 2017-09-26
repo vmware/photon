@@ -23,7 +23,7 @@
 		"dbus", "docker",
 		"e2fsprogs", "e2fsprogs-libs", "expat",
 		"file", "findutils",
-		"gdbm", "glibc", "gmp", "grub2", "gzip",
+		"gdbm", "glibc", "gmp", "grub2", "grub2-pc", "gzip",
 		"hawkey",
 		"iana-etc", "initramfs", "iproute2", "iptables",
 		"kmod",
