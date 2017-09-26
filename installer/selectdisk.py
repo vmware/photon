@@ -1,4 +1,3 @@
-#! /usr/bin/python2
 #
 #    Copyright (C) 2015 vmware inc.
 #
@@ -22,14 +21,14 @@ class SelectDisk(object):
         self.win_width = 70
         self.win_height = 16
 
-        self.win_starty = (self.maxy - self.win_height) / 2
-        self.win_startx = (self.maxx - self.win_width) / 2
+        self.win_starty = (self.maxy - self.win_height) // 2
+        self.win_startx = (self.maxx - self.win_width) // 2
 
         self.menu_starty = self.win_starty + 6
         self.menu_height = 5
         self.progress_padding = 5
         self.progress_width = self.win_width - self.progress_padding
-        self.progress_bar = ProgressBar(self.win_starty + 6, self.win_startx + self.progress_padding / 2, self.progress_width, new_win=True)
+        self.progress_bar = ProgressBar(self.win_starty + 6, self.win_startx + (self.progress_padding // 2), self.progress_width, new_win=True)
 
         self.disk_buttom_items = []
         self.disk_buttom_items.append(('<Custom>', self.custom_function, False))
@@ -47,7 +46,7 @@ class SelectDisk(object):
 
         menu_height = 9
         menu_width = 40
-        menu_starty = (self.maxy - menu_height) / 2 + 5
+        menu_starty = (self.maxy - menu_height) // 2 + 5
         self.install_config['delete_partition'] = True
         confrim_window = ConfirmWindow(menu_height, menu_width, self.maxy, self.maxx, menu_starty, 'This will erase the disk.\nAre you sure?')
         confirmed = confrim_window.do_action().result['yes']
