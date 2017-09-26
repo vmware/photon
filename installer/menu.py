@@ -1,4 +1,3 @@
-#! /usr/bin/python2
 #
 #    Copyright (C) 2015 vmware inc.
 #
@@ -7,7 +6,6 @@
 import curses
 from actionresult import ActionResult
 from action import Action
-from sets import Set
 
 class Menu(Action):
     def __init__(self, starty, maxx, items, height = 0, selector_menu = False, can_navigate_outside = True, horizontal = False, default_selected = 0, save_sel = False, tab_enable = True):
@@ -46,7 +44,7 @@ class Menu(Action):
         self.selector_menu = selector_menu
         if self.selector_menu:
             self.width += 4
-            self.selected_items = Set([])
+            self.selected_items = set([])
 
         if self.horizontal:
             menu_win_width = (self.width + self.horizontal_padding) * self.num_items
@@ -59,7 +57,7 @@ class Menu(Action):
         self.window.keypad(1)
         self.panel = curses.panel.new_panel(self.window)
 
-        self.panel.move(starty, (maxx - menu_win_width) / 2)
+        self.panel.move(starty, (maxx - menu_win_width) // 2)
         self.panel.hide()
         curses.panel.update_panels()
 
@@ -142,7 +140,7 @@ class Menu(Action):
                 else:
                     item = '[ ] ' + item
             if self.horizontal:
-                x = self.horizontal_padding / 2 + index * self.horizontal_padding
+                x = self.horizontal_padding // 2 + index * self.horizontal_padding
                 y = 0
             else:
                 x = 0
