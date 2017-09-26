@@ -18,7 +18,7 @@ def execute(name, config, root):
         os.makedirs(authorized_keys_dir)
     with open(authorized_keys_filename, "a") as destination:
         destination.write(config['public_key'] + "\n")
-    os.chmod(authorized_keys_filename, 0600)
+    os.chmod(authorized_keys_filename, 0o600)
 
     # Change the sshd config to allow root login
     process = subprocess.Popen(["sed", "-i", "s/^\\s*PermitRootLogin\s\+no/PermitRootLogin yes/", sshd_config_filename])
