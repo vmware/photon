@@ -72,8 +72,15 @@ function mount_devices {
     run_command "Mount devices in deployment" "mount -t proc -o defaults proc  ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/proc" "${LOGFILE}"
     run_command "Mount devices in deployment" "mount -t bind -o bind,defaults /run  ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/run" "${LOGFILE}"
     run_command "Mount devices in deployment" "mount -t sysfs -o defaults sysfs ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/sys" "${LOGFILE}"
+    run_command "Mount Boot" "mount --bind ${MOUNT_POINT}/boot ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/boot" "${LOGFILE}"
+    run_command "Mount Sysroot" "mount --bind ${MOUNT_POINT} ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/sysroot" "${LOGFILE}"
 }
 function unmount_devices {
+    sync
+    sync
+    sync
+    run_command "Unmount Boot" "umount ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/boot" "${LOGFILE}"
+    run_command "Unmount sysroot" "umount ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/sysroot" "${LOGFILE}"
     run_command "Unmount devices in deployment" "umount ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/sys" "${LOGFILE}"
     run_command "Unmount devices in deployment" "umount ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/run" "${LOGFILE}"
     run_command "Unmount devices in deployment" "umount ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/proc" "${LOGFILE}"
@@ -94,8 +101,11 @@ function create_systemd_tmpfile {
 }
 
 function unmount_loop_devices {
-    run_command "Unmounting p2" "umount ${ROOT_PARTITION}" "${LOGFILE}"
-    run_command "Unmounting p3" "umount ${SYSROOT_BOOT_PARTITION}" "${LOGFILE}"
+    sync
+    sync
+    sync
+    run_command "Unmounting p2" "umount -l ${SYSROOT_BOOT_PARTITION}" "${LOGFILE}"
+    run_command "Unmounting p3" "umount -l ${ROOT_PARTITION}" "${LOGFILE}"
     run_command "kpartx loop0" "kpartx -d ${DISK_DEVICE}" "${LOGFILE}"
     run_command "delete loop0" "losetup -d ${DISK_DEVICE}" "${LOGFILE}"
 }
@@ -171,9 +181,6 @@ id=$(cat ${MOUNT_POINT}/ostree/repo/refs/remotes/photon/${REPO_REF})
 create_systemd_tmpfile
 
 mount_devices
-
-run_command "Mount Boot" "mount --bind ${MOUNT_POINT}/boot ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/boot" "${LOGFILE}"
-run_command "Mount Sysroot" "mount --bind ${MOUNT_POINT} ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/sysroot" "${LOGFILE}"
 
 install_generate_grub
 
