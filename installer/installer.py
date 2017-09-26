@@ -19,7 +19,6 @@ from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
 from window import Window
 from actionresult import ActionResult
-from __builtin__ import isinstance
 
 class Installer(object):
     def __init__(self, install_config, maxy = 0, maxx = 0, iso_installer = False,
@@ -57,10 +56,10 @@ class Installer(object):
             self.progress_padding = 5
 
             self.progress_width = self.width - self.progress_padding
-            self.starty = (self.maxy - self.height) / 2
-            self.startx = (self.maxx - self.width) / 2
+            self.starty = (self.maxy - self.height) // 2
+            self.startx = (self.maxx - self.width) // 2
             self.window = Window(self.height, self.width, self.maxy, self.maxx, 'Installing Photon', False, items =[])
-            self.progress_bar = ProgressBar(self.starty + 3, self.startx + self.progress_padding / 2, self.progress_width)
+            self.progress_bar = ProgressBar(self.starty + 3, self.startx + self.progress_padding // 2, self.progress_width)
 
         signal.signal(signal.SIGINT, self.exit_gracefully)
 
@@ -152,6 +151,7 @@ class Installer(object):
                         if output.startswith(prefix):
                             package = output[len(prefix):].rstrip('\n')
                             self.progress_bar.increment(packages_to_install[package])
+
                         self.progress_bar.update_message(output)
                 # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
                 if retval != 0 and retval != 137:
