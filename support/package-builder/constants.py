@@ -331,7 +331,8 @@ class constants(object):
     listReqPrivilegedDockerForTest=[
         "elfutils", # SYS_PTRACE
         "gdb",
-        "glibc" ]
+        "glibc",
+        "tar"]
 
     # .spec file might contain lines such as
     # Requires(post):/sbin/useradd
