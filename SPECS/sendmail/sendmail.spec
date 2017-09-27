@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://www.sendmail.org/
 License:        BSD and CDDL1.1 and MIT
 Group:          Email/Server/Library
@@ -179,7 +179,6 @@ fi
 %{_sysconfdir}/mail/ostype/*
 %{_sysconfdir}/mail/sh/*
 %{_sysconfdir}/mail/siteconfig/*
-%{_sysconfdir}/mail/cf/*
 %{_sysconfdir}/mail/domain/*
 %{_sysconfdir}/mail/README
 %{_sysconfdir}/mail/helpfile
@@ -193,9 +192,11 @@ fi
 %exclude /usr/lib/debug
 %exclude /usr/src
 %exclude /usr/share/man/*
-
+%exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+*	Tue Sep 26 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-14
+-	Removed duplicate configuration folder.
 *	Mon Jun 12 2017 Darren Hart (VMware) <dvhart@infradead.org> 8.15.2-13
 -	Update the sendmail License meta-data
 *	Tue Apr 4 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.15.2-12
