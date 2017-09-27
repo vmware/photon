@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.20
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -10,6 +10,9 @@ Distribution: 	Photon
 BuildArch:      noarch
 Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
 %define sha1 apache-tomcat=1d65afa114d0d2d01e70592710df513ebe5ae463
+# base-for-apache-tomcat is a cached -Dbase.path folder
+Source1:        base-for-%{name}-%{version}.tar.xz
+%define sha1    base=57dc7aafbe477d13c4d9b74f2eb694f56246f11c
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -32,10 +35,11 @@ The Apache Tomcat package contains binaries for the Apache Tomcat servlet contai
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
+%setup -D -b 1 -n %{name}-%{version}-src
 
 %build
 mkdir -p -m 700 %{_prefix}
-ant -Dbase.path="." deploy dist-prepare dist-source javadoc
+ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -87,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 8.5.20-3
+-   Offline build, disable javadoc target
 *   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
 -   Updated the permissions on directories packaged 
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 8.5.20-1
