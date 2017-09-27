@@ -7,14 +7,8 @@ cd /
 
 echo "127.0.0.1 localhost" >> /etc/hosts
 
-# Update /etc/resolv.conf
-if [ -f /etc/resolv.conf ]
-	then
-		rm /etc/resolv.conf
-fi
-echo "nameserver 169.254.169.253" >> /etc/resolv.conf
-echo "search ec2.internal" >> /etc/resolv.conf
-
+echo "DNS=169.254.169.253" >> /etc/systemd/resolved.conf
+echo "Domains=ec2.internal" >> /etc/systemd/network/99-dhcp-en.network
 
 # Remove ssh host keys and add script to regenerate them at boot time.
 rm -f /etc/ssh/ssh_host_*
