@@ -22,12 +22,7 @@ echo "server 169.254.169.254" >> /etc/ntp.conf
 # Set UTC timezone
 ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
-# Update /etc/resolv.conf
-
-rm /etc/resolv.conf
-
-echo "nameserver 169.254.169.254" >> /etc/resolv.conf
-echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+echo "DNS=169.254.169.254 8.8.8.8" >> /etc/systemd/resolved.conf
 
 
 # Remove ssh host keys and add script to regenerate them at boot time.
