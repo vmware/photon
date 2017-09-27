@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.86
+Version:       4.4.88
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f70a59faebdb8f5d8e865b7f9eca1e05b4044b63
+%define sha1 linux=40ac50fad1c01f1f40a4f93a20ea698861b35c94
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -36,8 +36,6 @@ Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
-# Fix CVE-2017-11600
-Patch25:        xfrm-policy-check-policy-direction-value.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -99,7 +97,6 @@ The Linux package contains the Linux kernel doc files
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
-%patch25 -p1
 
 %build
 # patch vmw_balloon driver
@@ -188,6 +185,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Sep 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.88-1
+-   Enable kprobes
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.86-1
 -   Fix CVE-2017-11600
 *   Wed Aug 16 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.82-2

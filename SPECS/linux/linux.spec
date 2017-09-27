@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.86
+Version:    	4.4.88
 Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=f70a59faebdb8f5d8e865b7f9eca1e05b4044b63
+%define sha1 linux=40ac50fad1c01f1f40a4f93a20ea698861b35c94
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -38,8 +38,6 @@ Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
 # Fix CVE-2017-10911
 Patch19:        xen-blkback-dont-leak-stack-data-via-response-ring.patch
-# Fix CVE-2017-11600
-Patch20:        xfrm-policy-check-policy-direction-value.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -130,7 +128,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
-%patch20 -p1
 
 %build
 make mrproper
@@ -283,6 +280,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Sep 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.88-1
+-   Version update
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.86-1
 -   Fix CVE-2017-11600
 *   Thu Aug 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.82-2
