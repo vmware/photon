@@ -1,7 +1,7 @@
 Summary:	The Kerberos newtork authentication system
 Name:		krb5
 Version:	1.15.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MIT
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -9,7 +9,8 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1 krb5=810210a61070ea371014ac514d191bbe5cdac2e2
-Patch0:     krb5-1.15-never-unload-mechanisms.patch
+Patch0:         krb5-1.15-never-unload-mechanisms.patch
+Patch1:         krb5-1.15.1-CVE-2017-11462.patch
 Requires:	openssl
 Requires:	e2fsprogs-libs
 BuildRequires: 	openssl-devel
@@ -37,6 +38,7 @@ These are the additional language files of krb5.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 
 cd src &&
@@ -118,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Wed Sep 27 2016 Anish Swaminathan <anishs@vmware.com> 1.15.1-3
+-   Fix for CVE-2017-11462
 *   Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
 -   Fix make check: add /etc/hosts entry, disable parallel check
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
