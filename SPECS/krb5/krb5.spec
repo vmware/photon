@@ -1,22 +1,25 @@
-Summary:	The Kerberos newtork authentication system
-Name:		krb5
-Version:	1.14
-Release:	6%{?dist}
-License:	MIT
-URL:		http://cyrusimap.web.cmu.edu/
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 krb5=02973f6605b1170bec812af9c8da4e447eeca9a9
+Summary:        The Kerberos newtork authentication system
+Name:           krb5
+Version:        1.14
+Release:        7%{?dist}
+License:        MIT
+URL:            http://cyrusimap.web.cmu.edu/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha1    krb5=02973f6605b1170bec812af9c8da4e447eeca9a9
 Patch0:         krb5-1.14-skip-unnecessary-mech-calls.patch
 Patch1:         krb5-1.14-never-unload-mechanisms.patch
 Patch2:         krb5-1.14-CVE-2015-8631.patch
 Patch3:         krb5-1.14-CVE-2016-3120.patch
-Requires:	openssl
-Requires:	e2fsprogs
-BuildRequires: 	openssl-devel
-BuildRequires:	e2fsprogs-devel
+#Based on https://github.com/krb5/krb5/commit/56f7b1bc95a2a3eeb420e069e7655fb181ade5cf
+#changed for version 1.14
+Patch4:         krb5-1.14-CVE-2017-11462.patch
+Requires:       openssl
+Requires:       e2fsprogs
+BuildRequires:  openssl-devel
+BuildRequires:  e2fsprogs-devel
 %description
 Kerberos V5 is a trusted-third-party network authentication system,
 which can improve your network's security by eliminating the insecure
@@ -27,6 +30,7 @@ practice of clear text passwords.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 %build
 
 cd src &&
@@ -38,11 +42,11 @@ sed -e 's@\^u}@^u cols 300}@' \
 CPPFLAGS="-D_GNU_SOURCE" \
 autoconf &&
 ./configure \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--sysconfdir=/etc \
-    	--localstatedir=/var/lib \
+        --prefix=%{_prefix} \
+        --bindir=%{_bindir} \
+        --libdir=%{_libdir} \
+        --sysconfdir=/etc \
+        --localstatedir=/var/lib \
         --with-system-et         \
         --with-system-ss         \
         --with-system-verto=no   \
@@ -74,8 +78,8 @@ unset LIBRARY
 %{_fixperms} %{buildroot}/*
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -96,17 +100,19 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/man/man5/.k5login.5.gz
 %{_docdir}/%{name}-%{version}
 %changelog
-*	Mon Jun 19 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14-6
--	Patch for CVE-2016-3120
-*	Wed Apr 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-5
--	Patch for CVE-2015-8631
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
--	GA - Bump release of all rpms
-* 	Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
-- 	Add patch to never unload gssapi mechanisms
-* 	Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
-- 	Add patch for skipping unnecessary mech calls in gss_inquire_cred
-*	Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
--	Upgrade version
-*	Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
--	Initial build.	First version
+*   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.14-7
+-   Patch for CVE-2017-11462
+*   Mon Jun 19 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14-6
+-   Patch for CVE-2016-3120
+*   Wed Apr 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-5
+-   Patch for CVE-2015-8631
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
+-   GA - Bump release of all rpms
+*   Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
+-   Add patch to never unload gssapi mechanisms
+*   Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
+-   Add patch for skipping unnecessary mech calls in gss_inquire_cred
+*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
+-   Upgrade version
+*   Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
+-   Initial build.  First version
