@@ -1,7 +1,7 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
 Version:        3.4.10
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -62,29 +62,10 @@ getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
 getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
 
 %post
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    # Enabled by default per "runs once then goes away" exception
-    bash %{_prefix}/sbin/update-zookeeper-env.sh \
-       --prefix=%{_prefix} \
-       --conf-dir=%{_sysconfdir}/zookeeper \
-       --log-dir=%{_var}/log/zookeeper \
-       --pid-dir=%{_var}/run/zookeeper \
-       --var-dir=%{_var}/zookeeper
-fi
 %{_sbindir}/ldconfig
 %systemd_post zookeeper.service
  
 %preun
-if [ $1 -eq 0 ] ; then
-bash %{_prefix}/sbin/update-zookeeper-env.sh \
-       --prefix=%{_prefix} \
-       --conf-dir=%{_sysconfdir}/zookeeper \
-       --log-dir=%{_var}/log/zookeeper \
-       --pid-dir=%{_var}/run/zookeeper \
-       --var-dir=%{_var}/zookeeper \
-       --uninstall
-fi
 %systemd_preun zookeeper.service
 
 %postun
@@ -105,6 +86,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Wed Sep 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-7
+-   Remove the update script for zookeeper.
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 3.4.10-6
 -   Remove shadow from requires and use explicit tools for post actions
 *   Mon Sep 25 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-5
