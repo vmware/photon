@@ -8,7 +8,7 @@
 
 Summary:	Photon Management Daemon
 Name:		pmd
-Version:	0.0.4
+Version:	0.0.5
 Release:	1%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -37,7 +37,7 @@ BuildRequires:	netmgmt-devel
 BuildRequires:	tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 pmd=e623169975219751d944c9bd925134949548e2d4
+%define sha1 pmd=b49e8ab237da29010ebcd2728a3b767a9e0a633e
 
 %description
 Photon Management Daemon
@@ -51,6 +51,7 @@ photon management daemon libs used by server and clients
 
 %package cli
 Summary: photon management daemon cmd line cli
+Requires: %{name}-libs = %{version}-%{release}
 Requires: likewise-open >= 6.2.0
 Requires: lightwave-client-libs
 
@@ -88,7 +89,7 @@ Python3 bindings for photon management daemon
 %setup -q
 
 %build
-sed -i 's/pmd, 0.0.1/pmd, 0.0.4/' configure.ac
+sed -i 's/pmd, 0.0.1/pmd, 0.0.5/' configure.ac
 sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
 autoreconf -mif
 ./configure \
@@ -124,6 +125,8 @@ install -D -m 444 pmdprivsepd.service %{buildroot}%{_unitdir}
 install -D -m 444 conf/restapispec.json %{buildroot}/etc/pmd/restapispec.json
 install -D -m 444 conf/api_sddl.conf %{buildroot}/etc/pmd/api_sddl.conf
 install -D -m 444 conf/restconfig.txt %{buildroot}/etc/pmd/restconfig.txt
+install -d -m 0755 %{buildroot}/usr/lib/tmpfiles.d/
+install -m 0644 conf/pmd-tmpfiles.conf %{buildroot}/usr/lib/tmpfiles.d/%{name}.conf
 
 # Pre-install
 %pre
@@ -158,7 +161,6 @@ fi
             echo "unix %{_mech_id} libgssapi_unix.so" >> "%{_mech_file}"
         fi
     fi
-    chown %{name} /var/lib/likewise/rpc
 
     if [ "$1" = 1 ]; then
       openssl req \
@@ -177,6 +179,7 @@ fi
       chmod 0400 /etc/pmd/privsep*.key
       chown %{name} /etc/pmd/privsep_pub.key
     fi
+    %tmpfiles_create %_tmpfilesdir/%{name}.conf
 
 # Pre-uninstall
 %preun
@@ -216,7 +219,6 @@ fi
     # First argument is 1 => Upgrade
 if [ $1 -eq 0 ] ; then
     if getent passwd %{name} >/dev/null; then
-        chown root /var/lib/likewise/rpc
         /sbin/userdel %{name}
     fi
     if getent group %{name} >/dev/null; then
@@ -282,6 +284,7 @@ rm -rf %{buildroot}/*
     /etc/pmd/restapispec.json
     /etc/pmd/restconfig.txt
     %attr(0766, %{name}, %{name}) %dir /var/log/%{name}
+    %_tmpfilesdir/%{name}.conf
 
 %files libs
     %{_libdir}/libpmdclient.so*
@@ -302,6 +305,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*       Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-1
+-       Update to version 0.0.5
 *       Sat Sep 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.4-1
 -       Add privilege separation
 *       Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
