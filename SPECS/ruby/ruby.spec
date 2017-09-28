@@ -1,45 +1,30 @@
-Summary:    Ruby
-Name:       ruby
-Version:    2.4.0
-Release:    6%{?dist}
-License:    BSDL
-URL:        https://www.ruby-lang.org/en/
-Group:      System Environment/Security
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    http://cache.ruby-lang.org/pub/ruby/%{version}/%{name}-%{version}.tar.gz
-%define sha1 ruby=d44a3c50a0e742341ed3033d5db79d865151a4f4
-Patch0:     ruby-CVE-2017-9224.patch
-Patch1:     ruby-CVE-2017-9226.patch
-Patch2:     ruby-CVE-2017-9227.patch
-Patch3:     ruby-CVE-2017-9229.patch
-Patch4:	    ruby-CVE-2017-6181.patch
-Patch5:	    ruby-CVE-2017-9228.patch
-#https://github.com/flori/json/commit/8f782fd8e181d9cfe9387ded43a5ca9692266b85
-Patch6:     ruby-CVE-2017-14064.patch
+Summary:        Ruby
+Name:           ruby
+Version:        2.4.2
+Release:        1%{?dist}
+License:        BSDL
+URL:            https://www.ruby-lang.org/en/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://cache.ruby-lang.org/pub/ruby/%{name}/%{name}-%{version}.tar.xz
+%define sha1    ruby=8373e32c63bba2180799da091b572664aa9faf6f
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
 BuildRequires:  readline
-Requires:   ca-certificates
-Requires:   openssl
-Requires:   gmp
+Requires:       ca-certificates
+Requires:       openssl
+Requires:       gmp
 %description
 The Ruby package contains the Ruby development environment.
 This is useful for object-oriented scripting.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 %build
 ./configure \
-    --prefix=%{_prefix}   \
+        --prefix=%{_prefix}   \
         --enable-shared \
         --docdir=%{_docdir}/%{name}-%{version}
 make %{?_smp_mflags}
@@ -64,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.2-1
+-   Update to version 2.4.2
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.0-6
 -   [security] CVE-2017-14064
 *   Tue Aug 08 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-5
