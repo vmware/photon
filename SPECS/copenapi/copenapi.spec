@@ -1,6 +1,6 @@
 Name:          copenapi
 Summary:       c open api spec parser
-Version:       0.0.1
+Version:       0.0.2
 Release:       1%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
@@ -13,7 +13,7 @@ Requires:      curl
 BuildRequires: jansson-devel
 BuildRequires: curl-devel
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 copenapi=0cfd79271ec3639129a36c4a5c3375cca8c54f32
+%define sha1 copenapi=64d947d4eb6e671fc6284bbca6da0201f741653f
 
 %description
 copenapi is an openapi parser written in c
@@ -58,5 +58,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*  Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
+-  Update to 0.0.2
 *  Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
 -  Initial build.  First version
