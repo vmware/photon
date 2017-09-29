@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 # Got the intial spec from Fedora and modified it
 Summary:	An enhanced version of csh, the C shell
 Name:		tcsh

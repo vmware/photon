@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
 Version:        4.10.0

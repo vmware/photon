@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Very secure and very small FTP daemon.
 Name:		vsftpd
 Version:	3.0.3

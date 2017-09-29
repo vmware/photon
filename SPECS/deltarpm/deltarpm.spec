@@ -1,7 +1,7 @@
 Summary: Create deltas between rpms
 Name: deltarpm
 Version: 3.6
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: BSD
 Group: Applications/System
 Vendor: VMware, Inc.
@@ -63,8 +63,10 @@ deltarpms can also work with installed rpms.
 %{python_sitelib}/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6-2
--	GA - Bump release of all rpms
+* Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6-3
+- rpm version update
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.6-2
+- GA - Bump release of all rpms
 * Tue Apr 28 2015 Fabio Rapposelli <fabio@vmware.com> - 3.6-2
 - Fixed Python install.
 

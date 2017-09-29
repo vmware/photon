@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Unzip-6.0
 Name:		unzip
 Version:	6.0

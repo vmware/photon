@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Docbook-xml-4.5
 Name:		docbook-xml
 Version:	4.5

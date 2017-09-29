@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Intltool 
 Name:		intltool
 Version:	0.51.0

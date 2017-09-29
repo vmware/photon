@@ -1,7 +1,7 @@
 Summary:	Libsolv-0.6.19
 Name:		libsolv
 Version:	0.6.19
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		https://github.com/openSUSE/libsolv
 Source0:	https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -24,7 +24,9 @@ It supports debian, rpm, archlinux and haiku style distributions.
 %build
 cmake \
 	-DCMAKE_INSTALL_PREFIX=%{_prefix} \
-	-DRPM5=ON
+	-DRPM5=ON \
+	-DENABLE_RPMDB=ON \
+	-DENABLE_COMPLEX_DEPS=ON
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -38,8 +40,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/*
 %{_includedir}/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-2
--	GA - Bump release of all rpms
+*   Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.19-3
+-   added compile flag to support rich dependencies
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.19-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  0.6.19-1
 -   Upgrade to 0.6.19
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 0.6.17-1

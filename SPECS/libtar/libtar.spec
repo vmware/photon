@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:        C library for manipulating tar files
 Name:           libtar
 Version:        1.2.20

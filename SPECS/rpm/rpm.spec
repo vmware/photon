@@ -3,20 +3,19 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.11.2
-Release:        14%{?dist}
+Version:        4.13.0.1
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://rpm.org/releases/rpm-4.11.x/%{name}-%{version}.tar.bz2
-%define sha1    rpm-4.11.2=ceef44bd180d48d4004c437bc31a3ea038f54e3e
+Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
+%define sha1    rpm=2119489397d7e4da19320ef9330ab717ac05587d
 Source1:        http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz
 %define sha1    db=fa3f8a41ad5101f43d08bc0efb6241c9b6fc1ae9
 Source2:          rpm-system-configuring-scripts-2.2.tar.gz
 %define sha1 rpm-system-configuring-scripts=9461cdc0b65f7ecc244bfa09886b4123e55ab5a8
-Patch0:         rpm-4.11.2-cve-2014-8118.patch
 Patch1:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch2:         find-debuginfo-do-not-generate-dir-entries.patch
 #Requires:      nspr
@@ -73,15 +72,15 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -q
-%setup -q -T -D -a 1
-%setup -q -T -D -a 2
+%setup -n rpm-%{name}-%{version}-release
+%setup -n rpm-%{name}-%{version}-release -T -D -a 1
+%setup -n rpm-%{name}-%{version}-release -T -D -a 2
 mv db-5.3.28 db
-%patch0 -p1
 %patch1 -p1
 %patch2 -p1
 
 %build
+sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
 ./autogen.sh --noconfigure
 ./configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
@@ -99,6 +98,7 @@ mv db-5.3.28 db
         --sharedstatedir=%{_sharedstatedir} \
         --mandir=%{_mandir} \
         --infodir=%{_infodir} \
+	--without-archive \
         --disable-dependency-tracking \
         --disable-static \
         --enable-python \
@@ -153,9 +153,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/config.guess
 %{_libdir}/rpm/config.sub
 %{_libdir}/rpm/debugedit
-%{_libdir}/rpm/desktop-file.prov
 %{_libdir}/rpm/elfdeps
-%{_libdir}/rpm/fontconfig.prov
 %{_libdir}/rpm/libtooldeps.sh
 %{_libdir}/rpm/macros
 %{_libdir}/rpm/mkinstalldirs
@@ -168,7 +166,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/rpm2cpio.sh
 %{_libdir}/rpm/rpmdb_*
 %{_libdir}/rpm/rpmdeps
-%{_libdir}/rpm/rpmpopt-4.11.2
+%{_libdir}/rpm/rpmpopt*
 %{_libdir}/rpm/rpmrc
 %{_libdir}/rpm/tgpg
 %{_libdir}/librpmbuild.so
@@ -195,27 +193,22 @@ rm -rf %{buildroot}
 %{_bindir}/rpmbuild
 %{_bindir}/rpmsign
 %{_bindir}/rpmspec
-%{_libdir}/rpm/osgideps.pl
-%{_libdir}/rpm/perldeps.pl
-%{_libdir}/rpm/macros.perl
-%{_libdir}/rpm/perl.prov
+%{_libdir}/rpm/macros.*
 %{_libdir}/rpm/perl.req
-%{_libdir}/rpm/perldeps.pl
 %{_libdir}/rpm/find-debuginfo.sh
 %{_libdir}/rpm/find-lang.sh
 %{_libdir}/rpm/find-provides
 %{_libdir}/rpm/find-requires
 %{_libdir}/rpm/brp-*
+%{_libdir}/rpm/*.prov
 %{_libdir}/rpm/mono-find-provides
 %{_libdir}/rpm/mono-find-requires
 %{_libdir}/rpm/ocaml-find-provides.sh
 %{_libdir}/rpm/ocaml-find-requires.sh
-%{_libdir}/rpm/macros.perl
-%{_libdir}/rpm/macros.php
-%{_libdir}/rpm/macros.python
+%{_libdir}/rpm/macros.*
 %{_libdir}/rpm/fileattrs/*
 %{_libdir}/rpm/script.req
-%{_libdir}/rpm/tcl.req
+%{_libdir}/rpm/sepdebugcrcfix
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -241,6 +234,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-1
+-    rpm version update
 *    Mon Jul 10 2017 Divya Thaluru <dthaluru@vmware.com> 4.11.2-14
 -    Do not allow -debuginfo to own directories to avoid conflicts with
 -    find-debuginfo...patch: exclude non existing .build-id from packaging

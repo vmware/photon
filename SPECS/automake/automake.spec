@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Programs for generating Makefiles
 Name:		automake
 Version:	1.15

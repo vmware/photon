@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 %global security_hardening none
 %global commit          ed0d7c4f6f8db7bda1e74567693a0c525b9cf159
 %global shortcommit	%(c=%{commit}; echo ${c:0:7})
