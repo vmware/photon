@@ -292,7 +292,7 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
 def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType):
     listPackages=[]
     listPackages.append(package)
-    pkgManager = PackageManager()
+    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
     if constants.rpmCheck:
         constants.setTestForceRPMS(listPackages[:])
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType)
@@ -304,7 +304,7 @@ def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger
     logger.info(listPackages)
     if constants.rpmCheck:
         constants.setTestForceRPMS(listPackages[:])
-    pkgManager = PackageManager()
+    pkgManager = PackageManager(pkgBuildType=pkgBuildType)
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType)
 
     #Generating package info file which is required by installer

@@ -14,7 +14,7 @@ from SpecData import SPECS
 
 class PackageManager(object):
 
-    def __init__(self,logName=None,logPath=None):
+    def __init__(self,logName=None,logPath=None,pkgBuildType="chroot"):
         if logName is None:
             logName = "PackageManager"
         if logPath is None:
@@ -22,7 +22,6 @@ class PackageManager(object):
         self.logName=logName
         self.logPath=logPath
         self.logger=Logger.getLogger(logName,logPath)
-        self.dockerClient = docker.from_env(version="auto")
         self.mapCyclesToPackageList={}
         self.mapPackageToCycle={}
         self.sortedPackageList=[]
@@ -33,7 +32,9 @@ class PackageManager(object):
         self.listAvailableCyclicPackages=[]
         self.listBuildOptionPackages=[]
         self.pkgBuildOptionFile=""
-        self.pkgBuildType="chroot"
+        self.pkgBuildType=pkgBuildType
+        if self.pkgBuildType == "container":
+            self.dockerClient = docker.from_env(version="auto")
 
     def readPackageBuildData(self, listPackages):
         try:
