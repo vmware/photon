@@ -1,0 +1,2 @@
+CMD_OPTS="agent -config-dir=/etc/consul.d -data-dir=/var/lib/consul"
+#GOMAXPROCS=4
