@@ -1,7 +1,7 @@
 Summary:	Cmake-3.8.0
 Name:		cmake
 Version:	3.8.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.8/%{name}-%{version}.tar.gz
@@ -16,7 +16,10 @@ BuildRequires:  xz-devel
 BuildRequires:  curl
 BuildRequires:  curl-devel
 BuildRequires:  libgcc-devel
+BuildRequires:  expat-libs
+BuildRequires:  expat-devel
 Requires:	ncurses
+Requires:       expat
 %description
 CMake is an extensible, open-source system that manages the build process in an 
 operating system and in a compiler-independent manner. 
@@ -25,7 +28,7 @@ operating system and in a compiler-independent manner.
 %patch0 -p1
 %build
 ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
-./bootstrap --prefix=%{_prefix} --parallel=$ncores
+./bootstrap --prefix=%{_prefix} --system-expat --parallel=$ncores
 
 make
 %install
@@ -42,6 +45,8 @@ make  %{?_smp_mflags} test
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
 %changelog
+*       Fri Sep 29 2017 Kumar Kaushik <kaushikk@vmware.com> 3.8.0-4
+-       Building using system expat libs.
 *       Thu Aug 17 2017 Kumar Kaushik <kaushikk@vmware.com> 3.8.0-3
 -       Fixing make check bug # 1632102. 
 *	Tue May 23 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.8.0-2
