@@ -1,35 +1,35 @@
-Summary:	The Kerberos newtork authentication system
-Name:		krb5
-Version:	1.15.1
-Release:	2%{?dist}
-License:	MIT
-URL:		http://cyrusimap.web.cmu.edu/
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 krb5=810210a61070ea371014ac514d191bbe5cdac2e2
-Patch0:     krb5-1.15-never-unload-mechanisms.patch
-Requires:	openssl
-Requires:	e2fsprogs-libs
-BuildRequires: 	openssl-devel
-BuildRequires:	e2fsprogs-devel
-Provides:	pkgconfig(mit-krb5)
-Provides:	pkgconfig(mit-krb5-gssapi)
+Summary:        The Kerberos newtork authentication system
+Name:           krb5
+Version:        1.15.2
+Release:        2%{?dist}
+License:        MIT
+URL:            http://web.mit.edu/kerberos/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.15/%{name}-%{version}.tar.gz
+%define sha1    krb5=579afa73cb4a3537acd7bb8b06c5217a1006723d
+Patch0:         krb5-1.15-never-unload-mechanisms.patch
+Requires:       openssl
+Requires:       e2fsprogs-libs
+BuildRequires:  openssl-devel
+BuildRequires:  e2fsprogs-devel
+Provides:       pkgconfig(mit-krb5)
+Provides:       pkgconfig(mit-krb5-gssapi)
 %description
 Kerberos V5 is a trusted-third-party network authentication system,
 which can improve your network's security by eliminating the insecure
 practice of clear text passwords.
 
 %package devel
-Summary:	Libraries and header files for krb5
-Requires:	%{name} = %{version}-%{release}
+Summary:        Libraries and header files for krb5
+Requires:   %{name} = %{version}-%{release}
 %description devel
 Static libraries and header files for the support library for krb5
 
 %package lang
-Summary: Additional language files for krb5
-Group:		System Environment/Security
+Summary:    Additional language files for krb5
+Group:      System Environment/Security
 Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of krb5.
@@ -48,11 +48,11 @@ sed -e 's@\^u}@^u cols 300}@' \
 CPPFLAGS="-D_GNU_SOURCE" \
 autoconf &&
 ./configure \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--sysconfdir=/etc \
-    	--localstatedir=/var/lib \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --sysconfdir=/etc \
+        --localstatedir=/var/lib \
         --with-system-et         \
         --with-system-ss         \
         --with-system-verto=no   \
@@ -89,8 +89,8 @@ echo "127.0.0.1 $HOSTNAME" >> /etc/hosts
 cd src
 make check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -118,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
+-   Update to version 1.15.2
 *   Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
 -   Fix make check: add /etc/hosts entry, disable parallel check
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
