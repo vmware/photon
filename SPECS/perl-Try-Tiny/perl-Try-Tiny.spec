@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:        Minimal try/catch with proper preservation of $@ 
 Name:           perl-Try-Tiny
 Version:        0.28

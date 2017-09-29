@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 %global security_hardening none
 Summary:        Programs to parse command-line options
 Name:           netkit-telnet

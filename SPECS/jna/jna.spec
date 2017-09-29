@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1

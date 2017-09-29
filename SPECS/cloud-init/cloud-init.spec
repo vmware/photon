@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 %define python3_sitelib /usr/lib/python3.5/site-packages
 
 Name:           cloud-init

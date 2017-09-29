@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	command line utility to set and view hardware parameters
 Name:		hdparm
 Version:	9.51

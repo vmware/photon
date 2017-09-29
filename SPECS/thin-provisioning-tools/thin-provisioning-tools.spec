@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary: 	Thin provisioning tools
 Name:		thin-provisioning-tools
 Version:	0.6.1

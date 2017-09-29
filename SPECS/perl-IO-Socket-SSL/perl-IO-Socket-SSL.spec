@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:        SSL sockets with IO::Socket interface
 Name:           perl-IO-Socket-SSL
 Version:        2.024

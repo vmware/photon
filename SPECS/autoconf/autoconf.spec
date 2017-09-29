@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	The package automatically configure source code
 Name:		autoconf
 Version:	2.69

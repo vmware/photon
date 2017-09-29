@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Itstool-2.0.2
 Name:		itstool
 Version:	2.0.2

@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Apache Tomcat Connector
 Name:		httpd-mod_jk
 Version:	1.2.42

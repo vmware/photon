@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 %global security_hardening none
 Summary:        A UNIX init scheme with service supervision
 Name:           runit

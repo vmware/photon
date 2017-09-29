@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Name:           python-pip
 Version:        8.1.2
 Release:        3%{?dist}
