@@ -68,28 +68,8 @@ function fix_packages_with_upgrade_issues() {
   fix_mesos_devel_symlink
 }
 
-function upgrade_tdnf() {
-   tdnf -y update tdnf
-}
-
-#because there are no 2.0 repos yet, fit to what we have.
-#remove when 2.0 repos are published.
-function upgrade_photon_release_dev() {
-   sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/photon.repo
-   sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/photon-updates.repo
-   cat >> /etc/yum.repos.d/_photon_upgrade_dev_.repo <<-EOF
-[_dev_]
-name=dev
-baseurl=https://dl.bintray.com/vmware/photon_dev_x86_64
-gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
-gpgcheck=1
-enabled=1
-skip_if_unavailable=True
-EOF
-}
-
 function upgrade_photon_release() {
-   tdnf -y update photon-release --releasever=$LATEST_VERSION
+   tdnf -y update photon-release --releasever=$LATEST_VERSION --refresh
 }
 
 function distro_upgrade() {
@@ -139,6 +119,13 @@ function make_var_run_a_symlink() {
   fi
 }
 
+#next version of photon uses specs with dependencies
+#of the form x or y. update tdnf, libsolv and rpm to support it.
+function update_solv_to_support_complex_deps() {
+   tdnf -y update libsolv rpm tdnf --refresh
+   rebuilddb
+}
+
 function check_and_upgrade() {
   if [ $PHOTON_VERSION == $LATEST_VERSION ]; then
     echo "Your current version $PHOTON_VERSION is the latest version. Nothing to do."
@@ -152,13 +139,12 @@ function check_and_upgrade() {
 
   case $REPLY in
     [Yy]*)
-      upgrade_tdnf
+      update_solv_to_support_complex_deps
       remove_unsupported_pkgs
       fix_packages_with_upgrade_issues
       rebuilddb
       make_var_run_a_symlink
-      upgrade_photon_release_dev
-      #upgrade_photon_release
+      upgrade_photon_release
       distro_upgrade
       rebuilddb
       ask_for_reboot
