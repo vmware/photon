@@ -1,7 +1,7 @@
 Summary:	Bourne-Again SHell
 Name:		bash
 Version:	4.4
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/bash/
 Group:		System Environment/Base
@@ -11,6 +11,7 @@ Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
 %define sha1 bash=8de012df1e4f3e91f571c3eb8ec45b43d7c747eb
 Source1:	bash_completion
 Patch0:		bash-4.4.patch
+Patch1:         CVE-2017-5932.patch
 Provides:	/bin/sh
 Provides:	/bin/bash
 BuildRequires:  readline
@@ -38,6 +39,7 @@ These are the additional language files of bash.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 ./configure \
 	"CFLAGS=-fPIC" \
@@ -312,6 +314,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 4.4-6
+-   Adding security fix for CVE-2017-5932.
 *   Thu Jun 8 2017 Bo Gan <ganb@vmware.com> 4.4-5
 -   Fix dependency again
 *   Wed Jun 7 2017 Divya Thaluru <dthaluru@vmware.com>  4.4-4
