@@ -1,7 +1,8 @@
+%global debug_package %{nil}
 Summary:	Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity. 
 Name:		iotop  
 Version:	0.6
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2 
 URL:		http://guichaz.free.fr/iotop/
 Group:		System/Monitoring
@@ -43,6 +44,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Fri Sep 29 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6-4
+-   Disable debug package.
 *	Thu Jun 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.6-3
 -	Add python2 to Requires Section
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6-2

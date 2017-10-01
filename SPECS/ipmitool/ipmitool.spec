@@ -1,7 +1,8 @@
+%global debug_package %{nil}
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 
 Group:          System Environment/Utilities
@@ -57,5 +58,7 @@ mkdir -p %{buildroot}/lib/systemd/system
 %doc %{_datadir}/doc/ipmitool
 
 %changelog
+*   Fri Sep 29 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.18-2
+-   Disable debug package.
 *   Fri Aug 25 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.18-1
 -   Initial build.  First version
