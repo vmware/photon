@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        14%{?dist}
+Release:        15%{?dist}
 URL:            http://www.sendmail.org/
 License:        BSD and CDDL1.1 and MIT
 Group:          Email/Server/Library
@@ -180,7 +180,6 @@ fi
 %{_sysconfdir}/mail/ostype/*
 %{_sysconfdir}/mail/sh/*
 %{_sysconfdir}/mail/siteconfig/*
-%{_sysconfdir}/mail/cf/*
 %{_sysconfdir}/mail/domain/*
 %{_sysconfdir}/mail/README
 %{_sysconfdir}/mail/helpfile
@@ -194,9 +193,11 @@ fi
 %exclude /usr/lib/debug
 %exclude /usr/src
 %exclude /usr/share/man/*
-
+%exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+*   Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-15
+-   Removed duplicate configuration folder.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 8.15.2-14
 -   Requires coreutils/net-tools or toybox, /bin/sed
 -   Remove shadow from requires and use explicit tools for post actions
