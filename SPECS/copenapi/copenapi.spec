@@ -1,7 +1,7 @@
 Name:          copenapi
 Summary:       c open api spec parser
 Version:       0.0.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -14,6 +14,7 @@ BuildRequires: jansson-devel
 BuildRequires: curl-devel
 Source0:       %{name}-%{version}.tar.gz
 %define sha1 copenapi=64d947d4eb6e671fc6284bbca6da0201f741653f
+Patch0:        copenapi-fix-status-size.patch
 
 %description
 copenapi is an openapi parser written in c
@@ -28,6 +29,7 @@ copenapi development files
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 autoreconf -mif
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*  Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-2
+-  Apply patch to correct response code status size.
 *  Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
 -  Update to 0.0.2
 *  Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
