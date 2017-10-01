@@ -5,7 +5,7 @@
 Summary:	An enhanced version of csh, the C shell
 Name:		tcsh
 Version:	6.19.00
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	BSD
 Group:		System Environment/Shells
 Source:		http://www.sfr-fresh.com/unix/misc/%{name}-%{version}.tar.gz
@@ -49,9 +49,9 @@ ln -sf tcsh.1 %{buildroot}%{_mandir}/man1/csh.1
 
 while read lang language ; do
 	dest=%{buildroot}%{_datadir}/locale/$lang/LC_MESSAGES
-	if test -f tcsh.$language.cat ; then
+	if test -f nls/$language.cat ; then
 		mkdir -p $dest
-		install -p -m 644 tcsh.$language.cat $dest/tcsh
+		install -p -m 644 nls/$language.cat $dest/tcsh
 		echo "%lang($lang) %{_datadir}/locale/$lang/LC_MESSAGES/tcsh"
 	fi
 done > tcsh.lang << _EOF
@@ -115,6 +115,8 @@ fi
 %{_mandir}/man1/*.1*
 
 %changelog
+*   Fri Sep 29 2017 Xiaolin Li <xiaolinl@vmware.com> 6.19.00-7
+-   Fix tcsh.lang.
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 6.19.00-6
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
