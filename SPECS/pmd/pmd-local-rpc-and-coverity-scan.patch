@@ -1,0 +1,65 @@
+diff --git a/client/rpc.c b/client/rpc.c
+index 3452dfe..892cea6 100644
+--- a/client/rpc.c
++++ b/client/rpc.c
+@@ -166,7 +166,6 @@ get_client_rpc_binding(
+      * resolve it into a full binding handle using the endpoint mapper.
+      *  The binding handle resolution is handled by the runtime library
+      */
+-
+     rpc_string_binding_compose(NULL,
+ 			       (unsigned char *) protocol,
+ 			       (unsigned char *) hostname,
+@@ -414,7 +413,7 @@ rpc_open_privsep(
+     dwError = get_client_rpc_binding(
+               &hHandle->hRpc,
+               spec,
+-              NULL,
++              pszUser ? "localhost" : NULL,
+               pszUser,
+               pszDomain,
+               pszPass,
+diff --git a/conf/restapispec.json b/conf/restapispec.json
+index 2c823fb..8e10941 100644
+--- a/conf/restapispec.json
++++ b/conf/restapispec.json
+@@ -12,7 +12,7 @@
+      "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+- "host":"IPADDRESS_MARKER:81",
++ "host":"IPADDRESS_MARKER:2081",
+  "basePath":"/v1",
+  "schemes":["http", "https"],
+  "tags":
+diff --git a/python/pkgmgmt_py.c b/python/pkgmgmt_py.c
+index ed56599..c1e1c9a 100644
+--- a/python/pkgmgmt_py.c
++++ b/python/pkgmgmt_py.c
+@@ -268,6 +268,12 @@ pkg_py_repos(
+     char *ppszCmdsC[] = {"repolist"};
+     int i = 0;
+ 
++    if(!self || !self->hHandle)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
+     stArgs.nCmdCount = 1;
+     stArgs.ppszCmds = ppszCmdsC;
+ 
+@@ -327,6 +333,13 @@ pkg_py_count(
+     PPKGHANDLE hPkgHandle = NULL;
+     TDNF_CMD_ARGS stArgs = {0};
+     char *ppszCmdsC[] = {"count"};
++
++    if(!self || !self->hHandle)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
+     stArgs.nCmdCount = 1;
+     stArgs.ppszCmds = ppszCmdsC;
+ 
