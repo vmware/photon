@@ -3,7 +3,7 @@
 Summary:        Mesos
 Name:           mesos
 Version:        1.2.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -66,7 +66,7 @@ sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
     --sysconfdir=%{_sysconfdir}
-make
+make %{?_smp_mflags}
 
 #%check
 #make %{?_smp_mflags} check
@@ -105,6 +105,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-7
+-   Use multiple cores to build mesos.
 *   Wed Sep 06 2017 Anish Swaminathan <anishs@vmware.com> 1.2.0-6
 -   Use system sysconfdir
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-5
