@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.47
-Release:        2%{?dist}
+Version:        4.9.52
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=49110526c8e572513bd3295495ccd28754b5292d
+%define sha1 linux=a06b8a6031a81b32228b76b1dc28cf2bc8165228
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -44,8 +44,6 @@ Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11600
-Patch27:        xfrm-policy-check-policy-direction-value.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -141,7 +139,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
-%patch27 -p1
 
 %build
 make mrproper
@@ -301,6 +298,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-1
+-   Version update
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-2
 -   Requires coreutils or toybox
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-1
