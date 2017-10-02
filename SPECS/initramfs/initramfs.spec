@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
