@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	A Distributed init System
 Name:		fleet
 Version:	0.11.5
