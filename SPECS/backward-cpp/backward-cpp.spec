@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:        Pretty stack trace printer for C++.
 Name:           backward-cpp
 Version:        1.3

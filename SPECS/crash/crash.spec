@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Name:          crash
 Version:       7.1.4
 Release:       3%{?dist}
