@@ -1,7 +1,7 @@
 Summary:	Basic system utilities
 Name:		coreutils
 Version:	8.27
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base
@@ -13,6 +13,7 @@ Patch0:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8
 Patch1:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-uname-1.patch
 Requires:	gmp
 Provides:	sh-utils
+Conflicts:      toybox
 %description
 The Coreutils package contains utilities for showing and setting
 the basic system
@@ -75,15 +76,17 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %defattr(-,root,root)
 
 %changelog
-*       Wed Aug 09 2017 Rongrong Qiu <rqiu@vmware.com> 8.27-2
--       Fix make check for bug 1900253
-*       Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 8.27-1
--       Upgraded to version 8.27
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.25-2
--	GA - Bump release of all rpms
-*	Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 8.25-1
-- 	Updated to version 8.25
-* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 8.24-1
-- 	Updated to version 8.24
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 8.22-1
--	Initial build. First version
+* Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 8.27-3
+- Added conflicts toybox
+* Wed Aug 09 2017 Rongrong Qiu <rqiu@vmware.com> 8.27-2
+- Fix make check for bug 1900253
+* Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 8.27-1
+- Upgraded to version 8.27
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.25-2
+- GA - Bump release of all rpms
+* Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 8.25-1
+- Updated to version 8.25
+* Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 8.24-1
+- Updated to version 8.24
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 8.22-1
+- Initial build. First version

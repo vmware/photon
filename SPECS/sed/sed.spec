@@ -1,7 +1,7 @@
 Summary:	Stream editor
 Name:		sed
 Version:	4.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/sed
 Group:		Applications/Editors
@@ -9,6 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.xz
 %define sha1 sed=a196cd036efd52a8e349cfe88ab4baa555fb29d5
+Conflicts:      toybox
 
 %description
 The Sed package contains a stream editor.
@@ -50,13 +51,15 @@ make check
 %defattr(-,root,root)
 
 %changelog
-*       Tue Aug 01 2017 Chang Lee <changlee@vmware.com> 4.4-2
--       Skip panic-tests and subst-mb-incomplete from %check
-*       Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.4-1
--       Update to version 4.4
-*       Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.2.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.2-2
--	GA - Bump release of all rpms
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.2-1
--	Initial build. First version
+* Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4-3
+- Added conflicts toybox
+* Tue Aug 01 2017 Chang Lee <changlee@vmware.com> 4.4-2
+- Skip panic-tests and subst-mb-incomplete from %check
+* Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.4-1
+- Update to version 4.4
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.2.2-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.2-2
+- GA - Bump release of all rpms
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.2-1
+- Initial build. First version
