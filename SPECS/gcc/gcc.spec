@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -124,10 +124,10 @@ SED=sed \
     --enable-plugin \
     --with-system-zlib
 #   --disable-silent-rules
-make
+make %{?_smp_mflags}
 %install
 pushd ../gcc-build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%_lib
 ln -sv %{_bindir}/cpp %{buildroot}/%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
@@ -267,6 +267,8 @@ make %{?_smp_mflags} check-gcc
 %endif
 
 %changelog
+*   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-6
+-   Added smp_mflags for parallel build
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-5
 -   Enable elfdeps for libgcc_s to generate libgcc_s.so.1(*)(64bit) provides
 *   Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-4

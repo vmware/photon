@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.7.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -50,6 +50,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %{_sbindir}/*
 
 %changelog
+*   Mon Oct 01 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-6
+-   remove strings and usleep to avoid conflict with binutils and initscripts
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-5
 -   Move sed to /bin
 -   Remove kmod and systemd toys due to incomplete
