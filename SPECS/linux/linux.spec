@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.52
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -44,6 +44,8 @@ Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+# Fix CVE-2017-11472
+Patch27:        ACPICA-Namespace-fix-operand-cache-leak.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -139,6 +141,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
 
 %build
 make mrproper
@@ -298,6 +301,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-2
+-   Fix CVE-2017-11472 (ACPICA: Namespace: fix operand cache leak)
 *   Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-1
 -   Version update
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.47-2
