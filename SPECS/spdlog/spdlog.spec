@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:	Very fast, header only, C++ logging library.
 Name:		spdlog
 Version:	0.13.0
