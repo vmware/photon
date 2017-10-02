@@ -1,7 +1,7 @@
 Summary:	Program shows full path of (shell) commands
 Name:		which
 Version:	2.21
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://savannah.gnu.org/projects/which
 Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
+Conflicts:      toybox
 %description
 Program for showing the full the path of (shell) commands.
 %prep
@@ -25,11 +26,13 @@ make DESTDIR=%{buildroot} install
 /usr/share/info/*
 %{_mandir}/man1/*
 %changelog
-*       Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2.21-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.21-2
--	GA - Bump release of all rpms
-*	Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-1
--	Update to 2.21-1.
-*	Wed Oct 21 2014 Divya Thaluru <dthaluru@vmware.com> 2.20-1
--	Initial build. First version
+* Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 2.21-4
+- Added conflicts toybox
+* Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2.21-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.21-2
+- GA - Bump release of all rpms
+* Wed Jan 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-1
+- Update to 2.21-1.
+* Wed Oct 21 2014 Divya Thaluru <dthaluru@vmware.com> 2.20-1
+- Initial build. First version
