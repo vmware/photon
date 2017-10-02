@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.4
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -22,6 +22,8 @@ Patch3:         libxml2-fix-buffer-size-checks.patch
 Patch4:         libxml2-fix-handling-of-parameter-entity-references.patch
 Patch5:         libxml2-fix-handling-of-parameter-entity-references-test.patch
 Patch6:         CVE-2017-8872.patch
+#https://bugs.python.org/issue23524
+Patch7:         libxml2-2.9.4-remove-_PyVerify_fd-call.patch
 %define sha1    libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
 Provides:       pkgconfig(libxml-2.0)
 
@@ -66,6 +68,7 @@ Static libraries and header files for the support library for libxml
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -131,6 +134,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon Oct 2 2017 Anish Swaminathan <anishs@vmware.com> 2.9.4-12
+-   Remove call to _PyVerify_fd
 *   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.4-11
 -   Apply patch for CVE-2017-8872
 *   Mon Aug 07 2017 Danut Moraru <dmoraru@vmware.com> 2.9.4-10
