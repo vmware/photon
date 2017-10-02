@@ -1,3 +1,6 @@
+# FIXME: noarch or generate debuginfo
+%define debug_package %{nil}
+
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.18
