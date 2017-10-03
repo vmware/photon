@@ -1,7 +1,7 @@
 Summary:        agent for collecting, processing, aggregating, and writing metrics.
 Name:           telegraf
 Version:        1.3.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            https://github.com/influxdata/telegraf
 Source0:        https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
@@ -45,21 +45,23 @@ unzip %{SOURCE1}
 popd
 
 %build
-mkdir -p ${GOPATH}/src/github.com/influxdata/telegraf
-cp -r * ${GOPATH}/src/github.com/influxdata/telegraf
-mkdir -p ${GOPATH}/src/github.com/wavefronthq/telegraf/plugins/outputs/wavefront
-pushd ../telegraf-master
-cp -r *  ${GOPATH}/src/github.com/wavefronthq/telegraf/
-popd
-pushd ${GOPATH}/src/github.com/influxdata/telegraf
-sed -i '/import (/ a \\t_ "github.com/wavefronthq/telegraf/plugins/outputs/wavefront"' ${GOPATH}/src/github.com/influxdata/telegraf/plugins/outputs/all/all.go
+export GOPATH="$(pwd)"
+cd ..
+mv "${GOPATH}" telegraf
+mkdir -p "${GOPATH}/src/github.com/influxdata"
+mv telegraf "${GOPATH}/src/github.com/influxdata/"
+mkdir -p "${GOPATH}/src/github.com/wavefronthq/telegraf/plugins/outputs/wavefront"
+mv telegraf-master "${GOPATH}/src/github.com/wavefronthq/telegraf"
+
+cd "${GOPATH}/src/github.com/influxdata/telegraf"
+sed -i '/import (/ a \\t_ "github.com/wavefronthq/telegraf/plugins/outputs/wavefront"' \
+  "${GOPATH}/src/github.com/influxdata/telegraf/plugins/outputs/all/all.go"
 make
-popd
 
 %install
-install -m 755 -D ${GOPATH}/bin/telegraf %{buildroot}%{_bindir}/telegraf
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/telegraf/scripts/telegraf.service %{buildroot}%{_unitdir}/telegraf.service
-install -m 755 -D ${GOPATH}/src/github.com/influxdata/telegraf/etc/logrotate.d/%{name} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+install -m 755 -D bin/telegraf %{buildroot}%{_bindir}/telegraf
+install -m 755 -D src/github.com/influxdata/telegraf/scripts/telegraf.service %{buildroot}%{_unitdir}/telegraf.service
+install -m 755 -D src/github.com/influxdata/telegraf/etc/logrotate.d/%{name} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -m 755 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/telegraf.conf
 
 %clean
@@ -93,6 +95,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Tue Oct 17 2017 Bo Gan <ganb@vmware.com> 1.3.4-3
+-   cleanup GOPATH
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.4-2
 -   Remove shadow from requires and use explicit tools for post actions
 *   Tue Jul 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.3.4-1
