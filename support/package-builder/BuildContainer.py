@@ -24,7 +24,7 @@ class BuildContainer(object):
         self.dockerClient = docker.from_env(version="auto")
         self.mapPackageToCycles = mapPackageToCycles
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
-        self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","openssl-devel","go"]
+        self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","openssl-devel"]
         self.listBuildOptionPackages = listBuildOptionPackages
         self.pkgBuildOptionFile = pkgBuildOptionFile
 
