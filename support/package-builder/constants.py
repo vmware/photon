@@ -28,7 +28,6 @@ class constants(object):
         "nspr",
         "xz",
         "bison",
-        "go",
         "sqlite",
         "sqlite-devel",
         "sqlite-libs"]
@@ -210,8 +209,7 @@ class constants(object):
         "rpm-libs",
         "groff",
         "man-pages",
-        "cpio",
-        "go"]
+        "cpio"]
 
     perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
         "glib-devel",
@@ -292,7 +290,6 @@ class constants(object):
         "pcre-devel",
         "boost-devel",
         "which",
-        "go",
         "e2fsprogs-devel",
         "shadow",
         "check",
@@ -324,8 +321,7 @@ class constants(object):
         "gnupg",
         "ncurses-terminfo" ]
 
-    listReInstallPackages=[
-        "go"]
+    listReInstallPackages=[]
 
     # List of packages that requires privileged docker
     # to run make check.

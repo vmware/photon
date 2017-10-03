@@ -1,7 +1,7 @@
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
 Version:        0.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io/
 Source0:        https://github.com/opencontainers/runc/archive/%{name}-v%{version}.tar.gz
@@ -32,9 +32,17 @@ runC is a CLI tool for spawning and running containers according to the OCI spec
 %setup -q -n %{name}-%{version}
 
 %build
+export GOPATH="$(pwd)"
+cd ..
+mv "${GOPATH}" runc
+mkdir -p "${GOPATH}/src/github.com/opencontainers"
+mv runc "${GOPATH}/src/github.com/opencontainers/"
+
+cd "${GOPATH}/src/github.com/opencontainers/runc"
 make %{?_smp_mflags}
 
 %install
+cd src/github.com/opencontainers/runc
 install -D -m0755 runc %{buildroot}%{_sbindir}/runc
 
 %files
@@ -42,6 +50,8 @@ install -D -m0755 runc %{buildroot}%{_sbindir}/runc
 %{_sbindir}/runc
 
 %changelog
+*   Thu Oct 19 2017 Bo Gan <ganb@vmware.com> 0.1.1-3
+-   cleanup GOPATH
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.1-2
 -   Add iptables-devel to BuildRequires
 *   Tue Apr 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.1.1-1
