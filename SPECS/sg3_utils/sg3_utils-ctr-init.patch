@@ -1,0 +1,11 @@
+diff -uNr sg3_utils-1.43/scripts/rescan-scsi-bus.sh sg3_utils-1.43-fix/scripts/rescan-scsi-bus.sh
+--- sg3_utils-1.43/scripts/rescan-scsi-bus.sh	2016-02-18 05:48:05.000000000 +0000
++++ sg3_utils-1.43-fix/scripts/rescan-scsi-bus.sh	2017-10-03 19:18:50.670199204 +0000
+@@ -231,6 +231,7 @@
+ testonline ()
+ {
+   : testonline
++  ctr=0
+   RC=0
+   # Set default values
+   IPTYPE=31
