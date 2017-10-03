@@ -1,7 +1,7 @@
 Summary:        Vendor Package Management for Goland
 Name:           glide
 Version:        0.12.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/Masterminds/glide
 Source0:        %{name}-%{version}.tar.gz
@@ -20,13 +20,18 @@ Glide is a tool for managing the vendor directory within a Go package.
 %setup
 
 %build
-mkdir -p ${GOPATH}/src/github.com/Masterminds/glide
-cp -r * ${GOPATH}/src/github.com/Masterminds/glide/.
-pushd ${GOPATH}/src/github.com/Masterminds/glide
+export GOPATH="$(pwd)"
+cd ..
+mv "${GOPATH}" glide
+mkdir -p "${GOPATH}/src/github.com/Masterminds"
+mv glide "${GOPATH}/src/github.com/Masterminds/"
+
+cd "${GOPATH}/src/github.com/Masterminds/glide"
 make VERSION=%{version} build
 
 %install
-pushd ${GOPATH}/src/github.com/Masterminds/glide
+export GOPATH="$(pwd)"
+cd src/github.com/Masterminds/glide
 make install
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
@@ -36,5 +41,7 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
 %{_bindir}/glide
 
 %changelog
+*   Tue Oct 17 2017 Bo Gan <ganb@vmware.com> 0.12.3-2
+-   cleanup GOPATH
 *   Mon Aug 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.12.3-1
 -   glide for PhotonOS.

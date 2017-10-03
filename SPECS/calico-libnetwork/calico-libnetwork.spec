@@ -1,7 +1,7 @@
 Summary:       Docker libnetwork plugin for Calico
 Name:          calico-libnetwork
 Version:       1.1.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -21,23 +21,28 @@ Docker libnetwork plugin for Calico.
 %setup -q -n libnetwork-plugin-1.1.0
 
 %build
+export GOPATH="$(pwd)"
+cd ..
+mv "${GOPATH}" libnetwork-plugin
+mkdir -p "${GOPATH}/src/github.com/projectcalico"
+mv libnetwork-plugin "${GOPATH}/src/github.com/projectcalico/"
+
 mkdir -p /root/.glide
-mkdir -p ${GOPATH}/src/github.com/projectcalico/libnetwork-plugin
-cp -r * ${GOPATH}/src/github.com/projectcalico/libnetwork-plugin/.
-pushd ${GOPATH}/src/github.com/projectcalico/libnetwork-plugin
+cd "${GOPATH}/src/github.com/projectcalico/libnetwork-plugin"
 mkdir -p dist
 glide install --strip-vendor
 CGO_ENABLED=0 go build -v -i -o dist/libnetwork-plugin -ldflags "-X main.VERSION=%{version} -s -w" main.go
 
 %install
-pushd ${GOPATH}/src/github.com/projectcalico/libnetwork-plugin
-install -vdm 0755 %{buildroot}/usr/share/calico/docker
-install -vpm 0755 -t %{buildroot}/usr/share/calico/docker/ dist/libnetwork-plugin
+install -vdm 0755 %{buildroot}%{_datadir}/calico/docker
+install -vpm 0755 -t %{buildroot}%{_datadir}/calico/docker/ src/github.com/projectcalico/libnetwork-plugin/dist/libnetwork-plugin
 
 %files
 %defattr(-,root,root)
-/usr/share/calico/docker/libnetwork-plugin
+%{_datadir}/calico/docker/libnetwork-plugin
 
 %changelog
+*    Mon Oct 16 2017 Bo Gan <ganb@vmware.com> 1.1.0-2
+-    cleanup GOPATH
 *    Fri Aug 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-1
 -    Calico libnetwork plugin for PhotonOS.
