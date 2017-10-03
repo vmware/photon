@@ -1,13 +1,14 @@
-Summary:	Tools and Utilities for interaction with SCSI devices.
-Name:		sg3_utils
-Version:	1.42
-Release:	2%{?dist}
-License:	GPLv2
-URL:		http://sg.danny.cz/sg/sg3_utils.html
-Source0:	http://sg.danny.cz/sg/p/sg3_utils-1.42.tar.xz
-%define sha1 sg3_utils=7af36a62d10e2f078b5c96b18e5e3f4f6143f648
-Group:		System/Tools.
-Vendor:		VMware, Inc.
+Summary:        Tools and Utilities for interaction with SCSI devices.
+Name:           sg3_utils
+Version:        1.43
+Release:        1%{?dist}
+License:        BSD
+URL:            https://github.com/hreinecke/sg3_utils
+Source0:        %{name}-%{version}.tar.gz
+%define sha1 sg3_utils=235b2d4ebe506ba23fd7960ff9541830e72d305f
+Patch0:         sg3_utils-ctr-init.patch
+Group:          System/Tools.
+Vendor:         VMware, Inc.
 Distribution:   Photon
 Provides:       sg_utils.
 
@@ -23,6 +24,7 @@ Package containing static library object for development.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure
@@ -35,7 +37,6 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}/%{_bindir}
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
-
 
 %files
 %defattr(-,root,root)
@@ -51,7 +52,9 @@ install -m 755 scripts/rescan-scsi-bus.sh %{buildroot}/%{_bindir}
 %{_includedir}/scsi/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42-2
--	GA - Bump release of all rpms
-*	Thu Apr 14 2016 Kumar Kaushik <kaushikk@vmware.com> 1.42-1
--	Initial build. First version
+*   Tue Oct 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.43-1
+-   Update to v1.43
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42-2
+-   GA - Bump release of all rpms
+*   Thu Apr 14 2016 Kumar Kaushik <kaushikk@vmware.com> 1.42-1
+-   Initial build. First version
