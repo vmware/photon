@@ -1,11 +1,12 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        4.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz 
 %define sha1    wavefront=ff6ff22118e69c9df8de1427aa67659ebeb3341f
+Patch0:         CVE-2017-9735.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -26,7 +27,7 @@ It handles authentication and the transmission of your metrics to your Wavefront
 
 %prep
 %setup -n java-wavefront-%{version} 
-
+%patch0 -p1
 
 cat << EOF >>wavefront-proxy.service
 [Unit]
@@ -103,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-3
+- Fix for CVE-2017-9735
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
 - Remove shadow from requires and use explicit tools for post actions
 * Tue Jul 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-1
