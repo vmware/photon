@@ -120,7 +120,7 @@ function rpm_ostree_init_deploy {
 }
 
 function install_generate_grub {
-    run_command "Install grub" "chroot ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0 bash -c \"grub2-install /dev/loop0\"" "${LOGFILE}"
+    run_command "Install grub" "chroot ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0 bash -c \"grub2-install ${DISK_DEVICE}\"" "${LOGFILE}"
     run_command "Generate grub.cfg file" "chroot ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0 bash -c \"grub2-mkconfig -o /boot/grub2/grub.cfg\"" "${LOGFILE}"
     run_command "Set boot volume in grub config file" "chroot ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0 bash -c \"ostree admin instutil set-kargs root=${ROOT_PARTITION}\"" "${LOGFILE}"
     run_command "Replace ${ROOT_PARTITION} with ${SDA3} in cfg file" "sed -i 's:${ROOT_PARTITION}:${SDA3}:' ${MOUNT_POINT}/ostree/deploy/photon/deploy/${id}.0/boot/loader/grub.cfg" "${LOGFILE}"
