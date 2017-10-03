@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.24.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -17,6 +17,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
 %define sha1    perl=d43ac3d39686462f86eed35b3c298ace74f1ffa0
+Patch0:         CVE-2017-12883.patch
+#https://perl5.git.perl.org/perl.git/patch/96c83ed78aeea1a0496dd2b2d935869a822dc8a5
+Patch1:         CVE-2017-12837.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
@@ -33,6 +36,8 @@ Report Language.
 %prep
 %setup -q
 sed -i 's/-fstack-protector/&-all/' Configure
+%patch0 -p1
+%patch1 -p1
 
 %build
 export BUILD_ZLIB=False
@@ -69,6 +74,9 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.24.1-4
+-   CVE-2017-12837 and CVE-2017-12883 patch from
+-   https://perl5.git.perl.org/perl.git/commitdiff/2be4edede4ae226e2eebd4eff28cedd2041f300f#patch1
 *   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.24.1-3
 -   Rebuild perl after adding gdbm-devel package.
 *   Thu Jun 15 2017 Chang Lee <changlee@vmware.com> 5.24.1-2
@@ -81,7 +89,7 @@ make test TEST_SKIP_VERSION_CHECK=1
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.22.1-3
 -   GA - Bump release of all rpms
-*   Thu Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
+*   Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
 -   Enable threads
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-1
 -   Update version
