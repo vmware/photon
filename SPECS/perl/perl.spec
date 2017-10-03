@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.24.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -17,13 +17,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
 %define sha1    perl=d43ac3d39686462f86eed35b3c298ace74f1ffa0
+#https://perl5.git.perl.org/perl.git/patch/96c83ed78aeea1a0496dd2b2d935869a822dc8a5
+Patch0:         perl-CVE-2017-12837.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
 BuildRequires:  zlib-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  gdbm-devel
-Requires:       zlib 
+Requires:       zlib
 Requires:       gdbm
 Requires:       glibc
 Requires:       libgcc
@@ -31,7 +33,8 @@ Requires:       libgcc
 The Perl package contains the Practical Extraction and
 Report Language.
 %prep
-%setup -q
+%setup  -q
+%patch0 -p1
 sed -i 's/-fstack-protector/&-all/' Configure
 
 %build
@@ -69,6 +72,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Mon Oct 02 2017 Xiaolin Li <xiaolinl@vmware.com> 5.24.1-4
+-   CVE-2017-12837 patch.
 *   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.24.1-3
 -   Rebuild perl after adding gdbm-devel package.
 *   Thu Jun 15 2017 Chang Lee <changlee@vmware.com> 5.24.1-2
@@ -81,7 +86,7 @@ make test TEST_SKIP_VERSION_CHECK=1
 -   Modified %check
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.22.1-3
 -   GA - Bump release of all rpms
-*   Thu Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
+*   Tue Jan 26 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-2
 -   Enable threads
 *   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com> 5.22.1-1
 -   Update version
