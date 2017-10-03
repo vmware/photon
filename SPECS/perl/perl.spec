@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.24.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -17,6 +17,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
 %define sha1    perl=d43ac3d39686462f86eed35b3c298ace74f1ffa0
+Patch0:         CVE-2017-12883.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
@@ -33,6 +34,7 @@ Report Language.
 %prep
 %setup -q
 sed -i 's/-fstack-protector/&-all/' Configure
+%patch0 -p1
 
 %build
 export BUILD_ZLIB=False
@@ -69,6 +71,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.24.1-4
+-   CVE-2017-12883 patch from https://perl5.git.perl.org/perl.git/commitdiff/2be4edede4ae226e2eebd4eff28cedd2041f300f#patch1
 *   Wed Jul 05 2017 Xiaolin Li <xiaolinl@vmware.com> 5.24.1-3
 -   Rebuild perl after adding gdbm-devel package.
 *   Thu Jun 15 2017 Chang Lee <changlee@vmware.com> 5.24.1-2
