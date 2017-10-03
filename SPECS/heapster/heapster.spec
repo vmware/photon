@@ -1,7 +1,7 @@
 Summary:	Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:		heapster
 Version:        1.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:	Apache 2.0
 URL:		https://github.com/wavefrontHQ/cadvisor
 Source0:	https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
@@ -19,19 +19,24 @@ Heapster collects and interprets various signals like compute resource usage, li
 %setup -q
 
 %build
-mkdir -p $GOPATH/src/k8s.io/heapster
-cp -r . $GOPATH/src/k8s.io/heapster
-cd $GOPATH/src/k8s.io/heapster
+export GOPATH="$(pwd)"
+cd ..
+mv "${GOPATH}" heapster
+mkdir -p "${GOPATH}/src/k8s.io"
+mv heapster "${GOPATH}/src/k8s.io/"
+
+cd "${GOPATH}/src/k8s.io/heapster"
 make build
 
 %install
-cd $GOPATH/src/k8s.io/heapster
+cd src/k8s.io/heapster
 install -d -p %{buildroot}%{_bindir}
 install -p -m 0755 heapster %{buildroot}%{_bindir}
 install -p -m 0755 eventer %{buildroot}%{_bindir}
 
 %check
-cd $GOPATH/src/k8s.io/heapster
+export GOPATH="$(pwd)"
+cd src/k8s.io/heapster
 make test-unit
 
 %files
@@ -40,5 +45,7 @@ make test-unit
 %{_bindir}/eventer
 
 %changelog
+*   Tue Oct 17 2017 Bo Gan <ganb@vmware.com> 1.4.2-2
+-   cleanup GOPATH
 *   Thu Aug 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.2-1
 -   Initial heapster package
