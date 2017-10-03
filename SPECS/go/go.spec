@@ -1,45 +1,77 @@
+#Do not strip or try to separate debug information
+%global debug_package %{nil}
+%define __os_install_post %{nil}
 
-%global goroot          /usr/lib/golang
-%global gopath          %{_datadir}/gocode
-%global gohostarch      amd64
+# goroot for Photon
+%global goroot          %{_libdir}/golang
 
 # rpmbuild magic to keep from having meta dependency on libc.so.6
 %define _use_internal_dependency_generator 0
 %define __find_requires %{nil}
 
+%ifarch x86_64
+%global gohostarch amd64
+%endif
+%ifarch aarch64
+%global gohostarch  arm64
+%endif
+
+%ifarch x86_64
+%global race 1
+%else
+%global race 0
+%endif
+
 Summary:        Go 
 Name:           go
 Version:        1.8.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
-%define sha1    go=0c4b7116bd6b7cdc19bdcf8336c75eae4620907b
-Patch0:         go_imports_fix.patch
+#The bootstrap go1.4, see https://golang.org/doc/install/source#go14
+Source0:	https://storage.googleapis.com/golang/go1.4-bootstrap-20170531.tar.gz
+%define sha1    go1.4-bootstrap=30e8507eb0c984a1f53aa6a006882cf45235e148
+Source1:        https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
+%define sha1    go%{version}.src.tar.gz=0c4b7116bd6b7cdc19bdcf8336c75eae4620907b
 Requires:       glibc
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.  
 
 %prep
-%setup -qn %{name}
-%patch0 -p1
+%setup -q -c -n bootstrap
+mkdir ../go
+%setup -q -D -T -b 1 -n go
 
 %build
 export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
-export GOROOT_BOOTSTRAP=%{goroot}
 
-export GOROOT="`pwd`"
-export GOPATH=%{gopath}
-export GOROOT_FINAL=%{_bindir}/go
-rm -f  %{gopath}/src/runtime/*.c 
-pushd src
-./make.bash --no-clean
+pushd ../bootstrap/go/src
+# Now in the old go toolchain for bootstrapping
+# Disable cgo, as Go1.4 has problem with it
+# It doesn't affect the bootstrapping of the new toolchain
+CGO_ENABLED=0 ./make.bash
 popd
+
+# Now in the new go toolchain
+pushd src
+export GOROOT_FINAL=%{goroot}
+GOROOT_BOOTSTRAP="$(pwd)/../../bootstrap/go" ./make.bash --no-clean
+popd
+
+%if %{race}
+GOROOT="$(pwd)" PATH="$(pwd)/bin:$PATH" go install -race std
+%endif
+
+%check
+export GOROOT=$(pwd -P)
+export PATH="$GOROOT"/bin:"$PATH"
+cd src
+./run.bash --no-rebuild -v -v -v -k
 
 %install
 rm -rf %{buildroot}
@@ -47,13 +79,7 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{goroot}
 
-cp -R api bin doc favicon.ico lib pkg robots.txt src misc VERSION %{buildroot}%{goroot}
-
-# remove the unnecessary zoneinfo file (Go will always use the system one first)
-rm -rfv %{buildroot}%{goroot}/lib/time
-
-# remove the doc Makefile
-rm -rfv %{buildroot}%{goroot}/doc/Makefile
+cp -R api bin doc favicon.ico lib pkg robots.txt src misc test VERSION %{buildroot}%{goroot}
 
 # put binaries to bindir, linked to the arch we're building,
 # leave the arch independent pieces in %{goroot}
@@ -61,55 +87,37 @@ mkdir -p %{buildroot}%{goroot}/bin/linux_%{gohostarch}
 mv %{buildroot}%{goroot}/bin/go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
 mv %{buildroot}%{goroot}/bin/gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
 
-# ensure these exist and are owned
-mkdir -p %{buildroot}%{gopath}/src/github.com/
-mkdir -p %{buildroot}%{gopath}/src/bitbucket.org/
-mkdir -p %{buildroot}%{gopath}/src/code.google.com/
-mkdir -p %{buildroot}%{gopath}/src/code.google.com/p/
+ln -snrfv %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go %{buildroot}%{goroot}/bin/go
+ln -snrfv %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt %{buildroot}%{goroot}/bin/gofmt
 
-
-ln -sfv ../../%{goroot}/bin/linux_%{gohostarch}/gofmt %{buildroot}%{_bindir}/gofmt
-ln -sfv ../../%{goroot}/bin/linux_%{gohostarch}/go %{buildroot}%{_bindir}/go
-
-install -vdm644 %{buildroot}/etc/profile.d
-cat >> %{buildroot}/etc/profile.d/go-exports.sh <<- "EOF"
-export GOROOT=%{goroot}
-export GOPATH=%{_datadir}/gocode
-export GOHOSTOS=linux
-export GOHOSTARCH=%{gohostarch}
-export GOOS=linux
-EOF
-chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
-
+ln -snfv %{goroot}/bin/linux_%{gohostarch}/gofmt %{buildroot}%{_bindir}/gofmt
+ln -snfv %{goroot}/bin/linux_%{gohostarch}/go %{buildroot}%{_bindir}/go
 
 %{_fixperms} %{buildroot}/*
-
-%post -p /sbin/ldconfig
-
-%postun
-/sbin/ldconfig
-if [ $1 -eq 0 ]; then
-  #This is uninstall
-  rm /etc/profile.d/go-exports.sh
-  rm -rf /opt/%{name}
-  exit 0
-fi
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%exclude %{goroot}/src/*.rc
-%exclude %{goroot}/include/plan9
-/etc/profile.d/go-exports.sh
-%{goroot}/*
-%{gopath}/src
-%exclude %{goroot}/src/pkg/debug/dwarf/testdata
-%exclude %{goroot}/src/pkg/debug/elf/testdata
+%doc AUTHORS CONTRIBUTORS LICENSE PATENTS
+%doc %{goroot}/VERSION
+%dir %{goroot}/doc
+%doc %{goroot}/doc/*
+%{goroot}/favicon.ico
+%{goroot}/robots.txt
+%{goroot}/api
+%{goroot}/bin
+%{goroot}/lib
+%{goroot}/pkg
+%{goroot}/src
+%{goroot}/misc
+%{goroot}/test
 %{_bindir}/*
 
 %changelog
+*   Mon Oct 02 2017 Bo Gan <ganb@vmware.com> 1.8.1-3
+-   Clean up spec, remove env variables and add arm64 support
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-2
 -   Remove mercurial from buildrequires and requires.
 *   Tue Apr 11 2017 Danut Moraru <dmoraru@vmware.com> 1.8.1-1
