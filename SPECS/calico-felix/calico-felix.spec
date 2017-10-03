@@ -1,7 +1,7 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
 Version:       2.4.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -20,22 +20,29 @@ BuildRequires: protobuf
 A per-host daemon for Calico.
 
 %prep
+%setup -q -T -D -b 1 -n protobuf-0.4
 %setup -q -n felix-%{version}
-mkdir -p ${GOPATH}/src/github.com/gogo/protobuf
-tar xf %{SOURCE1} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/gogo/protobuf/
 
 %build
-pushd ${GOPATH}/src/github.com/gogo/protobuf
+export GOPATH="$(pwd)"
+cd ..
+mv "${GOPATH}" felix
+mkdir -p "${GOPATH}/src/github.com/projectcalico"
+mv felix "${GOPATH}/src/github.com/projectcalico/"
+mkdir -p "${GOPATH}/src/github.com/gogo"
+mv protobuf-0.4 "${GOPATH}/src/github.com/gogo/protobuf/"
+
+pushd "${GOPATH}/src/github.com/gogo/protobuf"
 make install
 popd
+
 mkdir -p /root/.glide
-mkdir -p ${GOPATH}/src/github.com/projectcalico/felix
-cp -r * ${GOPATH}/src/github.com/projectcalico/felix/.
-pushd ${GOPATH}/src/github.com/projectcalico/felix
+cd "${GOPATH}/src/github.com/projectcalico/felix"
 glide install --strip-vendor
 mkdir -p bin
+
 cd proto
-protoc --plugin=/usr/share/gocode/bin/protoc-gen-gogofaster \
+protoc "--plugin=${GOPATH}/bin/protoc-gen-gogofaster" \
        --gogofaster_out=. felixbackend.proto
 cd ..
 CGO_ENABLED=0 GOOS=linux go build -v -i -o bin/calico-felix -v \
@@ -45,13 +52,15 @@ CGO_ENABLED=0 GOOS=linux go build -v -i -o bin/calico-felix -v \
 
 %install
 install -vdm 755 %{buildroot}%{_bindir}
-install ${GOPATH}/src/github.com/projectcalico/felix/bin/calico-felix %{buildroot}%{_bindir}/
+install src/github.com/projectcalico/felix/bin/calico-felix %{buildroot}%{_bindir}/
 
 %files
 %defattr(-,root,root)
 %{_bindir}/calico-felix
 
 %changelog
+*    Thu Oct 12 2017 Bo Gan <ganb@vmware.com> 2.4.1-3
+-    cleanup GOPATH
 *    Tue Sep 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-2
 -    Build protoc-gen-gogofaster plugin from source.
 *    Sat Aug 19 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1

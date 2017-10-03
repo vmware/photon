@@ -1,7 +1,7 @@
 Summary:       confd is a lightweight configuration management tool
 Name:          calico-confd
 Version:       0.12.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       MIT
@@ -19,14 +19,17 @@ confd is a lightweight configuration management tool that keeps local configurat
 %setup -q -n confd-%{version}
 
 %build
-#mkdir -p /root/.glide
-mkdir -p ${GOPATH}/src/github.com/kelseyhightower/confd
-cp -r * ${GOPATH}/src/github.com/kelseyhightower/confd/.
-pushd ${GOPATH}/src/github.com/kelseyhightower/confd
+export GOPATH="$(pwd)"
+cd ..
+mv "${GOPATH}" confd
+mkdir -p "${GOPATH}/src/github.com/kelseyhightower"
+mv confd "${GOPATH}/src/github.com/kelseyhightower/"
+
+cd "${GOPATH}/src/github.com/kelseyhightower/confd"
 ./build
 
 %install
-pushd ${GOPATH}/src/github.com/kelseyhightower/confd
+pushd src/github.com/kelseyhightower/confd
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ bin/confd
 
@@ -35,5 +38,7 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ bin/confd
 %{_bindir}/confd
 
 %changelog
+*    Thu Oct 12 2017 Bo Gan <ganb@vmware.com> 0.12.0-2
+-    fix GOPATH
 *    Fri Aug 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.12.0-1
 -    Calico confd for PhotonOS.
