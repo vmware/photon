@@ -41,9 +41,15 @@ rm -rf %{buildroot}
 
 %build
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
-#disabling all tests
+# Intermittent issue happens:
+#
+# BUILD FAILED
+# /usr/src/photon/BUILD/jna-4.4.0/build.xml:717: API for native code has changed, or javah output is inconsistent.
+# Re-run this build after checking /usr/src/photon/BUILD/jna-4.4.0/build/native-linux-x86-64/jni.checksum or updating jni.version and jni.md5 in build.xml
+#
+# Rerun the build will pass it
+ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true || \
 ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/*.java" -Drelease=true
-#$ANT_HOME/bin/ant -Dcflags_extra.native=-DNO_JAWT -Dtests.exclude-patterns="**/LibraryLoadTest.java" -Drelease=true
 
 %install
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
