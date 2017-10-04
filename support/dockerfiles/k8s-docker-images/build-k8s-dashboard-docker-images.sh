@@ -21,7 +21,7 @@ then
     exit 1
 fi
 
-IMG_NAME=vmware_photon/kubernetes-dashboard-amd64:v${K8S_DASH_VER}
+IMG_NAME=vmware_photon_${DIST_VER}/kubernetes-dashboard-amd64:v${K8S_DASH_VER}
 
 IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
 if [[ ! -z "${IMG_ID}" ]]; then
@@ -39,7 +39,8 @@ cp -p -r opt/k8dashboard/* img/
 cd img
 docker build --rm -t ${IMG_NAME} .
 docker save -o ${K8S_DASH_TAR} ${IMG_NAME}
-mv -f ${K8S_DASH_TAR} ${STAGE_DIR}/
+gzip ${K8S_DASH_TAR}
+mv -f ${K8S_DASH_TAR}.gz ${STAGE_DIR}/
 popd
 
 rm -rf ./tmp
