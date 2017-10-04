@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -91,8 +91,10 @@ Python3 rpm.
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
-sed -i '/^ *include_dirs = /d' python/setup.py.in
-sed -i '/^ *libraries = /d' python/setup.py.in
+# pass -L opts to gcc as well to prioritize it over standard libs
+sed -i 's/-Wl,-L//g' python/setup.py.in
+sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
+
 ./autogen.sh --noconfigure
 ./configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
@@ -256,6 +258,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
+-   make python{,3}-rpm depend on current version of librpm
 *   Wed Jun 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-5
 -   Add file-devel to BuildRequires
 *   Mon Jun 26 2017 Chang Lee <changlee@vmware.com> 4.13.0.1-4
