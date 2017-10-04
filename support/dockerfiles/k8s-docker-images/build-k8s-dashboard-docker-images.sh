@@ -39,7 +39,8 @@ cp -p -r opt/k8dashboard/* img/
 cd img
 docker build --rm -t ${IMG_NAME} .
 docker save -o ${K8S_DASH_TAR} ${IMG_NAME}
-mv -f ${K8S_DASH_TAR} ${STAGE_DIR}/
+gzip ${K8S_DASH_TAR}
+mv -f ${K8S_DASH_TAR}.gz ${STAGE_DIR}/
 popd
 
 rm -rf ./tmp
