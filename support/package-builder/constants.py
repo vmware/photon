@@ -19,6 +19,7 @@ class constants(object):
     sourceRpmPath=""
     publishBuildDependencies=False
     packageWeightsPath=None
+    gitMirror=""
 
     noDepsPackageList=[
         "texinfo",
@@ -414,6 +415,7 @@ class constants(object):
         constants.dist = options.dist
         constants.buildNumber = options.buildNumber
         constants.releaseVersion = options.releaseVersion
+        constants.gitMirror = options.gitMirror
         constants.specPath = options.specPath
         constants.sourcePath = options.sourcePath
         constants.rpmPath = options.rpmPath

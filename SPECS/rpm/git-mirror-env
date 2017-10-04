@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+if GIT="$(which git)" && [ "${PHOTON_GIT_MIRROR}x" != "x" ]; then
+  echo "Using git mirror: ${PHOTON_GIT_MIRROR}" >&2
+  TMP="$(mktemp -d /tmp/gohome-XXXXXX)"
+  CONFIG="$TMP/.gitconfig"
+  env GIT_EDITOR=cat EDITOR=cat git config --global -e > "$CONFIG"
+  git config -f "$CONFIG" --replace-all url."${PHOTON_GIT_MIRROR}/".insteadOf https://
+  git config -f "$CONFIG" --add url."${PHOTON_GIT_MIRROR}/".insteadOf http://
+  git config -f "$CONFIG" --add url."${PHOTON_GIT_MIRROR}/".insteadOf git://
+#  trap "{ rm -rf "$TMP" ; }" EXIT
+  echo "#!/bin/bash" >> "$TMP/git"
+  echo "export HOME=\""$TMP"\"; exec \""$GIT"\" \""\$\@"\"" >> "$TMP/git"
+  chmod +x "$TMP/git"
+  export PATH="$TMP:$PATH"
+fi
+
+"$@"
