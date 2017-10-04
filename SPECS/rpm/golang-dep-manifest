@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ "$GOPATH"x == "x" ]; then
+  echo "gosrc: You must have GOPATH defined" >&2
+  exit 1
+fi
+
+get_git_remote() {
+  python -c "
+import sys
+from lxml import html
+from urllib2 import urlopen
+tree = html.parse(urlopen(sys.argv[1]))
+print tree.xpath('//meta[@name=\"go-import\"]/@content')[0].split()[-1]
+" https://$1?go-get=1 || exit 1
+}
+
+manifest() {
+  echo "$1" "$2" "$(get_git_remote "$1")"
+}
+
+while read l; do
+  manifest $l
+done < <("$GOPATH/bin/dep" status -json | python -c "
+import json, sys
+status = json.load(sys.stdin)
+
+for pkg in status:
+  print pkg['ProjectRoot'], pkg['Revision']
+") | sort

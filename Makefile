@@ -63,6 +63,12 @@ else
 PHOTON_RPMCHECK_FLAGS :=
 endif
 
+ifdef GIT_MIRROR
+PHOTON_GIT_MIRROR := -gm $(GIT_MIRROR)
+else
+PHOTON_GIT_MIRROR :=
+endif
+
 ifeq ($(BUILDDEPS),true)
 PUBLISH_BUILD_DEPENDENCIES := -bd True
 else
@@ -122,6 +128,7 @@ packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                $(PHOTON_GIT_MIRROR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
@@ -158,6 +165,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                $(PHOTON_GIT_MIRROR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
@@ -244,6 +252,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
                 -v $(PHOTON_RELEASE_VERSION) \
                 -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                $(PHOTON_GIT_MIRROR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
@@ -268,6 +277,7 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
                 -v $(PHOTON_RELEASE_VERSION) \
                 -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                $(PHOTON_GIT_MIRROR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
@@ -289,6 +299,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 -k $(PHOTON_INPUT_RPMS_DIR) \
+                $(PHOTON_GIT_MIRROR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
@@ -310,6 +321,7 @@ tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                $(PHOTON_GIT_MIRROR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
                 -m stage1
 
@@ -329,6 +341,7 @@ tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
+                -gm $(PHOTON_GIT_MIRROR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
                 -m stage2
 
@@ -581,6 +594,7 @@ check: packages
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 -u \
                 $(rpmcheck_stop_on_error) \
+                $(PHOTON_GIT_MIRROR) \
                 -t ${THREADS}
 
 %: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_SOURCES) $(CONTAIN) $(eval PKG_NAME = $@)
@@ -601,6 +615,7 @@ check: packages
                               -n $(PHOTON_BUILD_NUMBER) \
                               -v $(PHOTON_RELEASE_VERSION) \
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                              $(PHOTON_GIT_MIRROR) \
                               $(PHOTON_RPMCHECK_FLAGS) \
                               -l $(PHOTON_LOGS_DIR)
 
@@ -620,6 +635,7 @@ generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                               -n $(PHOTON_BUILD_NUMBER) \
                               -v $(PHOTON_RELEASE_VERSION) \
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+                              $(PHOTON_GIT_MIRROR) \
                               $(PHOTON_RPMCHECK_OPTION) \
                               -l $(PHOTON_LOGS_DIR) \
                               -j $(PHOTON_STAGE) \

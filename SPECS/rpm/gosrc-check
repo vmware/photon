@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+RESTORE="$(readlink -f "$(dirname "$0")/gosrc-restore")"
+TMP="$(mktemp -d "/tmp/gosrc-XXXXXX")"
+
+trap "{ rm -rf "$TMP" ; }" EXIT
+
+MANIFEST="$(readlink -f "$1")"
+pushd "$TMP"
+"$RESTORE" "$MANIFEST"
+popd
+
+if [ "$NO_VENDOR" == "TRUE" ]; then
+diff -q -r -x '.git' -x 'testdata' -x vendor ./ "$TMP/"
+else
+diff -q -r -x '.git' -x 'testdata' ./ "$TMP/"
+fi
+
