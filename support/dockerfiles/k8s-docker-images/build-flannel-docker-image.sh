@@ -21,7 +21,7 @@ then
     exit 1
 fi
 
-IMG_NAME=vmware_photon/flannel:v${FLANNEL_VER}
+IMG_NAME=vmware_photon_${DIST_VER}/flannel:v${FLANNEL_VER}
 
 IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
 if [[ ! -z "${IMG_ID}" ]]; then
@@ -36,6 +36,7 @@ rpm2cpio ${FLANNEL_RPM} | cpio -vid
 popd
 docker build --rm -t ${IMG_NAME} -f Dockerfile.flannel .
 docker save -o ${FLANNEL_TAR} ${IMG_NAME}
-mv -f ${FLANNEL_TAR} ${STAGE_DIR}/
+gzip ${FLANNEL_TAR}
+mv -f ${FLANNEL_TAR}.gz ${STAGE_DIR}/
 
 rm -rf ./tmp
