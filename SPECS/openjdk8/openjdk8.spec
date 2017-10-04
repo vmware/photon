@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.141
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -141,6 +141,7 @@ alternatives --install %{_bindir}/javac javac %{_libdir}/jvm/OpenJDK-%{version}/
   --slave %{_bindir}/wsgen wsgen %{_libdir}/jvm/OpenJDK-%{version}/bin/wsgen \
   --slave %{_bindir}/wsimport wsimport %{_libdir}/jvm/OpenJDK-%{version}/bin/wsimport \
   --slave %{_bindir}/xjc xjc %{_libdir}/jvm/OpenJDK-%{version}/bin/xjc
+/sbin/ldconfig
 
 %post -n openjre8
 alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/java 2000 \
@@ -154,12 +155,15 @@ alternatives --install %{_bindir}/java java %{_libdir}/jvm/OpenJDK-%{version}/jr
   --slave %{_bindir}/servertool servertool %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/servertool \
   --slave %{_bindir}/tnameserv tnameserv %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/tnameserv \
   --slave %{_bindir}/unpack200 unpack200 %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/unpack200
+/sbin/ldconfig
 
 %postun
 alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{version}/bin/javac
+/sbin/ldconfig
 
 %postun -n openjre8
 alternatives --remove java %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/java
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -233,6 +237,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Thu Sep 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-2
+-   added ldconfig in post actions.
 *   Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
 -   Upgraded to version 1.8.0.141-1
 *   Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4
