@@ -48,3 +48,21 @@
 %install %{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}\
 %%install\
 %{nil}
+
+# Restore the $GOPATH/src or similar directory hierarchy from %1,
+# which should be full of '<PATH> <GIT_REMOTE> <GIT_COMMIT>' lines
+# e.g.,
+#
+# github.com/fakeorg/fakeproj https://github.com/fakeorg/fakeproj 00000
+# gopkg.in/notneeded https://gopkg.in/notneeded fffff
+#
+%{gosrc-setup} \
+    %{_rpmconfigdir}/gosrc-restore '%1' \
+%{nil}
+
+# Verify that the local sources hasn't changed, this catches the cases
+# where some deps manager tries to checkout different versions.
+
+%{gosrc-verify} \
+    %{_rpmconfigdir}/gosrc-check '%1' \
+%{nil}

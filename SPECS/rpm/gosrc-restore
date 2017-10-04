@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+restore() {
+  mkdir -p "$1"
+  pushd "$1" >/dev/null
+  git clone -q "$2" .
+  git checkout --detach -q "$3"
+  echo "$@"
+  popd >/dev/null
+}
+
+while read l; do
+  restore $l
+done < $1

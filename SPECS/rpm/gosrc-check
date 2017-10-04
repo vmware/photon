@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+MANIFEST="$(dirname "$0")/gosrc-manifest"
+
+diff "$1" <("${MANIFEST}" /dev/stdout)

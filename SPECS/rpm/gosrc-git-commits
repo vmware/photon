@@ -1,0 +1,14 @@
+#!/bin/bash
+
+WORKDIR="$(dirname $1)"
+
+if BRANCH="$(git -C "$WORKDIR" symbolic-ref HEAD 2>/dev/null)" ; then
+  echo -e "warning: $WORKDIR is on {${BRANCH}} which is not a specific commit/tag" >&2
+fi
+
+if ! REMOTE="$(git -C "$WORKDIR" config --get remote.origin.url)" ; then
+  echo "no git origin for repo "$WORKDIR", STOP" >&2
+  exit 2
+fi
+
+echo "$WORKDIR" "$REMOTE" "$(git -C "$WORKDIR" rev-parse HEAD)"
