@@ -37,6 +37,7 @@ popd
 K8S_TAR_NAME=k8s-heapster.tar
 docker build --rm -t ${IMG_NAME} -f ./Dockerfile.heapster .
 docker save -o ${K8S_TAR_NAME} ${IMG_NAME}
-mv -f ${K8S_TAR_NAME} ${STAGE_DIR}/
+gzip ${K8S_TAR_NAME}
+mv -f ${K8S_TAR_NAME}.gz ${STAGE_DIR}/
 
 rm -rf ./tmp

@@ -36,6 +36,7 @@ rpm2cpio ${NGINX_INC_RPM} | cpio -vid
 popd
 docker build --rm -t ${IMG_NAME} -f Dockerfile.nginx-ingress .
 docker save -o ${NGINX_INC_TAR} ${IMG_NAME}
-mv -f ${NGINX_INC_TAR} ${STAGE_DIR}/
+gzip ${NGINX_INC_TAR}
+mv -f ${NGINX_INC_TAR}.gz ${STAGE_DIR}/
 
 rm -rf ./tmp

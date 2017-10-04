@@ -165,14 +165,17 @@ popd
 
 docker build --rm -t ${CALICO_NODE_IMG_NAME} -f Dockerfile.calico-node .
 docker save -o ${CALICO_NODE_TAR} ${CALICO_NODE_IMG_NAME}
-mv -f ${CALICO_NODE_TAR} ${STAGE_DIR}/
+gzip ${CALICO_NODE_TAR}
+mv -f ${CALICO_NODE_TAR}.gz ${STAGE_DIR}/
 
 docker build --rm -t ${CALICO_CNI_IMG_NAME} -f Dockerfile.calico-cni .
 docker save -o ${CALICO_CNI_TAR} ${CALICO_CNI_IMG_NAME}
-mv -f ${CALICO_CNI_TAR} ${STAGE_DIR}/
+gzip ${CALICO_CNI_TAR}
+mv -f ${CALICO_CNI_TAR}.gz ${STAGE_DIR}/
 
 docker build --rm -t ${CALICO_K8S_POLICY_IMG_NAME} -f Dockerfile.calico-k8s-policy .
 docker save -o ${CALICO_K8S_POLICY_TAR} ${CALICO_K8S_POLICY_IMG_NAME}
-mv -f ${CALICO_K8S_POLICY_TAR} ${STAGE_DIR}/
+gzip ${CALICO_K8S_POLICY_TAR}
+mv -f ${CALICO_K8S_POLICY_TAR}.gz ${STAGE_DIR}/
 
 rm -rf ./tmp

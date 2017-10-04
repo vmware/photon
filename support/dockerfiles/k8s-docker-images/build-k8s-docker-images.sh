@@ -45,7 +45,8 @@ for K8S_BIN in ${K8S_BINS[*]}; do
     K8S_TAR_NAME=${K8S_BIN}.tar
     docker build --rm -t ${IMG_NAME} -f ./Dockerfile.${K8S_BIN} .
     docker save -o ${K8S_TAR_NAME} ${IMG_NAME}
-    mv -f ${K8S_TAR_NAME} ${STAGE_DIR}/
+    gzip ${K8S_TAR_NAME}
+    mv -f ${K8S_TAR_NAME}.gz ${STAGE_DIR}/
 done
 
 
@@ -63,6 +64,7 @@ fi
 
 docker build --rm -t ${PAUSE_IMG_NAME} -f ./Dockerfile.pause .
 docker save -o ${PAUSE_TAR_NAME} ${PAUSE_IMG_NAME}
-mv -f ${PAUSE_TAR_NAME} ${STAGE_DIR}/
+gzip ${PAUSE_TAR_NAME}
+mv -f ${PAUSE_TAR_NAME}.gz ${STAGE_DIR}/
 
 rm -rf ./tmp
