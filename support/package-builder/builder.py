@@ -45,6 +45,7 @@ def main():
     parser.add_argument("-j",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
     parser.add_argument("-f",  "--pkg-blacklist-file",  dest="pkgBlacklistFile",  default=None)
     parser.add_argument("-bt", "--build-type",  dest="pkgBuildType",  default="chroot")
+    parser.add_argument("-gm", "--git-mirror", dest="gitMirror", default="")
     parser.add_argument("PackageName", nargs='?')
     options = parser.parse_args()
     cmdUtils=CommandUtils()
