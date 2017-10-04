@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.22.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -18,6 +18,8 @@ Distribution:   Photon
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
 %define sha1 perl=29f9b320b0299577a3e1d02e9e8ef8f26f160332
 Patch0:         perl-CVE-2016-1238.patch
+Patch1:         CVE-2017-12837.patch
+Patch2:         CVE-2017-12883.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
@@ -32,6 +34,8 @@ Report Language.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 sed -i 's/-fstack-protector/&-all/' Configure
 
@@ -64,6 +68,8 @@ unset BUILD_ZLIB BUILD_BZIP2
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.22.1-5
+-   Fix for CVE-2017-12837 and CVE-2017-12883
 *   Thu Oct 20 2016 Xiaolin Li <xiaolinl@vmware.com> 5.22.1-4
 -   CVE-2016-1238 patch from http://perl5.git.perl.org/perl.git/commit/cee96d52c39b1e7b36e1c62d38bcd8d86e9a41ab.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.22.1-3
