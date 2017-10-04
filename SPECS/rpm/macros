@@ -48,3 +48,29 @@
 %install %{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}\
 %%install\
 %{nil}
+
+# Run a given command with a customized git that redirects all http://, https:// and git://
+# clones with a local git mirror. This script will not modify git global config.
+# Internally it constructs a customized git script in a temporary directory and set PATH to it.
+%with_git_mirror() env 'PHOTON_GIT_MIRROR=%{?photon_git_mirror}' %{_rpmconfigdir}/git-mirror-env %*
+
+%gosrc_prep \
+%{__mkdir} -p %{name}-%{version}/src\
+%setup -D -T
+
+# Restore the $GOPATH/src or similar directory hierarchy from %1,
+# which should be full of '<PATH> <GIT_REMOTE> <GIT_COMMIT>' lines
+# e.g.,
+#
+# github.com/fakeorg/fakeproj https://github.com/fakeorg/fakeproj 00000
+# gopkg.in/notneeded https://gopkg.in/notneeded fffff
+#
+%gosrc_restore() %{_rpmconfigdir}/gosrc-restore %*
+
+# Verify that the local sources hasn't changed, this catches the cases
+# where some deps manager tries to checkout different versions.
+%gosrc_verify() %{_rpmconfigdir}/gosrc-check %*
+
+# Same as above except that the vendor directory is removed before check.
+# This is for golang/dep to work.
+%gosrc_verify_no_vendor() env NO_VENDOR=TRUE %{_rpmconfigdir}/gosrc-check %*

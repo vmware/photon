@@ -1,0 +1,2 @@
+github.com/golang/dep 0edac3f3d316467e8a62d82c0223392d917cf679 https://github.com/golang/dep
+github.com/osrg/gobgp 9d3dc914c6ef915d97fa7bcd74011ae222d4a1f5 https://github.com/osrg/gobgp

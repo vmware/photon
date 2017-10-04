@@ -302,6 +302,10 @@ class SPECS(object):
         #adding releasenumber rpm macro
         self.specData.addMacro("photon_release_version",constants.releaseVersion)
 
+        #adding photon git mirror url
+        if constants.gitMirror:
+            self.specData.addMacro("photon_git_mirror", constants.gitMirror)
+
         #adding kernelversion rpm macro
         kernelversion = self.specData.getVersion("linux")
         self.specData.addMacro("KERNEL_VERSION",kernelversion)
