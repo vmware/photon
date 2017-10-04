@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+GIT_COMMITS="$(dirname "$0")/gosrc-git-commits"
+TMP="$(mktemp -d "/tmp/gosrc-XXXXXX")"
+
+cp -al . "$TMP/."
+
+purge_from_tmp() {
+  [ -d "$TMP/$1/.git" ] || exit 1
+  rm -rf "$TMP/$1"
+}
+
+while read l; do
+  purge_from_tmp $l
+  echo $l
+done < <(find * -name .git -type d -prune -exec "${GIT_COMMITS}" "{}" \;) | sort
+
+find "$TMP" -type l -delete
+find "$TMP" -type d -empty -delete
+[ -d "$TMP" ] || exit 0
+
+echo "gosrc: You have package source that not managed by git. This is not supported currently." \
+  "Please check $TMP for offending packages" >&2
+exit 1

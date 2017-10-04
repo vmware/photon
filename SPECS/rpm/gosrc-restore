@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+restore() {
+  if [ $# -ne 3 ]; then
+    echo "gosrc: wrong manifest format!" >&2
+    exit 1
+  fi
+  mkdir -p "$1"
+  pushd "$1" >/dev/null
+  git clone "$3" . >&2
+  git checkout --detach -q "$2" >&2
+  git rev-parse HEAD >&2
+  echo "$@"
+  popd >/dev/null
+}
+
+while read l; do
+  restore $l
+done < $1

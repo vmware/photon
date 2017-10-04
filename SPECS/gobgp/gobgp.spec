@@ -1,15 +1,13 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       1.23
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/osrg/gobgp
-Source0:       %{name}-%{version}.tar.gz
-%define sha1 gobgp=3df002f61911cf56c33bd4350fe9d2ad39bcfca5
-Source1:       golang-dep-0.3.0.tar.gz
-%define sha1 golang-dep-0.3.0=e5e9952227930fe1e8632edc03d690bffc3e1132
+Source0:       gosrc-gobgp.txt
+Source1:       deps-gobgp.txt
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: go >= 1.7
@@ -19,34 +17,45 @@ BuildRequires: go >= 1.7
 GoBGP is an open source BGP implementation designed from scratch for modern environment and implemented in a modern programming language, the Go Programming Language.
 
 %prep
-%setup -q
-mkdir -p ${GOPATH}/src/github.com/golang/dep
-tar xf %{SOURCE1} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/golang/dep/
+%gosrc_prep
 
 %build
-pushd ${GOPATH}/src/github.com/golang/dep
-CGO_ENABLED=0 GOOS=linux go build -v -ldflags "-s -w" -o ${GOPATH}/bin/dep ./cmd/dep/
-popd
-mkdir -p ${GOPATH}/src/github.com/osrg/gobgp
-cp -r * ${GOPATH}/src/github.com/osrg/gobgp/.
-pushd ${GOPATH}/src/github.com/osrg/gobgp
-${GOPATH}/bin/dep ensure
-mkdir -p dist
-go build -v -o dist/gobgp -ldflags "-X main.VERSION=%{version} -s -w" gobgp/main.go
-go build -v -o dist/gobgpd -ldflags "-X main.VERSION=%{version} -s -w" gobgpd/main.go gobgpd/util.go
+export GOPATH="`pwd`"; export PATH="$GOPATH/bin:$PATH";
+
+# restore golang/dep and gobgp source
+cd src
+%with_git_mirror %gosrc_restore %{SOURCE0}
+
+%with_git_mirror go get github.com/golang/dep/cmd/dep
+# This go get will report no buildable Go source,
+# which is the correct behavior of gobgp
+%with_git_mirror go get github.com/osrg/gobgp || :
+
+cd github.com/osrg/gobgp
+%with_git_mirror dep ensure
+pushd gobgpd && go install && popd
+pushd gobgp && go install && popd
+
+#check sources and deps
+cd vendor
+%with_git_mirror %gosrc_verify_no_vendor %{SOURCE1}
+cd "${GOPATH}/src"
+%with_git_mirror %gosrc_verify_no_vendor %{SOURCE0}
 
 %install
-pushd ${GOPATH}/src/github.com/osrg/gobgp
 install -vdm 755 %{buildroot}%{_bindir}
-install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgp %{buildroot}%{_bindir}/
-install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
+install bin/gobgp %{buildroot}%{_bindir}/
+install bin/gobgpd %{buildroot}%{_bindir}/
 
 %files
 %defattr(-,root,root)
 %{_bindir}/gobgp
 %{_bindir}/gobgpd
-%doc LICENSE README.md
+%doc src/github.com/osrg/gobgp/LICENSE
+%doc src/github.com/osrg/gobgp/README.md
 
 %changelog
+*    Fri Oct 06 2017 Bo Gan <ganb@vmware.com> 1.23-2
+-    Use gosrc for source tracking
 *    Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.23-1
 -    Go BGP daemon for PhotonOS.

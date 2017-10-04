@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -15,6 +15,12 @@ Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
+Source4:        gosrc-check
+Source5:        gosrc-git-commits
+Source6:        gosrc-manifest
+Source7:        gosrc-restore
+Source8:        golang-dep-manifest
+Source9:        git-mirror-env
 Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
 Requires:       bash
@@ -136,6 +142,12 @@ install -dm 755 %{buildroot}%{_sysconfdir}/rpm
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
 install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
+install -vm755 %{SOURCE4} %{buildroot}%{_libdir}/rpm/
+install -vm755 %{SOURCE5} %{buildroot}%{_libdir}/rpm/
+install -vm755 %{SOURCE6} %{buildroot}%{_libdir}/rpm/
+install -vm755 %{SOURCE7} %{buildroot}%{_libdir}/rpm/
+install -vm755 %{SOURCE8} %{buildroot}%{_libdir}/rpm/
+install -vm755 %{SOURCE9} %{buildroot}%{_libdir}/rpm/
 
 pushd python
 python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -204,6 +216,9 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/find-provides
 %{_libdir}/rpm/find-requires
 %{_libdir}/rpm/brp-*
+%{_libdir}/rpm/gosrc-*
+%{_libdir}/rpm/git-mirror-env
+%{_libdir}/rpm/golang-dep-manifest
 %{_libdir}/rpm/mono-find-provides
 %{_libdir}/rpm/mono-find-requires
 %{_libdir}/rpm/ocaml-find-provides.sh
@@ -256,6 +271,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 04 2017 Bo Gan <ganb@vmware.com> 4.13.0.1-6
+-   Add gosrc macros and scripts for go package dependency enforcing
 *   Wed Jun 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-5
 -   Add file-devel to BuildRequires
 *   Mon Jun 26 2017 Chang Lee <changlee@vmware.com> 4.13.0.1-4
