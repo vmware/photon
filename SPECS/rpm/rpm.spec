@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -81,6 +81,10 @@ mv db-5.3.28 db
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
+# pass -L opts to gcc as well to prioritize it over standard libs
+sed -i 's/-Wl,-L//g' python/setup.py.in
+sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
+
 ./autogen.sh --noconfigure
 ./configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
@@ -234,6 +238,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Tue Oct 03 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-2
+-    make python{,3}-rpm depend on current version of librpm
 *    Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-1
 -    rpm version update
 *    Mon Jul 10 2017 Divya Thaluru <dthaluru@vmware.com> 4.11.2-14
