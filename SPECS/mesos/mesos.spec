@@ -3,7 +3,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	1.2.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -55,6 +55,7 @@ Requires:	%{name} = %{version}-%{release}
 Summary:	python bindings for mesos
 Requires:       python2
 Requires:       protobuf-python
+Conflicts:      mesos-devel < 1.2.0
 %description    python
  python bindings for mesos
 
@@ -111,6 +112,7 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{_libdir}/mesos/modules/liblogrotate_container_logger.so
 
 %files devel
+%exclude %{_includedir}/mesos/slave
 %{_includedir}/*
 %{_libdir}/libfixed_resource_estimator*
 %{_libdir}/pkgconfig/mesos.pc
@@ -121,6 +123,8 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{python2_sitelib}/mesos/*
 
 %changelog
+*	Thu Sep 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-3
+-	fix conflicts with mesos-0.28
 *	Thu Sep 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-2
 -	for python files, package only mesos python files.
 *	Fri Sep 1 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-1
