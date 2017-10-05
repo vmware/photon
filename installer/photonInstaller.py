@@ -14,7 +14,6 @@ import sys
 import os
 from jsonwrapper import JsonWrapper
 from packageselector import PackageSelector
-import json
 
 def query_yes_no(question, default="no"):
     valid = {"yes": True, "y": True, "ye": True,

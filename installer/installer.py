@@ -5,12 +5,7 @@
 import subprocess
 import curses
 import os
-import crypt
-import re
-import random
-import string
 import shutil
-import fnmatch
 import signal
 import sys
 import glob
@@ -173,7 +168,8 @@ class Installer(object):
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
 
-        shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
+        if os.path.exists("/etc/resolv.conf"):
+            shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
         self.finalize_system()
 
         if not self.install_config['iso_system']:
