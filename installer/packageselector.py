@@ -3,9 +3,7 @@
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
-import json
 import os
-import curses
 from jsonwrapper import JsonWrapper
 from menu import Menu
 from window import Window
