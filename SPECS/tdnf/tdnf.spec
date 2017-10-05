@@ -3,8 +3,8 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        1.2.1
-Release:        5%{?dist}
+Version:        1.2.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -19,18 +19,18 @@ BuildRequires:  hawkey-devel >= 2017.1
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
-Source0:    %{name}-%{version}.tar.gz
-Patch0:     tdnf_quiet_repo_refresh.patch
-Patch1:     tdnf_report_problems_to_stderr.patch
-%define sha1 tdnf=ebbed639c68316e5a152b0bd277c1b040ee6871f
-Source1:    cache-updateinfo
-Source2:    cache-updateinfo.service
-Source3:    cache-updateinfo.timer
-Source4:    updateinfo.sh
+Obsoletes:      yum
+Provides:       yum
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    tdnf=51e084e294e1ae4eae800dbf6f4e435c3d18a8ff
+Source1:        cache-updateinfo
+Source2:        cache-updateinfo.service
+Source3:        cache-updateinfo.timer
+Source4:        updateinfo.sh
 
 %description
 tdnf is a yum/dnf equivalent
-which uses libhawkey and librepo
+which uses libsolv and libhawkey
 
 %package    devel
 Summary:    A Library providing C API for tdnf
@@ -50,12 +50,10 @@ Library providing cli libs for tdnf like clients.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 
 
 %build
-sed -i 's/tdnf, 1.2.0/tdnf, 1.2.1/' configure.ac
+sed -i 's/tdnf, 1.2.0/tdnf, 1.2.2/' configure.ac
 autoreconf -i
 ./configure \
     --prefix=%{_prefix} \
@@ -70,6 +68,7 @@ make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 mkdir -p %{buildroot}/var/cache/tdnf
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
+ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
 install -v -D -m 0755 %{SOURCE1} %{buildroot}%{_bindir}/tdnf-cache-updateinfo
 install -v -D -m 0644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.service
 install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
@@ -131,6 +130,7 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %defattr(-,root,root,0755)
     %{_bindir}/tdnf
     %{_bindir}/tyum
+    %{_bindir}/yum
     %{_bindir}/tdnf-cache-updateinfo
     %{_libdir}/*.so.*
     %config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
@@ -152,6 +152,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Wed Oct 4 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.2-0
+-   update to v1.2.2
 *   Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-5
 -   Output problems while resolving to stderr (instead of stdout)
 *   Wed Sep 27 2017 Bo Gan <ganb@vmware.com> 1.2.1-4
