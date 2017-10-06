@@ -7,6 +7,8 @@ Type=simple
 ExecStartPre=/usr/sbin/unbound-checkconf
 ExecStart=/usr/sbin/unbound -d
 ExecReload=/usr/sbin/unbound-control reload
+PIDFile=/etc/unbound/unbound.pid
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
