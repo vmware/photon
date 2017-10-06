@@ -1,71 +1,103 @@
-Summary:	toolkit for defining and handling authorizations.
-Name:		polkit
-Version:	0.113
-Release:	1%{?dist}
-License:	LGPLv2+
-URL:		http://www.freedesktop.org/software/polkit
-Group:		User Interface/Desktops
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://www.freedesktop.org/software/%{name}/releases/%{name}-%{version}.tar.gz
+Summary:       A toolkit for defining and handling authorizations.
+Name:          polkit
+Version:       0.113
+Release:       2%{?dist}
+Group:         Applications/System
+Vendor:        VMware, Inc.
+License:       LGPLv2+
+URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
+Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
+Distribution:  Photon
+BuildRequires: autoconf
+BuildRequires: expat-devel
+BuildRequires: glib-devel
+BuildRequires: gobject-introspection
+BuildRequires: intltool >= 0.40.0
+BuildRequires: js-devel
+BuildRequires: Linux-PAM-devel
+BuildRequires: systemd-devel
+Requires:      expat
+Requires:      glib
+Requires:      js
+Requires:      Linux-PAM
+Requires:      systemd
 %define sha1 polkit=ef855c2d04184dceb38e0940dc7bec9cc3da415c
-BuildRequires:	intltool glib-devel js-devel expat-devel systemd
-Requires:	glib js expat shadow systemd
+
 %description
-Polkit is a toolkit for defining and handling authorizations. It is used for allowing unprivileged processes to communicate with privileged processes.
-%package 	devel
-Group:          Development/Libraries
-Summary:        Headers and static lib for application development
-Requires:	%{name} = %{version}
-Requires:	intltool glib-devel js-devel expat systemd
-%description 	devel
-Install this package if you want do compile applications using the polkit.
+polkit provides an authorization API intended to be used by privileged programs
+(“MECHANISMS”) offering service to unprivileged programs (“SUBJECTS”) often
+through some form of inter-process communication mechanism
+
+%package devel
+Summary: polkit development headers and libraries
+Group: Development/Libraries
+Requires: polkit = %{version}-%{release}
+
+%description devel
+header files and libraries for polkit
+
 %prep
 %setup -q
+
 %build
-# current configure uses old auto tools
-./configure --prefix=%{_prefix} \
-	    --sysconfdir=%{_sysconfdir} \
-	    --localstatedir=%{_localstatedir} \
-	    --disable-static \
-	    --enable-libsystemd-login=no \
-	    --with-authfw=shadow
+./configure \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --sbindir=%{_sbindir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
+    --datadir=%{_datarootdir} \
+    --sysconfdir=%{_sysconfdir} \
+    --enable-libsystemd-login=yes \
+    --with-systemdsystemunitdir=%{_libdir}/systemd/system
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
-install -vdm 755 %{buildroot}/etc/pam.d
-cat > %{buildroot}/etc/pam.d/polkit-1 << "EOF"
-# Begin /etc/pam.d/polkit-1
+find %{buildroot} -name '*.la' -delete
 
-auth     include        system-auth
-account  include        system-account
-password include        system-password
-session  include        system-session
+%check
+# Disable check. It requires dbus - not available in chroot/container.
 
-# End /etc/pam.d/polkit-1
-EOF
 %pre
 getent group polkitd > /dev/null || groupadd -fg 27 polkitd &&
-getent passwd polkitd > /dev/null || useradd -c "PolicyKit Daemon Owner" -d /etc/polkit-1 -u 27 \
+getent passwd polkitd > /dev/null || \
+    useradd -c "PolicyKit Daemon Owner" -d /etc/polkit-1 -u 27 \
         -g polkitd -s /bin/false polkitd
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/*
-%{_bindir}/*
-%{_libdir}/*
-%exclude %{_libdir}/debug
-%exclude %{_libdir}/*.la
-%exclude %{_libdir}/*.so
-%exclude %{_libdir}/debug
-%{_datadir}/*
+%{_bindir}/pk*
+%{_libdir}/lib%{name}-*.so.*
+%{_libdir}/polkit-1/polkit-agent-helper-1
+%{_libdir}/polkit-1/polkitd
+%{_libdir}/systemd/system/polkit.service
+%{_datarootdir}/dbus-1/system-services/org.freedesktop.PolicyKit1.service
+%{_datarootdir}/locale/*
+%{_datarootdir}/polkit-1/actions/*.policy
+%{_sysconfdir}/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
+%{_sysconfdir}/pam.d/polkit-1
+%{_sysconfdir}/polkit-1/rules.d/50-default.rules
+
 %files devel
 %defattr(-,root,root)
-%{_includedir}/*
-%{_libdir}/*.la
-%{_libdir}/*.so
+%{_includedir}/%{name}-1/
+%{_libdir}/lib%{name}-*.a
+%{_libdir}/lib%{name}-*.so
+%{_libdir}/pkgconfig/*.pc
+
 %changelog
-*	Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.113-1
--	Upgrade to 0.113-1
-*	Fri May 22 2015 Alexey Makhalov <amakhalov@vmware.com> 0.112-1
--	initial version
+*   Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.113-2
+-   Initial version of polkit for PhotonOS.
+*   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.113-1
+-   Upgrade to 0.113-1
+*   Fri May 22 2015 Alexey Makhalov <amakhalov@vmware.com> 0.112-1
+-   initial version
