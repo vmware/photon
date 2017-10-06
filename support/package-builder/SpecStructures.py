@@ -1,3 +1,5 @@
+import platform
+
 class rpmMacro(object):
 
     def __init__(self):
@@ -29,7 +31,7 @@ class Package(object):
         self.license=""
         self.version=""
         self.release=""
-        self.buildarch="x86_64"
+        self.buildarch=platform.machine()
         self.distribution="Photon"
         self.basePkgName=""
         self.URL=""

@@ -1,5 +1,6 @@
 from SpecUtils import Specutils
 import os
+import platform
 from Logger import Logger
 from distutils.version import StrictVersion
 import Queue
@@ -77,7 +78,7 @@ class SerializableSpecObjectsUtils(object):
     def getListSpecFiles(self,listSpecFiles,path):
         for dirEntry in os.listdir(path):
             dirEntryPath = os.path.join(path, dirEntry)
-            if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".spec"):
+            if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".spec") and os.path.basename(dirEntryPath) not in constants.skipSpecsForArch.get(platform.machine(),[]):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles,dirEntryPath)
@@ -307,8 +308,9 @@ class SPECS(object):
         self.specData.addMacro("KERNEL_VERSION",kernelversion)
 
         #adding openjre8 version rpm macro
-        java8version = self.specData.getVersion("openjre8")
-        self.specData.addMacro("JAVA8_VERSION",java8version)
+        if (platform.machine() == "x86_64"):
+            java8version = self.specData.getVersion("openjre8")
+            self.specData.addMacro("JAVA8_VERSION",java8version)
 
         #adding kernelrelease rpm macro
         kernelrelease = self.specData.getRelease("linux")
@@ -525,7 +527,7 @@ class SerializedSpecObjects(object):
     def getListSpecFiles(self,listSpecFiles,path):
         for dirEntry in os.listdir(path):
             dirEntryPath = os.path.join(path, dirEntry)
-            if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".spec"):
+            if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".spec") and os.path.basename(dirEntryPath) not in constants.skipSpecsForArch.get(platform.machine(),[]):
                 listSpecFiles.append(dirEntryPath)
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles,dirEntryPath)

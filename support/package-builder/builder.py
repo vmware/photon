@@ -2,6 +2,7 @@
 
 from argparse import ArgumentParser
 import os.path
+import platform
 from CommandUtils import CommandUtils
 from Logger import Logger
 from constants import constants
@@ -67,11 +68,11 @@ def main():
     if not os.path.isdir(options.publishXRPMSPath):
         logger.error("Given X RPMS Path is not a directory:"+options.publishXRPMSPath)
         errorFlag = True
-    if not os.path.isdir(options.publishRPMSPath+"/x86_64"):
-        logger.error("Given RPMS Path is missing x86_64 sub-directory:"+options.publishRPMSPath)
+    if not os.path.isdir(options.publishRPMSPath+"/" + platform.machine()):
+        logger.error("Given RPMS Path is missing "+platform.machine()+" sub-directory:"+options.publishRPMSPath)
         errorFlag = True
-    if not os.path.isdir(options.publishXRPMSPath+"/x86_64"):
-        logger.error("Given X RPMS Path is missing x86_64 sub-directory:"+options.publishXRPMSPath)
+    if not os.path.isdir(options.publishXRPMSPath+"/" + platform.machine()):
+        logger.error("Given X RPMS Path is missing "+platform.machine()+" sub-directory:"+options.publishXRPMSPath)
         errorFlag = True
     if not os.path.isdir(options.publishRPMSPath+"/noarch"):
         logger.error("Given RPMS Path is missing noarch sub-directory:"+options.publishRPMSPath)
@@ -108,7 +109,7 @@ def main():
 
 
     if not os.path.isdir(options.rpmPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/x86_64")
+        cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+platform.machine())
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
 
     if not os.path.isdir(options.sourceRpmPath):

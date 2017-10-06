@@ -1,6 +1,7 @@
 from CommandUtils import CommandUtils
 from Logger import Logger
 import os
+import platform
 import shutil
 from constants import constants
 import re
@@ -44,6 +45,8 @@ class PackageUtils(object):
         arch=""
         if rpmName.find("x86_64") != -1:
             arch="x86_64"
+        elif rpmName.find("aarch64") != -1:
+            arch="aarch64"
         elif rpmName.find("noarch") != -1:
             arch="noarch"
         return arch
@@ -281,10 +284,10 @@ class PackageUtils(object):
         cmdUtils = CommandUtils()
         version = SPECS.getData().getVersion(package)
         release = SPECS.getData().getRelease(package)
-        listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+".x86_64.rpm",constants.rpmPath),
+        listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+"."+platform.machine()+".rpm",constants.rpmPath),
                             cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
         if constants.inputRPMSPath is not None:
-            listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+".x86_64.rpm",constants.inputRPMSPath),
+            listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+"."+platform.machine()+".rpm",constants.inputRPMSPath),
                             cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.inputRPMSPath)], listFoundRPMFiles)
         if len(listFoundRPMFiles) == 1 :
             return listFoundRPMFiles[0]
@@ -309,7 +312,7 @@ class PackageUtils(object):
 
     def findPackageInfoFromRPMFile(self,rpmfile):
         rpmfile=os.path.basename(rpmfile)
-        rpmfile=rpmfile.replace(".x86_64.rpm","")
+        rpmfile=rpmfile.replace("."+platform.machine()+".rpm","")
         rpmfile=rpmfile.replace(".noarch.rpm","")
         releaseindex=rpmfile.rfind("-")
         if releaseindex == -1:
@@ -396,7 +399,7 @@ class PackageUtils(object):
         if "noarch" in rpmFile:
             rpmPath += "noarch/"
         else:
-            rpmPath += "x86_64/"
+            rpmPath += platform.machine()+"/"
         rpmPath += rpmName
         return rpmPath
 
