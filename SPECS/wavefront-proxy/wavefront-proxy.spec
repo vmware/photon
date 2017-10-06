@@ -1,7 +1,7 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        4.16
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz 
@@ -44,6 +44,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-proxy/' pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh
+sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
 
 %build
 mvn install
@@ -57,6 +58,7 @@ install -m 755 -D pkg/etc/wavefront/wavefront-proxy/wavefront.conf.default %{bui
 install -m 755 -D pkg/usr/share/doc/wavefront-proxy/copyright %{buildroot}/%{_docdir}/%name/copyright
 install -m 755 -D proxy/target/proxy-%{version}-uber.jar %{buildroot}/opt/wavefront-push-agent.jar
 install -m 755 -D wavefront-proxy.service %{buildroot}/%{_unitdir}/wavefront-proxy.service
+install -m 755 -D proxy/docker/run.sh %{buildroot}/opt/wavefront/%{name}/bin/run.sh
 
 %pre
 user="wavefront"
@@ -104,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Mon Oct 08 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-4
+- Add Docker related files to the package
 * Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-3
 - Fix for CVE-2017-9735
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
