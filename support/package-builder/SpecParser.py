@@ -1,4 +1,5 @@
 import re
+import platform
 from StringUtils import StringUtils
 from SpecStructures import *
 from constants import constants
@@ -46,7 +47,18 @@ class SpecParser(object):
         i=0
         while i < totalLines:
             line = lines[i].strip()
-            if self.isSpecMacro(line):
+            if self.isConditionalArch(line):
+                if (platform.machine() != self.readConditionalArch(line)):
+                    # skip conditional body
+                    deep = 1
+                    while (i < totalLines and deep != 0):
+                        i=i+1
+                        line = lines[i].strip()
+                        if self.isConditionalMacroStart(line):
+                            deep = deep + 1
+                        elif self.isConditionalMacroEnd(line):
+                            deep = deep - 1
+            elif self.isSpecMacro(line):
                 macro,i=self.readMacroFromFile(i, lines)
                 self.updateMacro(macro)
             elif self.isPackageMacro(line):
@@ -78,7 +90,7 @@ class SpecParser(object):
                 self.readDefinition(line)
             elif self.isConditionalCheckMacro(line):
                 self.conditionalCheckMacroEnabled = True
-            elif self.conditionalCheckMacroEnabled and self.isConditionalMacroCompleted(line):
+            elif self.conditionalCheckMacroEnabled and self.isConditionalMacroEnd(line):
                 self.conditionalCheckMacroEnabled = False
             else:
                 self.specAdditionalContent+=line+"\n"
@@ -137,7 +149,12 @@ class SpecParser(object):
         return False
 
     def isMacro(self,line):
-        return self.isPackageMacro(line) or self.isSpecMacro(line)
+        return self.isPackageMacro(line) or self.isSpecMacro(line) or self.isConditionalMacroStart(line) or self.isConditionalMacroEnd(line)
+
+    def isConditionalArch(self,line):
+        if re.search('^'+'%ifarch',line) :
+            return True
+        return False
 
     def isSpecMacro(self,line):
         if re.search('^'+'%clean',line) :
@@ -224,6 +241,12 @@ class SpecParser(object):
         if re.search('^'+'%global',line) :
             return True
         return False
+
+    def readConditionalArch(self,line):
+        w=line.split()
+        if len(w) == 2:
+           return w[1]
+        return None
 
     def readDefinition(self,line):
         listDefines=line.split()
@@ -400,12 +423,8 @@ class SpecParser(object):
             return False
         return True
 
-    def isConditionalMacroCompleted(self,line):
-        data = line.strip()
-        words = data.split()
-        nrWords = len(words)
-        if(nrWords != 1):
-            return False
-        if(words[0] != "%endif"):
-            return False
-        return True
+    def isConditionalMacroStart(self,line):
+        return line.startswith("%if")
+
+    def isConditionalMacroEnd(self,line):
+        return (line.strip() == "%endif")
