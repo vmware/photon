@@ -389,8 +389,6 @@ class PackageUtils(object):
         #TODO: Container path from constants
         if "PUBLISHRPMS" in rpmFile:
             rpmPath = "/publishrpms/"
-        elif "PUBLISHXRPMS" in rpmFile:
-            rpmPath = "/publishxrpms/"
         else:
             rpmPath = constants.topDirPath + "/RPMS/"
         if "noarch" in rpmFile:

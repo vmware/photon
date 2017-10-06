@@ -85,3 +85,5 @@ x86_64/go-1.4.2-5.ph1.x86_64.rpm
 x86_64/filesystem-1.0-7.ph1.x86_64.rpm
 x86_64/libdb-5.3.28-1.ph2dev.x86_64.rpm
 x86_64/libdb-devel-5.3.28-1.ph2dev.x86_64.rpm
+x86_64/openjdk-1.8.0.112-1.x86_64.rpm
+x86_64/openjre-1.8.0.112-1.x86_64.rpm

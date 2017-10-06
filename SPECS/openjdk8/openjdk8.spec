@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk8
 Version:	1.8.0.141
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -14,6 +14,8 @@ Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{versi
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 Patch2:         remove-cups.patch
+# little bit of surgery to build truly headless jdk/jre
+Patch3:         no-awt-no-sound.patch
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -68,13 +70,14 @@ This package provides the runtime library class sources.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
-sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
+%patch3 -p1
 
 %build
 chmod a+x ./configure
 unset JAVA_HOME &&
 ./configure \
+	ALSA_NOT_NEEDED=yes \
+	FREETYPE_NOT_NEEDED=yes \
 	CUPS_NOT_NEEDED=yes \
 	--with-target-bits=64 \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
@@ -82,9 +85,8 @@ unset JAVA_HOME &&
 	--with-cacerts-file=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre/lib/security/cacerts \
 	--with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
 	--with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
-	--with-freetype-include=/usr/include/freetype2 \
-	--with-freetype-lib=/usr/lib \
-	--with-stdc++lib=dynamic
+	--with-stdc++lib=dynamic \
+	--without-x
 
 make \
     DEBUG_BINARIES=true \
@@ -233,6 +235,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Thu Oct 05 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.141-2
+-   Truly headless build
 *   Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
 -   Upgraded to version 1.8.0.141-1
 *   Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4

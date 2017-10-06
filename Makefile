@@ -40,12 +40,6 @@ else
 PHOTON_PUBLISH_RPMS := publish-rpms
 endif
 
-ifdef PHOTON_PUBLISH_XRPMS_PATH
-PHOTON_PUBLISH_XRPMS := publish-x-rpms-cached
-else
-PHOTON_PUBLISH_XRPMS := publish-x-rpms
-endif
-
 # Tri state RPMCHECK:
 # 1) RPMCHECK is not specified:  just build
 # 2) RPMCHECK=enable: build and run %check section. do not stop on error. will generate report file.
@@ -225,7 +219,7 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
-packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
@@ -237,7 +231,6 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -249,7 +242,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
 
-packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
@@ -261,7 +254,6 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -273,7 +265,7 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
 
-updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
@@ -283,7 +275,6 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -352,22 +343,11 @@ publish-rpms:
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
 	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR)
 
-publish-x-rpms:
-	@echo "Pulling publish X rpms from bintray..."
-	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
-	$(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR)
-
 publish-rpms-cached:
 	@echo "Using cached publish rpms..."
 	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR)/{x86_64,noarch} && \
 	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
         $(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR) $(PHOTON_PUBLISH_RPMS_PATH)
-
-publish-x-rpms-cached:
-	@echo "Using ..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR)/{x86_64,noarch} && \
-	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
-        $(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR) $(PHOTON_PUBLISH_XRPMS_PATH)
 
 $(PHOTON_STAGE):
 	@echo "Creating staging folder..."
@@ -572,7 +552,6 @@ check: packages
                 -b $(PHOTON_CHROOT_PATH) \
                 -l $(PHOTON_LOGS_DIR) \
                 -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                 -c $(PHOTON_PULLSOURCES_CONFIG) \
                 -d $(PHOTON_DIST_TAG) \
                 -n $(PHOTON_BUILD_NUMBER) \
@@ -583,7 +562,7 @@ check: packages
                 $(rpmcheck_stop_on_error) \
                 -t ${THREADS}
 
-%: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_SOURCES) $(CONTAIN) $(eval PKG_NAME = $@)
+%: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) $(eval PKG_NAME = $@)
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -595,7 +574,6 @@ check: packages
                               -a $(PHOTON_SRPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                               -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -d $(PHOTON_DIST_TAG) \
                               -n $(PHOTON_BUILD_NUMBER) \
@@ -614,7 +592,6 @@ generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                               -a $(PHOTON_SRPMS_DIR) \
                               -x $(PHOTON_SRCS_DIR) \
                               -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
                               -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -d $(PHOTON_DIST_TAG) \
                               -n $(PHOTON_BUILD_NUMBER) \

@@ -1,0 +1,45 @@
+diff -Naur a/jdk/make/CompileJavaClasses.gmk b/jdk/make/CompileJavaClasses.gmk
+--- a/jdk/make/CompileJavaClasses.gmk	2017-10-05 23:23:58.390249040 -0700
++++ b/jdk/make/CompileJavaClasses.gmk	2017-10-05 23:26:17.769352397 -0700
+@@ -179,7 +179,7 @@
+   EXFILES += sun/awt/AWTCharset.java
+ endif
+ 
+-ifeq ($(OPENJDK_TARGET_OS), macosx)
++ifeq ($(OPENJDK_TARGET_OS), linux)
+   # exclude all X11 on Mac, we can't exclude some like below or we'll have compilation errors
+   EXCLUDES += sun/awt/X11
+ else
+diff -Naur a/jdk/make/CompileNativeLibraries.gmk b/jdk/make/CompileNativeLibraries.gmk
+--- a/jdk/make/CompileNativeLibraries.gmk	2017-10-05 22:11:54.186395728 -0700
++++ b/jdk/make/CompileNativeLibraries.gmk	2017-10-05 16:42:36.000000000 -0700
+@@ -83,9 +83,9 @@
+ 
+ include lib/ServiceabilityLibraries.gmk
+ 
+-include lib/Awt2dLibraries.gmk
++#include lib/Awt2dLibraries.gmk
+ 
+-include lib/SoundLibraries.gmk
++#include lib/SoundLibraries.gmk
+ 
+ # Include the corresponding custom file, if present. 
+ -include $(CUSTOM_MAKE_DIR)/CompileNativeLibraries.gmk
+diff -Naur a/jdk/make/GenerateSources.gmk b/jdk/make/GenerateSources.gmk
+--- a/jdk/make/GenerateSources.gmk	2017-10-05 22:12:07.057941636 -0700
++++ b/jdk/make/GenerateSources.gmk	2017-10-05 16:08:21.000000000 -0700
+@@ -73,10 +73,10 @@
+     GENSRC += $(GENSRC_OSX_ICONS)
+   endif
+ 
+-  ifneq ($(OPENJDK_TARGET_OS), macosx)
+-    include gensrc/GensrcX11Wrappers.gmk
+-    GENSRC += $(GENSRC_X11WRAPPERS)
+-  endif
++#  ifneq ($(OPENJDK_TARGET_OS), macosx)
++#    include gensrc/GensrcX11Wrappers.gmk
++#    GENSRC += $(GENSRC_X11WRAPPERS)
++#  endif
+ endif
+ 
+ include gensrc/GensrcCLDR.gmk

@@ -210,49 +210,14 @@ class constants(object):
         "rpm-libs",
         "groff",
         "man-pages",
-        "cpio",
-        "go"]
+        "cpio"]
 
     perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
-        "glib-devel",
-        "icu-devel",
         "openjdk",
-        "openjre",
-        "icu",
-        "harfbuzz",
-        "harfbuzz-devel",
-        "freetype2",
-        "freetype2-devel",
-        "alsa-lib",
-        "alsa-lib-devel",
-        "xcb-proto",
-        "libXdmcp-devel",
-        "libXau-devel",
-        "util-macros",
-        "xtrans",
-        "libxcb-devel",
-        "fontconfig-devel",
-        "proto",
-        "libXdmcp",
-        "libxcb",
-        "libXau",
-        "fontconfig",
-        "xtrans-devel",
-        "libX11",
-        "libX11-devel",
-        "libXext",
-        "libXext-devel",
-        "libICE-devel",
-        "libSM",
-        "libICE",
-        "libSM-devel",
-        "libXt",
-        "libXmu",
-        "libXt-devel",
-        "libXmu-devel",
-        "libXrender",
-        "libXrender-devel"])
+        "openjre"])
     perPackageToolChain["apache-maven"] = ["apache-maven"]
+    perPackageToolChain["go"] = ["go"]
+
     # List of RPMs which are not published. They will be created during the
     # build process
     listOfRPMsProvidedAfterBuild=[
@@ -358,7 +323,6 @@ class constants(object):
         constants.topDirPath = options.topDirPath
         constants.logPath = options.logPath
         constants.prevPublishRPMRepo = options.publishRPMSPath
-        constants.prevPublishXRPMRepo = options.publishXRPMSPath
         constants.buildRootPath=options.buildRootPath
         constants.pullsourcesConfig = options.pullsourcesConfig
         constants.inputRPMSPath=options.inputRPMSPath

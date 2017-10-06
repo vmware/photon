@@ -43,7 +43,6 @@ class BuildContainer(object):
         containerID = None
         mountVols = {
                         constants.prevPublishRPMRepo: {'bind': '/publishrpms', 'mode': 'ro'},
-                        constants.prevPublishXRPMRepo: {'bind': '/publishxrpms', 'mode': 'ro'},
                         constants.tmpDirPath: {'bind': '/tmp', 'mode': 'rw'},
                         constants.rpmPath: {'bind': constants.topDirPath + "/RPMS", 'mode': 'rw'},
                         constants.sourceRpmPath: {'bind': constants.topDirPath + "/SRPMS", 'mode': 'rw'},

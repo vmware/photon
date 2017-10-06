@@ -23,7 +23,6 @@ def main():
     parser.add_argument("-r",  "--rpm-path",  dest="rpmPath",  default="../../stage/RPMS")
     parser.add_argument("-i",  "--install-package", dest="installPackage",  default=False,  action ="store_true")
     parser.add_argument("-p",  "--publish-RPMS-path", dest="publishRPMSPath",  default="../../stage/PUBLISHRPMS")
-    parser.add_argument("-e",  "--publish-XRPMS-path", dest="publishXRPMSPath",  default="../../stage/PUBLISHXRPMS")
     parser.add_argument("-l",  "--log-path", dest="logPath",  default="../../stage/LOGS")
     parser.add_argument("-z",  "--top-dir-path", dest="topDirPath",  default="/usr/src/photon")
     parser.add_argument("-b",  "--build-root-path", dest="buildRootPath",  default="/mnt")
@@ -64,20 +63,11 @@ def main():
     if not os.path.isdir(options.publishRPMSPath):
         logger.error("Given RPMS Path is not a directory:"+options.publishRPMSPath)
         errorFlag = True
-    if not os.path.isdir(options.publishXRPMSPath):
-        logger.error("Given X RPMS Path is not a directory:"+options.publishXRPMSPath)
-        errorFlag = True
     if not os.path.isdir(options.publishRPMSPath+"/x86_64"):
         logger.error("Given RPMS Path is missing x86_64 sub-directory:"+options.publishRPMSPath)
         errorFlag = True
-    if not os.path.isdir(options.publishXRPMSPath+"/x86_64"):
-        logger.error("Given X RPMS Path is missing x86_64 sub-directory:"+options.publishXRPMSPath)
-        errorFlag = True
     if not os.path.isdir(options.publishRPMSPath+"/noarch"):
         logger.error("Given RPMS Path is missing noarch sub-directory:"+options.publishRPMSPath)
-        errorFlag = True
-    if not os.path.isdir(options.publishXRPMSPath+"/noarch"):
-        logger.error("Given X RPMS Path is missing noarch sub-directory:"+options.publishXRPMSPath)
         errorFlag = True
     if not os.path.isfile(options.pkgBuildOptionFile):
         logger.warning("Given JSON File is not a file:"+options.pkgBuildOptionFile)
@@ -127,7 +117,6 @@ def main():
     logger.info("Log Path :" + options.logPath)
     logger.info("Top Dir Path :" + options.topDirPath)
     logger.info("Publish RPMS Path :" + options.publishRPMSPath)
-    logger.info("Publish X RPMS Path :" + options.publishXRPMSPath)
 
     if options.installPackage:
         logger.info("Package to build:"+package)

@@ -163,10 +163,7 @@ class ToolChainUtils(object):
         for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             print "DEBUG:" + package
-            if "openjre8" in packageName or "openjdk8" in packageName:
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
-            else:
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+            rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
             if rpmFile is None:
                 self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
                 raise Exception("Input Error")
@@ -180,7 +177,7 @@ class ToolChainUtils(object):
             self.logger.debug("Command Executed:" + cmd)
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
-        self.logger.info("Successfully installed all Tool Chain X RPMS")
+        self.logger.info("Successfully installed custom Tool Chain RPMS")
 
     def installToolChainRPMSinContainer(self, containerID):
         self.logger.info("Installing tool-chain RPMS in container: " + containerID.short_id)
@@ -202,8 +199,6 @@ class ToolChainUtils(object):
                     raise Exception("Input Error")
             if rpmFile.find("stage/PUBLISHRPMS"):
                 rpmFile = rpmFile.replace(constants.prevPublishRPMRepo, "/publishrpms")
-            if rpmFile.find("stage/PUBLISHXRPMS"):
-                rpmFile = rpmFile.replace(constants.prevPublishXRPMRepo, "/publishxrpms")
             if rpmFile.find("stage/RPMS"):
                 rpmFile = rpmFile.replace(constants.rpmPath, constants.topDirPath + "/RPMS")
             rpmFiles += " " + rpmFile
@@ -220,23 +215,23 @@ class ToolChainUtils(object):
             raise Exception("RPM installation in container failed")
         self.logger.info(tcInstallLog)
         self.logger.info("Successfully installed default tool-chain RPMS in container: " + containerID.short_id)
+        print "Building Package:"+ packageName
+        print constants.perPackageToolChain
+        if packageName in constants.perPackageToolChain:
+            print constants.perPackageToolChain[packageName]
+            self.installCustomToolChainRPMSinContainer(chrootID, constants.perPackageToolChain[packageName], packageName);
 
     def installCustomToolChainRPMSinContainer(self, containerID, listOfToolChainPkgs, packageName):
         self.logger.info("Installing package specific tool chain RPMs for " + packageName)
         rpmFiles = ""
         packages = ""
         for package in listOfToolChainPkgs:
-            if "openjre8" in packageName or "openjdk8" in packageName:
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
-            else:
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+            rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
             if rpmFile is None:
                 self.logger.error("Unable to find rpm " + package + " in current and previous versions")
                 raise Exception("Input Error")
             if rpmFile.find("stage/PUBLISHRPMS"):
                 rpmFile = rpmFile.replace(constants.prevPublishRPMRepo, "/publishrpms")
-            if rpmFile.find("stage/PUBLISHXRPMS"):
-                rpmFile = rpmFile.replace(constants.prevPublishXRPMRepo, "/publishxrpms")
             if rpmFile.find("stage/RPMS"):
                 rpmFile = rpmFile.replace(constants.rpmPath, constants.topDirPath + "/RPMS")
             rpmFiles += " " + rpmFile
@@ -251,4 +246,4 @@ class ToolChainUtils(object):
             self.logger.error("Installing tool chain in container failed")
             raise Exception("RPM installation in container failed")
         self.logger.info(tcInstallLog)
-        self.logger.info("Successfully installed all tool-chain XRPMS in container: " + containerID.short_id)
+        self.logger.info("Successfully installed custom tool-chain RPMS in container: " + containerID.short_id)
