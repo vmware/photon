@@ -49,7 +49,7 @@ run_command "# 6" "cp boot/theme.txt ${WORKINGDIR}/boot/grub2/themes/photon/" "$
 run_command "echo : ${WORKINGDIR}" "echo ${WORKINGDIR}" "${LOGFILE}"
 cp BUILD_DVD/isolinux/splash.png ${BUILDROOT}/installer/boot/.
 mkdir -p ${BUILDROOT}/installer/EFI/BOOT
-cp EFI/BOOT/* ${BUILDROOT}/installer/EFI/BOOT/
+cp EFI_$(uname -m)/BOOT/* ${BUILDROOT}/installer/EFI/BOOT/
 
 #Generate efiboot image
 # efiboot is a fat16 image that has at least EFI/BOOT/bootx64.efi
@@ -68,7 +68,8 @@ dd if=/dev/zero of=${WORKINGDIR}/${EFI_IMAGE} bs=3K count=1024
 mkdosfs ${WORKINGDIR}/${EFI_IMAGE}
 mkdir $EFI_FOLDER
 mount -o loop ${WORKINGDIR}/${EFI_IMAGE} $EFI_FOLDER
-cp -r ./EFI $EFI_FOLDER
+mkdir $EFI_FOLDER/EFI
+cp -r ./EFI_$(uname -m)/BOOT $EFI_FOLDER/EFI
 ls -lR $EFI_FOLDER
 umount $EFI_FOLDER
 rm -rf $EFI_FOLDER

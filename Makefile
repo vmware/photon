@@ -336,9 +336,9 @@ tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
 packages-cached:
 	@echo "Using cached RPMS..."
 	@$(RM) -f $(PHOTON_RPMS_DIR_NOARCH)/* && \
-     $(RM) -f $(PHOTON_RPMS_DIR_X86_64)/* && \
+     $(RM) -f $(PHOTON_RPMS_DIR_ARCH)/* && \
      $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/noarch/* $(PHOTON_RPMS_DIR_NOARCH)/ && \
-     $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/x86_64/* $(PHOTON_RPMS_DIR_X86_64)/
+     $(CP) -f $(PHOTON_CACHE_PATH)/RPMS/$(ARCH)/* $(PHOTON_RPMS_DIR_ARCH)/
 
 sources:
 	@$(MKDIR) -p $(PHOTON_SRCS_DIR)
@@ -359,13 +359,13 @@ publish-x-rpms:
 
 publish-rpms-cached:
 	@echo "Using cached publish rpms..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR)/{x86_64,noarch} && \
+	@$(MKDIR) -p $(PHOTON_PUBLISH_RPMS_DIR)/{$(ARCH),noarch} && \
 	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
         $(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR) $(PHOTON_PUBLISH_RPMS_PATH)
 
 publish-x-rpms-cached:
 	@echo "Using ..."
-	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR)/{x86_64,noarch} && \
+	@$(MKDIR) -p $(PHOTON_PUBLISH_XRPMS_DIR)/{$(ARCH),noarch} && \
 	cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
         $(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR) $(PHOTON_PUBLISH_XRPMS_PATH)
 
@@ -376,12 +376,12 @@ $(PHOTON_STAGE):
 	$(MKDIR) -p $(PHOTON_CHROOT_PATH)
 	@echo "Building RPMS folders..."
 	@test -d $(PHOTON_RPMS_DIR_NOARCH) || $(MKDIR) -p $(PHOTON_RPMS_DIR_NOARCH)
-	@test -d $(PHOTON_RPMS_DIR_X86_64) || $(MKDIR) -p $(PHOTON_RPMS_DIR_X86_64)
+	@test -d $(PHOTON_RPMS_DIR_ARCH) || $(MKDIR) -p $(PHOTON_RPMS_DIR_ARCH)
 	@echo "Building SRPMS folders..."
 	@test -d $(PHOTON_SRPMS_DIR) || $(MKDIR) -p $(PHOTON_SRPMS_DIR)
 	@echo "Building UPDATED_RPMS folders..."
 	@test -d $(PHOTON_UPDATED_RPMS_DIR_NOARCH) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_NOARCH)
-	@test -d $(PHOTON_UPDATED_RPMS_DIR_X86_64) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_X86_64)
+	@test -d $(PHOTON_UPDATED_RPMS_DIR_ARCH) || $(MKDIR) -p $(PHOTON_UPDATED_RPMS_DIR_ARCH)
 	@echo "Building SOURCES folder..."
 	@test -d $(PHOTON_SRCS_DIR) || $(MKDIR) -p $(PHOTON_SRCS_DIR)
 	@echo "Building LOGS folder..."
