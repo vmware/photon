@@ -5,6 +5,7 @@ from PackageUtils import PackageUtils
 from constants import constants
 import subprocess
 import os.path
+import platform
 import traceback
 import shutil
 
@@ -38,7 +39,7 @@ class ToolChainUtils(object):
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/sys")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+"/tmp")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath)
-        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/x86_64")
+        cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/"+platform.machine())
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/RPMS/noarch")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SOURCES")
         cmdUtils.runCommandInShell("mkdir -p "+chrootID+constants.topDirPath+"/SPECS")
@@ -191,8 +192,8 @@ class ToolChainUtils(object):
             rpmFile = pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
-                if package == "sqlite":
-                    package = "sqlite-autoconf"
+#                if package == "sqlite":
+#                    package = "sqlite-autoconf"
                 rpmFile = self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
                     if package in constants.listOfRPMsProvidedAfterBuild:
