@@ -1,5 +1,6 @@
 from SpecParser import SpecParser
 from StringUtils import StringUtils
+import platform
 import os
 
 class Specutils(object):
@@ -133,7 +134,7 @@ class Specutils(object):
         return None
 
     def getBuildArch(self, pkgName):
-        buildArch="x86_64"
+        buildArch=platform.machine()
         for key in self.spec.packages.keys():
             pkg = self.spec.packages.get(key)
             if pkg.name == pkgName:

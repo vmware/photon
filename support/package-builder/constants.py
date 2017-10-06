@@ -346,6 +346,70 @@ class constants(object):
         "/bin/sed":"sed"
     }
 
+    # list of spec files to skip for parsing for given arch
+    skipSpecsForArch={
+        "x86_64":[],
+        "aarch64":[
+            # fakeroot-ng does not support aarch64
+            "fakeroot-ng.spec",
+            # ipxe does not support aarch64
+            "ipxe.spec",
+            # kexec-tools for arm64 does not support fpic
+            "kexec-tools.spec",
+            # no TXT/tboot on arm64
+            "tboot.spec",
+            # backward-cpp does not support amd64
+            "backward-cpp.spec",
+            "envoy.spec",
+            # only generic linux is for arm64
+            "linux-esx.spec",
+            "linux-secure.spec",
+            # only linux-secure supports aufs
+            "aufs-util.spec",
+            # open-vm-tools does not support aarch64
+            "open-vm-tools.spec",
+            # TODO: mariadb build hangs on amd64
+            "mariadb.spec",
+            # TODO: mysql fails on amd64 with fpic
+            "mysql.spec",
+            # irqbalance for arm64 ?
+            "irqbalance.spec",
+            # no X rpms to build openjdk, skip all java packages
+            "openjdk8.spec",
+            "ant-contrib.spec",
+            "apache-ant.spec",
+            "apache-maven.spec",
+            "apache-tomcat.spec",
+            "cassandra.spec",
+            "commons-daemon.spec",
+            "jna.spec",
+            "kubernetes-dashboard.spec",
+            "lightwave.spec",
+            "mesos.spec",
+            "protobuf.spec",
+            "wavefront-proxy.spec",
+            "zookeeper.spec",
+            # requires lightwave
+            "pmd.spec",
+            # requires protobuf
+            "calico-felix.spec",
+            "lightstep-tracer-cpp.spec",
+            "protobuf-c.spec",
+            "runc.spec",
+            # requires cassandra
+            "python-cqlsh.spec",
+            # requires python-pyinstaller, but it has unresolved glibc deps
+            "calico-k8s-policy.spec",
+            "libcalico.spec",
+            # pcstat requires patching for aarch64
+            "pcstat.spec",
+            # sysdig for aarch64 requires luajit, skip it and falco
+            # https://github.com/draios/sysdig/issues/833
+            "sysdig.spec",
+            "falco.spec"
+        ]
+    }
+
     @staticmethod
     def initialize(options):
         constants.dist = options.dist
