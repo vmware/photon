@@ -399,7 +399,8 @@ class Installer(object):
                 if f in rpms:
                     rpm_paths.append(os.path.join(root, f))
 
-        rpm_params = ['--root', self.photon_root, '--dbpath', '/var/lib/rpm']
+        # --nodeps is for hosts which do not support rich dependencies
+        rpm_params = ['--nodeps', '--root', self.photon_root, '--dbpath', '/var/lib/rpm']
 
         if ('type' in self.install_config and (self.install_config['type'] in ['micro', 'minimal'])) or self.install_config['iso_system']:
             rpm_params.append('--excludedocs')
