@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.7.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -35,6 +35,12 @@ Requires:       %{name} = %{version}
 %description    kubeadm
 kubeadm is a tool that enables quick and easy deployment of a kubernetes cluster.
 
+%package        pause
+Summary:        pause binary
+Group:          Development/Tools
+%description    pause
+A pod setup process that holds a pod's namespace.
+
 %prep -p exit
 %setup -qn %{name}-%{version}
 cd ..
@@ -44,6 +50,11 @@ cd %{name}-%{version}
 
 %build
 make
+pushd build/pause
+mkdir -p bin
+gcc -Os -Wall -Werror -static -o bin/pause-amd64 pause.c
+strip bin/pause-amd64
+popd
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
@@ -54,6 +65,7 @@ for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/${bin}
 done
+install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-amd64
 
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
@@ -159,7 +171,13 @@ fi
 /etc/systemd/system/kubelet.service
 /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
+%files pause
+%defattr(-,root,root)
+%{_bindir}/pause-amd64
+
 %changelog
+*   Fri Oct 06 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-2
+-   Add k8s pause.
 *   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-1
 -   k8s v1.7.5.
 *   Sat Aug 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
