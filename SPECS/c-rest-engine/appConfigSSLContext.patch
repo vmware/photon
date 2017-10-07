@@ -1,0 +1,752 @@
+From a0b1176c4f81064041e4c0bc7d5893ad6f9bc4b4 Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Thu, 5 Oct 2017 16:58:51 -0700
+Subject: [PATCH] Accepting SSL Context from application 6
+
+Change-Id: I9969845cd6dfdb7b14a7127e4dc6c6f2637f5963
+---
+ common/sockinterface.c                |  15 +-
+ include/public/vmrest.h               |   5 +-
+ include/vmrestcommon.h                |   1 +
+ include/vmrestdefines.h               |   4 +-
+ server/restengine/httpUtilsInternal.c |  55 ++++---
+ server/restengine/libmain.c           |  16 +-
+ server/vmrestd/Makefile.am            |   3 +-
+ server/vmrestd/main.c                 |  48 +++++-
+ server/vmrestd/prototypes.h           |  12 ++
+ server/vmrestd/ssl-context.c          | 277 ++++++++++++++++++++++++++++++++++
+ transport/posix/socket.c              |  79 ++++++----
+ 12 files changed, 451 insertions(+), 68 deletions(-)
+ create mode 100644 server/vmrestd/ssl-context.c
+
+diff --git a/common/sockinterface.c b/common/sockinterface.c
+index 032bb3a..466f602 100644
+--- a/common/sockinterface.c
++++ b/common/sockinterface.c
+@@ -153,15 +153,24 @@ VmRESTInitProtocolServer(
+     else
+     {
+         VMREST_LOG_DEBUG(pRESTHandle,"%s","Server initing in encrypted wire connection mode");
+-        if (strlen( pRESTHandle->pRESTConfig->ssl_certificate) == 0 || strlen( pRESTHandle->pRESTConfig->ssl_key) == 0)
++        if ((pRESTHandle->pRESTConfig->pSSLContext == NULL)  && ((IsNullOrEmptyString(pRESTHandle->pRESTConfig->ssl_certificate)) || (IsNullOrEmptyString(pRESTHandle->pRESTConfig->ssl_key))))
+         {
+             VMREST_LOG_ERROR(pRESTHandle,"%s", "Invalid SSL params");
+             dwError =  REST_ERROR_INVALID_CONFIG;
+         }
+         BAIL_ON_VMREST_ERROR(dwError);
+         dwFlags = dwFlags | VM_SOCK_IS_SSL;
+-        sslCert =  pRESTHandle->pRESTConfig->ssl_certificate;
+-        sslKey =   pRESTHandle->pRESTConfig->ssl_key;
++
++        if (pRESTHandle->pRESTConfig->pSSLContext != NULL)
++        {
++            sslCert = NULL;
++            sslKey = NULL;
++        }
++        else
++        {
++            sslCert =  pRESTHandle->pRESTConfig->ssl_certificate;
++            sslKey =   pRESTHandle->pRESTConfig->ssl_key;
++        }
+     }
+ 
+     /**** Handle IPv4 case ****/
+diff --git a/include/public/vmrest.h b/include/public/vmrest.h
+index 7ed39df..fc30733 100644
+--- a/include/public/vmrest.h
++++ b/include/public/vmrest.h
+@@ -10,6 +10,9 @@
+ * terms and conditions of the subcomponent's license, as noted in the LICENSE file. 
+ *
+ */
++#include <openssl/ssl.h>
++#include <openssl/err.h>
++#include <openssl/crypto.h>
+ 
+ #ifndef __VMREST_H__
+ #define __VMREST_H__
+@@ -66,7 +69,6 @@ typedef struct _VM_REST_HTTP_REQUEST_PACKET*  PREST_REQUEST;
+ 
+ typedef struct _VM_REST_HTTP_RESPONSE_PACKET* PREST_RESPONSE;
+ 
+-
+ typedef uint32_t(
+ *PFN_PROCESS_HTTP_REQUEST)(
+     PVMREST_HANDLE                   pRESTHandle,
+@@ -101,6 +103,7 @@ typedef struct _REST_CONF
+     char*                            pDebugLogFile;
+     char*                            pClientCount;
+     char*                            pMaxWorkerThread;
++    SSL_CTX*                         pSSLContext;
+ } REST_CONF, *PREST_CONF;
+ 
+ typedef struct _REST_ENDPOINT
+diff --git a/include/vmrestcommon.h b/include/vmrestcommon.h
+index 9abbfd4..a007b46 100644
+--- a/include/vmrestcommon.h
++++ b/include/vmrestcommon.h
+@@ -243,6 +243,7 @@ typedef struct _REST_CONFIG
+     char                             debug_log_file[MAX_PATH_LEN];
+     char                             client_count[MAX_CLIENT_ALLOWED_LEN];
+     char                             worker_thread_count[MAX_WORKER_COUNT_LEN];
++    SSL_CTX*                         pSSLContext;
+ } VM_REST_CONFIG, *PVM_REST_CONFIG;
+ 
+ typedef struct _REST_ENG_GLOBALS *PREST_ENG_GLOBALS;
+diff --git a/include/vmrestdefines.h b/include/vmrestdefines.h
+index 0bdecd0..24e4200 100644
+--- a/include/vmrestdefines.h
++++ b/include/vmrestdefines.h
+@@ -70,12 +70,12 @@
+ #define SSL_INFO_NO_SSL_PLAIN                           1
+ #define SSL_INFO_FROM_CONFIG_FILE                       2
+ #define SSL_INFO_FROM_BUFFER_API                        3
++#define SSL_INFO_USE_APP_CONTEXT                        4
+ 
+ 
+ #define TRUE                             1
+ #define FALSE                            0
+ 
+-
+ #ifndef WIN32
+ #define ERROR_SUCCESS                    0
+ #define ERROR_INVALID_PARAMETER          101
+@@ -136,7 +136,7 @@ extern "C" {
+         }
+ 
+ #ifndef IsNullOrEmptyString
+-#define IsNullOrEmptyString(str) (!(str) || !*(str))
++#define IsNullOrEmptyString(str) (!(str) || !(*str))
+ #endif
+ 
+ #ifndef VMREST_SAFE_STRING
+diff --git a/server/restengine/httpUtilsInternal.c b/server/restengine/httpUtilsInternal.c
+index b48c446..d10ee9a 100644
+--- a/server/restengine/httpUtilsInternal.c
++++ b/server/restengine/httpUtilsInternal.c
+@@ -431,6 +431,9 @@ VmRESTParseAndPopulateConfigFile(
+         strcpy(pRESTConfig->client_count, DEFAULT_CLIENT_CNT);
+     }
+ 
++    /**** WARNING :: Cannot pass SSL context from file - Use key/cert params and init SSL ****/
++    pRESTConfig->pSSLContext = NULL;
++
+ 
+ cleanup:
+     if (fp)
+@@ -499,25 +502,33 @@ VmRESTValidateConfig(
+     }
+     else
+     {
+-        certLen = strlen(pRESTConfig->ssl_certificate);
+-        keyLen = strlen(pRESTConfig->ssl_key);
+-
+-        if (keyLen == 0 || keyLen > MAX_PATH_LEN)
++        if (pRESTConfig->pSSLContext != NULL)
+         {
+-            pRESTHandle->pSSLInfo->isKeySet = SSL_INFO_NOT_SET;
++            pRESTHandle->pSSLInfo->isKeySet = SSL_INFO_USE_APP_CONTEXT;
++            pRESTHandle->pSSLInfo->isCertSet = SSL_INFO_USE_APP_CONTEXT;
+         }
+         else
+         {
+-            pRESTHandle->pSSLInfo->isKeySet = SSL_INFO_FROM_CONFIG_FILE;
+-        }
++            certLen = strlen(pRESTConfig->ssl_certificate);
++            keyLen = strlen(pRESTConfig->ssl_key);
+ 
+-        if (certLen == 0 || certLen > MAX_PATH_LEN)
+-        {
+-            pRESTHandle->pSSLInfo->isCertSet = SSL_INFO_NOT_SET;
+-        }
+-        else
+-        {
+-            pRESTHandle->pSSLInfo->isCertSet = SSL_INFO_FROM_CONFIG_FILE;
++            if (keyLen == 0 || keyLen > MAX_PATH_LEN)
++            {
++                pRESTHandle->pSSLInfo->isKeySet = SSL_INFO_NOT_SET;
++            }
++            else
++            {
++                pRESTHandle->pSSLInfo->isKeySet = SSL_INFO_FROM_CONFIG_FILE;
++            }
++
++            if (certLen == 0 || certLen > MAX_PATH_LEN)
++            {
++                pRESTHandle->pSSLInfo->isCertSet = SSL_INFO_NOT_SET;
++            }
++            else
++            {
++                pRESTHandle->pSSLInfo->isCertSet = SSL_INFO_FROM_CONFIG_FILE;
++            }
+         }
+     }
+ 
+@@ -568,14 +579,22 @@ VmRESTCopyConfig(
+ 
+     pRESTConfig = *ppRESTConfig;
+ 
+-    if (pConfig->pSSLCertificate)
++    if (pConfig->pSSLContext != NULL)
+     {
+-        strncpy(pRESTConfig->ssl_certificate, pConfig->pSSLCertificate,( MAX_PATH_LEN - 1));
++        pRESTConfig->pSSLContext = pConfig->pSSLContext;
+     }
+-    if (pConfig->pSSLKey)
++    else
+     {
+-        strncpy(pRESTConfig->ssl_key, pConfig->pSSLKey, (MAX_PATH_LEN - 1));
++        if (pConfig->pSSLCertificate)
++        {
++            strncpy(pRESTConfig->ssl_certificate, pConfig->pSSLCertificate,( MAX_PATH_LEN - 1));
++        }
++        if (pConfig->pSSLKey)
++        {
++            strncpy(pRESTConfig->ssl_key, pConfig->pSSLKey, (MAX_PATH_LEN - 1));
++        }
+     }
++
+     if (pConfig->pServerPort)
+     {
+         strncpy(pRESTConfig->server_port, pConfig->pServerPort, (MAX_SERVER_PORT_LEN - 1));
+diff --git a/server/restengine/libmain.c b/server/restengine/libmain.c
+index a39397b..921e564 100644
+--- a/server/restengine/libmain.c
++++ b/server/restengine/libmain.c
+@@ -185,18 +185,18 @@ VmRESTStart(
+     }
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
+-    if (pRESTHandle->pSSLInfo->isCertSet >= 1 && pRESTHandle->pSSLInfo->isKeySet >= 1)
++    if ((pRESTHandle->pSSLInfo->isCertSet < SSL_INFO_NO_SSL_PLAIN) || (pRESTHandle->pSSLInfo->isKeySet < SSL_INFO_NO_SSL_PLAIN))
+     {
+-        dwError = VmHTTPStart(
+-                      pRESTHandle
+-                      );
+-    }
+-    else
+-    {
+-        VMREST_LOG_ERROR(pRESTHandle, "Cannot Start Server due to missing SSL key or certificate");
++        dwError = REST_ERROR_MISSING_CONFIG;
++        VMREST_LOG_ERROR(pRESTHandle, "Missing/Bad SSL key or Certificate");
+     }
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
++    dwError = VmHTTPStart(
++                  pRESTHandle
++                  );
++    BAIL_ON_VMREST_ERROR(dwError);
++
+     /**** delete the cert file if created by library ****/
+ 
+     if (pRESTHandle->pSSLInfo->isCertSet == SSL_INFO_FROM_BUFFER_API)
+diff --git a/server/vmrestd/Makefile.am b/server/vmrestd/Makefile.am
+index 87430ba..8d20773 100644
+--- a/server/vmrestd/Makefile.am
++++ b/server/vmrestd/Makefile.am
+@@ -1,7 +1,8 @@
+ sbin_PROGRAMS = vmrestd
+ 
+ vmrestd_SOURCES = \
+-    main.c
++    main.c \
++    ssl-context.c
+ 
+ vmrestd_CPPFLAGS = \
+     -I$(top_srcdir)/include \
+diff --git a/server/vmrestd/main.c b/server/vmrestd/main.c
+index a751cfc..e9afebd 100644
+--- a/server/vmrestd/main.c
++++ b/server/vmrestd/main.c
+@@ -13,6 +13,8 @@
+ 
+ #include "includes.h"
+ 
++//#define USE_APP_CTX 1
++
+ #ifdef WIN32
+ #include "..\transport\win\includes.h"
+ char* configPath = "c:\\tmp\\restconfig.txt";
+@@ -57,7 +59,13 @@ void sig_handler(int signo)
+ int main()
+ {
+     uint32_t                         dwError = 0;
+-    //uint32_t                         cnt = 0;
++#ifdef USE_APP_CTX
++    PREST_CONF                       pConfig = NULL;
++    PREST_CONF                       pConfig1 = NULL;
++    SSL_CTX*                         sslCtx = NULL;
++    SSL_CTX*                         sslCtx1 = NULL;
++#endif
++   // uint32_t                         cnt = 0;
+ 
+ #ifndef WIN32
+     signal(SIGPIPE, sig_handler);
+@@ -78,9 +86,41 @@ int main()
+     gVmRestHandlers1.pfnHandleOthers = &VmHandleEchoData1;
+ 
+ 
++
++#ifdef USE_APP_CTX
++    
++    dwError = VmTESTInitSSL("/root/mycert.pem", "/root/mycert.pem", &sslCtx);
++
++    dwError = VmTESTInitSSL("/root/mycert.pem", "/root/mycert.pem", &sslCtx1);
++
++    pConfig = (PREST_CONF)malloc(sizeof(REST_CONF));
++    pConfig->pSSLCertificate = NULL;
++    pConfig->pSSLKey = NULL;
++    pConfig->pServerPort = "81";
++    pConfig->pDebugLogFile = "/tmp/restServer.log";
++    pConfig->pClientCount = "5";
++    pConfig->pMaxWorkerThread = "5";
++    pConfig->pSSLContext = sslCtx;
++
++    pConfig1 = (PREST_CONF)malloc(sizeof(REST_CONF));
++    pConfig1->pSSLCertificate = NULL;
++    pConfig1->pSSLKey = NULL;
++    pConfig1->pServerPort = "82";
++    pConfig1->pDebugLogFile = "/tmp/restServer1.log";
++    pConfig1->pClientCount = "5";
++    pConfig1->pMaxWorkerThread = "5";
++    pConfig1->pSSLContext = sslCtx1;
++
++
++    dwError = VmRESTInit(pConfig, NULL, &gpRESTHandle);
++    dwError = VmRESTInit(pConfig1, NULL, &gpRESTHandle1);
++
++#else
+     dwError = VmRESTInit(NULL,configPath, &gpRESTHandle);
+     dwError = VmRESTInit(NULL,configPath1, &gpRESTHandle1);
+ 
++#endif
++
+ // test set SSL info API
+ #if 0 
+    char buffer[8092]= {0};
+@@ -100,7 +140,7 @@ int main()
+     VmRESTStart(gpRESTHandle1);
+ 
+ 
+-    while(1 ) //cnt < 10)
++    while(1)  //cnt < 10)
+     {
+ #ifdef WIN32
+         Sleep(1000);
+@@ -119,6 +159,10 @@ int main()
+     VmRESTShutdown(gpRESTHandle);
+     VmRESTShutdown(gpRESTHandle1);
+ 
++#ifdef USE_APP_CTX
++    VmRESTShutdownSSL(sslCtx);
++    VmRESTShutdownSSL(sslCtx1);
++#endif
+ 
+ return dwError;
+ 
+diff --git a/server/vmrestd/prototypes.h b/server/vmrestd/prototypes.h
+index 3efa83a..c3a8935 100644
+--- a/server/vmrestd/prototypes.h
++++ b/server/vmrestd/prototypes.h
+@@ -27,3 +27,15 @@ VmHandleEchoData1(
+     uint32_t                         paramsCount
+     );
+ 
++uint32_t
++VmTESTInitSSL(
++    char*                            sslKey,
++    char*                            sslCert,
++    SSL_CTX**                        ppSSLCtx
++    );
++
++void
++VmRESTShutdownSSL(
++    SSL_CTX*                         sslCtx
++    );
++
+diff --git a/server/vmrestd/ssl-context.c b/server/vmrestd/ssl-context.c
+new file mode 100644
+index 0000000..afc572e
+--- /dev/null
++++ b/server/vmrestd/ssl-context.c
+@@ -0,0 +1,277 @@
++/* C-REST-Engine
++*
++* Copyright (c) 2017 VMware, Inc. All Rights Reserved. 
++*
++* This product is licensed to you under the Apache 2.0 license (the "License").
++* You may not use this product except in compliance with the Apache 2.0 License.  
++*
++* This product may include a number of subcomponents with separate copyright 
++* notices and license terms. Your use of these subcomponents is subject to the 
++* terms and conditions of the subcomponent's license, as noted in the LICENSE file. 
++*
++*/
++
++#include "includes.h"
++
++pthread_mutex_t*                     gTESTSSLThreadLock = NULL;
++pthread_mutex_t                      gTESTGlobalMutex = PTHREAD_MUTEX_INITIALIZER;
++int                                  gTESTSSLisedInstaceCount = -1;
++
++
++static
++void
++VmTESTSSLThreadLockCallback(
++    int                              mode,
++    int                              type,
++    char*                            file,
++    int                              line
++    );
++
++static
++unsigned long
++VmTESTSSLThreadId(
++    void
++    );
++
++static
++uint32_t
++VmTESTSSLThreadLockInit(
++    void
++    );
++
++static
++void
++VmTESTSSLThreadLockShutdown(
++    void
++    );
++
++static
++uint32_t
++VmTESTSecureSocket(
++    char*                            certificate,
++    char*                            key,
++    SSL_CTX**                        ppSSLCtx
++    );
++
++
++static
++void
++VmTESTSSLThreadLockCallback(
++    int                              mode,
++    int                              type,
++    char*                            file,
++    int                              line
++    )
++{
++    (void)line;
++    (void)file;
++    if(mode & CRYPTO_LOCK)
++    {
++        pthread_mutex_lock(&(gTESTSSLThreadLock[type]));
++    }
++    else
++    {
++        pthread_mutex_unlock(&(gTESTSSLThreadLock[type]));
++    }
++}
++
++static
++unsigned long
++VmTESTSSLThreadId(
++    void
++    )
++{
++    unsigned long                      ret = 0;
++
++    ret = (unsigned long)pthread_self();
++    return ret;
++}
++
++static
++uint32_t
++VmTESTSSLThreadLockInit(
++    void
++    )
++{
++    uint32_t                         dwError = REST_ENGINE_SUCCESS;
++    int                              i = 0;
++
++    gTESTSSLThreadLock = (pthread_mutex_t *)OPENSSL_malloc(
++                                           CRYPTO_num_locks() * sizeof(pthread_mutex_t)
++                                           );
++    if (gTESTSSLThreadLock == NULL)
++    {
++        dwError = 102;
++    }
++    BAIL_ON_VMREST_ERROR(dwError);
++
++    for(i = 0; i < CRYPTO_num_locks(); i++) 
++    {
++        pthread_mutex_init(&(gTESTSSLThreadLock[i]), NULL);
++    }
++
++    CRYPTO_set_id_callback((unsigned long (*)())VmTESTSSLThreadId);
++    CRYPTO_set_locking_callback((void (*)())VmTESTSSLThreadLockCallback);
++
++cleanup:
++    return dwError;
++error:
++    dwError = VMREST_TRANSPORT_SSL_ERROR;
++    goto cleanup;
++}
++
++static
++void
++VmTESTSSLThreadLockShutdown(
++    void
++    )
++{
++    int                              i = 0;
++
++    CRYPTO_set_locking_callback(NULL);
++
++    for( i = 0; i < CRYPTO_num_locks(); i++)
++    {
++        pthread_mutex_destroy(&(gTESTSSLThreadLock[i]));
++    }
++    OPENSSL_free(gTESTSSLThreadLock);
++}
++
++static
++uint32_t
++VmTESTSecureSocket(
++    char*                            certificate,
++    char*                            key,
++    SSL_CTX**                        ppSSLCtx
++    )
++{
++    uint32_t                         dwError = REST_ENGINE_SUCCESS;
++    int                              ret = 0;
++    long                             options = 0;
++    const SSL_METHOD*                method = NULL;
++    SSL_CTX*                         context = NULL;
++
++    if (key == NULL || certificate == NULL)
++    {
++        dwError = VMREST_TRANSPORT_INVALID_PARAM;
++    }
++    BAIL_ON_VMREST_ERROR(dwError);
++
++    OpenSSL_add_all_algorithms();
++    SSL_load_error_strings();
++    method = SSLv23_server_method();
++    context = SSL_CTX_new(method);
++    if ( context == NULL )
++    {
++        dwError = VMREST_TRANSPORT_SSL_CONFIG_ERROR;
++    }
++    BAIL_ON_VMREST_ERROR(dwError);
++
++    options = SSL_CTX_get_options(context);
++
++    options = options | SSL_OP_NO_TLSv1|SSL_OP_NO_SSLv3|SSL_OP_NO_SSLv2;
++
++    options = SSL_CTX_set_options(context, options);
++
++    ret = SSL_CTX_set_cipher_list(context, "!aNULL:kECDH+AESGCM:ECDH+AESGCM:RSA+AESGCM:kECDH+AES:ECDH+AES:RSA+AES");
++    if (ret == 0)
++    {
++        dwError = VMREST_TRANSPORT_SSL_INVALID_CIPHER_SUITES;
++    }
++    BAIL_ON_VMREST_ERROR(dwError);
++ 
++    ret = SSL_CTX_use_certificate_file(context, certificate, SSL_FILETYPE_PEM);
++    if (ret <= 0)
++    {
++        dwError = VMREST_TRANSPORT_SSL_CERTIFICATE_ERROR;
++    }
++    BAIL_ON_VMREST_ERROR(dwError);
++
++    ret = SSL_CTX_use_PrivateKey_file(context, key, SSL_FILETYPE_PEM);
++    if (ret <= 0)
++    {
++        dwError = VMREST_TRANSPORT_SSL_PRIVATEKEY_ERROR;
++        BAIL_ON_VMREST_ERROR(dwError);
++    }
++    if (!SSL_CTX_check_private_key(context))
++    {
++        dwError = VMREST_TRANSPORT_SSL_PRIVATEKEY_CHECK_ERROR;
++        BAIL_ON_VMREST_ERROR(dwError);
++    }
++
++    *ppSSLCtx = context;
++
++cleanup:
++    return dwError;
++
++error:
++     dwError = VMREST_TRANSPORT_SSL_ERROR;
++    goto cleanup;
++}
++
++
++uint32_t
++VmTESTInitSSL(
++    char*                            sslKey,
++    char*                            sslCert,
++    SSL_CTX**                        ppSSLCtx
++    )
++{
++    uint32_t                         dwError = 0;
++     
++     SSL_library_init();
++     dwError = VmTESTSecureSocket(
++                   sslCert,
++                   sslKey,
++                   ppSSLCtx
++                   );
++
++     BAIL_ON_VMREST_ERROR(dwError);
++
++     pthread_mutex_lock(&gTESTGlobalMutex);
++     if (gTESTSSLisedInstaceCount == 0)
++     {
++         dwError = VmTESTSSLThreadLockInit();
++         gTESTSSLisedInstaceCount++;
++     }
++     pthread_mutex_unlock(&gTESTGlobalMutex);
++     BAIL_ON_VMREST_ERROR(dwError);
++
++cleanup:
++    return dwError;
++
++error:
++     dwError = VMREST_TRANSPORT_SSL_ERROR;
++    goto cleanup;
++
++}
++
++void
++VmRESTShutdownSSL(
++    SSL_CTX*                         sslCtx
++    )
++{
++     uint32_t                        destroyGlobalMutex = 0;
++
++     if (sslCtx != NULL)
++        {
++            free(sslCtx);
++        }
++
++        pthread_mutex_lock(&gTESTGlobalMutex);
++        gTESTSSLisedInstaceCount--;
++        if (gTESTSSLisedInstaceCount == 0)
++        {
++            VmTESTSSLThreadLockShutdown();
++            gTESTSSLThreadLock = NULL;
++            destroyGlobalMutex = 1;
++            gTESTSSLisedInstaceCount = -1;
++        }
++        pthread_mutex_unlock(&gTESTGlobalMutex);
++        if (destroyGlobalMutex)
++        {
++            pthread_mutex_destroy(&gTESTGlobalMutex);
++        }
++}
++
++
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index b3a814e..1c48692 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -321,24 +321,30 @@ VmSockPosixOpenServer(
+     /**** Check if connection is over SSL ****/
+     if(dwFlags & VM_SOCK_IS_SSL)
+     {
+-        SSL_library_init();
+-        dwError = VmRESTSecureSocket(
+-                      pRESTHandle,
+-                      sslCert,
+-                      sslKey
+-                      );
+-        BAIL_ON_POSIX_SOCK_ERROR(dwError);
+-        pSSLInfo->isSecure = 1;
+-        
+-        pthread_mutex_lock(&gGlobalMutex);
+-        if (gSSLisedInstaceCount == INVALID)
++        if (sslCert == NULL && sslKey == NULL)
+         {
+-            gSSLisedInstaceCount = 0;
+-            dwError = VmRESTSSLThreadLockInit();
++            pRESTHandle->pSSLInfo->sslContext = pRESTHandle->pRESTConfig->pSSLContext;
+         }
+-        gSSLisedInstaceCount++;
+-        pthread_mutex_unlock(&gGlobalMutex);
+-        BAIL_ON_VMREST_ERROR(dwError);
++        else
++        {
++            SSL_library_init();
++            dwError = VmRESTSecureSocket(
++                          pRESTHandle,
++                          sslCert,
++                          sslKey
++                          );
++            BAIL_ON_POSIX_SOCK_ERROR(dwError);
++            pthread_mutex_lock(&gGlobalMutex);
++            if (gSSLisedInstaceCount == INVALID)
++            {
++                gSSLisedInstaceCount = 0;
++                dwError = VmRESTSSLThreadLockInit();
++            }
++            gSSLisedInstaceCount++;
++            pthread_mutex_unlock(&gGlobalMutex);
++            BAIL_ON_VMREST_ERROR(dwError);
++        }
++        pSSLInfo->isSecure = 1;
+     }
+     else
+     {
+@@ -818,26 +824,35 @@ VmSockPosixWaitForEvent(
+         VmSockPosixFreeEventQueue(pQueue);
+         pRESTHandle->pSSLInfo->isQueueInUse = 0;
+ 
+-        if (pRESTHandle->pSSLInfo->sslContext)
++        /**** Free SSL context only when it is allocated and managed by library ****/
++        if((pRESTHandle->pSSLInfo->isSecure == 1) && ((pRESTHandle->pSSLInfo->isCertSet == SSL_INFO_FROM_CONFIG_FILE) || (pRESTHandle->pSSLInfo->isCertSet == SSL_INFO_FROM_BUFFER_API)))
+         {
+-            VmRESTFreeMemory(pRESTHandle->pSSLInfo->sslContext);
+-            pRESTHandle->pSSLInfo->sslContext = NULL;
+-        }
+-
+-        pthread_mutex_lock(&gGlobalMutex);
+-        gSSLisedInstaceCount--;
+-        if (gSSLisedInstaceCount == 0)
+-        {
+-            VmRESTSSLThreadLockShutdown();
+-            gSSLThreadLock = NULL;
+-            destroyGlobalMutex = TRUE;
+-            gSSLisedInstaceCount = INVALID;
++            if (pRESTHandle->pSSLInfo->sslContext)
++            {
++                VmRESTFreeMemory(pRESTHandle->pSSLInfo->sslContext);
++                pRESTHandle->pSSLInfo->sslContext = NULL;
++            }
++            pthread_mutex_lock(&gGlobalMutex);
++            gSSLisedInstaceCount--;
++            if (gSSLisedInstaceCount == 0)
++            {
++                VmRESTSSLThreadLockShutdown();
++                gSSLThreadLock = NULL;
++                destroyGlobalMutex = TRUE;
++                gSSLisedInstaceCount = INVALID;
++            }
++            pthread_mutex_unlock(&gGlobalMutex);
++            if (destroyGlobalMutex)
++            {
++                pthread_mutex_destroy(&gGlobalMutex);
++            }
+         }
+-        pthread_mutex_unlock(&gGlobalMutex);
+-        if (destroyGlobalMutex)
++        else
+         {
+-            pthread_mutex_destroy(&gGlobalMutex);
++            /**** Don't free context as it was passed by application ****/
++            pRESTHandle->pSSLInfo->sslContext = NULL;
+         }
++        
+     }
+ 
+     return dwError;
