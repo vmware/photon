@@ -1,0 +1,61 @@
+diff -uNr nm1/build/package/rpm/netmgmt.spec nm2/build/package/rpm/netmgmt.spec
+--- nm1/build/package/rpm/netmgmt.spec	2017-10-07 21:01:21.336626137 +0000
++++ nm2/build/package/rpm/netmgmt.spec	2017-10-07 23:23:02.817031519 +0000
+@@ -6,7 +6,7 @@
+ Vendor:  VMware, Inc.
+ License: VMware
+ URL:     http://www.vmware.com
+-BuildArch: x86_64
++BuildArch: %{_arch}
+ 
+ %description
+ Network Management Utilities
+diff -uNr nm1/configure.ac nm2/configure.ac
+--- nm1/configure.ac	2017-10-07 21:01:21.344626137 +0000
++++ nm2/configure.ac	2017-10-07 23:23:02.817031519 +0000
+@@ -21,6 +21,8 @@
+ 
+     linux*:x86_64)
+ 	;;
++    linux*:aarch64)
++        ;;
+     *)
+         AC_ERROR("Unsupported operating system - ${host_os}:${host_cpu}")
+         ;;
+diff -uNr nm1/Dockerfile nm2/Dockerfile
+--- nm1/Dockerfile	2017-10-07 21:01:21.332626137 +0000
++++ nm2/Dockerfile	2017-10-07 23:23:02.817031519 +0000
+@@ -1,11 +1,12 @@
+ FROM vmware/photon
+ 
++ARG ARCH=x86_64
+ ARG NMROOT=/root/netmgmt/
+ ENV container docker
+ ENV LC_ALL C
+ 
+ # Copying netmgr rpms and tests..
+-ADD ./build/rpmbuild/RPMS/x86_64 /netmgr/rpms
++ADD ./build/rpmbuild/RPMS/$ARCH/*.rpm /netmgr/rpms/
+ ADD ./tests/files/10-eth0.network /etc/systemd/network/
+ ADD ./tests/files/run_tests.sh /netmgr/unittest/
+ ADD ./tests/clitest/testsuite /netmgr/unittest/clitest/
+diff -uNr nm1/tests/Makefile.am nm2/tests/Makefile.am
+--- nm1/tests/Makefile.am	2017-10-07 21:01:21.504626145 +0000
++++ nm2/tests/Makefile.am	2017-10-07 23:23:02.817031519 +0000
+@@ -1,5 +1,6 @@
+ # The `:;' works around a Bash 3.2 bug when the output is not writeable.
+ 
++ARCH = `uname -m`
+ ABSTOPDIR = `realpath $(PWD)/../../`
+ clitestdir = $(srcdir)/clitest
+ 
+@@ -41,7 +42,8 @@
+ 	if docker ps -a | grep netmgr_unittest > /dev/null; \
+           then docker rm netmgr_unittest; \
+         fi && \
+-	docker build --build-arg NMROOT=$(ABSTOPDIR) -t netmgr_ut . && \
++	docker build --build-arg NMROOT=$(ABSTOPDIR) --build-arg ARCH=$(ARCH) \
++            -t netmgr_ut . && \
+ 	docker run -d --name netmgr_unittest --privileged --cap-add=SYS_ADMIN \
+             --cap-add=NET_ADMIN --security-opt seccomp=unconfined \
+             --stop-signal=SIGRTMIN+3 --tmpfs /run --tmpfs /run/lock \
