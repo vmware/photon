@@ -91,7 +91,7 @@ class TextPane(Action):
 
 
     def read_file(self, text_file_path, line_width):
-        with open(text_file_path, "r") as f:
+        with open(text_file_path, "r", encoding="latin_1") as f:
             for line in f:
                 # expand tab to 8 spaces.
                 line = line.expandtabs()

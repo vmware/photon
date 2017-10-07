@@ -29,15 +29,16 @@ class Device(object):
         for deviceline in deviceslines:
             cols = deviceline.split(None, 2)
             #skip Virtual NVDIMM from install list
-            if(cols[0].startswith("pmem")):
+            coldstr = cols[0].decode()
+            if(coldstr.startswith("pmem")):
                 continue
             model = "Unknown"
             if(len(cols) >= 3):
-                model = cols[2]
+                model = cols[2].decode()
             devices.append(
                     Device(model #Model
-                        , '/dev/' + cols[0] #Path
-                        , cols[1] #size
+                        , '/dev/' + cols[0].decode() #Path
+                        , cols[1].decode() #size
                         ))
 
         return devices
