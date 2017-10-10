@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.7.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -16,6 +16,7 @@ Patch0:         OVS-CVE-2017-9214.patch
 Patch1:         OVS-CVE-2017-9265.patch
 Patch2:         ovs-systemd-services.patch
 Patch3:         OVS-CVE-2017-9263.patch
+Patch4:         OVS-CVE-2017-14970.patch
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -125,6 +126,7 @@ It contains the documentation and manpages for OVN.
 %patch0 -p1
 %patch1 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 ./configure \
@@ -279,6 +281,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-9
+-   Fix CVE-2017-14970
 *   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-8
 -   Fix CVE-2017-9263
 *   Tue Sep 19 2017 Anish Swaminathan <anishs@vmware.com> 2.7.0-7
