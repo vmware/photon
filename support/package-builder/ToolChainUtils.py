@@ -150,6 +150,8 @@ class ToolChainUtils(object):
     def findRPMFileInGivenLocation(self,package,rpmdirPath):
         cmdUtils = CommandUtils()
         listFoundRPMFiles = cmdUtils.findFile(package+"-*.rpm",rpmdirPath)
+        print "ADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+        print listFoundRPMFiles
         listFilterRPMFiles=[]
         for f in listFoundRPMFiles:
             rpmFileName=os.path.basename(f)
