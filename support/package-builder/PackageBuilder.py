@@ -79,6 +79,7 @@ class PackageBuilder(object):
             # TODO: self.logger might be None
             self.logger.error(e)
             outputMap[threadName]=False
+            raise e
 
     def checkIfPackageIsAlreadyBuilt(self):
         basePkg=SPECS.getData().getSpecName(self.package)
@@ -152,6 +153,8 @@ class PackageBuilder(object):
     def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
         if package in listInstalledPackages:
             return
+        # mark it as installed -  to avoid cyclic recursion
+        listInstalledPackages.append(package)
         self.installDependentRunTimePackages(pkgUtils,package,chrootID,destLogPath,listInstalledPackages)
         noDeps=False
         if self.mapPackageToCycles.has_key(package):
@@ -161,7 +164,6 @@ class PackageBuilder(object):
         if package in constants.noDepsPackageList:
             noDeps=True
         pkgUtils.installRPM(package,chrootID,noDeps,destLogPath)
-        listInstalledPackages.append(package)
 
     def installDependentRunTimePackages(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
         listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
