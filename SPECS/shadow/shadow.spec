@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.2.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 URL:            http://pkg-shadow.alioth.debian.org/
 License:        BSD
 Group:          Applications/System
@@ -19,10 +19,18 @@ BuildRequires:  cracklib-devel
 Requires:       cracklib
 BuildRequires:  Linux-PAM-devel
 Requires:       Linux-PAM
+Requires:       (%{name}-tools = %{version}-%{release} or toybox)
 
 %description
 The Shadow package contains programs for handling passwords
 in a secure way.
+
+%package tools
+Summary: Contains subset of tools which might be replaced by toybox
+Group:      Applications/System
+Requires: %{name} = %{version}-%{release}
+%description tools
+Contains subset of tools which might be replaced by toybox
 
 %package lang
 Summary: Additional language files for shadow
@@ -110,7 +118,6 @@ make %{?_smp_mflags} check
 %config(noreplace) /etc/login.access
 %config(noreplace) /etc/default/useradd
 %config(noreplace) /etc/limits
-/bin/*
 /sbin/nologin
 %{_bindir}/*
 %{_sbindir}/*
@@ -137,10 +144,17 @@ make %{?_smp_mflags} check
 %exclude %{_mandir}/zh_TW
 %config(noreplace) %{_sysconfdir}/pam.d/*
 
+%files tools
+%defattr(-,root,root)
+/bin/*
+
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-14
+-   Added -tools subpackage
+-   Main package requires -tools or toybox
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 4.2.1-13
 -   Added fix for CVE-2017-12424, CVE-2016-6252
 *   Thu Apr 27 2017 Divya Thaluru <dthaluru@vmware.com> 4.2.1-12
