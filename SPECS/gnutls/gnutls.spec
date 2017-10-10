@@ -1,11 +1,11 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.5.10
+Version:        3.5.15
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
-%define sha1    gnutls=4a8afbda93d48e4cdbcb562a420e0f4e9f3361e9
+%define sha1    gnutls=9b7466434332b92dc3ca704b9211370370814fac
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -80,6 +80,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Oct 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.15-1
+-   Update to 3.5.15. Fixes CVE-2017-7507
 *   Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 3.5.10-1
 -   Update to version 3.5.10
 *   Sun Dec 18 2016 Alexey Makhalov <amakhalov@vmware.com> 3.4.11-4
