@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.53
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -49,6 +49,8 @@ Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-11472
 Patch30:        ACPICA-Namespace-fix-operand-cache-leak.patch
+# Fix CVE-2017-1000252
+Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 BuildRequires:  bc
@@ -146,6 +148,7 @@ EOF
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
+%patch31 -p1
 
 pushd ..
 %patch99 -p0
@@ -261,6 +264,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Oct 10 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-2
+-   Add patch "KVM: Don't accept obviously wrong gsi values via
+    KVM_IRQFD" to fix CVE-2017-1000252.
 *   Thu Oct 05 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-1
 -   Version update
 *   Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-3
