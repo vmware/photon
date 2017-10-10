@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.1.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -21,7 +21,7 @@ BuildRequires:  libtirpc-devel
 BuildRequires:  python3-devel
 Requires:       libtirpc
 Requires:       rpcbind
-Requires:       (shadow or toybox)
+Requires:       shadow
 Requires:       python3-libs
 
 %description
@@ -80,6 +80,8 @@ make check
 /lib/systemd/system/*
 
 %changelog
+*   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-7
+-   No direct toybox dependency, shadow depends on toybox
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-6
 -   Requires shadow or toybox
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-5
