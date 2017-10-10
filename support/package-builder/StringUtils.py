@@ -8,7 +8,7 @@ class StringUtils(object):
     # aaa <= 3.1 ccc ddd
     def getStringInConditionalBrackets(self,inputstring):
         inputstring=inputstring.strip()
-        items = re.findall(r"([(][A-Za-z0-9 _\.\-<>=]+[)])",  inputstring)
+        items = re.findall(r"([(][A-Za-z0-9 %{?}_\.\-<>=]+[)])",  inputstring)
         for m in items:
             out = m[m.find("(")+1 : m.find(" or ")].strip()
             inputstring = inputstring.replace(m, out);

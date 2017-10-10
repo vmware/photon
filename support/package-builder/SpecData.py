@@ -393,6 +393,9 @@ class SerializedSpecObjects(object):
         specName = self.getSpecName(inPkg)
         specObj = self.mapSerializableSpecObjects[specName]
         for depPkg in specObj.installRequiresPackages[inPkg]:
+            # ignore circular deps within single spec file
+            if (specObj.installRequiresPackages.has_key(depPkg) and inPkg in specObj.installRequiresPackages[depPkg] and self.getSpecName(depPkg) == specName):
+                continue
             if (allDeps.has_key(depPkg) and allDeps[depPkg] < level + 1):
                 allDeps[depPkg] = level + 1
                 parent[depPkg] = inPkg
