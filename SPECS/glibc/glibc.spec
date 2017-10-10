@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.26
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -112,6 +112,7 @@ cd %{_builddir}/%{name}-build
 	--enable-obsolete-rpc \
 	--enable-obsolete-nsl \
 	--enable-bind-now \
+	--disable-experimental-malloc \
 	--disable-silent-rules
 
 # Sometimes we have false "out of memory" make error
@@ -277,6 +278,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-5
+-   Compile out tcache.
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 2.26-4
 -   exclude tst-eintr1 per official wiki recommendation.
 *   Tue Sep 12 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-3
