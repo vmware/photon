@@ -347,6 +347,9 @@ class SerializedSpecObjects(object):
                 print specPkg + " is missing"
             specObj = self.mapSerializableSpecObjects[specName]
             for depPkg in specObj.installRequiresPackages[specPkg]:
+                # ignore circular deps within single spec file
+                if (specObj.installRequiresPackages.has_key(depPkg) and specPkg in specObj.installRequiresPackages[depPkg] and self.getSpecName(depPkg) == specName):
+                    continue
                 if True == allDeps.has_key(depPkg):
                     if(allDeps[depPkg] < allDeps[specPkg] + 1):
                         allDeps[depPkg] = allDeps[specPkg] + 1
