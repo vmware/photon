@@ -26,7 +26,6 @@ class constants(object):
         "bzip2-libs",
         "gettext",
         "nspr",
-        "xz",
         "bison",
         "go",
         "sqlite",
