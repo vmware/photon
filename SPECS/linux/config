@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.9.0 Kernel Configuration
+# Linux/x86 4.9.53 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -4411,6 +4411,7 @@ CONFIG_OPTIMIZE_INLINING=y
 #
 CONFIG_KEYS=y
 # CONFIG_PERSISTENT_KEYRINGS is not set
+# CONFIG_BIG_KEYS is not set
 CONFIG_TRUSTED_KEYS=m
 CONFIG_ENCRYPTED_KEYS=m
 # CONFIG_KEY_DH_OPERATIONS is not set
