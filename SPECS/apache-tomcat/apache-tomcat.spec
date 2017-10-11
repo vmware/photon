@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
-Version:	8.5.20
-Release:	3%{?dist}
+Version:	8.5.23
+Release:	1%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -9,7 +9,9 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
 Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1 apache-tomcat=1d65afa114d0d2d01e70592710df513ebe5ae463
+%define sha1 apache-tomcat=ec7417f44ada9df348f9102fe7777b44d5c2c52f
+Source1:        base-for-%{name}-%{version}.tar.gz
+%define sha1    base=d920d15a8d3431dd396be0d635e329bc9817c6cf
 BuildRequires: openjre
 BuildRequires: openjdk
 BuildRequires: apache-ant
@@ -32,9 +34,10 @@ The Apache Tomcat package contains binaries for the Apache Tomcat servlet contai
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
+%setup -D -b 1 -n %{name}-%{version}-src
 
 %build
-ant -Dbase.path="." deploy dist-prepare dist-source javadoc
+ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
@@ -86,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com> 8.5.23-1
+-   Upgraded to version 8.5.23
 *   Wed Sep 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-3
 -   Updated the permissions on _prefix.
 *   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
