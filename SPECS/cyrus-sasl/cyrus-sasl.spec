@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.26
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1    cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
 Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
+Patch1:         cyrus-sasl-mem-leak-fix.patch
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel >= 1.12
@@ -30,6 +31,7 @@ protocol and the connection.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 autoreconf -fi
 pushd saslauthd
@@ -132,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-13
+-   Add patch for memory leak fix
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.1.26-12
 -   Disabled saslauthd service by default
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.1.26-11

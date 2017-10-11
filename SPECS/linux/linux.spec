@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.53
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -46,6 +46,8 @@ Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-11472
 Patch27:        ACPICA-Namespace-fix-operand-cache-leak.patch
+# Fix CVE-2017-1000252
+Patch28:        linux-4.9-CVE-2017-1000252-1.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -142,6 +144,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch25 -p1
 %patch26 -p1
 %patch27 -p1
+%patch28 -p1
 
 %build
 make mrproper
@@ -301,6 +304,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com> 4.9.53-2
+-   Add missing patch for CVE-2017-1000252
 *   Thu Oct 05 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-1
 -   Version update
 *   Mon Oct 02 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.52-3
