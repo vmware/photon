@@ -1,0 +1,168 @@
+diff --git a/client/prototypes.h b/client/prototypes.h
+index 2076972..4619615 100644
+--- a/client/prototypes.h
++++ b/client/prototypes.h
+@@ -805,6 +805,11 @@ TDNFShouldSyncMetadata(
+     int* pnShouldSync
+     );
+ 
++void
++print_curl_error(
++    const char *pszUrl
++    );
++
+ //validate.c
+ uint32_t
+ TDNFValidateCmdArgs(
+diff --git a/client/remoterepo.c b/client/remoterepo.c
+index 72bf268..e72e854 100644
+--- a/client/remoterepo.c
++++ b/client/remoterepo.c
+@@ -179,6 +179,22 @@ cleanup:
+ error:
+     if(pError)
+     {
++        if(!IsNullOrEmptyString(pszBaseUrl) ||
++           !IsNullOrEmptyString(pszHyPackage))
++        {
++            char *pszUrl = NULL;
++            dwError = TDNFAllocateStringPrintf(
++                          &pszUrl,
++                          "%s/%s",
++                          pszBaseUrl,
++                          pszHyPackage
++                          );
++            if(dwError == 0)
++            {
++                print_curl_error(pszUrl);
++            }
++            TDNF_SAFE_FREE_MEMORY(pszUrl);
++        }
+         fprintf(
+             stderr,
+             "Error during download: %d: %s\n",
+diff --git a/client/repo.c b/client/repo.c
+index 1cb6870..eecb285 100644
+--- a/client/repo.c
++++ b/client/repo.c
+@@ -45,6 +45,7 @@ TDNFInitRepo(
+     PTDNF_CONF pConf = NULL;
+ 
+     HyRepo hRepo = NULL;
++    GError *pError = NULL;
+ 
+     if(!pTdnf || !pTdnf->pConf || !pRepoData || !phRepo)
+     {
+@@ -141,7 +142,7 @@ TDNFInitRepo(
+     lr_handle_setopt(hLibRepo, NULL, LRO_LOCAL, nLocalOnly);
+ 
+     
+-    bRet = lr_handle_perform(hLibRepo, pResult, NULL);
++    bRet = lr_handle_perform(hLibRepo, pResult, &pError);
+     if(!bRet)
+     {
+         dwError = ERROR_TDNF_REPO_PERFORM;
+@@ -196,6 +197,10 @@ cleanup:
+     {
+         lr_handle_free(hLibRepo);
+     }
++    if(pError)
++    {
++        g_error_free(pError);
++    }
+     return dwError;
+ 
+ error:
+@@ -203,6 +208,10 @@ error:
+     //remove any cache data that could be potentially corrupt.
+     if(pRepoData)
+     {
++        if(pError && !IsNullOrEmptyString(pRepoData->pszBaseUrl))
++        {
++            print_curl_error(pRepoData->pszBaseUrl);
++        }
+         fprintf(
+             stderr,
+             "Error: Failed to synchronize cache for repo '%s' from '%s'\n",
+diff --git a/client/rpmtrans.c b/client/rpmtrans.c
+index c0a3145..7cae5a8 100644
+--- a/client/rpmtrans.c
++++ b/client/rpmtrans.c
+@@ -753,7 +753,7 @@ TDNFRemoveCachedRpms(
+     for(dwIndex = 0; dwIndex < pCachedRpmsArray->len; ++dwIndex)
+     {
+         pszCachedRpm = g_array_index(pCachedRpmsArray, char*, dwIndex);
+-        if(IsNullOrEmptyString(pszCachedRpm))
++        if(!IsNullOrEmptyString(pszCachedRpm))
+         {
+             if(unlink(pszCachedRpm))
+             {
+diff --git a/client/utils.c b/client/utils.c
+index 364434e..d9eb758 100644
+--- a/client/utils.c
++++ b/client/utils.c
+@@ -603,3 +603,64 @@ error:
+     }
+     goto cleanup;
+ }
++
++void
++print_curl_error(
++    const char *pszUrl
++    )
++{
++    CURLcode dwError = 0;
++    CURL *pCurl = NULL;
++    long nStatus = 0;
++
++    if(IsNullOrEmptyString(pszUrl))
++    {
++        dwError = ERROR_TDNF_INVALID_PARAMETER;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
++    pCurl = curl_easy_init();
++    if(IsNullOrEmptyString(pszUrl))
++    {
++        dwError = ERROR_TDNF_OUT_OF_MEMORY;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
++    dwError = curl_easy_setopt(pCurl, CURLOPT_URL, pszUrl);
++    BAIL_ON_TDNF_ERROR(dwError);
++
++    dwError = curl_easy_setopt(pCurl, CURLOPT_NOBODY, 1);
++    BAIL_ON_TDNF_ERROR(dwError);
++
++    dwError = curl_easy_setopt(pCurl, CURLOPT_FOLLOWLOCATION, 1L);
++    BAIL_ON_TDNF_ERROR(dwError);
++
++    dwError = curl_easy_perform(pCurl);
++    if(dwError)
++    {
++        const char *pszError = curl_easy_strerror(dwError);
++        fprintf(stderr, "curl#%d: %s\n", dwError, pszError);
++    }
++    else
++    {
++        dwError = curl_easy_getinfo(
++                     pCurl,
++                     CURLINFO_RESPONSE_CODE,
++                     &nStatus);
++        BAIL_ON_TDNF_ERROR(dwError);
++        if(nStatus >= 400)
++        {
++            fprintf(
++                stderr,
++                "Error: %ld when downloading %s\n. Please check repo url.\n",
++                nStatus,
++                pszUrl);
++        }
++    }
++error:
++    if(pCurl)
++    {
++        curl_easy_cleanup(pCurl);
++    }
++    return;
++}
