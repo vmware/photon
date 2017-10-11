@@ -4,7 +4,7 @@
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
 Version:	1.1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	VMware
@@ -20,6 +20,7 @@ BuildRequires:	openssl-devel
 BuildRequires:	librepo-devel
 Source0:	%{name}-%{version}.tar.gz
 %define sha1 tdnf=15544a87ea01d6215fed35bd2d1299776f7daca1
+Patch0:         tdnf_print_curl_error.patch
 
 %description
 tdnf is a yum/dnf equivalent
@@ -35,6 +36,7 @@ Development files for tdnf
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 autoreconf -i
@@ -91,6 +93,8 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
     %{_libdir}/pkgconfig/tdnf.pc
 
 %changelog
+*       Wed Oct 11 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-3
+-       Patch to report curl error for repo sync or download
 *       Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
 -       rpm version update
 *       Thu Dec 08 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-1
