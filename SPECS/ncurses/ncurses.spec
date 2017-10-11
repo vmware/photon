@@ -1,15 +1,15 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	MIT
-URL:		http://www.gnu.org/software/ncurses
+URL:		http://invisible-island.net/ncurses/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	ftp://ftp.gnu.org/gnu/ncurses/%{name}-%{version}.tar.gz
-%define sha1 ncurses=acd606135a5124905da770803c05f1f20dd3b21c
-Patch0:		CVE-2017-10684-CVE-2017-10685.patch
+%global ncursessubversion 20171007
+Source0:	ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-20171007.tgz
+%define sha1 ncurses=527be8da26f04f50c1d659e972fa7d0b762c3a80
 Requires:	ncurses-libs = %{version}-%{release}
 %description
 The Ncurses package contains libraries for terminal-independent
@@ -46,8 +46,8 @@ Requires:	%{name} = %{version}-%{release}
 It contains all terminfo files
 
 %prep
-%setup -q
-%patch0 -p1
+%setup -q -n %{name}-%{version}-%{ncursessubversion}
+
 %build
 mkdir v6
 pushd v6
@@ -183,6 +183,9 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Tue Oct 10 2017 Bo Gan <ganb@vmware.com> 6.0-12
+-   version bump to 20171007
+-   Fix for CVE-2017-11112, CVE-2017-11113 and CVE-2017-13728
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-11
 -   ncurses-devel provides pkgconfig(ncurses)
 *   Thu Aug 10 2017 Bo Gan <ganb@vmware.com> 6.0-10
