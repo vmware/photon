@@ -1,7 +1,7 @@
 Summary:	DNS proxy with integrated DHCP server
 Name:		dnsmasq
 Version:	2.76
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2 or GPLv3
 Group:		System Environment/Daemons
 URL:		http://www.thekelleys.org.uk/dnsmasq/
@@ -10,6 +10,7 @@ Source:	        %{name}-%{version}.tar.xz
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Patch0:		dnsmasq.patch
+Patch1:		CVE-2017-13704.patch
 
 %description
 Dnsmasq a lightweight, caching DNS proxy with integrated DHCP server.
@@ -17,6 +18,7 @@ Dnsmasq a lightweight, caching DNS proxy with integrated DHCP server.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 make %{?_smp_mflags}
@@ -67,6 +69,8 @@ rm -rf %{buildroot}
 %config  /usr/share/dnsmasq/trust-anchors.conf
 
 %changelog
+*   Wed Oct 11 2017 Alexey Makhalov <amakhalov@vmware.com> 2.76-3
+-   Fix CVE-2017-13704
 *   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 2.76-2
 -   Fix CVE-2017-14491..CVE-2017-14496
 *   Sun Nov 27 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.76-1
