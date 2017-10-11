@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
-Version:	8.5.20
-Release:	3%{?dist}
+Version:	8.5.23
+Release:	1%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -9,10 +9,10 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
 Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1 apache-tomcat=1d65afa114d0d2d01e70592710df513ebe5ae463
+%define sha1 apache-tomcat=ec7417f44ada9df348f9102fe7777b44d5c2c52f
 # base-for-apache-tomcat is a cached -Dbase.path folder
-Source1:        base-for-%{name}-%{version}.tar.xz
-%define sha1    base=57dc7aafbe477d13c4d9b74f2eb694f56246f11c
+Source1:        base-for-%{name}-%{version}.tar.gz
+%define sha1    base=d920d15a8d3431dd396be0d635e329bc9817c6cf
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -38,17 +38,16 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 %setup -D -b 1 -n %{name}-%{version}-src
 
 %build
-mkdir -p -m 700 %{_prefix}
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
 install -vdm 755 %{buildroot}%{_prefix}
 install -vdm 755 %{buildroot}%{_bindir}
 install -vdm 755 %{buildroot}%{_libdir}
-install -vdm 644 %{buildroot}%{_confdir}
-install -vdm 644 %{buildroot}%{_webappsdir}
-install -vdm 644 %{buildroot}%{_logsdir}
-install -vdm 644 %{buildroot}%{_tempdir}
+install -vdm 755 %{buildroot}%{_confdir}
+install -vdm 755 %{buildroot}%{_webappsdir}
+install -vdm 755 %{buildroot}%{_logsdir}
+install -vdm 755 %{buildroot}%{_tempdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/bin/* %{buildroot}%{_bindir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/lib/* %{buildroot}%{_libdir}
 cp -r %{_builddir}/%{name}-%{version}-src/output/build/conf/* %{buildroot}%{_confdir}
@@ -91,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com> 8.5.23-1
+-   Upgraded to version 8.5.23
 *   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 8.5.20-3
 -   Offline build, disable javadoc target
 *   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
