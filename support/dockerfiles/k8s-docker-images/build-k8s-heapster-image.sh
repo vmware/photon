@@ -34,7 +34,7 @@ pushd ./tmp/k8heapster
 rpm2cpio ${K8S_HEAPSTER_RPM} | cpio -vid
 popd
 
-K8S_TAR_NAME=k8s-heapster.tar
+K8S_TAR_NAME=k8s-heapster-${K8S_HEAPSTER_VER}.tar
 docker build --rm -t ${IMG_NAME} -f ./Dockerfile.heapster .
 docker save -o ${K8S_TAR_NAME} ${IMG_NAME}
 gzip ${K8S_TAR_NAME}

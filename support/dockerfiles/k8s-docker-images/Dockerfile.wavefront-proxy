@@ -1,4 +1,4 @@
-FROM vmware/photon
+FROM vmware/photon:2.0
 
 # This script may automatically configure wavefront without prompting, based on
 # these variables:

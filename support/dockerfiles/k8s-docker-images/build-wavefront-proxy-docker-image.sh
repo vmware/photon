@@ -13,7 +13,7 @@ WAVEFRONT_PROXY_VER=`cat ${SPEC_DIR}/wavefront-proxy/wavefront-proxy.spec | grep
 WAVEFRONT_PROXY_VER_REL=${WAVEFRONT_PROXY_VER}-`cat ${SPEC_DIR}/wavefront-proxy/wavefront-proxy.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 WAVEFRONT_PROXY_RPM=wavefront-proxy-${WAVEFRONT_PROXY_VER_REL}${DIST_TAG}.${ARCH}.rpm
 WAVEFRONT_PROXY_RPM_FILE=${STAGE_DIR}/RPMS/${ARCH}/${WAVEFRONT_PROXY_RPM}
-WAVEFRONT_PROXY_TAR=wavefront-proxy.tar
+WAVEFRONT_PROXY_TAR=wavefront-proxy-v${WAVEFRONT_PROXY_VER}.tar
 
 if [ ! -f ${WAVEFRONT_PROXY_RPM_FILE} ]
 then
