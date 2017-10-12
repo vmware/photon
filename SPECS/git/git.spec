@@ -1,14 +1,14 @@
 Summary:	Fast distributed version control system
 Name:		git
-Version:	2.8.1
-Release:	5%{?dist}
+Version:	2.14.2
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://git-scm.com/
 Group:		System Environment/Programming
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1 git=fc97f987bbdc9dc302a525047bf8a014f6574f92
+%define sha1 git=9515fd4a068027f2c3d6ea9b8a8a298e990123a0
 BuildRequires:  curl
 BuildRequires:	python2
 BuildRequires:	python2-libs
@@ -88,7 +88,9 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
-*   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
+*        Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
+-       Updated to version 2.14.2, fix CVE-2017-14867
+*       Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
 -	Excluded the perllocal.pod log. 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
 -	GA - Bump release of all rpms
