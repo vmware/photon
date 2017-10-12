@@ -1,4 +1,4 @@
-FROM vmware/photon
+FROM vmware/photon:2.0
 
 MAINTAINER kaushikk@vmware.com
 
