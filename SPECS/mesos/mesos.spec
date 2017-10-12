@@ -2,15 +2,15 @@
 
 Summary:	Mesos
 Name:		mesos
-Version:	1.2.0
-Release:	3%{?dist}
+Version:	1.2.2
+Release:	1%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 mesos=1d570504498c90697b690e3b221feba63d0a800b
+%define sha1 mesos=bbcec6f04bb629a16a5ea24a8cde3f3e9f75300e
 BuildRequires:	openjre >= %{JAVA_VERSION}
 BuildRequires:  openjdk >= %{JAVA_VERSION}
 BuildRequires:	curl
@@ -123,6 +123,8 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{python2_sitelib}/mesos/*
 
 %changelog
+*       Tue Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
+-       Updated to version 1.2.2
 *	Thu Sep 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-3
 -	fix conflicts with mesos-0.28
 *	Thu Sep 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-2
