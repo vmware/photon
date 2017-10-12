@@ -1,14 +1,14 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.9.3
-Release:        4%{?dist}
+Version:        2.14.2
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1    git=5d0274c028083206844142263aeef110ec1495d5
+%define sha1    git=9515fd4a068027f2c3d6ea9b8a8a298e990123a0
 BuildRequires:  curl-devel
 BuildRequires:  python2
 Requires:       openssl
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
+-   Updated to version 2.14.2, fix CVE-2017-14867
 *   Mon Aug 21 2017 Rui Gu <ruig@vmware.com> 2.9.3-4
 -   Fix make check with non-root mode.
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-3
