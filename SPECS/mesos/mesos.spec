@@ -2,15 +2,15 @@
 
 Summary:        Mesos
 Name:           mesos
-Version:        1.2.0
-Release:        7%{?dist}
+Version:        1.2.2
+Release:        1%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1    mesos=1d570504498c90697b690e3b221feba63d0a800b
+%define sha1    mesos=bbcec6f04bb629a16a5ea24a8cde3f3e9f75300e
 Patch0:         mesos-sysmacros.patch
 BuildRequires:  openjre8 >= 1.8.0.45
 BuildRequires:  openjdk8 >= 1.8.0.45
@@ -105,6 +105,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Tue Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
+-   Updated to version 1.2.2
 *   Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-7
 -   Use multiple cores to build mesos.
 *   Wed Sep 06 2017 Anish Swaminathan <anishs@vmware.com> 1.2.0-6
