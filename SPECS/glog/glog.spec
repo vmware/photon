@@ -1,7 +1,7 @@
 Summary:	Google's C++ logging module
 Name:		glog
 Version:	0.3.4
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		https://github.com/google/glog
 Source0:	https://github.com/google/glog/archive/%{name}-v%{version}.tar.gz
@@ -35,14 +35,9 @@ The contains glog package doc files.
 %setup -n %{name}-%{version}
 
 %build
-./configure \
-    --prefix=/usr \
-    --disable-silent-rules \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --docdir=%{_docdir}
-make
+%configure \
+    --disable-silent-rules
+make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
@@ -64,7 +59,9 @@ find %{buildroot} -name '*.la' -delete
 %{_docdir}/*
 
 %changelog
-*    Thu Jun 1  2017 Bo Gan <ganb@vmware.com> 0.3.4-2
--    Fix file paths
-*    Sat Mar 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.4-1
--    Initial version of glog for Photon.
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.4-3
+-   Use standard configure macros
+*   Thu Jun 1  2017 Bo Gan <ganb@vmware.com> 0.3.4-2
+-   Fix file paths
+*   Sat Mar 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.4-1
+-   Initial version of glog for Photon.

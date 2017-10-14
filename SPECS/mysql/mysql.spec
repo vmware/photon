@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        5.7.18
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -18,7 +18,7 @@ BuildRequires:  zlib-devel
 MySQL is a free, widely used SQL engine. It can be used as a fast database as well as a rock-solid DBMS using a modular engine architecture.
 
 %package devel
-Summary:        Development headers for musql
+Summary:        Development headers for mysql
 Requires:       %{name} = %{version}-%{release}
 
 %description devel
@@ -66,6 +66,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 5.7.18-3
+-   Fix typo in description
 *   Fri Jul 14 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-2
 -   Run make test in the %check section
 *   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-1

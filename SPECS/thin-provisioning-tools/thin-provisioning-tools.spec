@@ -1,7 +1,7 @@
 Summary:        Thin provisioning tools
 Name:           thin-provisioning-tools
 Version:        0.6.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 Group:          System Environment/Base
 URL:            https://github.com/jthornber/thin-provisioning-tools
@@ -28,7 +28,7 @@ snapshot eras
 autoconf
 export CFLAGS="%{optflags}"
 export LDFLAGS=""
-./configure STRIP=/bin/true --prefix=%{_prefix}
+%configure STRIP=/bin/true
 
 make %{?_smp_mflags}
 
@@ -64,6 +64,8 @@ rm -rf %{buildroot}
 %{_sbindir}/thin_trim
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.6.3-3
+-   Use standard configure macros
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.3-2
 -   Ensure non empty debuginfo
 *   Tue Mar 28 2017 Xiaolin Li <xiaolinl@vmware.com> 0.6.3-1

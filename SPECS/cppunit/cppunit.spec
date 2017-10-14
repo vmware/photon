@@ -1,7 +1,7 @@
 Summary:	C++ port of Junit test framework
 Name:		cppunit
 Version:	1.12.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2
 URL:		https://sourceforge.net/projects/cppunit/
 Source0:	https://sourceforge.net/projects/cppunit/files/%{name}/%{version}/%{name}-%{version}.tar.gz
@@ -31,13 +31,8 @@ This contains headers and libs for development with cppunit.
 %setup -n %{name}-%{version}
 
 %build
-./configure \
-    --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --docdir=%{_docdir}
+%configure \
+    --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -58,5 +53,7 @@ find %{buildroot} -name '*.la' -delete
 /usr/share/*
 
 %changelog
-*    Sun Mar 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.12.1-1
--    Initial version of cppunit for Photon.
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.12.1-2
+-   Use standard configure macros
+*   Sun Mar 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.12.1-1
+-   Initial version of cppunit for Photon.

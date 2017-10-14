@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the XFS filesystem
 Name:           xfsprogs
 Version:        4.10.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ and LGPLv2+
 URL:            http://oss.sgi.com/projects/xfs/
 Group:          System Environment/Base
@@ -35,10 +35,13 @@ These are the additional language files of xfsprogs.
 %setup -q
 
 %build
+%configure \
+        --enable-readline=yes	\
+	--enable-blkid=yes
+
 make DEBUG=-DNDEBUG     \
      INSTALL_USER=root  \
-     INSTALL_GROUP=root \
-     LOCAL_CONFIGURE_OPTIONS="--enable-readline"
+     INSTALL_GROUP=root  %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} PKG_DOC_DIR=%{_usr}/share/doc/%{name}-%{version} install
@@ -82,6 +85,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.10.0-3
+-   Use standard configure macros
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.10.0-2
 -   Ensure non empty debuginfo
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 4.10.0-1
