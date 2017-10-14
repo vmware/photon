@@ -4,13 +4,12 @@
 Summary:        Java Native Access
 Name:           jna
 Version:        4.4.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        Apache
 URL:            http://github.com/twall/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:      x86_64
 Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
 %define sha1 jna=d9b54e98393a696f458468bc8f3167f701a9ea9f
 Patch0:         jna_remove_clover_jar.patch
@@ -84,6 +83,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-9
+-   Remove BuildArch
 *   Thu Sep 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4.0-8
 -   Makecheck for jna
 *   Tue Sep 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-7

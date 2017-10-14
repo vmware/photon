@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        7.7.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,7 +9,6 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        node-%{version}.tar.gz
 %define         sha1 node=31f7b14476b90037516449aec233c68d9b21edd3
-BuildArch:      x86_64
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
 Requires:       (coreutils >= 8.22 or toybox)
@@ -70,6 +69,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-4
+-   Remove BuildArch
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-3
 -   Requires coreutils or toybox
 *   Fri Jul 14 2017 Chang Lee <changlee@vmware.com> 7.7.4-2
