@@ -1,7 +1,7 @@
 Summary:	Netcat is a featured networking utility which reads and writes data across network connections, using the TCP/IP protocol.
 Name:		netcat
 Version:	0.7.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2 
 URL:		http://netcat.sourceforge.net/
 Group:		Productivity/Networking/Other
@@ -18,7 +18,7 @@ It is designed to be a reliable "back-end" tool that can be used directly or eas
 %setup -q
 %build
 
-./configure --prefix=%{_prefix} 
+%configure
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -29,13 +29,13 @@ rm -rf %{buildroot}
 %files 
 %defattr(-,root,root)
 %{_bindir}
-/usr/info/
 %{_datadir}
-/usr/man
 %changelog
-*	Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 0.7.1-3
--	Removed packaging of debug files
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-2
--	GA - Bump release of all rpms
-*	Tue Dec 08 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.7.1-1
--	Initial build.	First version
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-4
+-   Use standard configure macros
+*   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 0.7.1-3
+-   Removed packaging of debug files
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-2
+-   GA - Bump release of all rpms
+*   Tue Dec 08 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 0.7.1-1
+-   Initial build.	First version

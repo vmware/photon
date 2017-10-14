@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.0.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        libtiff
 URL:            http://www.simplesystems.org/libtiff/
 Group:          System Environment/Libraries
@@ -35,8 +35,7 @@ It contains the libraries and header files to create applications
 %patch3 -p1
 %patch4 -p1
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --disable-static
 make %{?_smp_mflags}
 
@@ -68,6 +67,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.8-4
+-   Use standard configure macros
 *   Wed Aug 09 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.8-3
 -   Added patch for CVE-2017-9936, CVE-2017-11335
 *   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.8-2

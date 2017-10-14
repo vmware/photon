@@ -1,7 +1,7 @@
 Summary:        SQLite: An Embeddable SQL Database Engine
 Name:           sqlite2
 Version:        2.8.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.sqlite.org
 License:        Public Domain
 Group:          System Environment/GeneralLibraries
@@ -25,9 +25,7 @@ Headers and development libraries for sqlite2
 %setup -q -n sqlite-%{version}
 
 %build
-./configure \
-       --prefix=%{_prefix}  \
-       --mandir=%{_mandir}  \
+%configure \
        --enable-threads     \
        --enable-shared      \
        --enable-symbols
@@ -54,5 +52,7 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libsqlite.so
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.8.17-2
+-   Use standard configure macros
 *   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.8.17-1
 -   Initial build.  First version

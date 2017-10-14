@@ -1,7 +1,7 @@
 Summary:	Portable and efficient C programming interface (API) to determine the call-chain of a program.
 Name:		libunwind
 Version:	1.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	X11
 URL:		http://www.nongnu.org/libunwind/
 Source0:	http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
@@ -23,11 +23,8 @@ This contains development tools and libraries for libunwind.
 %setup -q
 
 %build
-./configure \
-	--disable-silent-rules \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir}
+%configure \
+	--disable-silent-rules
 
 make %{?_smp_mflags}
 
@@ -46,5 +43,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libunwind*
 
 %changelog
-*    Mon Feb 06 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2-1
--    Initial version of libunwind package for Photon.
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2-2
+-   Use standard configure macros
+*   Mon Feb 06 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2-1
+-   Initial version of libunwind package for Photon.
