@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
 Version:        17.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -32,8 +32,6 @@ Requires:       python-netaddr
 Requires:       python-incremental
 Requires:       python-constantly
 Requires:       python-hyperlink
-
-BuildArch:      x86_64
 
 %description
 Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3. 
@@ -129,6 +127,8 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 17.5.0-3
+-   Remove BuildArch
 *   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 17.5.0-2
 -   Added python-automat, python-hyperlink and its python3 version to the
 -   requires.

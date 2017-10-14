@@ -1,7 +1,7 @@
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
 Version:        1.81
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~mikem/Net-SSLeay-%{version}/
@@ -9,7 +9,6 @@ Source:         http://search.cpan.org/CPAN/authors/id/M/MI/MIKEM/Net-SSLeay-%{v
 %define sha1 Net-SSLeay=7dc2a5e6f037af95a2c2b424404781b55f03c254
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildArch:      x86_64
 Requires:       perl
 Requires:       openssl
 BuildRequires:  perl
@@ -45,10 +44,12 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.81-2
+-   Remove BuildArch
 *   Wed Apr 05 2017 Robert Qi <qij@vmware.com> 1.81-1
 -   Update version to 1.81
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.72-2
--	GA - Bump release of all rpms
-*    Mon Mar 28 2016 Mahmoud Bassiouny <mbassiounu@vmware.com> 1.72-1
--    Initial version.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.72-2
+-   GA - Bump release of all rpms
+*   Mon Mar 28 2016 Mahmoud Bassiouny <mbassiounu@vmware.com> 1.72-1
+-   Initial version.
 

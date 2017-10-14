@@ -6,7 +6,7 @@
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python-cassandra-driver
 Version:        3.10.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -14,7 +14,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/datastax/python-driver/archive/%{name}-%{version}.tar.gz
 %define sha1    python-cassandra-driver=1eb85a0979b6b480b53c7a725018cc0991599a60
-BuildArch:      x86_64
 BuildRequires:  python2
 BuildRequires:  cython
 BuildRequires:  python2-libs
@@ -107,6 +106,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.10.0-5
+-   Remove BuildArch
 *   Tue Sep 12 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.10.0-4
 -   Do make check for python3 subpackage
 *   Wed Aug 16 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10.0-3

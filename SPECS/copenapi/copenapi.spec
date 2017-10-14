@@ -1,13 +1,12 @@
 Name:          copenapi
 Summary:       c open api spec parser
 Version:       0.0.2
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       Apache 2.0
 URL:           https://www.github.com/vmware/copenapi
-BuildArch:     x86_64
 Requires:      jansson
 Requires:      curl
 BuildRequires: jansson-devel
@@ -60,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*  Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.0.2-3
+-  Remove BuildArch
 *  Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-2
 -  Apply patch to correct response code status size.
 *  Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1

@@ -1,13 +1,12 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
 Version:	1.0.15
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-BuildArch:      x86_64
 Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.0.15-src.tar.gz
 %define sha1 commons-daemon=ca6a448d1d214f714e214b35809a2117568970e3
 BuildRequires: openjre8
@@ -57,6 +56,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.15-12
+-   Remove BuildArch
 *   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.15-11
 -   Packaged jar files to /usr/share/java
 -   Removed version information from jar files

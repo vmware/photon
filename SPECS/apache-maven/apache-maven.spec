@@ -1,13 +1,12 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.5.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	Apache
 URL:		http://maven.apache.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-BuildArch:      x86_64
 Source0:	http://apache.mirrors.lucidnetworks.net//maven/source/%{name}-%{version}-src.tar.gz
 %define sha1 apache-maven=1730812af1cdd77493e269b371ef8ac536230c15
 BuildRequires: openjre8
@@ -77,6 +76,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-5
+-   Remove BuildArch
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-4
 -   Requires /usr/bin/which
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.0-3
