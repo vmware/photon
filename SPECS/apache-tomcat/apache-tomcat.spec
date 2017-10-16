@@ -1,7 +1,7 @@
 Summary:	Apache Tomcat
 Name:		apache-tomcat
 Version:	8.5.23
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org
 Group:		Applications/System
@@ -13,6 +13,7 @@ Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
 %define sha1    base=d920d15a8d3431dd396be0d635e329bc9817c6cf
+Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -36,6 +37,7 @@ The Apache Tomcat package contains binaries for the Apache Tomcat servlet contai
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 %setup -D -b 1 -n %{name}-%{version}-src
+%patch0 -p1
 
 %build
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
@@ -90,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Mon Oct 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.5.23-2
+-   patch to keep using inmem keystore as jks.
 *   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com> 8.5.23-1
 -   Upgraded to version 8.5.23
 *   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 8.5.20-3
