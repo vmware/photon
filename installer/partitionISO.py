@@ -15,8 +15,8 @@ class PartitionISO(object):
         self.install_config = install_config
         self.path_checker = []
 
-        self.win_starty = (self.maxy - self.win_height) / 2
-        self.win_startx = (self.maxx - self.win_width) / 2
+        self.win_starty = (self.maxy - self.win_height) // 2
+        self.win_startx = (self.maxx - self.win_width) // 2
 
         self.text_starty = self.win_starty + 4
         self.text_height = self.win_height - 6
@@ -29,9 +29,9 @@ class PartitionISO(object):
 
         self.disk_size = []
         for index, device in enumerate(self.devices):
-            self.disk_size.append((device.path, int(device.size) / 1048576))     
+            self.disk_size.append((device.path, int(device.size) / 1048576))
 
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Welcome to the Photon installer', False, items=[], can_go_next=False)
+        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Welcome to the Photon installer', False, can_go_next=False)
         Device.refresh_devices()
 
     def display(self, params):
@@ -60,7 +60,7 @@ class PartitionISO(object):
         self.table_space = 5
 
         title = 'Current partitions:\n'
-        self.window.addstr(0, (self.win_width - len(title)) / 2, title)
+        self.window.addstr(0, (self.win_width - len(title)) // 2, title)
 
         info = "Unpartitioned space: "+str(self.disk_size[self.device_index][1])+ " MB, Total size: "+ str(int(self.devices[self.device_index].size)/ 1048576)+" MB"
 
@@ -163,7 +163,7 @@ class PartitionISO(object):
         if self.install_config['partitionsnumber'] == 0:
             window_height=9
             window_width=40
-            window_starty=(self.maxy-window_height)/2+5
+            window_starty=(self.maxy-window_height) // 2+5
             confirm_window=ConfirmWindow(window_height,window_width,self.maxy, self.maxx, window_starty, 'Partition information cannot be empty', info=True)
             confirm_window.do_action()
             return self.display(False)
@@ -171,7 +171,7 @@ class PartitionISO(object):
         if not self.has_slash:
             window_height=9
             window_width=40
-            window_starty=(self.maxy-window_height)/2+5
+            window_starty=(self.maxy-window_height) // 2 + 5
             confirm_window=ConfirmWindow(window_height,window_width,self.maxy, self.maxx, window_starty, 'Missing /', info=True)
             confirm_window.do_action()
             return self.display(False)
