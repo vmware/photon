@@ -1,7 +1,6 @@
 #    Copyright (C) 2015 vmware inc.
 #
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
-
 import curses
 from actionresult import ActionResult
 from action import Action
@@ -91,9 +90,13 @@ class TextPane(Action):
 
 
     def read_file(self, text_file_path, line_width):
-        with open(text_file_path, "r") as f:
+        with open(text_file_path, "rb") as f:
             for line in f:
                 # expand tab to 8 spaces.
+                try:
+                    line = line.decode(encoding='latin1')
+                except UnicodeDecodeError:
+                    pass
                 line = line.expandtabs()
                 indent = len(line) - len(line.lstrip())
                 actual_line_width = line_width - indent
