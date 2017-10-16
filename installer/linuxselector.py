@@ -15,8 +15,8 @@ class LinuxSelector(object):
         self.win_width = 60
         self.win_height = 13
 
-        self.win_starty = (self.maxy - self.win_height) / 2
-        self.win_startx = (self.maxx - self.win_width) / 2
+        self.win_starty = (self.maxy - self.win_height) // 2
+        self.win_startx = (self.maxx - self.win_width) // 2
 
         self.menu_starty = self.win_starty + 6
 
@@ -28,7 +28,7 @@ class LinuxSelector(object):
                               default_selected=0, tab_enable=False)
 
         self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
-                             'Select Linux kernel to install', True, items=[], tab_enabled=False,
+                             'Select Linux kernel to install', True, tab_enabled=False,
                              position=1, can_go_next=True)
         self.window.set_action_panel(self.host_menu)
 
