@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.88
-Release:    	1%{?dist}
+Release:    	2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -38,6 +38,8 @@ Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
 # Fix CVE-2017-10911
 Patch19:        xen-blkback-dont-leak-stack-data-via-response-ring.patch
+# Fix CVE-2017-11472
+Patch20:        ACPICA-Namespace-fix-operand-cache-leak.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -128,6 +130,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch17 -p1
 %patch18 -p1
 %patch19 -p1
+%patch20 -p1
 
 %build
 make mrproper
@@ -280,6 +283,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Oct 16 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.88-2
+-   Fix CVE-2017-11472 (ACPICA: Namespace: fix operand cache leak)
 *   Fri Sep 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.88-1
 -   Version update
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.86-1
