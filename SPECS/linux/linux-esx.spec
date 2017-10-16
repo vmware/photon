@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.88
-Release:       2%{?dist}
+Version:       4.4.92
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=40ac50fad1c01f1f40a4f93a20ea698861b35c94
+%define sha1 linux=99d84146a16d69cf6a53cd4116b297c7790e5766
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -188,6 +188,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 16 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.92-1
+-   Version update
 *   Mon Oct 16 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.88-2
 -   Fix CVE-2017-11472 (ACPICA: Namespace: fix operand cache leak)
 *   Fri Sep 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.88-1
