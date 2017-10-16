@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.88
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -36,6 +36,8 @@ Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       net-9p-vsock.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
+# Fix CVE-2017-11472
+Patch25:        ACPICA-Namespace-fix-operand-cache-leak.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -97,6 +99,7 @@ The Linux package contains the Linux kernel doc files
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 
 %build
 # patch vmw_balloon driver
@@ -185,6 +188,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 16 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.88-2
+-   Fix CVE-2017-11472 (ACPICA: Namespace: fix operand cache leak)
 *   Fri Sep 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.88-1
 -   Enable kprobes
 *   Mon Sep 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.86-1
