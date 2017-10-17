@@ -1,7 +1,7 @@
 Summary:    High-performance HTTP server and reverse proxy
 Name:       nginx
 Version:    1.11.13
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSD-2-Clause
 URL:        http://nginx.org/download/nginx-1.11.13.tar.gz
 Group:      Applications/System
@@ -9,6 +9,7 @@ Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    %{name}-%{version}.tar.gz
 %define sha1 nginx=84f27729754796181dc39d47da761c7e85eb3ae2
+Patch0:     CVE-2017-7529.patch
 Source1:    nginx.service
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -17,6 +18,7 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 
 %prep
 %setup -q
+%patch0 -p0
 
 %build
 ./configure \
@@ -50,6 +52,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %dir %{_var}/log/nginx
 
 %changelog
+*   Tue Oct 17 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.11.13-4
+-   Add patch for CVE-2017-7529
 *   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.11.13-3
 -   Removed packaging of debug files
 *   Mon May 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.11.13-2
