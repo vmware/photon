@@ -1,0 +1,27 @@
+diff --git a/tests/unit/test_hookutils.py b/tests/unit/test_hookutils.py
+index a33f5e5..f8908e7
+--- a/tests/unit/test_hookutils.py
++++ b/tests/unit/test_hookutils.py
+@@ -13,7 +13,7 @@ import pytest
+ import shutil
+ from os.path import join
+ from threading import Thread
+-from queue import Queue
++from multiprocessing import Queue
+ 
+ from PyInstaller.utils.hooks import collect_data_files, collect_submodules, \
+   get_module_file_attribute, remove_prefix, remove_suffix, \
+
+diff --git a/tests/unit/test_loader.py b/tests/unit/test_loader.py 
+index 67ad04b..127d9ec
+--- a/tests/unit/test_loader.py
++++ b/tests/unit/test_loader.py
+@@ -10,7 +10,7 @@
+ 
+ import pytest
+ from threading import Thread
+-from queue import Queue
++from multiprocessing import Queue
+ 
+ from PyInstaller.loader.pyimod02_archive import ArchiveFile
+ 
