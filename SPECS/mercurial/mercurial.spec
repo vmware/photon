@@ -1,22 +1,14 @@
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
-Version:        3.7.1
-Release:        7%{?dist}
+Version:        4.3.3
+Release:        1%{?dist}
 License:        GPLv2+
-URL:            https://www.ruby-lang.org/en/
+URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://mercurial.selenic.com/release/%{name}-%{version}.tar.gz
-%define sha1    mercurial=8ce55b297c6a62e987657498746eeca870301ffb
-Patch0:         hg-CVE-2016-3068.patch
-Patch1:         hg-CVE-2016-3069-1.patch
-Patch2:         hg-CVE-2016-3069-2.patch
-Patch3:         hg-CVE-2016-3069-3.patch
-Patch4:         hg-CVE-2016-3069-4.patch
-Patch5:         hg-CVE-2016-3069-5.patch
-Patch6:         hg-CVE-2016-3105.patch
-Patch7:         hg-CVE-2017-9462.patch
+Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
+%define sha1    mercurial=921c3c6302c4b1d4be6a56fcfa0a41553dd4bd44
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 Requires:       python2
@@ -26,14 +18,6 @@ Mercurial is written in Python and is used by projects such as Mozilla and Vim.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 %build
 make build
 %install
@@ -63,6 +47,8 @@ rm -rf %{buildroot}/*
 %{python_sitelib}/*
 
 %changelog
+*   Tue Oct 17 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
+-   Update verion to 4.3.3 for CVE-2017-1000115, CVE-2017-1000116.
 *   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-7
 -   Fix CVE-2017-9462 patch.
 *   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-6
