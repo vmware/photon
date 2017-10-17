@@ -1,14 +1,11 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.4.11
-Release:        4%{?dist}
+Version:        3.5.15
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
-Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.4/%{name}-%{version}.tar.xz
-%define sha1    gnutls=55f73d1ea2b3335fea514fad6faa1e72006ae9f9
-Patch0:         gnutls_3.4.11_default_priority.patch
-Patch1:         gnutls-CVE-2016-7444.patch
-Patch2:         gnutls-CVE-2017-7869.patch
+Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.5/%{name}-%{version}.tar.xz
+%define sha1    gnutls=9b7466434332b92dc3ca704b9211370370814fac
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -38,15 +35,17 @@ developing applications that use gnutls.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 %build
+# check for trust store file presence
+[ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
+
 ./configure \
     --prefix=%{_prefix} \
     --without-p11-kit \
     --disable-openssl-compatibility \
-    --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities
+    --with-included-unistring \
+    --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
+    --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -69,12 +68,16 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_datadir}/locale/*
+%{_docdir}/gnutls/*.png
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/%{name}/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*   Tue Oct 17 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.15-1
+-   Update to 3.5.15. Fixes CVE-2017-7507
 *   Thu May 04 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-4
 -   Apply patch for CVE-2017-7869
 *   Tue Apr 25 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-3
