@@ -1,14 +1,14 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.18
+Version:        5.7.20
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
-Source0:        http://mirrors.syringanetworks.net/mariadb/mysql-boost-%{version}/source/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=346e91db0160434488493966054eb25f712c89c8
+Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
+%define         sha1 mysql-boost=1fcbaea0d75d71a8a868f518b5b0afaaa18c5cda
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -67,5 +67,7 @@ make check
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Tue Oct 17 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.20-1
+-   Update to version 5.7.20
 *   Tue Jun 13 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.18-1
 -   Initial packaging for Photon
