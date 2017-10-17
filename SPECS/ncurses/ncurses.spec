@@ -1,15 +1,15 @@
 Summary:	Libraries for terminal handling of character screens
 Name:		ncurses
 Version:	6.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	MIT
-URL:		http://www.gnu.org/software/ncurses
+URL:		http://invisible-island.net/ncurses/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	ftp://ftp.gnu.org/gnu/ncurses/%{name}-%{version}.tar.gz
-%define sha1 ncurses=acd606135a5124905da770803c05f1f20dd3b21c
-Patch0:		CVE-2017-10684-CVE-2017-10685.patch
+%global ncursessubversion 20171007
+Source0:	ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-20171007.tgz
+%define sha1 ncurses=527be8da26f04f50c1d659e972fa7d0b762c3a80
 Provides:       libncurses.so.6()(64bit)
 %description
 The Ncurses package contains libraries for terminal-independent
@@ -26,13 +26,13 @@ compatibility.
 
 %package	devel
 Summary:	Header and development files for ncurses
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 Provides:	pkgconfig(ncurses)
 %description	devel
 It contains the libraries and header files to create applications 
 %prep
-%setup -q
-%patch0 -p1
+%setup -q -n %{name}-%{version}-%{ncursessubversion}
+
 %build
 mkdir v6
 pushd v6
@@ -155,6 +155,8 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
 %changelog
+*   Tue Oct 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-7
+-   Update to 6.0-7. Fix CVE-2017-13728
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-6
 -   ncurses-devel provides pkgconfig(ncurses)
 *   Thu Jul 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.0-5
