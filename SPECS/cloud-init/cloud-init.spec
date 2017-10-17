@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -20,6 +20,7 @@ Patch4:         resizePartitionUUID.patch
 Patch5:         datasource-guestinfo.patch
 Patch6:         systemd-service-changes.patch
 Patch7:         makecheck.patch
+Patch8:         systemd-resolved-config.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -64,6 +65,7 @@ ssh keys and to let the user run various scripts.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -134,6 +136,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Mon Oct 16 2017 Vinay Kulkarni <kulakrniv@vmware.com> 0.7.9-13
+-   Support configuration of systemd resolved.conf
 *   Wed Sep 20 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.9-12
 -   Requires net-tools or toybox
 *   Wed Sep 20 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-11
