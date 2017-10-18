@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
 
 %define sha1 atftp=fc9e9f821dfd2f257b4a5c32b948ed60b4e31fd1
+Patch0:         atftpd_circumvent_tftp_size_restrictions.patch
 
 BuildRequires:  systemd
 Requires:       systemd
@@ -38,6 +39,7 @@ files using the TFTP protocol.
 
 %prep
 %setup
+%patch0 -p1
 sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
@@ -125,6 +127,8 @@ fi
 
 
 %changelog
+*   Wed Oct 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-8
+-   apply patch for large file support
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-7
 -   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-6
