@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.53
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -174,7 +174,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 %include %{SOURCE2}
 
 %post
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %files
@@ -198,6 +198,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Oct 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.53-4
+-   Enable vsyscall emulation
+-   Do not use deprecated -q depmod option
 *   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
 -   Add patch "KVM: Don't accept obviously wrong gsi values via
     KVM_IRQFD" to fix CVE-2017-1000252.
