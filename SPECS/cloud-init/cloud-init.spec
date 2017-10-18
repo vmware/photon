@@ -5,7 +5,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -22,6 +22,7 @@ Patch3:         photon-hosts-template.patch
 Patch4:         resizePartitionUUID.patch
 Patch5:         datasource-guestinfo.patch
 Patch6:         systemd-service-changes.patch
+Patch7:         systemd-resolved-config.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -63,6 +64,7 @@ ssh keys and to let the user run various scripts.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -200,6 +202,8 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 
 
 %changelog
+*   Tue Oct 17 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.9-4
+-   Support configuration of systemd resolved.conf
 *   Fri Jul 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.9-3
 -   Removed networking.service and NetworkManger.service from
 -   cloud-init and cloud-init-local service files

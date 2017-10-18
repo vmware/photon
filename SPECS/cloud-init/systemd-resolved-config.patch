@@ -1,0 +1,64 @@
+diff -uNr cloud-init-0.7.9-orig/cloudinit/config/cc_resolv_conf.py cloud-init-0.7.9/cloudinit/config/cc_resolv_conf.py
+--- cloud-init-0.7.9-orig/cloudinit/config/cc_resolv_conf.py	2017-10-18 00:36:44.839010507 +0000
++++ cloud-init-0.7.9/cloudinit/config/cc_resolv_conf.py	2017-10-18 23:40:02.986968167 +0000
+@@ -55,10 +55,10 @@
+ 
+ frequency = PER_INSTANCE
+ 
+-distros = ['fedora', 'rhel', 'sles']
++distros = ['fedora', 'rhel', 'sles', 'photon']
+ 
+ 
+-def generate_resolv_conf(template_fn, params, target_fname="/etc/resolv.conf"):
++def generate_resolv_conf(template_fn, params, target_fname="/etc/systemd/resolved.conf"):
+     flags = []
+     false_flags = []
+ 
+@@ -104,12 +104,29 @@
+     if "resolv_conf" not in cfg:
+         log.warn("manage_resolv_conf True but no parameters provided!")
+ 
+-    template_fn = cloud.get_template_filename('resolv.conf')
++    template_fn = cloud.get_template_filename('systemd.resolved.conf')
+     if not template_fn:
+-        log.warn("No template found, not rendering /etc/resolv.conf")
++        log.warn("No template found, not rendering /etc/systemd/resolved.conf")
+         return
+ 
+     generate_resolv_conf(template_fn=template_fn, params=cfg["resolv_conf"])
++
++    cmd = ['/usr/bin/sed', '-i',  '/Domains=/d' , '/etc/systemd/network/99-dhcp-en.network']
++    util.subp(cmd)
++
++    domain_regex_str = None
++    resolv_cfg = cfg["resolv_conf"]
++    if resolv_cfg:
++        domains = resolv_cfg["searchdomains"]
++        if domains:
++            domains_regex_str = '/\[Network\]/a Domains='
++            for domain in domains:
++                domains_regex_str += domain + ' '
++    if domains_regex_str:
++        cmd = ['/usr/bin/sed', '-i', domains_regex_str, '/etc/systemd/network/99-dhcp-en.network']
++        util.subp(cmd)
++
++    util.subp(["systemctl", "restart", "systemd-networkd", "systemd-resolved"])
+     return
+ 
+ # vi: ts=4 expandtab
+diff -uNr cloud-init-0.7.9-orig/templates/systemd.resolved.conf.tmpl cloud-init-0.7.9/templates/systemd.resolved.conf.tmpl
+--- cloud-init-0.7.9-orig/templates/systemd.resolved.conf.tmpl	1970-01-01 00:00:00.000000000 +0000
++++ cloud-init-0.7.9/templates/systemd.resolved.conf.tmpl	2017-10-18 00:37:39.003013090 +0000
+@@ -0,0 +1,12 @@
++## template:jinja
++# Your system has been configured with 'manage-resolv-conf' set to true.
++# As a result, cloud-init has written this file with configuration data
++# that it has been provided. Cloud-init, by default, will write this file
++# a single time (PER_ONCE).
++#
++[Resolve]
++LLMNR=false
++{% if nameservers is defined %}
++DNS={% for server in nameservers %}{{server}} {% endfor %}
++{% endif %}
++
