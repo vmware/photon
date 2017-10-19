@@ -10,7 +10,7 @@
 Summary:        Go 
 Name:           go
 Version:        1.8.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -19,6 +19,7 @@ Distribution:   Photon
 Source0:        https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
 %define sha1    go=0c4b7116bd6b7cdc19bdcf8336c75eae4620907b
 Patch0:         go_imports_fix.patch
+Patch1:         go-CVE-2017-8932.patch
 BuildRequires:  mercurial
 Requires:       mercurial
 Requires:       glibc
@@ -29,6 +30,7 @@ Go is an open source programming language that makes it easy to build simple, re
 %prep
 %setup -qn %{name}
 %patch0 -p1
+%patch1 -p1
 
 %build
 export GOHOSTOS=linux
@@ -115,6 +117,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Thu Oct 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-2
+-   Fix CVE-2017-8932
 *   Tue Apr 11 2017 Danut Moraru <dmoraru@vmware.com> 1.8.1-1
 -   Update Golang to version 1.8.1, updated patch0
 *   Wed Dec 28 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.4-1
