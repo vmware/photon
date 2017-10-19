@@ -1,4 +1,4 @@
-FROM vmware/photon:2.0
+FROM k8s-base-image:2.0
 
 MAINTAINER kulkarniv@vmware.com
 
@@ -6,7 +6,9 @@ MAINTAINER kulkarniv@vmware.com
 ENV DOCKER_API_VERSION 1.21
 
 # Install required packages
-RUN tdnf install -y initscripts iproute2 ipset iptables iputils net-tools runit
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y initscripts iproute2 \
+         ipset iptables iputils runit --refresh
 
 # Copy binaries needed by calico/node
 COPY [ "./tmp/calico/usr/share/calico/docker/fs/etc", "/etc/" ]
