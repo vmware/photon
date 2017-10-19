@@ -2,18 +2,17 @@
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk
-Version:	1.8.0.141
-Release:	2%{?dist}
+Version:	1.8.0.151
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.gz
-%define sha1 openjdk=e74417bc0bfcdb8f6b30a63bb26dbf35515ec562
+%define sha1 openjdk=2714c58d1bdc8a83ba83518b1608eb50221ba964
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
-Patch2:		remove-cups.patch
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -57,15 +56,15 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -q -n openjdk-1.8.0-141
+%setup -q -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
 
 %build
 chmod a+x ./configure
+rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 unset JAVA_HOME &&
 ./configure \
 	CUPS_NOT_NEEDED=yes \
@@ -230,6 +229,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*	Thu Oct 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.151-1
+-	Upgraded to version 1.8.0.151
 *	Thu Sep 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-2
 -	added ldconfig in post actions.
 *	Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
