@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+source common.inc
+
 DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
@@ -34,6 +36,9 @@ cp ${WAVEFRONT_PROXY_RPM_FILE} tmp/wavefront-proxy/
 pushd ./tmp/wavefront-proxy
 rpm2cpio ${WAVEFRONT_PROXY_RPM} | cpio -vid
 popd
+
+setup_repo
+
 docker build --rm -t ${IMG_NAME} -f Dockerfile.wavefront-proxy .
 docker save -o ${WAVEFRONT_PROXY_TAR} ${IMG_NAME}
 gzip ${WAVEFRONT_PROXY_TAR}
