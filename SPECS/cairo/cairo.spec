@@ -1,48 +1,50 @@
-Summary:	A 2D graphics library.
-Name:		cairo
-Version:	1.14.8
-Release:	1%{?dist}
-License:	LGPLv2 or MPLv1.1
-URL:		http://cairographics.org
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://cairographics.org/releases/%{name}-%{version}.tar.xz
-%define sha1 cairo=c6f7b99986f93c9df78653c3e6a3b5043f65145e
-BuildRequires:	pkg-config
-BuildRequires:	libpng-devel
-BuildRequires:	libxml2-devel
-BuildRequires:	pixman-devel
-BuildRequires:	freetype2-devel
-BuildRequires:	fontconfig-devel
-BuildRequires:	glib-devel
-Requires:	pixman
-Requires:	glib
-Requires:	libpng
-Requires:	expat
+Summary:        A 2D graphics library.
+Name:           cairo
+Version:        1.14.8
+Release:        2%{?dist}
+License:        LGPLv2 or MPLv1.1
+URL:            http://cairographics.org
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://cairographics.org/releases/%{name}-%{version}.tar.xz
+%define sha1    cairo=c6f7b99986f93c9df78653c3e6a3b5043f65145e
+Patch0:         CVE-2017-9814.patch
+BuildRequires:  pkg-config
+BuildRequires:  libpng-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  pixman-devel
+BuildRequires:  freetype2-devel
+BuildRequires:  fontconfig-devel
+BuildRequires:  glib-devel
+Requires:       pixman
+Requires:       glib
+Requires:       libpng
+Requires:       expat
 
 %description
 Cairo is a 2D graphics library with support for multiple output devices.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-Requires:	freetype2-devel
-Requires:	pixman-devel
+%package    devel
+Summary:    Header and development files
+Requires:   %{name} = %{version}-%{release}
+Requires:   freetype2-devel
+Requires:   pixman-devel
 
-%description	devel
+%description    devel
 It contains the libraries and header files to create applications 
 
 %prep
-%setup -q 
+%setup -q
+%patch0 -p1
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--enable-xlib=no \
-	--enable-xlib-render=no \
-	--enable-win32=no \
+    --prefix=%{_prefix} \
+    --enable-xlib=no \
+    --enable-xlib-render=no \
+    --enable-win32=no \
         CFLAGS="-O3 -fPIC" \
-	--disable-static
+    --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -73,5 +75,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*       Wed Apr 05 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-1
--       Initial version
+*   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-2
+-   Fix CVE-2017-9814
+*   Wed Apr 05 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-1
+-   Initial version
