@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          38%{?dist}
+Release:          39%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -11,6 +11,7 @@ Source0:          %{name}-%{version}.tar.gz
 %define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
+Source3:          filesystem.conf
 #patch for ostree
 Patch0:           systemd-228-mount.patch
 Patch1:           01-enoX-uses-instance-number-for-vmware-hv.patch
@@ -159,6 +160,7 @@ mkdir -p %{buildroot}%{_localstatedir}/log/journal
 find %{buildroot}%{_libdir} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
+install -m 0644 %{SOURCE3} %{buildroot}/usr/lib/tmpfiles.d/
 rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -vdm 755 %{buildroot}/%{_sysconfdir}/systemd/network
@@ -235,6 +237,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-39
+-    add filesystem.conf in tmpfiles.d
 *    Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  228-38
 -    Move network file to systemd package
 *    Thu Sep 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-37

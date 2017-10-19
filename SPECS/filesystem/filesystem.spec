@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -513,7 +513,7 @@ EOF
 #	run filesystem
 %dir /run/lock
 #	usr filesystem
-%dir /mnt/cdrom
+%ghost /mnt/cdrom
 %dir /mnt/hgfs
 %dir /usr/bin
 %dir /usr/include
@@ -589,6 +589,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.1-2
+-   ghost /mnt/cdrom
 *   Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  1.1-1
 -   Move network file from filesystem package
 *   Tue Mar 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0-10
