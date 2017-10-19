@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+source common.inc
+
 DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
@@ -36,9 +38,11 @@ pushd ./tmp/k8dns
 rpm2cpio ${K8S_DNS_RPM} | cpio -vid
 popd
 
+setup_repo
+
 for K8S_BIN in ${K8S_DNS_BINS[*]}; do
     IMG_NAME=vmware_photon_${DIST_VER}/k8s-dns-${K8S_BIN}-amd64:${K8S_DNS_VER}
-    K8S_TAR_NAME=k8s-dns-${K8S_BIN}-${K8S_DNS_VER}.tar
+    K8S_TAR_NAME=k8s-dns-${K8S_BIN}-${K8S_DNS_VER_REL}.tar
     docker build --rm -t ${IMG_NAME} -f ./Dockerfile.${K8S_BIN} .
     docker save -o ${K8S_TAR_NAME} ${IMG_NAME}
     gzip ${K8S_TAR_NAME}

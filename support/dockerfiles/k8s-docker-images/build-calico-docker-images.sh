@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+source common.inc
+
 DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
@@ -122,9 +124,9 @@ fi
 CALICO_NODE_IMG_NAME=vmware_photon_${DIST_VER}/calico-node:v${CALICO_VER}
 CALICO_CNI_IMG_NAME=vmware_photon_${DIST_VER}/calico-cni:v${CALICO_CNI_VER}
 CALICO_K8S_POLICY_IMG_NAME=vmware_photon_${DIST_VER}/calico-kube-policy-controller:v${CALICO_K8S_POLICY_VER}
-CALICO_NODE_TAR=calico-node-v${CALICO_VER}.tar
-CALICO_CNI_TAR=calico-cni-v${CALICO_CNI_VER}.tar
-CALICO_K8S_POLICY_TAR=calico-k8s-policy-v${CALICO_K8S_POLICY_VER}.tar
+CALICO_NODE_TAR=calico-node-v${CALICO_VER_REL}.tar
+CALICO_CNI_TAR=calico-cni-v${CALICO_CNI_VER_REL}.tar
+CALICO_K8S_POLICY_TAR=calico-k8s-policy-v${CALICO_K8S_POLICY_VER_REL}.tar
 
 NODE_IMG_ID=`docker images -q ${CALICO_NODE_IMG_NAME} 2> /dev/null`
 if [[ ! -z "${NODE_IMG_ID}" ]]; then
@@ -161,6 +163,8 @@ rpm2cpio ${CALICO_CNI_RPM} | cpio -vid
 rpm2cpio ${K8S_CNI_RPM} | cpio -vid
 rpm2cpio ${CALICO_K8S_POLICY_RPM} | cpio -vid
 popd
+
+setup_repo
 
 docker build --rm -t ${CALICO_NODE_IMG_NAME} -f Dockerfile.calico-node .
 docker save -o ${CALICO_NODE_TAR} ${CALICO_NODE_IMG_NAME}
