@@ -1,8 +1,10 @@
-FROM vmware/photon:2.0
+FROM k8s-base-image:2.0
 
 MAINTAINER kulkarniv@vmware.com
 
-RUN tdnf install -y shadow openssl nginx
+COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf makecache && \
+    tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y openssl nginx shadow
 RUN useradd --system --no-create-home -U -s /bin/false nginx
 
 # forward nginx access and error logs to stdout and stderr
