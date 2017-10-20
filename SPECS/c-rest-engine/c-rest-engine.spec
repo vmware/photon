@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
-Version:       1.0.4
-Release:       2%{?dist}
+Version:       1.0.5
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -12,8 +12,7 @@ Requires:      openssl >= 1.0.1
 BuildRequires: coreutils >= 8.22
 BuildRequires: openssl-devel >= 1.0.1
 Source0:       %{name}-%{version}.tar.gz
-%define sha1   c-rest-engine=3b2e8e421f1d3d2a3932502f24c5064c993e0ad0
-Patch0:        logLevelError.patch
+%define sha1   c-rest-engine=f846acf51e5d8b31d73d78c3d55c14e887208064
 
 %description
 c-rest-engine is a minimal embedded http(s) server written in C.
@@ -31,7 +30,6 @@ development libs and header files for c-rest-engine
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 cd build
@@ -64,6 +62,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Fri Oct 20 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.5-1
+-  New API for peer info.
 *  Tue Sep 12 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.4-2
 -  Making default log level as ERROR.
 *  Mon Sep 11 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.4-1
