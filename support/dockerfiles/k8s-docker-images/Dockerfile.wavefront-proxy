@@ -9,7 +9,7 @@ FROM k8s-base-image:2.0
 #  WAVEFRONT_USE_GRAPHITE  (default is false)
 
 COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
-RUN tdnf tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y net-tools sed openjre8 shadow --refresh
+RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y openjre8 shadow --refresh
 # Copy files
 COPY [ "./tmp/wavefront-proxy/etc/wavefront/wavefront-proxy/log4j2-stdout.xml", \
        "./tmp/wavefront-proxy/etc/wavefront/wavefront-proxy/log4j2.xml", \
