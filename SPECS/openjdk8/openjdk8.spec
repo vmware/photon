@@ -10,7 +10,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.gz
-%define sha1 openjdk=e07cd7e15cf17f0f47229fecd2098f3ee45abdc0
+%define sha1 openjdk=bdb67157673789aa2ad368c9e237be7215097fdd
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 Patch2:         remove-cups.patch
@@ -64,7 +64,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn %{name}-%{version}
+%setup -qn openjdk-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
