@@ -4,7 +4,7 @@
 Summary:        C library for manipulating tar files
 Name:           libtar
 Version:        1.2.20
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/tklauser/libtar/archive/v1.2.20.tar.gz
 License:        MIT
 Group:          System Environment/Libraries
@@ -13,6 +13,7 @@ Distribution:   Photon
 Source0:        libtar-%{version}.tar.gz
 %define         sha1 libtar=b3ec4058fa83448d6040ce9f9acf85eeec4530b1
 Provides:       libtar.so.0()(64bit)
+patch0:         libtar-CVE-2013-4420.patch
 
 %description
 libtar is a library for manipulating tar files from within C programs.
@@ -28,6 +29,7 @@ developing applications that use libtar.
 
 %prep
 %setup
+%patch0 -p1
 autoreconf -iv
 
 %build
@@ -56,6 +58,8 @@ make check
 %{_libdir}/libtar.la
 
 %changelog
+*   Fri Oct 20 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-3
+-   Fix CVE-2013-4420
 *   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-2
 -   Provides libtar.so.0()(64bit).
 *   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-1
