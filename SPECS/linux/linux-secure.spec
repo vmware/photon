@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.60
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -69,6 +69,13 @@ Requires(post):(coreutils or toybox)
 
 %description
 Security hardened Linux kernel.
+
+%package lkcm
+Summary:       LKCM module
+Group:         System Environment/Kernel
+Requires:      %{name} = %{version}-%{release}
+%description lkcm
+The Linux package contains the LKCM driver module
 
 %package devel
 Summary:       Kernel Dev
@@ -237,8 +244,11 @@ ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/bui
 %include %{SOURCE3}
 
 %post
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
+
+%post lkcm
+/sbin/depmod -a %{uname_r}
 
 %files
 %defattr(-,root,root)
@@ -251,6 +261,11 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
+%exclude /lib/modules/%{uname_r}/extra/fips_lkcm.ko.xz
+
+%files lkcm
+%defattr(-,root,root)
+/lib/modules/%{uname_r}/extra/fips_lkcm.ko.xz
 
 %files docs
 %defattr(-,root,root)
@@ -262,6 +277,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.60-2
+-   Update LKCM module
+-   Add -lkcm subpackage
 *   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
 -   Version update
 *   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
