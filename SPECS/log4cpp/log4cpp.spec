@@ -58,4 +58,6 @@ make DESTDIR=%{buildroot} install
 %_prefix/lib/pkgconfig/log4cpp.pc
 %_prefix/share/aclocal/*.m4
 
-
+%changelog
+*   Mon Oct 23 2017 Benson Kwok <bkwok@vmware.com> 1.1.1-1
+-   Initial build. First version
