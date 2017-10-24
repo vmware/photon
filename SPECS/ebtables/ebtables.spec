@@ -1,7 +1,7 @@
 Summary:        A filtering tool for a Linux-based bridging firewall.
 Name:           ebtables
 Version:        2.0.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://ebtables.netfilter.org/
 Group:          System Environment/Security
@@ -30,6 +30,8 @@ mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -vdm755 %{buildroot}/etc/systemd/scripts
 install -m 755 %{SOURCE1} %{buildroot}/etc/systemd/scripts/ebtables
 install -m 644 %{SOURCE2} %{buildroot}/%{_libdir}/systemd/system/ebtables.service
+install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+echo "disable ebtables.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ebtables.preset
 
 %preun
 %systemd_preun ebtables.service
@@ -57,11 +59,14 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 %config(noreplace) %{_sysconfdir}/sysconfig/ebtables-config
 %{_libdir}/systemd/system/*
+%{_libdir}/systemd/system-preset/50-ebtables.preset
 %{_sysconfdir}/ethertypes
 %{_sysconfdir}/systemd/scripts/ebtables
 %exclude %{_sysconfdir}/rc.d/init.d/ebtables
 
 %changelog
+*   Tue Oct 24 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.0.10-3
+-   Disabled ebtables service by default
 *   Thu Jun 29 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-2
 -   Added systemd to Requires and BuildRequires.
 *   Wed Jan 18 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-1
