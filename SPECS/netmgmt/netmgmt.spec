@@ -1,7 +1,7 @@
 Summary:       PhotonOS Network Management Utilities
 Name:          netmgmt
 Version:       1.1.0
-Release:       8%{?dist}
+Release:       9%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache2.0
@@ -12,6 +12,7 @@ Patch1:        netmgmt-1.1.0-coverity-and-bug-fix.patch
 Patch2:        netmgmt-1.1.0-carry-match-conf-fix.patch
 Patch3:        netmgmt-1.1.0-back-compat.patch
 Patch4:        netmgmt-1.1.0-build-arm64.patch
+Patch5:        netmgmt-iaid-cli-fix.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: check >= 0.9.4
@@ -51,6 +52,7 @@ header files and libraries for netmgmt cli
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 autoreconf -mif
@@ -91,6 +93,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Mon  Oct 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-9
+-   Fix netmgr if_iaid CLI.
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-8
 -   Use standard configure macros
 *   Sat  Oct 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.1.0-7
