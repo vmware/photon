@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.26
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -18,6 +18,8 @@ Patch0:   	http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fh
 Patch1:		glibc-2.24-bindrsvport-blacklist.patch
 Patch2:		0001-Fix-range-check-in-do_tunable_update_val.patch
 Patch3:		0002-malloc-arena-fix.patch
+Patch4:     glibc-fix-CVE-2017-15670.patch
+Patch5:     glibc-fix-CVE-2017-15804.patch
 Provides:	rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -75,6 +77,8 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -278,6 +282,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 2.26-6
+-   Fix CVE-2017-15670 and CVE-2017-15804
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-5
 -   Compile out tcache.
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 2.26-4
