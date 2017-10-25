@@ -1,19 +1,20 @@
-Summary:	An URL retrieval utility and library
-Name:		curl
-Version:	7.54.0
-Release:	1%{?dist}
-License:	MIT
-URL:		http://curl.haxx.se
-Group:		System Environment/NetworkingLibraries
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
-%define sha1 curl=a77da3cd2a9876bde3982976245ef2da9ad27847
-Requires:	ca-certificates
-BuildRequires:	ca-certificates
-Requires:	openssl
-BuildRequires:	openssl-devel
-Requires:   libssh2
+Summary:        An URL retrieval utility and library
+Name:           curl
+Version:        7.54.0
+Release:        2%{?dist}
+License:        MIT
+URL:            http://curl.haxx.se
+Group:          System Environment/NetworkingLibraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
+%define sha1    curl=a77da3cd2a9876bde3982976245ef2da9ad27847
+Patch0:         curl-CVE-2017-1000101.patch
+Requires:       ca-certificates
+BuildRequires:  ca-certificates
+Requires:       openssl
+BuildRequires:  openssl-devel
+Requires:       libssh2
 BuildRequires:  libssh2-devel
 %description
 The cURL package contains an utility and a library used for 
@@ -24,20 +25,21 @@ upload files can be incorporated into other programs to support
 functions like streaming media.
 %prep
 %setup -q
+%patch0 -p1
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 %build
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--mandir=%{_mandir} \
-	--disable-static \
-	--enable-threaded-resolver \
-	--with-ssl \
-	--with-libssh2 \
-	--with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --mandir=%{_mandir} \
+    --disable-static \
+    --enable-threaded-resolver \
+    --with-ssl \
+    --with-libssh2 \
+    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -47,8 +49,8 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -59,9 +61,12 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
+
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 %changelog
+*   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.0-2
+-   Fix CVE-2017-1000101
 *   Wed May 24 2017 Divya Thaluru <dthaluru@vmware.com> 7.54.0-1
 -   Update to 7.54.0
 *   Wed Nov 30 2016 Xiaolin Li <xiaolinl@vmware.com> 7.51.0-2
