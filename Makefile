@@ -402,6 +402,7 @@ photon-docker-image:
 
 k8s-docker-images:
 	systemctl start docker && \
+	mkdir -p $(PHOTON_STAGE)/docker_images && \
 	cd ./support/dockerfiles/k8s-docker-images && \
 	./build-k8s-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
 	./build-k8s-dns-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
