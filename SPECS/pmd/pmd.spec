@@ -37,7 +37,7 @@ BuildRequires:	netmgmt-devel
 BuildRequires:	tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
 Source0:	%{name}-%{version}-3.tar.gz
-%define sha1 pmd=b49e8ab237da29010ebcd2728a3b767a9e0a633e
+%define sha1 pmd=fe9b4b81410497d209fc4b6efb9574a049557b25
 
 %description
 Photon Management Daemon
