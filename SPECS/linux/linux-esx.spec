@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.53
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -198,6 +198,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Oct 25 2017 Anish Swaminathan <anishs@vmware.com> 4.9.53-5
+-   Enable x86 vsyscall emulation
 *   Tue Oct 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.53-4
 -   Enable vsyscall emulation
 -   Do not use deprecated -q depmod option
