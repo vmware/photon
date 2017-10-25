@@ -2,7 +2,7 @@
 Summary:	Simple kernel loader which boots from a FAT filesystem
 Name:		syslinux
 Version:	6.04
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.syslinux.org
 Group:		Applications/System
@@ -41,6 +41,10 @@ make bios install-all \
 	LDLINUX=ldlinux.c32
 rm -rf %{buildroot}/boot
 rm -rf %{buildroot}/tftpboot
+# remove it unless provide perl(Crypt::PasswdMD5)
+rm %{buildroot}/%{_bindir}/md5pass
+# remove it unless provide perl(Digest::SHA1)
+rm %{buildroot}/%{_bindir}/sha1pass
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -54,5 +58,7 @@ rm -rf %{buildroot}/tftpboot
 %{_datadir}/syslinux/com32/*
 
 %changelog
+*   Wed Oct 25 2017 Alexey Makhalov <amakhalov@vmware.com> 6.04-2
+-   Remove md5pass and sha1pass tools
 *   Tue Oct 17 2017 Alexey Makhalov <amakhalov@vmware.com> 6.04-1
 -   Initial version
