@@ -122,9 +122,9 @@ fi
 CALICO_NODE_IMG_NAME=vmware_photon_${DIST_VER}/calico-node:v${CALICO_VER}
 CALICO_CNI_IMG_NAME=vmware_photon_${DIST_VER}/calico-cni:v${CALICO_CNI_VER}
 CALICO_K8S_POLICY_IMG_NAME=vmware_photon_${DIST_VER}/calico-kube-policy-controller:v${CALICO_K8S_POLICY_VER}
-CALICO_NODE_TAR=calico-node-v${CALICO_VER}.tar
-CALICO_CNI_TAR=calico-cni-v${CALICO_CNI_VER}.tar
-CALICO_K8S_POLICY_TAR=calico-k8s-policy-v${CALICO_K8S_POLICY_VER}.tar
+CALICO_NODE_TAR=calico-node-v${CALICO_VER_REL}.tar
+CALICO_CNI_TAR=calico-cni-v${CALICO_CNI_VER_REL}.tar
+CALICO_K8S_POLICY_TAR=calico-k8s-policy-v${CALICO_K8S_POLICY_VER_REL}.tar
 
 NODE_IMG_ID=`docker images -q ${CALICO_NODE_IMG_NAME} 2> /dev/null`
 if [[ ! -z "${NODE_IMG_ID}" ]]; then
@@ -165,16 +165,16 @@ popd
 docker build --rm -t ${CALICO_NODE_IMG_NAME} -f Dockerfile.calico-node .
 docker save -o ${CALICO_NODE_TAR} ${CALICO_NODE_IMG_NAME}
 gzip ${CALICO_NODE_TAR}
-mv -f ${CALICO_NODE_TAR}.gz ${STAGE_DIR}/
+mv -f ${CALICO_NODE_TAR}.gz ${STAGE_DIR}/docker_images/
 
 docker build --rm -t ${CALICO_CNI_IMG_NAME} -f Dockerfile.calico-cni .
 docker save -o ${CALICO_CNI_TAR} ${CALICO_CNI_IMG_NAME}
 gzip ${CALICO_CNI_TAR}
-mv -f ${CALICO_CNI_TAR}.gz ${STAGE_DIR}/
+mv -f ${CALICO_CNI_TAR}.gz ${STAGE_DIR}/docker_images/
 
 docker build --rm -t ${CALICO_K8S_POLICY_IMG_NAME} -f Dockerfile.calico-k8s-policy .
 docker save -o ${CALICO_K8S_POLICY_TAR} ${CALICO_K8S_POLICY_IMG_NAME}
 gzip ${CALICO_K8S_POLICY_TAR}
-mv -f ${CALICO_K8S_POLICY_TAR}.gz ${STAGE_DIR}/
+mv -f ${CALICO_K8S_POLICY_TAR}.gz ${STAGE_DIR}/docker_images/
 
 rm -rf ./tmp
