@@ -9,7 +9,7 @@
 Summary:	Photon Management Daemon
 Name:		pmd
 Version:	0.0.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	Apache 2.0
@@ -36,9 +36,8 @@ BuildRequires:	netmgmt-cli-devel
 BuildRequires:	netmgmt-devel
 BuildRequires:	tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
-Source0:	%{name}-%{version}.tar.gz
+Source0:	%{name}-%{version}-3.tar.gz
 %define sha1 pmd=b49e8ab237da29010ebcd2728a3b767a9e0a633e
-Patch0:         pmd-local-rpc-and-coverity-scan.patch
 
 %description
 Photon Management Daemon
@@ -88,7 +87,6 @@ Python3 bindings for photon management daemon
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 sed -i 's/pmd, 0.0.1/pmd, 0.0.5/' configure.ac
@@ -307,6 +305,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*       Tue Oct 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-3
+-       Bug fixes and net commands fixes
 *       Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-2
 -       Apply patch for local rpc connection separation
 -       patch for couple of minor coverity scan fixes.
