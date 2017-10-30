@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.60
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -41,6 +41,7 @@ Patch23:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 
+Patch25:       init-do_mounts-recreate-dev-root.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -102,6 +103,7 @@ The Linux package contains the Linux kernel doc files
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
 
 %build
 # patch vmw_balloon driver
@@ -198,6 +200,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 27 2017 Bo Gan <ganb@vmware.com> 4.9.60-2
+-   Recreate /dev/root in init
 *   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
 -   Version update
 *   Wed Oct 25 2017 Anish Swaminathan <anishs@vmware.com> 4.9.53-5
