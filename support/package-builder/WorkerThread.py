@@ -1,5 +1,5 @@
-from BuildContainer import BuildContainer
-from PackageBuilder import PackageBuilder
+from PackageBuilder import PackageBuilderChroot
+from PackageBuilder import PackageBuilderContainer
 import threading
 import Scheduler
 import ThreadPool
@@ -28,9 +28,17 @@ class WorkerThread(threading.Thread):
                 break
             self.logger.info("Thread "+self.name+" is building package:"+ pkg)
             if self.pkgBuildType == "chroot":
-                pkgBuilder = PackageBuilder(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile)
+                pkgBuilder = PackageBuilderChroot(self.mapPackageToCycle,
+                                                  self.listAvailableCyclicPackages,
+                                                  self.listBuildOptionPackages,
+                                                  self.pkgBuildOptionFile,
+                                                  self.pkgBuildType)
             elif self.pkgBuildType == "container":
-                pkgBuilder = BuildContainer(self.mapPackageToCycle,self.listAvailableCyclicPackages,self.listBuildOptionPackages,self.pkgBuildOptionFile,"build-"+pkg)
+                pkgBuilder = PackageBuilderContainer(self.mapPackageToCycle,
+                                                     self.listAvailableCyclicPackages,
+                                                     self.listBuildOptionPackages,
+                                                     self.pkgBuildOptionFile,
+                                                     self.pkgBuildType)
             t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))
             t.start()
             t.join()
