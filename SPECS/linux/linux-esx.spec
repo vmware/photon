@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.92
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -38,6 +38,7 @@ Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 # Fix CVE-2017-11472
 Patch25:        ACPICA-Namespace-fix-operand-cache-leak.patch
+Patch26:       init-do_mounts-recreate-dev-root.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -100,6 +101,7 @@ The Linux package contains the Linux kernel doc files
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
+%patch26 -p1
 
 %build
 # patch vmw_balloon driver
@@ -188,6 +190,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 30 2017 Bo Gan <ganb@vmware.com> 4.4.92-3
+-   Recreate /dev/root in init
 *   Tue Oct 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.92-2
 -   Enable vsyscall emulation
 -   Do not use deprecated -q depmod option
