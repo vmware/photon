@@ -533,8 +533,8 @@ class PackageUtils(object):
             self.logger.error("Error copying source SPEC file to container")
             raise Exception("Failed copying source SPEC to container")
 
-# FIXME: some sources are located in SPECS/.. how to mount?
-#        if os.geteuid()==0:
+        #FIXME: some sources are located in SPECS/.. how to mount?
+        #        if os.geteuid()==0:
         #TODO: mount it in, don't copy
         macros = []
         self.copySourcesToContainer(listSourcesFiles, package, containerID, sourcePath)
