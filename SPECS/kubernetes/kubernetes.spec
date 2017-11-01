@@ -1,11 +1,11 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.7.5
-Release:        2%{?dist}
+Version:        1.8.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=8010b6709278cf8b3d5e6aad151dcf89d504350e
+%define sha1    kubernetes-v%{version}.tar.gz=74bad7a52f3fc0b3c70e5ccc986a46a9fdfe358b
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Group:          Development/Tools
@@ -175,6 +175,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
+-   k8s v1.8.1.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.5-2
 -   Requires util-linux or toybox
 -   Remove shadow from requires and use explicit tools for post actions
