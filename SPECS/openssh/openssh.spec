@@ -1,7 +1,7 @@
 Summary:    Free version of the SSH connectivity tools
 Name:       openssh
 Version:    7.4p1
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    BSD
 URL:         https://www.openssh.com/
 Group:      System Environment/Security
@@ -68,7 +68,7 @@ After=network.target sshd-keygen.service
 
 [Service]
 ExecStart=/usr/sbin/sshd -D
-ExecReload=/bin/kill -HUP $MAINPID
+ExecReload=/bin/kill -HUP \$MAINPID
 KillMode=process
 Restart=always
 
@@ -142,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Thu Nov 02 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-5
+-   Fix service file for sshd
 *   Fri May 19 2017 Alexey Makhalov <amakhalov@vmware.com> 7.4p1-4
 -   Configure FIPS mode: call FIPS_mode_set(1) earlier.
 *   Thu Feb 09 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-3
