@@ -1,0 +1,140 @@
+diff --git a/cloudinit/sources/DataSourceOVF.py b/cloudinit/sources/DataSourceOVF.py
+index 78928c7..89bf038 100644
+--- a/cloudinit/sources/DataSourceOVF.py
++++ b/cloudinit/sources/DataSourceOVF.py
+@@ -57,8 +57,6 @@ class DataSourceOVF(sources.DataSource):
+         found = []
+         md = {}
+         ud = ""
+-        vmwarePlatformFound = False
+-        vmwareImcConfigFilePath = ''
+ 
+         defaults = {
+             "instance-id": "iid-dsovf",
+@@ -76,86 +74,23 @@ class DataSourceOVF(sources.DataSource):
+             (md, ud, cfg) = read_ovf_environment(contents)
+             self.environment = contents
+             found.append(seed)
+-        elif system_type and 'vmware' in system_type.lower():
+-            LOG.debug("VMware Virtualization Platform found")
+-            if not util.get_cfg_option_bool(
+-                    self.sys_cfg, "disable_vmware_customization", True):
+-                deployPkgPluginPath = search_file("/usr/lib/vmware-tools",
+-                                                  "libdeployPkgPlugin.so")
+-                if not deployPkgPluginPath:
+-                    deployPkgPluginPath = search_file("/usr/lib/open-vm-tools",
+-                                                      "libdeployPkgPlugin.so")
+-                if deployPkgPluginPath:
+-                    # When the VM is powered on, the "VMware Tools" daemon
+-                    # copies the customization specification file to
+-                    # /var/run/vmware-imc directory. cloud-init code needs
+-                    # to search for the file in that directory.
+-                    vmwareImcConfigFilePath = util.log_time(
+-                        logfunc=LOG.debug,
+-                        msg="waiting for configuration file",
+-                        func=wait_for_imc_cfg_file,
+-                        args=("/var/run/vmware-imc", "cust.cfg"))
+-
+-                if vmwareImcConfigFilePath:
+-                    LOG.debug("Found VMware DeployPkg Config File at %s" %
+-                              vmwareImcConfigFilePath)
+-                else:
+-                    LOG.debug("Did not find VMware DeployPkg Config File Path")
+-            else:
+-                LOG.debug("Customization for VMware platform is disabled.")
+-
+-        if vmwareImcConfigFilePath:
+-            nics = ""
+-            try:
+-                cf = ConfigFile(vmwareImcConfigFilePath)
+-                conf = Config(cf)
+-                (md, ud, cfg) = read_vmware_imc(conf)
+-                dirpath = os.path.dirname(vmwareImcConfigFilePath)
+-                nics = get_nics_to_enable(dirpath)
+-            except Exception as e:
+-                LOG.debug("Error parsing the customization Config File")
+-                LOG.exception(e)
+-                set_customization_status(
+-                    GuestCustStateEnum.GUESTCUST_STATE_RUNNING,
+-                    GuestCustEventEnum.GUESTCUST_EVENT_CUSTOMIZE_FAILED)
+-                enable_nics(nics)
+-                return False
+-            finally:
+-                util.del_dir(os.path.dirname(vmwareImcConfigFilePath))
+-
+-            try:
+-                LOG.debug("Applying the Network customization")
+-                nicConfigurator = NicConfigurator(conf.nics)
+-                nicConfigurator.configure()
+-            except Exception as e:
+-                LOG.debug("Error applying the Network Configuration")
+-                LOG.exception(e)
+-                set_customization_status(
+-                    GuestCustStateEnum.GUESTCUST_STATE_RUNNING,
+-                    GuestCustEventEnum.GUESTCUST_EVENT_NETWORK_SETUP_FAILED)
+-                enable_nics(nics)
+-                return False
+ 
+-            vmwarePlatformFound = True
+-            set_customization_status(
+-                GuestCustStateEnum.GUESTCUST_STATE_DONE,
+-                GuestCustErrorEnum.GUESTCUST_ERROR_SUCCESS)
+-            enable_nics(nics)
+-        else:
+-            np = {'iso': transport_iso9660,
+-                  'vmware-guestd': transport_vmware_guestd, }
+-            name = None
+-            for (name, transfunc) in np.items():
+-                (contents, _dev, _fname) = transfunc()
+-                if contents:
+-                    break
++        np = {'iso': transport_iso9660 }
++        if util.get_cfg_option_bool(
++                    self.sys_cfg, "enable_vmware_guestinfo_transport", True):
++              np.update({'vmware-guestd': transport_vmware_guestd })
++        name = None
++        for (name, transfunc) in np.items():
++            (contents, _dev, _fname) = transfunc()
+             if contents:
+-                (md, ud, cfg) = read_ovf_environment(contents)
+-                self.environment = contents
+-                found.append(name)
++                break
++        if contents:
++            (md, ud, cfg) = read_ovf_environment(contents)
++            self.environment = contents
++            found.append(name)
+ 
+         # There was no OVF transports found
+-        if len(found) == 0 and not vmwarePlatformFound:
++        if len(found) == 0:
+             return False
+ 
+         if 'seedfrom' in md and md['seedfrom']:
+@@ -336,17 +271,15 @@ def transport_iso9660(require_iso=True):
+ 
+ 
+ def transport_vmware_guestd():
+-    # http://blogs.vmware.com/vapp/2009/07/ \
+-    #    selfconfiguration-and-the-ovf-environment.html
+-    # try:
+-    #     cmd = ['vmware-guestd', '--cmd', 'info-get guestinfo.ovfEnv']
+-    #     (out, err) = subp(cmd)
+-    #     return(out, 'guestinfo.ovfEnv', 'vmware-guestd')
+-    # except:
+-    #     # would need to error check here and see why this failed
+-    #     # to know if log/error should be raised
+-    #     return(False, None, None)
+-    return (False, None, None)
++    # http://blogs.vmware.com/vapp/2009/07/selfconfiguration-and-the-ovf-environment.html
++    try:
++        cmd = ['vmtoolsd', '--cmd', 'info-get guestinfo.ovfEnv']
++        (out, err) = util.subp(cmd)
++        return(out, 'guestinfo.ovfEnv', 'vmware-guestd')
++    except:
++        # would need to error check here and see why this failed
++        # to know if log/error should be raised
++        return(False, None, None)
+ 
+ 
+ def find_child(node, filter_func):
