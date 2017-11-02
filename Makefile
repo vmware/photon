@@ -46,6 +46,19 @@ else
 PHOTON_PUBLISH_XRPMS := publish-x-rpms
 endif
 
+ifdef PHOTONCI_PROXY
+ifndef PHOTONCI_CA_URL
+$(error PHOTONCI_CA_URL is not set)
+endif
+ifndef PHOTONCI_CA_SHA1
+$(error PHOTONCI_CA_SHA1 is not set)
+endif
+PHOTONCI_PROXY_OPTIONS :=\
+ --photonci-proxy $(PHOTONCI_PROXY)\
+ --photonci-ca-url $(PHOTONCI_CA_URL)\
+ --photonci-ca-sha1 $(PHOTONCI_CA_SHA1)
+endif
+
 # Tri state RPMCHECK:
 # 1) RPMCHECK is not specified:  just build
 # 2) RPMCHECK=enable: build and run %check section. do not stop on error. will generate report file.
@@ -123,6 +136,7 @@ packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_FLAGS) \
+                $(PHOTONCI_PROXY_OPTIONS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
@@ -159,6 +173,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_FLAGS) \
+                $(PHOTONCI_PROXY_OPTIONS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
@@ -245,6 +260,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
                 -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 $(PHOTON_RPMCHECK_FLAGS) \
+                $(PHOTONCI_PROXY_OPTIONS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
@@ -269,6 +285,7 @@ packages-docker: check-docker-py check-docker-service check-tools $(PHOTON_STAGE
                 -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 $(PHOTON_RPMCHECK_FLAGS) \
+                $(PHOTONCI_PROXY_OPTIONS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
@@ -290,6 +307,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
                 -v $(PHOTON_RELEASE_VERSION) \
                 -k $(PHOTON_INPUT_RPMS_DIR) \
                 $(PHOTON_RPMCHECK_FLAGS) \
+                $(PHOTONCI_PROXY_OPTIONS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
@@ -311,6 +329,7 @@ tool-chain-stage1: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_FLAGS) \
+                $(PHOTONCI_PROXY_OPTIONS) \
                 -m stage1
 
 tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
@@ -330,6 +349,7 @@ tool-chain-stage2: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_S
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_FLAGS) \
+                $(PHOTONCI_PROXY_OPTIONS) \
                 -m stage2
 
 
@@ -604,6 +624,7 @@ check: packages
                               -v $(PHOTON_RELEASE_VERSION) \
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_FLAGS) \
+                              $(PHOTONCI_PROXY_OPTIONS) \
                               -l $(PHOTON_LOGS_DIR)
 
 generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
@@ -623,6 +644,7 @@ generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
                               -v $(PHOTON_RELEASE_VERSION) \
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_OPTION) \
+                              $(PHOTONCI_PROXY_OPTIONS) \
                               -l $(PHOTON_LOGS_DIR) \
                               -j $(PHOTON_STAGE) \
                               -f $(PHOTON_PKG_BLACKLIST_FILE)

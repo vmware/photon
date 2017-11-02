@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -15,6 +15,7 @@ Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
+Source4:        photonci-with-mirror
 Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
 Requires:       bash
@@ -138,6 +139,7 @@ install -dm 755 %{buildroot}%{_sysconfdir}/rpm
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
 install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
+install -vm755 %{SOURCE4} %{buildroot}%{_libdir}/rpm/
 
 pushd python
 python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -258,6 +260,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Nov 1 2017 Bo Gan <ganb@vmware.com> 4.13.0.1-7
+-   Add git mirror support
 *   Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
 -   make python{,3}-rpm depend on current version of librpm
 *   Wed Jun 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-5

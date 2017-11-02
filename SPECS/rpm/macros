@@ -48,3 +48,9 @@
 %install %{?_enable_debug_packages:%{?buildsubdir:%{debug_package}}}\
 %%install\
 %{nil}
+
+%photonci_with_mirror() \
+    env 'PHOTONCI_PROXY=%{?photonci_proxy}' \
+        'PHOTONCI_CA_URL=%{?photonci_ca_url}' \
+        'PHOTONCI_CA_SHA1=%{?photonci_ca_sha1}' %{_rpmconfigdir}/photonci-with-mirror %* \
+%{nil}

@@ -46,6 +46,9 @@ def main():
     parser.add_argument("-j",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
     parser.add_argument("-f",  "--pkg-blacklist-file",  dest="pkgBlacklistFile",  default=None)
     parser.add_argument("-bt", "--build-type",  dest="pkgBuildType",  default="chroot")
+    parser.add_argument("--photonci-proxy", dest="photonci_proxy", default=None)
+    parser.add_argument("--photonci-ca-url", dest="photonci_ca_url", default=None)
+    parser.add_argument("--photonci-ca-sha1", dest="photonci_ca_sha1", default=None)
     parser.add_argument("PackageName", nargs='?')
     options = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -129,6 +132,8 @@ def main():
     logger.info("Top Dir Path :" + options.topDirPath)
     logger.info("Publish RPMS Path :" + options.publishRPMSPath)
     logger.info("Publish X RPMS Path :" + options.publishXRPMSPath)
+    if options.photonci_proxy is not None:
+        logger.info("Using https proxy at: " + options.photonci_proxy)
 
     if options.installPackage:
         logger.info("Package to build:"+package)
