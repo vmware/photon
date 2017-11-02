@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -e
+
+if [ x"$PHOTONCI_PROXY" = x ]; then
+  exec "$@"
+fi
+
+CA_TMP="$(mktemp /tmp/photonci-ca-pem-XXXXXX)"
+trap "{ rm -f "$CA_TMP"; }" EXIT
+http_proxy="$PHOTONCI_PROXY" curl -s -o "$CA_TMP" "$PHOTONCI_CA_URL" || exit 255
+
+diff <(echo "SHA1 Fingerprint=$PHOTONCI_CA_SHA1") <(openssl x509 -in "$CA_TMP" -noout -fingerprint -sha1) || exit 255
+
+export https_proxy="$PHOTONCI_PROXY"
+export HTTPS_PROXY="$PHOTONCI_PROXY"
+export GIT_SSL_CAINFO="$CA_TMP"
+
+"$@"

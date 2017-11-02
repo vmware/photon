@@ -329,6 +329,10 @@ class SPECS(object):
         else:
             self.specData.addMacro("with_check","0")
 
+        if constants.photonci_proxy is not None:
+            self.specData.addMacro("photonci_proxy", constants.photonci_proxy)
+            self.specData.addMacro("photonci_ca_url", constants.photonci_ca_url)
+            self.specData.addMacro("photonci_ca_sha1", constants.photonci_ca_sha1)
 
 
 # Little bit of duplication

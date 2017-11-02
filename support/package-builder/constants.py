@@ -19,6 +19,9 @@ class constants(object):
     sourceRpmPath=""
     publishBuildDependencies=False
     packageWeightsPath=None
+    photonci_proxy=None
+    photonci_ca_url=None
+    photonci_ca_sha1=None
 
     noDepsPackageList=[
         "texinfo",
@@ -431,6 +434,9 @@ class constants(object):
         constants.publishBuildDependencies=options.publishBuildDependencies
         constants.packageWeightsPath=options.packageWeightsPath
         constants.tmpDirPath = "/dev/shm"
+        constants.photonci_proxy=options.photonci_proxy
+        constants.photonci_ca_url=options.photonci_ca_url
+        constants.photonci_ca_sha1=options.photonci_ca_sha1
         if constants.rpmCheck:
             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
 
