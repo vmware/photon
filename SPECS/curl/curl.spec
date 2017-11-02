@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.54.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,6 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
 %define sha1    curl=5e549585a3e9746bd672f52cea2a7ea4936021ef
+Patch0:         curl-CVE-2017-1000099.patch
+Patch1:         curl-CVE-2017-1000100.patch
+Patch2:         curl-CVE-2017-1000101.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -41,6 +44,9 @@ This package contains minimal set of shared curl libraries.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -88,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.1-2
+-   Fix CVE-2017-1000099, CVE-2017-1000100, CVE-2017-1000101
 *   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 7.54.1-1
 -   Update to 7.54.1
 *   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 7.54.0-1
