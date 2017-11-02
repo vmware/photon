@@ -19,6 +19,7 @@ class constants(object):
     sourceRpmPath=""
     publishBuildDependencies=False
     packageWeightsPath=None
+    dockerUnixSocket="/var/run/docker.sock"
 
     noDepsPackageList=[
         "texinfo",

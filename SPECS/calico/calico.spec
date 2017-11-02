@@ -43,6 +43,8 @@ cp -r calico_node/filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/etc/rc.local
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/sbin/start_runit
 
+#%check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/allocate-ipip-addr

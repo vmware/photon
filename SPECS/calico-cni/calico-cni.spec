@@ -48,6 +48,11 @@ install -vdm 0755 %{buildroot}/usr/share/calico-cni/k8s
 install -vpm 0755 -t %{buildroot}/usr/share/calico-cni/k8s/ k8s-install/scripts/install-cni.sh
 install -vpm 0755 -t %{buildroot}/usr/share/calico-cni/k8s/ k8s-install/scripts/calico.conf.default
 
+%check
+cd ../build/src/github.com/projectcalico/cni-plugin
+go get -u ginkgo
+CGO_ENABLED=0 ETCD_IP=127.0.0.1 PLUGIN=calico GOPATH=$GOPATH $(shell which ginkgo)
+
 %files
 %defattr(-,root,root)
 /opt/cni/bin/calico

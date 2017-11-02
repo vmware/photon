@@ -14,6 +14,14 @@ Distribution:  Photon
 BuildRequires: git
 BuildRequires: go >= 1.7
 %define debug_package %{nil}
+%if %{with_check}
+BuildRequires: docker
+BuildRequires: docker-py
+BuildRequires: python2
+BuildRequires: python2-libs
+BuildRequires: python-pip
+BuildRequires: python-setuptools
+%endif
 
 %description
 GoBGP is an open source BGP implementation designed from scratch for modern environment and implemented in a modern programming language, the Go Programming Language.
@@ -40,6 +48,13 @@ pushd ${GOPATH}/src/github.com/osrg/gobgp
 install -vdm 755 %{buildroot}%{_bindir}
 install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgp %{buildroot}%{_bindir}/
 install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
+
+%check
+pushd ${GOPATH}/src/github.com/osrg/gobgp/tests
+pip install -r pip-requires.txt
+cd scenario_test
+./run_all_tests.sh
+foo
 
 %files
 %defattr(-,root,root)

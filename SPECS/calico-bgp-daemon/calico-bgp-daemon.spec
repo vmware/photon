@@ -33,6 +33,9 @@ go build -v -o dist/calico-bgp-daemon -ldflags "-X main.VERSION=%{version} -s -w
 install -vdm 755 %{buildroot}%{_bindir}
 install ${GOPATH}/src/github.com/projectcalico/calico-bgp-daemon/dist/calico-bgp-daemon %{buildroot}%{_bindir}/
 
+#%check
+# No tests available for this pkg
+
 %files
 %defattr(-,root,root)
 %{_bindir}/calico-bgp-daemon
