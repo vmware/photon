@@ -21,22 +21,21 @@ To set up and run the latest version of the Network Manager API for Python:
 # Initialization Steps
 ~~~~
 # python3
-&gt;&gt;&gt; import pmd
-&gt;&gt;&gt; net = pmd.server().net
-&gt;&gt;&gt; net._command_
+>>> import pmd
+>>> net = pmd.server().net
 ~~~~
 # Get Online Help
 
 Get help for all commands.
 ~~~~
-&gt;&gt;&gt; help(net)
+>>> help(net)
 ~~~~
 Get help for a specific command.
 ~~~~
-&gt;&gt;&gt; help(net.add_ntp_servers)
+>>> help(net.add_ntp_servers)
 -in function add_ntp_servers:
 add_ntp_servers(...) method of  [server.net](http://server.net/) instance
-    net.add_ntp_servers(ntpservers = [&quot;20.20.20.20&quot;, &quot;25.30.40.70&quot;])
+    net.add_ntp_servers(ntpservers = ["20.20.20.20", "25.30.40.70"])
     adds ntp servers. returns success: 0, failure: exception.
 (END)
 ~~~~
@@ -57,15 +56,11 @@ net.get_system_network_info()
 
 **Example**
 ~~~~
-&gt;&gt;&gt; system_network_info = netmgmt.get_system_network_info()
+>>> system_network_info = netmgmt.get_system_network_info()
 
-&gt;&gt;&gt; type  (system_network_info)
+>>> print ( system_network_info)
 
-&lt;class &#39;list&#39;&gt;
-
-&gt;&gt;&gt; print ( system_network_info)
-
-[{DUID: 00:02:11:22:33:44:55:66:77:20, DNS Mode: (null), DNS ServerList: [&#39;10.10.100.100&#39;, &#39;20.20.200.10&#39;], DNS domain list: [&#39; [abcd.com](http://abcd.com)&#39;], NTP ServerList: (null)}]
+[{DUID: 00:02:11:22:33:44:55:66:77:20, DNS Mode: (null), DNS ServerList: ['10.10.100.100', '20.20.200.10'], DNS domain list: [' [abcd.com](http://abcd.com)'], NTP ServerList: (null)}]
 ~~~~
 ### get_err_info
 
@@ -73,7 +68,7 @@ Get information about the specified error number.
 
 **Syntax**
 ~~~~
-net.get_err_info(error = &lt;error_number&gt;)
+net.get_err_info(error = <error_number>)
 ~~~~
 **Parameters**
 
@@ -100,9 +95,9 @@ Here is the list of error numbers:
 
 Example
 ~~~~
-&gt;&gt; net.get_err_info(error = 4097)
+>> net.get_err_info(error = 4097)
 
-&#39;invalid parameter&#39;
+'invalid parameter'
 ~~~~
 # Interface Configuration
 
@@ -509,7 +504,7 @@ Set the list of DNS domains for the specified interface.
 
 **Syntax**
 ~~~~
-net.set_dns_domains(domains = [&quot;domain1&quot;,&quot;domain2&quot;,...], ifname = interface_name)
+net.set_dns_domains(domains = ["domain1","domain2",...], ifname = interface_name)
 ~~~~
 **Parameters**
 
@@ -527,7 +522,7 @@ Set the list of DNS servers for the specified interface.
 
 **Syntax**
 ~~~~
-net.set_dns_servers(dns_mode = [dhcp, static], servers = [&quot;server1&quot;,&quot;server2&quot;, ...], ifname = interface_name)
+net.set_dns_servers(dns_mode = [dhcp, static], servers = ["server1","server2", ...], ifname = interface_name)
 ~~~~
 **Parameters**
 
@@ -565,7 +560,7 @@ Set the IAID for the specified interface.
 
 **Syntax**
 ~~~~
-net.set_link_iaid(ifname = interface_name, iaid = &lt;iaid&gt;)
+net.set_link_iaid(ifname = interface_name, iaid = <iaid>)
 ~~~~
 **Parameters**
 
@@ -622,7 +617,7 @@ Add one or more NTP servers to the NTP servers list.
 
 **Syntax**
 ~~~~
-net.add_ntp_servers(ntpservers = [&quot;server1&quot;, &quot;server2&quot;, ...])
+net.add_ntp_servers(ntpservers = ["server1", "server2", ...])
 ~~~~
 **Parameters**
 
@@ -639,7 +634,7 @@ Remove one or more NTP servers from the NTP servers list.
 
 **Syntax**
 ~~~~
-net.del_ntp_servers(ntpservers = [&quot;server1&quot;, &quot;server2&quot;, ...])
+net.del_ntp_servers(ntpservers = ["server1", "server2", ...])
 ~~~~
 **Parameters**
 
@@ -669,7 +664,7 @@ Set the NTP servers list.
 
 **Syntax**
 ~~~~
-net.set_ntp_servers(ntpservers = [&quot;server1&quot;, &quot;server2&quot;, ...])
+net.set_ntp_servers(ntpservers = ["server1", "server2", ...])
 ~~~~
 **Parameters**
 
