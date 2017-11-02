@@ -1,7 +1,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.14.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
@@ -38,7 +38,7 @@ ARCH=${ARCH} VERSION=${VERSION} PKG=${PKG} go install \
 
 %install
 install -m 755 -d %{buildroot}%{_bindir}
-binaries=(dnsmasq-nanny e2e ginkgo kube-dns sidecar sidecar-e2e)
+binaries=(dnsmasq-nanny e2e kube-dns sidecar sidecar-e2e)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/bin/${bin}
@@ -59,12 +59,13 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/dnsmasq-nanny
 %{_bindir}/e2e
-%{_bindir}/ginkgo
 %{_bindir}/kube-dns
 %{_bindir}/sidecar
 %{_bindir}/sidecar-e2e
 
 %changelog
+*   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.6-2
+-   Remove go testing framework binary.
 *   Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.6-1
 -   kubernetes-dns 1.14.6.
 *   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.4-1
