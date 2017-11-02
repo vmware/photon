@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -39,6 +39,8 @@ Patch14:        CVE-2016-4429-sunrpc-Do-not-use-alloca-in-clntudp_ca.patch
 Patch15:        glibc-fix-CVE-2017-1000366.patch
 #https://sourceware.org/git/gitweb.cgi?p=glibc.git;h=d42eed4a044e5e10dfb885cf9891c2518a72a491
 Patch16:        glibc-fix-CVE-2017-12133.patch
+Patch17:        glibc-fix-CVE-2017-15670.patch
+Patch18:        glibc-fix-CVE-2017-15804.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -81,6 +83,8 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
+%patch18 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -208,6 +212,8 @@ popd
 
 
 %changelog
+*   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 2.22-15
+-   Fix CVE-2017-15670, CVE-2017-15804
 *   Thu Oct 19 2017 Xiaolin Li <xiaolinl@vmware.com> 2.22-14
 -   Fix CVE-2017-12133
 *   Thu Jun 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.22-13
