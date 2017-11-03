@@ -65,8 +65,14 @@ make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
-# Disable check. It requires docker which does not run in chroot.
-# Make check for netmgr should be run in vmware/netmgmt project.
+make distclean
+pushd build
+make -f Makefile.bootstrap
+sed -i 's/systemctl start docker && //g' tests/Makefile
+cp -p /etc/systemd/network/99-dhcp-en.network /etc/systemd/network/10-eth0.network
+sed -i 's/Name=e\*/Name=eth0/g' /etc/systemd/network/10-eth0.network
+make check
+popd
 
 %post
 /sbin/ldconfig
@@ -88,7 +94,6 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/netmgmt/netmgrcli.h
 %{_lib64dir}/libnetmgrcli.a
 %{_lib64dir}/libnetmgrcli.so
-
 
 # %doc ChangeLog README COPYING
 

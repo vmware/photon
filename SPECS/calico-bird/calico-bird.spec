@@ -49,6 +49,9 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/bird
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/bird6
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/birdcl
 
+#%check
+# No tests available for this pkg
+
 %files
 %defattr(-,root,root)
 %{_bindir}/bird
