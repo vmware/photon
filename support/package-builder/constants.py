@@ -110,8 +110,6 @@ class constants(object):
         "icu",
         "harfbuzz",
         "harfbuzz-devel",
-        "freetype2",
-        "freetype2-devel",
         "alsa-lib",
         "alsa-lib-devel",
         "xcb-proto",
