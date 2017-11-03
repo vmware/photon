@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk
 Version:	1.8.0.151
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -20,6 +20,8 @@ BuildRequires:	unzip
 BuildRequires:  zlib-devel
 BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
+BuildRequires:  freetype2-devel
+Requires:       freetype2
 Requires:       openjre = %{version}-%{release}
 Requires:       chkconfig
 AutoReqProv: 	no
@@ -229,6 +231,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*       Fri Nov 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.151-2
+-       Upgrade requires to include freetype2 from photon OS repo
 *	Thu Oct 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.151-1
 -	Upgraded to version 1.8.0.151
 *	Thu Sep 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-2
