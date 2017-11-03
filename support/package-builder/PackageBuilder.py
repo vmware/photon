@@ -152,7 +152,8 @@ class PackageBuilderContainer(object):
                         constants.rpmPath: {'bind': constants.topDirPath + "/RPMS", 'mode': 'rw'},
                         constants.sourceRpmPath: {'bind': constants.topDirPath + "/SRPMS", 'mode': 'rw'},
                         constants.logPath + "/" + self.base.logName: {'bind': constants.topDirPath + "/LOGS", 'mode': 'rw'},
-                        chrootID + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD", 'mode': 'rw'}
+                        chrootID + constants.topDirPath + "/BUILD": {'bind': constants.topDirPath + "/BUILD", 'mode': 'rw'},
+                        constants.dockerUnixSocket: {'bind': constants.dockerUnixSocket, 'mode': 'rw'}
                     }
 
         containerName = containerTaskName
