@@ -7,8 +7,8 @@
         Version](#looking-at-the-differences-between-the-minimal-and-the-full-version)
     -   [The Root Account and the `sudo` and `su`
         Commands](#the-root-account-and-the-sudo-and-su-commands)
--   [Getting Start for Photon OS 2.0](#getting-started-with-photon-os)
--   [Quick Start for Photon OS 1.0](#quick-start-for-photon-os)
+-   [Getting Started with Photon OS 2.0](#getting-started-with-photon-os-20)
+-   [Quick Start for Photon OS 1.0](#quick-start-for-photon-os-10)
     -   [Obtaining the ISO from Bintray and Creating a Photon OS VM
         in VMware
         Workstation](#obtaining-the-iso-from-bintray-and-creating-a-photon-os-vm-in-vmware-workstation)
@@ -51,6 +51,8 @@
         systemd](#migrating-scripts-to-systemd)
 -   [Managing the Network
     Configuration](#managing-the-network-configuration)
+    -   [Using the Photon Management Daemon](#using-the-photon-management-daemon)
+    -   [Using the Network Configuration Manager](#using-the-network-configuration-manager)
     -   [Use `ip` and `ss` Commands Instead of `ifconfig` and
         `netstat`](#use-ip-and-ss-commands-instead-of-ifconfig-and-netstat)
     -   [Configuring Network
@@ -194,19 +196,21 @@ A later section covers tdnf.
 
 This guide assumes that you are logged in to Photon OS with the root account and running commands as root. The sudo program comes with the full version of Photon OS. On the minimal version, you must install sudo with tdnf if you want to use it. As an alternative to installing sudo on the minimal version, you can switch users as needed with the `su` command to run commands that require root privileges. 
 
-## Getting Started with Photon OS
+## Getting Started with Photon OS 2.0
 
 **NOTE:** This section applies to Photon OS w.0 only.
 
 To get started with Photon OS 2.0, refer to the installation instructions for your target environment:
-- [Running Photon OS on VMware vSphere](#https://github.com/vmware/photon/wiki/Running-Photon-OS-on-vSphere)
-- [Running Photon OS on VMware Fusion](#https://github.com/vmware/photon/wiki/Running-Project-Photon-on-Fusion)
-- [Running Photon OS on VMware Workstation](#https://github.com/vmware/photon/wiki/Running-Photon-OS-on-vSphere)
-- [Running Photon OS on Amazon EC2](#https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute)
-- [Running Photon OS on Google Compute Engine](#https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Google-Compute-Engine)
-- [Running Photon OS on Microsoft Azure](#https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Microsoft-Azure)
+- [Running Photon OS on VMware vSphere](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-vSphere)
+- [Running Photon OS on VMware Fusion](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-Fusion)
+- [Running Photon OS on VMware Workstation](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-vSphere)
+- [Running Photon OS on Amazon EC2](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute)
+- [Running Photon OS on Google Compute Engine](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Google-Compute-Engine)
+- [Running Photon OS on Microsoft Azure](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Microsoft-Azure)
 
-## Quick Start for Photon OS
+**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 2.0](https://github.com/vmware/photon/wiki/Upgrading-to-Photon-OS-2.0). 
+
+## Quick Start for Photon OS 1.0
 
 **NOTE:** This section applies to Photon OS 1.0 only.
 
@@ -888,7 +892,7 @@ The pmd package is included with your Photon OS 2.0 distribution. To make sure t
 
 ##### pmd-cli
 
-The pmd-cli utility enables Photon customers to invoke API requests securely on local and remote servers. For details, see [Photon Management Daemon Command-line Interface (pmd-cli)](#https://github.com/vmware/photon/blob/master/docs/pmd-cli.md).
+The pmd-cli utility enables Photon customers to invoke API requests securely on local and remote servers. For details, see [Photon Management Daemon Command-line Interface (pmd-cli)](https://github.com/vmware/photon/blob/master/docs/pmd-cli.md).
 
 ##### PMD REST API
 
@@ -897,7 +901,7 @@ You can also browse it using the copenapi_cli tool that comes with the pmd packa
 ~~~~
 # copenapi_cli --apispec /etc/pmd/restapispec.json
 ~~~~
-For more information about the copenapi_cli tool, refer to [github.com/vmware/copenapi](#https://github.com/vmware/copenapi).
+For more information about the copenapi_cli tool, refer to [github.com/vmware/copenapi](https://github.com/vmware/copenapi).
 
 ##### PMD Python API
 
@@ -920,15 +924,15 @@ To show help text for individual interfaces:
 >>> help(pmd.server().firewall)
 >>> help(pmd.server().user)
 ~~~~
-For details about the network commands, see also the [Network Configuration Manager - Python API](#https://github.com/vmware/photon/blob/master/docs/netmgr.python.md).
+For details about the network commands, see also the [Network Configuration Manager - Python API](https://github.com/vmware/photon/blob/master/docs/netmgr.python.md).
 
 ##### PMD C Documentation
 
 PMD C APIs are defined in the header files (pmd_fwmgmt.h, pmd_netmgr.h, pmd_pkgmgmt.h, pmd_usermgmt.h) that are stored in the following location:  
 ~~~~
-[https://github.com/vmware/pmd/tree/master/include](#https://github.com/vmware/pmd/tree/master/include)
+[https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
 ~~~~
-For details about the network commands, see also the [Network Configuration Manager - C API](#https://github.com/vmware/photon/blob/master/docs/netmgr.c.md).
+For details about the network commands, see also the [Network Configuration Manager - C API](https://github.com/vmware/photon/blob/master/docs/netmgr.c.md).
 
 ### Using the Network Configuration Manager
 
@@ -943,9 +947,9 @@ The Network Configuration Manager library that ships with Photon OS 2.0 provides
 - object parameters (interfaces and files)
 
 For additional details, see:
-- **CLI** - see the ``-net`` commands in the [Photon Management Daemon Command-line Interface (pmd-cli)](#https://github.com/vmware/photon/blob/master/docs/pmd-cli.md)
-- **C APIs** - [Network Configuration Manager - C API](#https://github.com/vmware/photon/blob/master/docs/netmgr.c.md)
-- **Python APIs** - [Network Configuration Manager - Python API](#https://github.com/vmware/photon/blob/master/docs/netmgr.python.md)
+- **CLI** - see the ``-net`` commands in the [Photon Management Daemon Command-line Interface (pmd-cli)](https://github.com/vmware/photon/blob/master/docs/pmd-cli.md)
+- **C APIs** - [Network Configuration Manager - C API](https://github.com/vmware/photon/blob/master/docs/netmgr.c.md)
+- **Python APIs** - [Network Configuration Manager - Python API](https://github.com/vmware/photon/blob/master/docs/netmgr.python.md)
 
 ### Use `ip` and `ss` Commands Instead of `ifconfig` and `netstat`
 
@@ -1971,22 +1975,9 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * FAQ
 * Running Photon OS on vSphere
 * Running Photon OS on Fusion
-* Running Photon OS on vCloud Air
 * Install and Configure a Swarm Cluster with DNS Service on Photon OS
 * Install and Configure a Production Ready Mesos Cluster on Photon OS
 * Install and Configure Marathon for Mesos Cluster on Photon OS
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
 * RPM OSTree Documentation
-
-
-
-
-
-
-
-
-
-
-
-
