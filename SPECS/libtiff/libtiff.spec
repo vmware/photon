@@ -1,7 +1,7 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
 Version:        4.0.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        libtiff
 URL:            http://www.simplesystems.org/libtiff/
 Group:          System Environment/Libraries
@@ -15,6 +15,8 @@ Patch1:         libtiff-4.0.6-CVE-2015-1547.patch
 Patch2:         libtiff-CVE-2017-10688.patch
 Patch3:         libtiff-4.0.8-CVE-2017-9936.patch
 Patch4:         libtiff-4.0.8-CVE-2017-11335.patch
+Patch5:         libtiff-4.0.8-CVE-2017-13726.patch
+Patch6:         libtiff-4.0.8-CVE-2017-13727.patch
 BuildRequires:  libjpeg-turbo-devel
 Requires:       libjpeg-turbo
 %description
@@ -34,6 +36,8 @@ It contains the libraries and header files to create applications
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
 %build
 %configure \
     --disable-static
@@ -67,6 +71,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Fri Nov 03 2017 Xiaolin Li <xiaolinl@vmware.com> 4.0.8-5
+-   Added patch for CVE-2017-13726, CVE-2017-13727
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.8-4
 -   Use standard configure macros
 *   Wed Aug 09 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.0.8-3
