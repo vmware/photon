@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          39%{?dist}
+Release:          40%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -39,6 +39,7 @@ Patch22:          systemd-228-vm-watchdog-timer.patch
 Patch23:          systemd-228-CVE-2016-10156-suid-fix.patch
 Patch24:          systemd-228-CVE-2017-9445-dns-oob.patch
 Patch25:          systemd-228-logind-disconnect.patch
+Patch26:          systemd-228-CVE-2015-7510-long-machinename.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -98,6 +99,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
+%patch26 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -237,6 +239,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Thu Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-40
+-    Fix CVE-2015-7510.
 *    Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-39
 -    add filesystem.conf in tmpfiles.d
 *    Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  228-38
