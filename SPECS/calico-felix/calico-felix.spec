@@ -1,13 +1,13 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
-Version:       2.4.1
+Version:       2.6.0
 Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/projectcalico/felix
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 calico-felix=4408e0b30fee66d8813bf0351094f4b4af7d6813
+%define sha1 calico-felix=24f20292c2132e1b912e99a8b6977e2af6cd7b39
 Source1:       gogo-protobuf-0.4.tar.gz
 %define sha1 gogo-protobuf-0.4=4fc5dda432ad929ce203486c861b7d3e48681150
 Distribution:  Photon
@@ -52,6 +52,8 @@ install ${GOPATH}/src/github.com/projectcalico/felix/bin/calico-felix %{buildroo
 %{_bindir}/calico-felix
 
 %changelog
+*    Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.0-1
+-    Calico Felix v2.6.2.
 *    Tue Sep 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-2
 -    Build protoc-gen-gogofaster plugin from source.
 *    Sat Aug 19 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
