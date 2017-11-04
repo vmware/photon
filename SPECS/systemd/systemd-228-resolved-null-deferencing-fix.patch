@@ -1,0 +1,12 @@
+diff -rup systemd-228/src/resolve/resolved-dns-transaction.c systemd-228-new/src/resolve/resolved-dns-transaction.c
+--- systemd-228/src/resolve/resolved-dns-transaction.c	2015-11-17 23:59:06.000000000 -0800
++++ systemd-228-new/src/resolve/resolved-dns-transaction.c	2017-11-03 17:49:35.350600440 -0700
+@@ -454,7 +454,7 @@ void dns_transaction_process_reply(DnsTr
+         }
+ 
+         /* Only consider responses with equivalent query section to the request */
+-        if (p->question->n_keys != 1 || dns_resource_key_equal(p->question->keys[0], t->key) <= 0) {
++        if (!p->question || p->question->n_keys != 1 || dns_resource_key_equal(p->question->keys[0], t->key) <= 0) {
+                 dns_transaction_complete(t, DNS_TRANSACTION_INVALID_REPLY);
+                 return;
+         }
