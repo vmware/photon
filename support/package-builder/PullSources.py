@@ -80,8 +80,8 @@ class pullSources:
             for block in response.iter_content(1024):
                 if not block:
                     break
-
                 handle.write(block)
+            handle.flush()
             response.close()
         return file_path
 
