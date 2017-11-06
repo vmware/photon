@@ -1,6 +1,6 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
-Version:        3.4.9
+Version:        3.4.10
 Release:        1%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source:         http://mirrors.ocf.berkeley.edu/apache/zookeeper/zookeeper-3.4.9/%{name}-%{version}.tar.gz
-%define sha1 zookeeper=0285717bf5ea87a7a36936bf37851d214a32bb99
+%define sha1 zookeeper=eb2145498c5f7a0d23650d3e0102318363206fba
 Source1:        zookeeper.service
 Source2:        zkEnv.sh
 Patch0:	        zookeeper-3.4.8-server.patch
@@ -62,7 +62,6 @@ getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --
 if [ $1 -eq 1 ] ; then
     # Initial installation
     # Enabled by default per "runs once then goes away" exception
-    source %{_sysconfdir}/profile.d/java-exports.sh
     bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
@@ -75,7 +74,6 @@ fi
  
 %preun
 if [ $1 -eq 0 ] ; then
-source %{_sysconfdir}/profile.d/java-exports.sh
 bash %{_prefix}/sbin/update-zookeeper-env.sh \
        --prefix=%{_prefix} \
        --conf-dir=%{_sysconfdir}/zookeeper \
@@ -104,6 +102,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Mon Nov 6 2017 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.10-1
+-   Upgraded to version 3.4.10
 *   Mon Nov 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.9-1
 -   Upgrade to 3.4.9 to address CVE-2016-5017
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.8-4
