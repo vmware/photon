@@ -1,6 +1,6 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
-Version:    1.0.2l
+Version:    1.0.2m
 Release:    1%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
@@ -8,9 +8,9 @@ Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1 openssl=b58d5d0e9cea20e571d903aafa853e2ccd914138
+%define sha1 openssl=27fb00641260f97eaa587eb2b80fab3647f6013b
 Patch0:     c_rehash.patch
-Patch1:     openssl-1.0.2f-ipv6apps.patch
+Patch1:     openssl-1.0.2m-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
 Patch3:     openssl-drbg-default-read-system-fips.patch
 Requires:   bash glibc libgcc 
@@ -112,6 +112,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Tue Nov 07 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2m-1
+-   Upgrade to 1.0.2m
 *   Fri Aug 11 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2l-1
 -   Upgrade to 1.0.2l
 *   Fri Jul 28 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2k-3
