@@ -13,7 +13,7 @@ Photon OS 2.0 provides the Photon Management Daemon command line interface (pmd-
 
 The pmd-cli utility is included with your Photon OS 2.0 distribution. To make sure that you have the latest version, you can run:
 ~~~~
-tndf install pmd-cli
+tdnf install pmd-cli
 ~~~~
 # Syntax
 ~~~~
@@ -104,6 +104,11 @@ Delete a new firewall rule.
 pmd-cli firewall rules --chain <chain_name> --delete <rule_specification>
 ~~~~
 **Note:**  To confirm that the firewall rule was removed, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.
+
+Make firewall rule changes peristent (add --persist flag)
+~~~~
+pmd-cli firewall rules --chain <chain_name> --add <rule_specification> --persist
+~~~~
 
 ## firewall version
 
