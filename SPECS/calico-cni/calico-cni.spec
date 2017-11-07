@@ -1,11 +1,11 @@
 Summary:        Calico networking for CNI
 Name:           calico-cni
-Version:        1.10.0
+Version:        1.11.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/projectcalico/cni-plugin
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico-cni=6c7f7e59e8f632e1630685f5bf092c2e4a60550f
+%define sha1 calico-cni=0fee124daa5e3a5f72e9af28ca1df61e6c2443c3
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,5 +57,7 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico-cni/k8s/ k8s-install/scripts/
 /usr/share/calico-cni/k8s/calico.conf.default
 
 %changelog
+*   Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.11.0-1
+-   calico-cni v1.11.0.
 *   Thu Oct 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.10.0-1
 -   calico-cni for PhotonOS.
