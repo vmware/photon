@@ -13,7 +13,7 @@ Photon OS 2.0 provides the Photon Management Daemon command line interface (pmd-
 
 The pmd-cli utility is included with your Photon OS 2.0 distribution. To make sure that you have the latest version, you can run:
 ~~~~
-tndf install pmd-cli
+tdnf install pmd-cli
 ~~~~
 # Syntax
 ~~~~
