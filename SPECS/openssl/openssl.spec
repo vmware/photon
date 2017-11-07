@@ -1,19 +1,18 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2l
-Release:        2%{?dist}
+Version:        1.0.2m
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=b58d5d0e9cea20e571d903aafa853e2ccd914138
+%define sha1    openssl=27fb00641260f97eaa587eb2b80fab3647f6013b
 Patch0:         c_rehash.patch
-Patch1:         openssl-1.0.2f-ipv6apps.patch
+Patch1:         openssl-1.0.2m-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
-Patch4:         openssl-CVE-2017-3735.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -57,7 +56,6 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -117,6 +115,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Tue Nov 07 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2m-1
+-   Upgrade to 1.0.2m
 *   Tue Oct 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.2l-2
 -   Fix CVE-2017-3735 OOB read.
 *   Fri Aug 11 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2l-1
@@ -139,7 +139,7 @@ rm -rf %{buildroot}/*
 -   Security bug fix, CVE-2016-2182.
 *   Tue Sep 20 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.2h-4
 -   Security bug fix, CVE-2016-6303.
-*   Fri Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
+*   Wed Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
 -   Add patches for using openssl_init under all initialization and changing default RAND
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2h-2
 -   GA - Bump release of all rpms
