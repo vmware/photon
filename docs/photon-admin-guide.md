@@ -190,6 +190,8 @@ One notable difference between the two versions of Photon OS pertains to OpenJDK
 	openjre 	x86_64    1.8.0.92-1.ph1    95.09 M
 	openjdk 	x86_64    1.8.0.92-1.ph1    37.63 M
 
+**NOTE:** openjdk and openjre are available as openjdk8 and openjre8 in Photon OS 2.0
+
 A later section covers tdnf. 
 
 ### The Root Account and the `sudo` and `su` Commands
