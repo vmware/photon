@@ -13,7 +13,8 @@ class Scheduler(object):
     listOfPackagesToBuild=[]
     listOfPackagesCurrentlyBuilding=[]
     sortedList=[]
-    listOfPackagesNextToBuild=PriorityQueue()
+    listOfPackagesNextToBuild=[]
+    queueOfPackagesNextToBuild=PriorityQueue()
     listOfFailedPackages=[]
     alldependencyGraph = {}
     dependencyGraph = {}
@@ -107,12 +108,7 @@ class Scheduler(object):
 
     @staticmethod
     def setPriorities():
-	if constants.packageWeightsPath == None:
-            Scheduler.logger.info("Priority Scheduler disabled")
-            Scheduler.isPriorityScheduler = 0
-	else:
-	    Scheduler.parseWeights()
-
+        Scheduler.parseWeights()
         for package in Scheduler.sortedList:
             Scheduler.dependencyGraph[package] = {}
             Scheduler.alldependencyGraph[package] = {}
@@ -133,18 +129,21 @@ class Scheduler(object):
         Scheduler.logger.info("set Priorities: Priority of all packages")
         Scheduler.logger.info(Scheduler.priorityMap)
 
-
     @staticmethod
     def setParams(sortedList,listOfAlreadyBuiltPackages):
+        if constants.packageWeightsPath == None:
+            Scheduler.logger.info("Priority Scheduler disabled")
+            Scheduler.isPriorityScheduler = 0
         Scheduler.sortedList=sortedList
         Scheduler.listOfAlreadyBuiltPackages=listOfAlreadyBuiltPackages
         for x in Scheduler.sortedList:
             if x not in Scheduler.listOfAlreadyBuiltPackages or x in constants.testForceRPMS:
                 Scheduler.listOfPackagesToBuild.append(x)
         Scheduler.listOfPackagesCurrentlyBuilding=[]
-        Scheduler.listOfPackagesNextToBuild=[]
+        Scheduler.queueOfPackagesNextToBuild=[]
         Scheduler.listOfFailedPackages=[]
-        Scheduler.setPriorities()
+        if Scheduler.isPriorityScheduler == 1:
+            Scheduler.setPriorities()
         
     @staticmethod
     def getRequiredPackages(package):
@@ -163,7 +162,8 @@ class Scheduler(object):
     
     @staticmethod
     def __getListNextPackagesReadyToBuild():
-        listOfPackagesNextToBuild=PriorityQueue()
+        queueOfPackagesNextToBuild=PriorityQueue()
+        listOfPackagesNextToBuild=[]
         Scheduler.logger.info("Checking for next possible packages to build")
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
@@ -178,9 +178,13 @@ class Scheduler(object):
                     Scheduler.logger.info(reqPkg+" is not available. So we cannot build "+ pkg +" at this moment.")
                     break
             if canBuild:
-                listOfPackagesNextToBuild.put((-Scheduler.priorityMap[pkg], pkg))
                 Scheduler.logger.info("Adding "+ pkg +" to the schedule list")
-        return listOfPackagesNextToBuild
+                if Scheduler.isPriorityScheduler:
+                    queueOfPackagesNextToBuild.put((-Scheduler.priorityMap[pkg], pkg))
+                    return queueOfPackagesNextToBuild
+                else:
+                    listOfPackagesNextToBuild.append(pkg)
+                    return listOfPackagesNextToBuild
 
     @staticmethod
     def getNextPackageToBuild():
@@ -195,36 +199,48 @@ class Scheduler(object):
         if len(Scheduler.listOfPackagesToBuild) == 0:
             if Scheduler.event is not None:
                 Scheduler.event.set()
+        
+        if 0 == Scheduler.isPriorityScheduler:
+            if Scheduler.listOfPackagesNextToBuild is None or len(Scheduler.listOfPackagesNextToBuild) == 0:
+                listOfPackagesNextToBuild=Scheduler.__getListNextPackagesReadyToBuild()
+                Scheduler.listOfPackagesNextToBuild=listOfPackagesNextToBuild
+            
+            if Scheduler.listOfPackagesNextToBuild is None or len(Scheduler.listOfPackagesNextToBuild) == 0:
+                Scheduler.logger.info("Released scheduler lock")
+                Scheduler.lock.release()
+                return None
+        
+            package=Scheduler.listOfPackagesNextToBuild.pop(0)
 
-        try:
-            if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
-                listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
-                Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
-        except:
-            if len(Scheduler.listOfPackagesNextToBuild) == 0:
-                listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
-                Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
+            if len(Scheduler.listOfPackagesNextToBuild) > 0:
+                ThreadPool.ThreadPool.activateWorkerThreads(len(Scheduler.listOfPackagesNextToBuild))
+        else:
+            try:
+                if Scheduler.queueOfPackagesNextToBuild.qsize() == 0:
+                    queueOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
+                    Scheduler.queueOfPackagesNextToBuild = queueOfPackagesNextToBuild
+            except:
+                if len(Scheduler.queueOfPackagesNextToBuild) == 0:
+                    queueOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
+                    Scheduler.queueOfPackagesNextToBuild = queueOfPackagesNextToBuild
 
-        if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
-            Scheduler.logger.info("Released scheduler lock")
-            Scheduler.lock.release()
-            return None
+            if Scheduler.queueOfPackagesNextToBuild.qsize() == 0:
+                Scheduler.logger.info("Released scheduler lock")
+                Scheduler.lock.release()
+                return None
 
-        packageTup=Scheduler.listOfPackagesNextToBuild.get()
+            packageTup=Scheduler.queueOfPackagesNextToBuild.get()
 
-        if packageTup[0] == 0 and Scheduler.isPriorityScheduler == 1:
-            listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
-            Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
-	    if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
-            	Scheduler.logger.info("Released scheduler lock")
-            	Scheduler.lock.release()
-            	return None
-            packageTup = Scheduler.listOfPackagesNextToBuild.get()
+            if packageTup[0] == 0 and Scheduler.isPriorityScheduler == 1:
+                queueOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
+                Scheduler.queueOfPackagesNextToBuild = queueOfPackagesNextToBuild
+                packageTup = Scheduler.listOfPackagesNextToBuild.get()
 
-        package = packageTup[1]
-        Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
-        if Scheduler.listOfPackagesNextToBuild.qsize() > 0:
-            ThreadPool.ThreadPool.activateWorkerThreads(Scheduler.listOfPackagesNextToBuild.qsize())
+            package = packageTup[1]
+            Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
+            if Scheduler.queueOfPackagesNextToBuild.qsize() > 0:
+                ThreadPool.ThreadPool.activateWorkerThreads(Scheduler.queueOfPackagesNextToBuild.qsize())
+        
         Scheduler.logger.info("Released scheduler lock")
         Scheduler.lock.release()
         Scheduler.listOfPackagesCurrentlyBuilding.append(package)
