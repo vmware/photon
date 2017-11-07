@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.53
-Release:        3%{?dist}
+Version:        4.9.60
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b3e6e5608b6684d103fea702cd08b498162a4c96
+%define sha1 linux=1f30f2da710d5dcb63f15f69fdb2c90e96064179
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -38,7 +38,6 @@ Patch18:        0009-Drivers-hv-Log-the-negotiated-IC-versions.patch
 Patch19:        0010-vmbus-fix-missed-ring-events-on-boot.patch
 Patch20:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
 Patch21:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
-Patch22:        0013-vmbus-fix-the-missed-signaling-in-hv_signal_on_read.patch
 Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
@@ -138,7 +137,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch19 -p1
 %patch20 -p1
 %patch21 -p1
-%patch22 -p1
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
@@ -304,6 +302,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
+-   Version update
 *   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
 -   Add patch "KVM: Don't accept obviously wrong gsi values via
     KVM_IRQFD" to fix CVE-2017-1000252.
