@@ -1,14 +1,14 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.2.8
+Version:        10.2.10
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
-Source0:        http://mirrors.syringanetworks.net/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=80dcd455986eec254fc81b6bbedd4a542e8af495
+Source0:        http://mirrors.nodesdirect.com/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+%define         sha1 mariadb=14a7d6b5c77de5235b60ffa13bf80a1dd2dda49c
 
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
@@ -348,6 +348,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Tue Nov 07 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.10-1
+-   Update to verion 10.2.10 to address CVE-2017-10378, CVE-2017-10268
 *   Wed Sep 06 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.8-1
 -   Update to 10.2.8 and enable build server.
 *   Thu Aug 31 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.24-3
