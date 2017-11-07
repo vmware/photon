@@ -668,7 +668,7 @@ net.set_ntp_servers(ntpservers = ["server1", "server2", ...])
 ~~~~
 **Parameters**
 
-- ``ntpservers`` - Comma-separated list of NTP servers to remove from the list.
+- ``ntpservers`` - Comma-separated list of NTP servers to set in the list.
 
 **Returns**
 
