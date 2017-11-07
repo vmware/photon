@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.53
-Release:        3%{?dist}
+Version:        4.9.60
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b3e6e5608b6684d103fea702cd08b498162a4c96
+%define sha1 linux=1f30f2da710d5dcb63f15f69fdb2c90e96064179
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -41,7 +41,6 @@ Patch21:        0009-Drivers-hv-Log-the-negotiated-IC-versions.patch
 Patch22:        0010-vmbus-fix-missed-ring-events-on-boot.patch
 Patch23:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
 Patch24:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
-Patch25:        0013-vmbus-fix-the-missed-signaling-in-hv_signal_on_read.patch
 Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
 Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
@@ -264,6 +263,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
+-   Version update
 *   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
 -   Add patch "KVM: Don't accept obviously wrong gsi values via
     KVM_IRQFD" to fix CVE-2017-1000252.
