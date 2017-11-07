@@ -1,0 +1,15 @@
+diff -uNr systemd-228-orig/src/network/networkd-link.c systemd-228-fix/src/network/networkd-link.c
+--- systemd-228-orig/src/network/networkd-link.c	2017-11-07 11:07:43.366280859 -0800
++++ systemd-228-fix/src/network/networkd-link.c	2017-11-07 12:17:51.267674643 -0800
+@@ -147,8 +147,10 @@
+         p = strjoina("/proc/sys/net/ipv6/conf/", link->ifname, "/disable_ipv6");
+         _cleanup_free_ char *val = NULL;
+         r = read_one_line_file(p, &val);
+-        if (r < 0)
++        if (r < 0) {
+                 log_link_warning_errno(link, r, "Cannot read ipv6 state for interface: %m");
++                return false;
++        }
+ 	if (streq(val, "0"))
+                 return false;
+         
