@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.60
-Release:        1%{?dist}
+Version:        4.9.53
+Release:        3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1f30f2da710d5dcb63f15f69fdb2c90e96064179
+%define sha1 linux=b3e6e5608b6684d103fea702cd08b498162a4c96
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -304,8 +304,6 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
-*   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
--   Version update
 *   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
 -   Add patch "KVM: Don't accept obviously wrong gsi values via
     KVM_IRQFD" to fix CVE-2017-1000252.
