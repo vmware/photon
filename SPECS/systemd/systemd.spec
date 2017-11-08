@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          9%{?dist}
+Release:          10%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -26,6 +26,7 @@ Patch8:           systemd-233-CVE-2017-9445-dns-oob.patch
 Patch9:           systemd-233-CVE-2017-1000082-1.patch
 Patch10:          systemd-233-CVE-2017-1000082-2.patch
 Patch11:          systemd-233-ra-improvements.patch
+Patch12:          systemd-228-link-disabled-nullptr-fix.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -91,6 +92,7 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -239,6 +241,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-10
+-    Fix nullptr access during link disable.
 *    Mon Sep 18 2017 Anish Swaminathan <anishs@vmware.com>  233-9
 -    Backport router solicitation backoff from systemd 234
 *    Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  233-8
