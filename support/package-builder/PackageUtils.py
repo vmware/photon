@@ -5,6 +5,8 @@ import platform
 import shutil
 from constants import constants
 import re
+import random
+import string
 from time import sleep
 import PullSources
 import json
@@ -60,11 +62,14 @@ class PackageUtils(object):
         cmdUtils = CommandUtils()
         rpmName=os.path.basename(rpmFile)
         rpmDestDir=self.getRPMDestDir(rpmName,destDir)
+        # shutil is not atomic. copy & move to ensure atomicity.
         rpmDestPath=rpmDestDir+"/"+rpmName
+        rpmDestPathTemp = rpmDestDir + "/." + ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(10)])
         if os.geteuid()==0:
             if not os.path.isdir(rpmDestDir):
                 cmdUtils.runCommandInShell("mkdir -p "+rpmDestDir)
-            shutil.copyfile(rpmFile,  rpmDestPath)
+            shutil.copyfile(rpmFile, rpmDestPathTemp)
+            shutil.move(rpmDestPathTemp, rpmDestPath)
         return rpmDestPath
 
     def installRPM(self,package,chrootID,noDeps=False,destLogPath=None):
@@ -183,8 +188,8 @@ class PackageUtils(object):
         chrootCmd=self.runInChrootCommand+" "+chrootID
         shutil.copyfile(specFile, chrootID+chrootSpecPath+specName )
 
-# FIXME: some sources are located in SPECS/.. how to mount?
-#        if os.geteuid()==0:
+        # FIXME: some sources are located in SPECS/.. how to mount?
+        #        if os.geteuid()==0:
         self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
         self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
 
