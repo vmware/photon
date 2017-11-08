@@ -128,7 +128,7 @@ class PackageBuilderContainer(object):
             outputMap[threadName]=True
         except Exception as e:
             # TODO: self.logger might be None
-            self.base.logger.error(e)
+            self.base.logger.exception(e)
             outputMap[threadName]=False
             raise e
 
@@ -277,7 +277,7 @@ class PackageBuilderChroot(object):
             outputMap[threadName]=True
         except Exception as e:
             # TODO: self.logger might be None
-            self.base.logger.error(e)
+            self.base.logger.exception(e)
             outputMap[threadName]=False
             raise e
 
