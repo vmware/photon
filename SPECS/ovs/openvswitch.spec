@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -11,7 +11,8 @@ Distribution:   Photon
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
 Patch0:         ovs-CVE-2017-9264.patch
 Patch1:         OVS-CVE-2017-9263.patch
-%define sha1 openvswitch=2865fe03b3906b5aea984102c4b65772b5dd7450
+Patch2:         OVS-CVE-2017-14970.patch
+%define sha1    openvswitch=2865fe03b3906b5aea984102c4b65772b5dd7450
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -44,9 +45,9 @@ Open vSwitch provides standard network bridging functions and
 support for the OpenFlow protocol for remote per-flow control of
 traffic.
 
-%package	devel
-Summary:	Header and development files for openvswitch
-Requires:	%{name} = %{version}
+%package        devel
+Summary:        Header and development files for openvswitch
+Requires:       %{name} = %{version}
 %description    devel
 openvswitch-devel package contains header files and libs.
 
@@ -60,6 +61,7 @@ It contains the documentation and manpages for openvswitch.
 %setup -q
 %patch0 -p1
 %patch1 -p0
+%patch2 -p1
 
 %build
 ./configure \
@@ -141,19 +143,21 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/man/man8/vtep-ctl.8.gz
 
 %changelog
-*	Wed Oct 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.6.1-4
--	Fix CVE-2017-9263
-*	Mon Jun 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
--	Fix CVE-2017-9264
-*	Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
--	Build ovs shared library
-*	Wed Nov 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-1
--	Update to openvswitch 2.6.1
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
--	GA - Bump release of all rpms
-*       Sat Oct 31 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-2
--       OVS requires libatomic.so.1 provided by gcc.
-*       Mon Oct 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-1
--       Update to OVS v2.4.0
-*       Fri May 29 2015 Kumar Kaushik <kaushikk@vmware.com> 2.3.1-1
--       Initial build. First version
+*   Thu Nov 09 2017 Xiaolin Li <xiaolinl@vmware.com> 2.6.1-5
+-   Fix CVE-2017-14970
+*   Wed Oct 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.6.1-4
+-   Fix CVE-2017-9263
+*   Mon Jun 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
+-   Fix CVE-2017-9264
+*   Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
+-   Build ovs shared library
+*   Wed Nov 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-1
+-   Update to openvswitch 2.6.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
+-   GA - Bump release of all rpms
+*   Sat Oct 31 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-2
+-   OVS requires libatomic.so.1 provided by gcc.
+*   Mon Oct 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-1
+-   Update to OVS v2.4.0
+*   Fri May 29 2015 Kumar Kaushik <kaushikk@vmware.com> 2.3.1-1
+-   Initial build. First version
