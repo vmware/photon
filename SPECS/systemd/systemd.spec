@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          42%{?dist}
+Release:          43%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -42,6 +42,7 @@ Patch25:          systemd-228-logind-disconnect.patch
 Patch26:          systemd-228-CVE-2015-7510-long-machinename.patch
 Patch27:          systemd-228-resolved-null-deferencing-fix.patch
 Patch28:          systemd-228-link-disabled-nullptr-fix.patch
+Patch29:          systemd-228-CVE-2017-15908-dns-pkt-loop-fix.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -104,6 +105,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -243,11 +245,13 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-43
+-    Fix CVE-2017-15908 dns packet loop fix.
 *    Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-42
 -    Fix nullptr access during link disable.
-*    Thu Nov 03 2017 Anish Swaminathan <anishs@vmware.com> 228-41
+*    Fri Nov 03 2017 Anish Swaminathan <anishs@vmware.com> 228-41
 -    Fix null pointer dereferencing in resolved - CVE-2017-9217
-*    Thu Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-40
+*    Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-40
 -    Fix CVE-2015-7510.
 *    Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-39
 -    add filesystem.conf in tmpfiles.d
