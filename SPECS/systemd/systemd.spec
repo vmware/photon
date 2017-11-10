@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          10%{?dist}
+Release:          11%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -27,6 +27,7 @@ Patch9:           systemd-233-CVE-2017-1000082-1.patch
 Patch10:          systemd-233-CVE-2017-1000082-2.patch
 Patch11:          systemd-233-ra-improvements.patch
 Patch12:          systemd-233-link-disabled-nullptr-fix.patch
+Patch13:          systemd-228-CVE-2017-15908-dns-pkt-loop-fix.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -93,6 +94,7 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -241,6 +243,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-11
+-    Fix CVE-2017-15908 dns packet loop fix.
 *    Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-10
 -    Fix nullptr access during link disable.
 *    Mon Sep 18 2017 Anish Swaminathan <anishs@vmware.com>  233-9
