@@ -9,8 +9,8 @@ ARCH=x86_64
 #
 # Docker images for kubernetes artifacts
 #
-K8S_VER=`cat ${SPEC_DIR}/kubernetes/kubernetes.spec | grep Version | cut -d: -f2 | tr -d ' '`
-K8S_VER_REL=${K8S_VER}-`cat ${SPEC_DIR}/kubernetes/kubernetes.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
+K8S_VER=`cat ${SPEC_DIR}/kubernetes/kubernetes.spec | grep "^Version:" | cut -d: -f2 | tr -d ' '`
+K8S_VER_REL=${K8S_VER}-`cat ${SPEC_DIR}/kubernetes/kubernetes.spec | grep "^Release:" | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 K8S_RPM=kubernetes-${K8S_VER_REL}${DIST_TAG}.${ARCH}.rpm
 K8S_RPM_FILE=../../../stage/RPMS/x86_64/${K8S_RPM}
 K8S_PAUSE_RPM=kubernetes-pause-${K8S_VER_REL}${DIST_TAG}.${ARCH}.rpm

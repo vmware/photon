@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.8.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -78,6 +78,13 @@ cd ..
 # install config files
 install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
 install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} contrib-0.7.0/init/systemd/environ/*
+cat << EOF >> %{buildroot}%{_sysconfdir}/%{name}/kubeconfig
+apiVersion: v1
+clusters:
+- cluster:
+    server: http://127.0.0.1:8080
+EOF
+sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="/etc/kubernetes/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
 
 # install service files
 install -d -m 0755 %{buildroot}/usr/lib/systemd/system
@@ -162,6 +169,7 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/controller-manager
 %config(noreplace) %{_sysconfdir}/%{name}/proxy
 %config(noreplace) %{_sysconfdir}/%{name}/kubelet
+%config(noreplace) %{_sysconfdir}/%{name}/kubeconfig
 %config(noreplace) %{_sysconfdir}/%{name}/scheduler
 
 %files kubeadm
@@ -175,6 +183,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-2
+-   Specify API server via kubeconfig file.
 *   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
 -   k8s v1.8.1.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.5-2
