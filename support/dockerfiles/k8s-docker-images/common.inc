@@ -15,6 +15,26 @@ setup_repo()
         exit 1
     fi
     echo "tdnf repo server started with pid: " ${PY_WS_PID}
+    CTR=30
+    while true
+    do
+        set +e
+        netstat -an | grep tcp | grep 62965 | grep LISTEN
+        if [ $? -eq 0 ]; then
+            set -e
+            echo "tdnf repo server running with pid: " ${PY_WS_PID}
+            break
+        fi
+        set -e
+        echo "Waiting for $CTR seconds for tdnf repo server to start..."
+        sleep 1
+        let CTR=$CTR-1
+        if [ $CTR -eq 0 ]; then
+            echo "Failed to start tdnf repo server. Stopping PID: " ${PY_WS_PID}
+            kill ${PY_WS_PID}
+            exit 1
+        fi
+    done
 }
 
 function cleanup_repo {
