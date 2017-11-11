@@ -1,0 +1,80 @@
+Summary:       Mozilla's JavaScript engine.
+Name:          js
+Version:       1.8.5
+Release:       1%{?dist}
+Group:         Applications/System
+Vendor:        VMware, Inc.
+License:       GPLv2+ or LGPLv2+ or MPLv1.1
+URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Releases/1.8.5
+Source0:       https://archive.mozilla.org/pub/js/js185-1.0.0.tar.gz
+Distribution:  Photon
+BuildRequires: autoconf
+BuildRequires: readline-devel
+BuildRequires: ncurses-devel
+BuildRequires: nspr >= 4.7
+BuildRequires: zip
+Requires:      ncurses
+Requires:      nspr >= 4.7
+%define sha1 js185=52a01449c48d7a117b35f213d3e4263578d846d6
+
+%description
+Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
+JavaScript to machine code, for a significant speed increase.
+
+%package devel
+Summary:        js devel
+Group:          Development/Tools
+Requires:       %{name} = %{version}
+%description devel
+This contains development tools and libraries for SpiderMonkey.
+
+%prep
+%setup -q
+
+%build
+cd js/src
+./configure \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --sbindir=%{_sbindir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
+    --datadir=%{_datarootdir} \
+    --sysconfdir=/etc \
+    --with-system-nspr \
+    --enable-threadsafe \
+    --enable-readline
+make CXX=g++ CXXFLAGS='-std=gnu++98 -DXP_UNIX=1 -DJS_THREADSAFE=1 -DENABLE_ASSEMBLER=1 -DENABLE_JIT=1'
+
+%install
+cd js/src
+make DESTDIR=%{buildroot} install
+pushd %{buildroot}/%{_libdir}
+ln -fs libmozjs185.so.1.0.0 libmozjs185.so.1.0
+ln -fs libmozjs185.so.1.0 libmozjs185.so
+popd
+find %{buildroot} -name '*.la' -delete
+
+%post
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
+%files
+%defattr(-,root,root)
+%{_bindir}/js-config
+%{_libdir}/libmozjs185.so.*
+
+%files devel
+%defattr(-,root,root)
+%{_includedir}/%{name}/*
+%{_libdir}/libmozjs185-1.0.a
+%{_libdir}/libmozjs185.so
+%{_libdir}/pkgconfig/mozjs185.pc
+
+%changelog
+*   Fri Nov 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.5-1
+-   mozjs v1.8.5 for PhotonOS.
