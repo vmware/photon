@@ -21,7 +21,7 @@ then
     exit 1
 fi
 
-IMG_NAME=vmware_photon_${DIST_VER}/k8s-heapster-amd64:${K8S_HEAPSTER_VER}
+IMG_NAME=vmware/photon-${DIST_VER}-k8s-heapster-amd64:${K8S_HEAPSTER_VER}
 IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
 if [[ ! -z "${IMG_ID}" ]]; then
     echo "Removing image ${IMG_NAME}"
