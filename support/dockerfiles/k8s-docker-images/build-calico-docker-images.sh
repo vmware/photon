@@ -121,9 +121,9 @@ then
     exit 1
 fi
 
-CALICO_NODE_IMG_NAME=vmware_photon_${DIST_VER}/calico-node:v${CALICO_VER}
-CALICO_CNI_IMG_NAME=vmware_photon_${DIST_VER}/calico-cni:v${CALICO_CNI_VER}
-CALICO_K8S_POLICY_IMG_NAME=vmware_photon_${DIST_VER}/calico-kube-policy-controller:v${CALICO_K8S_POLICY_VER}
+CALICO_NODE_IMG_NAME=vmware/photon-${DIST_VER}-calico-node:v${CALICO_VER}
+CALICO_CNI_IMG_NAME=vmware/photon-${DIST_VER}-calico-cni:v${CALICO_CNI_VER}
+CALICO_K8S_POLICY_IMG_NAME=vmware/photon-${DIST_VER}-calico-kube-policy-controller:v${CALICO_K8S_POLICY_VER}
 CALICO_NODE_TAR=calico-node-v${CALICO_VER_REL}.tar
 CALICO_CNI_TAR=calico-cni-v${CALICO_CNI_VER_REL}.tar
 CALICO_K8S_POLICY_TAR=calico-k8s-policy-v${CALICO_K8S_POLICY_VER_REL}.tar
