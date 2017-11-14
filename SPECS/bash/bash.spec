@@ -1,7 +1,7 @@
 Summary:  Bourne-Again SHell
 Name:     bash
 Version:  4.3.48
-Release:  1%{?dist}
+Release:  2%{?dist}
 License:  GPLv3
 URL:      https://www.gnu.org/software/bash/
 Group:    System Environment/Base
@@ -59,6 +59,9 @@ Patch045: bash43-045
 Patch046: bash43-046
 Patch047: bash43-047
 Patch048: bash43-048
+#https://ftp.gnu.org/gnu/bash/bash-4.4-patches/bash44-006
+# with patchlevel removed.
+Patch440: bash-CVE-2016-9401.patch
 
 Patch500:   fix-save_bash_input-segfault.patch
 Patch501:   bash-4.3.patch
@@ -129,6 +132,7 @@ These are the additional language files of bash.
 %patch047 -p0
 %patch048 -p0
 
+%patch440 -p0
 %patch500 -p1
 %patch501 -p1
 
@@ -407,9 +411,11 @@ fi
 %doc %{_mandir}/*/*
 
 %files lang -f %{name}.lang
-%defattr(-,root,root)
+#%defattr(-,root,root)
 
 %changelog
+*   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.48-2
+-   Fix CVE-2016-9401.
 *   Thu Oct 19 2017 Bo Gan <ganb@vmware.com> 4.3.48-1
 -   Upstream patch level 48 applied
 -   Fix rpm version to match upstream patch level
