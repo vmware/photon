@@ -1,19 +1,31 @@
-Summary:	Bourne-Again SHell
-Name:		bash
-Version:	4.4
-Release:	6%{?dist}
-License:	GPLv3
-URL:		http://www.gnu.org/software/bash/
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://ftp.gnu.org/gnu/bash/%{name}-%{version}.tar.gz
-%define sha1 bash=8de012df1e4f3e91f571c3eb8ec45b43d7c747eb
-Source1:	bash_completion
-Patch0:		bash-4.4.patch
-Patch1:         CVE-2017-5932.patch
-Provides:	/bin/sh
-Provides:	/bin/bash
+Summary:        Bourne-Again SHell
+Name:           bash
+Version:        4.4.12
+Release:        1%{?dist}
+License:        GPLv3
+URL:            http://www.gnu.org/software/bash/
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/bash/%{name}-4.4.tar.gz
+%define sha1    bash=8de012df1e4f3e91f571c3eb8ec45b43d7c747eb
+Source1:        bash_completion
+Patch0:         bash-4.4.patch
+#Upstream patches
+Patch001:       bash44-001
+Patch002:       bash44-002
+Patch003:       bash44-003
+Patch004:       bash44-004
+Patch005:       bash44-005
+Patch006:       bash44-006
+Patch007:       bash44-007
+Patch008:       bash44-008
+Patch009:       bash44-009
+Patch010:       bash44-010
+Patch011:       bash44-011
+Patch012:       bash44-012
+Provides:       /bin/sh
+Provides:       /bin/bash
 BuildRequires:  readline
 Requires:       readline
 Requires(post):    /bin/grep
@@ -23,10 +35,10 @@ Requires(postun):  /bin/mv
 %description
 The package contains the Bourne-Again SHell
 
-%package	devel
-Summary:	Header and development files for bash
-Requires:	%{name} = %{version}
-%description	devel
+%package    devel
+Summary:    Header and development files for bash
+Requires:   %{name} = %{version}
+%description    devel
 It contains the libraries and header files to create applications
 
 %package lang
@@ -37,17 +49,28 @@ Requires: bash >= 4.4
 These are the additional language files of bash.
 
 %prep
-%setup -q
+%setup -q -n bash-4.4
 %patch0 -p1
-%patch1 -p1
+%patch001 -p0
+%patch002 -p0
+%patch003 -p0
+%patch004 -p0
+%patch005 -p0
+%patch006 -p0
+%patch007 -p0
+%patch008 -p0
+%patch009 -p0
+%patch010 -p0
+%patch011 -p0
+%patch012 -p0
 %build
 ./configure \
-	"CFLAGS=-fPIC" \
-	--prefix=%{_prefix} \
-	--bindir=/bin \
-	--htmldir=%{_defaultdocdir}/%{name}-%{version} \
-	--without-bash-malloc \
-	--with-installed-readline 
+    "CFLAGS=-fPIC" \
+    --prefix=%{_prefix} \
+    --bindir=/bin \
+    --htmldir=%{_defaultdocdir}/%{name}-%{version} \
+    --without-bash-malloc \
+    --with-installed-readline 
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -314,6 +337,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.4.12-1
+-   Upstream patch level 12 applied
 *   Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 4.4-6
 -   Adding security fix for CVE-2017-5932.
 *   Thu Jun 8 2017 Bo Gan <ganb@vmware.com> 4.4-5
