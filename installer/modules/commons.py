@@ -24,12 +24,10 @@ default_partitions = [
                         {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
                      ]
 
-def partition_compare(p1, p2):
-    if 'mountpoint' in p1 and 'mountpoint' in p2:
-        if len(p1['mountpoint']) == len(p2['mountpoint']):
-            return cmp(p1['mountpoint'], p2['mountpoint'])
-        return len(p1['mountpoint']) - len(p2['mountpoint'])
-    return 0
+def partition_compare(p):
+    if 'mountpoint' in p:
+        return (1, len(p['mountpoint']), p['mountpoint'])
+    return (0, 0, "A")
 
 def partition_disk(disk, partitions):
     partitions_data = {}
@@ -128,7 +126,7 @@ def partition_disk(disk, partitions):
         partitions_data['boot_partition_number'] = partitions_data['root_partition_number']
         partitions_data['bootdirectory'] = '/boot/'
 
-    partitions.sort(lambda p1,p2: partition_compare(p1, p2))
+    partitions.sort(key=lambda p: partition_compare(p))
 
     return partitions_data
 

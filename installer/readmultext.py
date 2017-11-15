@@ -27,7 +27,7 @@ class ReadMulText(Action):
         self.default_string = default_string
         self.display_string = display_string
         self.textwin_width = maxx - self.horizontal_padding -2
-        self.textwin_width = self.textwin_width*2/3
+        self.textwin_width = self.textwin_width* 2 // 3
         self.visible_text_width = self.textwin_width - 1
         self.position = 0
         self.height = len(self.display_string) * 4 + 2
@@ -41,10 +41,10 @@ class ReadMulText(Action):
         self.shadowwin.bkgd(' ', curses.color_pair(0)) #Default shadow color
 
         self.panel = curses.panel.new_panel(self.textwin)
-        self.panel.move((maxy-self.height)/2, (maxx - self.textwin_width) / 2 -1)
+        self.panel.move((maxy-self.height) // 2, (maxx - self.textwin_width) // 2 -1)
         self.panel.hide()
         self.shadowpanel = curses.panel.new_panel(self.shadowwin)
-        self.shadowpanel.move((maxy-self.height)/2+1, (maxx - self.textwin_width) / 2)
+        self.shadowpanel.move((maxy-self.height) // 2 + 1, (maxx - self.textwin_width) // 2)
         self.shadowpanel.hide()
         curses.panel.update_panels()
 

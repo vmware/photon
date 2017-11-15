@@ -14,7 +14,7 @@ def execute(name, config, root):
     script_file = os.path.join(root, 'etc/tmpfiles.d/postinstall.sh')
 
     with open(script_file,  'wb') as outfile:
-        outfile.write("\n".join(script))
+        outfile.write("\n".join(script).encode())
 
     os.chmod(script_file, 0o700);
     with open(commons.KS_POST_INSTALL_LOG_FILE_NAME,"w") as logfile:
