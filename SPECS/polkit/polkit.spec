@@ -21,6 +21,7 @@ Requires:      glib
 Requires:      js
 Requires:      Linux-PAM
 Requires:      systemd
+Requires:	shadow
 %define sha1 polkit=ef855c2d04184dceb38e0940dc7bec9cc3da415c
 
 %description

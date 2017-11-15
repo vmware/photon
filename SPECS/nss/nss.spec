@@ -87,8 +87,8 @@ sudo -u test ./all.sh && userdel test -r -f
 
 %files devel
 %{_includedir}/*
-%exclude %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
+%{_libdir}/*.a
 
 %files libs
 %{_libdir}/libfreeblpriv3.so
@@ -109,7 +109,7 @@ sudo -u test ./all.sh && userdel test -r -f
 -   Added libs subpackage to reduce tdnf dependent tree
 *   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 3.25-3
 -   Use sqlite-libs as runtime dependency
-*   Mon Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
+*   Tue Oct 04 2016 ChangLee <changLee@vmware.com> 3.25-2
 -   Modified %check
 *   Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
 -   Upgrade to 3.25
