@@ -1,7 +1,7 @@
 Summary:	Tracks system calls that are made by a running process
 Name:		strace
 Version:	4.16
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://sourceforge.net/p/strace/code/ci/master/tree/
 Group:		Development/Debuggers
@@ -25,6 +25,7 @@ all the arugments and return values from the system calls. This is useful in deb
 
 # to resolve build issue with glibc-2.26
 sed -i 's/struct ucontext/ucontext_t/g' linux/x86_64/arch_sigreturn.c
+sed -i 's/struct ucontext/ucontext_t/g' linux/arm/arch_sigreturn.c
 
 make %{?_smp_mflags}
 
@@ -44,6 +45,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-3
+-   Aarch64 support
 *   Wed Aug 23 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
 -   Fix compilation issue for glibc-2.26
 *   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.16-1

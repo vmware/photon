@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -41,15 +41,12 @@ ln -svfn ../bin %{buildroot}/usr/lib/debug/usr/bin
 ln -svfn ../sbin %{buildroot}/usr/lib/debug/usr/sbin
 ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib
 
-#	Symlinks for AMD64
-%ifarch x86_64
 	ln -svfn usr/lib %{buildroot}/lib64
 	ln -svfn lib %{buildroot}/usr/lib64
 	ln -svfn lib %{buildroot}/usr/local/lib64
         ln -svfn lib %{buildroot}/usr/lib/debug/lib64
         ln -svfn ../lib %{buildroot}/usr/lib/debug/usr/lib64
 
-%endif
 install -vdm 755 %{buildroot}/var/{log,mail,spool,mnt,srv}
 
 ln -svfn var/srv %{buildroot}/srv
@@ -532,15 +529,14 @@ EOF
 /var/lock
 /var/run
 
-#	Symlinks for AMD64
-%ifarch x86_64
 /lib64
 /usr/lib64
 /usr/local/lib64
 /usr/lib/debug/lib64
 /usr/lib/debug/usr/lib64
-%endif
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1-2
+-   Aarch64 support
 *   Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  1.1-1
 -   Move network file from filesystem package
 *   Fri Apr 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0-13

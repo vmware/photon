@@ -1,7 +1,7 @@
 Summary:		Libcap
 Name:			libcap
 Version:		2.25
-Release:		7%{?dist}
+Release:		8%{?dist}
 License:		GPLv2+
 URL:			https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
 Source0:		https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/%{name}-%{version}.tar.xz
@@ -30,6 +30,9 @@ sed -i 's:LIBDIR:PAM_&:g' pam_cap/Makefile
 make %{?_smp_mflags}
 %install
 make prefix=%{_prefix}	SBINDIR=%{_sbindir} PAM_LIBDIR=%{_libdir} RAISE_SETFCAP=no DESTDIR=%{buildroot} install
+%ifarch aarch64
+mv %{buildroot}%{_libdir} %{buildroot}%{_lib64dir}
+%endif
 chmod -v 755 %{buildroot}/usr/lib64/libcap.so
 %check
 cd progs
@@ -51,8 +54,11 @@ sed -i "s|pass_capsh --chroot=\$(/bin/pwd) ==||g" quicktest.sh
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-8
+-   Aarch64 support
 *   Wed Aug 09 2017 Danut Moraru <dmoraru@vmware.com> 2.25-7
--   Remove capsh test that runs chroot already in chroot, failing due to expected environment/dependencies not available
+-   Remove capsh test that runs chroot already in chroot, failing due to
+    expected environment/dependencies not available
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.25-6
 -   Remove attr deps.
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 2.25-5

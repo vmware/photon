@@ -1,13 +1,14 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group: 		Development/Libraries
 Vendor:         VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 likewise-open=6aa4cf11de6747d5f8940666c21adc3e1f7b6a4b
+Patch0:         likewise-open-aarch64.patch
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -45,6 +46,7 @@ This package provides files for developing against the Likewise APIs
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
@@ -62,7 +64,7 @@ export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-d
              --libdir=/opt/likewise/lib64 \
              --datadir=/opt/likewise/share \
              --datarootdir=/opt/likewise/share \
-             --build-isas=x86_64 \
+             --build-isas=%{_arch} \
              --lw-bundled-libs='libedit' \
              --enable-vmdir-provider=yes \
              --disable-static
@@ -288,6 +290,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-4
+-   Aarch64 support
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3
 -   Requires coreutils/procps-ng or toybox, /bin/grep, /bin/sed
 *   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-2

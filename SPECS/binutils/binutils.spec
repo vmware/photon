@@ -1,7 +1,7 @@
 Summary:	Contains a linker, an assembler, and other tools
 Name:		binutils
 Version:	2.29.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/binutils
 Group:		System Environment/Base
@@ -39,7 +39,7 @@ cd ../binutils-build
 make %{?_smp_mflags} tooldir=%{_prefix}
 %install
 pushd ../binutils-build
-make DESTDIR=%{buildroot} tooldir=%{_prefix} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} tooldir=%{_prefix} install
 find %{buildroot} -name '*.la' -delete
 # Don't remove libiberity.a
 rm -rf %{buildroot}/%{_infodir}
@@ -74,89 +74,7 @@ make %{?_smp_mflags} check
 %{_bindir}/ranlib
 %{_bindir}/readelf
 %{_bindir}/strip
-%{_libdir}/ldscripts/elf32_x86_64.xu
-%{_libdir}/ldscripts/elf32_x86_64.xr
-%{_libdir}/ldscripts/i386linux.xr
-%{_libdir}/ldscripts/elf_l1om.xw
-%{_libdir}/ldscripts/elf_l1om.xdc
-%{_libdir}/ldscripts/elf_x86_64.xdw
-%{_libdir}/ldscripts/elf_k1om.xn
-%{_libdir}/ldscripts/elf_x86_64.xr
-%{_libdir}/ldscripts/i386linux.x
-%{_libdir}/ldscripts/elf_l1om.xd
-%{_libdir}/ldscripts/elf_k1om.xw
-%{_libdir}/ldscripts/elf_l1om.xs
-%{_libdir}/ldscripts/elf_i386.xc
-%{_libdir}/ldscripts/elf_i386.xdc
-%{_libdir}/ldscripts/elf_k1om.xd
-%{_libdir}/ldscripts/elf_i386.xw
-%{_libdir}/ldscripts/elf32_x86_64.x
-%{_libdir}/ldscripts/elf_i386.xsc
-%{_libdir}/ldscripts/elf_x86_64.xw
-%{_libdir}/ldscripts/i386linux.xn
-%{_libdir}/ldscripts/elf_k1om.xdw
-%{_libdir}/ldscripts/elf_k1om.x
-%{_libdir}/ldscripts/elf_i386.xr
-%{_libdir}/ldscripts/elf32_x86_64.xc
-%{_libdir}/ldscripts/elf_x86_64.xsw
-%{_libdir}/ldscripts/elf_x86_64.xd
-%{_libdir}/ldscripts/elf_i386.x
-%{_libdir}/ldscripts/elf_i386.xu
-%{_libdir}/ldscripts/elf_k1om.xdc
-%{_libdir}/ldscripts/elf32_x86_64.xn
-%{_libdir}/ldscripts/elf32_x86_64.xs
-%{_libdir}/ldscripts/elf_x86_64.x
-%{_libdir}/ldscripts/elf32_x86_64.xdc
-%{_libdir}/ldscripts/elf_l1om.xsc
-%{_libdir}/ldscripts/elf_l1om.x
-%{_libdir}/ldscripts/elf_x86_64.xsc
-%{_libdir}/ldscripts/elf_k1om.xu
-%{_libdir}/ldscripts/elf32_x86_64.xbn
-%{_libdir}/ldscripts/elf_x86_64.xu
-%{_libdir}/ldscripts/elf32_x86_64.xw
-%{_libdir}/ldscripts/elf_k1om.xs
-%{_libdir}/ldscripts/elf_x86_64.xn
-%{_libdir}/ldscripts/elf_l1om.xu
-%{_libdir}/ldscripts/elf32_x86_64.xdw
-%{_libdir}/ldscripts/elf_l1om.xsw
-%{_libdir}/ldscripts/elf_l1om.xc
-%{_libdir}/ldscripts/elf_l1om.xr
-%{_libdir}/ldscripts/i386linux.xbn
-%{_libdir}/ldscripts/elf_l1om.xn
-%{_libdir}/ldscripts/elf_i386.xsw
-%{_libdir}/ldscripts/elf32_x86_64.xd
-%{_libdir}/ldscripts/elf_k1om.xbn
-%{_libdir}/ldscripts/elf_i386.xn
-%{_libdir}/ldscripts/elf_i386.xbn
-%{_libdir}/ldscripts/i386linux.xu
-%{_libdir}/ldscripts/elf_k1om.xc
-%{_libdir}/ldscripts/elf32_x86_64.xsw
-%{_libdir}/ldscripts/elf_k1om.xr
-%{_libdir}/ldscripts/elf32_x86_64.xsc
-%{_libdir}/ldscripts/elf_k1om.xsw
-%{_libdir}/ldscripts/elf_i386.xdw
-%{_libdir}/ldscripts/elf_i386.xd
-%{_libdir}/ldscripts/elf_x86_64.xdc
-%{_libdir}/ldscripts/elf_i386.xs
-%{_libdir}/ldscripts/elf_x86_64.xs
-%{_libdir}/ldscripts/elf_x86_64.xc
-%{_libdir}/ldscripts/elf_k1om.xsc
-%{_libdir}/ldscripts/elf_l1om.xbn
-%{_libdir}/ldscripts/elf_x86_64.xbn
-%{_libdir}/ldscripts/elf_l1om.xdw
-%{_libdir}/ldscripts/elf_iamcu.x
-%{_libdir}/ldscripts/elf_iamcu.xbn
-%{_libdir}/ldscripts/elf_iamcu.xc
-%{_libdir}/ldscripts/elf_iamcu.xd
-%{_libdir}/ldscripts/elf_iamcu.xdc
-%{_libdir}/ldscripts/elf_iamcu.xdw
-%{_libdir}/ldscripts/elf_iamcu.xn
-%{_libdir}/ldscripts/elf_iamcu.xr
-%{_libdir}/ldscripts/elf_iamcu.xs
-%{_libdir}/ldscripts/elf_iamcu.xsc
-%{_libdir}/ldscripts/elf_iamcu.xsw
-%{_libdir}/ldscripts/elf_iamcu.xu
-%{_libdir}/ldscripts/elf_iamcu.xw
+%{_libdir}/ldscripts/*
 %{_mandir}/man1/readelf.1.gz
 %{_mandir}/man1/windmc.1.gz
 %{_mandir}/man1/ranlib.1.gz
@@ -192,6 +110,9 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29.1-3
+-   Aarch64 support
+-   Parallel build
 *   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-2
 -   Add patch to fix CVE-2017-15020
 *   Mon Oct 2 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-1
