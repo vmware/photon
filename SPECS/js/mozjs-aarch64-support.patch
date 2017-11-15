@@ -1,0 +1,52 @@
+--- a/js/src/Makefile.in
++++ a/js/src/Makefile.in
+@@ -382,7 +382,7 @@ CPPSRCS += 	checks.cc \
+ # END enclude sources for V8 dtoa
+ #############################################
+
+-ifeq (,$(filter-out powerpc sparc,$(TARGET_CPU)))
++ifeq (,$(filter-out aarch64 powerpc sparc,$(TARGET_CPU)))
+
+ VPATH +=	$(srcdir)/assembler \
+ 		$(srcdir)/assembler/wtf \
+--- a/js/src/assembler/jit/ExecutableAllocator.h
++++ a/js/src/assembler/jit/ExecutableAllocator.h
+@@ -391,6 +391,12 @@ public:
+     {
+         CacheRangeFlush(code, size, CACHE_SYNC_ALL);
+     }
++#elif WTF_CPU_AARCH64 && WTF_PLATFORM_LINUX
++    static void cacheFlush(void* code, size_t size)
++    {
++        intptr_t end = reinterpret_cast<intptr_t>(code) + size;
++        __builtin___clear_cache(reinterpret_cast<char*>(code), reinterpret_cast<char*>(end));
++    }
+ #else
+     #error "The cacheFlush support is missing on this platform."
+ #endif
+--- a/js/src/assembler/wtf/Platform.h
++++ a/js/src/assembler/wtf/Platform.h
+@@ -292,6 +292,10 @@
+
+ #endif /* ARM */
+
++/* CPU(AArch64) - 64-bit ARM */
++#if defined(__aarch64__)
++#define WTF_CPU_AARCH64 1
++#endif
+
+
+ /* Operating systems - low-level dependencies */
+--- a/js/src/configure.in
++++ a/js/src/configure.in
+@@ -1534,6 +1534,10 @@ arm*)
+     CPU_ARCH=arm
+     ;;
+
++aarch64)
++    CPU_ARCH=aarch64
++    ;;
++
+ mips|mipsel)
+     CPU_ARCH="mips"
+     ;;

@@ -1,3 +1,14 @@
+--- gdb-7.6/gdb/aarch64-linux-nat.c.orig
++++ gdb-7.6/gdb/aarch64-linux-nat.c
+@@ -457,7 +457,7 @@ aarch64_linux_new_fork (struct lwp_info *parent, pid_t child_pid)
+    storage (or its descriptor).  */
+ 
+ ps_err_e
+-ps_get_thread_area (const struct ps_prochandle *ph,
++ps_get_thread_area (struct ps_prochandle *ph,
+ 		    lwpid_t lwpid, int idx, void **base)
+ {
+   struct iovec iovec;
 --- gdb-7.6/gdb/amd64-linux-nat.c.orig
 +++ gdb-7.6/gdb/amd64-linux-nat.c
 @@ -482,7 +482,7 @@
