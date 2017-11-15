@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.02
-Release:    9%{?dist}
+Release:    10%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -28,12 +28,14 @@ Requires: %{name} = %{version}
 %description lang
 These are the additional language files of grub.
 
+%ifarch x86_64
 %package pc
 Summary: GRUB Library for BIOS
 Group: System Environment/Programming
 Requires: %{name} = %{version}
 %description pc
 Additional library files for grub
+%endif
 
 %package efi
 Summary: GRUB Library for UEFI
@@ -48,8 +50,9 @@ Additional library files for grub
 %patch1 -p1
 %build
 ./autogen.sh
-mkdir build-for-pc build-for-efi
-cd build-for-pc
+%ifarch x86_64
+mkdir build-for-pc
+pushd build-for-pc
 ../configure \
     --prefix=%{_prefix} \
     --sbindir=/sbin \
@@ -64,7 +67,11 @@ cd build-for-pc
     --with-bootdir="/boot" 
 make %{?_smp_mflags}
 make DESTDIR=$PWD/../install-for-pc install
-cd ../build-for-efi
+popd
+%endif
+
+mkdir build-for-efi
+pushd build-for-efi
 ../configure \
     --prefix=%{_prefix} \
     --sbindir=/sbin \
@@ -74,23 +81,28 @@ cd ../build-for-efi
     --disable-efiemu \
     --with-grubdir=grub2 \
     --with-platform=efi \
-    --target=x86_64 \
+    --target=%{_arch} \
     --program-transform-name=s,grub,%{name}, \
     --with-bootdir="/boot"
 make %{?_smp_mflags}
 make DESTDIR=$PWD/../install-for-efi install
+popd
 
 #make sure all the files are same between two configure except the /usr/lib/grub
 %check
+%ifarch x86_64
 diff -sr install-for-efi/sbin install-for-pc/sbin && \
 diff -sr install-for-efi%{_bindir} install-for-pc%{_bindir} && \
 diff -sr install-for-efi%{_sysconfdir} install-for-pc%{_sysconfdir} && \
 diff -sr install-for-efi%{_datarootdir} install-for-pc%{_datarootdir}
+%endif
 
 %install
 mkdir -p %{buildroot}
 cp -a install-for-efi/. %{buildroot}/.
+%ifarch x86_64
 cp -a install-for-pc/. %{buildroot}/.
+%endif
 mkdir %{buildroot}%{_sysconfdir}/default
 touch %{buildroot}%{_sysconfdir}/default/grub
 mkdir %{buildroot}%{_sysconfdir}/sysconfig
@@ -120,17 +132,21 @@ rm -rf %{buildroot}%{_infodir}
 %{_sysconfdir}/default/grub
 %ghost %config(noreplace) /boot/%{name}/grub.cfg
 
+%ifarch x86_64
 %files pc
 %{_libdir}/grub/i386-pc
+%endif
 
 %files efi
-%{_libdir}/grub/x86_64-efi
+%{_libdir}/grub/*
 
 %files lang
 %defattr(-,root,root)
 %{_datarootdir}/locale/*
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.02-10
+-   Aarch64 support
 *   Fri Jun 2  2017 Bo Gan <ganb@vmware.com> 2.02-9
 -   Split grub2 to grub2 and grub2-pc, remove grub2-efi spec
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com>  2.02-8

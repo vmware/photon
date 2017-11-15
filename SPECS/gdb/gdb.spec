@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.12.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -50,6 +50,9 @@ rm %{buildroot}%{_libdir}/libopcodes.a
 rm %{buildroot}%{_datadir}/locale/de/LC_MESSAGES/opcodes.mo
 rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/bfd.mo
 rm %{buildroot}%{_datadir}/locale/fi/LC_MESSAGES/opcodes.mo
+%ifarch aarch64
+rm %{buildroot}%{_libdir}/libaarch64-unknown-linux-gnu-sim.a
+%endif
 %find_lang %{name} --all-name
 
 %check
@@ -74,6 +77,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-7
+-   Aarch64 support
 *   Mon Sep 11 2017 Rui Gu <ruig@vmware.com> 7.12.1-6
 -   Enable make check in docker with part of checks disabled
 *   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-5
