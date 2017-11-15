@@ -1,7 +1,15 @@
+%ifarch x86_64
+%define archname amd64
+%endif
+%ifarch aarch64
+%define archname arm64
+%endif
+
+
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.8.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -52,8 +60,8 @@ cd %{name}-%{version}
 make
 pushd build/pause
 mkdir -p bin
-gcc -Os -Wall -Werror -static -o bin/pause-amd64 pause.c
-strip bin/pause-amd64
+gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
+strip bin/pause-%{archname}
 popd
 
 %install
@@ -63,13 +71,13 @@ install -m 755 -d %{buildroot}%{_bindir}
 binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl kubefed)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
-  install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/${bin}
+  install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
 done
-install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-amd64
+install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
 
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
-install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/kubeadm
+install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
 install -p -m 755 -t %{buildroot}/etc/systemd/system build/rpms/kubelet.service
 install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d build/rpms/10-kubeadm.conf
 sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
@@ -180,10 +188,12 @@ fi
 
 %files pause
 %defattr(-,root,root)
-%{_bindir}/pause-amd64
+%{_bindir}/pause-%{archname}
 
 %changelog
-*   Fri Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
+*   Wed Nov 15 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.1-4
+-   Aarch64 support
+*   Wed Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
 -   Specify --kubeconfig to pass in config file.
 *   Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-2
 -   Specify API server via kubeconfig file.

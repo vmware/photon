@@ -1,12 +1,13 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          js
 Version:       1.8.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPLv1.1
 URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Releases/1.8.5
 Source0:       https://archive.mozilla.org/pub/js/js185-1.0.0.tar.gz
+Patch0:        mozjs-aarch64-support.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: ncurses-devel
@@ -29,19 +30,12 @@ This contains development tools and libraries for SpiderMonkey.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 cd js/src
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --sbindir=%{_sbindir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --infodir=%{_infodir} \
+%configure \
     --datadir=%{_datarootdir} \
-    --sysconfdir=/etc \
     --with-system-nspr \
     --enable-threadsafe \
     --enable-readline
@@ -75,7 +69,9 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs185.pc
 
 %changelog
-*   Tue Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.5-1
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.5-2
+-   Aarch64 support
+*   Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.5-1
 -   mozjs v1.8.5.
 *   Fri May 22 2015 Alexey Makhalov <amakhalov@vmware.com> 17.0.0-1
 -   initial version

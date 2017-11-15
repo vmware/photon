@@ -1,7 +1,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.14.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
@@ -18,7 +18,12 @@ Kubernetes DNS is a name lookup service for kubernetes pods.
 %setup -qn dns-%{version}
 
 %build
+%ifarch x86_64
 export ARCH=amd64
+%endif
+%ifarch aarch64
+export ARCH=arm64
+%endif
 export VERSION=%{version}
 export PKG=k8s.io/dns
 export GOARCH=${ARCH}
@@ -64,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.14.6-3
+-   Aarch64 support
 *   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.6-2
 -   Remove go testing framework binary.
 *   Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.14.6-1
