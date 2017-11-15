@@ -4,7 +4,7 @@
 Summary:	Main C library
 Name:		glibc
 Version:	2.26
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	LGPLv2+
 URL:		http://www.gnu.org/software/libc
 Group:		Applications/System
@@ -209,6 +209,9 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %config(missingok,noreplace) %{_sysconfdir}/ld.so.cache
 %config %{_sysconfdir}/locale-gen.conf
 /lib64/*
+%ifarch aarch64
+%exclude /lib
+%endif
 %exclude /lib64/libpcprofile.so
 %{_lib64dir}/*.so
 /sbin/ldconfig
@@ -271,10 +274,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
 # /usr/bin/mtrace
-%ifarch x86_64
 %{_lib64dir}/*.a
 %{_lib64dir}/*.o
-%endif
 %{_includedir}/*
 
 %files -f %{name}.lang lang
@@ -282,6 +283,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-7
+-   Aarch64 support
 *   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 2.26-6
 -   Fix CVE-2017-15670 and CVE-2017-15804
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-5
