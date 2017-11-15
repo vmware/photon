@@ -1,7 +1,7 @@
-diff -rup openssh-7.5p1/cipher.c openssh-7.5p1-fips/cipher.c
---- openssh-7.5p1/cipher.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/cipher.c	2017-02-02 15:51:07.008913721 -0800
-@@ -136,6 +136,20 @@ static const struct sshcipher ciphers[]
+diff -rup openssh-7.5p1/cipher.c openssh-7.5p1-new/cipher.c
+--- openssh-7.5p1/cipher.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/cipher.c	2017-11-14 16:04:07.735036305 -0800
+@@ -136,6 +136,26 @@ static const struct sshcipher ciphers[]
  	{ NULL,		SSH_CIPHER_INVALID, 0, 0, 0, 0, 0, 0, NULL }
  };
  
@@ -16,13 +16,19 @@ diff -rup openssh-7.5p1/cipher.c openssh-7.5p1-fips/cipher.c
 +	{ "aes128-ctr",	SSH_CIPHER_SSH2, 16, 16, 0, 0, 0, 0, EVP_aes_128_ctr },
 +	{ "aes192-ctr",	SSH_CIPHER_SSH2, 16, 24, 0, 0, 0, 0, EVP_aes_192_ctr },
 +	{ "aes256-ctr",	SSH_CIPHER_SSH2, 16, 32, 0, 0, 0, 0, EVP_aes_256_ctr },
++# ifdef OPENSSL_HAVE_EVPGCM
++	{ "aes128-gcm@openssh.com",
++			SSH_CIPHER_SSH2, 16, 16, 12, 16, 0, 0, EVP_aes_128_gcm },
++	{ "aes256-gcm@openssh.com",
++			SSH_CIPHER_SSH2, 16, 32, 12, 16, 0, 0, EVP_aes_256_gcm },
++# endif /* OPENSSL_HAVE_EVPGCM */
 +	{ NULL,		SSH_CIPHER_INVALID, 0, 0, 0, 0, 0, 0, NULL }
 +};
 +
  /*--*/
  
  /* Returns a comma-separated list of supported ciphers. */
-@@ -146,7 +160,7 @@ cipher_alg_list(char sep, int auth_only)
+@@ -146,7 +166,7 @@ cipher_alg_list(char sep, int auth_only)
  	size_t nlen, rlen = 0;
  	const struct sshcipher *c;
  
@@ -31,7 +37,7 @@ diff -rup openssh-7.5p1/cipher.c openssh-7.5p1-fips/cipher.c
  		if (c->number != SSH_CIPHER_SSH2)
  			continue;
  		if (auth_only && c->auth_len == 0)
-@@ -242,7 +256,7 @@ const struct sshcipher *
+@@ -242,7 +262,7 @@ const struct sshcipher *
  cipher_by_name(const char *name)
  {
  	const struct sshcipher *c;
@@ -40,7 +46,7 @@ diff -rup openssh-7.5p1/cipher.c openssh-7.5p1-fips/cipher.c
  		if (strcmp(c->name, name) == 0)
  			return c;
  	return NULL;
-@@ -252,7 +266,7 @@ const struct sshcipher *
+@@ -252,7 +272,7 @@ const struct sshcipher *
  cipher_by_number(int id)
  {
  	const struct sshcipher *c;
@@ -49,7 +55,7 @@ diff -rup openssh-7.5p1/cipher.c openssh-7.5p1-fips/cipher.c
  		if (c->number == id)
  			return c;
  	return NULL;
-@@ -293,7 +307,7 @@ cipher_number(const char *name)
+@@ -293,7 +313,7 @@ cipher_number(const char *name)
  	const struct sshcipher *c;
  	if (name == NULL)
  		return -1;
@@ -58,9 +64,9 @@ diff -rup openssh-7.5p1/cipher.c openssh-7.5p1-fips/cipher.c
  		if (strcasecmp(c->name, name) == 0)
  			return c->number;
  	return -1;
-diff -rup openssh-7.5p1/cipher-ctr.c openssh-7.5p1-fips/cipher-ctr.c
---- openssh-7.5p1/cipher-ctr.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/cipher-ctr.c	2017-02-02 15:47:44.252918302 -0800
+diff -rup openssh-7.5p1/cipher-ctr.c openssh-7.5p1-new/cipher-ctr.c
+--- openssh-7.5p1/cipher-ctr.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/cipher-ctr.c	2017-11-14 16:03:27.498694013 -0800
 @@ -138,7 +138,8 @@ evp_aes_128_ctr(void)
  	aes_ctr.do_cipher = ssh_aes_ctr;
  #ifndef SSH_OLD_EVP
@@ -71,9 +77,9 @@ diff -rup openssh-7.5p1/cipher-ctr.c openssh-7.5p1-fips/cipher-ctr.c
  #endif
  	return (&aes_ctr);
  }
-diff -rup openssh-7.5p1/dh.h openssh-7.5p1-fips/dh.h
---- openssh-7.5p1/dh.h	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/dh.h	2017-02-02 15:52:37.552911676 -0800
+diff -rup openssh-7.5p1/dh.h openssh-7.5p1-new/dh.h
+--- openssh-7.5p1/dh.h	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/dh.h	2017-11-14 16:03:27.498694013 -0800
 @@ -51,6 +51,7 @@ u_int	 dh_estimate(int);
   * Miniumum increased in light of DH precomputation attacks.
   */
@@ -82,9 +88,9 @@ diff -rup openssh-7.5p1/dh.h openssh-7.5p1-fips/dh.h
  #define DH_GRP_MAX	8192
  
  /*
-diff -rup openssh-7.5p1/entropy.c openssh-7.5p1-fips/entropy.c
---- openssh-7.5p1/entropy.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/entropy.c	2017-02-02 15:53:46.088910128 -0800
+diff -rup openssh-7.5p1/entropy.c openssh-7.5p1-new/entropy.c
+--- openssh-7.5p1/entropy.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/entropy.c	2017-11-14 16:03:27.498694013 -0800
 @@ -217,6 +217,9 @@ seed_rng(void)
  		fatal("OpenSSL version mismatch. Built against %lx, you "
  		    "have %lx", (u_long)OPENSSL_VERSION_NUMBER, SSLeay());
@@ -95,14 +101,18 @@ diff -rup openssh-7.5p1/entropy.c openssh-7.5p1-fips/entropy.c
  #ifndef OPENSSL_PRNG_ONLY
  	if (RAND_status() == 1) {
  		debug3("RNG is ready, skipping seeding");
-diff -rup openssh-7.5p1/kex.c openssh-7.5p1-fips/kex.c
---- openssh-7.5p1/kex.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/kex.c	2017-02-02 16:06:13.120893252 -0800
-@@ -114,6 +114,23 @@ static const struct kexalg kexalgs[] = {
+diff -rup openssh-7.5p1/kex.c openssh-7.5p1-new/kex.c
+--- openssh-7.5p1/kex.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/kex.c	2017-11-14 16:10:16.816150390 -0800
+@@ -114,6 +114,27 @@ static const struct kexalg kexalgs[] = {
  	{ NULL, -1, -1, -1},
  };
  
 +static const struct kexalg kexalgs_fips[] = {
++	{ KEX_DH14_SHA1, KEX_DH_GRP14_SHA1, 0, SSH_DIGEST_SHA1 },
++	{ KEX_DH14_SHA256, KEX_DH_GRP14_SHA256, 0, SSH_DIGEST_SHA256 },
++	{ KEX_DH16_SHA512, KEX_DH_GRP16_SHA512, 0, SSH_DIGEST_SHA512 },
++	{ KEX_DH18_SHA512, KEX_DH_GRP18_SHA512, 0, SSH_DIGEST_SHA512 },
 +#ifdef HAVE_EVP_SHA256
 +	{ KEX_DHGEX_SHA256, KEX_DH_GEX_SHA256, 0, SSH_DIGEST_SHA256 },
 +#endif
@@ -122,7 +132,7 @@ diff -rup openssh-7.5p1/kex.c openssh-7.5p1-fips/kex.c
  char *
  kex_alg_list(char sep)
  {
-@@ -121,7 +138,7 @@ kex_alg_list(char sep)
+@@ -121,7 +142,7 @@ kex_alg_list(char sep)
  	size_t nlen, rlen = 0;
  	const struct kexalg *k;
  
@@ -131,7 +141,7 @@ diff -rup openssh-7.5p1/kex.c openssh-7.5p1-fips/kex.c
  		if (ret != NULL)
  			ret[rlen++] = sep;
  		nlen = strlen(k->name);
-@@ -141,7 +158,7 @@ kex_alg_by_name(const char *name)
+@@ -141,7 +162,7 @@ kex_alg_by_name(const char *name)
  {
  	const struct kexalg *k;
  
@@ -140,7 +150,7 @@ diff -rup openssh-7.5p1/kex.c openssh-7.5p1-fips/kex.c
  		if (strcmp(k->name, name) == 0)
  			return k;
  	}
-@@ -161,7 +178,10 @@ kex_names_valid(const char *names)
+@@ -161,7 +182,10 @@ kex_names_valid(const char *names)
  	for ((p = strsep(&cp, ",")); p && *p != '\0';
  	    (p = strsep(&cp, ","))) {
  		if (kex_alg_by_name(p) == NULL) {
@@ -152,9 +162,9 @@ diff -rup openssh-7.5p1/kex.c openssh-7.5p1-fips/kex.c
  			free(s);
  			return 0;
  		}
-diff -rup openssh-7.5p1/kexgexc.c openssh-7.5p1-fips/kexgexc.c
---- openssh-7.5p1/kexgexc.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/kexgexc.c	2017-02-02 16:10:36.604887300 -0800
+diff -rup openssh-7.5p1/kexgexc.c openssh-7.5p1-new/kexgexc.c
+--- openssh-7.5p1/kexgexc.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/kexgexc.c	2017-11-14 16:03:27.498694013 -0800
 @@ -63,7 +63,7 @@ kexgex_client(struct ssh *ssh)
  
  	nbits = dh_estimate(kex->dh_need * 8);
@@ -164,9 +174,9 @@ diff -rup openssh-7.5p1/kexgexc.c openssh-7.5p1-fips/kexgexc.c
  	kex->max = DH_GRP_MAX;
  	kex->nbits = nbits;
  	if (datafellows & SSH_BUG_DHGEX_LARGE)
-diff -rup openssh-7.5p1/kexgexs.c openssh-7.5p1-fips/kexgexs.c
---- openssh-7.5p1/kexgexs.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/kexgexs.c	2017-02-02 16:11:31.404886062 -0800
+diff -rup openssh-7.5p1/kexgexs.c openssh-7.5p1-new/kexgexs.c
+--- openssh-7.5p1/kexgexs.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/kexgexs.c	2017-11-14 16:03:27.498694013 -0800
 @@ -83,9 +83,9 @@ input_kex_dh_gex_request(int type, u_int
  	kex->nbits = nbits;
  	kex->min = min;
@@ -179,9 +189,9 @@ diff -rup openssh-7.5p1/kexgexs.c openssh-7.5p1-fips/kexgexs.c
  	nbits = MINIMUM(DH_GRP_MAX, nbits);
  
  	if (kex->max < kex->min || kex->nbits < kex->min ||
-diff -rup openssh-7.5p1/mac.c openssh-7.5p1-fips/mac.c
---- openssh-7.5p1/mac.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/mac.c	2017-02-02 16:13:56.932882775 -0800
+diff -rup openssh-7.5p1/mac.c openssh-7.5p1-new/mac.c
+--- openssh-7.5p1/mac.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/mac.c	2017-11-14 16:03:27.498694013 -0800
 @@ -54,7 +54,7 @@ struct macalg {
  	int		etm;		/* Encrypt-then-MAC */
  };
@@ -234,20 +244,23 @@ diff -rup openssh-7.5p1/mac.c openssh-7.5p1-fips/mac.c
  		if (strcmp(name, m->name) != 0)
  			continue;
  		if (mac != NULL)
-diff -rup openssh-7.5p1/myproposal.h openssh-7.5p1-fips/myproposal.h
---- openssh-7.5p1/myproposal.h	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/myproposal.h	2017-02-02 16:15:40.516880435 -0800
-@@ -138,6 +138,26 @@
+diff -rup openssh-7.5p1/myproposal.h openssh-7.5p1-new/myproposal.h
+--- openssh-7.5p1/myproposal.h	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/myproposal.h	2017-11-14 16:12:38.278996802 -0800
+@@ -138,6 +138,29 @@
  
  #define KEX_CLIENT_MAC KEX_SERVER_MAC
  
 +#define KEX_DEFAULT_KEX_FIPS		\
 +	KEX_ECDH_METHODS \
-+	KEX_SHA2_METHODS
++	KEX_SHA2_METHODS \
++	KEX_SHA2_GROUP14 \
++	"diffie-hellman-group14-sha1"
 +#define	KEX_FIPS_ENCRYPT \
 +	"aes128-ctr,aes192-ctr,aes256-ctr," \
 +	"aes128-cbc,3des-cbc," \
-+	"aes192-cbc,aes256-cbc,rijndael-cbc@lysator.liu.se"
++	"aes192-cbc,aes256-cbc,rijndael-cbc@lysator.liu.se" \
++	AESGCM_CIPHER_MODES
 +#ifdef HAVE_EVP_SHA256
 +#define	KEX_FIPS_MAC \
 +	"hmac-sha1," \
@@ -264,9 +277,9 @@ diff -rup openssh-7.5p1/myproposal.h openssh-7.5p1-fips/myproposal.h
  #else /* WITH_OPENSSL */
  
  #define KEX_SERVER_KEX		\
-diff -rup openssh-7.5p1/openbsd-compat/openssl-compat.h openssh-7.5p1-fips/openbsd-compat/openssl-compat.h
---- openssh-7.5p1/openbsd-compat/openssl-compat.h	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/openbsd-compat/openssl-compat.h	2017-02-02 16:17:03.024878571 -0800
+diff -rup openssh-7.5p1/openbsd-compat/openssl-compat.h openssh-7.5p1-new/openbsd-compat/openssl-compat.h
+--- openssh-7.5p1/openbsd-compat/openssl-compat.h	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/openbsd-compat/openssl-compat.h	2017-11-14 16:03:27.498694013 -0800
 @@ -24,6 +24,7 @@
  #include <openssl/evp.h>
  #include <openssl/rsa.h>
@@ -275,10 +288,10 @@ diff -rup openssh-7.5p1/openbsd-compat/openssl-compat.h openssh-7.5p1-fips/openb
  
  int ssh_compatible_openssl(long, long);
  
-diff -rup openssh-7.5p1/readconf.c openssh-7.5p1-fips/readconf.c
---- openssh-7.5p1/readconf.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/readconf.c	2017-02-02 16:19:05.624875801 -0800
-@@ -2044,9 +2044,12 @@ fill_default_options(Options * options)
+diff -rup openssh-7.5p1/readconf.c openssh-7.5p1-new/readconf.c
+--- openssh-7.5p1/readconf.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/readconf.c	2017-11-14 16:03:27.498694013 -0800
+@@ -2066,9 +2066,12 @@ fill_default_options(Options * options)
  		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
  	if (options->update_hostkeys == -1)
  		options->update_hostkeys = 0;
@@ -294,10 +307,11 @@ diff -rup openssh-7.5p1/readconf.c openssh-7.5p1-fips/readconf.c
  	    kex_assemble_names(KEX_DEFAULT_PK_ALG,
  	    &options->hostbased_key_types) != 0 ||
  	    kex_assemble_names(KEX_DEFAULT_PK_ALG,
-diff -rup openssh-7.5p1/sandbox-seccomp-filter.c openssh-7.5p1-fips/sandbox-seccomp-filter.c
---- openssh-7.5p1/sandbox-seccomp-filter.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/sandbox-seccomp-filter.c	2017-02-02 16:20:10.104874345 -0800
-@@ -118,6 +118,9 @@ static const struct sock_filter preauth_
+Only in openssh-7.5p1-new: readconf.c.orig
+diff -rup openssh-7.5p1/sandbox-seccomp-filter.c openssh-7.5p1-new/sandbox-seccomp-filter.c
+--- openssh-7.5p1/sandbox-seccomp-filter.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/sandbox-seccomp-filter.c	2017-11-14 16:03:27.498694013 -0800
+@@ -134,6 +134,9 @@ static const struct sock_filter preauth_
  #ifdef __NR_open
  	SC_DENY(__NR_open, EACCES),
  #endif
@@ -307,9 +321,10 @@ diff -rup openssh-7.5p1/sandbox-seccomp-filter.c openssh-7.5p1-fips/sandbox-secc
  #ifdef __NR_openat
  	SC_DENY(__NR_openat, EACCES),
  #endif
-diff -rup openssh-7.5p1/servconf.c openssh-7.5p1-fips/servconf.c
---- openssh-7.5p1/servconf.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/servconf.c	2017-02-02 16:23:48.132869419 -0800
+Only in openssh-7.5p1-new: sandbox-seccomp-filter.c.orig
+diff -rup openssh-7.5p1/servconf.c openssh-7.5p1-new/servconf.c
+--- openssh-7.5p1/servconf.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/servconf.c	2017-11-14 16:03:27.502704413 -0800
 @@ -176,9 +176,12 @@ option_clear_or_none(const char *o)
  static void
  assemble_algorithms(ServerOptions *o)
@@ -326,7 +341,7 @@ diff -rup openssh-7.5p1/servconf.c openssh-7.5p1-fips/servconf.c
  	    kex_assemble_names(KEX_DEFAULT_PK_ALG,
  	    &o->hostkeyalgorithms) != 0 ||
  	    kex_assemble_names(KEX_DEFAULT_PK_ALG,
-@@ -2281,8 +2284,10 @@ dump_config(ServerOptions *o)
+@@ -2282,8 +2285,10 @@ dump_config(ServerOptions *o)
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
  	dump_cfg_string(sXAuthLocation, o->xauth_location);
@@ -339,7 +354,7 @@ diff -rup openssh-7.5p1/servconf.c openssh-7.5p1-fips/servconf.c
  	dump_cfg_string(sBanner, o->banner);
  	dump_cfg_string(sForceCommand, o->adm_forced_command);
  	dump_cfg_string(sChrootDirectory, o->chroot_directory);
-@@ -2297,8 +2302,8 @@ dump_config(ServerOptions *o)
+@@ -2298,8 +2303,8 @@ dump_config(ServerOptions *o)
  	dump_cfg_string(sAuthorizedPrincipalsCommand, o->authorized_principals_command);
  	dump_cfg_string(sAuthorizedPrincipalsCommandUser, o->authorized_principals_command_user);
  	dump_cfg_string(sHostKeyAgent, o->host_key_agent);
@@ -350,9 +365,10 @@ diff -rup openssh-7.5p1/servconf.c openssh-7.5p1-fips/servconf.c
  	dump_cfg_string(sHostbasedAcceptedKeyTypes, o->hostbased_key_types ?
  	    o->hostbased_key_types : KEX_DEFAULT_PK_ALG);
  	dump_cfg_string(sHostKeyAlgorithms, o->hostkeyalgorithms ?
-diff -rup openssh-7.5p1/ssh.c openssh-7.5p1-fips/ssh.c
---- openssh-7.5p1/ssh.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/ssh.c	2017-02-02 16:49:00.060835265 -0800
+Only in openssh-7.5p1-new: servconf.c.orig
+diff -rup openssh-7.5p1/ssh.c openssh-7.5p1-new/ssh.c
+--- openssh-7.5p1/ssh.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/ssh.c	2017-11-14 16:03:27.502704413 -0800
 @@ -609,6 +609,9 @@ main(int ac, char **av)
  	    "ACD:E:F:GI:J:KL:MNO:PQ:R:S:TVw:W:XYy")) != -1) {
  		switch (opt) {
@@ -387,10 +403,10 @@ diff -rup openssh-7.5p1/ssh.c openssh-7.5p1-fips/ssh.c
  	/* Open a connection to the remote host. */
  	if (ssh_connect(host, addrs, &hostaddr, options.port,
  	    options.address_family, options.connection_attempts,
-diff -rup openssh-7.5p1/sshd.c openssh-7.5p1-fips/sshd.c
---- openssh-7.5p1/sshd.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/sshd.c	2017-02-02 16:54:20.952828016 -0800
-@@ -1827,6 +1827,10 @@ main(int ac, char **av)
+diff -rup openssh-7.5p1/sshd.c openssh-7.5p1-new/sshd.c
+--- openssh-7.5p1/sshd.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/sshd.c	2017-11-14 16:03:27.502704413 -0800
+@@ -1841,6 +1841,10 @@ main(int ac, char **av)
  	/* Reinitialize the log (because of the fork above). */
  	log_init(__progname, options.log_level, options.log_facility, log_stderr);
  
@@ -401,9 +417,10 @@ diff -rup openssh-7.5p1/sshd.c openssh-7.5p1-fips/sshd.c
  	/* Chdir to the root directory so that the current disk can be
  	   unmounted if desired. */
  	if (chdir("/") == -1)
-diff -rup openssh-7.5p1/sshkey.c openssh-7.5p1-fips/sshkey.c
---- openssh-7.5p1/sshkey.c	2016-12-18 20:59:41.000000000 -0800
-+++ openssh-7.5p1-fips/sshkey.c	2017-02-02 17:17:00.576797301 -0800
+Only in openssh-7.5p1-new: sshd.c.orig
+diff -rup openssh-7.5p1/sshkey.c openssh-7.5p1-new/sshkey.c
+--- openssh-7.5p1/sshkey.c	2017-03-19 19:39:27.000000000 -0700
++++ openssh-7.5p1-new/sshkey.c	2017-11-14 16:03:27.502704413 -0800
 @@ -56,6 +56,7 @@
  #include "digest.h"
  #define SSHKEY_INTERNAL
@@ -412,7 +429,7 @@ diff -rup openssh-7.5p1/sshkey.c openssh-7.5p1-fips/sshkey.c
  #include "match.h"
  
  /* openssh private key file format */
-@@ -1527,6 +1528,8 @@ rsa_generate_private_key(u_int bits, RSA
+@@ -1534,6 +1535,8 @@ rsa_generate_private_key(u_int bits, RSA
  	}
  	if (!BN_set_word(f4, RSA_F4) ||
  	    !RSA_generate_key_ex(private, bits, f4, NULL)) {
@@ -421,3 +438,4 @@ diff -rup openssh-7.5p1/sshkey.c openssh-7.5p1-fips/sshkey.c
  		ret = SSH_ERR_LIBCRYPTO_ERROR;
  		goto out;
  	}
+Only in openssh-7.5p1-new: sshkey.c.orig
