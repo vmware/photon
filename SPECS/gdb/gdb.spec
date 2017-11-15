@@ -12,6 +12,7 @@ Distribution:   Photon
 Patch0:         gdb-7.12-pstack.patch
 Requires:       expat
 Requires:       ncurses
+Requires:	python3
 BuildRequires:  expat-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  python3-devel

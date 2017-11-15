@@ -14,6 +14,7 @@ Patch1:     fontconfig-runtest-expect.patch
 BuildRequires:	freetype2-devel
 BuildRequires:	libxml2
 BuildRequires:	expat-devel
+Requires:       freetype2
 Provides:	pkgconfig(fontconfig)
 %description
 Fontconfig can discover new fonts when installed automatically, removing a common source of configuration problems, perform font name substitution, so that appropriate alternative fonts can be selected if fonts are missing, identify the set of fonts required to completely cover a set of languages.
@@ -22,6 +23,7 @@ Fontconfig can discover new fonts when installed automatically, removing a commo
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 Requires:	expat-devel
+Requires:       freetype2-devel
 %description	devel
 It contains the libraries and header files to create applications 
 
