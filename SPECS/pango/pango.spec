@@ -19,12 +19,18 @@ BuildRequires:	harfbuzz
 BuildRequires:	harfbuzz-devel
 BuildRequires:	freetype2
 Requires:	harfbuzz-devel
+Requires:	cairo
+Requires:	fontconfig
+Requires:	libpng
+Requires:	harfbuzz
 %description
 Pango is a library for laying out and rendering of text, with an emphasis on internationalization. Pango can be used anywhere that text layout is needed, though most of the work on Pango so far has been done in the context of the GTK+ widget toolkit.
 
 %package	devel
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
+Requires:	freetype2-devel
+Requires:	cairo-devel
 %description	devel
 It contains the libraries and header files to create applications 
 
