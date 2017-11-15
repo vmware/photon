@@ -1,7 +1,7 @@
 Summary:    Free version of the SSH connectivity tools
 Name:       openssh
 Version:    7.4p1
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    BSD
 URL:         https://www.openssh.com/
 Group:      System Environment/Security
@@ -142,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Tue Nov 14 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-6
+-   Add ciphers aes128-gcm, aes256-gcm and kex dh14/16/18 in fips mode
 *   Thu Nov 02 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-5
 -   Fix service file for sshd
 *   Fri May 19 2017 Alexey Makhalov <amakhalov@vmware.com> 7.4p1-4
