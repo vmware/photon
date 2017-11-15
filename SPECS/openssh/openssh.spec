@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -42,6 +42,7 @@ Requires:   shadow
 Requires:   ncurses-terminfo
 Requires:   openssh-clients = %{version}-%{release}
 Requires(post): /bin/chown
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 %description server
 This provides the ssh server daemons, utilities, configuration and service files.
 
@@ -178,6 +179,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-9
+-   Fix: openssh-server requires(pre) shadow tools
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-8
 -   No direct toybox dependency, shadow depends on toybox
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-7

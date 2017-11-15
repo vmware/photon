@@ -1,7 +1,11 @@
 
 %global goroot          /usr/lib/golang
 %global gopath          %{_datadir}/gocode
+%ifarch aarch64
+%global gohostarch      arm64
+%else
 %global gohostarch      amd64
+%endif
 
 # rpmbuild magic to keep from having meta dependency on libc.so.6
 %define _use_internal_dependency_generator 0
@@ -10,7 +14,7 @@
 Summary:        Go 
 Name:           go
 Version:        1.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -58,8 +62,10 @@ rm -rfv %{buildroot}%{goroot}/doc/Makefile
 # put binaries to bindir, linked to the arch we're building,
 # leave the arch independent pieces in %{goroot}
 mkdir -p %{buildroot}%{goroot}/bin/linux_%{gohostarch}
-mv %{buildroot}%{goroot}/bin/go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
-mv %{buildroot}%{goroot}/bin/gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
+ln -sfv ../go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
+ln -sfv ../gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
+ln -sfv %{goroot}/bin/gofmt %{buildroot}%{_bindir}/gofmt
+ln -sfv %{goroot}/bin/go %{buildroot}%{_bindir}/go
 
 # ensure these exist and are owned
 mkdir -p %{buildroot}%{gopath}/src/github.com/
@@ -67,11 +73,7 @@ mkdir -p %{buildroot}%{gopath}/src/bitbucket.org/
 mkdir -p %{buildroot}%{gopath}/src/code.google.com/
 mkdir -p %{buildroot}%{gopath}/src/code.google.com/p/
 
-
-ln -sfv ../../%{goroot}/bin/linux_%{gohostarch}/gofmt %{buildroot}%{_bindir}/gofmt
-ln -sfv ../../%{goroot}/bin/linux_%{gohostarch}/go %{buildroot}%{_bindir}/go
-
-install -vdm644 %{buildroot}/etc/profile.d
+install -vdm755 %{buildroot}/etc/profile.d
 cat >> %{buildroot}/etc/profile.d/go-exports.sh <<- "EOF"
 export GOROOT=%{goroot}
 export GOPATH=%{_datadir}/gocode
@@ -79,10 +81,10 @@ export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
-chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
+#chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
 
 
-%{_fixperms} %{buildroot}/*
+#%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
 
@@ -110,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.9.1-2
+-   Aarch64 support
 *   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.1-1
 -   Update to golang release v1.9.1
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-2

@@ -1,7 +1,7 @@
 Summary:	The Berkley DB database library for C
 Name:		libdb
 Version:	5.3.28
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD and LGPLv2 and Sleepycat
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
@@ -32,6 +32,7 @@ The package contains the DB doc files
 %build
 cd build_unix
 ../dist/configure \
+	--host=%{_host} --build=%{_build} \
 	--prefix=%{_prefix} \
 	--enable-compat185 \
 	--enable-dbm       \
@@ -65,5 +66,7 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.28-2
+-   Aarch64 support
 *	Thu Oct 27 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.28-1
 -	Initial build. First version

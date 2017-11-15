@@ -1,7 +1,7 @@
 Summary: Network traffic statics utility for Solaris and Linux
 Name:    nicstat
 Version: 1.95
-Release: 2%{?dist}
+Release: 3%{?dist}
 License:	Artistic License 2.0
 URL:		http://sourceforge.net/projects/%{name}
 Source0:	http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
@@ -17,7 +17,7 @@ Nicstat is a Solaris and Linux command-line that prints out network statistics f
 %setup -q
 
 %build
-gcc  -o3 -m64 %{name}.c -o %{name}
+gcc  -o3 $([ $(uname -m) = x86_64 ] && echo -m64) %{name}.c -o %{name}
 
 %install
 install -p -m755 -D  %{name} %{buildroot}%{_bindir}/%{name}
@@ -28,6 +28,8 @@ install -p -m644 -D  %{name}.1 %{buildroot}%{_mandir}/man1/%{name}.1
 %{_mandir}/man1/*
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.95-3
+-   Aarch64 support
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.95-2
 -	GA - Bump release of all rpms
 *	Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 1.95-1

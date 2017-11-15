@@ -1,17 +1,17 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.0.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
 URL:           http://www.github.com/vmware/c-rest-engine
-BuildArch:     x86_64
 Requires:      openssl >= 1.0.1
 BuildRequires: coreutils >= 8.22
 BuildRequires: openssl-devel >= 1.0.1
 Source0:       %{name}-%{version}.tar.gz
 %define sha1   c-rest-engine=f846acf51e5d8b31d73d78c3d55c14e887208064
+Patch0:        c-rest-engine-aarch64.patch
 
 %description
 c-rest-engine is a minimal embedded http(s) server written in C.
@@ -28,11 +28,13 @@ development libs and header files for c-rest-engine
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 cd build
 autoreconf -mif ..
 ../configure \
+    --host=%{_host} --build=%{_build} \
     --prefix=%{_prefix} \
     --with-ssl=/usr \
     --enable-debug=%{_enable_debug} \
@@ -60,6 +62,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.5-2
+-  Aarch64 support
 *  Thu Nov 02 2017 Kumar Kaushik <kaushikk@vmware.com> 1.0.5-1
 -  Adding version, 1.0.5, get peer info API.
 *  Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.4-3
