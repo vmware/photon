@@ -1,7 +1,7 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
 Version:        3.4.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -29,12 +29,12 @@ mkdir -p %{buildroot}%{_prefix}
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_libdir}/java/zookeeper
 mkdir -p %{buildroot}%{_libdir}/zookeeper
-mkdir -p %{buildroot}%{_var}/log/zookeeper
 mkdir -p %{buildroot}%{_sysconfdir}/zookeeper
-mkdir -p %{buildroot}%{_var}/run/zookeeper
 mkdir -p %{buildroot}/sbin
 mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 mkdir -p %{buildroot}%{_var}/zookeeper
+install -vdm 755 %{buildroot}/var/log/zookeeper
+install -vdm 755 %{buildroot}/var/run/zookeeper
 
 cp zookeeper-%{version}.jar %{buildroot}%{_libdir}/java/zookeeper
 cp src/packages/update-zookeeper-env.sh %{buildroot}/sbin/update-zookeeper-env.sh
@@ -59,29 +59,10 @@ getent group hadoop >/dev/null || /usr/sbin/groupadd -r hadoop
 getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --shell /bin/bash -M -r --groups hadoop --home %{_prefix}/share/zookeeper zookeeper
 
 %post
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    # Enabled by default per "runs once then goes away" exception
-    bash %{_prefix}/sbin/update-zookeeper-env.sh \
-       --prefix=%{_prefix} \
-       --conf-dir=%{_sysconfdir}/zookeeper \
-       --log-dir=%{_var}/log/zookeeper \
-       --pid-dir=%{_var}/run/zookeeper \
-       --var-dir=%{_var}/zookeeper
-fi
 %{_sbindir}/ldconfig
 %systemd_post zookeeper.service
  
 %preun
-if [ $1 -eq 0 ] ; then
-bash %{_prefix}/sbin/update-zookeeper-env.sh \
-       --prefix=%{_prefix} \
-       --conf-dir=%{_sysconfdir}/zookeeper \
-       --log-dir=%{_var}/log/zookeeper \
-       --pid-dir=%{_var}/run/zookeeper \
-       --var-dir=%{_var}/zookeeper \
-       --uninstall
-fi
 %systemd_preun zookeeper.service
 
 %postun
@@ -102,6 +83,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Mon Nov 6 2017 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.10-2
+-   Fix zookeeper service startup issue. 
 *   Mon Nov 6 2017 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 3.4.10-1
 -   Upgraded to version 3.4.10
 *   Mon Nov 28 2016 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.9-1
