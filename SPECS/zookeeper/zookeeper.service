@@ -4,11 +4,13 @@ After=network.target
 ConditionPathExists=/etc/zookeeper/zoo.cfg
 
 [Service]
-Type=forking
+Type=simple
 ExecStart=/usr/bin/zkServer.sh start /etc/zookeeper/zoo.cfg
 ExecStop=/usr/bin/zkServer.sh stop
 User=zookeeper
 Group=hadoop
+RuntimeDirectory=zookeeper
+RuntimeDirectoryMode=0755
 Restart=always
 RestartSec=30
 
