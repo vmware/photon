@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.8.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -84,7 +84,7 @@ clusters:
 - cluster:
     server: http://127.0.0.1:8080
 EOF
-sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="/etc/kubernetes/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
+sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="--kubeconfig=/etc/kubernetes/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
 
 # install service files
 install -d -m 0755 %{buildroot}/usr/lib/systemd/system
@@ -184,6 +184,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Fri Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
+-   Specify --kubeconfig to pass in config file.
 *   Fri Nov 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-2
 -   Specify API server via kubeconfig file.
 *   Mon Oct 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
