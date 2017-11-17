@@ -1,0 +1,26 @@
+diff --git a/setup.py b/setup.py
+index f3d6d7e..3e591a2 100644
+--- a/setup.py
++++ b/setup.py
+@@ -399,7 +399,7 @@ class hgbuildext(build_ext):
+     negative_opt = buildextnegops
+ 
+     def initialize_options(self):
+-        self.zstd = True
++        self.zstd = False
+         return build_ext.initialize_options(self)
+ 
+     def build_extensions(self):
+@@ -776,9 +776,9 @@ extmodules = [
+               ['hgext/fsmonitor/pywatchman/bser.c']),
+     ]
+ 
+-sys.path.insert(0, 'contrib/python-zstandard')
+-import setup_zstd
+-extmodules.append(setup_zstd.get_c_extension(name='mercurial.zstd'))
++#sys.path.insert(0, 'contrib/python-zstandard')
++#import setup_zstd
++#extmodules.append(setup_zstd.get_c_extension(name='mercurial.zstd'))
+ 
+ try:
+     from distutils import cygwinccompiler
