@@ -53,7 +53,7 @@ class Installer(object):
             self.progress_width = self.width - self.progress_padding
             self.starty = (self.maxy - self.height) // 2
             self.startx = (self.maxx - self.width) // 2
-            self.window = Window(self.height, self.width, self.maxy, self.maxx, 'Installing Photon', False, items =[])
+            self.window = Window(self.height, self.width, self.maxy, self.maxx, 'Installing Photon', False)
             self.progress_bar = ProgressBar(self.starty + 3, self.startx + self.progress_padding // 2, self.progress_width)
 
         signal.signal(signal.SIGINT, self.exit_gracefully)
@@ -115,7 +115,7 @@ class Installer(object):
                 process = subprocess.Popen(
                     ['tdnf', 'install'] + selected_packages + ['--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=subprocess.PIPE, stderr=tdnf_errlog)
                 while True:
-                    output = process.stdout.readline()
+                    output = process.stdout.readline().decode()
                     if output == '':
                         retval = process.poll()
                         if retval is not None:
@@ -404,6 +404,7 @@ class Installer(object):
         return process.wait()
 
     def execute_modules(self, phase):
+        sys.path.append("./modules")
         modules_paths = glob.glob('modules/m_*.py')
         for mod_path in modules_paths:
             module = mod_path.replace('/', '.', 1)
@@ -429,6 +430,7 @@ class Installer(object):
             if not hasattr(mod, 'execute'):
                 modules.commons.log(modules.commons.LOG_ERROR, "Error: not able to execute module {}".format(module))
                 continue
+
             mod.execute(module, self.install_config, self.photon_root)
 
     def adjust_packages_for_vmware_virt(self):
@@ -446,18 +448,3 @@ class Installer(object):
                 selected_packages.append('linux-esx')
         except KeyError:
             pass
-
-    def run(self, command, comment = None):
-        if comment != None:
-            modules.commons.log(modules.commons.LOG_INFO, "Installer: {} ".format(comment))
-            self.progress_bar.update_loading_message(comment)
-
-        modules.commons.log(modules.commons.LOG_INFO, "Installer: {} ".format(command))
-        process = subprocess.Popen([command], shell=True, stdout=subprocess.PIPE)
-        out,err = process.communicate()
-        if err != None and err != 0 and "systemd-tmpfiles" not in command:
-            modules.commons.log(modules.commons.LOG_ERROR, "Installer: failed in {} with error code {}".format(command, err))
-            modules.commons.log(modules.commons.LOG_ERROR, out)
-            self.exit_gracefully(None, None)
-
-        return err
