@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -13,6 +13,7 @@ BuildRequires: coreutils >= 8.22
 BuildRequires: openssl-devel >= 1.0.1
 Source0:       %{name}-%{version}.tar.gz
 Patch0:        socket_RW.patch
+Patch1:        syslog_noInit.patch
 %define sha1   c-rest-engine=a25927fd98ec92df5e210cc4941fa626604636f6
 
 %description
@@ -32,6 +33,7 @@ development libs and header files for c-rest-engine
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 cd build
@@ -64,6 +66,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Fri Nov 17 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-3
+-  Removing syslog open/close from library.
 *  Fri Nov 10 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-2
 -  Fix 0 bytes error codition on socket read and write.
 *  Tue Oct 31 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-1
