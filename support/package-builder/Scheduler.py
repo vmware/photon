@@ -234,7 +234,7 @@ class Scheduler(object):
             if packageTup[0] == 0 and Scheduler.isPriorityScheduler == 1:
                 queueOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
                 Scheduler.queueOfPackagesNextToBuild = queueOfPackagesNextToBuild
-                packageTup = Scheduler.listOfPackagesNextToBuild.get()
+                packageTup = Scheduler.queueOfPackagesNextToBuild.get()
 
             package = packageTup[1]
             Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
