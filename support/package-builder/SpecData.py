@@ -68,7 +68,7 @@ class SerializableSpecObjectsUtils(object):
                     if self.compareVersions(existingObj,specObj) == 1:
                         skipUpdating = True
                         break;
-            	specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
+                specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
                 self.mapPackageToSpec[specPkg]=specName
                 if spec.getIsRPMPackage(specPkg):
                     specObj.listRPMPackages.append(specPkg)
@@ -93,7 +93,7 @@ class SerializableSpecObjectsUtils(object):
 
     def getRequiresForPackage(self, package):
         specName=self.getSpecName(package)
-        if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
+        if package in self.mapSerializableSpecObjects[specName].installRequiresPackages:
             return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
         return None
 
@@ -176,35 +176,35 @@ class SerializableSpecObjectsUtils(object):
         return self.mapSerializableSpecObjects[specName].listRPMPackages
 
     def getReleaseNum(self, releaseVal):
-	id = releaseVal.find("%")
-	if (id != -1):
-	    return releaseVal[0:id]
-	else:
-	    return releaseVal
+        id = releaseVal.find("%")
+        if (id != -1):
+            return releaseVal[0:id]
+        else:
+            return releaseVal
 
     def compareVersions(self, existingObj, newObject):
-	if StrictVersion(existingObj.version) > StrictVersion(newObject.version):
-	    return 1;
-	elif StrictVersion(existingObj.version) < StrictVersion(newObject.version):
-	    return -1
-	else:
-	    if int(self.getReleaseNum(existingObj.release)) > int(self.getReleaseNum(newObject.release)):
-		return 1;
-	    else:
-	     	return -1;
+        if StrictVersion(existingObj.version) > StrictVersion(newObject.version):
+            return 1;
+        elif StrictVersion(existingObj.version) < StrictVersion(newObject.version):
+            return -1
+        else:
+            if int(self.getReleaseNum(existingObj.release)) > int(self.getReleaseNum(newObject.release)):
+                return 1;
+            else:
+                return -1;
 
     def getSpecName(self,package):
-        if self.mapPackageToSpec.has_key(package):
+        if package in self.mapPackageToSpec:
             specName=self.mapPackageToSpec[package]
-            if self.mapSerializableSpecObjects.has_key(specName):
+            if specName in self.mapSerializableSpecObjects:
                 return specName
         self.logger.error("Could not able to find "+package+" package from specs")
         raise Exception("Invalid package:"+package)
 
     def isRPMPackage(self,package):
-        if self.mapPackageToSpec.has_key(package):
+        if package in self.mapPackageToSpec:
             specName=self.mapPackageToSpec[package]
-            if self.mapSerializableSpecObjects.has_key(specName):
+            if specName in self.mapSerializableSpecObjects:
                 return True
         return False
 
@@ -349,7 +349,7 @@ class SerializedSpecObjects(object):
                 print specPkg + " is missing"
             specObj = self.mapSerializableSpecObjects[specName]
             for depPkg in specObj.installRequiresPackages[specPkg]:
-                if True == allDeps.has_key(depPkg):
+                if depPkg in allDeps:
                     if(allDeps[depPkg] < allDeps[specPkg] + 1):
                         allDeps[depPkg] = allDeps[specPkg] + 1
                         parent[depPkg] = specPkg
@@ -370,13 +370,13 @@ class SerializedSpecObjects(object):
             whoBuildDepSet.add(debuginfoRPMName)
             if specName is None:
                 print specPkg + " is missing"
-            if not whoBuildDeps.has_key(specPkg):
+            if specPkg not in whoBuildDeps:
                 continue
             for depPkg in whoBuildDeps[specPkg]:
                 depQue.put(depPkg)
 
     def printTree(self, allDeps, children, curParent , depth):
-        if (children.has_key(curParent)):
+        if (curParent in children):
             for child in children[curParent]:
                 print "\t" * depth, child
                 self.printTree(allDeps, children, child, depth+1)
@@ -394,9 +394,9 @@ class SerializedSpecObjects(object):
         specObj = self.mapSerializableSpecObjects[specName]
         for depPkg in specObj.installRequiresPackages[inPkg]:
             # ignore circular deps within single spec file
-            if (specObj.installRequiresPackages.has_key(depPkg) and inPkg in specObj.installRequiresPackages[depPkg] and self.getSpecName(depPkg) == specName):
+            if (depPkg in specObj.installRequiresPackages and inPkg in specObj.installRequiresPackages[depPkg] and self.getSpecName(depPkg) == specName):
                 continue
-            if (allDeps.has_key(depPkg) and allDeps[depPkg] < level + 1):
+            if (depPkg in allDeps and allDeps[depPkg] < level + 1):
                 allDeps[depPkg] = level + 1
                 parent[depPkg] = inPkg
                 self.updateLevels(allDeps, depPkg, parent, allDeps[depPkg])
@@ -432,7 +432,7 @@ class SerializedSpecObjects(object):
                 if (inputType == "pkg" and inputValue == specPkg): # all the first level dependencies to a dictionary and queue
                     packageFound = True
                     for depPkg in specObj.installRequiresPackages[specPkg]:
-                        if False == allDeps.has_key(depPkg):
+                        if depPkg not in allDeps:
                             allDeps[depPkg] = 0
                             parent[depPkg] = ""
                             depQue.put(depPkg)
@@ -440,7 +440,7 @@ class SerializedSpecObjects(object):
                     whoNeedsList.append(specPkg)
                 elif (inputType == "who-needs-build"):
                     for bdrq in specObj.buildRequirePackages:
-                        if (whoBuildDeps.has_key(bdrq)):
+                        if (bdrq in whoBuildDeps):
                             whoBuildDeps[bdrq].add(specPkg)
                         else:
                             whoBuildDeps[bdrq] = set()
@@ -466,7 +466,7 @@ class SerializedSpecObjects(object):
             filePath = self.inputDataDir +"/"+ inputValue
             data = self.get_all_package_names(filePath)
             for pkg in data:
-                if False == allDeps.has_key(pkg):
+                if pkg not in allDeps:
                     spName = self.getSpecName(pkg)
                     if(spName != None):
                         allDeps[pkg] = 0
@@ -503,7 +503,7 @@ class SerializedSpecObjects(object):
             if(inputType == "json"):
                 print "Dependency Mappings for", inputValue, ":", "\n----------------------------------------------------",children
                 print "----------------------------------------------------"
-            if (children.has_key("")):
+            if ("" in children):
                 for child in children[""]:
                     print child
                     self.printTree(allDeps, children, child, 1)
@@ -541,7 +541,7 @@ class SerializedSpecObjects(object):
 
     def getRequiresForPackage(self, package):
         specName=self.getSpecName(package)
-        if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
+        if package in self.mapSerializableSpecObjects[specName].installRequiresPackages:
             return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
         return None
 
@@ -570,9 +570,9 @@ class SerializedSpecObjects(object):
         return self.mapSerializableSpecObjects[specName].listPackages
 
     def getSpecName(self,package):
-        if self.mapPackageToSpec.has_key(package):
+        if package in self.mapPackageToSpec:
             specName=self.mapPackageToSpec[package]
-            if self.mapSerializableSpecObjects.has_key(specName):
+            if specName in self.mapSerializableSpecObjects:
                 return specName
             else:
                 print "SpecDeps: Could not able to find " + package + " package from specs"
@@ -581,9 +581,9 @@ class SerializedSpecObjects(object):
             return None
 
     def isRPMPackage(self,package):
-        if self.mapPackageToSpec.has_key(package):
+        if package in self.mapPackageToSpec:
             specName=self.mapPackageToSpec[package]
-        if self.mapSerializableSpecObjects.has_key(specName):
+        if specName in self.mapSerializableSpecObjects:
             return True
         return False
 

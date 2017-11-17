@@ -42,7 +42,7 @@ class WorkerThread(threading.Thread):
             t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,args=(pkg,outputMap,pkg))
             t.start()
             t.join()
-            if not outputMap.has_key(pkg) or outputMap[pkg] == False:
+            if pkg not in outputMap or outputMap[pkg] == False:
                 buildThreadFailed = True
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
                 self.logger.info("Thread "+self.name +" stopped building package:" + pkg)
