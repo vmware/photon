@@ -91,7 +91,7 @@ class PackageBuilderBase(object):
         listInstalledRPMs.append(latestRPM)
         self.installDependentRunTimePackages(pkgUtils,package,instanceID,destLogPath,listInstalledPackages, listInstalledRPMs)
         noDeps=False
-        if self.mapPackageToCycles.has_key(package):
+        if package in self.mapPackageToCycles:
             noDeps = True
         if package in self.listNodepsPackages:
             noDeps=True
@@ -106,7 +106,7 @@ class PackageBuilderBase(object):
         listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
         if len(listRunTimeDependentPackages) != 0:
             for pkg in listRunTimeDependentPackages:
-                if self.mapPackageToCycles.has_key(pkg) and pkg not in self.listAvailableCyclicPackages:
+                if pkg in self.mapPackageToCycles and pkg not in self.listAvailableCyclicPackages:
                     continue
                 latestPkgRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(pkg)).replace(".rpm", "") 
                 if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
