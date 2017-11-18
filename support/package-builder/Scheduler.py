@@ -3,7 +3,7 @@ import ThreadPool
 from constants import constants
 from Logger import Logger
 import threading
-from Queue import PriorityQueue
+from queue import PriorityQueue
 from SpecData import SPECS
 
 class Scheduler(object):
@@ -80,22 +80,22 @@ class Scheduler(object):
                     except KeyError:
                         Scheduler.dependencyGraph[package][node] = \
                             Scheduler.alldependencyGraph[child_pkg][node] * k
-	if constants.publishBuildDependencies:
-	    dependencyLists = {}
-	    for package in Scheduler.dependencyGraph.keys():
-		dependencyLists[package] = []
-		for dependency in Scheduler.dependencyGraph[package].keys():
-			dependencyLists[package].append(dependency)
-	    graphfile = open(str(constants.logPath) + "/BuildDependencies.json", 'w')
-	    graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
-	    graphfile.close()
+        if constants.publishBuildDependencies:
+            dependencyLists = {}
+            for package in list(Scheduler.dependencyGraph.keys()):
+                dependencyLists[package] = []
+                for dependency in list(Scheduler.dependencyGraph[package].keys()):
+                        dependencyLists[package].append(dependency)
+            graphfile = open(str(constants.logPath) + "/BuildDependencies.json", 'w')
+            graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
+            graphfile.close()
 
     @staticmethod
     def parseWeights():
-	Scheduler.pkgWeights.clear()
-	weightFile = open(constants.packageWeightsPath, 'r')
-	Scheduler.pkgWeights = json.load(weightFile)
-	weightFile.close()
+        Scheduler.pkgWeights.clear()
+        weightFile = open(constants.packageWeightsPath, 'r')
+        Scheduler.pkgWeights = json.load(weightFile)
+        weightFile.close()
 
     @staticmethod
     def getWeight(package):
