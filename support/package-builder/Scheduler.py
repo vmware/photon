@@ -224,7 +224,7 @@ class Scheduler(object):
                     queueOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
                     Scheduler.queueOfPackagesNextToBuild = queueOfPackagesNextToBuild
 
-            if Scheduler.queueOfPackagesNextToBuild.qsize() == 0:
+            if Scheduler.queueOfPackagesNextToBuild and Scheduler.queueOfPackagesNextToBuild.qsize() == 0:
                 Scheduler.logger.info("Released scheduler lock")
                 Scheduler.lock.release()
                 return None
