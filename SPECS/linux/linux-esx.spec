@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.96
+Version:       4.4.99
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=042ec095c08816ad76454f379f2fa7592ffdf873
+%define sha1 linux=b9e3193df23090404e5b7fc2b0d48d153b892e8b
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -190,6 +190,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 20 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.99-1
+-   Version update
 *   Tue Nov 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.96-1
 -   Version update
 *   Mon Oct 30 2017 Bo Gan <ganb@vmware.com> 4.4.92-3
