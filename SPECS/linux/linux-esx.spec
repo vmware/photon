@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.60
+Version:        4.9.64
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1f30f2da710d5dcb63f15f69fdb2c90e96064179
+%define sha1 linux=06466679a6b1ada7614d988ed730ccd5c03210d9
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -198,6 +198,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.64-1
+-   Version update
 *   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
 -   Version update
 *   Wed Oct 25 2017 Anish Swaminathan <anishs@vmware.com> 4.9.53-5

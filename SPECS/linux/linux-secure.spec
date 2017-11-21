@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.60
-Release:        2%{?dist}
+Version:        4.9.64
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1f30f2da710d5dcb63f15f69fdb2c90e96064179
+%define sha1 linux=06466679a6b1ada7614d988ed730ccd5c03210d9
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -277,6 +277,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.64-1
+-   Version update
 *   Wed Nov 08 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.60-2
 -   Update LKCM module
 -   Add -lkcm subpackage
