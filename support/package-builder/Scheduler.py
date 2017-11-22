@@ -214,7 +214,6 @@ class Scheduler(object):
 
             if len(Scheduler.listOfPackagesNextToBuild) > 0:
                 ThreadPool.ThreadPool.activateWorkerThreads(len(Scheduler.listOfPackagesNextToBuild))
-            Scheduler.listOfPackagesToBuild.remove(package)
         else:
             try:
                 if Scheduler.queueOfPackagesNextToBuild.qsize() == 0:
@@ -242,11 +241,11 @@ class Scheduler(object):
                  Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
                  if Scheduler.queueOfPackagesNextToBuild.qsize() > 0:
                      ThreadPool.ThreadPool.activateWorkerThreads(Scheduler.queueOfPackagesNextToBuild.qsize())
-                 Scheduler.queueOfPackagesToBuild.remove(package)
 
         Scheduler.logger.info("Released scheduler lock")
         Scheduler.lock.release()
         Scheduler.listOfPackagesCurrentlyBuilding.append(package)
+        Scheduler.listOfPackagesToBuild.remove(package)
         return package
 
     #can be synchronized TODO
