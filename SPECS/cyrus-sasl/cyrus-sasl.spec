@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.26
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -134,6 +134,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Tue Nov 21 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-14
+-   Update patch for memory leak fix
 *   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-13
 -   Add patch for memory leak fix
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.1.26-12
