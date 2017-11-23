@@ -1,0 +1,94 @@
+From 8afe888fb34b1d121bae7701c51d0e7d0c96cbb5 Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Mon, 20 Nov 2017 15:21:56 -0800
+Subject: [PATCH] Adding more debug for socket read failures
+
+Change-Id: I85b10413b4fe9273a11e46da038aa2e31ffd0318
+(cherry picked from commit a0c4357aca99a08a28d10875aff87c6e3d1798be)
+---
+ common/sockinterface.c   | 11 +++++------
+ transport/posix/socket.c | 27 ++++++++++++++++++++++++++-
+ 2 files changed, 31 insertions(+), 7 deletions(-)
+
+diff --git a/common/sockinterface.c b/common/sockinterface.c
+index a53c4a5..403189c 100644
+--- a/common/sockinterface.c
++++ b/common/sockinterface.c
+@@ -521,11 +521,10 @@ VmRESTTcpReceiveNewData(
+    {
+        VMREST_LOG_DEBUG(pRESTHandle,"%s","Calling closed connection....");
+        /**** Close connection ****/ 
+-       dwError = VmRESTDisconnectClient(
+-                     pRESTHandle,
+-                     pSocket
+-                     );
+-       BAIL_ON_VMREST_ERROR(dwError);
++       VmRESTDisconnectClient(
++           pRESTHandle,
++           pSocket
++           );
+ 
+        /****  free request object memory ****/
+        if (pRequest)
+@@ -542,7 +541,7 @@ VmRESTTcpReceiveNewData(
+ 
+ error:
+ 
+-    VMREST_LOG_DEBUG(pRESTHandle,"ERROR code %u", dwError);
++    VMREST_LOG_ERROR(pRESTHandle,"ERROR code %u", dwError);
+     goto cleanup;
+ }
+ 
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index 029633a..79c7a38 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -539,6 +539,8 @@ VmSockPosixWaitForEvent(
+                 BAIL_ON_VMREST_ERROR(dwError);
+             }
+ 
++            VMREST_LOG_DEBUG(pRESTHandle,"Notification on socket fd %d", pEventSocket->fd);
++
+             if (pEvent->events & (EPOLLERR | EPOLLHUP))
+             {
+                 eventType = VM_SOCK_EVENT_TYPE_CONNECTION_CLOSED;
+@@ -919,8 +921,23 @@ VmSockPosixRead(
+ 
+ error:
+ 
+-    if (pszBufPrev && pSocket)
++    if (pSocket)
++    {
++        VMREST_LOG_ERROR(pRESTHandle,"Socket read failed with Socket fd %d, dwError = %u, nRead = %d, errno = %u, errorCode = %u", pSocket->fd, dwError, nRead, errno, errorCode);
++    }
++    else
++    {
++        VMREST_LOG_ERROR(pRESTHandle,"Socket read failed with dwError = %u, nRead = %d, errno = %u, errorCode = %u", dwError, nRead, errno, errorCode);
++    }
++
++    if (pszBufPrev && pSocket && pRESTHandle->pSockContext)
+     {
++        /**** Delete the socket from poller ****/
++        VmSockPosixEventQueueDelete_inlock(
++            pRESTHandle->pSockContext->pEventQueue,
++            pSocket
++            );
++
+         VmRESTFreeMemory(pszBufPrev);
+         pszBufPrev = NULL;
+         pSocket->pszBuffer = NULL;
+@@ -1542,6 +1559,14 @@ VmSockPosixSetRequestHandle(
+                       pSocket->pTimerSocket
+                       );
+         BAIL_ON_VMREST_ERROR(dwError);
++
++        /**** Delete actual IO socket from poller ****/
++        dwError = VmSockPosixEventQueueDelete_inlock(
++                      pQueue,
++                      pSocket
++                      );
++        BAIL_ON_VMREST_ERROR(dwError);
++
+         if (pSocket->pTimerSocket->fd > 0)
+         {
+             close(pSocket->pTimerSocket->fd);

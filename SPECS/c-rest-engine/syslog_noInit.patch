@@ -1,0 +1,151 @@
+From 56c8c0ffd82c8fe8c396d8c00f23688adcdc9ecd Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Wed, 15 Nov 2017 17:24:44 -0800
+Subject: [PATCH] Remove init/shutdown of syslog from library
+
+Change-Id: I7705f44c468d2ce69a15b531e108ef0cfbe391b8
+---
+ build/package/rpm/c-rest-engine.spec |  4 +++-
+ common/logging.c                     | 45 ++++++++----------------------------
+ server/vmrestd/main.c                |  8 ++++++-
+ 3 files changed, 20 insertions(+), 37 deletions(-)
+
+diff --git a/build/package/rpm/c-rest-engine.spec b/build/package/rpm/c-rest-engine.spec
+index 8730113..02c1e62 100644
+--- a/build/package/rpm/c-rest-engine.spec
++++ b/build/package/rpm/c-rest-engine.spec
+@@ -1,7 +1,7 @@
+ Name:          c-rest-engine
+ Summary:       Minimal http(s) server library
+ Version:       1.1
+-Release:       1%{?dist}
++Release:       3%{?dist}
+ Group:         Applications/System
+ Vendor:        VMware, Inc.
+ License:       Apache 2.0
+diff --git a/common/logging.c b/common/logging.c
+index 6bef25c..385c0b6 100644
+--- a/common/logging.c
++++ b/common/logging.c
+@@ -41,13 +41,7 @@ VmRESTLogInitialize(
+     }
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
+-    if (pRESTHandle->pRESTConfig->useSysLog)
+-    {
+-        /**** Use syslog ****/
+-        openlog(pRESTHandle->pRESTConfig->pszDaemonName, 0, LOG_DAEMON);
+-        setlogmask(LOG_UPTO(logLevelToSysLogLevel(pRESTHandle->debugLogLevel)));
+-    }
+-    else if (!(IsNullOrEmptyString(pRESTHandle->pRESTConfig->pszDebugLogFile)))
++    if ((!(IsNullOrEmptyString(pRESTHandle->pRESTConfig->pszDebugLogFile))) && (pRESTHandle->pRESTConfig->useSysLog == FALSE))
+     {
+         if ((pRESTHandle->logFile = fopen(pRESTHandle->pRESTConfig->pszDebugLogFile, "a")) == NULL)
+         {
+@@ -55,10 +49,6 @@ VmRESTLogInitialize(
+             dwError = REST_ENGINE_FAILURE;
+         }
+     }
+-    else
+-    {
+-        dwError = REST_ENGINE_FAILURE;
+-    }
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
+ cleanup:
+@@ -76,11 +66,7 @@ VmRESTLogTerminate(
+     PVMREST_HANDLE                   pRESTHandle
+     )
+ {
+-    if (pRESTHandle && pRESTHandle->pRESTConfig->useSysLog)
+-    {
+-        closelog();
+-    }
+-    else if (pRESTHandle && pRESTHandle->logFile != NULL)
++    if (pRESTHandle && pRESTHandle->logFile != NULL)
+     {
+        fclose(pRESTHandle->logFile);
+        pRESTHandle->logFile = NULL;
+@@ -95,10 +81,9 @@ VmRESTLog(
+     ...)
+ {
+     char        extraLogMessage[EXTRA_LOG_MESSAGE_LEN] = {0};
+-    struct      timespec tspec = {0};
+-    time_t      ltime;
+-    struct      tm mytm = {0};
+     char        logMessage[MAX_LOG_MESSAGE_LEN];
++    struct      tm* tm_info = NULL;
++    struct      timeval tv = {0};
+ 	
+     va_list     va;
+     const char* logLevelTag = "";
+@@ -115,30 +100,20 @@ VmRESTLog(
+         vsnprintf( logMessage, sizeof(logMessage), fmt, va );
+         logMessage[sizeof(logMessage)-1] = '\0';
+         va_end( va );
+-        ltime = time(&ltime);
++        gettimeofday(&tv, NULL);
++
++        tm_info = localtime(&tv.tv_sec);
+         logLevelTag = logLevelToTag(level);
+-        localtime_r(&ltime, &mytm);
+-        snprintf(extraLogMessage, sizeof(extraLogMessage) - 1,
+-                  "%4d%2d%2d%2d%2d%2d.%03ld:t@%lu:%-3.7s: ",
+-                  mytm.tm_year+1900,
+-                  mytm.tm_mon+1,
+-                  mytm.tm_mday,
+-                  mytm.tm_hour,
+-                  mytm.tm_min,
+-                  mytm.tm_sec,
+-                  tspec.tv_nsec/NSECS_PER_MSEC,
+-                  (unsigned long) pthread_self(),
+-                  logLevelTag? logLevelTag : "UNKNOWN");
++        strftime(extraLogMessage, sizeof(extraLogMessage) - 1, "%F %T", tm_info);   
+ 
+         if (pRESTHandle->pRESTConfig->useSysLog)
+         {
+             sysLogLevel = logLevelToSysLogLevel(level);
+-            snprintf(extraLogMessage, sizeof(extraLogMessage) - 1, "t@%lu: ", (unsigned long) pthread_self());
+-            syslog(sysLogLevel, "%s: %s%s", logLevelToTag(level), extraLogMessage, logMessage);
++            syslog(sysLogLevel, "%s:%lu t@%lu %-3.7s: %s\n", extraLogMessage, (long unsigned)(tv.tv_usec), (unsigned long) pthread_self(),(logLevelTag? logLevelTag : "UNKNOWN"),logMessage);
+         }
+         else if (pRESTHandle->logFile != NULL)
+         {
+-            fprintf(pRESTHandle->logFile, "%s%s\n", extraLogMessage, logMessage);
++            fprintf(pRESTHandle->logFile, "%s:%lu t@%lu %-3.7s: %s\n", extraLogMessage, (long unsigned)(tv.tv_usec), (unsigned long) pthread_self(),(logLevelTag? logLevelTag : "UNKNOWN"),logMessage);
+             fflush( pRESTHandle->logFile );
+         }
+     }
+diff --git a/server/vmrestd/main.c b/server/vmrestd/main.c
+index 353f597..214b28d 100644
+--- a/server/vmrestd/main.c
++++ b/server/vmrestd/main.c
+@@ -116,7 +116,7 @@ int main()
+     pConfig1->maxDataPerConnMB = 10;
+     pConfig1->nWorkerThr = 5;
+     pConfig1->nClientCnt = 5;
+-    pConfig1->useSysLog = FALSE;
++    pConfig1->useSysLog = TRUE;
+     pConfig1->pszSSLCertificate = "/root/mycert.pem";
+     pConfig1->isSecure = TRUE;
+     pConfig1->pszSSLKey = "/root/mycert.pem";
+@@ -127,6 +127,10 @@ int main()
+     pConfig1->pszSSLCipherList = NULL;
+     pConfig1->SSLCtxOptionsFlag = 0;
+ 
++    /**** Init sys log ****/
++    openlog("VMREST_KAUSHIK", 0, LOG_DAEMON);
++    setlogmask(LOG_UPTO(LOG_DEBUG));
++
+     dwError = VmRESTInit(pConfig, &gpRESTHandle);
+     dwError = VmRESTInit(pConfig1, &gpRESTHandle1);
+ 
+@@ -177,6 +181,8 @@ int main()
+  //   VmRESTShutdownSSL(sslCtx1);
+ #endif
+ 
++    closelog();
++
+ return dwError;
+ 
+ }
