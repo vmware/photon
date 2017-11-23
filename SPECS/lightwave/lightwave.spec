@@ -1,14 +1,14 @@
 Name:          lightwave
 Summary:       VMware Lightwave
-Version:       1.3.1
-Release:       5%{?dist}
+Version:       1.3.1.7
+Release:       1%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL: 	       https://github.com/vmware/lightwave
 Source0:       lightwave-%{version}.tar.gz
 Patch0:        lightwave-gssapi-unix-creds-separation.patch
-%define sha1 lightwave=e8cc3582ffe0586b9b21ef87d9abe4160854e9c4
+%define sha1 lightwave=abe987b67aadab05040ac38c11474b8d93fe8644
 Distribution:  Photon
 
 Requires:  apache-tomcat >= 8.5.8
@@ -27,7 +27,7 @@ Requires:  lightwave-client = %{version}
 BuildRequires: ant-contrib >= 1.0
 BuildRequires: apache-maven >= 3.3.9
 BuildRequires: boost-devel = 1.63.0
-BuildRequires: c-rest-engine-devel
+BuildRequires: c-rest-engine-devel >= 1.1
 BuildRequires: commons-daemon >= 1.0.15
 BuildRequires: copenapi-devel
 BuildRequires: coreutils >= 8.22
@@ -94,7 +94,7 @@ Client libraries to communicate with Lightwave Services
 
 %package client
 Summary: Lightwave Client
-Requires: c-rest-engine
+Requires: c-rest-engine >= 1.1
 Requires: copenapi
 Requires: coreutils >= 8.22
 Requires: cyrus-sasl >= 2.1
@@ -944,7 +944,6 @@ fi
 %{_webappsdir}/lightwaveui.war
 %{_webappsdir}/ROOT.war
 
-%{_configdir}/firewall.json
 %{_configdir}/setfirewallrules.py
 
 %{_servicedir}/firewall.service
@@ -1119,6 +1118,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Thu Nov 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.7-1
+-   update to lightwave 1.3.1.7 (release 1.3.1-7 in lightwave repo)
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1-5
 -   Requires coreutils or toybox
 *   Fri Sep 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-4
