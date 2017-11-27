@@ -1,7 +1,7 @@
 Summary:	DNS proxy with integrated DHCP server
 Name:		dnsmasq
 Version:	2.76
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2 or GPLv3
 Group:		System Environment/Daemons
 URL:		http://www.thekelleys.org.uk/dnsmasq/
@@ -48,6 +48,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/sbin/dnsmasq -k
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -69,6 +70,8 @@ rm -rf %{buildroot}
 %config  /usr/share/dnsmasq/trust-anchors.conf
 
 %changelog
+*   Mon Nov 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.76-4
+-   Always restart dnsmasq service on exit
 *   Wed Oct 11 2017 Alexey Makhalov <amakhalov@vmware.com> 2.76-3
 -   Fix CVE-2017-13704
 *   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 2.76-2
