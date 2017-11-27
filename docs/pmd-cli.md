@@ -124,7 +124,7 @@ The Photon Management Daemon provides CLI commands to help you manage network in
 ~~~~
 pmd-cli [connection_auth_options] net <command> [command_options]
 ~~~~
-Many of these commands require the interface name (–interface &lt;ifname&gt;). IP addresses can be specified in dot-decimal notation or as prefixes. Other command options are described below.
+Many of these commands require the interface name (–interface &lt;ifname&gt;). Command options are described below.
 
 ## net link_info
 
@@ -142,7 +142,7 @@ Get the IPv4 address for the specified interface.
 ~~~~
 pmd-cli net ip4_address --get --interface <ifname>
 ~~~~
-Set the IPv4 address (dot-decimal or prefix notation), mode (dhcp, static, or none), and (optionally) the default gateway for the specified interface.
+Set the IPv4 address (dot-decimal/prefix notation), mode (dhcp, static, or none), and (optionally) the default gateway for the specified interface.
 ~~~~
 pmd-cli net ip4_address --set --interface <ifname> --mode <dhcp|static|none> --addr <IPv4Address/prefix> --gateway <gateway_address>
 ~~~~
@@ -152,11 +152,11 @@ Get IPv6 address(es) for the specified interface.
 ~~~~
 pmd-cli net ip6_address --get --interface <ifname>
 ~~~~
-Add one or more IPv6 addresses (comma-separated list in dot-decimal or prefix notation) to the specified interface.
+Add one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) to the specified interface.
 ~~~~
 pmd-cli net ip6_address --add --interface <ifname> --addrlist <IPv6Addr1/prefix,IPv6Addr2/prefix,...>
 ~~~~
-Delete one or more IPv6 addresses (comma-separated list in dot-decimal or prefix notation) from the specified interface.
+Delete one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) from the specified interface.
 ~~~~
 pmd-cli net ip6_address --del --interface <ifname> --addrlist <IPv6Addr1/prefix,IPv6Addr2/prefix,...>
 ~~~~
@@ -176,7 +176,7 @@ pmd-cli net ip_route --add --interface <ifname> --gateway <GatewayIP> --destinat
 ~~~~
 Delete the specified static IP route from the specified interface.
 ~~~~
-pmd-cli net ip_route --del --interface <ifname> --destination <DestIP/N>
+pmd-cli net ip_route --del --interface <ifname> --destination <DestinationNetwork/prefix>
 ~~~~
 ## net dns_servers
 
@@ -216,11 +216,11 @@ pmd-cli net dns_domains --del --domains <domain1>
 ~~~~
 ## net dhcp_duid
 
-Get the DHCP DUID per interface for all interfaces in the system.
+Get the DHCP DUID (optionally interface-specific DUID) for the system.
 ~~~~
 pmd-cli net dhcp_duid --get
 ~~~~
-Set the DHCP DUID for all interfaces in the system.
+Set the DHCP DUID for the system, optionally per-interface if the interface is specified.
 ~~~~
 pmd-cli net dhcp_duid --set --duid <duid>
 ~~~~
