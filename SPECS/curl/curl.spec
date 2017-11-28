@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.54.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -12,6 +12,7 @@ Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
 Patch0:         curl-CVE-2017-1000101.patch
 Patch1:         curl-CVE-2017-1000100.patch
 Patch2:         curl-CVE-2017-1000254.patch
+Patch3:         curl-CVE-2017-1000257.patch
 Requires:       ca-certificates
 BuildRequires:  ca-certificates
 Requires:       openssl
@@ -30,6 +31,7 @@ functions like streaming media.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 %build
 ./configure \
@@ -69,6 +71,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 %changelog
+*   Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.0-5
+-   Fix CVE-2017-1000257
 *   Mon Nov 06 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.0-4
 -   Fix CVE-2017-1000254
 *   Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.0-3
