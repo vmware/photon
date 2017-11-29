@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          43%{?dist}
+Release:          44%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -154,7 +154,6 @@ sed -i 's/After=plymouth-start.service//g' %{buildroot}/lib/systemd/system/syste
 sed -i 's/plymouth-start.service//g' %{buildroot}/lib/systemd/system/rescue.service
 sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/container-getty@.service
 sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/getty@.service
-sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/autovt@.service
 sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/serial-getty@.service
 sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/console-getty.service
 sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/console-shell.service
@@ -245,6 +244,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Wed Nov 29 2017 Anish Swaminathan <anishs@vmware.com> 228-44
+-    Remove the sed replace to autovt (autovt is a symlink to getty service)
 *    Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-43
 -    Fix CVE-2017-15908 dns packet loop fix.
 *    Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-42
