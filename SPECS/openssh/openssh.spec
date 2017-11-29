@@ -1,28 +1,29 @@
-Summary:    Free version of the SSH connectivity tools
-Name:       openssh
-Version:    7.4p1
-Release:    6%{?dist}
-License:    BSD
-URL:         https://www.openssh.com/
-Group:      System Environment/Security
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1 openssh=2330bbf82ed08cf3ac70e0acf00186ef3eeb97e0
-Source1:    http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
-%define sha1 blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
-Patch0:     blfs_systemd_fixes.patch
-Patch1:     openssh-7.4p1-fips.patch
-Patch2:     openssh-7.4p1-configure-fips.patch
+Summary:        Free version of the SSH connectivity tools
+Name:           openssh
+Version:        7.4p1
+Release:        7%{?dist}
+License:        BSD
+URL:            https://www.openssh.com/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
+%define sha1    openssh=2330bbf82ed08cf3ac70e0acf00186ef3eeb97e0
+Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
+%define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
+Patch0:         blfs_systemd_fixes.patch
+Patch1:         openssh-7.4p1-fips.patch
+Patch2:         openssh-7.4p1-configure-fips.patch
+Patch3:         openssh-CVE-2017-15906.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM
 BuildRequires:  krb5
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
 Requires:       systemd
-Requires:   openssl
-Requires:   Linux-PAM
-Requires:   shadow
+Requires:       openssl
+Requires:       Linux-PAM
+Requires:       shadow
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
 useful for encrypting authentication and subsequent traffic over a 
@@ -34,6 +35,7 @@ tar xf %{SOURCE1}
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
+%patch3 -p3
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -142,6 +144,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Tue Nov 28 2017 Xiaolin Li <xiaolinl@vmware.comm> 7.4p1-7
+-   Fix CVE-2017-15906.
 *   Tue Nov 14 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-6
 -   Add ciphers aes128-gcm, aes256-gcm and kex dh14/16/18 in fips mode
 *   Thu Nov 02 2017 Anish Swaminathan <anishs@vmware.com> 7.4p1-5
