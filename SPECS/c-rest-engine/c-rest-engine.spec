@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.1
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -15,6 +15,7 @@ Source0:       %{name}-%{version}.tar.gz
 Patch0:        socket_RW.patch
 Patch1:        syslog_noInit.patch
 Patch2:        socket_logging.patch
+Patch3:        errno_init.patch
 %define sha1   c-rest-engine=a25927fd98ec92df5e210cc4941fa626604636f6
 
 %description
@@ -36,6 +37,7 @@ development libs and header files for c-rest-engine
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 cd build
@@ -68,6 +70,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed Nov 29 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-5
+-  Adding patch for right use of errno.
 *  Mon Nov 20 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-4
 -  Socket poller/read logging patch.
 *  Fri Nov 17 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-3
