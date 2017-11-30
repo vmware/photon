@@ -1,14 +1,14 @@
 Name:          lightwave
 Summary:       VMware Lightwave
-Version:       1.3.1
-Release:       5%{?dist}
+Version:       1.3.1.7
+Release:       1%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL: 	       https://github.com/vmware/lightwave
 Source0:       lightwave-%{version}.tar.gz
 Patch0:        lightwave-gssapi-unix-creds-separation.patch
-%define sha1 lightwave=e8cc3582ffe0586b9b21ef87d9abe4160854e9c4
+%define sha1 lightwave=abe987b67aadab05040ac38c11474b8d93fe8644
 Distribution:  Photon
 
 Requires:  apache-tomcat >= 8.5.8
@@ -27,7 +27,7 @@ Requires:  lightwave-client = %{version}
 BuildRequires: ant-contrib >= 1.0
 BuildRequires: apache-maven >= 3.3.9
 BuildRequires: boost-devel = 1.63.0
-BuildRequires: c-rest-engine-devel
+BuildRequires: c-rest-engine-devel >= 1.1
 BuildRequires: commons-daemon >= 1.0.15
 BuildRequires: copenapi-devel
 BuildRequires: coreutils >= 8.22
@@ -41,6 +41,7 @@ BuildRequires: openssl-devel >= 1.0.2
 BuildRequires: python2-devel >= 2.7.8
 BuildRequires: sqlite-devel >= 3.14
 BuildRequires: go
+BuildRequires: binutils
 
 %description
 VMware Lightwave Server
@@ -94,7 +95,7 @@ Client libraries to communicate with Lightwave Services
 
 %package client
 Summary: Lightwave Client
-Requires: c-rest-engine
+Requires: c-rest-engine >= 1.1
 Requires: copenapi
 Requires: coreutils >= 8.22
 Requires: cyrus-sasl >= 2.1
@@ -915,6 +916,9 @@ fi
 %{_datadir}/config/vmdns-rest.json
 %{_datadir}/config/vmdnsd-syslog-ng.conf
 %{_datadir}/config/idm/*
+%{_datadir}/config/vmca-telegraf.conf
+%{_datadir}/config/vmdir-telegraf.conf
+%{_datadir}/config/vmdns-telegraf.conf
 
 %{_jarsdir}/openidconnect-client-lib.jar
 %{_jarsdir}/openidconnect-common.jar
@@ -939,13 +943,23 @@ fi
 %{_jarsdir}/log4j-api-2.8.2.jar
 %{_jarsdir}/log4j-slf4j-impl-2.8.2.jar
 %{_jarsdir}/log4j-core-2.8.2.jar
+%{_jarsdir}/args4j-2.33.jar
+%{_jarsdir}/commons-codec-1.9.jar
+%{_jarsdir}/commons-lang3-3.3.2.jar
+%{_jarsdir}/httpcore-4.4.4.jar
+%{_jarsdir}/jackson-annotations-2.8.4.jar
+%{_jarsdir}/jackson-core-2.8.4.jar
+%{_jarsdir}/jackson-databind-2.8.4.jar
+%{_jarsdir}/jersey-media-json-jackson-2.25.1.jar
+%{_jarsdir}/json-smart-1.3.1.jar
+%{_jarsdir}/nimbus-jose-jwt-4.12.jar
 
 
 %{_webappsdir}/lightwaveui.war
 %{_webappsdir}/ROOT.war
 
-%{_configdir}/firewall.json
 %{_configdir}/setfirewallrules.py
+%{_configdir}/lw-firewall-server.json
 
 %{_servicedir}/firewall.service
 %{_servicedir}/vmware-stsd.service
@@ -959,6 +973,7 @@ fi
 %config %attr(600, root, root) %{_prefix}/vmware-sts/conf/server.xml
 %config %attr(600, root, root) %{_prefix}/vmware-sts/conf/web.xml
 %config %attr(600, root, root) %{_prefix}/vmware-sts/conf/tomcat-users.xml
+%config %attr(600, root, root) %{_prefix}/vmware-sts/conf/vmsts-telegraf.conf
 
 %files client-libs
 %{_lib64dir}/libvmafcfgapi.so*
@@ -1017,6 +1032,11 @@ fi
 %{_datadir}/config/vmdir-client.reg
 %{_datadir}/config/vmdns-client.reg
 %{_datadir}/config/vmafdd-syslog-ng.conf
+%{_datadir}/config/lw-firewall-client.json
+%{_datadir}/config/refresh-resolve-conf.sh
+%{_datadir}/config/telegraf.conf
+%{_datadir}/config/vmafd-telegraf.conf
+
 
 %{_jreextdir}/vmware-endpoint-certificate-store.jar
 %{_jreextdir}/client-domain-controller-cache.jar
@@ -1101,11 +1121,10 @@ fi
 %{_sbindir}/postd
 
 %{_bindir}/postadmintool
-%{_bindir}/lwraftleavefed
-%{_bindir}/lwraftaclmgr
 %{_bindir}/lwraftpromo
 %{_bindir}/postschema
 %{_bindir}/post-cli
+%{_bindir}/postaclmgr
 
 %{_lib64dir}/sasl2/libsaslpostdb.so*
 
@@ -1115,10 +1134,15 @@ fi
 %{_datadir}/config/post.reg
 %{_datadir}/config/postd-syslog-ng.conf
 %{_datadir}/config/post-client.reg
+%{_datadir}/config/lw-firewall-post.json
+%{_datadir}/config/post-demote-deads.sh
+%{_datadir}/config/post-telegraf.conf
 
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Thu Nov 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.7-1
+-   update to lightwave 1.3.1.7 (release 1.3.1-7 in lightwave repo)
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1-5
 -   Requires coreutils or toybox
 *   Fri Sep 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-4
