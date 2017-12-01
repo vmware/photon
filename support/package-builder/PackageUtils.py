@@ -64,7 +64,7 @@ class PackageUtils(object):
         rpmDestDir=self.getRPMDestDir(rpmName,destDir)
         # shutil is not atomic. copy & move to ensure atomicity.
         rpmDestPath=rpmDestDir+"/"+rpmName
-        rpmDestPathTemp = rpmDestDir + "/." + ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(10)])
+        rpmDestPathTemp = rpmDestDir + "/." + ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
         if os.geteuid()==0:
             if not os.path.isdir(rpmDestDir):
                 cmdUtils.runCommandInShell("mkdir -p "+rpmDestDir)
@@ -338,7 +338,7 @@ class PackageUtils(object):
         cmdUtils=CommandUtils()
         result=cmdUtils.runCommandInShell2(cmd, chrootCmd)
         if result is not None:
-            return result.split()
+            return result.decode().split()
         return result
 
     def adjustGCCSpecs(self, package, chrootID, logPath):

@@ -199,7 +199,7 @@ class Specutils(object):
         dependentPackages=[]
         defaultPkgName=self.spec.packages['default'].name
         pkg = None
-        if self.spec.packages.has_key(packageName):
+        if packageName in self.spec.packages:
             pkg = self.spec.packages.get(packageName)
         if defaultPkgName == packageName:
             pkg=self.spec.packages['default']
@@ -207,7 +207,7 @@ class Specutils(object):
             for dpkg in pkg.provides:
                 dependentPackages.append(dpkg.package)
         else:
-            print "package not found"
+            print("package not found")
         return dependentPackages
 
     def getVersion(self):
@@ -236,16 +236,16 @@ class Specutils(object):
 
 def main():
     spec = Specutils("/workspace1/myrepos/photon/SPECS/docker/docker.spec")
-    print "packages",spec.getPackageNames()
-    print "packages",spec.getRPMNames()
-    print "sources",spec.getSourceNames()
-    print "patches",spec.getPatchNames()
-    print "requires",spec.getRequires('libltdl-devel')
-    print "requires",spec.getRequires('libtool')
+    print("packages {}".format(spec.getPackageNames()))
+    print("packages {}".format(spec.getRPMNames()))
+    print("sources {}".format(spec.getSourceNames()))
+    print("patches {}".format(spec.getPatchNames()))
+    print("requires {}".format(spec.getRequires('libltdl-devel')))
+    print("requires {}".format(spec.getRequires('libtool')))
 
-    print "provides",spec.getProvides('libtool')
-    print "all-requires",spec.getRequiresAllPackages()
-    print "all-build-requires",spec.getBuildRequiresAllPackages()
+    print("provides {}".format(spec.getProvides('libtool')))
+    print("all-requires {}".format(spec.getRequiresAllPackages()))
+    print("all-build-requires {}".format(spec.getBuildRequiresAllPackages()))
 
 if __name__ == '__main__':
     main()

@@ -13,8 +13,11 @@ class rpmMacro(object):
         self.macroName=name
 
     def displayMacro(self):
-        print "Macro:\n", self.macroName, " ",self.macroFlag," ",self.position," ",self.endposition
-        print self.content
+        print("Macro:")
+        print(self.macroName +  " {}".format(self.macroFlag)
+              + " {}".format(self.position)
+              + " {}".format(self.endposition))
+        print(self.content)
 
 class dependentPackageData(object):
 

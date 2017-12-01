@@ -33,4 +33,4 @@ class MiscUtils(object):
 if __name__=="__main__":
     listInputFiles=["SpecParser.py","Logger.py"]
     listOutputFiles=["builder.py"]
-    print MiscUtils.isOutdated(listInputFiles, listOutputFiles)
+    print(MiscUtils.isOutdated(listInputFiles, listOutputFiles))
