@@ -61,6 +61,8 @@ getent passwd zookeeper >/dev/null || /usr/sbin/useradd --comment "ZooKeeper" --
 %post
 %{_sbindir}/ldconfig
 %systemd_post zookeeper.service
+#Remove old config file if present(upgrade scenarios)
+[[ -f /etc/zookeeper/zookeeper-env.sh ]] && rm /etc/zookeeper/zookeeper-env.sh
  
 %preun
 %systemd_preun zookeeper.service
