@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -98,6 +98,8 @@ fi
 
 
 %changelog
+*   Thu Nov 30 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-3
+-   Revert changing systemd service file dependency with cloud-init.
 *   Fri Nov 17 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-2
 -   Changing systemd service file dependency with cloud-init.
 *   Fri Mar 03 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-1
