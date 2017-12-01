@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-websocket-client
-Version:        0.7.0
+Version:        0.44.0
 Release:        1%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
-Url:            https://pypi.python.org/packages/8f/2d/8eb061e94e29c0b35e1fd87f1c0e779f4288d7393b180ef0e5c0ee2b155e/websocket-client-%{version}.tar.gz
-Source0:        websocket-client-%{version}.tar.gz
-%define sha1    websocket-client=cb36dc1c9b0dda4d4672f0d2c812e65343f509b8
+Url:            https://pypi.python.org/pypi/websocket-client
+Source0:        websocket_client-0.44.0.tar.gz
+%define sha1    websocket_client=736908072e36c1f3dc5714b685e246d8090ee1df
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -30,7 +30,7 @@ BuildRequires:  python3-devel
 WebSocket client for python3
 
 %prep
-%setup -n websocket-client-%{version}
+%setup -n websocket_client-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -56,5 +56,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Nov 30 2017 Xiaolin Li <xiaolinl@vmware.com> 0.44.0-1
+-   Update websocket_client to version 0.44.0
 *   Sun Jun 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.0-1
 -   Initial version of python WebSocket for PhotonOS.
