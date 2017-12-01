@@ -22,7 +22,7 @@ class StringUtils(object):
         filename=self.getFileNameFromURL(inputstring)
         m = re.search(r"(zip|mozjs|.+-)([0-9_.]+)(\.source|\.tar|-src|\.zip|\+md|\.tgz).*",  filename)
         if m is None:
-            print "Unable to parse "+filename
+            print("Unable to parse " + filename)
             return inputstring
         name = m.group(1)
         if name.endswith("-"):
@@ -33,7 +33,7 @@ class StringUtils(object):
         filename=self.getFileNameFromURL(inputstring)
         m = re.search(r"(zip|mozjs|.*-)([0-9_.]+)(\.source|\.tar|-src|\.zip|\+md|\.tgz).*",  filename)
         if m is None:
-            print "Unable to parse "+filename
+            print("Unable to parse " + filename)
             return inputstring
         name = m.group(2)
         return name.replace("_", ".")

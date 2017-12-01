@@ -150,10 +150,10 @@ class ToolChainUtils(object):
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
         self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
-        print "Building Package:"+ packageName
-        print constants.perPackageToolChain
+        print("Building Package: ".format(packageName))
+        print(constants.perPackageToolChain)
         if packageName in constants.perPackageToolChain:
-            print constants.perPackageToolChain[packageName]
+            print(constants.perPackageToolChain[packageName])
             self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName], packageName);
    
     def installCustomToolChainRPMS(self, chrootID, listOfToolChainPkgs, packageName):
@@ -163,7 +163,7 @@ class ToolChainUtils(object):
         cmdUtils = CommandUtils()
         for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-            print "DEBUG:" + package
+            print("DEBUG:" + package)
             if "openjre8" in packageName or "openjdk8" in packageName:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             else:
