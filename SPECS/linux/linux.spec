@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.99
+Version:    	4.4.103
 Release:    	1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=b9e3193df23090404e5b7fc2b0d48d153b892e8b
+%define sha1 linux=e1de56b56f0a6662224d57a34b4dcd8f01b79926
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -36,8 +36,6 @@ Patch16:        net-9p-vsock.patch
 #allow some algorithms in FIPS mode
 Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
-# Fix CVE-2017-10911
-Patch19:        xen-blkback-dont-leak-stack-data-via-response-ring.patch
 # Fix CVE-2017-11472
 Patch20:        ACPICA-Namespace-fix-operand-cache-leak.patch
 
@@ -129,7 +127,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
-%patch19 -p1
 %patch20 -p1
 
 %build
@@ -283,6 +280,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.103-1
+-   Version update
 *   Mon Nov 20 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.99-1
 -   Version update
 *   Tue Nov 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.96-1
