@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.66
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -158,7 +158,11 @@ make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
 popd
 
 %define __modules_install_post \
-    find %{buildroot}/lib/modules/%{uname_r} -name *.ko | xargs xz \
+for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
+    ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+    rm -f $MODULE.{sig,dig} \
+    xz $MODULE \
+    done \
 %{nil}
 
 # We want to compress modules after stripping. Extra step is added to
@@ -302,6 +306,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Dec 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-2
+-   Sign and compress modules after stripping. fips=1 requires signed modules
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
 -   Version update
 *   Tue Nov 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.64-1
