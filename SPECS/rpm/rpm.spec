@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -238,6 +238,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 4.13.0.1-3
+-    Release bump to use python 3.5.4.
 *    Tue Oct 03 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-2
 -    make python{,3}-rpm depend on current version of librpm
 *    Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-1

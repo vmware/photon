@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -112,6 +112,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.9.6-2
+-   Release bump to use python 3.5.4.
 *   Wed Oct 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
 -   Update to version 2.9.6
 *   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.4-7

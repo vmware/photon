@@ -4,7 +4,7 @@
 Summary:        Software library for fast, message-based applications
 Name:           python-zmq
 Version:        16.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv3+ and BSD3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -61,5 +61,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/zmq
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 16.0.2-2
+-   Release bump to use python 3.5.4.
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 16.0.2-1
 -   Initial packaging for Photon

@@ -4,7 +4,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
 Version:        1.8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -62,5 +62,7 @@ python3 setup.py test
 %{_bindir}/f2py3
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.8.2-2
+-   Release bump to use python 3.5.4.
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.2-1
 -   Initial packaging for Photon

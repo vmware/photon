@@ -5,7 +5,7 @@
 Summary:        Coroutine-based network library
 Name:           python-gevent
 Version:        1.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -70,6 +70,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.2.1-3
+-   Release bump to use python 3.5.4.
 *   Fri Jun 30 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.1-2
 -   Add python-greenlet and python3-greenlet as required.
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1

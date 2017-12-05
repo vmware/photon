@@ -5,7 +5,7 @@
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python-markupsafe
 Version:        0.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -60,5 +60,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 0.23-2
+-   Release bump to use python 3.5.4.
 *   Thu Mar 02 2017 Xiaolin Li <xiaolinl@vmware.com> 0.23-1
 -   Initial packaging for Photon

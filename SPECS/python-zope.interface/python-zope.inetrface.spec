@@ -3,7 +3,7 @@
 
 Name:           python-zope.interface
 Version:        4.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
@@ -63,6 +63,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 4.3.3-2
+-   Release bump to use python 3.5.4.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
 -   Updated to version 4.3.3.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1.3-2
