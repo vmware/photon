@@ -1,12 +1,12 @@
 Name:           mongodb
-Version:        3.4.4
+Version:        3.4.10
 Release:        1%{?dist}
 Summary:        The MongoDB Database
-Group:		Applications/Database
+Group:          Applications/Database
 License:        AGPLv3
 URL:            http://www.mongodb.org/
 Source0:        https://github.com/mongodb/mongo/archive/mongo-r%{version}.tar.gz
-%define sha1    mongo-r=904dabdfcfaa2e8b97784094da8227deaaf32040
+%define sha1    mongo-r=39b1e86c650a7b1b3ccc1dee86d088fc95a0a225
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  scons
@@ -63,5 +63,7 @@ fi
 %attr(0766, mongod, mongod) %dir /var/lib/mongo
 
 %changelog
+*   Tue Dec 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
+-   Update to version 3.4.10, fix CVE-2017-15535
 *   Sun Oct 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.4-1
 -   Initial build.  First version
