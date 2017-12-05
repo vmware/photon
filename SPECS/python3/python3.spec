@@ -1,14 +1,14 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.5.3
-Release:        7%{?dist}
+Version:        3.5.4
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define         sha1 Python=127121fdca11e735b3686e300d66f73aba663e93
+%define         sha1 Python=4aacbd09ca6988255de84a98ab9e4630f584efba
 Patch0:         cgi3.patch
 Patch1:         sockWarning.patch
 BuildRequires:  pkg-config >= 0.28
@@ -193,6 +193,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.4-1
+-   Upgrading to 3.5.4
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 3.5.3-7
 -   Release bump for expat version update
 *   Thu Sep 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.3-6

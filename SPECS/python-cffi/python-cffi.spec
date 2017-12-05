@@ -3,7 +3,7 @@
 Summary:        Interface for Python to call C code
 Name:           python-cffi
 Version:        1.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -60,6 +60,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.9.1-2
+-   Release bump to use python 3.5.4.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.1-1
 -   Updated to version 1.9.1.
 *   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-3

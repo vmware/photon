@@ -6,7 +6,7 @@
 Summary:        Code coverage measurement for Python.
 Name:           python-coverage
 Version:        4.3.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -76,6 +76,8 @@ popd
 
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 4.3.4-3
+-   Release bump to use python 3.5.4.
 *   Tue Jul 11 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-2
 -   Packaging python2 and python3 scripts in bin directory
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.4-1

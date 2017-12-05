@@ -3,7 +3,7 @@
 Summary:        XML and HTML with Python
 Name:           python-lxml
 Version:        3.5.0b1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
@@ -62,6 +62,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.0b1-4
+-   Release bump to use python 3.5.4.
 *   Wed Feb 08 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.0b1-3
 -   Added python3 site-packages.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.0b1-2

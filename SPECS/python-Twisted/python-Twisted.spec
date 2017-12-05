@@ -4,7 +4,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python-Twisted
 Version:        17.1.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -78,6 +78,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 17.1.0-7
+-   Release bump to use python 3.5.4.
 *   Thu Jun 01 2017 Xiaolin Li <rqiu@vmware.com> 17.1.0-6
 -   Keep python2 scrips in bin folder.
 *   Mon May 22 2017 Rongrong Qiu <rqiu@vmware.com> 17.1.0-5

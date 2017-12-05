@@ -4,7 +4,7 @@
 Summary:        The Python Cryptography Toolkit.
 Name:           pycrypto
 Version:        2.6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Public Domain and Python
 URL:            http://www.pycrypto.org/
 Source0:        https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/%{name}-%{version}.tar.gz
@@ -50,6 +50,8 @@ python3 setup.py install -O1 --root=%{buildroot} --prefix=/usr
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.6.1-4
+-   Release bump to use python 3.5.4.
 *   Thu Jul 20 2017 Anish Swaminathan <anishs@vmware.com> 2.6.1-3
 -   Apply patch for CVE-2013-7459
 *   Thu Jul 13 2017 Divya Thaluru <dthaluru@vmware.com> 2.6.1-2
