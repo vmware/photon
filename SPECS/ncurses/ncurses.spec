@@ -1,15 +1,15 @@
-Summary:	Libraries for terminal handling of character screens
-Name:		ncurses
-Version:	6.0
-Release:	7%{?dist}
-License:	MIT
-URL:		http://invisible-island.net/ncurses/
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-%global ncursessubversion 20171007
-Source0:	ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-20171007.tgz
-%define sha1 ncurses=527be8da26f04f50c1d659e972fa7d0b762c3a80
+Summary:        Libraries for terminal handling of character screens
+Name:           ncurses
+Version:        6.0
+Release:        8%{?dist}
+License:        MIT
+URL:            http://invisible-island.net/ncurses/
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+%global ncursessubversion 20171125
+Source0:    ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-20171125.tgz
+%define sha1    ncurses=179d79d707ac5040499294e3206fd558d52b604a
 Provides:       libncurses.so.6()(64bit)
 %description
 The Ncurses package contains libraries for terminal-independent
@@ -24,11 +24,11 @@ Provides: libncurses.so.5()(64bit)
 This package contains the ABI version 5 of the ncurses libraries for
 compatibility.
 
-%package	devel
-Summary:	Header and development files for ncurses
-Requires:	%{name} = %{version}-%{release}
-Provides:	pkgconfig(ncurses)
-%description	devel
+%package    devel
+Summary:    Header and development files for ncurses
+Requires:   %{name} = %{version}-%{release}
+Provides:   pkgconfig(ncurses)
+%description    devel
 It contains the libraries and header files to create applications 
 %prep
 %setup -q -n %{name}-%{version}-%{ncursessubversion}
@@ -38,33 +38,33 @@ mkdir v6
 pushd v6
 ln -s ../configure .
 ./configure \
-	--prefix=%{_prefix} \
-	--mandir=%{_mandir} \
-	--with-shared \
-	--without-debug \
-	--enable-pc-files \
-	--enable-widec \
-	--disable-lp64 \
-	--with-chtype='long' \
-	--with-mmask-t='long' \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --mandir=%{_mandir} \
+    --with-shared \
+    --without-debug \
+    --enable-pc-files \
+    --enable-widec \
+    --disable-lp64 \
+    --with-chtype='long' \
+    --with-mmask-t='long' \
+    --disable-silent-rules
 make %{?_smp_mflags}
 popd
 mkdir v5
 pushd v5
 ln -s ../configure .
 ./configure \
-	--prefix=%{_prefix} \
-	--mandir=%{_mandir} \
-	--with-shared \
-	--without-debug \
-	--enable-pc-files \
-	--enable-widec \
-	--disable-lp64 \
-	--with-chtype='long' \
-	--with-mmask-t='long' \
-	--disable-silent-rules \
-	--with-abi-version=5
+    --prefix=%{_prefix} \
+    --mandir=%{_mandir} \
+    --with-shared \
+    --without-debug \
+    --enable-pc-files \
+    --enable-widec \
+    --disable-lp64 \
+    --with-chtype='long' \
+    --with-mmask-t='long' \
+    --disable-silent-rules \
+    --with-abi-version=5
 make %{?_smp_mflags}
 popd
 %install
@@ -89,8 +89,8 @@ ln -sv %{_lib}/libncursesw.so.6.0 %{buildroot}%{_libdir}/libncurses.so.6
 cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %post compat -p /sbin/ldconfig
 %postun compat -p /sbin/ldconfig
 %files
@@ -155,6 +155,8 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
 %changelog
+*   Wed Dec 06 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-8
+-   version bump to 20171007, fix CVE-2017-16879
 *   Tue Oct 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-7
 -   Update to 6.0-7. Fix CVE-2017-13728
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-6
@@ -176,4 +178,4 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 *   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 5.9-2
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.9-1
--   Initial build.	First version
+-   Initial build.  First version
