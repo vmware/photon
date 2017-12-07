@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.66
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,6 +15,7 @@ Source2:	initramfs.trigger
 %define ena_version 1.1.3
 Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
 %define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
+Source4:	config_aarch64
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -47,6 +48,9 @@ Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.pat
 Patch27:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
+
+# RPi3 support
+Patch100:       mmc-bcm2835-Add-new-driver-for-the-sdhost-controller.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -98,12 +102,14 @@ Requires:       python2
 %description docs
 The Linux package contains the Linux kernel doc files
 
+%ifarch x86_64
 %package oprofile
 Summary:        Kernel driver for oprofile, a statistical profiler for Linux systems
 Group:          System Environment/Kernel
 Requires:       %{name} = %{version}-%{release}
 %description oprofile
 Kernel driver for oprofile, a statistical profiler for Linux systems
+%endif
 
 %package tools
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
@@ -116,7 +122,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %prep
 %setup -q -n linux-%{version}
+%ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
+%endif
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -143,19 +151,34 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch100 -p1
 
 %build
 make mrproper
+
+%ifarch x86_64
 cp %{SOURCE1} .config
+arch="x86_64"
+archdir="x86"
+%endif
+
+%ifarch aarch64
+cp %{SOURCE4} .config
+arch="arm64"
+archdir="arm64"
+%endif
+
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 make LC_ALL= oldconfig
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 make -C tools perf
+%ifarch x86_64
 # build ENA module
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
 popd
+%endif
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -182,6 +205,7 @@ install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
+%ifarch x86_64
 # install ENA module
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
@@ -201,6 +225,10 @@ if [ "$ID1" != "$ID2" ] ; then
 	exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
+%ifarch aarch64
+install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
@@ -227,12 +255,14 @@ rm -rf %{buildroot}/lib/modules/%{uname_r}/source
 rm -rf %{buildroot}/lib/modules/%{uname_r}/build
 
 find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find arch/${archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find $(find arch/${archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find arch/${archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+%ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
 install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
 install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
+%endif
 
 cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
 ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
@@ -255,8 +285,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %post sound
 /sbin/depmod -aq %{uname_r}
 
+%ifarch x86_64
 %post oprofile
 /sbin/depmod -aq %{uname_r}
+%endif
 
 %files
 %defattr(-,root,root)
@@ -271,7 +303,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/build
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
 %exclude /lib/modules/%{uname_r}/kernel/sound
+%ifarch x86_64
 %exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
+%endif
 
 %files docs
 %defattr(-,root,root)
@@ -291,21 +325,30 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/sound
 
+%ifarch x86_64
 %files oprofile
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
+%endif
 
 %files tools
 %defattr(-,root,root)
 /usr/libexec
 %exclude %{_libdir}/debug
+%ifarch x86_64
 /usr/lib64/traceevent
+%endif
+%ifarch aarch64
+/usr/lib/traceevent
+%endif
 %{_bindir}
 /etc/bash_completion.d/*
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
 
 %changelog
+*   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-3
+-   Aarch64 support
 *   Tue Dec 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-2
 -   Sign and compress modules after stripping. fips=1 requires signed modules
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
