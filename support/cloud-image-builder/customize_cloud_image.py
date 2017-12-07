@@ -165,7 +165,10 @@ if __name__ == '__main__':
             print "  Copying additional files into the raw image ..."
             for filetuples in config['additionalfiles']:
                 for src,dest in filetuples.iteritems():
-                    shutil.copyfile(options.build_scripts_path + '/' + options.image_name + '/' + src, options.mount_path + '/' + dest)
+		    if (os.path.isdir(options.build_scripts_path + '/' + options.image_name + '/' + src)):
+                        shutil.copytree(options.build_scripts_path + '/' + options.image_name + '/' + src, options.mount_path + dest, True)
+                    else:
+                        shutil.copyfile(options.build_scripts_path + '/' + options.image_name + '/' + src, options.mount_path + dest)
 
 
         if 'postinstallscripts' in config:
@@ -179,17 +182,22 @@ if __name__ == '__main__':
                 utils.runshellcommand("chroot {} /bin/bash -c '/tempscripts/{}'".format(options.mount_path, script))
             shutil.rmtree(options.mount_path + "/tempscripts", ignore_errors=True)
 
+    except Exception as e:
+	print e
+
+    finally:
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/sys"))
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/dev/pts"))
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/dev"))
         utils.runshellcommand("umount -l {}".format(options.mount_path + "/proc"))
+
+        utils.runshellcommand("sync")
         utils.runshellcommand("umount -l {}".format(options.mount_path))
 
         mount_out = utils.runshellcommand("mount")
         print "List of mounted devices:"
         print mount_out
 
-    finally:
         utils.runshellcommand("kpartx -d {}".format(disk_device))
         utils.runshellcommand("losetup -d {}".format(disk_device))
 
@@ -217,6 +225,13 @@ if __name__ == '__main__':
             tgzout = tarfile.open(tarname, "w:gz")
             tgzout.add(raw_image, arcname=os.path.basename(raw_image))
             tgzout.close()
+        elif config['artifacttype'] == 'xz':
+            print "Generating the xz artifact ..."
+            utils.runshellcommand("xz -z -k {}".format(raw_image))
+#            tarname = img_path + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.xz'
+#            tgzout = tarfile.open(tarname, "w:xz")
+#            tgzout.add(raw_image, arcname=os.path.basename(raw_image))
+#            tgzout.close()
         elif config['artifacttype'] == 'vhd':
             relrawpath = os.path.relpath(raw_image, options.src_root)
             vhdname = os.path.dirname(relrawpath) + '/photon-' + options.image_name + '-' + photon_release_ver + '-' + photon_build_num + '.vhd'

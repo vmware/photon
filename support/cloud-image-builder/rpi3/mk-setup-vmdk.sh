@@ -25,8 +25,8 @@ echo -e "Setting up the disk...\n"
 set -x
 LFS_OPTION=""
 VMDK_IMAGE_NAME=mydisk.vmdk
-ROOT_PARTITION_SIZE=8
-SWAP_PARTITION_SIZE=2
+ROOT_PARTITION_SIZE=1
+SWAP_PARTITION_SIZE=0
 BOOT_FIRM_WARE="bios"
 
 while [[ $# > 0 ]]
@@ -79,28 +79,30 @@ mkdir -p $LFS_DISK
 TOTAL_SIZE=` echo $ROOT_PARTITION_SIZE + $SWAP_PARTITION_SIZE | bc`
 
 echo "Creating raw disk file " $VMDK_IMAGE_NAME " of size " $TOTAL_SIZE
-dd if=/dev/zero of=$VMDK_IMAGE_NAME bs=1 seek=$(($TOTAL_SIZE * 1024 * 1024 * 1024)) count=0
+# hack to create 512MB image instead of 1GB - use 512 instead of 1024
+dd if=/dev/zero of=$VMDK_IMAGE_NAME bs=1024 count=$(($TOTAL_SIZE * 1024 * 512))
 chmod 755 $VMDK_IMAGE_NAME
 
 echo "Associating loopdevice to raw disk"
 DISK_DEVICE=`losetup --show -f $VMDK_IMAGE_NAME`
 
-echo "Creating partition on raw disk"
-if [ $SWAP_PARTITION_SIZE -gt 0 ] 
-then
-      sgdisk -n 1::+8M -n 2::+${ROOT_PARTITION_SIZE}G -n 3: -p $DISK_DEVICE >> $LOGFILE
-else
-      sgdisk -n 1::+8M -n 2: -p $DISK_DEVICE >> $LOGFILE
-fi
+parted -s $DISK_DEVICE mklabel msdos mkpart primary fat32 1M 30M mkpart primary ext4 30M 100%
+#echo "Creating partition on raw disk"
+#if [ $SWAP_PARTITION_SIZE -gt 0 ] 
+#then
+#      sgdisk -n 1::+8M -n 2::+${ROOT_PARTITION_SIZE}G -n 3: -p $DISK_DEVICE >> $LOGFILE
+#else
+#      sgdisk -n 1::+8M -n 2: -p $DISK_DEVICE >> $LOGFILE
+#fi
 
-if [ $BOOT_FIRM_WARE = "efi" ]
-then
-    echo "EFI boot partition"
-    sgdisk -t1:ef00 $DISK_DEVICE >> $LOGFILE
-else
-    echo "BIOS boot partition"
-    sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
-fi
+#if [ $BOOT_FIRM_WARE = "efi" ]
+#then
+#    echo "EFI boot partition"
+#    sgdisk -t1:ef00 $DISK_DEVICE >> $LOGFILE
+#else
+#    echo "BIOS boot partition"
+#    sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
+#fi
 echo "Mapping device partition to loop device"
 kpartx -avs $DISK_DEVICE >> $LOGFILE
 
