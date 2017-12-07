@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        3.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -51,6 +51,7 @@ The contains libvirt package doc files.
 %package devel
 Summary:        libvirt devel
 Group:          Development/Tools
+Requires:       %{name} = %{version}-%{release}
 %description devel
 This contains development tools and libraries for libvirt.
 
@@ -78,6 +79,8 @@ find %{buildroot} -name '*.la' -delete
 %{_bindir}/*
 %{_libdir}/libvirt*.so.*
 %{_libdir}/libvirt/storage-backend/*
+%{_libdir}/libvirt/connection-driver/*.so
+%{_libdir}/libvirt/lock-driver/*.so
 %{_libdir}/sysctl.d/60-libvirtd.conf
 %{_libdir}/systemd/system/*
 /usr/libexec/libvirt*
@@ -94,10 +97,7 @@ find %{buildroot} -name '*.la' -delete
 %files devel
 %{_includedir}/libvirt/*
 %{_libdir}/libvirt*.so
-%{_libdir}/libvirt/connection-driver/*.so
-%{_libdir}/libvirt/lock-driver/*.so
 %{_libdir}/pkgconfig/libvirt*
-%{_libdir}/libvirt/storage-backend/*
 
 %files docs
 /usr/share/augeas/lenses/*
@@ -108,6 +108,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
+*   Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-3
+-   Add so files in folder connection-driver and lock-driver to main package.
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-2
 -   Fix CVE-2017-1000256
 *   Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
