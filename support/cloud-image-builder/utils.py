@@ -47,6 +47,7 @@ class Utils(object):
         return data
 
     def runshellcommand(self, cmd, ignore_errors=False):
+        print cmd
         command=cmd.split()
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output, err = p.communicate()
