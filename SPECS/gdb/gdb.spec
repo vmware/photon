@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.12.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -12,10 +12,13 @@ Distribution:   Photon
 Patch0:         gdb-7.12-pstack.patch
 Requires:       expat
 Requires:       ncurses
+Requires:       python3
+Requires:       xz-libs
 BuildRequires:  expat-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  xz-devel
 %if %{with_check}
 BuildRequires:  dejagnu
 BuildRequires:  systemtap-sdt-devel
@@ -77,6 +80,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-8
+-   Enable LZMA support
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-7
 -   Aarch64 support
 *   Mon Sep 11 2017 Rui Gu <ruig@vmware.com> 7.12.1-6
