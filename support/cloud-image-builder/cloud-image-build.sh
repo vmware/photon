@@ -25,9 +25,11 @@ VMDK_CONFIG_SAFE_FILE=${BUILD_SCRIPTS_PATH}/$IMG_NAME/vmdk_safe_$IMG_NAME.json
 
 cd $BUILD_SCRIPTS_PATH
 image_list=`for i in $(ls -d */); do echo ${i%%/}; done`
-if ! [[ $image_list =~ (^|[[:space:]])$IMG_NAME($|[[:space:]]) ]]
-  then
+if ! [[ $image_list =~ (^|[[:space:]])$IMG_NAME($|[[:space:]]) ]] ; then
     echo "Input image name not supported. Aborting."; exit 1;
+fi
+if [[ $IMG_NAME == ova* ]] ; then
+    command -v ovftool >/dev/null 2>&1 || { echo "Ovftool not installed. Aborting." >&2; exit 1; }
 fi
 
 rm -rf $WORKING_DIR
@@ -39,15 +41,7 @@ cp $VMDK_CONFIG_FILE $VMDK_CONFIG_SAFE_FILE
 cp ${BUILD_SCRIPTS_PATH}/mk-setup-vmdk.sh .
 cp ${BUILD_SCRIPTS_PATH}/mk-clean-vmdk.sh .
 
-if [[ $IMG_NAME == ova* ]]
-  then
-    command -v ovftool >/dev/null 2>&1 || { echo "Ovftool not installed. Aborting." >&2; exit 1; }
-fi
-
-if [ -e ${BUILD_SCRIPTS_PATH}/${IMG_NAME}/mk-setup-grub.sh ]
-  then
-    cp ${BUILD_SCRIPTS_PATH}/${IMG_NAME}/mk-setup-grub.sh .
-fi
+cp -r ${BUILD_SCRIPTS_PATH}/${IMG_NAME}/* .
 
 PASSWORD=`date | md5sum | cut -f 1 -d ' '`
 sed -i "s/PASSWORD/$PASSWORD/" $VMDK_CONFIG_SAFE_FILE
@@ -59,12 +53,13 @@ if [ -n "$ADDITIONAL_RPMS_PATH" ]
 fi
 
 ./photonInstaller.py -p $GENERATED_DATA_PATH/build_install_options_$IMG_NAME.json -r $PHOTON_STAGE_PATH/RPMS -v $WORKING_DIR/photon-${IMG_NAME} -o $GENERATED_DATA_PATH -d $PHOTON_STAGE_PATH/pkg_info.json -f $VMDK_CONFIG_SAFE_FILE
+status=$?
 cat $VMDK_CONFIG_SAFE_FILE
 rm $VMDK_CONFIG_SAFE_FILE
 
 cd $BUILD_SCRIPTS_PATH
 
-./customize_cloud_image.py \
+[ $status -eq 0 ] && ./customize_cloud_image.py \
  -r ${PHOTON_IMG_OUTPUT_PATH}/photon-${IMG_NAME}.raw \
  -c $VMDK_CONFIG_FILE \
  -w $WORKING_DIR \
