@@ -1,0 +1,8 @@
+{
+    "minimal" : {
+        "title" : "Photon Minimal",
+        "file" : "packages_minimal_rpi3.json",
+        "visible" : true,
+        "include" : []
+    }
+}

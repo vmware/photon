@@ -368,6 +368,8 @@ class constants(object):
             "aufs-util.spec",
             # open-vm-tools does not support aarch64
             "open-vm-tools.spec",
+            # syslinux does not support aarch64
+            "syslinux.spec",
             # TODO: mariadb build hangs on amd64
             "mariadb.spec",
             # TODO: mysql fails on amd64 with fpic
@@ -406,7 +408,36 @@ class constants(object):
             # sysdig for aarch64 requires luajit, skip it and falco
             # https://github.com/draios/sysdig/issues/833
             "sysdig.spec",
-            "falco.spec"
+            "falco.spec",
+
+            # VIVACE packages
+            # need to update to mono-4.5
+            "mono.spec",
+            "banshee.spec",
+            "dbus-sharp.spec",
+            "dbus-sharp-glib.spec",
+            "gnome-keyring-sharp.spec",
+            "gnome-sharp.spec",
+            "gtk-sharp2.spec",
+            "mono-addins.spec",
+            "monodevelop.spec",
+            "nuget.spec",
+            "nunit.spec",
+            "pinta.spec",
+            "taglib-sharp.spec",
+            "tomboy.spec",
+            "totem.spec",
+            "webkit-sharp.spec",
+            # compilation issues with libwebkit
+            "libwebkit.spec",
+            "xf86-video-vmware.spec",
+            "xf86-video-intel.spec",
+            "xf86-input-vmmouse.spec",
+            # does not recognize aarch64
+            "thunderbird.spec",
+            #
+            "open-vm-tools-vivace.spec"
+
         ]
     }
 

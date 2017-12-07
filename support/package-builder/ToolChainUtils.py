@@ -130,7 +130,7 @@ class ToolChainUtils(object):
                     rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
-                if package == "sqlite":
+                if (package == "sqlite") and (platform.machine() == "x86_64"):
                     package = "sqlite-autoconf"
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
@@ -192,7 +192,7 @@ class ToolChainUtils(object):
             rpmFile = pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
-#                if package == "sqlite":
+#                if (package == "sqlite") and (platform.machine() == "x86_64"):
 #                    package = "sqlite-autoconf"
                 rpmFile = self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
