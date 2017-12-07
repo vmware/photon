@@ -298,37 +298,35 @@ class Installer(object):
             self.exit_gracefully(None, None)
 
     def update_fstab(self):
-        fstab_file = open(os.path.join(self.photon_root, "etc/fstab"), "w")
-        fstab_file.write("#system\tmnt-pt\ttype\toptions\tdump\tfsck\n")
+        with open(os.path.join(self.photon_root, "etc/fstab"), "w") as fstab_file:
+            fstab_file.write("#system\tmnt-pt\ttype\toptions\tdump\tfsck\n")
 
-        for partition in self.install_config['disk']['partitions']:
-            options = 'defaults'
-            dump = 1
-            fsck = 2
+            for partition in self.install_config['disk']['partitions']:
+                options = 'defaults'
+                dump = 1
+                fsck = 2
 
-            if 'mountpoint' in partition and partition['mountpoint'] == '/':
-                options = options + ',barrier,noatime,noacl,data=ordered'
-                fsck = 1
+                if 'mountpoint' in partition and partition['mountpoint'] == '/':
+                    options = options + ',barrier,noatime,noacl,data=ordered'
+                    fsck = 1
             
-            if partition['filesystem'] == 'swap':
-                mountpoint = 'swap'
-                dump = 0
-                fsck = 0
-            else:
-                mountpoint = partition['mountpoint']
+                if partition['filesystem'] == 'swap':
+                    mountpoint = 'swap'
+                    dump = 0
+                    fsck = 0
+                else:
+                    mountpoint = partition['mountpoint']
 
-            fstab_file.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
-                partition['path'],
-                mountpoint,
-                partition['filesystem'],
-                options,
-                dump,
-                fsck
-                ))
-        # Add the cdrom entry
-        fstab_file.write("/dev/cdrom\t/mnt/cdrom\tiso9660\tro,noauto\t0\t0\n")
-
-        fstab_file.close()
+                fstab_file.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(
+                    partition['path'],
+                    mountpoint,
+                    partition['filesystem'],
+                    options,
+                    dump,
+                    fsck
+                    ))
+            # Add the cdrom entry
+            fstab_file.write("/dev/cdrom\t/mnt/cdrom\tiso9660\tro,noauto\t0\t0\n")
 
     def generate_partitions_param(self, reverse = False):
         if reverse:
