@@ -9,14 +9,14 @@
 Summary:	Photon Management Daemon
 Name:		pmd
 Version:	0.0.5
-Release:	3%{?dist}
+Release:	4%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	Apache 2.0
 URL:            https://www.github.com/vmware/pmd
 Group:		Applications/System
 Requires:       copenapi
-Requires:	c-rest-engine
+Requires:	c-rest-engine >= 1.1
 Requires:       jansson
 Requires:	likewise-open >= 6.2.9
 Requires:       netmgmt
@@ -26,7 +26,7 @@ Requires:       lightwave-client-libs
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
 BuildRequires:  copenapi-devel
-BuildRequires:	c-rest-engine-devel
+BuildRequires:	c-rest-engine-devel >= 1.1
 BuildRequires:	curl-devel
 BuildRequires:	hawkey-devel >= 2017.1
 BuildRequires:  jansson-devel
@@ -38,6 +38,7 @@ BuildRequires:	tdnf-devel >= 1.2.0
 BuildRequires:  lightwave-devel
 Source0:	%{name}-%{version}-3.tar.gz
 %define sha1 pmd=fe9b4b81410497d209fc4b6efb9574a049557b25
+Patch0:         pmd-update-to-c-rest-engine-1.1.patch
 
 %description
 Photon Management Daemon
@@ -87,6 +88,7 @@ Python3 bindings for photon management daemon
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 sed -i 's/pmd, 0.0.1/pmd, 0.0.5/' configure.ac
@@ -305,6 +307,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*       Thu Nov 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-4
+-       update to use c-rest-engine-1.11
 *       Tue Oct 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-3
 -       Bug fixes and net commands fixes
 *       Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-2
