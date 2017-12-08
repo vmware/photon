@@ -2,17 +2,16 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.10
-Release:        6%{?dist}
+Version:        3.11.1
+Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/3.10/apache-%{name}-%{version}-src.tar.gz
-%define sha1 apache-cassandra=fa2bbeb62f930f5ff6fccee60cfb837d0794633a
+Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
+%define sha1 apache-cassandra=f5e76a5007b947970e18142e6ba6e0b9d7cdaa29
 Source1:        cassandra.service
-Patch0:         build-fix.patch
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk
@@ -24,7 +23,6 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 
 %prep
 %setup -qn apache-%{name}-%{version}-src
-%patch0 -p1
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
 rm lib/logback-*
@@ -128,6 +126,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Thu Dec 07 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11.1
+-   Update to 3.11.1
 *   Tue Aug 15 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-6
 -   Remove build/libs directory from cassandra, add gawk requires
 *   Thu Jul 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-5
