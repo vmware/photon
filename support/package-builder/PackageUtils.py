@@ -199,7 +199,7 @@ class PackageUtils(object):
             self.copyAdditionalBuildFiles(listAdditionalFiles,chrootID)
 
         #Adding rpm macros
-        listRPMMacros = SPECS.getData().getRPMMacros()
+        listRPMMacros = constants.userDefinedMacros
         for macroName in listRPMMacros.keys():
             macros.append(macroName+" "+listRPMMacros[macroName])
 
@@ -550,7 +550,7 @@ class PackageUtils(object):
             self.copyAdditionalBuildFilesToContainer(listAdditionalFiles, containerID)
 
         # Add rpm macros
-        listRPMMacros = SPECS.getData().getRPMMacros()
+        listRPMMacros = constants.userDefinedMacros
         for macroName in listRPMMacros.keys():
             macros.append(macroName + " " + listRPMMacros[macroName])
 
