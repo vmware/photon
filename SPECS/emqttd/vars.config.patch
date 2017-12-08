@@ -1,0 +1,34 @@
+--- vars.config	2017-04-20 23:05:45.000000000 +0000
++++ vars.config.1	2017-12-08 21:53:54.944911116 +0000
+@@ -3,22 +3,22 @@
+ 
+ %% Platform-specific installation paths
+ {platform_bin_dir,  "bin"}.
+-{platform_data_dir, "data"}.
+-{platform_etc_dir,  "etc"}.
++{platform_data_dir, "/var/lib/emqttd"}.
++{platform_etc_dir,  "/etc/emqttd"}.
+ {platform_lib_dir,  "lib"}.
+-{platform_log_dir,  "log"}.
++{platform_log_dir,  "/var/log/emqttd"}.
+ 
+ %%
+ %% bin/emqttd
+ %% 
+ %% {runner_script_dir,  "$(cd ${0%/*} && pwd)"}.
+-{runner_root_dir,    ""}.
++{runner_root_dir,    "/lib/emqttd"}.
+ {runner_base_dir,    ""}.
+-{runner_bin_dir,     "$RUNNER_ROOT_DIR/bin/"}.
+-{runner_etc_dir,     "$RUNNER_ROOT_DIR/etc"}.
++{runner_bin_dir,     "/usr/sbin/"}.
++{runner_etc_dir,     "/etc/emqttd"}.
+ {runner_lib_dir,     "$RUNNER_ROOT_DIR/lib"}.
+-{runner_log_dir,     "$RUNNER_ROOT_DIR/log"}.
+-{runner_data_dir,    "$RUNNER_ROOT_DIR/data"}.
++{runner_log_dir,     "/var/log/emqttd"}.
++{runner_data_dir,    "/var/lib/emqttd"}.
+ {pipe_dir,           "/tmp/$RUNNER_SCRIPT/"}.
+-{runner_user,        ""}.
++{runner_user,        "emqtt"}.
+ 
