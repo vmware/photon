@@ -35,7 +35,6 @@ class SerializableSpecObjectsUtils(object):
         self.mapSerializableSpecObjects={}
         self.mapPackageToSpec={}
         self.logger=Logger.getLogger("Serializable Spec objects", logPath )
-        self.userDefinedMacros={}
 
     def readSpecsAndConvertToSerializableObjects(self,specFilesPath):
         listSpecFiles=[]
@@ -101,51 +100,9 @@ class SerializableSpecObjectsUtils(object):
         specName=self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].checkBuildRequirePackages
 
-    def addMacro(self, macroName, macroValue):
-        if macroName == "":
-            self.logger.error("Given invalid macro: name:"+macroName+" value:"+macroValue)
-            return
-        self.userDefinedMacros[macroName]=macroValue
-
-    def getRPMMacros(self):
-        return self.userDefinedMacros
-
-    def processData(self, package, data):
-        #User macros
-        for macroName in self.userDefinedMacros.keys():
-            value = self.userDefinedMacros[macroName]
-            macro="%{?"+macroName+"}"
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-                continue
-            macro="%{"+macroName+"}"
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-                continue
-            macro="%"+macroName
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-        #Spec definitions
-        specName=self.getSpecName(package)
-        specDefs =  self.mapSerializableSpecObjects[specName].specDefs
-        for macroName in specDefs.keys():
-            value = specDefs[macroName]
-            macro="%{?"+macroName+"}"
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-                continue
-            macro="%{"+macroName+"}"
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-                continue
-            macro="%"+macroName
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-        return data
-
     def getRelease(self, package):
         specName=self.getSpecName(package)
-        return self.processData(package, self.mapSerializableSpecObjects[specName].release)
+        return self.mapSerializableSpecObjects[specName].release
 
     def getVersion(self, package):
         specName=self.getSpecName(package)
@@ -221,24 +178,15 @@ class SerializableSpecObjectsUtils(object):
 
     def getURL(self, package):
         specName=self.getSpecName(package)
-        url = self.mapSerializableSpecObjects[specName].url
-        if url is None:
-            return None
-        return self.processData(package, url)
+        return self.mapSerializableSpecObjects[specName].url
 
     def getSourceURL(self, package):
         specName=self.getSpecName(package)
-        sourceurl = self.mapSerializableSpecObjects[specName].sourceurl
-        if sourceurl is None:
-            return None
-        return self.processData(package, sourceurl)
+        return self.mapSerializableSpecObjects[specName].sourceurl
 
     def getLicense(self, package):
         specName=self.getSpecName(package)
-        license = self.mapSerializableSpecObjects[specName].license
-        if license is None:
-            return None
-        return self.processData(package, license)
+        return self.mapSerializableSpecObjects[specName].license
 
     def printAllObjects(self):
         listSpecs=self.mapSerializableSpecObjects.keys()
@@ -291,45 +239,32 @@ class SPECS(object):
         self.initialize()
 
     def initialize(self):
-        self.specData = SerializableSpecObjectsUtils(constants.logPath)
-        self.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
-
-        #adding distribution rpm macro
-        self.specData.addMacro("dist",constants.dist)
-
-        #adding buildnumber rpm macro
-        self.specData.addMacro("photon_build_number",constants.buildNumber)
-
-        #adding releasenumber rpm macro
-        self.specData.addMacro("photon_release_version",constants.releaseVersion)
-
-        #adding kernelversion rpm macro
-        kernelversion = self.specData.getVersion("linux")
-        self.specData.addMacro("KERNEL_VERSION",kernelversion)
-
+        # Preparse some files
         #adding openjre8 version rpm macro
         if (platform.machine() == "x86_64"):
-            java8version = self.specData.getVersion("openjre8")
-            self.specData.addMacro("JAVA8_VERSION",java8version)
+            spec = Specutils(constants.specPath + "/openjdk8/openjdk8.spec")
+            java8version = spec.getVersion()
+            constants.addMacro("JAVA8_VERSION",java8version)
+
+        #adding kernelversion rpm macro
+        spec = Specutils(constants.specPath + "/linux/linux.spec")
+        kernelversion = spec.getVersion()
+        constants.addMacro("KERNEL_VERSION",kernelversion)
 
         #adding kernelrelease rpm macro
-        kernelrelease = self.specData.getRelease("linux")
-        self.specData.addMacro("KERNEL_RELEASE",kernelrelease)
+        kernelrelease = spec.getRelease()
+        constants.addMacro("KERNEL_RELEASE",kernelrelease)
 
         #adding kernelsubrelease rpm macro
         a,b,c = kernelversion.split(".")
-        kernelsubrelease = '%02d%02d%03d%03d' % (int(a),int(b),int(c),int(kernelrelease.replace(constants.dist,"")))
+        kernelsubrelease = '%02d%02d%03d%03d' % (int(a),int(b),int(c),int(kernelrelease.split('.')[0]))
         if kernelsubrelease:
             kernelsubrelease = "."+kernelsubrelease
-            self.specData.addMacro("kernelsubrelease",kernelsubrelease)
+            constants.addMacro("kernelsubrelease",kernelsubrelease)
 
-        #adding check rpm macro
-        if constants.rpmCheck:
-            self.specData.addMacro("with_check","1")
-        else:
-            self.specData.addMacro("with_check","0")
-
-
+        # Full parsing
+        self.specData = SerializableSpecObjectsUtils(constants.logPath)
+        self.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
 
 # Little bit of duplication
 # Used by SpecVerify and SpecDeps only

@@ -195,15 +195,6 @@ class Specutils(object):
                     dependentPackages.append(dpkg.package)
         return dependentPackages
 
-    def getCheckBuildRequires(self,pkgName):
-        dependentPackages=[]
-        for key in self.spec.packages.keys():
-            pkg = self.spec.packages.get(key)
-            if pkg.name == pkgName:
-                for dpkg in pkg.checkbuildrequires:
-                    dependentPackages.append(dpkg.package)
-        return dependentPackages
-
     def getProvides(self,packageName):
         dependentPackages=[]
         defaultPkgName=self.spec.packages['default'].name

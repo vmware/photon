@@ -63,6 +63,11 @@ else
 PHOTON_RPMCHECK_FLAGS :=
 endif
 
+# KAT build for FIPS certification
+ifdef KAT_BUILD
+PHOTON_KAT_BUILD_FLAGS := -F $(KAT_BUILD)
+endif
+
 ifeq ($(BUILDDEPS),true)
 PUBLISH_BUILD_DEPENDENCIES := -bd True
 else
@@ -245,6 +250,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
                 -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 $(PHOTON_RPMCHECK_FLAGS) \
+		$(PHOTON_KAT_BUILD_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
@@ -289,6 +295,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 -k $(PHOTON_INPUT_RPMS_DIR) \
+		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
@@ -604,6 +611,7 @@ check: packages
                               -v $(PHOTON_RELEASE_VERSION) \
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_FLAGS) \
+				$(PHOTON_KAT_BUILD_FLAGS) \
                               -l $(PHOTON_LOGS_DIR)
 
 generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)

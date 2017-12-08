@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.66
-Release:        1%{?dist}
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -52,6 +52,10 @@ Patch30:        ACPICA-Namespace-fix-operand-cache-leak.patch
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
+
+%if 0%{?kat_build:1}
+Patch1000:	%{kat_build}.patch
+%endif
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -158,6 +162,9 @@ EOF
 pushd ..
 %patch99 -p0
 popd
+%if 0%{?kat_build:1}
+%patch1000 -p1
+%endif
 
 %build
 # patch vmw_balloon driver
