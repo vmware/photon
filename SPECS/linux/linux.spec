@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.66
-Release:        2%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -48,6 +48,9 @@ Patch27:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 
+%if 0%{?kat_build:1}
+Patch1000:	%{kat_build}.patch
+%endif
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -143,6 +146,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%if 0%{?kat_build:1}
+%patch1000 -p1
+%endif
 
 %build
 make mrproper
