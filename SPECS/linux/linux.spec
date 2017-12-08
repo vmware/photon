@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.66
-Release:        3%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -52,6 +52,9 @@ Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # RPi3 support
 Patch100:       mmc-bcm2835-Add-new-driver-for-the-sdhost-controller.patch
 
+%if 0%{?kat_build:1}
+Patch1000:	%{kat_build}.patch
+%endif
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod-devel
@@ -152,6 +155,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch27 -p1
 %patch28 -p1
 %patch100 -p1
+%if 0%{?kat_build:1}
+%patch1000 -p1
+%endif
 
 %build
 make mrproper
@@ -347,6 +353,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Dec 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-4
+-   KAT build support
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-3
 -   Aarch64 support
 *   Tue Dec 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-2

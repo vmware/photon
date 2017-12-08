@@ -5,9 +5,6 @@ class constants(object):
     sourcePath=""
     rpmPath=""
     logPath=""
-    dist=""
-    buildNumber="0000000"
-    releaseVersion="NNNnNNN"
     topDirPath=""
     buildRootPath="/mnt"
     prevPublishRPMRepo=""
@@ -20,6 +17,7 @@ class constants(object):
     publishBuildDependencies=False
     packageWeightsPath=None
     dockerUnixSocket="/var/run/docker.sock"
+    userDefinedMacros={}
 
     noDepsPackageList=[
         "texinfo",
@@ -443,9 +441,6 @@ class constants(object):
 
     @staticmethod
     def initialize(options):
-        constants.dist = options.dist
-        constants.buildNumber = options.buildNumber
-        constants.releaseVersion = options.releaseVersion
         constants.specPath = options.specPath
         constants.sourcePath = options.sourcePath
         constants.rpmPath = options.rpmPath
@@ -465,7 +460,26 @@ class constants(object):
         constants.tmpDirPath = "/dev/shm"
         if constants.rpmCheck:
             constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
+            constants.addMacro("with_check","1")
+        else:
+            constants.addMacro("with_check","0")
+
+        #adding distribution rpm macro
+        constants.addMacro("dist",options.dist)
+
+        #adding buildnumber rpm macro
+        constants.addMacro("photon_build_number",options.buildNumber)
+
+        #adding releasenumber rpm macro
+        constants.addMacro("photon_release_version",options.releaseVersion)
+
+        if options.katBuild != None:
+            constants.addMacro("kat_build", options.katBuild)
 
     @staticmethod
     def setTestForceRPMS(listsPackages):
         constants.testForceRPMS=listsPackages
+
+    @staticmethod
+    def addMacro(macroName, macroValue):
+        constants.userDefinedMacros[macroName]=macroValue

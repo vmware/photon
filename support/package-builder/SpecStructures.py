@@ -64,21 +64,6 @@ class Package(object):
             self.release=basePkg.release
             self.distribution=basePkg.distribution
 
-    def decodeContents(self,content):
-        if content.find("%{name}") != -1:
-            if self.basePkgName == "":
-                content = content.replace('%{name}',self.name)
-            else:
-                content = content.replace('%{name}',self.basePkgName)
-
-        if content.find("%{release}") != -1:
-            content = content.replace('%{release}',self.release)
-
-        if content.find("%{version}") != -1:
-            content = content.replace('%{version}',self.version)
-
-        return content
-
     def updatePackageMacro(self,macro):
         if macro.macroName == "%post":
             self.postMacro=macro
