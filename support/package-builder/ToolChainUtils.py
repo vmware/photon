@@ -204,12 +204,9 @@ class ToolChainUtils(object):
         self.logger.info("Installing Tool Chain RPMS.......")
         rpmFiles = ""
         packages = ""
-        for package in constants.listToolChainRPMPkgsToInstall:
+        for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-            rpmFile = None
-            if (packageName not in constants.listToolChainRPMPkgsToInstall or
-                    constants.listToolChainRPMPkgsToInstall.index(packageName) > constants.listToolChainRPMPkgsToInstall.index(package)):
-                rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
