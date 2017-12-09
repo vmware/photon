@@ -1,25 +1,27 @@
-Summary:    The Apache Portable Runtime
-Name:       apr
-Version:    1.5.2
-Release:    6%{?dist}
-License:    Apache License 2.0
-URL:        https://apr.apache.org/
-Group:      System Environment/Libraries
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha1 apr=2ef2ac9a8de7f97f15ef32cddf1ed7325163d84c
-%define	    aprver  1
+Summary:        The Apache Portable Runtime
+Name:           apr
+Version:        1.5.2
+Release:        7%{?dist}
+License:        Apache License 2.0
+URL:            https://apr.apache.org/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
+%define sha1    apr=2ef2ac9a8de7f97f15ef32cddf1ed7325163d84c
+%define         aprver  1
+Patch0:         apr-CVE-2017-12613.patch
 %description
 The Apache Portable Runtime.
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}
+%description    devel
 It contains the libraries and header files to create applications 
 
 %prep
 %setup -q
+%patch0 -p4
 %build
 ./configure --prefix=/usr \
         --includedir=%{_includedir}/apr-%{aprver} \
@@ -44,7 +46,7 @@ make DESTDIR=%{buildroot} install
 %exclude %{_libdir}/pkgconfig
 %{_bindir}/*
 
-%files	devel
+%files  devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.la
@@ -53,10 +55,12 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-6
--	GA - Bump release of all rpms
-*	Mon Sep 21 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 1.5.2-5
--	Repacked to move the include files in devel package. 
+*   Fri Dec 08 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-7
+-   Fix CVE-2017-12613
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-6
+-   GA - Bump release of all rpms
+*   Mon Sep 21 2015 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 1.5.2-5
+-   Repacked to move the include files in devel package.
 *   Wed Jul 15 2015 Sarah Choi <sarahc@vmware.com> 1.5.2-4
 -   Use aprver(=1) instead of version for mesos
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 1.5.2-3
