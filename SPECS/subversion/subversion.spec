@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.9.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 %define sha1    subversion=bc7d51fdda43bea01e1272dfe9d23d0a9d6cd11c
 Patch0:         subversion-CVE-2017-9800.patch
+Patch1:         subversion-CVE-2016-8734.patch
 Requires:       apr
 Requires:       apr-util
 BuildRequires:  apr-devel
@@ -31,6 +32,7 @@ Requires:   %{name} = %{version}
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p0
 %build
 ./configure --prefix=%{_prefix}         \
             --disable-static            \
@@ -54,6 +56,8 @@ make -j1 DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-4
+-   Fix CVE-2016-8734
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 1.9.4-3
 -   Release bump for expat version update
 *   Mon Aug 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-2
