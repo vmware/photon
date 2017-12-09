@@ -25,6 +25,7 @@ Source4:        https://github.com/krallin/tini/tree/tini-949e6fa.tar.gz
 Source5:        https://github.com/cpuguy83/go-md2man/tree/go-md2man-a65d4d2.tar.gz
 %define sha1 go-md2man=e3d0865c583150f7c76e385a8b4a3f2432ca8ad8
 Patch0:         remove-firewalld.patch
+Patch1:         docker-CVE-2017-14992.patch
 
 BuildRequires:  systemd
 BuildRequires:  device-mapper-devel
@@ -70,6 +71,7 @@ ln -s docker-ce/components/engine engine
 ln -s docker-ce/components/packaging packaging
 
 %patch0 -p2
+%patch1 -p0
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
@@ -213,6 +215,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri Dec 08 2017 Xiaolin Li <xiaolinl@vmware.com> 17.06.0-2
+-   Fix CVE-2017-14992
 *   Tue Jul 18 2017 Bo Gan <ganb@vmware.com> 17.06.0-1
 -   Update to 17.06.0-ce
 *   Mon Jul 10 2017 Bo Gan <ganb@vmware.com> 1.13.1-4
