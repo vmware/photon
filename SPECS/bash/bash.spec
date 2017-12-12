@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        4.4.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash/
 Group:          System Environment/Base
@@ -93,7 +93,10 @@ if [ -f "/etc/dircolors" ] ; then
         fi
 fi
 alias ls='ls --color=auto'
-alias grep='grep --color=auto'
+grep --help | grep color  >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias grep='grep --color=auto'
+fi
 EOF
 
 cat > %{buildroot}/etc/profile.d/extrapaths.sh << "EOF"
@@ -181,7 +184,10 @@ cat > %{buildroot}/etc/bash.bashrc << "EOF"
 # with code in /etc/profile.
 
 alias ls='ls --color=auto'
-alias grep='grep --color=auto'
+grep --help | grep color  >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias grep='grep --color=auto'
+fi
 
 # Provides prompt for non-login shells, specifically shells started
 # in the X environment. [Review the LFS archive thread titled
@@ -337,6 +343,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Mon Dec 11 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.12-2
+-   conditionally apply grep color alias
 *   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.4.12-1
 -   Upstream patch level 12 applied
 *   Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 4.4-6
