@@ -1,33 +1,37 @@
-Summary:	fork of the original IJG libjpeg which uses SIMD.
-Name:		libjpeg-turbo
-Version:	1.5.2
-Release:	1%{?dist}
-License:	IJG
-URL:		http://sourceforge.net/projects/libjpeg-turbo
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
-%define sha1 libjpeg-turbo=e788f6defa58b4393a5e1685c018f3b962971457
-BuildRequires:	nasm
-Requires:	nasm
+Summary:        fork of the original IJG libjpeg which uses SIMD.
+Name:           libjpeg-turbo
+Version:        1.5.2
+Release:        2%{?dist}
+License:        IJG
+URL:            http://sourceforge.net/projects/libjpeg-turbo
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
+%define sha1    libjpeg-turbo=e788f6defa58b4393a5e1685c018f3b962971457
+Patch0:         libjpeg-turbo-CVE-2017-15232-1.patch
+Patch1:         libjpeg-turbo-CVE-2017-15232-2.patch
+BuildRequires:  nasm
+Requires:       nasm
 %description
 libjpeg-turbo is a fork of the original IJG libjpeg which uses SIMD to accelerate baseline JPEG compression and decompression. libjpeg is a library that implements JPEG image encoding, decoding and transcoding.
 
-%package	devel
-Summary:	Header and development files
-Requires:	%{name} = %{version}-%{release}
-%description	devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+%description    devel
 It contains the libraries and header files to create applications 
 
 %prep
-%setup -q 
+%setup -q
+%patch0 -p1
+%patch1 -p1
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--disable-static \
-	--mandir=/usr/share/man \
-	--with-jpeg8
+    --prefix=%{_prefix} \
+    --disable-static \
+    --mandir=/usr/share/man \
+    --with-jpeg8
 make %{?_smp_mflags}
 
 %install
@@ -53,10 +57,12 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*       Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.2-1
--       Updated to version 1.5.2
-*	Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.1-1
--	Updated to version 1.5.1
-*       Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
--       Initial version
+*   Mon Dec 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
+-   Fix CVE-2017-15232
+*   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.2-1
+-   Updated to version 1.5.2
+*   Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.1-1
+-   Updated to version 1.5.1
+*   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
+-   Initial version
 
