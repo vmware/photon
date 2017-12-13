@@ -102,25 +102,9 @@ class SerializableSpecObjectsUtils(object):
     def getRPMMacros(self):
         return self.userDefinedMacros
 
-    def processData(self, data):
-        for macroName in self.userDefinedMacros.keys():
-            value = self.userDefinedMacros[macroName]
-            macro="%{?"+macroName+"}"
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-                continue
-            macro="%{"+macroName+"}"
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-                continue
-            macro="%"+macroName
-            if data.find(macro) != -1:
-                data = data.replace(macro,value)
-        return data
-
     def getRelease(self, package):
         specName=self.getSpecName(package)
-        return self.processData(self.mapSerializableSpecObjects[specName].release)
+        return self.mapSerializableSpecObjects[specName].release
 
     def getVersion(self, package):
         specName=self.getSpecName(package)
@@ -192,24 +176,15 @@ class SerializableSpecObjectsUtils(object):
 
     def getURL(self, package):
         specName=self.getSpecName(package)
-        url = self.mapSerializableSpecObjects[specName].url
-        if url is None:
-            return None
-        return self.processData(url)
+        return self.mapSerializableSpecObjects[specName].url
 
     def getSourceURL(self, package):
         specName=self.getSpecName(package)
-        sourceurl = self.mapSerializableSpecObjects[specName].sourceurl
-        if sourceurl is None:
-            return None
-        return self.processData(sourceurl)
+        return self.mapSerializableSpecObjects[specName].sourceurl
 
     def getLicense(self, package):
         specName=self.getSpecName(package)
-        license = self.mapSerializableSpecObjects[specName].license
-        if license is None:
-            return None
-        return self.processData(license)
+        return self.mapSerializableSpecObjects[specName].license
 
     def printAllObjects(self):
         listSpecs=self.mapSerializableSpecObjects.keys()
