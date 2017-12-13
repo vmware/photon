@@ -53,6 +53,11 @@ else
 PHOTON_RPMCHECK_OPTION :=
 endif
 
+# KAT build for FIPS certification
+ifdef KAT_BUILD
+PHOTON_KAT_BUILD_FLAGS := -F $(KAT_BUILD)
+endif
+
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
@@ -252,6 +257,7 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $
                 -v $(PHOTON_RELEASE_VERSION) \
                 -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
@@ -271,6 +277,7 @@ updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 -k $(PHOTON_INPUT_RPMS_DIR) \
+		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_OPTION) \
                 -t ${THREADS}
 
@@ -550,6 +557,7 @@ check-packer-ovf-plugin:
                               -n $(PHOTON_BUILD_NUMBER) \
                               -v $(PHOTON_RELEASE_VERSION) \
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
+			      $(PHOTON_KAT_BUILD_FLAGS) \
                               $(PHOTON_RPMCHECK_OPTION) \
                               -l $(PHOTON_LOGS_DIR)
 

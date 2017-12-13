@@ -1,4 +1,5 @@
 import re
+import constants
 from StringUtils import StringUtils
 from SpecStructures import *
 
@@ -13,7 +14,10 @@ class SpecParser(object):
         self.packages={}
         self.specAdditionalContent=""
         self.globalSecurityHardening=""
+        self.defs={}
         self.conditionalCheckMacroEnabled = False
+        self.macro_pattern = re.compile(r'%{(\S+?)\}')
+        self.userDefinedMacros = constants.constants.specData.getRPMMacros()
 
 
     def readPkgNameFromPackageMacro(self,data,basePkgName=None):
@@ -35,6 +39,71 @@ class SpecParser(object):
             return True, basePkgName
         return True, pkgName
 
+    def replaceMacros(self, string):
+        """Replace all macros in given string with corresponding values.
+
+        For example: a string '%{name}-%{version}.tar.gz' will be transformed to 'foo-2.0.tar.gz'.
+
+        :return A string where all macros in given input are substituted as good as possible.
+
+        """
+        def _is_conditional(macro):
+            return macro.startswith("?") or macro.startswith("!")
+
+        def _test_conditional(macro):
+            if macro[0] == "?":
+                return True
+            if macro[0] == "!":
+                return False
+            raise Exception("Given string is not a conditional macro")
+
+        def _is_macro_defined(macro):
+            return (macro in self.defs.keys()) or (macro in self.userDefinedMacros.keys())
+
+        def _get_macro(macro):
+            if macro in self.defs.keys():
+                return self.defs[macro]
+            elif macro in self.userDefinedMacros.keys():
+                return self.userDefinedMacros[macro]
+            raise Exception("Unknown macro: " + macro)
+
+        def _macro_repl(match):
+            macro_name = match.group(1)
+            if _is_conditional(macro_name):
+                parts = macro_name[1:].split(":")
+                assert len(parts) > 0
+                if _test_conditional(macro_name):  # ?
+                    if _is_macro_defined(parts[0]):
+                        if len(parts) == 2:
+                            return parts[1]
+                        else:
+                            return _get_macro(parts[0])
+                    else:
+                        return ""
+                else:  # !
+                    if not _is_macro_defined(parts[0]):
+                        if len(parts) == 2:
+                            return parts[1]
+                    return ""
+
+            if _is_macro_defined(macro_name):
+                return _get_macro(macro_name)
+            return match.string[match.start():match.end()]
+
+        #User macros
+        for macroName in self.userDefinedMacros.keys():
+            value = self.userDefinedMacros[macroName]
+            macro="%"+macroName
+            if string.find(macro) != -1:
+                string = string.replace(macro,value)
+        #Spec definitions
+        for macroName in self.defs.keys():
+            value = self.defs[macroName]
+            macro="%"+macroName
+            if string.find(macro) != -1:
+                string = string.replace(macro,value)
+        return re.sub(self.macro_pattern, _macro_repl, string)
+
     def parseSpecFile(self,specfile):
         self.createDefaultPackage()
         currentPkg="default"
@@ -44,13 +113,24 @@ class SpecParser(object):
         i=0
         while i < totalLines:
             line = lines[i].strip()
-            if self.isSpecMacro(line):
+            if self.isIfCondition(line):
+                if (not self.isConditionTrue(line)):
+                    # skip conditional body
+                    deep = 1
+                    while (i < totalLines and deep != 0):
+                        i=i+1
+                        line = lines[i].strip()
+                        if self.isConditionalMacroStart(line):
+                            deep = deep + 1
+                        elif self.isConditionalMacroEnd(line):
+                            deep = deep - 1
+            elif self.isSpecMacro(line):
                 macro,i=self.readMacroFromFile(i, lines)
                 self.updateMacro(macro)
             elif self.isPackageMacro(line):
                 defaultpkg = self.packages.get('default')
                 returnVal,packageName=self.readPkgNameFromPackageMacro(line, defaultpkg.name)
-                packageName=defaultpkg.decodeContents(packageName)
+                packageName=self.replaceMacros(packageName)
                 if not returnVal:
                     return False
                 if re.search('^'+'%package',line) :
@@ -74,7 +154,7 @@ class SpecParser(object):
                 self.readChecksum(line, self.packages[currentPkg])
             elif self.isConditionalCheckMacro(line):
                 self.conditionalCheckMacroEnabled = True
-            elif self.conditionalCheckMacroEnabled and self.isConditionalMacroCompleted(line):
+            elif self.conditionalCheckMacroEnabled and self.isConditionalMacroEnd(line):
                 self.conditionalCheckMacroEnabled = False
             else:
                 self.specAdditionalContent+=line+"\n"
@@ -133,7 +213,7 @@ class SpecParser(object):
         return False
 
     def isMacro(self,line):
-        return self.isPackageMacro(line) or self.isSpecMacro(line)
+        return self.isPackageMacro(line) or self.isSpecMacro(line) or self.isConditionalMacroStart(line) or self.isConditionalMacroEnd(line)
 
     def isSpecMacro(self,line):
         if re.search('^'+'%clean',line) :
@@ -265,12 +345,14 @@ class SpecParser(object):
         if not returnVal:
             return False
 
-        headerContent=pkg.decodeContents(headerContent)
+        headerContent=self.replaceMacros(headerContent)
         if headerName == 'summary':
             pkg.summary=headerContent
             return True
         if headerName == 'name':
             pkg.name=headerContent
+            if (pkg == self.packages["default"]):
+                self.defs["name"] = pkg.name
             return True
         if headerName == 'group':
             pkg.group=headerContent
@@ -280,12 +362,16 @@ class SpecParser(object):
             return True
         if headerName == 'version':
             pkg.version=headerContent
+            if (pkg == self.packages["default"]):
+                self.defs["version"] = pkg.version
             return True
         if headerName == 'buildarch':
             pkg.buildarch=headerContent
             return True
         if headerName == 'release':
             pkg.release=headerContent
+            if (pkg == self.packages["default"]):
+                self.defs["release"] = pkg.release
             return True
         if headerName == 'distribution':
             pkg.distribution=headerContent
@@ -337,7 +423,7 @@ class SpecParser(object):
 
     def readChecksum(self,line,pkg):
         strUtils = StringUtils()
-        line=pkg.decodeContents(line)
+        line=self.replaceMacros(line)
         data = line.strip();
         words=data.split()
         nrWords = len(words)
@@ -381,3 +467,24 @@ class SpecParser(object):
         if(words[0] != "%endif"):
             return False
         return True
+
+    def isIfCondition(self,line):
+        return line.startswith("%if ")
+
+    # Supports only %if %{}
+    def isConditionTrue(self,line):
+        data = line.strip()
+        words = data.split()
+        nrWords = len(words)
+        # condition like %if a > b is not supported
+        if(nrWords != 2):
+            return True
+        if (self.replaceMacros(words[1]) == "0"):
+            return False
+        return True
+
+    def isConditionalMacroStart(self,line):
+        return line.startswith("%if")
+
+    def isConditionalMacroEnd(self,line):
+        return (line.strip() == "%endif")

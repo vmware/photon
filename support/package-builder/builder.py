@@ -40,6 +40,7 @@ def main():
     parser.add_option("-y",  "--generate-pkg-yaml-files",  dest="generatePkgYamlFiles",  default=False, action ="store_true")
     parser.add_option("-j",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
     parser.add_option("-f",  "--pkg-blacklist-file",  dest="pkgBlacklistFile",  default=None)
+    parser.add_option("-F",  "--kat-build", dest="katBuild",  default=None)
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()

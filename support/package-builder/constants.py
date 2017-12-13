@@ -1,4 +1,5 @@
 from SpecData import SerializableSpecObjectsUtils
+from SpecUtils import Specutils
 
 class constants(object):
     specPath=""
@@ -312,16 +313,20 @@ class constants(object):
         constants.logPath = options.logPath
         constants.prevPublishRPMRepo=options.publishRPMSPath
         constants.prevPublishXRPMRepo = options.publishXRPMSPath
-	constants.buildRootPath=options.buildRootPath
-        constants.specData = SerializableSpecObjectsUtils(constants.logPath)
-        constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
+        constants.buildRootPath=options.buildRootPath
         constants.pullsourcesConfig = options.pullsourcesConfig
         constants.inputRPMSPath=options.inputRPMSPath
         constants.rpmCheck = options.rpmCheck
-        constants.updateRPMMacros()
+        constants.specData = SerializableSpecObjectsUtils(constants.logPath)
+        constants.updateRPMMacros(options)
+        # Perform full parsing now
+        constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
         
     @staticmethod
-    def updateRPMMacros():
+    def updateRPMMacros(options):
+        if options.katBuild != None:
+            constants.specData.addMacro("kat_build", options.katBuild)
+
         #adding distribution rpm macro
         constants.specData.addMacro("dist",constants.dist)
 
@@ -331,27 +336,30 @@ class constants(object):
         #adding releasenumber rpm macro
         constants.specData.addMacro("photon_release_version",constants.releaseVersion)
 
+        #adding check rpm macro
+        constants.specData.addMacro("with_check","0")
+
+	    #adding openjre version rpm macro
+        spec = Specutils(constants.specPath + "/openjdk/openjdk.spec")
+        javaversion = spec.getVersion()
+        constants.specData.addMacro("JAVA_VERSION",javaversion)
+
+
         #adding kernelversion rpm macro
-        kernelversion = constants.specData.getVersion("linux")
+        spec = Specutils(constants.specPath + "/linux/linux.spec")
+        kernelversion = spec.getVersion()
         constants.specData.addMacro("KERNEL_VERSION",kernelversion)
 
         #adding kernelrelease rpm macro
-        kernelrelease = constants.specData.getRelease("linux")
+        kernelrelease = spec.getRelease()
         constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
        
-	#adding openjre version rpm macro
-        javaversion = constants.specData.getVersion("openjre")
-        constants.specData.addMacro("JAVA_VERSION",javaversion)
-
         #adding kernelsubrelease rpm macro
         kernelversion = kernelversion.replace(".","")
         if kernelversion.isdigit():
             kernelversion = int(kernelversion) << 8
-        kernelsubrelease = str(kernelversion)+kernelrelease
-        kernelsubrelease = kernelsubrelease.replace(constants.dist,"")
+        kernelsubrelease = str(kernelversion)+kernelrelease.split('.')[0]
         if kernelsubrelease:
             kernelsubrelease = "."+kernelsubrelease
             constants.specData.addMacro("kernelsubrelease",kernelsubrelease) 
 
-        #adding check rpm macro
-        constants.specData.addMacro("with_check","0")

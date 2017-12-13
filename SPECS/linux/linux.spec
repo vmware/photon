@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.104
-Release:    	1%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -39,6 +39,9 @@ Patch18:        0002-allow-also-ecb-cipher_null.patch
 # Fix CVE-2017-11472
 Patch20:        ACPICA-Namespace-fix-operand-cache-leak.patch
 
+%if 0%{?kat_build:1}
+Patch1000:	%{kat_build}.patch
+%endif
 BuildRequires:  bc
 BuildRequires:  kbd
 BuildRequires:  kmod
@@ -128,6 +131,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch17 -p1
 %patch18 -p1
 %patch20 -p1
+
+%if 0%{?kat_build:1}
+%patch1000 -p1
+%endif
 
 %build
 make mrproper
@@ -280,6 +287,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Dec 12 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.104-2
+-   KAT build support
 *   Fri Dec 08 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.104-1
 -   Version update
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.103-1
