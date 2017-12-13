@@ -1,18 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.54.0
-Release:        5%{?dist}
+Version:        7.56.1
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
-%define sha1    curl=a77da3cd2a9876bde3982976245ef2da9ad27847
-Patch0:         curl-CVE-2017-1000101.patch
-Patch1:         curl-CVE-2017-1000100.patch
-Patch2:         curl-CVE-2017-1000254.patch
-Patch3:         curl-CVE-2017-1000257.patch
+Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.xz
+%define sha1    curl=c26bd88fdd5fe5d31a3b9e7a0a6b3dffff3168df
 Requires:       ca-certificates
 BuildRequires:  ca-certificates
 Requires:       openssl
@@ -28,10 +24,6 @@ upload files can be incorporated into other programs to support
 functions like streaming media.
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 %build
 ./configure \
@@ -71,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 %changelog
+*   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 7.56.1-1
+-   Update to version 7.56.1
 *   Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.0-5
 -   Fix CVE-2017-1000257
 *   Mon Nov 06 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.0-4
