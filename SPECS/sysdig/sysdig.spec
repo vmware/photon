@@ -1,26 +1,27 @@
 %global security_hardening none
-Summary:	Sysdig is a universal system visibility tool with native support for containers.
-Name:		sysdig
-Version:	0.10.1
-Release:	4%{?kernelsubrelease}%{?dist}
-License:	GPLv2	  
-URL:		http://www.sysdig.org/
-Group:		Applications/System	
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
-%define sha1 sysdig=272b95ad02be4d194bba66d360ff935084d9c842
-BuildRequires:	cmake 
+Summary:        Sysdig is a universal system visibility tool with native support for containers.
+Name:           sysdig
+Version:        0.19.1
+Release:        1%{?kernelsubrelease}%{?dist}
+License:        GPLv2
+URL:            http://www.sysdig.org/
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
+%define sha1 sysdig=425ea9fab8e831274626a9c9e65f0dfb4f9bc019
+BuildRequires:  cmake
 BuildRequires:  linux-dev = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-BuildRequires:	openssl-devel
-BuildRequires:	curl
-BuildRequires:	zlib-devel
-BuildRequires:	ncurses-devel >= 6.0-3
-Requires:   linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-Requires:	zlib
-Requires:	ncurses >= 6.0-3
-Requires:	openssl
-Requires:	curl
+BuildRequires:  openssl-devel
+BuildRequires:  curl
+BuildRequires:  zlib-devel
+BuildRequires:  ncurses-devel >= 6.0-3
+BuildRequires:  wget
+Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+Requires:       zlib
+Requires:       ncurses >= 6.0-3
+Requires:       openssl
+Requires:       curl
 
 %description
  Sysdig is open source, system-level exploration: capture system state and activity from a running Linux instance, then save, filter and analyze. Sysdig is scriptable in Lua and includes a command line interface and a powerful interactive UI, csysdig, that runs in your terminal
@@ -33,11 +34,11 @@ mkdir build
 cd build
 
 cmake \
-	-DCMAKE_INSTALL_PREFIX=%{_prefix} \
-	-DUSE_BUNDLED_OPENSSL=OFF \
-	-DUSE_BUNDLED_CURL=OFF \
-	-DUSE_BUNDLED_ZLIB=OFF \
-	-DUSE_BUNDLED_NCURSES=OFF ..
+    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+    -DUSE_BUNDLED_OPENSSL=OFF \
+    -DUSE_BUNDLED_CURL=OFF \
+    -DUSE_BUNDLED_ZLIB=OFF \
+    -DUSE_BUNDLED_NCURSES=OFF ..
 
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 
@@ -69,6 +70,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.19.1-1
+-   Update to version 0.19.1
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 0.10.1-4
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
