@@ -10,7 +10,6 @@ Type=notify
 ExecStart=/usr/sbin/rsyslogd -n $RSYSLOGD_PARAMS
 StandardOutput=null
 Environment=RSYSLOGD_PARAMS=
-ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 
 [Install]

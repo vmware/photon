@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.26.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -81,6 +81,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/systemd/journald.conf.d/*
 %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Fri Dec 15 2017 Anish Swaminathan <anishs@vmware.com>  8.26.0-4
+-   Remove kill SIGHUP from service file
 *   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 8.26.0-3
 -   Add a default rsyslog.conf.
 *   Tue Aug 15 2017 Dheeraj Shetty <dheerajs@vmware.com>  8.26.0-2
