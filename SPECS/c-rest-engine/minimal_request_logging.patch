@@ -1,0 +1,180 @@
+From 3fbf376fe21d544bfe1373c17369fd8f916813da Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Fri, 15 Dec 2017 18:36:44 -0800
+Subject: [PATCH] Adding minimal INFO level packet trace logging
+
+Change-Id: I932706c8446b44c70aa8a015852e28a65f0b4a16
+(cherry picked from commit 305dda1d5e242dd78f3e867232e6f0247b8fdf10)
+---
+ server/restengine/httpProtocolHead.c  | 19 ++++++++++++++++---
+ server/restengine/httpUtilsExternal.c |  4 ++--
+ server/restengine/restProtocolHead.c  |  2 +-
+ transport/posix/socket.c              |  6 ++++++
+ 4 files changed, 25 insertions(+), 6 deletions(-)
+
+diff --git a/server/restengine/httpProtocolHead.c b/server/restengine/httpProtocolHead.c
+index 0a1e5e5..18cff08 100644
+--- a/server/restengine/httpProtocolHead.c
++++ b/server/restengine/httpProtocolHead.c
+@@ -598,6 +598,7 @@ VmRESTSendHeader(
+             );
+         buffer = NULL;
+     }
++    VMREST_LOG_ERROR(pRESTHandle,"%s","Sending header data failed");
+     goto cleanup;
+ }
+ 
+@@ -669,6 +670,7 @@ VmRESTSendChunkedPayload(
+             );
+         buffer = NULL;
+     }
++    VMREST_LOG_ERROR(pRESTHandle,"%s","Sending chunked payload data failed");
+     goto cleanup;
+ }
+ 
+@@ -777,6 +779,7 @@ VmRESTSendHeaderAndPayload(
+             );
+         buffer = NULL;
+     }
++    VMREST_LOG_ERROR(pRESTHandle,"%s","Sending header and payload data failed");
+     goto cleanup;
+ }
+ 
+@@ -1209,6 +1212,7 @@ VmRESTProcessHeaders(
+     {
+         *nProcessed = 0;
+     }
++    VMREST_LOG_ERROR(pRESTHandle,"Failed while processing headers... dwError %u", dwError);
+     goto cleanup;
+ 
+ }
+@@ -1313,13 +1317,15 @@ VmRESTProcessPayload(
+     return dwError;
+ 
+ error:
+-    VMREST_LOG_ERROR(pRESTHandle,"Errorcode %u", dwError);
+-
+     if (dwError == REST_ENGINE_MORE_IO_REQUIRED)
+     {
+         *nProcessed = 0;
+         dwError = REST_ENGINE_SUCCESS;
+     }
++    else
++    {
++        VMREST_LOG_ERROR(pRESTHandle,"Failed while processing payload ... dwError %u", dwError);
++    }
+     goto cleanup;
+ 
+ }
+@@ -1396,12 +1402,17 @@ VmRESTProcessBuffer(
+ 
+              case PROCESS_APPLICATION_CALLBACK:
+                  /**** Give callback to application ****/
+-                 VMREST_LOG_DEBUG(pRESTHandle,"%s","Giving callback to application...");
++                 VMREST_LOG_INFO(pRESTHandle,"%s","C-REST-ENGINE: Giving callback to application...");
+                  dwError = VmRESTTriggerAppCb(
+                                pRESTHandle,
+                                pRequest,
+                                &(pRequest->pResponse)
+                                );
++                 VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Application callback returns dwError %u", dwError);
++                 if ((dwError != REST_ENGINE_SUCCESS) && pRequest && pRequest->pResponse && pRequest->pResponse->statusLine)
++                 {
++                     VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Status code: %s, header sent %d", pRequest->pResponse->statusLine->statusCode, pRequest->pResponse->bHeaderSent);
++                 }
+                  BAIL_ON_VMREST_ERROR(dwError);
+                  bInitiateClose = TRUE;
+                  break;
+@@ -1428,6 +1439,7 @@ VmRESTProcessBuffer(
+ 
+ error:
+ 
++    VMREST_LOG_ERROR(pRESTHandle,"Process buffer failed with error code %u, sending failure response", dwError);
+     ret = VmRESTSendFailureResponse(
+                   pRESTHandle,
+                   dwError,
+@@ -1475,6 +1487,7 @@ VmRESTTriggerAppCb(
+         dwError = VMREST_APPLICATION_VALIDATION_FAILED;
+     }
+     BAIL_ON_VMREST_ERROR(dwError);
++    
+ 
+     pRequest->state = PROCESS_INVALID;
+ 
+diff --git a/server/restengine/httpUtilsExternal.c b/server/restengine/httpUtilsExternal.c
+index b75756d..a9e9222 100644
+--- a/server/restengine/httpUtilsExternal.c
++++ b/server/restengine/httpUtilsExternal.c
+@@ -258,7 +258,7 @@ VmRESTGetHttpPayload(
+ 
+     return dwError;
+ error:
+-
++    VMREST_LOG_ERROR(pRESTHandle,"Get payload failed with error code %u", dwError);
+     goto cleanup;
+ 
+ }
+@@ -375,7 +375,7 @@ VmRESTSetHttpPayload(
+ cleanup:
+     return dwError;
+ error:
+-    VMREST_LOG_ERROR(pRESTHandle,"%s","Set Payload Failed");
++    VMREST_LOG_ERROR(pRESTHandle,"Set Payload Failed with error Code %u", dwError);
+     goto cleanup;
+ }
+ 
+diff --git a/server/restengine/restProtocolHead.c b/server/restengine/restProtocolHead.c
+index 0446d1a..53a5864 100644
+--- a/server/restengine/restProtocolHead.c
++++ b/server/restengine/restProtocolHead.c
+@@ -76,7 +76,7 @@ VmRestEngineHandler(
+         ptr = NULL;
+     }
+ 
+-    VMREST_LOG_DEBUG(pRESTHandle,"HTTP URI %s", httpURI);
++    VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: HTTP URI %s", httpURI);
+ 
+     /**** 4. Get the End point from URI ****/
+     dwError = VmRestGetEndPointURIfromRequestURI(
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index 18cef89..6c0e14e 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -553,10 +553,12 @@ VmSockPosixWaitForEvent(
+             }
+             else if (pEventSocket->type == VM_SOCK_TYPE_LISTENER)
+             {
++                VMREST_LOG_INFO(pRESTHandle,"%s","C-REST-ENGINE: ========================  NEW REQUEST ==========================");
+                 dwError = VmSockPosixAcceptConnection(
+                               pEventSocket,
+                               &pSocket);
+                 BAIL_ON_VMREST_ERROR(dwError);
++                VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Accepted new connection with socket fd %d", pSocket->fd);
+ 
+                 dwError = VmSockPosixSetNonBlocking(pRESTHandle,pSocket);
+                 BAIL_ON_VMREST_ERROR(dwError);
+@@ -694,6 +696,7 @@ VmSockPosixWaitForEvent(
+ 
+ error:
+ 
++    VMREST_LOG_ERROR(pRESTHandle,"%s","Socket layer - wait for event error");
+     if (ppSocket)
+     {
+         *ppSocket = NULL;
+@@ -1077,6 +1080,7 @@ VmSockPosixWrite(
+ 
+ error:
+ 
++    VMREST_LOG_ERROR(pRESTHandle,"%s", "Socket write failed");
+     goto cleanup;
+ }
+ 
+@@ -1114,6 +1118,8 @@ VmSockPosixCloseSocket(
+     }
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
++    VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Closing socket with fd %d", pSocket->fd);
++
+     dwError = VmRESTLockMutex(pSocket->pMutex);
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
