@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.1
-Release:       6%{?dist}
+Release:       7%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -17,6 +17,7 @@ Patch1:        syslog_noInit.patch
 Patch2:        socket_logging.patch
 Patch3:        errno_init.patch
 Patch4:        ssl_shutdown.patch
+Patch5:        minimal_request_logging.patch
 %define sha1   c-rest-engine=a25927fd98ec92df5e210cc4941fa626604636f6
 
 %description
@@ -40,6 +41,7 @@ development libs and header files for c-rest-engine
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 cd build
@@ -72,6 +74,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Fri Dec 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-7
+-  Adding patch for minimal packet level logging.
 *  Wed Nov 29 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-6
 -  Adding patch for ssl_shutdown order.
 *  Wed Nov 29 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-5
