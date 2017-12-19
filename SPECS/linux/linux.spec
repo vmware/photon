@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.66
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Source2:	initramfs.trigger
 %define ena_version 1.1.3
 Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
 %define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
-Source4:	config_aarch64
+Source4:	config-aarch64
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -347,6 +347,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Dec 18 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-4
+-   Rename config_aarch64 to config-aarch64
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-3
 -   Aarch64 support
 *   Tue Dec 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-2
