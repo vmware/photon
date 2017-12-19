@@ -122,6 +122,7 @@ class constants(object):
         "glibc-tools",
         "zlib",
         "zlib-devel",
+        "file-libs",
         "file",
         "binutils",
         "binutils-devel",
@@ -266,6 +267,7 @@ class constants(object):
         "xz-libs",
         "sqlite",
         "sqlite-libs",
+        "file-libs",
         "rpm-libs"]
 
     # List of packages that will be installed in addition for each
