@@ -346,7 +346,9 @@ class constants(object):
 
     # list of spec files to skip for parsing for given arch
     skipSpecsForArch={
-        "x86_64":[],
+        "x86_64":[
+            "u-boot-rpi3.spec"
+            ],
         "aarch64":[
             # fakeroot-ng does not support aarch64
             "fakeroot-ng.spec",
