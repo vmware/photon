@@ -1,7 +1,7 @@
 Summary:    Contains a linker, an assembler, and other tools
 Name:       binutils
 Version:    2.29.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2+
 URL:        http://www.gnu.org/software/binutils
 Group:      System Environment/Base
@@ -18,7 +18,11 @@ Patch5:     binutils-2.29.1-CVE-2017-16829.patch
 Patch6:     binutils-2.29.1-CVE-2017-16830.patch
 Patch7:     binutils-2.29.1-CVE-2017-16831.patch
 Patch8:     binutils-2.29.1-CVE-2017-16832.patch
-
+Patch9:     binutils-2.29.1-CVE-2017-17121.patch
+Patch10:    binutils-2.29.1-CVE-2017-17122.patch
+Patch11:    binutils-2.29.1-CVE-2017-17123.patch
+Patch12:    binutils-2.29.1-CVE-2017-17124.patch
+Patch13:    binutils-2.29.1-CVE-2017-17125.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -41,6 +45,11 @@ for handling compiled objects.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -211,6 +220,9 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Mon Dec 18 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-3
+-   Fix CVEs CVE-2017-17121, CVE-2017-17122, CVE-2017-17123,
+-   CVE-2017-17124, CVE-2017-17125
 *   Mon Dec 4 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-2
 -   Fix CVEs CVE-2017-16826, CVE-2017-16827, CVE-2017-16828, CVE-2017-16829,
 -   CVE-2017-16830, CVE-2017-16831, CVE-2017-16832
