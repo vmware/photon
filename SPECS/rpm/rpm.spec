@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -17,6 +17,7 @@ Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
 Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
+Patch2:         rpm-CVE-2017-7501.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -88,6 +89,7 @@ Python3 rpm.
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -258,6 +260,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
+-   Fix CVE-2017-7501
 *   Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
 -   make python{,3}-rpm depend on current version of librpm
 *   Wed Jun 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-5
