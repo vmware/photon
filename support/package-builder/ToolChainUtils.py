@@ -9,7 +9,7 @@ import traceback
 import shutil
 
 class ToolChainUtils(object):
-    
+
     def __init__(self,logName=None,logPath=None):
         if logName is None:
             logName = "Toolchain Utils"
@@ -145,8 +145,8 @@ class ToolChainUtils(object):
             self.logger.error("Installing toolchain rpms failed")
             raise Exception("RPM installation failed")
             
-        self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)    
-    
+        self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)
+
     def findRPMFileInGivenLocation(self,package,rpmdirPath):
         cmdUtils = CommandUtils()
         listFoundRPMFiles = cmdUtils.findFile(package+"-*.rpm",rpmdirPath)
@@ -164,7 +164,7 @@ class ToolChainUtils(object):
         if len(listFilterRPMFiles) > 1 :
             self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
             return None
-    
+
     def buildCoreToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile):
         self.logger.info("Building core tool chain packages.....")
         chrootID=None
@@ -206,7 +206,10 @@ class ToolChainUtils(object):
         packages = ""
         for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+            rpmFile = None
+            if (packageName not in constants.listToolChainRPMPkgsToInstall or
+                    constants.listToolChainRPMPkgsToInstall.index(packageName) > constants.listToolChainRPMPkgsToInstall.index(package)):
+                rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             if rpmFile is None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
@@ -228,18 +231,18 @@ class ToolChainUtils(object):
         if retval != 0:
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
-            
+
         self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
         if "openjdk" in packageName or "openjre" in packageName:
             self.installToolChainXRPMS(chrootID);
-   
+
     def installToolChainXRPMS(self, chrootID):
         self.logger.info("Installing Tool Chain X package RPMS.......")
         rpmFiles = ""
         packages = ""
         for package in constants.listToolChainXRPMsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-	    print "DEBUG:" + package
+            print "DEBUG:" + package
             rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             if rpmFile is None:
                 self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
@@ -248,12 +251,12 @@ class ToolChainUtils(object):
             packages += " " + package
 
         self.logger.debug("Installing rpms:"+packages)
-	cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
-	print "Command Executed:" + cmd 
+        cmd=self.rpmCommand + " -i --nodeps --force --root "+chrootID+" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles
+        print "Command Executed:" + cmd
         process = subprocess.Popen("%s" %cmd,shell=True,stdout=subprocess.PIPE)
         retval = process.wait()
         if retval != 0:
             self.logger.error("Installing tool chain  failed")
             raise Exception("RPM installation failed")
         self.logger.info("Successfully installed all Tool Chain X RPMS")
- 
+
