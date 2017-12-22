@@ -165,6 +165,10 @@ class ToolChainUtils(object):
             pkgUtils=PackageUtils(self.logName,self.logPath)
             print "DEBUG:" + package
             if "openjre8" in packageName or "openjdk8" in packageName:
+                # x86_64 has openjdk/jre as a published rpms but aarch64 has openjdk8/jre8
+                # Remove this condition after publishxrpms for x86_^4 got updated
+                if (package == "openjdk" or package == "openjre") and (platform.machine() == "aarch64"):
+                    package = package + "8"
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             else:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
