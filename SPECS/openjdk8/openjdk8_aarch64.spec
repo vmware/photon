@@ -1,16 +1,35 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
+%define _jdk_update 151
+%define _jdk_build 13
+%define _repo_ver aarch64-jdk8u%{_jdk_update}-b%{_jdk_build}
+%define _url_src http://hg.openjdk.java.net/aarch64-port/jdk8u
+
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.152
-Release:	2%{?dist}
+Version:	1.8.0.%{_jdk_update}
+Release:	1%{?dist}
 License:	GNU GPL
-URL:		https://openjdk.java.net
+URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u/
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.gz
-%define sha1 openjdk=bdb67157673789aa2ad368c9e237be7215097fdd
+Source0:	%{_url_src}/archive/jdk8u-%{_repo_ver}.tar.bz2
+%define sha1 jdk8u=d92f2f3633ca1f376dddc1d3c6d7ec53a54d7d63
+Source1:	%{_url_src}/corba/archive/corba-%{_repo_ver}.tar.bz2
+%define sha1 corba=a8cfcc8cd8817560059d7d121bb774334ae012b0
+Source2:	%{_url_src}/hotspot/archive/hotspot-%{_repo_ver}.tar.bz2
+%define sha1 hotspot=c9378ab34ee281e196206214ffe3174b2dfd2d80
+Source3:	%{_url_src}/jdk/archive/jdk-%{_repo_ver}.tar.bz2
+%define sha1 jdk-aarch64=5cc629011f0e6c2aa522e4ca6c8b602912431cbd
+Source4:	%{_url_src}/jaxws/archive/jaxws-%{_repo_ver}.tar.bz2
+%define sha1 jaxws=d3fd7bca75d6e8125c7968c9242129477d0fc0cb
+Source5:	%{_url_src}/jaxp/archive/jaxp-%{_repo_ver}.tar.bz2
+%define sha1 jaxp=229a83f8687bae8c1c51f2ea0010f3d2cf896072
+Source6:	%{_url_src}/langtools/archive/langtools-%{_repo_ver}.tar.bz2
+%define sha1 langtools=ec34f7adc4f66b687a33e1c8fbf0a4e44dafb0c1
+Source7:	%{_url_src}/nashorn/archive/nashorn-%{_repo_ver}.tar.bz2
+%define sha1 nashorn=aaf4d057bb3e5d8700f6b6d11d38fb9519c2ab29
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 BuildRequires:  pcre-devel
@@ -25,7 +44,7 @@ Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
-%define bootstrapjdkversion 1.8.0.112
+%define bootstrapjdk /usr/lib/jvm/OpenJDK-1.8.0.151
 %description
 The OpenJDK package installs java class library and javac java compiler.
 
@@ -64,9 +83,14 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-%{version}
+%setup -qn jdk8u-%{_repo_ver} -b1 -b2 -b3 -b4 -b5 -b6 -b7
+for subrepo in corba hotspot jdk jaxws jaxp langtools nashorn
+do
+    mv ../${subrepo}-%{_repo_ver} ${subrepo}
+done
 %patch0 -p1
 %patch1 -p1
+rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
 
@@ -76,9 +100,9 @@ unset JAVA_HOME &&
 ./configure \
 	CUPS_NOT_NEEDED=yes \
 	--with-target-bits=64 \
-	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
+	--with-boot-jdk=%{bootstrapjdk} \
 	--disable-headful \
-	--with-cacerts-file=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre/lib/security/cacerts \
+	--with-cacerts-file=%{bootstrapjdk}/jre/lib/security/cacerts \
 	--with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
 	--with-extra-cflags="-std=gnu++98 -fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
 	--with-freetype-include=/usr/include/freetype2 \
@@ -92,7 +116,7 @@ make \
     JAVAC_FLAGS=-g \
     STRIP_POLICY=no_strip \
     DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
-    CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre \
+    CLASSPATH=%{bootstrapjdk}/jre \
     POST_STRIP_CMD="" \
     LOG=trace \
     SCTP_WERROR=
@@ -102,12 +126,12 @@ make DESTDIR=%{buildroot} install \
 	BUILD_HEADLESS_ONLY=yes \
 	OPENJDK_TARGET_OS=linux \
 	DISABLE_HOTSPOT_OS_VERSION_CHECK=ok \
-	CLASSPATH=/var/opt/OpenJDK-%bootstrapjdkversion-bin/jre
+	CLASSPATH=%{bootstrapjdk}/jre
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 install -vdm755 %{buildroot}%{_bindir}
-find /usr/local/jvm/openjdk-1.8.0-internal/jre/lib/amd64 -iname \*.diz -delete
+find /usr/local/jvm/openjdk-1.8.0-internal/jre/lib/aarch64 -iname \*.diz -delete
 mv /usr/local/jvm/openjdk-1.8.0-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}/
 
 %post
@@ -219,8 +243,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/bin/servertool
 %{_libdir}/jvm/OpenJDK-%{version}/bin/tnameserv
 %{_libdir}/jvm/OpenJDK-%{version}/bin/unpack200
-%{_libdir}/jvm/OpenJDK-%{version}/lib/amd64/jli/
-%exclude %{_libdir}/jvm/OpenJDK-%{version}/lib/amd64/*.diz
+%{_libdir}/jvm/OpenJDK-%{version}/lib/aarch64/jli/
+%exclude %{_libdir}/jvm/OpenJDK-%{version}/lib/aarch64/*.diz
 
 %files sample
 %defattr(-,root,root)
@@ -236,48 +260,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
-*   Thu Dec 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.152-2
--   Reduce list of published rpms dependencies
-*   Thu Oct 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.152-1
--   Upgraded to version 1.8.0.152
-*   Thu Sep 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-2
--   added ldconfig in post actions.
-*   Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1
--   Upgraded to version 1.8.0.141-1
-*   Thu Jul 6 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-4
--   Build AWT libraries as well.
-*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 1.8.0.131-3
--   Added obseletes for deprecated openjdk package
-*   Tue Jun 06 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-2
--   Add requires for libstdc++
-*   Mon Apr 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.131-1
--   Upgraded to version 1.8.0.131 and building Java from sources
-*   Tue Mar 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-2
--   add java rpm macros
-*   Wed Dec 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.112-1
--   Update to 1.8.0.112. addresses CVE-2016-5582 CVE-2016-5573
-*   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.102-1
--   Update to 1.8.0.102, minor fixes in url, spelling.
--   addresses CVE-2016-3598, CVE-2016-3606, CVE-2016-3610
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-3
--   Added version constraint to runtime dependencies
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.92-2
--   GA - Bump release of all rpms
-*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.92-1
--   Updated to version 1.8.0.92
-*   Mon May 2 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.0.72-3
--   Move tools like javac to openjdk
-*   Thu Apr 28 2016 Divya Thaluru <dthaluru@vmware.com> 1.8.0.72-2
--   Adding openjre as run time dependency for openjdk package
-*   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 1.8.0.72-1
--   Updating Version.
-*   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 1.8.0.51-3
--   Change to use /var/opt path
-*   Fri Sep 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.51-2
--   Split the openjdk into multiple sub-packages to reduce size.
-*   Mon Aug 17 2015 Sharath George <sarahc@vmware.com> 1.8.0.51-1
--   Moved to the next version
-*   Tue Jun 30 2015 Sarah Choi <sarahc@vmware.com> 1.8.0.45-2
--   Add JRE path
-*   Mon May 18 2015 Sharath George <sharathg@vmware.com> 1.8.0.45-1
--   Initial build. First version
+*   Thu Dec 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.151-1
+-   Initial version of OpenJDK for aarch64. SPEC file was forked from
+    openjdk8-1.8.0.152-1 of x86_64

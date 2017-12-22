@@ -329,7 +329,7 @@ class SpecParser(object):
     def readDefinition(self,line):
         listDefines=line.split()
         if len(listDefines) == 3:
-           self.defs[listDefines[1]] = listDefines[2]
+           self.defs[listDefines[1]] = self.replaceMacros(listDefines[2])
            return True
         return False
 

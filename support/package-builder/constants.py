@@ -212,15 +212,10 @@ class constants(object):
         "go"]
 
     perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
-        "glib-devel",
         "icu-devel",
         "openjdk",
         "openjre",
         "icu",
-        "harfbuzz",
-        "harfbuzz-devel",
-        "freetype2",
-        "freetype2-devel",
         "alsa-lib",
         "alsa-lib-devel",
         "xcb-proto",
@@ -229,12 +224,10 @@ class constants(object):
         "util-macros",
         "xtrans",
         "libxcb-devel",
-        "fontconfig-devel",
         "proto",
         "libXdmcp",
         "libxcb",
         "libXau",
-        "fontconfig",
         "xtrans-devel",
         "libX11",
         "libX11-devel",
@@ -347,7 +340,8 @@ class constants(object):
     # list of spec files to skip for parsing for given arch
     skipSpecsForArch={
         "x86_64":[
-            "u-boot-rpi3.spec"
+            "u-boot-rpi3.spec",
+            "openjdk8_aarch64.spec"
             ],
         "aarch64":[
             # fakeroot-ng does not support aarch64
