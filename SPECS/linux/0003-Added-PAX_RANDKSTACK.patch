@@ -10,7 +10,7 @@ Subject: [PATCH 3/3] Added PAX_RANDKSTACK
  3 files changed, 51 insertions(+)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index be9df51..7f18cd3 100644
+index e7b0e7f..706c64c 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
 @@ -54,6 +54,16 @@ ENTRY(native_usergs_sysret64)
@@ -27,10 +27,10 @@ index be9df51..7f18cd3 100644
 +#endif
 +.endm
 +
- .macro TRACE_IRQS_FLAGS flags:req
+ .macro TRACE_IRQS_IRETQ
  #ifdef CONFIG_TRACE_IRQFLAGS
- 	bt	$9, \flags		/* interrupts off? */
-@@ -227,6 +237,8 @@ entry_SYSCALL_64_fastpath:
+ 	bt	$9, EFLAGS(%rsp)		/* interrupts off? */
+@@ -223,6 +233,8 @@ entry_SYSCALL_64_fastpath:
  	testl	$_TIF_ALLWORK_MASK, TASK_TI_flags(%r11)
  	jnz	1f
  
@@ -39,7 +39,7 @@ index be9df51..7f18cd3 100644
  	LOCKDEP_SYS_EXIT
  	TRACE_IRQS_ON		/* user mode is traced as IRQs on */
  	movq	RIP(%rsp), %rcx
-@@ -255,6 +267,8 @@ entry_SYSCALL64_slow_path:
+@@ -251,6 +263,8 @@ entry_SYSCALL64_slow_path:
  	call	do_syscall_64		/* returns with IRQs disabled */
  
  return_from_SYSCALL_64:
@@ -48,7 +48,7 @@ index be9df51..7f18cd3 100644
  	RESTORE_EXTRA_REGS
  	TRACE_IRQS_IRETQ		/* we're about to change IF */
  
-@@ -427,6 +441,7 @@ ENTRY(ret_from_fork)
+@@ -423,6 +437,7 @@ ENTRY(ret_from_fork)
  2:
  	movq	%rsp, %rdi
  	call	syscall_return_slowpath	/* returns with IRQs disabled */
@@ -56,7 +56,7 @@ index be9df51..7f18cd3 100644
  	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
  	SWAPGS
  	jmp	restore_regs_and_iret
-@@ -538,6 +553,7 @@ ret_from_intr:
+@@ -534,6 +549,7 @@ ret_from_intr:
  GLOBAL(retint_user)
  	mov	%rsp,%rdi
  	call	prepare_exit_to_usermode
