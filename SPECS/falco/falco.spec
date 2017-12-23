@@ -1,17 +1,17 @@
 %global security_hardening none
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.6.0
-Release:        3%{?kernelsubrelease}%{?dist}
+Version:        0.8.1
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    falco=04dc79c1c4773ba2080c2c49c718305e7920c2f7
-Source1:        https://github.com/draios/sysdig/archive/sysdig-0.15.1.tar.gz
-%define sha1    sysdig=5b1a7a4978315176412989b5400572d849691917
+%define sha1    falco=7873d34769656349678584502296b147aa5445fa
+Source1:        https://github.com/draios/sysdig/archive/sysdig-0.19.1.tar.gz
+%define sha1    sysdig=425ea9fab8e831274626a9c9e65f0dfb4f9bc019
 Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
 %define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
 BuildRequires:  cmake
@@ -50,12 +50,9 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
 tar xf %{SOURCE2} --no-same-owner
 
 %build
-mv sysdig-0.15.1 ../sysdig
+mv sysdig-0.19.1 ../sysdig
 sed -i 's|../falco/rules|rules|g' userspace/engine/CMakeLists.txt
 sed -i 's|../falco/userspace|userspace|g' userspace/engine/config_falco_engine.h.in
-# fix for linux-4.9
-sed -i 's|task_thread_info(current)->status|current->thread.status|g' ../sysdig/driver/main.c
-sed -i 's|task_thread_info(task)->status|current->thread.status|g' ../sysdig/driver/ppm_syscall.h
 cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} CMakeLists.txt
 make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
 
@@ -87,6 +84,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
 
 %changelog
+*   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1
+-   Version update to build against linux-4.14.y kernel
 *   Thu Aug 24 2017 Rui Gu <ruig@vmware.com> 0.6.0-3
 -   Disable check section (Bug 1900272).
 *   Thu May 11 2017 Chang Lee <changlee@vmware.com> 0.6.0-2
