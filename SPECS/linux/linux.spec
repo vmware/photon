@@ -1,56 +1,39 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.66
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:        4.14.8
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ecb5adfa84ab6f06f2cb07b56517883310710a0b
+%define sha1 linux=45f140e0eab08428d78d81d4169d531a3e65a297
 Source1:	config
 Source2:	initramfs.trigger
-%define ena_version 1.1.3
-Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
-%define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
+%define ena_version 1.5.0
+Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
+%define sha1 ena_linux=cbbbe8a3bbab6d01a4e38417cb0ead2f7cb8b2ee
 Source4:	config_aarch64
 # common
-Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
-Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
-Patch2:         x86-vmware-add-basic-paravirt-ops-support.patch
-Patch3:         x86-vmware-add-paravirt-sched-clock.patch
-Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
-Patch5:         double-tcp_mem-limits.patch
-Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch11:        net-9p-vsock.patch
-Patch12:        x86-vmware-sta.patch
+Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
+Patch1:         double-tcp_mem-limits.patch
+# TODO: disable this patch, check for regressions
+#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch5:         vsock-transport-for-9p.patch
+Patch6:         x86-vmware-STA-support.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-Patch14:        0005-Drivers-hv-utils-Fix-the-mapping-between-host-versio.patch
-Patch15:        0006-Drivers-hv-vss-Improve-log-messages.patch
-Patch16:        0007-Drivers-hv-vss-Operation-timeouts-should-match-host-.patch
-Patch17:        0008-Drivers-hv-vmbus-Use-all-supported-IC-versions-to-ne.patch
-Patch18:        0009-Drivers-hv-Log-the-negotiated-IC-versions.patch
-Patch19:        0010-vmbus-fix-missed-ring-events-on-boot.patch
-Patch20:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
-Patch21:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
-Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
+# TODO: Is CONFIG_HYPERV_VSOCKETS the same?
+#Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
-Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
-Patch25:        0002-allow-also-ecb-cipher_null.patch
+Patch24:        Allow-some-algo-tests-for-FIPS.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11472
-Patch27:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
-
-# RPi3 support
-Patch100:       mmc-bcm2835-Add-new-driver-for-the-sdhost-controller.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -130,31 +113,14 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %endif
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
 %patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch23 -p1
 %patch24 -p1
-%patch25 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
-%patch100 -p1
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -207,7 +173,6 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
-install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
@@ -303,7 +268,6 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
-/lib/firmware/*
 %defattr(0644,root,root)
 /lib/modules/%{uname_r}/*
 %exclude /lib/modules/%{uname_r}/build
@@ -353,6 +317,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Dec 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
+-   Version update
 *   Wed Dec 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-4
 -   KAT build support
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-3
