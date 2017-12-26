@@ -5,7 +5,7 @@
 Summary:        Query Language for JSON
 Name:           python-jmespath
 Version:        0.9.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -65,10 +65,13 @@ popd
 %{python2_sitelib}/*
 %{_bindir}/jp.py
 
+%files -n  python3-jmespath
 %defattr(-,root,root)
 %{python3_sitelib}/*
 %{_bindir}/jp.py-%{python3_version}
 
 %changelog
+*   Tue Dec 26 2017 Kumar Kaushik <kaushikk@vmware.com> 0.9.3-2
+-   Packaging python3 files.
 *   Mon Dec 18 2017 Kumar Kaushik <kaushikk@vmware.com> 0.9.3-1
 -   Initial packaging for photon.
