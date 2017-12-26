@@ -1,0 +1,11 @@
+--- a/rc.d/init.d/functions	2015-12-07 13:17:16.000000000 +0000
++++ b/rc.d/init.d/functions	2017-12-26 22:00:49.911765466 +0000
+@@ -59,7 +59,7 @@
+ 
+ if [ -z "${CONSOLETYPE:-}" ]; then
+   if [ -c "/dev/stderr" -a -r "/dev/stderr" ]; then
+-    CONSOLETYPE="$(/sbin/consoletype < /dev/stderr 2>/dev/null)"
++    CONSOLETYPE="$(/sbin/consoletype stdout < /dev/stderr 2>/dev/null)"
+   else
+     CONSOLETYPE="serial"
+   fi
