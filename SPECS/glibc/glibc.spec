@@ -1,26 +1,27 @@
 %global security_hardening nonow
 %define glibc_target_cpu %{_build}
 
-Summary:	Main C library
-Name:		glibc
-Version:	2.26
-Release:	7%{?dist}
-License:	LGPLv2+
-URL:		http://www.gnu.org/software/libc
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1 glibc=7cf7d521f5ebece5dd27cfb3ca5e5f6b84da4bfd
-Source1:	locale-gen.sh
-Source2:	locale-gen.conf
-Patch0:   	http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
-Patch1:		glibc-2.24-bindrsvport-blacklist.patch
-Patch2:		0001-Fix-range-check-in-do_tunable_update_val.patch
-Patch3:		0002-malloc-arena-fix.patch
-Patch4:     glibc-fix-CVE-2017-15670.patch
-Patch5:     glibc-fix-CVE-2017-15804.patch
-Provides:	rtld(GNU_HASH)
+Summary:        Main C library
+Name:           glibc
+Version:        2.26
+Release:        8%{?dist}
+License:        LGPLv2+
+URL:            http://www.gnu.org/software/libc
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
+%define sha1    glibc=7cf7d521f5ebece5dd27cfb3ca5e5f6b84da4bfd
+Source1:        locale-gen.sh
+Source2:        locale-gen.conf
+Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
+Patch1:         glibc-2.24-bindrsvport-blacklist.patch
+Patch2:         0001-Fix-range-check-in-do_tunable_update_val.patch
+Patch3:         0002-malloc-arena-fix.patch
+Patch4:         glibc-fix-CVE-2017-15670.patch
+Patch5:         glibc-fix-CVE-2017-15804.patch
+Patch6:         glibc-fix-CVE-2017-17426.patch
+Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
 This library provides the basic routines for allocating memory,
@@ -110,55 +111,55 @@ chmod +x find_requires.sh
 %build
 cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
-	--prefix=%{_prefix} \
-	--disable-profile \
-	--enable-kernel=2.6.32 \
-	--enable-obsolete-rpc \
-	--enable-obsolete-nsl \
-	--enable-bind-now \
-	--disable-experimental-malloc \
-	--disable-silent-rules
+        --prefix=%{_prefix} \
+        --disable-profile \
+        --enable-kernel=2.6.32 \
+        --enable-obsolete-rpc \
+        --enable-obsolete-nsl \
+        --enable-bind-now \
+        --disable-experimental-malloc \
+        --disable-silent-rules
 
 # Sometimes we have false "out of memory" make error
 # just rerun/continue make to workaroung it.
 make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
 
 %install
-#	Do not remove static libs
+#       Do not remove static libs
 pushd %{_builddir}/glibc-build
-#	Create directories
+#       Create directories
 make install_root=%{buildroot} install
 install -vdm 755 %{buildroot}%{_sysconfdir}/ld.so.conf.d
 install -vdm 755 %{buildroot}/var/cache/nscd
 install -vdm 755 %{buildroot}%{_libdir}/locale
 cp -v ../%{name}-%{version}/nscd/nscd.conf %{buildroot}%{_sysconfdir}/nscd.conf
-#	Install locale generation script and config file
+#       Install locale generation script and config file
 cp -v %{SOURCE2} %{buildroot}%{_sysconfdir}
 cp -v %{SOURCE1} %{buildroot}/sbin
-#	Remove unwanted cruft
+#       Remove unwanted cruft
 rm -rf %{buildroot}%{_infodir}
-#	Install configuration files
+#       Install configuration files
 cat > %{buildroot}%{_sysconfdir}/nsswitch.conf <<- "EOF"
-#	Begin /etc/nsswitch.conf
+#       Begin /etc/nsswitch.conf
 
-	passwd: files
-	group: files
-	shadow: files
+        passwd: files
+        group: files
+        shadow: files
 
-	hosts: files dns
-	networks: files
+        hosts: files dns
+        networks: files
 
-	protocols: files
-	services: files
-	ethers: files
-	rpc: files
-#	End /etc/nsswitch.conf
+        protocols: files
+        services: files
+        ethers: files
+        rpc: files
+#       End /etc/nsswitch.conf
 EOF
 cat > %{buildroot}%{_sysconfdir}/ld.so.conf <<- "EOF"
-#	Begin /etc/ld.so.conf
-	/usr/local/lib
-	/opt/lib
-	include /etc/ld.so.conf.d/*.conf
+#       Begin /etc/ld.so.conf
+        /usr/local/lib
+        /opt/lib
+        include /etc/ld.so.conf.d/*.conf
 EOF
 popd
 %find_lang %{name} --all-name
@@ -283,6 +284,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 2.26-8
+-   Fix CVE-2017-17426
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-7
 -   Aarch64 support
 *   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 2.26-6
