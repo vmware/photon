@@ -1,12 +1,15 @@
 Summary:        Fast incremental file transfer. 
 Name:           rsync
 Version:        3.1.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org/
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
 %define sha1    rsync=0d4c7fb7fe3fc80eeff922a7c1d81df11dbb8a1a
 Patch0:         rsync-CVE-2017-16548.patch
+Patch1:         rsync-CVE-2017-17433.patch
+Patch2:         rsync-CVE-2017-17434-1.patch
+Patch3:         rsync-CVE-2017-17434-2.patch
 Group:          Appication/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,6 +20,9 @@ Rsync is a fast and extraordinarily versatile file copying tool. It can copy loc
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 %build
 %configure --prefix=/usr
 make %{?_smp_mflags}
@@ -56,6 +62,8 @@ make %{?_smp_mflags} check
 %{_libdir}/systemd/system/rsyncd.service
 %{_sysconfdir}/rsyncd.conf
 %changelog
+*   Wed Dec 27 2017 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-5
+-   Fix CVE-2017-17433, CVE-2017-17434
 *   Wed Nov 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-4
 -   Fix CVE-2017-16548
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 3.1.2-3
