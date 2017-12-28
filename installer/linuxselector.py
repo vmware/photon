@@ -41,4 +41,3 @@ class LinuxSelector(object):
         self.window.addstr(1, 0, 'Photon OS on a VMware hypervisor.')
         self.window.addstr(2, 0, 'Which type of Linux kernel would you like to install?')
         return self.window.do_action()
-

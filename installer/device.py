@@ -14,12 +14,16 @@ class Device(object):
 
     @staticmethod
     def refresh_devices():
-        devices_list = subprocess.check_output(['lsblk', '-d', '-I', '8,259', '-n', '--output', 'NAME,SIZE,MODEL'], stderr=open(os.devnull, 'w'))
+        devices_list = subprocess.check_output(['lsblk', '-d', '-I', '8,259', '-n',
+                                                '--output', 'NAME,SIZE,MODEL'],
+                                               stderr=open(os.devnull, 'w'))
         return Device.wrap_devices_from_list(devices_list)
 
     @staticmethod
     def refresh_devices_bytes():
-        devices_list = subprocess.check_output(['lsblk', '-d', '--bytes', '-I', '8,259', '-n', '--output', 'NAME,SIZE,MODEL'], stderr=open(os.devnull, 'w'))
+        devices_list = subprocess.check_output(['lsblk', '-d', '--bytes', '-I',
+                                                '8,259', '-n', '--output', 'NAME,SIZE,MODEL'],
+                                               stderr=open(os.devnull, 'w'))
         return Device.wrap_devices_from_list(devices_list)
 
     @staticmethod
@@ -30,15 +34,15 @@ class Device(object):
             cols = deviceline.split(None, 2)
             #skip Virtual NVDIMM from install list
             colstr = cols[0].decode()
-            if(colstr.startswith("pmem")):
+            if colstr.startswith("pmem"):
                 continue
             model = "Unknown"
-            if(len(cols) >= 3):
+            if len(cols) >= 3:
                 model = cols[2].decode()
             devices.append(
-                    Device(model #Model
-                        , '/dev/' + cols[0].decode() #Path
-                        , cols[1].decode() #size
-                        ))
+                Device(model #Model
+                       , '/dev/' + cols[0].decode() #Path
+                       , cols[1].decode() #size
+                      ))
 
         return devices
