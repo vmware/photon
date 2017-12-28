@@ -20,7 +20,8 @@ def reportMissing(pkg,specDepList, repoDepList, excludeList):
     missingList = [];
     if None != repoDepList:
         for repoItem in repoDepList:
-            if repoItem not in excludeList and (None == specDepList or repoItem  not in specDepList):
+            if (repoItem not in excludeList and
+                (specDepList is None or repoItem not in specDepList)):
                 missingList.append(repoItem)
     if missingList:
         if len(pkg) <= 7:

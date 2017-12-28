@@ -3,34 +3,34 @@ import ThreadPool
 from constants import constants
 from Logger import Logger
 import threading
-from Queue import PriorityQueue
+from queue import PriorityQueue
 from SpecData import SPECS
 
 class Scheduler(object):
-    
-    lock=threading.Lock()
-    listOfAlreadyBuiltPackages=[]
-    listOfPackagesToBuild=[]
-    listOfPackagesCurrentlyBuilding=[]
-    sortedList=[]
-    listOfPackagesNextToBuild=PriorityQueue()
-    listOfFailedPackages=[]
+
+    lock = threading.Lock()
+    listOfAlreadyBuiltPackages = []
+    listOfPackagesToBuild = []
+    listOfPackagesCurrentlyBuilding = []
+    sortedList = []
+    listOfPackagesNextToBuild = PriorityQueue()
+    listOfFailedPackages = []
     alldependencyGraph = {}
     dependencyGraph = {}
     priorityMap = {}
-    pkgWeights={}
-    isPriorityScheduler=1
-    logger=None
-    event=None
-    stopScheduling=False
-    
+    pkgWeights = {}
+    isPriorityScheduler = 1
+    logger = None
+    event = None
+    stopScheduling = False
+
     @staticmethod
     def setEvent(event):
-        Scheduler.event=event
-    
+        Scheduler.event = event
+
     @staticmethod
-    def setLog(logName,logPath):
-        Scheduler.logger = Logger.getLogger(logName, logPath)    
+    def setLog(logName, logPath):
+        Scheduler.logger = Logger.getLogger(logName, logPath)
 
     @staticmethod
     def getBuildRequiredPackages(package):
@@ -46,17 +46,16 @@ class Scheduler(object):
 
         return listRequiredPackages
 
-
     @staticmethod
     def getDependencies(package, parentPackage, k):
 
-        for node in Scheduler.alldependencyGraph[package].keys():
-                Scheduler.getDependencies(node, package, k)
+        for node in list(Scheduler.alldependencyGraph[package].keys()):
+            Scheduler.getDependencies(node, package, k)
 
         if parentPackage == None:
             return
         else:
-            for node in Scheduler.alldependencyGraph[package].keys():
+            for node in list(Scheduler.alldependencyGraph[package].keys()):
                 try:
                     Scheduler.alldependencyGraph[parentPackage][node] = max(
                         Scheduler.alldependencyGraph[parentPackage][node],
@@ -69,9 +68,9 @@ class Scheduler(object):
     def makeGraph():
         k = 3
         for package in Scheduler.sortedList:
-            for child_pkg in Scheduler.dependencyGraph[package].keys():
+            for child_pkg in list(Scheduler.dependencyGraph[package].keys()):
                 Scheduler.getDependencies(child_pkg, package, k)
-                for node in Scheduler.alldependencyGraph[child_pkg].keys():
+                for node in list(Scheduler.alldependencyGraph[child_pkg].keys()):
                     try:
                         Scheduler.dependencyGraph[package][node] = max(
                             Scheduler.dependencyGraph[package][node],
@@ -79,22 +78,21 @@ class Scheduler(object):
                     except KeyError:
                         Scheduler.dependencyGraph[package][node] = \
                             Scheduler.alldependencyGraph[child_pkg][node] * k
-	if constants.publishBuildDependencies:
-	    dependencyLists = {}
-	    for package in Scheduler.dependencyGraph.keys():
-		dependencyLists[package] = []
-		for dependency in Scheduler.dependencyGraph[package].keys():
-			dependencyLists[package].append(dependency)
-	    graphfile = open(str(constants.logPath) + "/BuildDependencies.json", 'w')
-	    graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
-	    graphfile.close()
+        if constants.publishBuildDependencies:
+            dependencyLists = {}
+            for package in list(Scheduler.dependencyGraph.keys()):
+                dependencyLists[package] = []
+                for dependency in list(Scheduler.dependencyGraph[package].keys()):
+                    dependencyLists[package].append(dependency)
+            graphfile = open(str(constants.logPath) + "/BuildDependencies.json", 'w')
+            graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
+            graphfile.close()
 
     @staticmethod
     def parseWeights():
-	Scheduler.pkgWeights.clear()
-	weightFile = open(constants.packageWeightsPath, 'r')
-	Scheduler.pkgWeights = json.load(weightFile)
-	weightFile.close()
+        Scheduler.pkgWeights.clear()
+        with open(constants.packageWeightsPath, 'r') as weightFile:
+            Scheduler.pkgWeights = json.load(weightFile)
 
     @staticmethod
     def getWeight(package):
@@ -103,15 +101,13 @@ class Scheduler(object):
         except KeyError:
             return 0
 
-
-
     @staticmethod
     def setPriorities():
-	if constants.packageWeightsPath == None:
+        if constants.packageWeightsPath == None:
             Scheduler.logger.info("Priority Scheduler disabled")
             Scheduler.isPriorityScheduler = 0
-	else:
-	    Scheduler.parseWeights()
+        else:
+            Scheduler.parseWeights()
 
         for package in Scheduler.sortedList:
             Scheduler.dependencyGraph[package] = {}
@@ -135,47 +131,48 @@ class Scheduler(object):
 
 
     @staticmethod
-    def setParams(sortedList,listOfAlreadyBuiltPackages):
-        Scheduler.sortedList=sortedList
-        Scheduler.listOfAlreadyBuiltPackages=listOfAlreadyBuiltPackages
+    def setParams(sortedList, listOfAlreadyBuiltPackages):
+        Scheduler.sortedList = sortedList
+        Scheduler.listOfAlreadyBuiltPackages = listOfAlreadyBuiltPackages
         for x in Scheduler.sortedList:
             if x not in Scheduler.listOfAlreadyBuiltPackages or x in constants.testForceRPMS:
                 Scheduler.listOfPackagesToBuild.append(x)
-        Scheduler.listOfPackagesCurrentlyBuilding=[]
-        Scheduler.listOfPackagesNextToBuild=[]
-        Scheduler.listOfFailedPackages=[]
+        Scheduler.listOfPackagesCurrentlyBuilding = []
+        Scheduler.listOfPackagesNextToBuild = []
+        Scheduler.listOfFailedPackages = []
         Scheduler.setPriorities()
-        
+
     @staticmethod
     def getRequiredPackages(package):
-        listRequiredRPMPackages=[]
+        listRequiredRPMPackages = []
         listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
         listRequiredRPMPackages.extend(SPECS.getData().getRequiresAllForPackage(package))
-        
-        listRequiredPackages=[]
+
+        listRequiredPackages = []
 
         for pkg in listRequiredRPMPackages:
-            basePkg=SPECS.getData().getSpecName(pkg)
+            basePkg = SPECS.getData().getSpecName(pkg)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
-        
+
         return listRequiredPackages
-    
+
     @staticmethod
     def __getListNextPackagesReadyToBuild():
-        listOfPackagesNextToBuild=PriorityQueue()
+        listOfPackagesNextToBuild = PriorityQueue()
         Scheduler.logger.info("Checking for next possible packages to build")
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
                 continue
-            listRequiredPackages=Scheduler.getRequiredPackages(pkg)
-            canBuild=True
+            listRequiredPackages = Scheduler.getRequiredPackages(pkg)
+            canBuild = True
             Scheduler.logger.info("Required packages for "+ pkg + " are:")
             Scheduler.logger.info(listRequiredPackages)
             for reqPkg in listRequiredPackages:
                 if reqPkg not in Scheduler.listOfAlreadyBuiltPackages:
-                    canBuild=False
-                    Scheduler.logger.info(reqPkg+" is not available. So we cannot build "+ pkg +" at this moment.")
+                    canBuild = False
+                    Scheduler.logger.info(reqPkg + " is not available. So we cannot build " +
+                                          pkg +" at this moment.")
                     break
             if canBuild:
                 listOfPackagesNextToBuild.put((-Scheduler.priorityMap[pkg], pkg))
@@ -210,15 +207,15 @@ class Scheduler(object):
             Scheduler.lock.release()
             return None
 
-        packageTup=Scheduler.listOfPackagesNextToBuild.get()
+        packageTup = Scheduler.listOfPackagesNextToBuild.get()
 
         if packageTup[0] == 0 and Scheduler.isPriorityScheduler == 1:
             listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
             Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
-	    if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
-            	Scheduler.logger.info("Released scheduler lock")
-            	Scheduler.lock.release()
-            	return None
+            if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
+                Scheduler.logger.info("Released scheduler lock")
+                Scheduler.lock.release()
+                return None
             packageTup = Scheduler.listOfPackagesNextToBuild.get()
 
         package = packageTup[1]
@@ -230,31 +227,29 @@ class Scheduler(object):
         Scheduler.listOfPackagesCurrentlyBuilding.append(package)
         Scheduler.listOfPackagesToBuild.remove(package)
         return package
-    
+
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildCompleted(package):
         if package in Scheduler.listOfPackagesCurrentlyBuilding:
             Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
             Scheduler.listOfAlreadyBuiltPackages.append(package)
-    
-        
+
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildFailed(package):
         if package in Scheduler.listOfPackagesCurrentlyBuilding:
             Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
             Scheduler.listOfFailedPackages.append(package)
-                
+
     @staticmethod
     def isAllPackagesBuilt():
-        if len(Scheduler.listOfPackagesToBuild) == 0 :
+        if len(Scheduler.listOfPackagesToBuild) == 0:
             return True
         return False
-    
+
     @staticmethod
     def isAnyPackagesFailedToBuild():
         if len(Scheduler.listOfFailedPackages) != 0:
             return True
         return False
-

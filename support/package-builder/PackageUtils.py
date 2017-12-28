@@ -13,15 +13,17 @@ from SpecData import SPECS
 
 class PackageUtils(object):
 
-    def __init__(self,logName=None,logPath=None):
+    def __init__(self, logName=None, logPath=None):
         if logName is None:
             self.logName = "PackageUtils"
         if logPath is None:
             logPath = constants.logPath
-        self.logName=logName
-        self.logPath=logPath
-        self.logger=Logger.getLogger(logName,logPath)
-        self.runInChrootCommand="./run-in-chroot.sh " + constants.sourcePath + " " + constants.rpmPath;
+        self.logName = logName
+        self.logPath = logPath
+        self.logger = Logger.getLogger(logName, logPath)
+        self.runInChrootCommand = ("./run-in-chroot.sh " +
+                                   constants.sourcePath + " " +
+                                   constants.rpmPath)
         self.rpmBinary = "rpm"
         self.installRPMPackageOptions = "-Uvh"
         self.nodepsRPMPackageOptions = "--nodeps"
@@ -29,55 +31,55 @@ class PackageUtils(object):
         self.rpmbuildBinary = "rpmbuild"
         self.rpmbuildBuildallOption = "-ba --clean"
         self.rpmbuildNocheckOption = "--nocheck"
-        self.rpmbuildCheckOption ="-bi --clean"
+        self.rpmbuildCheckOption = "-bi --clean"
         self.queryRpmPackageOptions = "-qa"
         self.forceRpmPackageOptions = "--force"
         self.replaceRpmPackageOptions = "--replacepkgs"
-        self.adjustGCCSpecScript="adjust-gcc-specs.sh"
-        self.rpmFilesToInstallInAOneShot=""
-        self.packagesToInstallInAOneShot=""
-        self.noDepsRPMFilesToInstallInAOneShot=""
-        self.noDepsPackagesToInstallInAOneShot=""
-        self.rpmFilesToReInstallInAOneShot=""
-        self.noDepsRPMFilesToReInstallInAOneShot=""
+        self.adjustGCCSpecScript = "adjust-gcc-specs.sh"
+        self.rpmFilesToInstallInAOneShot = ""
+        self.packagesToInstallInAOneShot = ""
+        self.noDepsRPMFilesToInstallInAOneShot = ""
+        self.noDepsPackagesToInstallInAOneShot = ""
+        self.rpmFilesToReInstallInAOneShot = ""
+        self.noDepsRPMFilesToReInstallInAOneShot = ""
 
-    def getRPMArch(self,rpmName):
-        arch=""
-        if rpmName.find("x86_64") != -1:
-            arch="x86_64"
-        elif rpmName.find("aarch64") != -1:
-            arch="aarch64"
-        elif rpmName.find("noarch") != -1:
-            arch="noarch"
+    def getRPMArch(self, rpmName):
+        arch = ""
+        if "x86_64" in rpmName:
+            arch = "x86_64"
+        elif "aarch64" in rpmName:
+            arch = "aarch64"
+        elif "noarch" in rpmName:
+            arch = "noarch"
         return arch
 
-    def getRPMDestDir(self,rpmName,rpmDir):
+    def getRPMDestDir(self, rpmName, rpmDir):
         arch = self.getRPMArch(rpmName)
-        rpmDestDir=rpmDir+"/"+arch
+        rpmDestDir = rpmDir + "/" + arch
         return rpmDestDir
 
-    def copyRPM(self,rpmFile,destDir):
+    def copyRPM(self, rpmFile, destDir):
         cmdUtils = CommandUtils()
-        rpmName=os.path.basename(rpmFile)
-        rpmDestDir=self.getRPMDestDir(rpmName,destDir)
-        rpmDestPath=rpmDestDir+"/"+rpmName
-        if os.geteuid()==0:
+        rpmName = os.path.basename(rpmFile)
+        rpmDestDir = self.getRPMDestDir(rpmName, destDir)
+        rpmDestPath = rpmDestDir + "/" + rpmName
+        if os.geteuid() == 0:
             if not os.path.isdir(rpmDestDir):
-                cmdUtils.runCommandInShell("mkdir -p "+rpmDestDir)
-            shutil.copyfile(rpmFile,  rpmDestPath)
+                cmdUtils.runCommandInShell("mkdir -p " + rpmDestDir)
+            shutil.copyfile(rpmFile, rpmDestPath)
         return rpmDestPath
 
-    def installRPM(self,package,chrootID,noDeps=False,destLogPath=None):
+    def installRPM(self, package, chrootID, noDeps=False, destLogPath=None):
 #        self.logger.info("Installing rpm for package:"+package)
 #        self.logger.debug("No deps:"+str(noDeps))
 
-        rpmfile=self.findRPMFileForGivenPackage(package)
+        rpmfile = self.findRPMFileForGivenPackage(package)
         if rpmfile is None:
-            self.logger.error("No rpm file found for package:"+package)
-            raise Exception("Missing rpm file: "+package)
+            self.logger.error("No rpm file found for package:" + package)
+            raise Exception("Missing rpm file: " + package)
 
-        rpmDestFile = self.copyRPM(rpmfile, chrootID+constants.topDirPath+"/RPMS")
-        rpmFile=rpmDestFile.replace(chrootID,"")
+        rpmDestFile = self.copyRPM(rpmfile, chrootID + constants.topDirPath + "/RPMS")
+        rpmFile = rpmDestFile.replace(chrootID, "")
         if noDeps:
             self.noDepsRPMFilesToInstallInAOneShot += " " + rpmFile
             self.noDepsPackagesToInstallInAOneShot += " " + package
@@ -85,23 +87,26 @@ class PackageUtils(object):
             self.rpmFilesToInstallInAOneShot += " " + rpmFile
             self.packagesToInstallInAOneShot += " " + package
 
-    def installRPMSInAOneShot(self,chrootID,destLogPath):
-        chrootCmd=self.runInChrootCommand+" "+chrootID
-        rpmInstallcmd=self.rpmBinary+" "+ self.installRPMPackageOptions
+    def installRPMSInAOneShot(self, chrootID, destLogPath):
+        chrootCmd = self.runInChrootCommand + " " + chrootID
+        rpmInstallcmd = self.rpmBinary + " " + self.installRPMPackageOptions
         cmdUtils = CommandUtils()
         if self.noDepsRPMFilesToInstallInAOneShot != "":
-            self.logger.info("Installing nodeps rpms: " + self.noDepsPackagesToInstallInAOneShot)
-            logFile=destLogPath+"/install_rpms_nodeps.log"
-            cmd = rpmInstallcmd+" "+self.nodepsRPMPackageOptions + " " + self.noDepsRPMFilesToInstallInAOneShot
+            self.logger.info("Installing nodeps rpms: " +
+                             self.noDepsPackagesToInstallInAOneShot)
+            logFile = destLogPath + "/install_rpms_nodeps.log"
+            cmd = (rpmInstallcmd + " " + self.nodepsRPMPackageOptions +
+                   " " + self.noDepsRPMFilesToInstallInAOneShot)
             returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
             if not returnVal:
                 self.logger.debug("Command Executed:" + cmd)
                 self.logger.error("Unable to install rpms")
                 raise Exception("RPM installation failed")
         if self.rpmFilesToInstallInAOneShot != "":
-            self.logger.info("Installing rpms: " + self.packagesToInstallInAOneShot)
-            logFile=destLogPath+"/install_rpms.log"
-            cmd=rpmInstallcmd+" "+self.rpmFilesToInstallInAOneShot
+            self.logger.info("Installing rpms: " +
+                             self.packagesToInstallInAOneShot)
+            logFile = destLogPath+"/install_rpms.log"
+            cmd = rpmInstallcmd + " " + self.rpmFilesToInstallInAOneShot
             returnVal = cmdUtils.runCommandInShell(cmd, logFile, chrootCmd)
             if not returnVal:
                 self.logger.debug("Command Executed:" + cmd)
@@ -113,34 +118,40 @@ class PackageUtils(object):
         # Fetch/verify sources if sha1 not None.
         sha1 = SPECS.getData().getSHA1(package, source)
         if sha1 is not None:
-            PullSources.get(source, sha1, constants.sourcePath, constants.pullsourcesConfig, self.logger)
+            PullSources.get(source, sha1, constants.sourcePath,
+                            constants.pullsourcesConfig, self.logger)
 
-        sourcePath = cmdUtils.findFile(source,constants.sourcePath)
+        sourcePath = cmdUtils.findFile(source, constants.sourcePath)
         if sourcePath is None or len(sourcePath) == 0:
-            sourcePath = cmdUtils.findFile(source,constants.specPath)
+            sourcePath = cmdUtils.findFile(source, constants.specPath)
             if sourcePath is None or len(sourcePath) == 0:
                 if sha1 is None:
-                    self.logger.error("No sha1 found or missing source for "+source)
-                    raise Exception("No sha1 found or missing source for "+source)
+                    self.logger.error("No sha1 found or missing source for " +
+                                      source)
+                    raise Exception("No sha1 found or missing source for " + source)
                 else:
-                    self.logger.error("Missing source: "+source+". Cannot find sources for package: "+package)
+                    self.logger.error("Missing source: " + source +
+                                      ". Cannot find sources for package: " + package)
                     raise Exception("Missing source")
         else:
             if sha1 is None:
-                self.logger.error("No sha1 found for "+source)
+                self.logger.error("No sha1 found for " + source)
                 raise Exception("No sha1 found")
         if len(sourcePath) > 1:
-            self.logger.error("Multiple sources found for source:"+source+"\n"+ ",".join(sourcePath) +"\nUnable to determine one.")
+            self.logger.error("Multiple sources found for source:" +
+                              source + "\n"+ ",".join(sourcePath) +
+                              "\nUnable to determine one.")
             raise Exception("Multiple sources found")
         return sourcePath
 
-    def copySourcesTobuildroot(self,listSourceFiles,package,destDir):
+    def copySourcesTobuildroot(self, listSourceFiles, package, destDir):
         for source in listSourceFiles:
             sourcePath = self.verifyShaAndGetSourcePath(source, package)
-            self.logger.info("Copying... Source path :" + source + " Source filename: " + sourcePath[0])
+            self.logger.info("Copying... Source path :" +
+                             source + " Source filename: " + sourcePath[0])
             shutil.copy2(sourcePath[0], destDir)
 
-    def copyAdditionalBuildFiles(self,listAdditionalFiles,chrootID):
+    def copyAdditionalBuildFiles(self, listAdditionalFiles, chrootID):
         cmdUtils = CommandUtils()
         for additionalFile in listAdditionalFiles:
             source = additionalFile["src"].encode('utf-8')
@@ -169,80 +180,95 @@ class PackageUtils(object):
                     macros.append(str(macro.encode('utf-8')))
         return listAdditionalFiles, macros
 
-    def buildRPMSForGivenPackage(self,package,chrootID,listBuildOptionPackages,pkgBuildOptionFile,destLogPath=None):
-        self.logger.info("Building rpm's for package:"+package)
+    def buildRPMSForGivenPackage(self, package, chrootID,
+                                 listBuildOptionPackages, pkgBuildOptionFile,
+                                 destLogPath=None):
+
+        self.logger.info("Building rpm's for package:" + package)
 
         listSourcesFiles = SPECS.getData().getSources(package)
-        listPatchFiles =  SPECS.getData().getPatches(package)
+        listPatchFiles = SPECS.getData().getPatches(package)
         specFile = SPECS.getData().getSpecFile(package)
         specName = SPECS.getData().getSpecName(package) + ".spec"
 
-        chrootSourcePath=chrootID+constants.topDirPath+"/SOURCES/"
-        chrootSpecPath=constants.topDirPath+"/SPECS/"
-        chrootLogsFilePath=chrootID+constants.topDirPath+"/LOGS/"+package+".log"
-        chrootCmd=self.runInChrootCommand+" "+chrootID
-        shutil.copyfile(specFile, chrootID+chrootSpecPath+specName )
+        chrootSourcePath = chrootID + constants.topDirPath + "/SOURCES/"
+        chrootSpecPath = constants.topDirPath + "/SPECS/"
+        chrootLogsFilePath = chrootID + constants.topDirPath + "/LOGS/" + package + ".log"
+        chrootCmd = self.runInChrootCommand + " " + chrootID
+        shutil.copyfile(specFile, chrootID + chrootSpecPath + specName)
 
 # FIXME: some sources are located in SPECS/.. how to mount?
 #        if os.geteuid()==0:
-        self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
-        self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
+        self.copySourcesTobuildroot(listSourcesFiles, package, chrootSourcePath)
+        self.copySourcesTobuildroot(listPatchFiles, package, chrootSourcePath)
 
         macros = []
         if package in listBuildOptionPackages:
-            listAdditionalFiles, macros = self.getAdditionalBuildFiles(package, pkgBuildOptionFile)
-            self.copyAdditionalBuildFiles(listAdditionalFiles,chrootID)
+            listAdditionalFiles, macros = self.getAdditionalBuildFiles(package,
+                                                                       pkgBuildOptionFile)
+            self.copyAdditionalBuildFiles(listAdditionalFiles, chrootID)
 
         #Adding rpm macros
         listRPMMacros = constants.userDefinedMacros
         for macroName in listRPMMacros.keys():
-            macros.append(macroName+" "+listRPMMacros[macroName])
+            macros.append(macroName + " " + listRPMMacros[macroName])
 
-        listRPMFiles=[]
-        listSRPMFiles=[]
+        listRPMFiles = []
+        listSRPMFiles = []
         try:
-            listRPMFiles,listSRPMFiles = self.buildRPM(chrootSpecPath +specName,chrootLogsFilePath,chrootCmd,package,macros)
-            self.logger.info("Successfully built rpm:"+package)
+            listRPMFiles, listSRPMFiles = self.buildRPM(
+                chrootSpecPath +
+                specName, chrootLogsFilePath, chrootCmd, package, macros)
+            self.logger.info("Successfully built rpm:"  +package)
         except Exception as e:
-            self.logger.error("Failed while building rpm:"+package)
+            self.logger.error("Failed while building rpm:" + package)
             raise e
         finally:
             if destLogPath is not None:
-                if constants.rpmCheck and package in constants.testForceRPMS and SPECS.getData().isCheckAvailable(package):
-                    cmd="sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' "+ chrootLogsFilePath
+                if (constants.rpmCheck and
+                        package in constants.testForceRPMS and
+                        SPECS.getData().isCheckAvailable(package)):
+
+                    cmd = ("sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' " +
+                           chrootLogsFilePath)
                     logFile = destLogPath+"/adjustTestFile.log"
                     returnVal = CommandUtils().runCommandInShell(cmd, logFile)
-                    testLogFile = destLogPath+"/"+package+"-test.log"
+                    testLogFile = destLogPath + "/" + package + "-test.log"
                     shutil.copyfile(chrootLogsFilePath, testLogFile)
                 else:
                     shutil.copy2(chrootLogsFilePath, destLogPath)
         self.logger.info("RPM build is successful")
 
         for rpmFile in listRPMFiles:
-            self.copyRPM(chrootID+"/"+rpmFile, constants.rpmPath)
+            self.copyRPM(chrootID + "/" + rpmFile, constants.rpmPath)
 
         for srpmFile in listSRPMFiles:
-            srpmDestFile = self.copyRPM(chrootID+"/"+srpmFile, constants.sourceRpmPath)
+            srpmDestFile = self.copyRPM(chrootID + "/" + srpmFile,
+                                        constants.sourceRpmPath)
 
-    def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
+    def buildRPM(self, specFile, logFile, chrootCmd, package, macros):
 
-        rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption
+        rpmBuildcmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption
 
         if constants.rpmCheck and package in constants.testForceRPMS:
-            self.logger.info("#"*(68+2*len(package)))
+            self.logger.info("#" * (68 + 2 * len(package)))
             if not SPECS.getData().isCheckAvailable(package):
-                self.logger.info("####### "+package+" MakeCheck is not available. Skipping MakeCheck TEST for "+package+ " #######")
-                rpmBuildcmd=self.rpmbuildBinary+" --clean"
+                self.logger.info("####### " + package +
+                                 " MakeCheck is not available. Skipping MakeCheck TEST for "+
+                                 package+ " #######")
+                rpmBuildcmd = self.rpmbuildBinary + " --clean"
             else:
-                self.logger.info("####### "+package+" MakeCheck is available. Running MakeCheck TEST for "+package+ " #######")
-                rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildCheckOption
-            self.logger.info("#"*(68+2*len(package)))
+                self.logger.info("####### " + package +
+                                 " MakeCheck is available. Running MakeCheck TEST for " +
+                                 package+ " #######")
+                rpmBuildcmd = self.rpmbuildBinary + " " + self.rpmbuildCheckOption
+            self.logger.info("#" *(68 + 2 * len(package)))
         else:
-           rpmBuildcmd+=" "+self.rpmbuildNocheckOption
+            rpmBuildcmd += " " + self.rpmbuildNocheckOption
 
         for macro in macros:
-            rpmBuildcmd+=' --define \\\"%s\\\"' % macro
-        rpmBuildcmd+=" "+specFile
+            rpmBuildcmd += ' --define \\\"%s\\\"' % macro
+        rpmBuildcmd += " " + specFile
 
         cmdUtils = CommandUtils()
         self.logger.info("Building rpm....")
@@ -250,99 +276,117 @@ class PackageUtils(object):
         returnVal = cmdUtils.runCommandInShell(rpmBuildcmd, logFile, chrootCmd)
         if constants.rpmCheck and package in constants.testForceRPMS:
             if not SPECS.getData().isCheckAvailable(package):
-                constants.testLogger.info(package+" : N/A")
+                constants.testLogger.info(package + " : N/A")
             elif returnVal:
-                constants.testLogger.info(package+" : PASS")
+                constants.testLogger.info(package + " : PASS")
             else:
-                constants.testLogger.error(package+" : FAIL" )
+                constants.testLogger.error(package + " : FAIL")
 
         if constants.rpmCheck:
             if not returnVal and constants.rpmCheckStopOnError:
-                self.logger.error("Checking rpm is failed "+specFile)
+                self.logger.error("Checking rpm is failed " + specFile)
                 raise Exception("RPM check failed")
         else:
             if not returnVal:
-                self.logger.error("Building rpm is failed "+specFile)
+                self.logger.error("Building rpm is failed " + specFile)
                 raise Exception("RPM build failed")
 
         #Extracting rpms created from log file
-        logfile=open(logFile,'r')
-        fileContents=logfile.readlines()
+        logfile = open(logFile, 'r')
+        fileContents = logfile.readlines()
         logfile.close()
-        listRPMFiles=[]
-        listSRPMFiles=[]
-        for i in range(0,len(fileContents)):
-            if re.search("^Wrote:",fileContents[i]):
-                listcontents=fileContents[i].split()
-                if (len(listcontents) == 2) and listcontents[1].strip()[-4:] == ".rpm" and listcontents[1].find("/RPMS/") != -1:
+        listRPMFiles = []
+        listSRPMFiles = []
+        for i in range(0, len(fileContents)):
+            if re.search("^Wrote:", fileContents[i]):
+                listcontents = fileContents[i].split()
+                if (len(listcontents) == 2 and
+                        listcontents[1].strip().endswith(".rpm") and
+                        listcontents[1].find("/RPMS/") != -1):
                     listRPMFiles.append(listcontents[1])
-                if (len(listcontents) == 2) and listcontents[1].strip()[-8:] == ".src.rpm" and listcontents[1].find("/SRPMS/") != -1:
+                if (len(listcontents) == 2 and
+                        listcontents[1].strip().endswith(".src.rpm") and
+                        listcontents[1].find("/SRPMS/") != -1):
                     listSRPMFiles.append(listcontents[1])
-        return listRPMFiles,listSRPMFiles
+        return listRPMFiles, listSRPMFiles
 
-    def findRPMFileForGivenPackage(self,package):
+    def findRPMFileForGivenPackage(self, package):
         cmdUtils = CommandUtils()
         version = SPECS.getData().getVersion(package)
         release = SPECS.getData().getRelease(package)
-        listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+"."+platform.machine()+".rpm",constants.rpmPath),
-                            cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
+        listFoundRPMFiles = sum([cmdUtils.findFile(package + "-" + version + "-" +
+                                                   release + "." + platform.machine() +
+                                                   ".rpm", constants.rpmPath),
+                                 cmdUtils.findFile(package + "-" + version + "-" +
+                                                   release + ".noarch.rpm",
+                                                   constants.rpmPath)],
+                                [])
         if constants.inputRPMSPath is not None:
-            listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+"."+platform.machine()+".rpm",constants.inputRPMSPath),
-                            cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.inputRPMSPath)], listFoundRPMFiles)
-        if len(listFoundRPMFiles) == 1 :
+            listFoundRPMFiles = sum([cmdUtils.findFile(package + "-" + version +
+                                                       "-" + release + "." +
+                                                       platform.machine() + ".rpm",
+                                                       constants.inputRPMSPath),
+                                     cmdUtils.findFile(package + "-" + version + "-" +
+                                                       release  + ".noarch.rpm",
+                                                       constants.inputRPMSPath)],
+                                    listFoundRPMFiles)
+        if len(listFoundRPMFiles) == 1:
             return listFoundRPMFiles[0]
-        if len(listFoundRPMFiles) == 0 :
+        if len(listFoundRPMFiles) == 0:
             return None
-        if len(listFoundRPMFiles) > 1 :
-            self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
+        if len(listFoundRPMFiles) > 1:
+            self.logger.error("Found multiple rpm files for given "
+                              "package in rpm directory.Unable to determine the rpm "
+                              "file for package:" + package)
             raise Exception("Multiple rpm files found")
 
-    def findPackageNameFromRPMFile(self,rpmfile):
-        rpmfile=os.path.basename(rpmfile)
-        releaseindex=rpmfile.rfind("-")
+    def findPackageNameFromRPMFile(self, rpmfile):
+        rpmfile = os.path.basename(rpmfile)
+        releaseindex = rpmfile.rfind("-")
         if releaseindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
+            self.logger.error("Invalid rpm file:" + rpmfile)
             raise Exception("Invalid RPM")
-        versionindex=rpmfile[0:releaseindex].rfind("-")
+        versionindex = rpmfile[0:releaseindex].rfind("-")
         if versionindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
+            self.logger.error("Invalid rpm file:" + rpmfile)
             raise Exception("Invalid RPM")
-        packageName=rpmfile[0:versionindex]
+        packageName = rpmfile[0:versionindex]
         return packageName
 
-    def findPackageInfoFromRPMFile(self,rpmfile):
-        rpmfile=os.path.basename(rpmfile)
-        rpmfile=rpmfile.replace("."+platform.machine()+".rpm","")
-        rpmfile=rpmfile.replace(".noarch.rpm","")
-        releaseindex=rpmfile.rfind("-")
+    def findPackageInfoFromRPMFile(self, rpmfile):
+        rpmfile = os.path.basename(rpmfile)
+        rpmfile = rpmfile.replace("." + platform.machine() + ".rpm", "")
+        rpmfile = rpmfile.replace(".noarch.rpm", "")
+        releaseindex = rpmfile.rfind("-")
         if releaseindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
+            self.logger.error("Invalid rpm file:" + rpmfile)
             raise Exception("Invalid RPM")
-        versionindex=rpmfile[0:releaseindex].rfind("-")
+        versionindex = rpmfile[0:releaseindex].rfind("-")
         if versionindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
+            self.logger.error("Invalid rpm file:" + rpmfile)
             raise Exception("Invalid RPM")
-        packageName=rpmfile[0:versionindex]
-        version=rpmfile[versionindex+1:releaseindex]
-        release=rpmfile[releaseindex+1:]
-        return packageName,version,release
+        packageName = rpmfile[0:versionindex]
+        version = rpmfile[versionindex + 1:releaseindex]
+        release = rpmfile[releaseindex + 1:]
+        return packageName, version, release
 
     def findInstalledRPMPackages(self, chrootID):
-        cmd = self.rpmBinary+" "+self.queryRpmPackageOptions
-        chrootCmd=self.runInChrootCommand+" "+chrootID
-        cmdUtils=CommandUtils()
-        result=cmdUtils.runCommandInShell2(cmd, chrootCmd)
+        cmd = self.rpmBinary + " " + self.queryRpmPackageOptions
+        chrootCmd = self.runInChrootCommand + " " +chrootID
+        cmdUtils = CommandUtils()
+        result = cmdUtils.runCommandInShell2(cmd, chrootCmd)
         if result is not None:
-            return result.split()
+            return result.decode().split()
         return result
 
     def adjustGCCSpecs(self, package, chrootID, logPath):
         opt = " " + SPECS.getData().getSecurityHardeningOption(package)
-        cmdUtils=CommandUtils()
-        cpcmd="cp "+ self.adjustGCCSpecScript+" "+chrootID+"/tmp/"+self.adjustGCCSpecScript
-        cmd = "/tmp/"+self.adjustGCCSpecScript+opt
-        logFile = logPath+"/adjustGCCSpecScript.log"
-        chrootCmd=self.runInChrootCommand+" "+chrootID
+        cmdUtils = CommandUtils()
+        cpcmd = ("cp "+ self.adjustGCCSpecScript + " " + chrootID + "/tmp/" +
+                 self.adjustGCCSpecScript)
+        cmd = "/tmp/" + self.adjustGCCSpecScript + opt
+        logFile = logPath + "/adjustGCCSpecScript.log"
+        chrootCmd = self.runInChrootCommand + " " + chrootID
         returnVal = cmdUtils.runCommandInShell(cpcmd, logFile)
         if not returnVal:
             self.logger.error("Error during copying the file adjust gcc spec")
@@ -351,24 +395,32 @@ class PackageUtils(object):
         if returnVal:
             return
 
-        self.logger.debug(cmdUtils.runCommandInShell2("ls -la " + chrootID + "/tmp/" + self.adjustGCCSpecScript))
-        self.logger.debug(cmdUtils.runCommandInShell2("lsof " + chrootID + "/tmp/" + self.adjustGCCSpecScript))
+        self.logger.debug(
+            cmdUtils.runCommandInShell2("ls -la " + chrootID + "/tmp/" +
+                                        self.adjustGCCSpecScript))
+        self.logger.debug(
+            cmdUtils.runCommandInShell2("lsof " + chrootID + "/tmp/" +
+                                        self.adjustGCCSpecScript))
         self.logger.debug(cmdUtils.runCommandInShell2("ps ax"))
 
         self.logger.error("Failed while adjusting gcc specs")
         raise Exception("Failed while adjusting gcc specs")
 
-    def copySourcesToContainer(self, listSourceFiles, package, containerID, destDir):
+    def copySourcesToContainer(self, listSourceFiles, package,
+                               containerID, destDir):
         cmdUtils = CommandUtils()
         for source in listSourceFiles:
             sourcePath = self.verifyShaAndGetSourcePath(source, package)
             self.logger.info("Copying source file: " + sourcePath[0])
-            copyCmd = "docker cp " + sourcePath[0] + " " + containerID.short_id + ":" + destDir
+            copyCmd = ("docker cp " + sourcePath[0] + " " +
+                       containerID.short_id + ":" + destDir)
             cmdUtils.runCommandInShell(copyCmd)
 
-    def copyAdditionalBuildFilesToContainer(self, listAdditionalFiles, containerID):
+    def copyAdditionalBuildFilesToContainer(self, listAdditionalFiles,
+                                            containerID):
         cmdUtils = CommandUtils()
-        #self.logger.debug("VDBG-PU-copyAdditionalBuildFilesToContainer id: " +containerID.short_id)
+        #self.logger.debug("VDBG-PU-copyAdditionalBuildFilesToContainer id: "
+        # +containerID.short_id)
         #self.logger.debug(listAdditionalFiles)
         for additionalFile in listAdditionalFiles:
             source = additionalFile["src"].encode('utf-8')
@@ -383,7 +435,7 @@ class PackageUtils(object):
                     copyCmd += " " + destPath
                 else:
                     self.logger.info("Copying addl source file tree: " + source)
-                    copyCmd +=  "/. " + destPath
+                    copyCmd += "/. " + destPath
                 #TODO: cmd error code
                 cmdUtils.runCommandInShell(copyCmd)
 
@@ -399,11 +451,12 @@ class PackageUtils(object):
         if "noarch" in rpmFile:
             rpmPath += "noarch/"
         else:
-            rpmPath += platform.machine()+"/"
+            rpmPath += platform.machine() + "/"
         rpmPath += rpmName
         return rpmPath
 
-    def prepRPMforInstallInContainer(self, package, containerID, noDeps=False, destLogPath=None):
+    def prepRPMforInstallInContainer(self, package, containerID,
+                                     noDeps=False, destLogPath=None):
         rpmfile = self.findRPMFileForGivenPackage(package)
         if rpmfile is None:
             self.logger.error("No rpm file found for package: " + package)
@@ -422,65 +475,73 @@ class PackageUtils(object):
                 self.rmpFilesToReInstallInAOneShot += " " + rpmDestFile
 
     def installRPMSInAOneShotInContainer(self, containerID, destLogPath):
-        rpmInstallcmd = self.rpmBinary + " " + self.installRPMPackageOptions + " " + self.forceRpmPackageOptions
+        rpmInstallcmd = (self.rpmBinary + " " +
+                         self.installRPMPackageOptions + " " +
+                         self.forceRpmPackageOptions)
 
         if self.noDepsRPMFilesToInstallInAOneShot != "":
-            self.logger.info("PackageUtils-installRPMSInAOneShotInContainer: Installing nodeps rpms: " + \
+            self.logger.info("PackageUtils-installRPMSInAOneShotInContainer: "
+                             "Installing nodeps rpms: " + \
                              self.noDepsPackagesToInstallInAOneShot)
             logFile = destLogPath + "/install_rpms_nodeps.log"
-            cmd = rpmInstallcmd + " " + self.nodepsRPMPackageOptions + " " + self.noDepsRPMFilesToInstallInAOneShot
+            cmd = (rpmInstallcmd + " " + self.nodepsRPMPackageOptions + " "+
+                   self.noDepsRPMFilesToInstallInAOneShot)
             cmd = "/bin/bash -l -c '" + cmd + "'"
-            #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: Install nodeps cmd: " + cmd)
+            #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: ""
+            # "Install nodeps cmd: " + cmd)
             #TODO: Error code from exec_run
             installLog = containerID.exec_run(cmd)
             if not installLog:
                 self.logger.error("Unable to install nodeps rpms")
                 raise Exception("nodeps RPM installation failed")
-            logfile = open(logFile, 'w')
-            logfile.write(installLog)
-            logfile.close()
+            with open(logFile, 'w') as logfile:
+                logfile.write(installLog.decode())
 
             if self.noDepsRPMFilesToReInstallInAOneShot != "":
-                cmd = rpmInstallcmd + " " + self.nodepsRPMPackageOptions + " " + self.forceRpmPackageOptions + " " + self.noDepsRPMFilesToReInstallInAOneShot
+                cmd = (rpmInstallcmd + " " + self.nodepsRPMPackageOptions +
+                       " " + self.forceRpmPackageOptions + " " +
+                       self.noDepsRPMFilesToReInstallInAOneShot)
                 cmd = "/bin/bash -l -c '" + cmd + "'"
-                #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: ReInstall nodeps cmd: " + cmd)
+                #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: ""
+                # "ReInstall nodeps cmd: " + cmd)
                 #TODO: Error code from exec_run
                 installLog = containerID.exec_run(cmd)
                 if not installLog:
                     self.logger.error("Unable to re-install nodeps rpms")
                     raise Exception("nodeps RPM re-installation failed")
-                logfile = open(logFile, 'a')
-                logfile.write(installLog)
-                logfile.close()
+                with open(logFile, 'a') as logfile:
+                    logfile.write(installLog.decode())
 
         if self.rpmFilesToInstallInAOneShot != "":
-            self.logger.info("PackageUtils-installRPMSInAOneShotInContainer: Installing rpms: " + \
+            self.logger.info("PackageUtils-installRPMSInAOneShotInContainer: "
+                             "Installing rpms: " +
                              self.packagesToInstallInAOneShot)
             logFile = destLogPath + "/install_rpms.log"
             cmd = rpmInstallcmd + " " + self.rpmFilesToInstallInAOneShot
             cmd = "/bin/bash -l -c '" + cmd + "'"
-            #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: Install cmd: " + cmd)
+            #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: "
+            # "Install cmd: " + cmd)
             #TODO: Error code from exec_run
             installLog = containerID.exec_run(cmd)
             if not installLog:
                 self.logger.error("Unable to install rpms")
                 raise Exception("RPM installation failed")
-            logfile = open(logFile, 'w')
-            logfile.write(installLog)
-            logfile.close()
+            with open(logFile, 'w') as logfile:
+                logfile.write(installLog.decode())
 
             if self.rpmFilesToReInstallInAOneShot != "":
-                cmd = rpmInstallcmd + " " + self.forceRpmPackageOptions + " " + self.rpmFilesToReInstallInAOneShot
+                cmd = (rpmInstallcmd + " " + self.forceRpmPackageOptions +
+                       " " + self.rpmFilesToReInstallInAOneShot)
                 cmd = "/bin/bash -l -c '" + cmd + "'"
-                #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: ReInstall cmd: " + cmd)
+                #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: "
+                #  "ReInstall cmd: " + cmd)
                 #TODO: Error code from exec_run
                 installLog = containerID.exec_run(cmd)
                 if not installLog:
                     self.logger.error("Unable to re-install rpms")
                     raise Exception("RPM re-installation failed")
-                logfile = open(logFile, 'a')
-                logfile.write(installLog)
-                logfile.close()
+                with open(logFile, 'a') as logfile:
+                    logfile.write(installLog.decode())
 
     def findInstalledRPMPackagesInContainer(self, containerID):
         cmd = self.rpmBinary + " " + self.queryRpmPackageOptions
@@ -500,20 +561,25 @@ class PackageUtils(object):
         #TODO: Error code from exec_run
         scriptLog = containerID.exec_run(adjustCmd)
         if scriptLog:
-            logfile = open(logFile, 'w')
-            logfile.write(scriptLog)
-            logfile.close()
+            with open(logFile, 'w') as logfile:
+                logfile.write(scriptLog.decode())
             return
 
-        self.logger.debug(containerID.exec_run("ls -la /tmp/" + self.adjustGCCSpecScript))
-        self.logger.debug(containerID.exec_run("lsof /tmp/" + self.adjustGCCSpecScript))
+        self.logger.debug(containerID.exec_run("ls -la /tmp/" +
+                                               self.adjustGCCSpecScript))
+        self.logger.debug(containerID.exec_run("lsof /tmp/" +
+                                               self.adjustGCCSpecScript))
         self.logger.debug(containerID.exec_run("ps ax"))
         self.logger.error("Failed while adjusting gcc specs")
         raise Exception("Failed while adjusting gcc specs")
 
-    def buildRPMSForGivenPackageInContainer(self, package, containerID, listBuildOptionPackages,
-                                            pkgBuildOptionFile, destLogPath=None):
-        self.logger.info("Building rpm's for package " + package + " in container " + containerID.short_id)
+    def buildRPMSForGivenPackageInContainer(self, package,
+                                            containerID,
+                                            listBuildOptionPackages,
+                                            pkgBuildOptionFile,
+                                            destLogPath=None):
+        self.logger.info("Building rpm's for package " +
+                         package + " in container " + containerID.short_id)
 
         listSourcesFiles = SPECS.getData().getSources(package)
         listPatchFiles = SPECS.getData().getPatches(package)
@@ -526,8 +592,8 @@ class PackageUtils(object):
         cmdUtils = CommandUtils()
 
         #TODO: mount it in, don't copy
-        cpSpecCmd = "docker cp " + specFile + " " + containerID.short_id \
-                        + ":" + specPath + specName
+        cpSpecCmd = ("docker cp " + specFile + " " + containerID.short_id +
+                     ":" + specPath + specName)
         returnVal = cmdUtils.runCommandInShell(cpSpecCmd)
         if not returnVal:
             self.logger.error("Error copying source SPEC file to container")
@@ -537,12 +603,15 @@ class PackageUtils(object):
 #        if os.geteuid()==0:
         #TODO: mount it in, don't copy
         macros = []
-        self.copySourcesToContainer(listSourcesFiles, package, containerID, sourcePath)
+        self.copySourcesToContainer(listSourcesFiles, package, containerID,
+                                    sourcePath)
         #TODO: mount it in, don't copy
-        self.copySourcesToContainer(listPatchFiles, package, containerID, sourcePath)
+        self.copySourcesToContainer(listPatchFiles, package, containerID,
+                                    sourcePath)
         if package in listBuildOptionPackages:
             listAdditionalFiles, macros = self.getAdditionalBuildFiles(package, pkgBuildOptionFile)
-            self.copyAdditionalBuildFilesToContainer(listAdditionalFiles, containerID)
+            self.copyAdditionalBuildFilesToContainer(listAdditionalFiles,
+                                                     containerID)
 
         # Add rpm macros
         listRPMMacros = constants.userDefinedMacros
@@ -550,28 +619,30 @@ class PackageUtils(object):
             macros.append(macroName + " " + listRPMMacros[macroName])
 
         # Build RPMs
-        listRPMFiles=[]
-        listSRPMFiles=[]
+        listRPMFiles = []
+        listSRPMFiles = []
         try:
             listRPMFiles, listSRPMFiles = self.buildRPMinContainer(
-                                                    specPath + specName,
-                                                    rpmLogFile,
-                                                    destLogFile,
-                                                    containerID,
-                                                    package,
-                                                    macros)
-            self.logger.info("Successfully built rpm:"+package)
+                specPath + specName,
+                rpmLogFile,
+                destLogFile,
+                containerID,
+                package,
+                macros)
+            self.logger.info("Successfully built rpm:" + package)
         except Exception as e:
             self.logger.error("Failed while building rpm: " + package)
             raise e
         finally:
             if destLogPath is not None:
                 rpmLog = destLogPath + "/" + package + ".log"
-                if constants.rpmCheck and package in constants.testForceRPMS and SPECS.getData().isCheckAvailable(package):
-                    cmd="sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' "+ rpmLog
-                    logFile = destLogPath+"/adjustTestFile.log"
+                if (constants.rpmCheck and package in constants.testForceRPMS and
+                        SPECS.getData().isCheckAvailable(package)):
+                    cmd = ("sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' "+
+                           rpmLog)
+                    logFile = destLogPath + "/adjustTestFile.log"
                     returnVal = CommandUtils().runCommandInShell(cmd, logFile)
-                    testLogFile = destLogPath+"/"+package+"-test.log"
+                    testLogFile = destLogPath + "/" + package + "-test.log"
                     shutil.copyfile(rpmLog, testLogFile)
         self.logger.info("RPM build is successful")
 
@@ -586,33 +657,42 @@ class PackageUtils(object):
 
         for srpmFile in listSRPMFiles:
             srpmName = os.path.basename(srpmFile)
-            srpmDestDir = self.getRPMDestDir(os.path.basename(srpmFile), constants.sourceRpmPath)
+            srpmDestDir = self.getRPMDestDir(os.path.basename(srpmFile),
+                                             constants.sourceRpmPath)
             srpmDestFile = srpmDestDir + "/" + srpmName
             if not os.path.isfile(srpmDestFile):
                 self.logger.error("Could not find RPM file: " + srpmDestFile)
                 raise Exception("Built SRPM file not found.")
 
-    def buildRPMinContainer(self, specFile, rpmLogFile, destLogFile, containerID, package, macros):
+    def buildRPMinContainer(self, specFile, rpmLogFile, destLogFile,
+                            containerID, package, macros):
 
-        rpmBuildCmd = self.rpmbuildBinary + " " + self.rpmbuildBuildallOption
+        rpmBuildCmd = (self.rpmbuildBinary + " " +
+                       self.rpmbuildBuildallOption)
 
         if constants.rpmCheck and package in constants.testForceRPMS:
-            self.logger.info("#"*(68+2*len(package)))
+            self.logger.info("#" * (68 + 2 * len(package)))
             if not SPECS.getData().isCheckAvailable(package):
-                self.logger.info("####### "+package+" MakeCheck is not available. Skipping MakeCheck TEST for "+package+ " #######")
-                rpmBuildCmd=self.rpmbuildBinary+" --clean"
+                self.logger.info("####### " + package +
+                                 " MakeCheck is not available. Skipping MakeCheck TEST for "+
+                                 package + " #######")
+                rpmBuildCmd = self.rpmbuildBinary + " --clean"
             else:
-                self.logger.info("####### "+package+" MakeCheck is available. Running MakeCheck TEST for "+package+ " #######")
-                rpmBuildCmd=self.rpmbuildBinary+" "+self.rpmbuildCheckOption
-            self.logger.info("#"*(68+2*len(package)))
+                self.logger.info("####### " + package +
+                                 " MakeCheck is available. Running MakeCheck TEST for " +
+                                 package + " #######")
+                rpmBuildCmd = self.rpmbuildBinary + " " + self.rpmbuildCheckOption
+            self.logger.info("#" * (68 + 2 * len(package)))
         else:
-           rpmBuildCmd+=" "+self.rpmbuildNocheckOption
+            rpmBuildCmd += " " + self.rpmbuildNocheckOption
 
         for macro in macros:
             rpmBuildCmd += ' --define \"%s\"' % macro
         rpmBuildCmd += " " + specFile
-        rpmBuildCmd = "/bin/bash -l -c '" + rpmBuildCmd + " > " + rpmLogFile + " 2>&1'"
-        rpmBuildCmd = "docker exec -t " + str(containerID.short_id) + " " + rpmBuildCmd
+        rpmBuildCmd = ("/bin/bash -l -c '" + rpmBuildCmd + " > " +
+                       rpmLogFile + " 2>&1'")
+        rpmBuildCmd = ("docker exec -t " + str(containerID.short_id) +
+                       " " + rpmBuildCmd)
 
         cmdUtils = CommandUtils()
         self.logger.info("Building rpm for package: " + package)
@@ -622,38 +702,44 @@ class PackageUtils(object):
         returnVal = cmdUtils.runCommandInShell(rpmBuildCmd)
 
         if not os.path.isfile(destLogFile):
-            self.logger.error("RPM build not file not found. Building rpm failed for: " + specFile)
+            self.logger.error("RPM build not file not found. Building "
+                              "rpm failed for: " + specFile)
             raise Exception("RPM Build failed")
 
         if constants.rpmCheck and package in constants.testForceRPMS:
             if not SPECS.getData().isCheckAvailable(package):
-                constants.testLogger.info(package+" : N/A")
+                constants.testLogger.info(package + " : N/A")
             elif returnVal:
-                constants.testLogger.info(package+" : PASS")
+                constants.testLogger.info(package + " : PASS")
             else:
-                constants.testLogger.error(package+" : FAIL" )
+                constants.testLogger.error(package + " : FAIL")
 
         if constants.rpmCheck:
             if not returnVal and constants.rpmCheckStopOnError:
-                self.logger.error("Checking rpm is failed "+specFile)
+                self.logger.error("Checking rpm is failed " + specFile)
                 raise Exception("RPM check failed")
         else:
             if not returnVal:
-                self.logger.error("Building rpm is failed "+specFile)
+                self.logger.error("Building rpm is failed " + specFile)
                 raise Exception("RPM build failed")
 
         #Extracting rpms created from log file
-        listRPMFiles=[]
-        listSRPMFiles=[]
+        listRPMFiles = []
+        listSRPMFiles = []
         logfile = open(destLogFile, 'r')
         rpmBuildLogLines = logfile.readlines()
         logfile.close()
         for i in range(0, len(rpmBuildLogLines)):
             if re.search("^Wrote:", rpmBuildLogLines[i]):
                 listcontents = rpmBuildLogLines[i].split()
-                if (len(listcontents) == 2) and listcontents[1].strip()[-4:] == ".rpm" and listcontents[1].find("/RPMS/") != -1:
+                if (len(listcontents) == 2 and
+                        listcontents[1].strip().endswith(".rpm") and
+                        listcontents[1].find("/RPMS/") != -1):
                     listRPMFiles.append(listcontents[1])
-                if (len(listcontents) == 2) and listcontents[1].strip()[-8:] == ".src.rpm" and listcontents[1].find("/SRPMS/") != -1:
+                if (len(listcontents) == 2 and
+                        listcontents[1].strip().endswith(".src.rpm") and
+                        listcontents[1].find("/SRPMS/") != -1):
+
                     listSRPMFiles.append(listcontents[1])
         #if not listRPMFiles:
         #    self.logger.error("Building rpm failed for " + specFile)

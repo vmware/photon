@@ -7,34 +7,33 @@ from constants import constants
 class SpecParser(object):
 
     def __init__(self):
-        self.cleanMacro=rpmMacro().setName("clean")
-        self.prepMacro=rpmMacro().setName("prep")
-        self.buildMacro=rpmMacro().setName("build")
-        self.installMacro=rpmMacro().setName("install")
-        self.changelogMacro=rpmMacro().setName("changelog")
-        self.checkMacro=rpmMacro().setName("check")
-        self.packages={}
-        self.specAdditionalContent=""
-        self.globalSecurityHardening=""
-        self.defs={}
+        self.cleanMacro = rpmMacro().setName("clean")
+        self.prepMacro = rpmMacro().setName("prep")
+        self.buildMacro = rpmMacro().setName("build")
+        self.installMacro = rpmMacro().setName("install")
+        self.changelogMacro = rpmMacro().setName("changelog")
+        self.checkMacro = rpmMacro().setName("check")
+        self.packages = {}
+        self.specAdditionalContent = ""
+        self.globalSecurityHardening = ""
+        self.defs = {}
         self.conditionalCheckMacroEnabled = False
         self.macro_pattern = re.compile(r'%{(\S+?)\}')
 
-
-    def readPkgNameFromPackageMacro(self,data,basePkgName=None):
-        data=" ".join(data.split())
-        pkgHeaderName=data.split(" ")
+    def readPkgNameFromPackageMacro(self, data, basePkgName=None):
+        data = " ".join(data.split())
+        pkgHeaderName = data.split(" ")
         lenpkgHeaderName = len(pkgHeaderName)
-        i=1;
+        i = 1
         pkgName = None
-        while i<lenpkgHeaderName:
-            if pkgHeaderName[i] == "-n" and i+1 < lenpkgHeaderName:
+        while i < lenpkgHeaderName:
+            if pkgHeaderName[i] == "-n" and i + 1 < lenpkgHeaderName:
                 pkgName = pkgHeaderName[i+1]
                 break
             if pkgHeaderName[i].startswith('-'):
                 i = i + 2
             else:
-                pkgName = basePkgName+"-"+pkgHeaderName[i]
+                pkgName = basePkgName + "-" + pkgHeaderName[i]
                 break
         if pkgName is None:
             return True, basePkgName
@@ -59,12 +58,13 @@ class SpecParser(object):
             raise Exception("Given string is not a conditional macro")
 
         def _is_macro_defined(macro):
-            return (macro in self.defs.keys()) or (macro in constants.userDefinedMacros.keys())
+            return (macro in self.defs or
+                    macro in constants.userDefinedMacros)
 
         def _get_macro(macro):
-            if macro in self.defs.keys():
+            if macro in self.defs:
                 return self.defs[macro]
-            elif macro in constants.userDefinedMacros.keys():
+            elif macro in constants.userDefinedMacros:
                 return constants.userDefinedMacros[macro]
             raise Exception("Unknown macro: " + macro)
 
@@ -92,70 +92,70 @@ class SpecParser(object):
             return match.string[match.start():match.end()]
 
         #User macros
-        for macroName in constants.userDefinedMacros.keys():
+        for macroName in constants.userDefinedMacros:
             value = constants.userDefinedMacros[macroName]
-            macro="%"+macroName
+            macro = "%" + macroName
             if string.find(macro) != -1:
-                string = string.replace(macro,value)
+                string = string.replace(macro, value)
         #Spec definitions
-        for macroName in self.defs.keys():
+        for macroName in self.defs:
             value = self.defs[macroName]
-            macro="%"+macroName
+            macro = "%" + macroName
             if string.find(macro) != -1:
-                string = string.replace(macro,value)
+                string = string.replace(macro, value)
         return re.sub(self.macro_pattern, _macro_repl, string)
 
-    def parseSpecFile(self,specfile):
+    def parseSpecFile(self, specfile):
         self.createDefaultPackage()
-        currentPkg="default"
+        currentPkg = "default"
         specFile = open(specfile)
         lines = specFile.readlines()
-        totalLines=len(lines)
-        i=0
+        totalLines = len(lines)
+        i = 0
         while i < totalLines:
             line = lines[i].strip()
             if self.isConditionalArch(line):
-                if (platform.machine() != self.readConditionalArch(line)):
+                if platform.machine() != self.readConditionalArch(line):
                     # skip conditional body
                     deep = 1
-                    while (i < totalLines and deep != 0):
-                        i=i+1
+                    while i < totalLines and deep != 0:
+                        i = i + 1
                         line = lines[i].strip()
                         if self.isConditionalMacroStart(line):
                             deep = deep + 1
                         elif self.isConditionalMacroEnd(line):
                             deep = deep - 1
             elif self.isIfCondition(line):
-                if (not self.isConditionTrue(line)):
+                if not self.isConditionTrue(line):
                     # skip conditional body
                     deep = 1
-                    while (i < totalLines and deep != 0):
-                        i=i+1
+                    while i < totalLines and deep != 0:
+                        i = i + 1
                         line = lines[i].strip()
                         if self.isConditionalMacroStart(line):
                             deep = deep + 1
                         elif self.isConditionalMacroEnd(line):
                             deep = deep - 1
             elif self.isSpecMacro(line):
-                macro,i=self.readMacroFromFile(i, lines)
+                macro, i = self.readMacroFromFile(i, lines)
                 self.updateMacro(macro)
             elif self.isPackageMacro(line):
                 defaultpkg = self.packages.get('default')
-                returnVal,packageName=self.readPkgNameFromPackageMacro(line, defaultpkg.name)
-                packageName=self.replaceMacros(packageName)
+                returnVal, packageName = self.readPkgNameFromPackageMacro(line, defaultpkg.name)
+                packageName = self.replaceMacros(packageName)
                 if not returnVal:
                     return False
-                if re.search('^'+'%package',line) :
+                if re.search('^'+'%package', line):
                     pkg = Package(defaultpkg)
-                    pkg.name=packageName
-                    currentPkg=packageName
-                    self.packages[pkg.name]=pkg
+                    pkg.name = packageName
+                    currentPkg = packageName
+                    self.packages[pkg.name] = pkg
                 else:
-                    if defaultpkg.name == packageName :
+                    if defaultpkg.name == packageName:
                         packageName = 'default'
-                    macro,i=self.readMacroFromFile(i, lines)
-                    if not self.packages.has_key(packageName):
-                        i=i+1
+                    macro, i = self.readMacroFromFile(i, lines)
+                    if packageName not in self.packages:
+                        i = i + 1
                         continue
                     self.packages[packageName].updatePackageMacro(macro)
             elif self.isPackageHeaders(line):
@@ -168,265 +168,254 @@ class SpecParser(object):
                 self.readDefinition(line)
             elif self.isConditionalCheckMacro(line):
                 self.conditionalCheckMacroEnabled = True
-            elif self.conditionalCheckMacroEnabled and self.isConditionalMacroEnd(line):
+            elif (self.conditionalCheckMacroEnabled and
+                  self.isConditionalMacroEnd(line)):
                 self.conditionalCheckMacroEnabled = False
             else:
-                self.specAdditionalContent+=line+"\n"
-            i=i+1
+                self.specAdditionalContent += line + "\n"
+            i = i + 1
         specFile.close()
 
     def createDefaultPackage(self):
         pkg = Package()
-        self.packages["default"]=pkg
+        self.packages["default"] = pkg
 
-    def readMacroFromFile(self,currentPos,lines):
+    def readMacroFromFile(self, currentPos, lines):
         macro = rpmMacro()
         line = lines[currentPos]
         macro.position = currentPos
-        macro.endposition=currentPos
-        endPos=len(lines)
+        macro.endposition = currentPos
+        endPos = len(lines)
         line = " ".join(line.split())
         flagindex = line.find(" ")
         if flagindex != -1:
-            macro.macroFlag=line[flagindex+1:]
-            macro.macroName=line[:flagindex]
+            macro.macroFlag = line[flagindex + 1:]
+            macro.macroName = line[:flagindex]
         else:
-            macro.macroName=line
+            macro.macroName = line
 
-        if currentPos+1 < len(lines) and self.isMacro(lines[currentPos+1]):
-            return macro,currentPos
+        if (currentPos + 1 < len(lines) and
+                self.isMacro(lines[currentPos + 1])):
+            return macro, currentPos
 
-        for j in range(currentPos+1,endPos):
+        for j in range(currentPos + 1, endPos):
             content = lines[j]
             if j+1 < endPos and self.isMacro(lines[j+1]):
-                return macro,j
+                return macro, j
             macro.content += content +'\n'
-            macro.endposition=j
-        return macro,endPos
+            macro.endposition = j
+        return macro, endPos
 
-
-    def updateMacro(self,macro):
+    def updateMacro(self, macro):
         if macro.macroName == "%clean":
-            self.cleanMacro=macro
+            self.cleanMacro = macro
             return True
         if macro.macroName == "%prep":
-            self.prepMacro=macro
+            self.prepMacro = macro
             return True
         if macro.macroName == "%build":
-            self.buildMacro=macro
+            self.buildMacro = macro
             return True
         if macro.macroName == "%install":
-            self.installMacro=macro
+            self.installMacro = macro
             return True
         if macro.macroName == "%changelog":
-            self.changelogMacro=macro
+            self.changelogMacro = macro
             return True
         if macro.macroName == "%check":
-            self.checkMacro=macro
+            self.checkMacro = macro
             return True
         return False
 
-    def isMacro(self,line):
-        return self.isPackageMacro(line) or self.isSpecMacro(line) or self.isConditionalMacroStart(line) or self.isConditionalMacroEnd(line)
+    def isMacro(self, line):
+        return (self.isPackageMacro(line) or
+                self.isSpecMacro(line) or
+                self.isConditionalMacroStart(line) or
+                self.isConditionalMacroEnd(line))
 
-    def isConditionalArch(self,line):
-        if re.search('^'+'%ifarch',line) :
+    def isConditionalArch(self, line):
+        if re.search('^' + '%ifarch', line):
             return True
         return False
 
-    def isSpecMacro(self,line):
-        if re.search('^'+'%clean',line) :
-            return True
-        elif re.search('^'+'%prep',line) :
-            return True
-        elif re.search('^'+'%build',line) :
-            return True
-        elif re.search('^'+'%install',line) :
-            return True
-        elif re.search('^'+'%changelog',line) :
-            return True
-        elif re.search('^'+'%check',line) :
+    def isSpecMacro(self, line):
+        line = line.strip()
+        specMacro = ('%clean', '%prep', '%build', '%install', '%changelog', '%check')
+        if line.startswith(specMacro):
             return True
         return False
 
-    def isPackageMacro(self,line):
-        line=line.strip()
-
-        if re.search('^'+'%post',line) :
-            return True
-        elif re.search('^'+'%postun',line) :
-            return True
-        elif re.search('^'+'%files',line) :
-            return True
-        elif re.search('^'+'%description',line) :
-            return True
-        elif re.search('^'+'%package',line) :
+    def isPackageMacro(self, line):
+        line = line.strip()
+        packageMacro = ('%post', '%postun', '%files', '%description', '%package')
+        if line.startswith(packageMacro):
             return True
         return False
 
-    def isPackageHeaders(self,line):
-        if re.search('^'+'summary:',line,flags=re.IGNORECASE) :
+    def isPackageHeaders(self, line):
+        if re.search('^'+'summary:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'name:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'name:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'group:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'group:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'license:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'license:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'version:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'version:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'release:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'release:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'distribution:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'distribution:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'requires:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'requires:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'requires\((pre|post|preun|postun)\):',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'requires\((pre|post|preun|postun)\):', line,
+                       flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'provides:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'provides:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'obsoletes:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'obsoletes:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'conflicts:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'conflicts:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'url:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'url:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'source[0-9]*:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'source[0-9]*:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'patch[0-9]*:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'patch[0-9]*:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'buildrequires:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'buildrequires:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'buildprovides:',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'buildprovides:', line, flags=re.IGNORECASE):
             return True
-        elif re.search('^'+'buildarch:',line,flags=re.IGNORECASE) :
-            return True
-        return False
-
-    def isGlobalSecurityHardening(self,line):
-        if re.search('^%global *security_hardening',line,flags=re.IGNORECASE) :
+        elif re.search('^'+'buildarch:', line, flags=re.IGNORECASE):
             return True
         return False
 
-    def isChecksum(self,line):
-        if re.search('^%define *sha1',line,flags=re.IGNORECASE) :
+    def isGlobalSecurityHardening(self, line):
+        if re.search('^%global *security_hardening', line, flags=re.IGNORECASE):
             return True
         return False
 
-    def isDefinition(self,line):
-        if re.search('^'+'%define',line) :
-            return True
-        if re.search('^'+'%global',line) :
+    def isChecksum(self, line):
+        if re.search('^%define *sha1', line, flags=re.IGNORECASE):
             return True
         return False
 
-    def readConditionalArch(self,line):
-        w=line.split()
+    def isDefinition(self, line):
+        if re.search('^'+'%define', line):
+            return True
+        if re.search('^'+'%global', line):
+            return True
+        return False
+
+    def readConditionalArch(self, line):
+        w = line.split()
         if len(w) == 2:
-           return w[1]
+            return w[1]
         return None
 
-    def readDefinition(self,line):
-        listDefines=line.split()
+    def readDefinition(self, line):
+        listDefines = line.split()
         if len(listDefines) == 3:
-           self.defs[listDefines[1]] = listDefines[2]
-           return True
+            self.defs[listDefines[1]] = listDefines[2]
+            return True
         return False
 
-    def readHeader(self,line):
-        headerSplitIndex=line.find(":")
-        if(headerSplitIndex+1 == len(line) ):
-            print line
-            print "Error:Invalid header"
-            return False, None,None
-        headerName=line[0:headerSplitIndex].lower()
-        headerContent=line[headerSplitIndex+1:].strip()
-        return True,headerName,headerContent
+    def readHeader(self, line):
+        headerSplitIndex = line.find(":")
+        if headerSplitIndex + 1 == len(line):
+            print(line)
+            print("Error:Invalid header")
+            return False, None, None
+        headerName = line[0:headerSplitIndex].lower()
+        headerContent = line[headerSplitIndex + 1:].strip()
+        return True, headerName, headerContent
 
 
-    def readDependentPackageData(self,line):
+    def readDependentPackageData(self, line):
         strUtils = StringUtils()
-        listPackages=line.split(",")
-        listdependentpkgs=[]
+        listPackages = line.split(",")
+        listdependentpkgs = []
         for line in listPackages:
-            line=strUtils.getStringInConditionalBrackets(line)
-            listContents=line.split()
+            line = strUtils.getStringInConditionalBrackets(line)
+            listContents = line.split()
             totalContents = len(listContents)
-            i=0
+            i = 0
             while i < totalContents:
                 dpkg = dependentPackageData()
-                compare=None
-                packageName=listContents[i]
+                compare = None
+                packageName = listContents[i]
                 if listContents[i].startswith("/"):
-                    provider=constants.providedBy.get(listContents[i], None)
-                    i=i+1
+                    provider = constants.providedBy.get(listContents[i], None)
+                    i = i + 1
                     if provider is not None:
-                        packageName=provider
+                        packageName = provider
                     else:
                         continue
                 if i+2 < len(listContents):
                     if listContents[i+1] == ">=":
-                        compare="gte"
+                        compare = "gte"
                     elif listContents[i+1] == "<=":
-                        compare="lte"
+                        compare = "lte"
                     elif listContents[i+1] == "==":
-                        compare="eq"
+                        compare = "eq"
                     elif listContents[i+1] == "<":
-                        compare="lt"
+                        compare = "lt"
                     elif listContents[i+1] == ">":
-                        compare="gt"
+                        compare = "gt"
                     elif listContents[i+1] == "=":
-                        compare="eq"
+                        compare = "eq"
 
                 if compare is not None:
-                    dpkg.package=packageName
-                    dpkg.compare=compare
-                    dpkg.version=listContents[i+2]
-                    i=i+3
+                    dpkg.package = packageName
+                    dpkg.compare = compare
+                    dpkg.version = listContents[i + 2]
+                    i = i + 3
                 else:
-                    dpkg.package=packageName
-                    i=i+1
+                    dpkg.package = packageName
+                    i = i + 1
                 listdependentpkgs.append(dpkg)
         return listdependentpkgs
 
-    def readPackageHeaders(self,line,pkg):
-        returnVal,headerName,headerContent=self.readHeader(line)
+    def readPackageHeaders(self, line, pkg):
+        returnVal, headerName, headerContent = self.readHeader(line)
         if not returnVal:
             return False
 
-        headerContent=self.replaceMacros(headerContent)
+        headerContent = self.replaceMacros(headerContent)
         if headerName == 'summary':
-            pkg.summary=headerContent
+            pkg.summary = headerContent
             return True
         if headerName == 'name':
-            pkg.name=headerContent
-            if (pkg == self.packages["default"]):
+            pkg.name = headerContent
+            if pkg == self.packages["default"]:
                 self.defs["name"] = pkg.name
             return True
         if headerName == 'group':
-            pkg.group=headerContent
+            pkg.group = headerContent
             return True
         if headerName == 'license':
-            pkg.license=headerContent
+            pkg.license = headerContent
             return True
         if headerName == 'version':
-            pkg.version=headerContent
-            if (pkg == self.packages["default"]):
+            pkg.version = headerContent
+            if pkg == self.packages["default"]:
                 self.defs["version"] = pkg.version
             return True
         if headerName == 'buildarch':
-            pkg.buildarch=headerContent
+            pkg.buildarch = headerContent
             return True
         if headerName == 'release':
-            pkg.release=headerContent
-            if (pkg == self.packages["default"]):
+            pkg.release = headerContent
+            if pkg == self.packages["default"]:
                 self.defs["release"] = pkg.release
             return True
         if headerName == 'distribution':
-            pkg.distribution=headerContent
+            pkg.distribution = headerContent
             return True
         if headerName == 'url':
-            pkg.URL=headerContent
+            pkg.URL = headerContent
             return True
         if headerName.find('source') != -1:
             pkg.sources.append(headerContent)
@@ -434,8 +423,13 @@ class SpecParser(object):
         if headerName.find('patch') != -1:
             pkg.patches.append(headerContent)
             return True
-        if headerName.startswith('requires') or headerName == 'provides' or headerName == 'obsoletes' or headerName == 'conflicts' or headerName == 'buildrequires' or headerName == 'buildprovides':
-            dpkg=self.readDependentPackageData(headerContent)
+        if (headerName.startswith('requires') or
+                headerName == 'provides' or
+                headerName == 'obsoletes' or
+                headerName == 'conflicts' or
+                headerName == 'buildrequires' or
+                headerName == 'buildprovides'):
+            dpkg = self.readDependentPackageData(headerContent)
             if dpkg is None:
                 return False
             if headerName.startswith('requires'):
@@ -457,73 +451,75 @@ class SpecParser(object):
             return True
         return False
 
-    def readSecurityHardening(self,line):
-        data = line.lower().strip();
-        words=data.split(" ")
+    def readSecurityHardening(self, line):
+        data = line.lower().strip()
+        words = data.split(" ")
         nrWords = len(words)
-        if (nrWords != 3):
-            print "Error: Unable to parse line: "+line
+        if nrWords != 3:
+            print("Error: Unable to parse line: " + line)
             return False
-        if (words[2] != "none" and words[2] != "nonow" and words[2] != "nopie") :
-            print "Error: Invalid security_hardening value: " + words[2]
+        if words[2] not in ["none", "nonow", "nopie"]:
+            print("Error: Invalid security_hardening value: " + words[2])
             return False
         self.globalSecurityHardening = words[2]
-        return True;
+        return True
 
-    def readChecksum(self,line,pkg):
+    def readChecksum(self, line, pkg):
         strUtils = StringUtils()
-        line=self.replaceMacros(line)
-        data = line.strip();
-        words=data.split()
-        nrWords = len(words)
-        if (nrWords != 3):
-            print "Error: Unable to parse line: "+line
-            return False
-        value=words[2].split("=")
-        if (len(value) != 2):
-            print "Error: Unable to parse line: "+line
-            return False
-        matchedSources=[]
-        for source in pkg.sources:
-            sourceName=strUtils.getFileNameFromURL(source)
-            if (sourceName.startswith(value[0])):
-                matchedSources.append(sourceName)
-        if (len(matchedSources) == 0):
-            print "Error: Can not find match for sha1 "+value[0]
-            return False
-        if (len(matchedSources) > 1):
-            print "Error: Too many matched Sources:" + ' '.join(matchedSources) + " for sha1 "+value[0]
-            return False
-        pkg.checksums[sourceName] = value[1]
-        return True;
-
-    def isConditionalCheckMacro(self,line):
+        line = self.replaceMacros(line)
         data = line.strip()
         words = data.split()
         nrWords = len(words)
-        if(nrWords != 2):
+        if nrWords != 3:
+            print("Error: Unable to parse line: " + line)
             return False
-        if(words[0] != "%if" or words[1] != "%{with_check}"):
+        value = words[2].split("=")
+        if len(value) != 2:
+            print("Error: Unable to parse line: " + line)
+            return False
+        matchedSources = []
+        for source in pkg.sources:
+            sourceName = strUtils.getFileNameFromURL(source)
+            if sourceName.startswith(value[0]):
+                matchedSources.append(sourceName)
+        if len(matchedSources) == 0:
+            print("Error: Can not find match for sha1 " + value[0])
+            return False
+        if len(matchedSources) > 1:
+            print("Error: Too many matched Sources:" +
+                  ' '.join(matchedSources) +
+                  " for sha1 " + value[0])
+            return False
+        pkg.checksums[sourceName] = value[1]
+        return True
+
+    def isConditionalCheckMacro(self, line):
+        data = line.strip()
+        words = data.split()
+        nrWords = len(words)
+        if nrWords != 2:
+            return False
+        if words[0] != "%if" or words[1] != "%{with_check}":
             return False
         return True
 
-    def isIfCondition(self,line):
+    def isIfCondition(self, line):
         return line.startswith("%if ")
 
     # Supports only %if %{}
-    def isConditionTrue(self,line):
+    def isConditionTrue(self, line):
         data = line.strip()
         words = data.split()
         nrWords = len(words)
         # condition like %if a > b is not supported
-        if(nrWords != 2):
+        if nrWords != 2:
             return True
-        if (self.replaceMacros(words[1]) == "0"):
+        if  self.replaceMacros(words[1]) == "0":
             return False
         return True
 
-    def isConditionalMacroStart(self,line):
+    def isConditionalMacroStart(self, line):
         return line.startswith("%if")
 
-    def isConditionalMacroEnd(self,line):
-        return (line.strip() == "%endif")
+    def isConditionalMacroEnd(self, line):
+        return line.strip() == "%endif"

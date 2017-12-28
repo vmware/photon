@@ -1,4 +1,3 @@
-#!/usr/bin/python2
 #
 #    Copyright (C) 2015 vmware inc.
 #
@@ -10,16 +9,16 @@ import collections
 
 class JsonWrapper(object):
 
-    def __init__(self,  filename):
+    def __init__(self, filename):
         self.filename = filename
 
     def read(self):
-        json_data = open(self.filename)
-        self.data = json.load(json_data, object_pairs_hook=collections.OrderedDict)
-        json_data.close()
+        with open(self.filename) as json_data:
+            self.data = json.load(json_data,
+                                  object_pairs_hook=collections.OrderedDict)
         return self.data
 
-    def write(self,  data):
+    def write(self, data):
         self.data = data
-        outfile = open(self.filename,  'wb')
-        json.dump(data,  outfile)
+        with open(self.filename, 'w') as outfile:
+            json.dump(data, outfile)
