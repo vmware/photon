@@ -11,8 +11,10 @@ from window import Window
 from confirmwindow import ConfirmWindow
 
 class ReadMulText(Action):
-    def __init__(self, maxy, maxx, y, install_config, field, display_string, confirmation_error_msg, 
-        echo_char, accepted_chars, validation_fn, conversion_fn, can_cancel, default_string = None):
+    def __init__(self, maxy, maxx, y, install_config, field,
+                 display_string, confirmation_error_msg,
+                 echo_char, accepted_chars, validation_fn, conversion_fn,
+                 can_cancel, default_string=None):
         self.maxy = maxy
         self.maxx = maxx
         self.y = y
@@ -32,8 +34,8 @@ class ReadMulText(Action):
         self.position = 0
         self.height = len(self.display_string) * 4 + 2
         self.menu_pos = 0
-
-        self.textwin = curses.newwin(self.height, self.textwin_width + 2)#self.textwin_width)
+        #self.textwin_width)
+        self.textwin = curses.newwin(self.height, self.textwin_width + 2)
         self.textwin.bkgd(' ', curses.color_pair(2))
         self.textwin.keypad(1)
 
@@ -60,20 +62,20 @@ class ReadMulText(Action):
 
     def hide(self):
         return
-    
+
     def init_text(self):
         self.shadowpanel.show()
         curses.panel.update_panels()
 
-        self.x = 0;
+        self.x = 0
         #initialize the ----
-        dashes = '_' * self.textwin_width 
-        cury = self.y+1
+        dashes = '_' * self.textwin_width
+        cury = self.y + 1
         self.str = []
 
         for string in self.display_string:
             self.textwin.addstr(cury, 1, string)
-            self.textwin.addstr(cury+1, 1, dashes)
+            self.textwin.addstr(cury + 1, 1, dashes)
             cury = cury + 4
             self.str.append('')
 
@@ -95,11 +97,11 @@ class ReadMulText(Action):
                 curs_loc = self.visible_text_width + 1
             else:
                 curs_loc = len(self.str[self.position]) +1
-            ch = self.textwin.getch(self.y+2+self.position*4, curs_loc)
+            ch = self.textwin.getch(self.y + 2 + self.position * 4, curs_loc)
 
             update_text = False
             if ch in [curses.KEY_ENTER, ord('\n')]:
-                if self.menu_pos==1:
+                if self.menu_pos == 1:
                     curses.curs_set(0)
                     self.shadowpanel.hide()
                     return ActionResult(False, None)
@@ -108,8 +110,10 @@ class ReadMulText(Action):
                         curses.curs_set(0)
                         conf_message_height = 8
                         conf_message_width = 48
-                        conf_message_button_y = (self.maxy - conf_message_height) / 2 + 5
-                        confrim_window = ConfirmWindow(conf_message_height, conf_message_width, self.maxy, self.maxx, conf_message_button_y, self.confirmation_error_msg, True)
+                        conf_message_button_y = (self.maxy - conf_message_height) // 2 + 5
+                        confrim_window = ConfirmWindow(conf_message_height, conf_message_width,
+                                                       self.maxy, self.maxx, conf_message_button_y,
+                                                       self.confirmation_error_msg, True)
                         confrim_window.do_action()
                         return ActionResult(False, {'goBack': True})
                     self.set_field()
@@ -129,7 +133,7 @@ class ReadMulText(Action):
             elif ch in [ord('\t')]:
                 self.refresh(1, reset=True)
 
-            elif ch ==curses.KEY_LEFT:
+            elif ch == curses.KEY_LEFT:
                 self.menu_refresh(1)
 
             elif ch == curses.KEY_RIGHT:
@@ -148,22 +152,24 @@ class ReadMulText(Action):
                 self.update_text()
 
     def menu_refresh(self, n):
-        self.menu_pos+=n
-        if self.menu_pos<0:
-            self.menu_pos=0
-        elif self.menu_pos>=1:
-            self.menu_pos=1
+        self.menu_pos += n
+        if self.menu_pos < 0:
+            self.menu_pos = 0
+        elif self.menu_pos >= 1:
+            self.menu_pos = 1
         self.update_menu()
 
     def update_menu(self):
-        if self.menu_pos==1:
+        if self.menu_pos == 1:
             self.textwin.addstr(self.height-2, 5, '<Cancel>', curses.color_pair(3))
         else:
             self.textwin.addstr(self.height-2, 5, '<Cancel>')
-        if self.menu_pos==0:
-            self.textwin.addstr(self.height-2, self.textwin_width-len('<OK>')-5, '<OK>',curses.color_pair(3))
+        if self.menu_pos == 0:
+            self.textwin.addstr(self.height-2, self.textwin_width-len('<OK>')-5, '<OK>',
+                                curses.color_pair(3))
         else:
-            self.textwin.addstr(self.height-2, self.textwin_width-len('<OK>')-5, '<OK>')
+            self.textwin.addstr(self.height-2, self.textwin_width-len('<OK>')-5,
+                                '<OK>')
 
 
 
@@ -176,15 +182,15 @@ class ReadMulText(Action):
             text = self.echo_char * len(text)
 
         text = text + '_' * (self.visible_text_width - len(self.str[self.position]))
-        self.textwin.addstr(self.y+2+self.position*4, 1, text)
+        self.textwin.addstr(self.y + 2 + self.position * 4, 1, text)
 
     def refresh(self, n, reset=False):
-        self.position += n 
+        self.position += n
         if self.position < 0:
             self.position = 0
         elif self.position >= len(self.display_string):
             if reset:
-                self.position=0
+                self.position = 0
             else:
                 self.position = len(self.display_string)-1
 
@@ -203,8 +209,8 @@ class ReadMulText(Action):
             if not success:
                 spaces = ' ' * (int(self.textwin_width) - len(self.display_string[0]))
                 self.textwin.addstr(self.y + 1, len(self.display_string[0]), spaces)
-                self.textwin.addstr(self.y + 1, len(self.display_string[0]), err, curses.color_pair(4))
+                self.textwin.addstr(self.y + 1, len(self.display_string[0]), err,
+                                    curses.color_pair(4))
             return success
         else:
             return True
-

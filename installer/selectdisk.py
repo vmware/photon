@@ -12,7 +12,7 @@ import modules.commons
 from progressbar import ProgressBar
 
 class SelectDisk(object):
-    def __init__(self,  maxy, maxx, install_config):
+    def __init__(self, maxy, maxx, install_config):
         self.install_config = install_config
         self.menu_items = []
 
@@ -28,19 +28,25 @@ class SelectDisk(object):
         self.menu_height = 5
         self.progress_padding = 5
         self.progress_width = self.win_width - self.progress_padding
-        self.progress_bar = ProgressBar(self.win_starty + 6, self.win_startx + (self.progress_padding // 2), self.progress_width, new_win=True)
+        self.progress_bar = ProgressBar(self.win_starty + 6,
+                                        self.win_startx + (self.progress_padding // 2),
+                                        self.progress_width, new_win=True)
 
         self.disk_buttom_items = []
         self.disk_buttom_items.append(('<Custom>', self.custom_function, False))
         self.disk_buttom_items.append(('<Auto>', self.auto_function, False))
 
-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Select a disk', True, items = self.disk_buttom_items, menu_helper = self.save_index, position = 2, tab_enabled=False)
-        self.partition_window = Window(self.win_height, self.win_width, self.maxy, self.maxx, 'Partition', True)
+        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
+                             'Select a disk', True,
+                             items=self.disk_buttom_items, menu_helper=self.save_index,
+                             position=2, tab_enabled=False)
+        self.partition_window = Window(self.win_height, self.win_width, self.maxy,
+                                       self.maxx, 'Partition', True)
         self.devices = Device.refresh_devices()
 
     def guided_partitions(self, params):
         if not 'diskindex' in self.install_config:
-            return ActionResult(False, None);
+            return ActionResult(False, None)
 
         device_index = self.install_config['diskindex']
 
@@ -48,7 +54,9 @@ class SelectDisk(object):
         menu_width = 40
         menu_starty = (self.maxy - menu_height) // 2 + 5
         self.install_config['delete_partition'] = True
-        confrim_window = ConfirmWindow(menu_height, menu_width, self.maxy, self.maxx, menu_starty, 'This will erase the disk.\nAre you sure?')
+        confrim_window = ConfirmWindow(menu_height, menu_width, self.maxy,
+                                       self.maxx, menu_starty,
+                                       'This will erase the disk.\nAre you sure?')
         confirmed = confrim_window.do_action().result['yes']
 
         if confirmed == False:
@@ -62,24 +70,27 @@ class SelectDisk(object):
 
         # Do the partitioning
         if 'partitionsnumber' in self.install_config:
-                if (int(self.install_config['partitionsnumber']) == 0):
-                    partitions_data = modules.commons.partition_disk(self.devices[device_index].path, modules.commons.default_partitions)
-                else:
-                    partitions = []
-                    for i in range (int (self.install_config['partitionsnumber'])):
-                        if len(self.install_config[str(i)+'partition_info'+str(0)])==0:
-                            sizedata=0
-                        else:
-                            sizedata = int(self.install_config[str(i)+'partition_info'+str(0)])
-                        mtdata = self.install_config[str(i)+'partition_info'+str(2)]
-                        typedata = self.install_config[str(i)+'partition_info'+str(1)]
+            if int(self.install_config['partitionsnumber']) == 0:
+                partitions_data = modules.commons.partition_disk(
+                    self.devices[device_index].path, modules.commons.default_partitions)
+            else:
+                partitions = []
+                for i in range(int(self.install_config['partitionsnumber'])):
+                    if len(self.install_config[str(i)+'partition_info'+str(0)]) == 0:
+                        sizedata = 0
+                    else:
+                        sizedata = int(self.install_config[str(i) + 'partition_info' + str(0)])
+                    mtdata = self.install_config[str(i) + 'partition_info' + str(2)]
+                    typedata = self.install_config[str(i) + 'partition_info'+str(1)]
 
-                        partitions = partitions + [
-                                    {"mountpoint": mtdata, "size": sizedata, "filesystem": typedata},
-                                    ]
-                    partitions_data = modules.commons.partition_disk(self.devices[device_index].path, partitions)
-        else: 
-            partitions_data = modules.commons.partition_disk(self.devices[device_index].path, modules.commons.default_partitions)
+                    partitions = partitions + [{"mountpoint": mtdata,
+                                                "size": sizedata,
+                                                "filesystem": typedata},]
+                partitions_data = modules.commons.partition_disk(
+                    self.devices[device_index].path, partitions)
+        else:
+            partitions_data = modules.commons.partition_disk(
+                self.devices[device_index].path, modules.commons.default_partitions)
 
         if partitions_data == None:
             self.partition_window.adderror('Partitioning failed, you may try again')
@@ -92,22 +103,24 @@ class SelectDisk(object):
     def display(self, params):
         if 'skipPrevs' in self.install_config:
             self.install_config['skipPrevs'] = False
-        self.window.addstr(0, 0, 'Please select a disk and a method how to partition it:\nAuto - single partition for /, no swap partition.\nCustom - for customized partitioning')
+        self.window.addstr(0, 0, 'Please select a disk and a method how to partition it:\n' +
+                           'Auto - single partition for /, no swap partition.\n' +
+                           'Custom - for customized partitioning')
 
         self.disk_menu_items = []
 
         # Fill in the menu items
         for index, device in enumerate(self.devices):
             #if index > 0:
-                self.disk_menu_items.append(
-                        (
-                            '{2} - {1} @ {0}'.format(device.path, device.size, device.model), 
-                            self.save_index, 
-                            index
-                        )
-                    )
+            self.disk_menu_items.append(
+                (
+                    '{2} - {1} @ {0}'.format(device.path, device.size, device.model),
+                    self.save_index,
+                    index
+                ))
 
-        self.disk_menu = Menu(self.menu_starty,  self.maxx, self.disk_menu_items, self.menu_height, tab_enable=False)
+        self.disk_menu = Menu(self.menu_starty, self.maxx, self.disk_menu_items,
+                              self.menu_height, tab_enable=False)
         self.disk_menu.can_save_sel(True)
 
         self.window.set_action_panel(self.disk_menu)
@@ -125,4 +138,3 @@ class SelectDisk(object):
     def custom_function(self, params):  #custom minimize partition number is 1
         self.install_config['autopartition'] = False
         return ActionResult(True, None)
-
