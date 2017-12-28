@@ -1,4 +1,4 @@
-#! /usr/bin/python2
+#! /usr/bin/python3
 #
 #    Copyright (C) 2015 vmware inc.
 #
@@ -43,7 +43,9 @@ def create_vmdk_and_partition(config, vmdk_path):
     firmware = "bios"
     if 'boot' in config and config['boot'] == 'efi':
         firmware = "efi"
-    process = subprocess.Popen(['./mk-setup-vmdk.sh', '-rp', config['size']['root'], '-sp', config['size']['swap'], '-n', vmdk_path, '-fm', firmware, '-m'], stdout=subprocess.PIPE)
+    process = subprocess.Popen(['./mk-setup-vmdk.sh', '-rp', config['size']['root'], '-sp',
+                                config['size']['swap'], '-n', vmdk_path, '-fm', firmware, '-m'],
+                               stdout=subprocess.PIPE)
     count = 0
     for line in iter(process.stdout.readline, ''):
         sys.stdout.write(line)
@@ -57,7 +59,8 @@ def create_vmdk_and_partition(config, vmdk_path):
             count += 1
 
     if count == 2:
-        partitions_data['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/', 'filesystem': 'ext4'}]
+        partitions_data['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/',
+                                          'filesystem': 'ext4'}]
 
     return partitions_data, count == 2
 
@@ -83,7 +86,8 @@ def create_pkg_list_to_copy_to_iso(build_install_option, output_data_path):
     #copy_flags 1: add the rpm file for the package
     #           2: add debuginfo rpm file for the package.
     #           4: add src rpm file for the package
-def create_rpm_list_to_be_copied_to_iso(pkg_to_rpm_map_file, build_install_option, copy_flags, output_data_path):
+def create_rpm_list_to_be_copied_to_iso(pkg_to_rpm_map_file, build_install_option, copy_flags,
+                                        output_data_path):
     packages = []
     if build_install_option is None:
         packages = []
@@ -112,7 +116,9 @@ def create_additional_file_list_to_copy_in_iso(base_path, build_install_option):
     file_list = []
     for install_option in options_sorted:
         if "additional-files" in install_option[1]:
-            file_list = file_list + map(lambda filename: os.path.join(base_path, filename), install_option[1].get("additional-files"))
+            file_list = file_list + list(map(
+                lambda filename: os.path.join(base_path, filename),
+                install_option[1].get("additional-files")))
     return file_list
 
 def get_live_cd_status_string(build_install_option):
@@ -165,31 +171,40 @@ def make_debug_iso(working_directory, debug_iso_path, rpm_list):
 if __name__ == '__main__':
     usage = "Usage: %prog [options] <config file> <tools path>"
     parser = ArgumentParser(usage)
-    parser.add_argument("-i", "--iso-path",  dest="iso_path")
-    parser.add_argument("-j", "--src-iso-path",  dest="src_iso_path")
-    parser.add_argument("-k", "--debug-iso-path",  dest="debug_iso_path")
+    parser.add_argument("-i", "--iso-path", dest="iso_path")
+    parser.add_argument("-j", "--src-iso-path", dest="src_iso_path")
+    parser.add_argument("-k", "--debug-iso-path", dest="debug_iso_path")
     parser.add_argument("-v", "--vmdk-path", dest="vmdk_path")
-    parser.add_argument("-w",  "--working-directory",  dest="working_directory", default="/mnt/photon-root")
-    parser.add_argument("-l",  "--log-path",  dest="log_path", default="../stage/LOGS")
-    parser.add_argument("-r",  "--rpm-path",  dest="rpm_path", default="../stage/RPMS")
-    parser.add_argument("-x",  "--srpm-path",  dest="srpm_path", default="../stage/SRPMS")
-    parser.add_argument("-o", "--output-data-path", dest="output_data_path", default="../stage/common/data/")
+    parser.add_argument("-w", "--working-directory", dest="working_directory",
+                        default="/mnt/photon-root")
+    parser.add_argument("-l", "--log-path", dest="log_path",
+                        default="../stage/LOGS")
+    parser.add_argument("-r", "--rpm-path", dest="rpm_path", default="../stage/RPMS")
+    parser.add_argument("-x", "--srpm-path", dest="srpm_path", default="../stage/SRPMS")
+    parser.add_argument("-o", "--output-data-path", dest="output_data_path",
+                        default="../stage/common/data/")
     parser.add_argument("-f", "--force", action="store_true", dest="force", default=False)
-    parser.add_argument("-p", "--package-list-file", dest="package_list_file", default="../common/data/build_install_options_all.json")
+    parser.add_argument("-p", "--package-list-file", dest="package_list_file",
+                        default="../common/data/build_install_options_all.json")
     parser.add_argument("-m", "--stage-path", dest="stage_path", default="../stage")
-    parser.add_argument("-s", "--json-data-path", dest="json_data_path", default="../stage/common/data/")
-    parser.add_argument("-d", "--pkg-to-rpm-map-file", dest="pkg_to_rpm_map_file", default="../stage/pkg_info.json")
+    parser.add_argument("-s", "--json-data-path", dest="json_data_path",
+                        default="../stage/common/data/")
+    parser.add_argument("-d", "--pkg-to-rpm-map-file", dest="pkg_to_rpm_map_file",
+                        default="../stage/pkg_info.json")
     parser.add_argument("-c", "--pkg-to-be-copied-conf-file", dest="pkg_to_be_copied_conf_file")
     parser.add_argument('configfile', nargs='?')
     options = parser.parse_args()
     # Cleanup the working directory
     if not options.force:
-        proceed = query_yes_no("This will remove everything under {0}. Are you sure?".format(options.working_directory))
+        proceed = query_yes_no("This will remove everything under {0}. " +
+                               "Are you sure?".format(options.working_directory))
         if not proceed:
             sys.exit(0)
 
     if options.src_iso_path:
-        rpm_list = create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 4, options.output_data_path)
+        rpm_list = create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file,
+                                                       options.pkg_to_be_copied_conf_file, 4,
+                                                       options.output_data_path)
         make_src_iso(options.working_directory, options.src_iso_path, rpm_list)
 
     else:
@@ -234,7 +249,10 @@ if __name__ == '__main__':
             if config['password']['crypted']:
                 config['password'] = config['password']['text']
             else:
-                config['password'] = crypt.crypt(config['password']['text'], "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
+                config['password'] = crypt.crypt(
+                    config['password']['text'],
+                    "$6$" + "".join([random.choice(
+                        string.ascii_letters + string.digits) for _ in range(16)]))
 
         # Check the installation type
         json_wrapper_option_list = JsonWrapper(options.package_list_file)
@@ -242,33 +260,48 @@ if __name__ == '__main__':
         options_sorted = option_list_json.items()
 
         packages = []
-        packages = PackageSelector.get_packages_to_install(options_sorted, config['type'], options.output_data_path)
+        packages = PackageSelector.get_packages_to_install(options_sorted, config['type'],
+                                                           options.output_data_path)
 
         config['packages'] = packages
 
-        if (os.path.isdir(options.working_directory)):
+        if os.path.isdir(options.working_directory):
             process = subprocess.Popen(['rm', '-rf', options.working_directory])
             retval = process.wait()
 
-        process = subprocess.Popen(['mkdir', '-p', os.path.join(options.working_directory, "photon-chroot")])
+        process = subprocess.Popen(['mkdir', '-p',
+                                    os.path.join(options.working_directory, "photon-chroot")])
         retval = process.wait()
 
         config['working_directory'] = options.working_directory
 
         # Run the installer
-        package_installer = Installer(config, rpm_path = options.rpm_path, log_path = options.log_path)
+        package_installer = Installer(config, rpm_path=options.rpm_path,
+                                      log_path=options.log_path)
         package_installer.install(None)
 
         # Making the iso if needed
         if options.iso_path:
-            rpm_list = " ".join(create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 1, options.output_data_path))
-            files_to_copy = " ".join(create_additional_file_list_to_copy_in_iso(os.path.abspath(options.stage_path), options.package_list_file))
+            rpm_list = " ".join(
+                create_rpm_list_to_be_copied_to_iso(
+                    options.pkg_to_rpm_map_file,
+                    options.pkg_to_be_copied_conf_file, 1, options.output_data_path))
+            files_to_copy = " ".join(
+                create_additional_file_list_to_copy_in_iso(
+                    os.path.abspath(options.stage_path), options.package_list_file))
+
             live_cd = get_live_cd_status_string(options.package_list_file)
-            process = subprocess.Popen(['./mk-install-iso.sh', '-w', options.working_directory, options.iso_path, options.rpm_path, options.package_list_file, rpm_list, options.stage_path, files_to_copy, live_cd, options.json_data_path])
+            process = subprocess.Popen(['./mk-install-iso.sh', '-w',
+                                        options.working_directory, options.iso_path,
+                                        options.rpm_path, options.package_list_file,
+                                        rpm_list, options.stage_path, files_to_copy,
+                                        live_cd, options.json_data_path])
             retval = process.wait()
 
         if options.debug_iso_path:
-            debug_rpm_list = create_rpm_list_to_be_copied_to_iso(options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 2, options.output_data_path)
+            debug_rpm_list = create_rpm_list_to_be_copied_to_iso(
+                options.pkg_to_rpm_map_file, options.pkg_to_be_copied_conf_file, 2,
+                options.output_data_path)
             make_debug_iso(options.working_directory, options.debug_iso_path, debug_rpm_list)
 
         # Cleaning up for vmdk
@@ -277,6 +310,6 @@ if __name__ == '__main__':
             process.wait()
 
         #Clean up the working directories
-        if (options.iso_path or options.vmdk_path or options.debug_iso_path):
+        if options.iso_path or options.vmdk_path or options.debug_iso_path:
             process = subprocess.Popen(['rm', '-rf', options.working_directory])
             retval = process.wait()
