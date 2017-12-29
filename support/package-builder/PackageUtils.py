@@ -64,7 +64,7 @@ class PackageUtils(object):
         rpmDestDir=self.getRPMDestDir(rpmName,destDir)
         # shutil is not atomic. copy & move to ensure atomicity.
         rpmDestPath=rpmDestDir+"/"+rpmName
-        rpmDestPathTemp = rpmDestDir + "/." + ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(10)])
+        rpmDestPathTemp = rpmDestDir + "/." + ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)])
         if os.geteuid()==0:
             if not os.path.isdir(rpmDestDir):
                 cmdUtils.runCommandInShell("mkdir -p "+rpmDestDir)
@@ -338,7 +338,7 @@ class PackageUtils(object):
         cmdUtils=CommandUtils()
         result=cmdUtils.runCommandInShell2(cmd, chrootCmd)
         if result is not None:
-            return result.split()
+            return result.decode().split()
         return result
 
     def adjustGCCSpecs(self, package, chrootID, logPath):
@@ -441,9 +441,8 @@ class PackageUtils(object):
             if not installLog:
                 self.logger.error("Unable to install nodeps rpms")
                 raise Exception("nodeps RPM installation failed")
-            logfile = open(logFile, 'w')
-            logfile.write(installLog)
-            logfile.close()
+            with open(logFile, 'w') as logfile:
+                logfile.write(installLog.decode())
 
             if self.noDepsRPMFilesToReInstallInAOneShot != "":
                 cmd = rpmInstallcmd + " " + self.nodepsRPMPackageOptions + " " + self.forceRpmPackageOptions + " " + self.noDepsRPMFilesToReInstallInAOneShot
@@ -454,9 +453,8 @@ class PackageUtils(object):
                 if not installLog:
                     self.logger.error("Unable to re-install nodeps rpms")
                     raise Exception("nodeps RPM re-installation failed")
-                logfile = open(logFile, 'a')
-                logfile.write(installLog)
-                logfile.close()
+                with open(logFile, 'a') as logfile:
+                    logfile.write(installLog.decode())
 
         if self.rpmFilesToInstallInAOneShot != "":
             self.logger.info("PackageUtils-installRPMSInAOneShotInContainer: Installing rpms: " + \
@@ -470,9 +468,8 @@ class PackageUtils(object):
             if not installLog:
                 self.logger.error("Unable to install rpms")
                 raise Exception("RPM installation failed")
-            logfile = open(logFile, 'w')
-            logfile.write(installLog)
-            logfile.close()
+            with open(logFile, 'w') as logfile:
+                logfile.write(installLog.decode())
 
             if self.rpmFilesToReInstallInAOneShot != "":
                 cmd = rpmInstallcmd + " " + self.forceRpmPackageOptions + " " + self.rpmFilesToReInstallInAOneShot
@@ -483,9 +480,8 @@ class PackageUtils(object):
                 if not installLog:
                     self.logger.error("Unable to re-install rpms")
                     raise Exception("RPM re-installation failed")
-                logfile = open(logFile, 'a')
-                logfile.write(installLog)
-                logfile.close()
+                with open(logFile, 'a') as logfile:
+                    logfile.write(installLog.decode())
 
     def findInstalledRPMPackagesInContainer(self, containerID):
         cmd = self.rpmBinary + " " + self.queryRpmPackageOptions
@@ -493,7 +489,7 @@ class PackageUtils(object):
         #TODO: Error code from exec_run
         result = containerID.exec_run(cmd)
         if result is not None:
-            return result.split()
+            return result.decode().split()
         return result
 
     def adjustGCCSpecsInContainer(self, package, containerID, logPath):
@@ -505,9 +501,8 @@ class PackageUtils(object):
         #TODO: Error code from exec_run
         scriptLog = containerID.exec_run(adjustCmd)
         if scriptLog:
-            logfile = open(logFile, 'w')
-            logfile.write(scriptLog)
-            logfile.close()
+            with open(logFile, 'w') as logfile:
+                logfile.write(scriptLog.decode())
             return
 
         self.logger.debug(containerID.exec_run("ls -la /tmp/" + self.adjustGCCSpecScript))

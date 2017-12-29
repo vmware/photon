@@ -154,7 +154,7 @@ class SpecParser(object):
                     if defaultpkg.name == packageName :
                         packageName = 'default'
                     macro,i=self.readMacroFromFile(i, lines)
-                    if not self.packages.has_key(packageName):
+                    if packageName not in self.packages:
                         i=i+1
                         continue
                     self.packages[packageName].updatePackageMacro(macro)
@@ -336,8 +336,8 @@ class SpecParser(object):
     def readHeader(self,line):
         headerSplitIndex=line.find(":")
         if(headerSplitIndex+1 == len(line) ):
-            print line
-            print "Error:Invalid header"
+            print(line)
+            print("Error:Invalid header")
             return False, None,None
         headerName=line[0:headerSplitIndex].lower()
         headerContent=line[headerSplitIndex+1:].strip()
@@ -462,10 +462,10 @@ class SpecParser(object):
         words=data.split(" ")
         nrWords = len(words)
         if (nrWords != 3):
-            print "Error: Unable to parse line: "+line
+            print("Error: Unable to parse line: "+line)
             return False
         if (words[2] != "none" and words[2] != "nonow" and words[2] != "nopie") :
-            print "Error: Invalid security_hardening value: " + words[2]
+            print("Error: Invalid security_hardening value: " + words[2])
             return False
         self.globalSecurityHardening = words[2]
         return True;
@@ -477,11 +477,11 @@ class SpecParser(object):
         words=data.split()
         nrWords = len(words)
         if (nrWords != 3):
-            print "Error: Unable to parse line: "+line
+            print("Error: Unable to parse line: "+line)
             return False
         value=words[2].split("=")
         if (len(value) != 2):
-            print "Error: Unable to parse line: "+line
+            print("Error: Unable to parse line: "+line)
             return False
         matchedSources=[]
         for source in pkg.sources:
@@ -489,10 +489,10 @@ class SpecParser(object):
             if (sourceName.startswith(value[0])):
                 matchedSources.append(sourceName)
         if (len(matchedSources) == 0):
-            print "Error: Can not find match for sha1 "+value[0]
+            print("Error: Can not find match for sha1 "+value[0])
             return False
         if (len(matchedSources) > 1):
-            print "Error: Too many matched Sources:" + ' '.join(matchedSources) + " for sha1 "+value[0]
+            print("Error: Too many matched Sources:" + ' '.join(matchedSources) + " for sha1 "+value[0])
             return False
         pkg.checksums[sourceName] = value[1]
         return True;

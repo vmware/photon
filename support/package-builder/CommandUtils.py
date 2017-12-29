@@ -20,7 +20,7 @@ class CommandUtils(object):
         result=process.communicate()[0]
         if result is None:
             return None
-        return result.split()
+        return result.decode().split()
 
     def runCommandInShell(self,cmd,logfilePath=None,chrootCmd=None):
         if chrootCmd is not None:

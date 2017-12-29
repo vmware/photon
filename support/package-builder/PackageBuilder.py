@@ -34,14 +34,14 @@ class PackageBuilderBase(object):
         self.logger=Logger.getLogger(self.logName,self.logPath)
 
     def findPackageNameFromRPMFile(self,rpmfile):
-        rpmfile=os.path.basename(rpmfile)
-        releaseindex=rpmfile.rfind("-")
+        rpmfile = os.path.basename(rpmfile)
+        releaseindex = rpmfile.rfind("-")
         if releaseindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
+            self.logger.error("Invalid rpm file:" + rpmfile)
             return None
-        versionindex=rpmfile[0:releaseindex].rfind("-")
+        versionindex = rpmfile[0:releaseindex].rfind("-")
         if versionindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
+            self.logger.error("Invalid rpm file:" + rpmfile)
             return None
         packageName=rpmfile[0:versionindex]
         return packageName
@@ -91,7 +91,7 @@ class PackageBuilderBase(object):
         listInstalledRPMs.append(latestRPM)
         self.installDependentRunTimePackages(pkgUtils,package,instanceID,destLogPath,listInstalledPackages, listInstalledRPMs)
         noDeps=False
-        if self.mapPackageToCycles.has_key(package):
+        if package in self.mapPackageToCycles:
             noDeps = True
         if package in self.listNodepsPackages:
             noDeps=True
@@ -106,7 +106,7 @@ class PackageBuilderBase(object):
         listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
         if len(listRunTimeDependentPackages) != 0:
             for pkg in listRunTimeDependentPackages:
-                if self.mapPackageToCycles.has_key(pkg) and pkg not in self.listAvailableCyclicPackages:
+                if pkg in self.mapPackageToCycles and pkg not in self.listAvailableCyclicPackages:
                     continue
                 latestPkgRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(pkg)).replace(".rpm", "") 
                 if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
@@ -163,7 +163,10 @@ class PackageBuilderContainer(object):
             if oldContainerID is not None:
                 oldContainerID.remove(force=True)
         except docker.errors.NotFound:
-            sys.exc_clear()
+            try:
+                sys.exc_clear()
+            except:
+                pass
 
         try:
             self.base.logger.info("BuildContainer-prepareBuildContainer: Starting build container: " + containerName)
