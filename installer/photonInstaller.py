@@ -47,7 +47,8 @@ def create_vmdk_and_partition(config, vmdk_path):
                                 config['size']['swap'], '-n', vmdk_path, '-fm', firmware, '-m'],
                                stdout=subprocess.PIPE)
     count = 0
-    for line in iter(process.stdout.readline, ''):
+    for byteline in iter(process.stdout.readline, ''):
+        line = byteline.decode()
         sys.stdout.write(line)
         if line.startswith("DISK_DEVICE="):
             partitions_data['disk'] = line.replace("DISK_DEVICE=", "").strip()
