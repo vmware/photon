@@ -9,7 +9,7 @@
 Summary:	Photon Management Daemon
 Name:		pmd
 Version:	0.0.5
-Release:	4%{?dist}
+Release:	5%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	Apache 2.0
@@ -120,7 +120,9 @@ rm -f %{buildroot}%{python_sitearch}/pmd.so
 python3 setup.py install --skip-build --root %{buildroot}
 popd
 
-install -d $RPM_BUILD_ROOT/var/log/pmd
+install -d $RPM_BUILD_ROOT/var/log
+install -d $RPM_BUILD_ROOT/var/opt/pmd/log
+ln -sfv /var/opt/pmd/log $RPM_BUILD_ROOT/var/log/pmd
 install -vdm755 %{buildroot}%{_unitdir}
 install -D -m 444 pmd.service %{buildroot}%{_unitdir}
 install -D -m 444 pmdprivsepd.service %{buildroot}%{_unitdir}
@@ -285,7 +287,8 @@ rm -rf %{buildroot}/*
     /etc/pmd/api_sddl.conf
     /etc/pmd/restapispec.json
     /etc/pmd/restconfig.txt
-    %attr(0766, %{name}, %{name}) %dir /var/log/%{name}
+    %attr(0766, %{name}, %{name}) %dir /var/opt/%{name}/log
+    %attr(0766, %{name}, %{name}) /var/log/%{name}
     %_tmpfilesdir/%{name}.conf
 
 %files libs
@@ -307,6 +310,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*       Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  0.0.5-5
+-       Fixed the log file directory structure
 *       Thu Nov 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-4
 -       update to use c-rest-engine-1.11
 *       Tue Oct 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-3
