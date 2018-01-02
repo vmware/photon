@@ -13,7 +13,7 @@
 #################################################################################
 Name:       ceph
 Version:    11.2.0
-Release:    10%{?dist}
+Release:    11%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -506,7 +506,8 @@ install -m 0644 -D udev/95-ceph-osd.rules %{buildroot}%{_udevrulesdir}/95-ceph-o
 #set up placeholder directories
 mkdir -p %{buildroot}%{_sysconfdir}/ceph
 mkdir -p %{buildroot}%{_localstatedir}/run/ceph
-mkdir -p %{buildroot}%{_localstatedir}/log/ceph
+mkdir -p %{buildroot}%{_localstatedir}/opt/ceph/log
+mkdir -p %{buildroot}%{_localstatedir}/log
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/tmp
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/mon
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/osd
@@ -516,6 +517,7 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/radosgw
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-osd
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-mds
 mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rgw
+ln -sfv %{_localstatedir}/opt/ceph/log  %{buildroot}%{_localstatedir}/log/ceph
 
 %clean
 rm -rf %{buildroot}
@@ -613,7 +615,8 @@ rm -rf %{buildroot}
 %{python_sitelib}/ceph_daemon.py*
 %dir %{_udevrulesdir}
 %{_udevrulesdir}/50-rbd.rules
-%attr(3770,ceph,ceph) %dir %{_localstatedir}/log/ceph/
+%attr(3770,ceph,ceph) %dir %{_localstatedir}/opt/ceph/log
+%attr(3770,ceph,ceph) %{_localstatedir}/log/ceph
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/
 
 %pre common
@@ -997,6 +1000,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  11.2.0-11
+-   Fixed the log file directory structure
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 11.2.0-10
 -   Requires /bin/grep, /usr/bin/which, or toybox
 *   Tue Aug 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 11.2.0-9

@@ -5,7 +5,7 @@
 
 Name:           dracut
 Version:        045
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -89,7 +89,9 @@ rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/98integrity
 mkdir -p $RPM_BUILD_ROOT/boot/dracut
 mkdir -p $RPM_BUILD_ROOT/var/lib/dracut/overlay
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log
-touch $RPM_BUILD_ROOT%{_localstatedir}/log/dracut.log
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/opt/dracut/log
+touch $RPM_BUILD_ROOT%{_localstatedir}/opt/dracut/log/dracut.log
+ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log $RPM_BUILD_ROOT%{_localstatedir}/log/
 mkdir -p $RPM_BUILD_ROOT%{_sharedstatedir}/initramfs
 
 rm -f $RPM_BUILD_ROOT%{_mandir}/man?/*suse*
@@ -136,8 +138,9 @@ rm -rf -- $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/dracut.conf
 %dir %{_sysconfdir}/dracut.conf.d
 %dir %{dracutlibdir}/dracut.conf.d
-
-%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_localstatedir}/log/dracut.log
+%dir %{_localstatedir}/opt/dracut/log
+%attr(0644,root,root) %ghost %config(missingok,noreplace) %{_localstatedir}/opt/dracut/log/dracut.log
+%{_localstatedir}/log/dracut.log
 %dir %{_sharedstatedir}/initramfs
 %{_unitdir}/dracut-shutdown.service
 %{_unitdir}/sysinit.target.wants/dracut-shutdown.service
@@ -165,6 +168,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  045-6
+-   Fixed the log file directory structure
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 045-5
 -   Requires coreutils/util-linux/findutils or toybox,
     /bin/grep, /bin/sed
@@ -188,4 +193,3 @@ rm -rf -- $RPM_BUILD_ROOT
 -   Fix incorrect systemd directory.
 *   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 044-1
 -   Updating Version.
-
