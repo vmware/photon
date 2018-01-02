@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.71
+Version:        4.9.74
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=837883b228489c9717bce49e021080d94921460b
+%define sha1 linux=b9054174240bc452a9596e59921c93e903fa3d60
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -40,8 +40,13 @@ Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.pat
 Patch23:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
-
-Patch25:       init-do_mounts-recreate-dev-root.patch
+Patch25:        init-do_mounts-recreate-dev-root.patch
+# Fix CVE-2017-8824
+Patch26:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
+# Fix CVE-2017-17448
+Patch27:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
+# Fix CVE-2017-17450
+Patch28:        netfilter-xt_osf-Add-missing-permission-checks.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -104,6 +109,9 @@ The Linux package contains the Linux kernel doc files
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
 
 %build
 # patch vmw_balloon driver
@@ -200,6 +208,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-1
+-   Version update
+-   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.
 *   Thu Dec 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.71-1
 -   Version update
 *   Mon Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-2

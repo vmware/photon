@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.71
+Version:        4.9.74
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=837883b228489c9717bce49e021080d94921460b
+%define sha1 linux=b9054174240bc452a9596e59921c93e903fa3d60
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -50,6 +50,13 @@ Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.pat
 Patch30:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
+# Fix CVE-2017-8824
+Patch32:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
+# Fix CVE-2017-17448
+Patch33:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
+# Fix CVE-2017-17450
+Patch34:        netfilter-xt_osf-Add-missing-permission-checks.patch
+
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 
@@ -158,6 +165,9 @@ EOF
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
+%patch32 -p1
+%patch33 -p1
+%patch34 -p1
 
 pushd ..
 %patch99 -p0
@@ -284,6 +294,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-1
+-   Version update
+-   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.
 *   Thu Dec 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.71-1
 -   Version update
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1

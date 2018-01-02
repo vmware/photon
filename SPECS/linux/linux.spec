@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.71
+Version:        4.9.74
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=837883b228489c9717bce49e021080d94921460b
+%define sha1 linux=b9054174240bc452a9596e59921c93e903fa3d60
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -47,6 +47,12 @@ Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.pat
 Patch27:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
+# Fix CVE-2017-8824
+Patch29:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
+# Fix CVE-2017-17448
+Patch30:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
+# Fix CVE-2017-17450
+Patch31:        netfilter-xt_osf-Add-missing-permission-checks.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -146,6 +152,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -312,6 +322,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-1
+-   Version update
+-   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.
 *   Thu Dec 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.71-1
 -   Version update
 *   Tue Dec 05 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-2
