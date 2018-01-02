@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.13.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -13,7 +13,7 @@ Source1:        nginx.service
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 %description
-NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server. 
+NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
 %setup -q
@@ -36,7 +36,9 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/usr/lib/systemd/system
-install -vdm755 %{buildroot}%{_var}/log/nginx
+install -vdm755 %{buildroot}%{_var}/log
+install -vdm755 %{buildroot}%{_var}/opt/nginx/log
+ln -sfv %{_var}/opt/nginx/log %{buildroot}%{_var}/log/nginx
 install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 
 %files
@@ -44,9 +46,12 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_sysconfdir}/*
 %{_sbindir}/*
 %{_libdir}/systemd/system/nginx.service
-%dir %{_var}/log/nginx
+%dir %{_var}/opt/nginx/log
+%{_var}/log/nginx
 
 %changelog
+*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  1.13.5-2
+-   Fixed the log file directory structure
 *   Wed Oct 04 2017 Xiaolin Li <xiaolinl@vmware.com> 1.13.5-1
 -   Update to version 1.13.5
 *   Mon May 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.11.13-2

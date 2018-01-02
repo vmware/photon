@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.6.10
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -38,7 +38,9 @@ make install DESTDIR=$RPM_BUILD_ROOT \
 install -vdm755 %{buildroot}/var/lib/rabbitmq/
 install -vdm755 %{buildroot}/%{_sysconfdir}/rabbitmq/
 install -vdm755 %{buildroot}/usr/lib/systemd/system/
-mkdir -p %{buildroot}/var/log/rabbitmq
+mkdir -p %{buildroot}/var/log
+mkdir -p %{buildroot}/var/opt/rabbitmq/log
+ln -sfv /var/opt/rabbitmq/log %{buildroot}/var/log/rabbitmq
 
 cp %{SOURCE1} %{buildroot}/%{_sysconfdir}/rabbitmq/
 mkdir -p %{buildroot}/usr/lib/systemd/system
@@ -89,12 +91,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%dir %attr(0750, rabbitmq, rabbitmq) /var/log/rabbitmq
+%dir %attr(0750, rabbitmq, rabbitmq) /var/opt/rabbitmq/log
+%attr(0750, rabbitmq, rabbitmq) /var/log/rabbitmq
 %{_libdir}/*
 %{_sysconfdir}/*
 /var/lib/*
 
 %changelog
+* Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.6.10-3
+- Fixed the log file directory structure
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.10-2
 - Remove shadow from requires and use explicit tools for post actions
 * Wed May 31 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.6.10-1
