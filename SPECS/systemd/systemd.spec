@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          11%{?dist}
+Release:          12%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -136,7 +136,9 @@ sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legac
 sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/lib/systemd/network/99-default.link
 sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
 rm -f %{buildroot}%{_var}/log/README
-mkdir -p %{buildroot}%{_localstatedir}/log/journal
+mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
+mkdir -p %{buildroot}%{_localstatedir}/log
+ln -sfv %{_localstatedir}/opt/journal/log %{buildroot}%{_localstatedir}/log/journal
 
 find %{buildroot} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
@@ -226,7 +228,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/polkit-1
 %{_datadir}/systemd
 %{_datadir}/zsh/*
-%dir %{_localstatedir}/log/journal
+%dir %{_localstatedir}/opt/journal/log
+%{_localstatedir}/log/journal
 
 %files devel
 %dir %{_includedir}/systemd
@@ -243,6 +246,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  233-12
+-    Fixed the log file directory structure
 *    Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-11
 -    Fix CVE-2017-15908 dns packet loop fix.
 *    Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-10
@@ -350,13 +355,13 @@ rm -rf %{buildroot}/*
 *    Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
 -    Reduce systemd-networkd boot time (exclude if-rename patch).
 *    Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
--    Adding sysvinit support 
+-    Adding sysvinit support
 *    Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
 -    Fixing networkd/udev race condition for renaming interface.
 *    Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
 -    Remove debug files.
 *    Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 216-5
--    Building compat libs 
+-    Building compat libs
 *    Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
 -    gudev support
 *    Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3
