@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.106
+Version:       4.4.109
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=a40a7f291d85f9373f024946faa8c7dcb6dc7fdb
+%define sha1 linux=bcc074736b9ba1801d04371e0a9a4bfd8a5a2967
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -37,8 +37,14 @@ Patch22:       net-9p-vsock.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 # Fix CVE-2017-11472
-Patch25:        ACPICA-Namespace-fix-operand-cache-leak.patch
+Patch25:       ACPICA-Namespace-fix-operand-cache-leak.patch
 Patch26:       init-do_mounts-recreate-dev-root.patch
+# Fix CVE-2017-8824
+Patch27:       dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
+# Fix CVE-2017-17448
+Patch28:       netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
+# Fix CVE-2017-17450
+Patch29:       netfilter-xt_osf-Add-missing-permission-checks.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -102,6 +108,9 @@ The Linux package contains the Linux kernel doc files
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
 
 %build
 # patch vmw_balloon driver
@@ -190,6 +199,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-1
+-   Version update
+-   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.
 *   Tue Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.106-1
 -   Version update
 *   Fri Dec 08 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.104-1
