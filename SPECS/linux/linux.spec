@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.106
+Version:    	4.4.109
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=a40a7f291d85f9373f024946faa8c7dcb6dc7fdb
+%define sha1 linux=bcc074736b9ba1801d04371e0a9a4bfd8a5a2967
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -38,6 +38,12 @@ Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
 # Fix CVE-2017-11472
 Patch20:        ACPICA-Namespace-fix-operand-cache-leak.patch
+# Fix CVE-2017-8824
+Patch21:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
+# Fix CVE-2017-17448
+Patch22:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
+# Fix CVE-2017-17450
+Patch23:        netfilter-xt_osf-Add-missing-permission-checks.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -131,6 +137,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch17 -p1
 %patch18 -p1
 %patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -287,6 +296,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-1
+-   Version update
+-   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.
 *   Tue Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.106-1
 -   Version update
 *   Tue Dec 12 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.104-2
