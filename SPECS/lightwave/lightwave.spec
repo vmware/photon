@@ -1,13 +1,14 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.7
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL: 	       https://github.com/vmware/lightwave
 Source0:       lightwave-%{version}.tar.gz
 Patch0:        lightwave-gssapi-unix-creds-separation.patch
+Patch1:        lightwave-aarch64-support.patch
 %define sha1 lightwave=abe987b67aadab05040ac38c11474b8d93fe8644
 Distribution:  Photon
 
@@ -126,6 +127,7 @@ Lightwave POST service
 %prep
 %setup -qn lightwave-%{version}
 %patch0 -p1
+%patch1 -p1
 sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/lib64/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
 sed -i 's,/opt/vmware/bin/ic-join,/usr/bin/ic-join,' config/scripts/domainjoin.sh
@@ -1141,6 +1143,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.7-2
+-   Aarch64 support
 *   Thu Nov 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.7-1
 -   update to lightwave 1.3.1.7 (release 1.3.1-7 in lightwave repo)
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1-5
