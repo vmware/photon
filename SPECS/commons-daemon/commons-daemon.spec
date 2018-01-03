@@ -1,14 +1,14 @@
 Summary:	Apache Commons Daemon
 Name:		commons-daemon
-Version:	1.0.15
-Release:	12%{?dist}
+Version:	1.1.0
+Release:	1%{?dist}
 License:	Apache
 URL:		http://commons.apache.org/proper/commons-daemon
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.0.15-src.tar.gz
-%define sha1 commons-daemon=ca6a448d1d214f714e214b35809a2117568970e3
+Source0:	http://apache.mesi.com.ar//commons/daemon/source/commons-daemon-1.1.0-src.tar.gz
+%define sha1 commons-daemon=5a64221b8020d32c02bf44a115f8a95016d3c76e
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -29,8 +29,14 @@ rm -rf %{buildroot}
 export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA8_VERSION}
 ant dist
 
+%ifarch x86_64
 export CFLAGS=-m64
 export LDFLAGS=-m64
+%endif
+
+%ifarch aarch64
+sed -i 's/supported_os="aarch64"/supported_os="linux"/' src/native/unix/configure
+%endif
 
 CURDIR=`pwd`
 
@@ -56,6 +62,8 @@ chmod -R 755 $DIST_DIR
 %{_datadir}/java/*.jar
 
 %changelog
+*   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-1
+-   Versio update to support aarch64
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.15-12
 -   Remove BuildArch
 *   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.15-11

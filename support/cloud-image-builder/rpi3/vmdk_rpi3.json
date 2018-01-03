@@ -11,8 +11,6 @@
     "public_key":"<ssh-key-here>",
     "postinstallscripts": ["rpi3-custom-patch.sh"],
     "additionalfiles": [
-                            {"root/boot/grub2/arm64-efi": "/boot/grub2/arm64-efi"},
-                            {"root/boot/dtb-4.4.36-8": "/boot/dtb"},
                             {"photon-dev.repo": "/etc/yum.repos.d/photon-dev.repo"},
                             {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
                             {"resizefs.service": "/lib/systemd/system/resizefs.service"}
