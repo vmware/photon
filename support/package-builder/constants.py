@@ -372,33 +372,12 @@ class constants(object):
             "mysql.spec",
             # irqbalance for arm64 ?
             "irqbalance.spec",
-            # no X rpms to build openjdk, skip all java packages
+            # openjdk8.spec is for x86_64 arch
             "openjdk8.spec",
-            "ant-contrib.spec",
-            "apache-ant.spec",
-            "apache-maven.spec",
-            "apache-tomcat.spec",
-            "cassandra.spec",
-            "commons-daemon.spec",
-            "jna.spec",
+            # dashboard failed to build libxslt during `npm install`
             "kubernetes-dashboard.spec",
-            "lightwave.spec",
-            "mesos.spec",
-            "protobuf.spec",
+            # test issue (java null pointer exception) before compilation
             "wavefront-proxy.spec",
-            "zookeeper.spec",
-            # requires lightwave
-            "pmd.spec",
-            # requires protobuf
-            "calico-felix.spec",
-            "lightstep-tracer-cpp.spec",
-            "protobuf-c.spec",
-            "runc.spec",
-            # requires cassandra
-            "python-cqlsh.spec",
-            # requires python-pyinstaller, but it has unresolved glibc deps
-            "calico-k8s-policy.spec",
-            "libcalico.spec",
             # pcstat requires patching for aarch64
             "pcstat.spec",
             # sysdig for aarch64 requires luajit, skip it and falco

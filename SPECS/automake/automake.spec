@@ -1,14 +1,14 @@
 Summary:	Programs for generating Makefiles
 Name:		automake
-Version:	1.15
-Release:	4%{?dist}
+Version:	1.15.1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/automake/
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.gz
-%define sha1 automake=b5a840c7ec4321e78fdc9472e476263fa6614ca1
+Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
+%define sha1 automake=45632d466c16ecf18d9c18dc4be883cde59acb59
 BuildRequires:	autoconf
 BuildArch:      noarch
 
@@ -42,6 +42,8 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*	Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-1
+-	Version update
 *	Fri Aug 04 2017 Danut Moraru <dmoraru@vmware.com> 1.15-4
 -	Disable check that fails test case
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.15-3
