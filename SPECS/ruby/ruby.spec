@@ -1,14 +1,14 @@
 Summary:        Ruby
 Name:           ruby
-Version:        2.4.2
+Version:        2.4.3
 Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://cache.ruby-lang.org/pub/ruby/%{name}-%{version}.tar.xz
-%define sha1    ruby=8373e32c63bba2180799da091b572664aa9faf6f
+Source0:        http://cache.ruby-lang.org/pub/ruby/2.4/%{name}-%{version}.tar.bz2
+%define sha1    ruby=3ca96536320b915762d57fe1ee540df6810bf631
 Patch0:         ruby-CVE-2017-9224.patch
 Patch1:         ruby-CVE-2017-9226.patch
 Patch2:         ruby-CVE-2017-9227.patch
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
 %changelog
+*   Wed Jan 03 2018 Xiaolin Li <xiaolinl@vmware.com> 2.4.3-1
+-   Update to version 2.4.3, fix CVE-2017-17405
 *   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.2-1
 -   Update to version 2.4.2
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.0-6
