@@ -1,7 +1,5 @@
-#! /usr/bin/python2
-#
 #    Copyright (C) 2015-2017 VMware, Inc. All rights reserved.
-#    pullsources.py 
+#    pullsources.py
 #    Allows pulling packages'sources from a source repository.
 #
 #    Author(s): Mahmoud Bassiouny (mbassiouny@vmware.com)
@@ -11,7 +9,6 @@
 import json
 import os
 import hashlib
-import datetime
 import requests
 from requests.auth import HTTPBasicAuth
 from CommandUtils import CommandUtils
@@ -30,37 +27,39 @@ def get(source, sha1, sourcesPath, configs, logger):
     sourcePath = cmdUtils.findFile(source, sourcesPath)
     if sourcePath is not None and len(sourcePath) > 0:
         if len(sourcePath) > 1:
-            raise Exception("Multiple sources found for source:"+source+"\n"+ ",".join(sourcePath) +"\nUnable to determine one.")
+            raise Exception("Multiple sources found for source:" + source + "\n" +
+                            ",".join(sourcePath) +"\nUnable to determine one.")
         if sha1 == getFileHash(sourcePath[0]):
             # Use file from sourcesPath
             return
         else:
-            logger.info("sha1 of "+sourcePath[0]+" does not match. "+sha1+" vs "+getFileHash(sourcePath[0]))
-    configFiles=configs.split(":")
+            logger.info("sha1 of " + sourcePath[0] + " does not match. " + sha1 +
+                        " vs " + getFileHash(sourcePath[0]))
+    configFiles = configs.split(":")
     for config in configFiles:
         p = pullSources(config, logger)
         package_path = os.path.join(sourcesPath, source)
-        try: 
+        try:
             p.downloadFileHelper(source, package_path, sha1)
             return
         except Exception as e:
-            logger.error(e)
-    raise Exception("Missing source: "+source)
+            logger.exception(e)
+    raise Exception("Missing source: " + source)
 
 class pullSources:
 
     def __init__(self, conf_file, logger):
         self._config = {}
-        self.logger=logger
+        self.logger = logger
         self.loadConfig(conf_file)
 
         # generate the auth
         self._auth = None
         if ('user' in self._config and len(self._config['user']) > 0 and
-            'apikey' in self._config and len(self._config['apikey'])) > 0:
+                'apikey' in self._config and len(self._config['apikey'])) > 0:
             self._auth = HTTPBasicAuth(self._config['user'], self._config['apikey'])
 
-    def loadConfig(self,conf_file):
+    def loadConfig(self, conf_file):
         with open(conf_file) as jsonFile:
             self._config = json.load(jsonFile)
 
@@ -68,7 +67,7 @@ class pullSources:
         #form url: https://dl.bintray.com/vmware/photon_sources/1.0/<filename>.
         url = '%s/%s' % (self._config['baseurl'], filename)
 
-        self.logger.info("Downloading: "+url)
+        self.logger.info("Downloading: " + url)
 
         with open(file_path, 'wb') as handle:
             response = requests.get(url, auth=self._auth, stream=True)
@@ -85,8 +84,7 @@ class pullSources:
             response.close()
         return file_path
 
-    def downloadFileHelper(self, package_name, package_path, package_sha1 = None):
+    def downloadFileHelper(self, package_name, package_path, package_sha1=None):
         self.downloadFile(package_name, package_path)
         if package_sha1 != getFileHash(package_path):
             raise Exception('Invalid sha1 for package %s' % package_name)
-
