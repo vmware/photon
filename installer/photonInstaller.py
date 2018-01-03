@@ -40,6 +40,7 @@ def query_yes_no(question, default="no"):
 
 def create_vmdk_and_partition(config, vmdk_path):
     partitions_data = {}
+
     firmware = "bios"
     if 'boot' in config and config['boot'] == 'efi':
         firmware = "efi"
@@ -47,7 +48,13 @@ def create_vmdk_and_partition(config, vmdk_path):
                                 config['size']['swap'], '-n', vmdk_path, '-fm', firmware, '-m'],
                                stdout=subprocess.PIPE)
     count = 0
-    for line in iter(process.stdout.readline, ''):
+
+    while True:
+        line = process.stdout.readline().decode()
+        if line == '':
+            retval = process.poll()
+            if retval is not None:
+                break
         sys.stdout.write(line)
         if line.startswith("DISK_DEVICE="):
             partitions_data['disk'] = line.replace("DISK_DEVICE=", "").strip()
@@ -231,7 +238,6 @@ if __name__ == '__main__':
 
             config['iso_system'] = False
             config['vmdk_install'] = True
-
         else:
             # Check the arguments
             if not options.configfile:
@@ -244,6 +250,7 @@ if __name__ == '__main__':
             config['vmdk_install'] = False
 
         config["pkg_to_rpm_map_file"] = options.pkg_to_rpm_map_file
+
         if 'password' in config:
             # crypt the password if needed
             if config['password']['crypted']:
