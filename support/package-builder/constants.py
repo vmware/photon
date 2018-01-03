@@ -384,8 +384,6 @@ class constants(object):
             "kubernetes-dashboard.spec",
             # test issue (java null pointer exception) before compilation
             "wavefront-proxy.spec",
-            # pcstat requires patching for aarch64
-            "pcstat.spec",
             # sysdig for aarch64 requires luajit, skip it and falco
             # https://github.com/draios/sysdig/issues/833
             "sysdig.spec",
