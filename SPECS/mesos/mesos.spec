@@ -2,7 +2,7 @@
 
 Summary:        Mesos
 Name:           mesos
-Version:        1.2.2
+Version:        1.4.1
 Release:        1%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
@@ -10,8 +10,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1    mesos=bbcec6f04bb629a16a5ea24a8cde3f3e9f75300e
-Patch0:         mesos-sysmacros.patch
+%define sha1    mesos=5a194b3ea8e1a6c30269e9e88c204ba7bfca07e5
 BuildRequires:  openjre8 >= 1.8.0.45
 BuildRequires:  openjdk8 >= 1.8.0.45
 BuildRequires:  curl-devel
@@ -51,21 +50,15 @@ Requires:   %{name} = %{version}
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.am
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.am
-sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
 
-./configure \
+%configure \
     CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
     CXXFLAGS="%{optflags} -Wno-deprecated-declarations -Wno-strict-aliasing" \
-    --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir}
+    --disable-silent-rules
 make %{?_smp_mflags}
 
 #%check
@@ -105,7 +98,9 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
-*   Tue Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
+*   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.4.1-2
+-   Version update. Aarch64 support
+*   Wed Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
 -   Updated to version 1.2.2
 *   Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-7
 -   Use multiple cores to build mesos.
@@ -129,7 +124,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 -   BuildRequires curl-devel.
 *   Tue Dec 13 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-1
 -   Updated to version 1.1.0
-*   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 0.28.2-3
+*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 0.28.2-3
 -   Use sqlite-{devel,libs}
 *   Mon Oct 03 2016 ChangLee <changlee@vmware.com> 0.28.2-2
 -   Modified check

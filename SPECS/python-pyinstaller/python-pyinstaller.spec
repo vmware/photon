@@ -3,16 +3,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python-pyinstaller
-Version:        3.2.1
-Release:        2%{?dist}
-Url:            https://pypi.python.org/pypi/PyInstaller/3.2.1
+Version:        3.3.1
+Release:        1%{?dist}
+Url:            https://pypi.python.org/pypi/PyInstaller/3.3.1
 License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.bz2
-%define sha1    PyInstaller=6e8bc52d325a5527402ad574f774ed64c70bf03f
-Patch0:         python2-unit-tests.patch
+Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.gz
+%define sha1    PyInstaller=578324d2dfb4edbfca34903dbde404c95a211663
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -58,9 +57,12 @@ Python 3 version.
 
 rm -rf ../p3dir
 cp -a . ../p3dir
-%patch0 -p1
 
 %build
+pushd bootloader
+python ./waf distclean all
+popd
+
 python2 setup.py build
 pushd ../p3dir
 python3 setup.py build
@@ -78,7 +80,6 @@ mv %{buildroot}/%{_bindir}/pyinstaller        %{buildroot}/%{_bindir}/pyinstalle
 
 popd
 python2 setup.py install --single-version-externally-managed -O1 --root=%{buildroot}
-
 
 %check
 # future is required for python2 make check
@@ -110,6 +111,9 @@ LANG=en_US.UTF-8 py.test2 tests/unit tests/functional \
 %{_bindir}/pyinstaller3
 %exclude %{python2_sitelib}/PyInstaller/bootloader/Darwin-64bit
 %exclude %{python2_sitelib}/PyInstaller/bootloader/Linux-32bit
+%ifarch aarch64
+%exclude %{python2_sitelib}/PyInstaller/bootloader/Linux-64bit
+%endif
 %exclude %{python2_sitelib}/PyInstaller/bootloader/Windows-32bit
 %exclude %{python2_sitelib}/PyInstaller/bootloader/Windows-64bit
 
@@ -119,10 +123,15 @@ LANG=en_US.UTF-8 py.test2 tests/unit tests/functional \
 %{python3_sitelib}/*
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Darwin-64bit
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Linux-32bit
+%ifarch aarch64
+%exclude %{python3_sitelib}/PyInstaller/bootloader/Linux-64bit
+%endif
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-32bit
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.1-1
+-   Version update. Build bootloader from sources
 *   Mon Sep 25 2017 Bo Gan <ganb@vmware.com> 3.2.1-2
 -   Fix make check issues.
 *   Tue Feb 14 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.1-1

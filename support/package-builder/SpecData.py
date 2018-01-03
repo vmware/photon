@@ -243,8 +243,10 @@ class SPECS(object):
         #adding openjre8 version rpm macro
         if (platform.machine() == "x86_64"):
             spec = Specutils(constants.specPath + "/openjdk8/openjdk8.spec")
-            java8version = spec.getVersion()
-            constants.addMacro("JAVA8_VERSION",java8version)
+        else:
+            spec = Specutils(constants.specPath + "/openjdk8/openjdk8_aarch64.spec")
+        java8version = spec.getVersion()
+        constants.addMacro("JAVA8_VERSION",java8version)
 
         #adding kernelversion rpm macro
         spec = Specutils(constants.specPath + "/linux/linux.spec")
