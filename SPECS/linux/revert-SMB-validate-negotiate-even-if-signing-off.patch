@@ -1,0 +1,58 @@
+
+This code reverts the commit mentioned below. (Apply it with patch -p1,
+not patch -p1 -R).
+
+commit 02ef29f9cbb616bf41900c427830dc8bf3f52d99
+Author: Steve French <smfrench@gmail.com>
+Date:   Wed Sep 20 19:57:18 2017 -0500
+
+    SMB: Validate negotiate (to protect against downgrade) even if signing off
+    
+    commit 0603c96f3af50e2f9299fa410c224ab1d465e0f9 upstream.
+    
+    As long as signing is supported (ie not a guest user connection) and
+    connection is SMB3 or SMB3.02, then validate negotiate (protect
+    against man in the middle downgrade attacks).  We had been doing this
+    only when signing was required, not when signing was just enabled,
+    but this more closely matches recommended SMB3 behavior and is
+    better security.  Suggested by Metze.
+    
+    Signed-off-by: Steve French <smfrench@gmail.com>
+    Reviewed-by: Jeremy Allison <jra@samba.org>
+    Acked-by: Stefan Metzmacher <metze@samba.org>
+    Reviewed-by: Ronnie Sahlberg <lsahlber@redhat.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
+index f2ff60e..7123289 100644
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -526,22 +526,15 @@ int smb3_validate_negotiate(const unsigned int xid, struct cifs_tcon *tcon)
+ 
+        /*
+         * validation ioctl must be signed, so no point sending this if we
+-        * can not sign it (ie are not known user).  Even if signing is not
+-        * required (enabled but not negotiated), in those cases we selectively
++        * can not sign it.  We could eventually change this to selectively
+         * sign just this, the first and only signed request on a connection.
+-        * Having validation of negotiate info  helps reduce attack vectors.
++        * This is good enough for now since a user who wants better security
++        * would also enable signing on the mount. Having validation of
++        * negotiate info for signed connections helps reduce attack vectors
+         */
+-       if (tcon->ses->session_flags & SMB2_SESSION_FLAG_IS_GUEST)
++       if (tcon->ses->server->sign == false)
+                return 0; /* validation requires signing */
+ 
+-       if (tcon->ses->user_name == NULL) {
+-               cifs_dbg(FYI, "Can't validate negotiate: null user mount\n");
+-               return 0; /* validation requires signing */
+-       }
+-
+-       if (tcon->ses->session_flags & SMB2_SESSION_FLAG_IS_NULL)
+-               cifs_dbg(VFS, "Unexpected null user (anonymous) auth flag sent by server\n");
+-
+        vneg_inbuf.Capabilities =
+                        cpu_to_le32(tcon->ses->server->vals->req_capabilities);
+        memcpy(vneg_inbuf.Guid, tcon->ses->server->client_guid,
+
