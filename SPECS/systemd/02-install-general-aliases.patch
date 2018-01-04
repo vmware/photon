@@ -1,28 +1,18 @@
-diff -Naur a/Makefile.am b/Makefile.am
---- a/Makefile.am	2016-08-29 12:55:38.000000000 -0700
-+++ b/Makefile.am	2016-08-29 13:42:31.472636829 -0700
-@@ -309,7 +309,7 @@
- 	set -- $(USER_UNIT_ALIASES) && \
- 		dir=$(userunitdir) && $(install-relative-aliases)
- 	set -- $(GENERAL_ALIASES) && \
--		dir= && $(install-relative-aliases)
-+		dir= && $(install-general-aliases)
+diff -rup systemd-236/units/meson-add-wants.sh systemd-236-new/units/meson-add-wants.sh
+--- systemd-236/units/meson-add-wants.sh	2017-12-14 14:09:57.000000000 -0800
++++ systemd-236-new/units/meson-add-wants.sh	2018-01-03 14:53:07.176167234 -0800
+@@ -13,8 +13,6 @@ case "$target" in
+                 ;;
+ esac
  
- define install-aliases
- 	while [ -n "$$1" ]; do \
-@@ -328,6 +328,15 @@
- 		shift 2 || exit $$?; \
- 	done
- endef
-+
-+define install-general-aliases
-+	while [ -n "$$1" ]; do \
-+		$(MKDIR_P) `dirname $(DESTDIR)$$dir/$$2` && \
-+		rm -f $(DESTDIR)$$dir/$$2 && \
-+		$(LN_S) /usr$$1 $(DESTDIR)$$dir/$$2 && \
-+		shift 2 || exit $$?; \
-+	done
-+endef
+-unitpath="${DESTDIR:-}${unitdir}/${unit}"
+-
+ case "$target" in
+         */)
+                 mkdir -p -m 0755 "$dir"
+@@ -24,4 +22,4 @@ case "$target" in
+                 ;;
+ esac
  
- install-touch-usr-hook:
- 	touch -c $(DESTDIR)/$(prefix)
+-ln -vfs --relative "$unitpath" "$dir"
++ln -vfs "${unitdir}/${unit}" "$dir"
