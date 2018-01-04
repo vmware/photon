@@ -1,11 +1,11 @@
 import os
-import commons
 import random
+import commons
 
 install_phase = commons.POST_INSTALL
 enabled = True
 
-def execute(name, config, root):
+def execute(config, root):
     hostname = config['hostname']
 
     hostname_file = os.path.join(root, 'etc/hostname')

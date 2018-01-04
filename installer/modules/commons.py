@@ -6,8 +6,8 @@ PRE_INSTALL = "pre-install"
 POST_INSTALL = "post-install"
 
 LOG_LEVEL_DESC = ["emerg", "alert", "crit", "err", "warning", "notice", "info", "debug"]
-LOG_FILE_NAME  = "/var/log/installer.log"
-TDNF_LOG_FILE_NAME  = "/var/log/tdnf.log"
+LOG_FILE_NAME = "/var/log/installer.log"
+TDNF_LOG_FILE_NAME = "/var/log/tdnf.log"
 TDNF_CMDLINE_FILE_NAME = "/var/log/tdnf.cmdline"
 KS_POST_INSTALL_LOG_FILE_NAME = "/var/log/installer-kickstart.log"
 SIGNATURE   = "localhost echo"
@@ -21,8 +21,8 @@ LOG_INFO    = 6
 LOG_DEBUG   = 7
 
 default_partitions = [
-                        {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
-                     ]
+    {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
+    ]
 
 def partition_compare(p):
     if 'mountpoint' in p:
@@ -36,7 +36,7 @@ def partition_disk(disk, partitions):
     output = open(os.devnull, 'w')
 
     # Clear the disk
-    process = subprocess.Popen(['sgdisk', '-o', '-g', disk], stderr = output, stdout = output)
+    process = subprocess.Popen(['sgdisk', '-o', '-g', disk], stderr=output, stdout=output)
     retval = process.wait()
     if retval != 0:
         log(LOG_ERROR, "Failed clearing disk {0}".format(disk))
@@ -58,7 +58,7 @@ def partition_disk(disk, partitions):
     # Adding the known size partitions
     for partition in partitions:
         if partition['size'] == 0:
-            # Can not have more than 1 extensible partition 
+            # Can not have more than 1 extensible partition
             if extensible_partition != None:
                 log(LOG_ERROR, "Can not have more than 1 extensible partition")
                 return None
@@ -80,13 +80,13 @@ def partition_disk(disk, partitions):
     partition_cmd.extend(['-p', disk])
 
     # Run the partitioning command
-    process = subprocess.Popen(partition_cmd, stderr = output, stdout = output)
+    process = subprocess.Popen(partition_cmd, stderr=output, stdout=output)
     retval = process.wait()
     if retval != 0:
         log(LOG_ERROR, "Faild partition disk, command: {0}". format(partition_cmd))
         return None
 
-    process = subprocess.Popen(['sgdisk', '-t1' + grub_flag, disk], stderr = output, stdout = output)
+    process = subprocess.Popen(['sgdisk', '-t1' + grub_flag, disk], stderr=output, stdout=output)
     retval = process.wait()
     if retval != 0:
         log(LOG_ERROR, "Failed to setup grub partition")
@@ -103,25 +103,27 @@ def partition_disk(disk, partitions):
                 partitions_data['boot_partition_number'] = partition['partition_number']
                 partitions_data['bootdirectory'] = '/'
         if partition['filesystem'] == "swap":
-            process = subprocess.Popen(['mkswap', partition['path']], stderr = output, stdout = output)
+            process = subprocess.Popen(['mkswap', partition['path']], stderr=output, stdout=output)
             retval = process.wait()
             if retval != 0:
                 log(LOG_ERROR, "Failed to create swap partition @ {}".format(partition['path']))
                 return None
         else:
             mkfs_cmd = ['mkfs', '-t', partition['filesystem'], partition['path']]
-            process = subprocess.Popen(mkfs_cmd, stderr = output, stdout = output)
+            process = subprocess.Popen(mkfs_cmd, stderr=output, stdout=output)
             retval = process.wait()
             if retval != 0:
-                log(LOG_ERROR, "Failed to format {} partition @ {}".format(partition['filesystem'], partition['path']))
+                log(LOG_ERROR,
+                    "Failed to format {} partition @ {}".format(partition['filesystem'],
+                                                                partition['path']))
                 return None
 
     # Check if there is no root partition
-    if not 'root' in partitions_data:
+    if 'root' not in partitions_data:
         log(LOG_ERROR, "There is no partition assigned to root '/'")
         return None
 
-    if not 'boot' in partitions_data:
+    if 'boot' not in partitions_data:
         partitions_data['boot'] = partitions_data['root']
         partitions_data['boot_partition_number'] = partitions_data['root_partition_number']
         partitions_data['bootdirectory'] = '/boot/'
@@ -130,9 +132,9 @@ def partition_disk(disk, partitions):
 
     return partitions_data
 
-def replace_string_in_file(filename,  search_string,  replace_string):
+def replace_string_in_file(filename, search_string, replace_string):
     with open(filename, "r") as source:
-        lines=source.readlines()
+        lines = source.readlines()
 
     with open(filename, "w") as destination:
         for line in lines:
@@ -145,7 +147,8 @@ def log(type, message):
     return retval
 
 def dump(type, filename):
-    command = "journalctl -p {0} | grep --line-buffered \"{1}\" > {2}".format(LOG_LEVEL_DESC[type], SIGNATURE, filename)
+    command = ("journalctl -p {0} | grep --line-buffered \"{1}\" > {2}"
+               .format(LOG_LEVEL_DESC[type], SIGNATURE, filename))
     process = subprocess.Popen([command], shell=True)
     retval = process.wait()
     return retval
@@ -153,5 +156,5 @@ def dump(type, filename):
 def dump(filename):
     command = "journalctl | grep --line-buffered \"{0}\" > {1}".format(SIGNATURE, filename)
     process = subprocess.Popen([command], shell=True)
-    retval = process.wait()    
+    retval = process.wait()
     return retval
