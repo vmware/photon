@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.74
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -56,6 +56,7 @@ Patch32:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 Patch33:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 # Fix CVE-2017-17450
 Patch34:        netfilter-xt_osf-Add-missing-permission-checks.patch
+Patch35:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -168,6 +169,7 @@ EOF
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
+%patch35 -p1
 
 pushd ..
 %patch99 -p0
@@ -294,6 +296,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-2
+-   Fix SMB3 mount regression.
 *   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-1
 -   Version update
 -   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.
