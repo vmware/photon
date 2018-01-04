@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.74
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -47,6 +47,7 @@ Patch26:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 Patch27:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 # Fix CVE-2017-17450
 Patch28:        netfilter-xt_osf-Add-missing-permission-checks.patch
+Patch29:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -112,6 +113,7 @@ The Linux package contains the Linux kernel doc files
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
 
 %build
 # patch vmw_balloon driver
@@ -208,6 +210,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-2
+-   Fix SMB3 mount regression.
 *   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-1
 -   Version update
 -   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.74
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -53,6 +53,7 @@ Patch29:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 Patch30:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 # Fix CVE-2017-17450
 Patch31:        netfilter-xt_osf-Add-missing-permission-checks.patch
+Patch32:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -155,6 +156,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
+%patch32 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -322,6 +324,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Jan 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-2
+-   Fix SMB3 mount regression.
 *   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-1
 -   Version update
 -   Add patches to fix CVE-2017-8824, CVE-2017-17448 and CVE-2017-17450.
