@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.109
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -33,7 +33,7 @@ Patch18:       vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 Patch19:       serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch20:       vmci-1.1.4.0-use-32bit-atomics-for-queue-headers.patch
 Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
-Patch22:       net-9p-vsock.patch
+Patch22:       vsock-transport-for-9p.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 # Fix CVE-2017-11472
@@ -201,6 +201,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-3
+-   Update vsock transport for 9p with newer version.
 *   Wed Jan 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-2
 -   Fix SMB3 mount regression.
 *   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-1
