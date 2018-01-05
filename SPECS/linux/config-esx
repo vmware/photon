@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86 4.4.99 Kernel Configuration
+# Linux/x86 4.4.110 Kernel Configuration
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -2916,6 +2916,7 @@ CONFIG_KEYS_COMPAT=y
 # CONFIG_ENCRYPTED_KEYS is not set
 # CONFIG_SECURITY_DMESG_RESTRICT is not set
 # CONFIG_SECURITY is not set
+CONFIG_PAGE_TABLE_ISOLATION=y
 # CONFIG_SECURITYFS is not set
 CONFIG_DEFAULT_SECURITY_DAC=y
 CONFIG_DEFAULT_SECURITY=""
