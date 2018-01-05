@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.109
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -32,7 +32,7 @@ Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
 #fixes CVE-2016-6187
 Patch15:        apparmor-fix-oops-validate-buffer-size-in-apparmor_setprocattr.patch
-Patch16:        net-9p-vsock.patch
+Patch16:        vsock-transport-for-9p.patch
 #allow some algorithms in FIPS mode
 Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
@@ -298,6 +298,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Jan 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-3
+-   Update vsock transport for 9p with newer version.
 *   Wed Jan 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-2
 -   Fix SMB3 mount regression.
 *   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-1
