@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.74
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -23,7 +23,7 @@ Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch11:        net-9p-vsock.patch
+Patch11:        vsock-transport-for-9p.patch
 Patch12:        x86-vmware-sta.patch
 # -esx
 Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
@@ -210,6 +210,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-3
+-   Update vsock transport for 9p with newer version.
 *   Wed Jan 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-2
 -   Fix SMB3 mount regression.
 *   Tue Jan 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.74-1
