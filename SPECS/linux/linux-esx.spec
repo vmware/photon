@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.109
-Release:       3%{?dist}
+Version:       4.4.110
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bcc074736b9ba1801d04371e0a9a4bfd8a5a2967
+%define sha1 linux=918cca36197d90b6e67fca331efe7b345be3a56d
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -46,7 +46,6 @@ Patch28:       netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 # Fix CVE-2017-17450
 Patch29:       netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch30:       revert-SMB-validate-negotiate-even-if-signing-off.patch
-
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -201,6 +200,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 05 2018 Anish Swaminathan <anishs@vmware.com> 4.4.110-1
+-   Version update to 4.4.110
 *   Thu Jan 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-3
 -   Update vsock transport for 9p with newer version.
 *   Wed Jan 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-2
