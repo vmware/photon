@@ -12,72 +12,40 @@ for code hygiene.
  arch/x86/entry/entry_64.S | 13 ++++++++++---
  2 files changed, 29 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/entry/calling.h b/arch/x86/entry/calling.h
-index 393a5bf..dba5ff7 100644
---- a/arch/x86/entry/calling.h
-+++ b/arch/x86/entry/calling.h
-@@ -156,6 +156,25 @@ For 32-bit we have the following conventions - kernel is built with
- 	popq %rbx
- 	.endm
- 
-+	.macro RESTORE_EXTRA_REGS offset=0
-+	movq 0*8+\offset(%rsp), %r15
-+	movq 1*8+\offset(%rsp), %r14
-+	movq 2*8+\offset(%rsp), %r13
-+	movq 3*8+\offset(%rsp), %r12
-+	movq 4*8+\offset(%rsp), %rbp
-+	movq 5*8+\offset(%rsp), %rbx
-+	UNWIND_HINT_REGS offset=\offset extra=0
-+	.endm
-+
-+	.macro CLEAR_EXTRA_REGS
-+	xorq %r15, %r15
-+	xorq %r14, %r14
-+	xorq %r13, %r13
-+	xorq %r12, %r12
-+	xorq %rbp, %rbp
-+	xorq %rbx, %rbx
-+	.endm
-+
- 	.macro POP_C_REGS
- 	popq %r11
- 	popq %r10
+ Removed arch/x86/entry/calling.h changes, as it's in 4.9 upstream already
+
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index e58a78f..f65060a 100644
+index af4e581..9e31419 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -235,9 +235,16 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
+@@ -176,7 +176,14 @@ GLOBAL(entry_SYSCALL_64_after_swapgs)
  	pushq	%r9				/* pt_regs->r9 */
  	pushq	%r10				/* pt_regs->r10 */
  	pushq	%r11				/* pt_regs->r11 */
 -	sub	$(6*8), %rsp			/* pt_regs->bp, bx, r12-15 not saved */
 +	sub	$(6*8), %rsp			/* pt_regs->bp, bx, r12-15 not used */
- 	UNWIND_HINT_REGS extra=0
- 
++
 +	/*
 +	 * Clear the unused extra regs for code hygiene.
 +	 * Will restore the callee saved extra regs at end of syscall.
 +	 */
 +	SAVE_EXTRA_REGS
-+	CLEAR_EXTRA_REGS
-+
- 	TRACE_IRQS_OFF
++	ZERO_EXTRA_REGS
  
- 	STUFF_RSB
-@@ -290,7 +297,9 @@ entry_SYSCALL_64_fastpath:
+ 	/*
+ 	 * If we need to do entry work or if we guess we'll need to do
+@@ -229,6 +236,7 @@ entry_SYSCALL_64_fastpath:
  	TRACE_IRQS_ON		/* user mode is traced as IRQs on */
  	movq	RIP(%rsp), %rcx
  	movq	EFLAGS(%rsp), %r11
 +	RESTORE_EXTRA_REGS
- 	addq	$6*8, %rsp	/* skip extra regs -- they were preserved */
-+
- 	UNWIND_HINT_EMPTY
- 	jmp	.Lpop_c_regs_except_rcx_r11_and_sysret
- 
-@@ -302,14 +311,12 @@ entry_SYSCALL_64_fastpath:
+ 	RESTORE_C_REGS_EXCEPT_RCX_R11
+ 	/*
+ 	 * This opens a window where we have a user CR3, but are
+@@ -249,19 +257,16 @@ entry_SYSCALL_64_fastpath:
  	 */
  	TRACE_IRQS_ON
- 	ENABLE_INTERRUPTS(CLBR_ANY)
+ 	ENABLE_INTERRUPTS(CLBR_NONE)
 -	SAVE_EXTRA_REGS
  	movq	%rsp, %rdi
  	call	syscall_return_slowpath	/* returns with IRQs disabled */
@@ -89,6 +57,28 @@ index e58a78f..f65060a 100644
  	movq	%rsp, %rdi
  	call	do_syscall_64		/* returns with IRQs disabled */
  
+ return_from_SYSCALL_64:
+-	RESTORE_EXTRA_REGS
+ 	TRACE_IRQS_IRETQ		/* we're about to change IF */
+ 
+ 	/*
+@@ -331,6 +336,7 @@ return_from_SYSCALL_64:
+ 	 * perf profiles. Nothing jumps here.
+ 	 */
+ syscall_return_via_sysret:
++	RESTORE_EXTRA_REGS
+ 	/* rcx and r11 are already restored (see code above) */
+ 	RESTORE_C_REGS_EXCEPT_RCX_R11
+ 	/*
+@@ -354,7 +360,7 @@ opportunistic_sysret_failed:
+ 	 */
+ 	SWITCH_USER_CR3
+ 	SWAPGS
+-	jmp	restore_c_regs_and_iret
++	jmp	restore_regs_and_iret
+ END(entry_SYSCALL_64)
+ 
+ ENTRY(stub_ptregs_64)
 -- 
 2.9.5
 
