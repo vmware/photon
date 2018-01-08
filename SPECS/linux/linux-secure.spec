@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.75
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -208,9 +208,8 @@ EOF
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
-#not ready yet
-#%patch67 -p1
-#%patch68 -p1
+%patch67 -p1
+%patch68 -p1
 
 pushd ..
 %patch99 -p0
@@ -337,7 +336,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Sun Jan 08 2018 Bo Gan <ganb@vmware.com> 4.9.75-2
+*   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-3
+-   Second Spectre fix, clear user controlled registers upon syscall entry
+*   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-2
 -   Initial Spectre fix
 *   Fri Jan 05 2018 Bo Gan <ganb@vmware.com> 4.9.75-1
 -   Verion update (fix Intel Meltdown)
