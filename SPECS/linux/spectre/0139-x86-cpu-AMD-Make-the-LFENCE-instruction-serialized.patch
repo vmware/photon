@@ -1,0 +1,58 @@
+From 9883f4d618615acaa9541aaae38e8434d699593f Mon Sep 17 00:00:00 2001
+From: Elena Reshetova <elena.reshetova@intel.com>
+Date: Thu, 14 Dec 2017 09:57:58 +0200
+Subject: [PATCH 139/194] x86/cpu/AMD: Make the LFENCE instruction serialized
+
+In order to reduce the impact of using MFENCE, make the execution of the
+LFENCE instruction serialized.  This is done by setting bit 1 of MSR
+0xc0011029 (DE_CFG).
+
+Some families that support LFENCE do not have this MSR.  For these
+families, the LFENCE instruction is already serialized.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+---
+ arch/x86/include/asm/msr-index.h |  2 ++
+ arch/x86/kernel/cpu/amd.c        | 13 +++++++++++--
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index ab02261..1e7d710 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -352,6 +352,8 @@
+ #define FAM10H_MMIO_CONF_BASE_MASK	0xfffffffULL
+ #define FAM10H_MMIO_CONF_BASE_SHIFT	20
+ #define MSR_FAM10H_NODE_ID		0xc001100c
++#define MSR_F10H_DECFG			0xc0011029
++#define MSR_F10H_DECFG_LFENCE_SERIALIZE_BIT	1
+ 
+ /* K8 MSRs */
+ #define MSR_K8_TOP_MEM1			0xc001001a
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index e2defc7..5751810 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -746,8 +746,17 @@ static void init_amd(struct cpuinfo_x86 *c)
+ 		set_cpu_cap(c, X86_FEATURE_K8);
+ 
+ 	if (cpu_has_xmm2) {
+-		/* MFENCE stops RDTSC speculation */
+-		set_cpu_cap(c, X86_FEATURE_MFENCE_RDTSC);
++		/*
++		 * Use LFENCE for execution serialization. On some families
++		 * LFENCE is already serialized and the MSR is not available,
++		 * but msr_set_bit() uses rdmsrl_safe() and wrmsrl_safe().
++		 */
++		if (c->x86 > 0xf)
++			msr_set_bit(MSR_F10H_DECFG,
++				    MSR_F10H_DECFG_LFENCE_SERIALIZE_BIT);
++
++		/* LFENCE with MSR_F10H_DECFG[1]=1 stops RDTSC speculation */
++		set_cpu_cap(c, X86_FEATURE_LFENCE_RDTSC);
+ 	}
+ 
+ 	/*
+-- 
+2.9.5
+

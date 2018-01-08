@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.110
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -46,6 +46,27 @@ Patch28:       netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 # Fix CVE-2017-17450
 Patch29:       netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch30:       revert-SMB-validate-negotiate-even-if-signing-off.patch
+# For Spectre
+Patch50: 0139-x86-cpu-AMD-Make-the-LFENCE-instruction-serialized.patch
+Patch51: 0140-x86-cpu-AMD-Remove-now-unused-definition-of-MFENCE_R.patch
+Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
+Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
+#Patch54: 0143-x86-bpf-jit-prevent-speculative-execution-when-JIT-i.patch
+Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
+Patch56: 0145-carl9170-prevent-speculative-execution.patch
+Patch57: 0146-p54-prevent-speculative-execution.patch
+Patch58: 0147-qla2xxx-prevent-speculative-execution.patch
+Patch59: 0148-cw1200-prevent-speculative-execution.patch
+Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
+Patch61: 0150-ipv4-prevent-speculative-execution.patch
+Patch62: 0151-ipv6-prevent-speculative-execution.patch
+Patch63: 0152-fs-prevent-speculative-execution.patch
+Patch64: 0153-net-mpls-prevent-speculative-execution.patch
+Patch65: 0154-udf-prevent-speculative-execution.patch
+Patch66: 0155-userns-prevent-speculative-execution.patch
+Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+Patch68: 0170-x86-syscall-Clear-unused-extra-registers-on-32-bit-c.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -112,6 +133,26 @@ The Linux package contains the Linux kernel doc files
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
+
+%patch50 -p1
+%patch51 -p1
+%patch52 -p1
+%patch53 -p1
+#%patch54 -p1
+%patch55 -p1
+%patch56 -p1
+%patch57 -p1
+%patch58 -p1
+%patch59 -p1
+%patch60 -p1
+%patch61 -p1
+%patch62 -p1
+%patch63 -p1
+%patch64 -p1
+%patch65 -p1
+%patch66 -p1
+%patch67 -p1
+%patch68 -p1
 
 %build
 # patch vmw_balloon driver
@@ -200,6 +241,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jan 08 2018 Bo Gan <ganb@vmware.com> 4.4.110-2
+-   Initial Spectre fix
+-   Add Observable speculation barrier
+-   Clear unused register upon syscall entry
 *   Fri Jan 05 2018 Anish Swaminathan <anishs@vmware.com> 4.4.110-1
 -   Version update to 4.4.110
 *   Thu Jan 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.109-3
