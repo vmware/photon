@@ -15,11 +15,11 @@ Signed-off-by: Tim Chen <tim.c.chen@linux.intel.com>
  2 files changed, 25 insertions(+), 4 deletions(-)
 
 diff --git a/arch/x86/entry/calling.h b/arch/x86/entry/calling.h
-index dba5ff7..b4c6842 100644
+index 9a9e588..1439429 100644
 --- a/arch/x86/entry/calling.h
 +++ b/arch/x86/entry/calling.h
-@@ -156,6 +156,17 @@ For 32-bit we have the following conventions - kernel is built with
- 	popq %rbx
+@@ -129,6 +129,17 @@ For 32-bit we have the following conventions - kernel is built with
+ 	SAVE_C_REGS_HELPER 0, 0, 0, 1, 0
  	.endm
  
 +	.macro CLEAR_R8_TO_R15
@@ -33,23 +33,33 @@ index dba5ff7..b4c6842 100644
 +	xorq %r8, %r8
 +	.endm
 +
- 	.macro RESTORE_EXTRA_REGS offset=0
- 	movq 0*8+\offset(%rsp), %r15
- 	movq 1*8+\offset(%rsp), %r14
+ 	.macro SAVE_EXTRA_REGS offset=0
+ 	movq %r15, 0*8+\offset(%rsp)
+ 	movq %r14, 1*8+\offset(%rsp)
 diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
-index 574b599..7951358 100644
+index d76a976..9217245 100644
 --- a/arch/x86/entry/entry_64_compat.S
 +++ b/arch/x86/entry/entry_64_compat.S
-@@ -100,6 +100,8 @@ ENTRY(entry_SYSENTER_compat)
- 
- 	STUFF_RSB
+@@ -88,12 +88,14 @@ ENTRY(entry_SYSENTER_compat)
+ 	pushq   $0			/* pt_regs->r11 = 0 */
+ 	pushq   %rbx                    /* pt_regs->rbx */
+ 	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
+-	pushq   $0			/* pt_regs->r12 = 0 */
+-	pushq   $0			/* pt_regs->r13 = 0 */
+-	pushq   $0			/* pt_regs->r14 = 0 */
+-	pushq   $0			/* pt_regs->r15 = 0 */
++	pushq   %r12                    /* pt_regs->r12 */
++	pushq   %r13                    /* pt_regs->r13 */
++	pushq   %r14                    /* pt_regs->r14 */
++	pushq   %r15                    /* pt_regs->r15 */
+ 	cld
  
 +	CLEAR_R8_TO_R15
 +
  	/*
  	 * SYSENTER doesn't filter flags, so we need to clear NT and AC
  	 * ourselves.  To save a few cycles, we can check whether
-@@ -218,10 +220,12 @@ GLOBAL(entry_SYSCALL_compat_after_hwframe)
+@@ -214,10 +217,12 @@ ENTRY(entry_SYSCALL_compat)
  	pushq   $0			/* pt_regs->r11 = 0 */
  	pushq   %rbx                    /* pt_regs->rbx */
  	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
@@ -65,11 +75,11 @@ index 574b599..7951358 100644
 +	CLEAR_R8_TO_R15
  
  	/*
- 	 * We just saved %rdi so it is safe to clobber.  It is not
-@@ -247,6 +251,10 @@ GLOBAL(entry_SYSCALL_compat_after_hwframe)
+ 	 * User mode is traced as though IRQs are on, and SYSENTER
+@@ -234,6 +238,10 @@ ENTRY(entry_SYSCALL_compat)
+ 	/* Opportunistic SYSRET */
  sysret32_from_system_call:
  	TRACE_IRQS_ON			/* User mode traces as IRQs on. */
- 	DISABLE_IBRS_CLOBBER
 +	movq    R15(%rsp), %r15         /* pt_regs->r15 */
 +	movq    R14(%rsp), %r14         /* pt_regs->r14 */
 +	movq    R13(%rsp), %r13         /* pt_regs->r13 */
@@ -77,9 +87,9 @@ index 574b599..7951358 100644
  	movq	RBX(%rsp), %rbx		/* pt_regs->rbx */
  	movq	RBP(%rsp), %rbp		/* pt_regs->rbp */
  	movq	EFLAGS(%rsp), %r11	/* pt_regs->flags (in r11) */
-@@ -359,6 +367,8 @@ ENTRY(entry_INT80_compat)
- 
- 	STUFF_RSB
+@@ -331,6 +339,8 @@ ENTRY(entry_INT80_compat)
+ 	pushq   %r15                    /* pt_regs->r15 */
+ 	cld
  
 +	CLEAR_R8_TO_R15
 +
