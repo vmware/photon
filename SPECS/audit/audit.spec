@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=b684a8dca31776a4184044733cd5fd4b1b652298
 License:        GPLv2+
@@ -24,6 +24,7 @@ Requires:       krb5
 Requires:       openldap
 Requires:       tcp_wrappers
 Requires:       libcap-ng
+Requires:       gawk
 
 %description
 The audit package contains the user space utilities for
@@ -148,6 +149,8 @@ find %{buildroot} -name '*.la' -delete
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.5-6
+-   Add gawk requirement.
 *   Fri Jun 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-5
 -   Move python2 requires to python subpackage and added python3.
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-4
