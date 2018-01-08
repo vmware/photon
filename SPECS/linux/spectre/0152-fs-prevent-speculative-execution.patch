@@ -1,0 +1,37 @@
+From d7ca466502c0427749f64a6bdb47d96f848bf72d Mon Sep 17 00:00:00 2001
+From: Elena Reshetova <elena.reshetova@intel.com>
+Date: Wed, 30 Aug 2017 13:52:22 +0300
+Subject: [PATCH 152/194] fs: prevent speculative execution
+
+Since the fd value in function __fcheck_files()
+seems to be controllable by userspace and later on
+conditionally (upon bound check) used to resolve
+fdt->fd, insert an observable speculation
+barrier before its usage. This should prevent
+observable speculation on that branch and avoid
+kernel memory leak.
+
+Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+---
+ include/linux/fdtable.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/fdtable.h b/include/linux/fdtable.h
+index 1c65817..dbc1200 100644
+--- a/include/linux/fdtable.h
++++ b/include/linux/fdtable.h
+@@ -82,8 +82,10 @@ static inline struct file *__fcheck_files(struct files_struct *files, unsigned i
+ {
+ 	struct fdtable *fdt = rcu_dereference_raw(files->fdt);
+ 
+-	if (fd < fdt->max_fds)
++	if (fd < fdt->max_fds) {
++		osb();
+ 		return rcu_dereference_raw(fdt->fd[fd]);
++	}
+ 	return NULL;
+ }
+ 
+-- 
+2.9.5
+

@@ -1,0 +1,45 @@
+From 3325f36c2f6f6335cb3161977ba07ee58a03577f Mon Sep 17 00:00:00 2001
+From: Elena Reshetova <elena.reshetova@intel.com>
+Date: Thu, 14 Dec 2017 10:09:03 +0200
+Subject: [PATCH 140/194] x86/cpu/AMD: Remove now unused definition of
+ MFENCE_RDTSC feature
+
+With the switch to using LFENCE_RDTSC on AMD platforms there is no longer
+a need for the MFENCE_RDTSC feature.  Remove its usage and definition.
+
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+---
+ arch/x86/include/asm/cpufeatures.h | 2 +-
+ arch/x86/include/asm/msr.h         | 3 +--
+ 2 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index f8c2bd4..86c68cb 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -96,7 +96,7 @@
+ #define X86_FEATURE_SYSCALL32	( 3*32+14) /* "" syscall in ia32 userspace */
+ #define X86_FEATURE_SYSENTER32	( 3*32+15) /* "" sysenter in ia32 userspace */
+ #define X86_FEATURE_REP_GOOD	( 3*32+16) /* rep microcode works well */
+-#define X86_FEATURE_MFENCE_RDTSC ( 3*32+17) /* "" Mfence synchronizes RDTSC */
++
+ #define X86_FEATURE_LFENCE_RDTSC ( 3*32+18) /* "" Lfence synchronizes RDTSC */
+ /* free, was #define X86_FEATURE_11AP	( 3*32+19) * "" Bad local APIC aka 11AP */
+ #define X86_FEATURE_NOPL	( 3*32+20) /* The NOPL (0F 1F) instructions */
+diff --git a/arch/x86/include/asm/msr.h b/arch/x86/include/asm/msr.h
+index 07962f5..8d8d7ae2 100644
+--- a/arch/x86/include/asm/msr.h
++++ b/arch/x86/include/asm/msr.h
+@@ -214,8 +214,7 @@ static __always_inline unsigned long long rdtsc_ordered(void)
+ 	 * that some other imaginary CPU is updating continuously with a
+ 	 * time stamp.
+ 	 */
+-	alternative_2("", "mfence", X86_FEATURE_MFENCE_RDTSC,
+-			  "lfence", X86_FEATURE_LFENCE_RDTSC);
++	alternative("", "lfence", X86_FEATURE_LFENCE_RDTSC);
+ 	return rdtsc();
+ }
+ 
+-- 
+2.9.5
+

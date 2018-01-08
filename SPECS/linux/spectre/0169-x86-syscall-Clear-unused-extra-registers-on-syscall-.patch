@@ -1,0 +1,116 @@
+From 632c8d1eaacb69fb0e8ed5c6d8e19e4f69a17554 Mon Sep 17 00:00:00 2001
+From: Tim Chen <tim.c.chen@linux.intel.com>
+Date: Tue, 19 Sep 2017 15:21:40 -0700
+Subject: [PATCH 169/194] x86/syscall: Clear unused extra registers on syscall
+ entrance
+
+To prevent the unused registers %r12-%r15, %rbp and %rbx from
+being used speculatively, we clear them upon syscall entrance
+for code hygiene.
+---
+ arch/x86/entry/calling.h  | 19 +++++++++++++++++++
+ arch/x86/entry/entry_64.S | 13 ++++++++++---
+ 2 files changed, 29 insertions(+), 3 deletions(-)
+
+ Removed arch/x86/entry/calling.h changes, as it's in 4.4 upstream already
+
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 952b23b5..d16bfe2 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -171,7 +171,14 @@ GLOBAL(entry_SYSCALL_64_after_swapgs)
+ 	pushq	%r9				/* pt_regs->r9 */
+ 	pushq	%r10				/* pt_regs->r10 */
+ 	pushq	%r11				/* pt_regs->r11 */
+-	sub	$(6*8), %rsp			/* pt_regs->bp, bx, r12-15 not saved */
++	sub	$(6*8), %rsp			/* pt_regs->bp, bx, r12-15 not used */
++
++	/*
++	 * Clear the unused extra regs for code hygiene.
++	 * Will restore the callee saved extra regs at end of syscall.
++	 */
++	SAVE_EXTRA_REGS
++	ZERO_EXTRA_REGS
+ 
+ 	testl	$_TIF_WORK_SYSCALL_ENTRY, ASM_THREAD_INFO(TI_flags, %rsp, SIZEOF_PTREGS)
+ 	jnz	tracesys
+@@ -211,6 +218,7 @@ entry_SYSCALL_64_fastpath:
+ 
+ 	movq	RIP(%rsp), %rcx
+ 	movq	EFLAGS(%rsp), %r11
++	RESTORE_EXTRA_REGS
+ 	RESTORE_C_REGS_EXCEPT_RCX_R11
+ 	/*
+ 	 * This opens a window where we have a user CR3, but are
+@@ -255,7 +263,6 @@ tracesys:
+ 	jmp	entry_SYSCALL_64_fastpath	/* and return to the fast path */
+ 
+ tracesys_phase2:
+-	SAVE_EXTRA_REGS
+ 	movq	%rsp, %rdi
+ 	movl	$AUDIT_ARCH_X86_64, %esi
+ 	movq	%rax, %rdx
+@@ -267,7 +274,6 @@ tracesys_phase2:
+ 	 * the value it wants us to use in the table lookup.
+ 	 */
+ 	RESTORE_C_REGS_EXCEPT_RAX
+-	RESTORE_EXTRA_REGS
+ #if __SYSCALL_MASK == ~0
+ 	cmpq	$__NR_syscall_max, %rax
+ #else
+@@ -286,10 +292,8 @@ tracesys_phase2:
+  * Has correct iret frame.
+  */
+ GLOBAL(int_ret_from_sys_call)
+-	SAVE_EXTRA_REGS
+ 	movq	%rsp, %rdi
+ 	call	syscall_return_slowpath	/* returns with IRQs disabled */
+-	RESTORE_EXTRA_REGS
+ 	TRACE_IRQS_IRETQ		/* we're about to change IF */
+ 
+ 	/*
+@@ -355,6 +359,7 @@ GLOBAL(int_ret_from_sys_call)
+ 	 * perf profiles. Nothing jumps here.
+ 	 */
+ syscall_return_via_sysret:
++	RESTORE_EXTRA_REGS
+ 	/* rcx and r11 are already restored (see code above) */
+ 	RESTORE_C_REGS_EXCEPT_RCX_R11
+ 	/*
+@@ -378,13 +383,12 @@ opportunistic_sysret_failed:
+ 	 */
+ 	SWITCH_USER_CR3
+ 	SWAPGS
+-	jmp	restore_c_regs_and_iret
++	jmp	restore_regs_and_iret
+ END(entry_SYSCALL_64)
+ 
+ 
+ 	.macro FORK_LIKE func
+ ENTRY(stub_\func)
+-	SAVE_EXTRA_REGS 8
+ 	jmp	sys_\func
+ END(stub_\func)
+ 	.endm
+@@ -442,18 +446,15 @@ ENTRY(stub_rt_sigreturn)
+ 	 * To make sure RESTORE_EXTRA_REGS doesn't restore garbage on error,
+ 	 * we SAVE_EXTRA_REGS here.
+ 	 */
+-	SAVE_EXTRA_REGS 8
+ 	call	sys_rt_sigreturn
+ return_from_stub:
+ 	addq	$8, %rsp
+-	RESTORE_EXTRA_REGS
+ 	movq	%rax, RAX(%rsp)
+ 	jmp	int_ret_from_sys_call
+ END(stub_rt_sigreturn)
+ 
+ #ifdef CONFIG_X86_X32_ABI
+ ENTRY(stub_x32_rt_sigreturn)
+-	SAVE_EXTRA_REGS 8
+ 	call	sys32_x32_rt_sigreturn
+ 	jmp	return_from_stub
+ END(stub_x32_rt_sigreturn)
+-- 
+2.9.5
+

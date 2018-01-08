@@ -1,0 +1,33 @@
+From 9515f43ddd006464308b2796b63b7d6446d922b8 Mon Sep 17 00:00:00 2001
+From: Elena Reshetova <elena.reshetova@intel.com>
+Date: Wed, 13 Dec 2017 10:16:07 +0200
+Subject: [PATCH 150/194] ipv4: prevent speculative execution
+
+Since the offset value in function raw_getfrag()
+seems to be controllable by userspace and later on
+conditionally (upon bound check) used in the following
+memcpy, insert an observable speculation
+barrier before its usage. This should prevent
+observable speculation on that branch and avoid
+kernel memory leak.
+
+Signed-off-by: Elena Reshetova <elena.reshetova@intel.com>
+---
+ net/ipv4/raw.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+index 33b70bf..c9d33f1 100644
+--- a/net/ipv4/raw.c
++++ b/net/ipv4/raw.c
+@@ -476,6 +476,7 @@ static int raw_getfrag(void *from, char *to, int offset, int len, int odd,
+ 	if (offset < rfv->hlen) {
+ 		int copy = min(rfv->hlen - offset, len);
+ 
++		osb();
+ 		if (skb->ip_summed == CHECKSUM_PARTIAL)
+ 			memcpy(to, rfv->hdr.c + offset, copy);
+ 		else
+-- 
+2.9.5
+
