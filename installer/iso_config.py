@@ -18,24 +18,35 @@ from license import License
 from linuxselector import LinuxSelector
 
 class IsoConfig(object):
-    def Configure(self,options_file, maxy, maxx):
+    """This class handles iso installer configuration."""
+    def __init__(self):
         self.cd_path = None
+        self.alpha_chars = list(range(65, 91))
+        self.alpha_chars.extend(range(97, 123))
+        self.hostname_accepted_chars = self.alpha_chars
+        # Adding the numeric chars
+        self.hostname_accepted_chars.extend(range(48, 58))
+        # Adding the . and -
+        self.hostname_accepted_chars.extend([ord('.'), ord('-')])
+        self.random_id = '%12x' % random.randrange(16**12)
+        self.random_hostname = "photon-" + self.random_id.strip()
 
+    def Configure(self, options_file, maxy, maxx):
         kernel_params = subprocess.check_output(['cat', '/proc/cmdline'])
 
         # check for the repo param
         m = re.match(r".*repo=(\S+)\s*.*\s*", kernel_params.decode())
-        if m != None:
+        if m is not None:
             rpm_path = m.group(1)
         else:
             # the rpms should be in the cd
-            self.mount_RPMS_cd()
+            self.mount_cd()
             rpm_path = os.path.join(self.cd_path, "RPMS")
 
         # check the kickstart param
         ks_config = None
         m = re.match(r".*ks=(\S+)\s*.*\s*", kernel_params.decode())
-        if m != None:
+        if m is not None:
             ks_config = self.get_config(m.group(1))
 
         install_config = None
@@ -45,21 +56,23 @@ class IsoConfig(object):
             install_config = self.ui_config(options_file, maxy, maxx)
         return rpm_path, install_config
 
-    def is_vmware_virtualization(self):
+    @staticmethod
+    def is_vmware_virtualization():
+        """Detect vmware vm"""
         process = subprocess.Popen(['systemd-detect-virt'], stdout=subprocess.PIPE)
         out, err = process.communicate()
         if err is not None and err != 0:
             return False
-        else:
-            return out == 'vmware\n'
+        return out == 'vmware\n'
 
     def get_config(self, path):
+        """kick start configuration"""
         if path.startswith("http://"):
             # Do 5 trials to get the kick start
             # TODO: make sure the installer run after network is up
             ks_file_error = "Failed to get the kickstart file at {0}".format(path)
             wait = 1
-            for x in range(0, 5):
+            for _ in range(0, 5):
                 err_msg = ""
                 try:
                     response = requests.get(path, timeout=3)
@@ -70,9 +83,9 @@ class IsoConfig(object):
                     err_msg = e
 
                 modules.commons.log(modules.commons.LOG_ERROR,
-                    ks_file_error)
+                                    ks_file_error)
                 modules.commons.log(modules.commons.LOG_ERROR,
-                    "error msg: {0}".format(err_msg))
+                                    "error msg: {0}".format(err_msg))
                 print(ks_file_error)
                 print("retry in a second")
                 time.sleep(wait)
@@ -84,11 +97,12 @@ class IsoConfig(object):
             raise Exception(err_msg)
         else:
             if path.startswith("cdrom:/"):
-                self.mount_RPMS_cd()
+                self.mount_cd()
                 path = os.path.join(self.cd_path, path.replace("cdrom:/", "", 1))
             return (JsonWrapper(path)).read()
 
-    def mount_RPMS_cd(self):
+    def mount_cd(self):
+        """Mount the cd with RPMS"""
         # check if the cd is already mounted
         if self.cd_path:
             return
@@ -98,7 +112,7 @@ class IsoConfig(object):
         retval = process.wait()
 
         # Retry mount the CD
-        for i in range(0, 3):
+        for _ in range(0, 3):
             process = subprocess.Popen(['mount', '/dev/cdrom', '/mnt/cdrom'])
             retval = process.wait()
             if retval == 0:
@@ -111,6 +125,8 @@ class IsoConfig(object):
         raise Exception("Can not mount the cd")
 
     def ks_config(self, options_file, ks_config):
+        """Load configuration from file"""
+        del options_file
         install_config = ks_config
         install_config['iso_system'] = False
         if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
@@ -123,7 +139,9 @@ class IsoConfig(object):
         base_path = os.path.dirname("build_install_options_all.json")
         package_list = []
 
-        package_list = PackageSelector.get_packages_to_install(options_sorted, install_config['type'], base_path)
+        package_list = PackageSelector.get_packages_to_install(options_sorted,
+                                                               install_config['type'],
+                                                               base_path)
         if 'additional_packages' in install_config:
             package_list.extend(install_config['additional_packages'])
         install_config['packages'] = package_list
@@ -139,77 +157,103 @@ class IsoConfig(object):
             evalhostname = os.popen('printf ' + install_config["hostname"].strip(" ")).readlines()
             install_config['hostname'] = evalhostname[0]
         if "hostname" not in install_config or install_config['hostname'] == "":
-            random_id = '%12x' % random.randrange(16**12)
-            install_config['hostname'] = "photon-" + random_id.strip()
+            install_config['hostname'] = "photon-" + self.random_id.strip()
 
         # crypt the password if needed
         if install_config['password']['crypted']:
             install_config['password'] = install_config['password']['text']
         else:
-            install_config['password'] = crypt.crypt(install_config['password']['text'],
-                "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
+            install_config['password'] = crypt.crypt(
+                install_config['password']['text'],
+                "$6$" + "".join([random.choice(
+                    string.ascii_letters + string.digits) for _ in range(16)]))
         return install_config
 
-    def validate_hostname(self, hostname):
+    @staticmethod
+    def validate_hostname(hostname):
+        """A valid hostname must start with a letter"""
         error_empty = "Empty hostname or domain is not allowed"
         error_dash = "Hostname or domain should not start or end with '-'"
         error_hostname = "Hostname should start with alpha char and <= 64 chars"
 
-        if hostname is None or len(hostname) == 0:
+        if hostname is None or not hostname:
             return False, error_empty
 
         fields = hostname.split('.')
         for field in fields:
-            if len(field) == 0:
+            if not field:
                 return False, error_empty
             if field[0] == '-' or field[-1] == '-':
                 return False, error_dash
 
         machinename = fields[0]
-        return (len(machinename) <= 64) and (ord(machinename[0]) in self.alpha_chars), error_hostname
+        return (len(machinename) <= 64 and
+                machinename[0].isalpha(), error_hostname)
 
     @staticmethod
     def validate_password(text):
+        """Validate password with cracklib"""
         try:
-            p = cracklib.VeryFascistCheck(text)
+            password = cracklib.VeryFascistCheck(text)
         except ValueError as message:
-            p = str(message)
-        return p == text, "Error: " + p
+            password = str(message)
+        return password == text, "Error: " + password
 
     @staticmethod
     def generate_password_hash(password):
-        shadow_password = crypt.crypt(password, "$6$" + "".join([random.choice(string.ascii_letters + string.digits) for _ in range(16)]))
+        """Generate hash for the password"""
+        shadow_password = crypt.crypt(
+            password, "$6$" + "".join(
+                [random.choice(
+                    string.ascii_letters + string.digits) for _ in range(16)]))
         return shadow_password
 
     def ui_config(self, options_file, maxy, maxx):
-        # This represents the installer screen, the bool indicated if I can go back to this window or not
-        items = []
-        random_id = '%12x' % random.randrange(16**12)
-        random_hostname = "photon-" + random_id.strip()
+        """Configuration through UI"""
+        # This represents the installer screen, the bool indicated if
+        # I can go back to this window or not
         install_config = {'iso_system': False}
         install_config['ui_install'] = True
+        items, select_linux_index = self.add_ui_pages(options_file, maxy, maxx,
+                                                      install_config)
+        index = 0
+        while True:
+            result = items[index][0](None)
+            if result.success:
+                index += 1
+                if index == len(items):
+                    break
+                #Skip linux select screen for ostree installation.
+                if index == select_linux_index:
+                    if install_config['type'] == 'ostree_server':
+                        index += 1
+            else:
+                index -= 1
+                while index >= 0 and items[index][1] is False:
+                    index -= 1
+                if index < 0:
+                    index = 0
+                #Skip linux select screen for ostree installation.
+                if index == select_linux_index:
+                    if install_config['type'] == 'ostree_server':
+                        index -= 1
+        return install_config
+    def add_ui_pages(self, options_file, maxy, maxx, install_config):
+        items = []
         license_agreement = License(maxy, maxx)
         select_disk = SelectDisk(maxy, maxx, install_config)
         select_partition = PartitionISO(maxy, maxx, install_config)
         package_selector = PackageSelector(maxy, maxx, install_config, options_file)
-        self.alpha_chars = list(range(65, 91))
-        self.alpha_chars.extend(range(97, 123))
-        hostname_accepted_chars = self.alpha_chars
-        # Adding the numeric chars
-        hostname_accepted_chars.extend(range(48, 58))
-        # Adding the . and -
-        hostname_accepted_chars.extend([ord('.'), ord('-')])
-
         hostname_reader = WindowStringReader(
             maxy, maxx, 10, 70,
             'hostname',
             None, # confirmation error msg if it's a confirmation text
             None, # echo char
-            hostname_accepted_chars, # set of accepted chars
-            self.validate_hostname, # validation function of the input
+            self.hostname_accepted_chars, # set of accepted chars
+            IsoConfig.validate_hostname, # validation function of the input
             None, # post processing of the input field
             'Choose the hostname for your system', 'Hostname:', 2, install_config,
-            random_hostname,
+            self.random_hostname,
             True)
         root_password_reader = WindowStringReader(
             maxy, maxx, 10, 70,
@@ -223,7 +267,8 @@ class IsoConfig(object):
         confirm_password_reader = WindowStringReader(
             maxy, maxx, 10, 70,
             'password',
-            "Passwords don't match, please try again.", # confirmation error msg if it's a confirmation text
+            # confirmation error msg if it's a confirmation text
+            "Passwords don't match, please try again.",
             '*', # echo char
             None, # set of accepted chars
             None, # validation function of the input
@@ -243,27 +288,4 @@ class IsoConfig(object):
         items.append((hostname_reader.get_user_string, True))
         items.append((root_password_reader.get_user_string, True))
         items.append((confirm_password_reader.get_user_string, False))
-        index = 0
-        params = None
-        while True:
-            result = items[index][0](params)
-            if result.success:
-                index += 1
-                params = result.result
-                if index == len(items):
-                    break
-                #Skip linux select screen for ostree installation.
-                if index == select_linux_index:
-                    if install_config['type'] == 'ostree_server':
-                        index += 1
-            else:
-                index -= 1
-                while index >= 0 and items[index][1] is False:
-                    index -= 1
-                if index < 0:
-                    index = 0
-                #Skip linux select screen for ostree installation.
-                if index == select_linux_index:
-                    if install_config['type'] == 'ostree_server':
-                        index -= 1
-        return install_config
+        return items, select_linux_index
