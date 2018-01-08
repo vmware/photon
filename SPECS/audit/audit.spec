@@ -24,6 +24,7 @@ Requires:       krb5
 Requires:       openldap
 Requires:       tcp_wrappers
 Requires:       libcap-ng
+Requires:       gawk
 
 %description
 The audit package contains the user space utilities for
@@ -148,6 +149,8 @@ find %{buildroot} -name '*.la' -delete
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.5-6
+-   Add gawk requirement.
 *   Fri Jun 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-5
 -   Move python2 requires to python subpackage and added python3.
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.5-4
