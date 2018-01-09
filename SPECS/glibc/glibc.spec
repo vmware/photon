@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.26
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -21,6 +21,7 @@ Patch3:         0002-malloc-arena-fix.patch
 Patch4:         glibc-fix-CVE-2017-15670.patch
 Patch5:         glibc-fix-CVE-2017-15804.patch
 Patch6:         glibc-fix-CVE-2017-17426.patch
+Patch7:         glibc-fix-CVE-2017-16997.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -81,6 +82,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -285,6 +287,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-9
+-   Fix CVE-2017-16997
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 2.26-8
 -   Fix CVE-2017-17426
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.26-7
