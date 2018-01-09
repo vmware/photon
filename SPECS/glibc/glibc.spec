@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -45,6 +45,7 @@ Patch18:        glibc-fix-CVE-2017-15804.patch
 Patch19:        glibc-fix-CVE-2015-5180.patch
 #https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=patch;h=5e7fdabd7df1fc6c56d104e61390bf5a6b526c38
 Patch20:        glibc-2.22-CVE-2016-5417.patch
+Patch21:        glibc-fix-CVE-2017-16997.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -91,6 +92,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -217,6 +219,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.22-18
+-   Fix CVE-2017-16997
 *   Tue Dec 5 2017 Anish Swaminathan <anishs@vmware.com> 2.22-17
 -   Fix CVE-2016-5417
 *   Tue Nov 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2.22-16
