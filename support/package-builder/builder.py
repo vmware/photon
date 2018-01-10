@@ -53,11 +53,6 @@ def main():
     parser.add_argument("-bd", "--publish-build-dependencies", dest="publishBuildDependencies",
                         default=False)
     parser.add_argument("-pw", "--package-weights-path", dest="packageWeightsPath", default=None)
-    parser.add_argument("-y", "--generate-pkg-yaml-files", dest="generatePkgYamlFiles",
-                        default=False, action="store_true")
-    parser.add_argument("-j", "--pkg-yaml-dir-path", dest="pkgYamlDirPath",
-                        default="../../stage/")
-    parser.add_argument("-f", "--pkg-blacklist-file", dest="pkgBlacklistFile", default=None)
     parser.add_argument("-bt", "--build-type", dest="pkgBuildType", default="chroot")
     parser.add_argument("-F", "--kat-build", dest="katBuild", default=None)
     parser.add_argument("PackageName", nargs='?')
@@ -109,14 +104,6 @@ def main():
         logger.error("Given input Weights file is not a file:"+options.packageWeightsPath)
         errorFlag = True
 
-    if options.generatePkgYamlFiles:
-        if (options.pkgBlacklistFile is not None and
-                options.pkgBlacklistFile != "" and
-                not os.path.isfile(options.pkgBlacklistFile)):
-            logger.error("Given package blacklist file is not valid:"+
-                         options.pkgBlacklistFile)
-            errorFlag = True
-
     if options.installPackage:
         if not options.PackageName:
             logger.error("Please provide package name")
@@ -128,7 +115,6 @@ def main():
         logger.error("Found some errors. Please fix input options and re-run it.")
         return False
 
-
     if not os.path.isdir(options.rpmPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/"+platform.machine())
         cmdUtils.runCommandInShell("mkdir -p "+options.rpmPath+"/noarch")
@@ -138,10 +124,6 @@ def main():
 
     if not os.path.isdir(options.buildRootPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.buildRootPath)
-
-    if options.generatePkgYamlFiles:
-        if not os.path.isdir(options.pkgYamlDirPath):
-            cmdUtils.runCommandInShell("mkdir -p "+options.pkgYamlDirPath)
 
     logger.info("Source Path :"+options.sourcePath)
     logger.info("Spec Path :" + options.specPath)
@@ -157,16 +139,31 @@ def main():
     listBuildOptionPackages = get_packages_with_build_options(options.pkgBuildOptionFile)
 
     try:
-        constants.initialize(options)
+
+        constants.setSpecPath(options.specPath)
+        constants.setSourcePath(options.sourcePath)
+        constants.setRpmPath(options.rpmPath)
+        constants.setSourceRpmPath(options.sourceRpmPath)
+        constants.setTopDirPath(options.topDirPath)
+        constants.setLogPath(options.logPath)
+        constants.setDist(options.dist)
+        constants.setBuildNumber(options.buildNumber)
+        constants.setReleaseVersion(options.releaseVersion)
+        constants.setPrevPublishRPMRepo(options.publishRPMSPath)
+        constants.setPrevPublishXRPMRepo(options.publishXRPMSPath)
+        constants.setBuildRootPath(options.buildRootPath)
+        constants.setPullSourcesConfig(options.pullsourcesConfig)
+        constants.setInputRPMSPath(options.inputRPMSPath)
+        constants.setRPMCheck(options.rpmCheck)
+        constants.setRpmCheckStopOnError(options.rpmCheckStopOnError)
+        constants.setPublishBuildDependencies(options.publishBuildDependencies)
+        constants.setPackageWeightsPath(options.packageWeightsPath)
+        constants.setKatBuild(options.katBuild)
+
+        constants.initialize()
         # parse SPECS folder
         SPECS()
-        if package == "packages_list":
-            buildPackagesList(options.buildRootPath+"/../packages_list.csv")
-        elif options.generatePkgYamlFiles:
-            blackListPkgs = readBlackListPackages(options.pkgBlacklistFile)
-            buildSourcesList(options.pkgYamlDirPath, blackListPkgs, logger)
-            buildSRPMList(options.sourceRpmPath, options.pkgYamlDirPath, blackListPkgs, logger)
-        elif options.toolChainStage == "stage1":
+        if options.toolChainStage == "stage1":
             pkgManager = PackageManager()
             pkgManager.buildToolChain()
         elif options.toolChainStage == "stage2":
@@ -187,144 +184,16 @@ def main():
         sys.exit(1)
     sys.exit(0)
 
-def buildPackagesList(csvFilename):
-    csvFile = open(csvFilename, "w")
-    csvFile.write("Package,Version,License,URL,Sources,Patches\n")
-    listPackages = SPECS.getData().getListPackages()
-    listPackages.sort()
-    for package in listPackages:
-        name = package
-        version = SPECS.getData().getVersion(package)
-        license = SPECS.getData().getLicense(package)
-        listPatches = SPECS.getData().getPatches(package)
-        url = SPECS.getData().getURL(package)
-        listSourceNames = SPECS.getData().getSources(package)
-        sources = ""
-        patches = ""
-        if listPatches is not None:
-            patches = " ".join(listPatches)
-        if listSourceNames is not None:
-            sources = " ".join(listSourceNames)
-        csvFile.write(name+","+version+","+license+","+url+","+sources+","+patches+"\n")
-    csvFile.close()
-
-def readBlackListPackages(pkgBlackListFile):
-    blackListPkgs = []
-    if pkgBlackListFile is not None and pkgBlackListFile != "":
-        with open(pkgBlackListFile) as jsonFile:
-            config = json.load(jsonFile)
-            if 'packages' in config:
-                blackListPkgs = config['packages']
-    return blackListPkgs
-
-def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
-    cmdUtils = CommandUtils()
-    yamlSourceDir = os.path.join(yamlDir, "yaml_sources")
-    if not os.path.isdir(yamlSourceDir):
-        cmdUtils.runCommandInShell("mkdir -p "+yamlSourceDir)
-    if singleFile:
-        yamlFile = open(yamlSourceDir+"/sources_list.yaml", "w")
-    listPackages = SPECS.getData().getListPackages()
-    listPackages.sort()
-    import PullSources
-    for package in listPackages:
-        if package in blackListPkgs:
-            continue
-        ossname = package
-        ossversion = SPECS.getData().getVersion(package)
-        modified = False
-        listPatches = SPECS.getData().getPatches(package)
-        if listPatches is not None and len(listPatches) > 0:
-            modified = True
-        url = SPECS.getData().getSourceURL(package)
-        if url is None:
-            url = SPECS.getData().getURL(package)
-
-        sourceName = None
-        listSourceNames = SPECS.getData().getSources(package)
-        if len(listSourceNames) > 0:
-            sourceName = listSourceNames[0]
-            sha1 = SPECS.getData().getSHA1(package, sourceName)
-            if sha1 is not None:
-                PullSources.get(sourceName, sha1, yamlSourceDir,
-                                constants.pullsourcesConfig, logger)
-
-        if not singleFile:
-            yamlFile = open(yamlSourceDir+"/"+ossname+"-"+ossversion+".yaml", "w")
-        yamlFile.write("vmwsource:"+ossname+":"+ossversion+":\n")
-        yamlFile.write("  repository: VMWsource\n")
-        yamlFile.write("  name: '"+ossname+"'\n")
-        yamlFile.write("  version: '"+ossversion+"'\n")
-        yamlFile.write("  url: "+str(url)+"\n")
-        yamlFile.write("  license: UNKNOWN\n")
-        if sourceName is not None:
-            yamlFile.write("  vmwsource-distribution: "+str(sourceName)+"\n")
-        if modified:
-            yamlFile.write("  modified: true\n")
-        yamlFile.write("\n")
-        if not singleFile:
-            yamlFile.close()
-
-    if singleFile:
-        yamlFile.close()
-    logger.info("Generated source yaml files for all packages")
-
-def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
-    cmdUtils = CommandUtils()
-    yamlSrpmDir = os.path.join(yamlDir, "yaml_srpms")
-    if not os.path.isdir(yamlSrpmDir):
-        cmdUtils.runCommandInShell("mkdir -p "+yamlSrpmDir)
-    if singleFile:
-        yamlFile = open(yamlSrpmDir+"/srpm_list.yaml", "w")
-    listPackages = SPECS.getData().getListPackages()
-    listPackages.sort()
-    for package in listPackages:
-        if package in blackListPkgs:
-            continue
-        ossname = package
-        ossversion = SPECS.getData().getVersion(package)
-        ossrelease = SPECS.getData().getRelease(package)
-
-        listFoundSRPMFiles = cmdUtils.findFile(ossname+"-"+ossversion+"-"+ossrelease+".src.rpm",
-                                               srpmPath)
-        srpmName = None
-        if len(listFoundSRPMFiles) == 1:
-            srpmFullPath = listFoundSRPMFiles[0]
-            srpmName = os.path.basename(srpmFullPath)
-            cpcmd = "cp "+ srpmFullPath +" "+yamlSrpmDir+"/"
-            returnVal = cmdUtils.runCommandInShell(cpcmd)
-            if not returnVal:
-                logger.error("Copy SRPM File is failed for package:"+ossname)
-        else:
-            logger.error("SRPM file is not found:" +ossname)
-
-        if not singleFile:
-            yamlFile = open(yamlSrpmDir+"/"+ossname+"-"+ossversion+"-"+ossrelease+".yaml", "w")
-
-        yamlFile.write("baseos:"+ossname+":"+ossversion+"-"+ossrelease+":\n")
-        yamlFile.write("  repository: BaseOS\n")
-        yamlFile.write("  name: '"+ossname+"'\n")
-        yamlFile.write("  version: '"+ossversion+"-"+ossrelease+"'\n")
-        yamlFile.write("  baseos-style: rpm\n")
-        yamlFile.write("  baseos-source: '"+str(srpmName)+"'\n")
-        yamlFile.write("  baseos-osname: 'photon'\n")
-        yamlFile.write("\n")
-        if not singleFile:
-            yamlFile.close()
-
-    if singleFile:
-        yamlFile.close()
-    logger.info("Generated srpm yaml files for all packages")
 
 def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile,
                   buildThreads, pkgBuildType):
-    listPackages = []
-    listPackages.append(package)
+    listPackages = [package]
     pkgManager = PackageManager(pkgBuildType=pkgBuildType)
     if constants.rpmCheck:
         constants.setTestForceRPMS(listPackages[:])
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile,
                              buildThreads, pkgBuildType)
+
 
 def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger,
                              buildThreads, pkgInfoJsonFile, pkgBuildType):
@@ -338,11 +207,12 @@ def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger
     pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile,
                              buildThreads, pkgBuildType)
 
-    #Generating package info file which is required by installer
+    # Generating package info file which is required by installer
     logger.info("Writing Package info to the file:"+pkgInfoJsonFile)
     pkgInfo = PackageInfo()
     pkgInfo.loadPackagesData()
     pkgInfo.writePkgListToFile(pkgInfoJsonFile)
+
 
 def get_packages_with_build_options(pkg_build_options_file):
     packages = []
@@ -356,6 +226,7 @@ def get_packages_with_build_options(pkg_build_options_file):
             packages.append(str(p))
 
     return packages
+
 
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)
@@ -373,6 +244,7 @@ def get_all_package_names(build_install_option):
         packages = packages + package_list_json["packages"]
 
     return packages
+
 
 if __name__ == "__main__":
     main()

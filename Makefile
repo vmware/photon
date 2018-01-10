@@ -404,16 +404,16 @@ $(PHOTON_STAGE):
 generate-dep-lists:
 	$(RMDIR) $(PHOTON_GENERATED_DATA_DIR)
 	$(MKDIR) -p $(PHOTON_GENERATED_DATA_DIR)
-	@for f in $$(ls $(PHOTON_DATA_DIR)/build_install_options*.json) ; \
-	do \
-		cp $$f $(PHOTON_GENERATED_DATA_DIR); \
-		echo "Generating the install time dependency list for " $$f; \
-		cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) \
+	cd $(PHOTON_SPECDEPS_DIR) && \
+	$(PHOTON_SPECDEPS) \
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
-		--input-type=json --file $$f -d json -a $(PHOTON_DATA_DIR); \
-	done
+		-l $(PHOTON_LOGS_DIR) \
+		-p $(PHOTON_GENERATED_DATA_DIR) \
+		--input-type=json \
+		--file "$$(ls $(PHOTON_DATA_DIR)/build_install_options*.json)" \
+		-d json \
+		-a $(PHOTON_DATA_DIR)
 
 photon-docker-image:
 	createrepo $(PHOTON_RPMS_DIR)
@@ -617,22 +617,11 @@ check: packages
 generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Generating yaml files for packages ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -y \
-                              -b $(PHOTON_CHROOT_PATH) \
+        $(PHOTON_GENERATE_OSS_FILES) -y \
                               -s $(PHOTON_SPECS_DIR) \
-                              -r $(PHOTON_RPMS_DIR) \
                               -a $(PHOTON_SRPMS_DIR) \
-                              -x $(PHOTON_SRCS_DIR) \
-                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
-                              -c $(PHOTON_PULLSOURCES_CONFIG) \
-                              -d $(PHOTON_DIST_TAG) \
-                              -n $(PHOTON_BUILD_NUMBER) \
-                              -v $(PHOTON_RELEASE_VERSION) \
-                              -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
-                              $(PHOTON_RPMCHECK_OPTION) \
                               -l $(PHOTON_LOGS_DIR) \
-                              -j $(PHOTON_STAGE) \
+                              -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -f $(PHOTON_PKG_BLACKLIST_FILE)
 
 $(TOOLS_BIN):
