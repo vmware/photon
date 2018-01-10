@@ -18,6 +18,12 @@ class constants(object):
     packageWeightsPath = None
     dockerUnixSocket = "/var/run/docker.sock"
     userDefinedMacros = {}
+    dist = None
+    buildNumber = None
+    releaseVersion = None
+    katBuild = None
+    testForceRPMS = []
+    tmpDirPath = "/dev/shm"
 
     noDepsPackageList = [
         "texinfo",
@@ -421,41 +427,103 @@ class constants(object):
     }
 
     @staticmethod
-    def initialize(options):
-        constants.specPath = options.specPath
-        constants.sourcePath = options.sourcePath
-        constants.rpmPath = options.rpmPath
-        constants.sourceRpmPath = options.sourceRpmPath
-        constants.topDirPath = options.topDirPath
-        constants.logPath = options.logPath
-        constants.prevPublishRPMRepo = options.publishRPMSPath
-        constants.prevPublishXRPMRepo = options.publishXRPMSPath
-        constants.buildRootPath = options.buildRootPath
-        constants.pullsourcesConfig = options.pullsourcesConfig
-        constants.inputRPMSPath = options.inputRPMSPath
-        constants.testForceRPMS = []
-        constants.rpmCheck = options.rpmCheck
-        constants.rpmCheckStopOnError = options.rpmCheckStopOnError
-        constants.publishBuildDependencies = options.publishBuildDependencies
-        constants.packageWeightsPath = options.packageWeightsPath
-        constants.tmpDirPath = "/dev/shm"
+    def setSpecPath(specPath):
+        constants.specPath = specPath
+
+    @staticmethod
+    def setSourcePath(sourcePath):
+        constants.sourcePath = sourcePath
+
+    @staticmethod
+    def setRpmPath(rpmPath):
+        constants.rpmPath = rpmPath
+
+    @staticmethod
+    def setSourceRpmPath(sourceRpmPath):
+        constants.sourceRpmPath = sourceRpmPath
+
+    @staticmethod
+    def setTopDirPath(topDirPath):
+        constants.topDirPath = topDirPath
+
+    @staticmethod
+    def setLogPath(logPath):
+        constants.logPath = logPath
+
+    @staticmethod
+    def setPrevPublishRPMRepo(prevPublishRPMRepo):
+        constants.prevPublishRPMRepo = prevPublishRPMRepo
+
+    @staticmethod
+    def setPrevPublishXRPMRepo(prevPublishXRPMRepo):
+        constants.prevPublishXRPMRepo = prevPublishXRPMRepo
+
+    @staticmethod
+    def setBuildRootPath(buildRootPath):
+        constants.buildRootPath = buildRootPath
+
+    @staticmethod
+    def setPullSourcesConfig(pullSourcesConfig):
+        constants.pullsourcesConfig = pullSourcesConfig
+
+    @staticmethod
+    def setInputRPMSPath(inputRPMSPath):
+        constants.inputRPMSPath = inputRPMSPath
+
+    @staticmethod
+    def setRPMCheck(rpmCheck):
+        constants.rpmCheck = rpmCheck
+
+    @staticmethod
+    def setRpmCheckStopOnError(rpmCheckStopOnError):
+        constants.rpmCheckStopOnError = rpmCheckStopOnError
+
+    @staticmethod
+    def setPublishBuildDependencies(publishBuildDependencies):
+        constants.publishBuildDependencies = publishBuildDependencies
+
+    @staticmethod
+    def setPackageWeightsPath(packageWeightsPath):
+        constants.packageWeightsPath = packageWeightsPath
+
+    @staticmethod
+    def setDist(dist):
+        constants.dist = dist
+
+    @staticmethod
+    def setBuildNumber(buildNumber):
+        constants.buildNumber = buildNumber
+
+    @staticmethod
+    def setReleaseVersion(releaseVersion):
+        constants.releaseVersion = releaseVersion
+
+    @staticmethod
+    def setKatBuild(katBuild):
+        constants.katBuild = katBuild
+
+    @staticmethod
+    def initialize():
         if constants.rpmCheck:
             constants.testLogger = Logger.getLogger("MakeCheckTest", constants.logPath)
             constants.addMacro("with_check", "1")
         else:
             constants.addMacro("with_check", "0")
 
-        #adding distribution rpm macro
-        constants.addMacro("dist", options.dist)
+        # adding distribution rpm macro
+        if constants.dist is not None:
+            constants.addMacro("dist", constants.dist)
 
-        #adding buildnumber rpm macro
-        constants.addMacro("photon_build_number", options.buildNumber)
+        # adding buildnumber rpm macro
+        if constants.buildNumber is not None:
+            constants.addMacro("photon_build_number", constants.buildNumber)
 
-        #adding releasenumber rpm macro
-        constants.addMacro("photon_release_version", options.releaseVersion)
+        # adding releasenumber rpm macro
+        if constants.releaseVersion is not None:
+            constants.addMacro("photon_release_version", constants.releaseVersion)
 
-        if options.katBuild is not None:
-            constants.addMacro("kat_build", options.katBuild)
+        if constants.katBuild is not None:
+            constants.addMacro("kat_build", constants.katBuild)
 
     @staticmethod
     def setTestForceRPMS(listsPackages):
