@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.110
-Release:       2%{?dist}
+Version:       4.4.111
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=918cca36197d90b6e67fca331efe7b345be3a56d
+%define sha1 linux=15b1027ef42d40253fc2f88030a8aa11ae4ab095
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -241,6 +241,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.4.111-1
+-   Version update to 4.4.111
 *   Mon Jan 08 2018 Bo Gan <ganb@vmware.com> 4.4.110-2
 -   Initial Spectre fix
 -   Add Observable speculation barrier
