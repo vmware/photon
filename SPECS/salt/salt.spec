@@ -8,7 +8,7 @@
 %define _salttesting_ver 2016.5.11
 
 Name: salt
-Version: 2016.11.2
+Version: 2017.7.2
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -18,18 +18,14 @@ URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: http://pypi.python.org/packages/source/s/%{name}/%{name}-%{version}.tar.gz
-%define sha1 salt=35b812751b414fc4d279772c106af93e727bb518
+%define sha1 salt=c0e7db44328e5400b17c8cd15033991855c6fe2e
 Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
 %define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
-Source2: %{name}-master
-Source3: %{name}-syndic
-Source4: %{name}-minion
-Source5: %{name}-api
-Source6: %{name}-master.service
-Source7: %{name}-syndic.service
-Source8: %{name}-minion.service
-Source9: %{name}-api.service
-Source10: logrotate.salt
+Source2: %{name}-master.service
+Source3: %{name}-syndic.service
+Source4: %{name}-minion.service
+Source5: %{name}-api.service
+Source6: logrotate.salt
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -160,13 +156,13 @@ install -p -m 0640 conf/cloud %{buildroot}%{_sysconfdir}/salt/cloud
 install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/salt/roster
 
 mkdir -p %{buildroot}%{_unitdir}
-install -p -m 0644 %{SOURCE6} %{buildroot}%{_unitdir}/
-install -p -m 0644 %{SOURCE7} %{buildroot}%{_unitdir}/
-install -p -m 0644 %{SOURCE8} %{buildroot}%{_unitdir}/
-install -p -m 0644 %{SOURCE9} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE3} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE4} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE5} %{buildroot}%{_unitdir}/
 
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
-install -p -m 0644 %{SOURCE10} %{buildroot}%{_sysconfdir}/logrotate.d/salt
+install -p -m 0644 %{SOURCE6} %{buildroot}%{_sysconfdir}/logrotate.d/salt
 
 
 %clean
@@ -316,8 +312,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Jan 11 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2017.7.2-1
+- Update to 2017.7.2
+- Fixes CVE-2017-5192, CVE-2017-5200, CVE-2017-8109
+- CVE-2017-12791, CVE-2017-14695, CVE-2017-14696
 * Thu Oct 26 2017 Padmini Thirumalachar <pthirumalachar@vmware.com> 2016.11.2-1
 - This is an initial version of salt for Photon OS
   The source is from https://github.com/saltstack/salt/archive/v2016.11.2.tar.gz
-
-
