@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.111
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -241,6 +241,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.111-2
+-   Enable the 'deadline' and 'cfq' I/O schedulers.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.4.111-1
 -   Version update to 4.4.111
 *   Mon Jan 08 2018 Bo Gan <ganb@vmware.com> 4.4.110-2
