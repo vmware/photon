@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.75
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -250,6 +250,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.75-4
+-   Enable the 'deadline' and 'cfq' I/O schedulers.
 *   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-3
 -   Second Spectre fix, clear user controlled registers upon syscall entry
 *   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-2
