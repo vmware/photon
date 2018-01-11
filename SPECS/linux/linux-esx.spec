@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.75
-Release:        3%{?dist}
+Version:        4.9.76
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4088ca9f8f53ab4acc2700937b0f507a7f107e01
+%define sha1 linux=3ba38a58da7301e50c85ec6a20d37bf63f7c686f
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -250,6 +250,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.9.76-1
+-   Version update
 *   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-3
 -   Second Spectre fix, clear user controlled registers upon syscall entry
 *   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-2
