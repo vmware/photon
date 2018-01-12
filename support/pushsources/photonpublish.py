@@ -113,11 +113,11 @@ class photonPublish:
         newCount = len(checkResults[const.new])
 
         if(updateCount + newCount == 0):
-            print 'Remote is up to date.' 
+            print('Remote is up to date.')
             return
 
         #push updates
-        print 'Updating %d files' % updateCount 
+        print('Updating %d files' % updateCount)
         for new in checkResults[const.updates]:
             filePath = new[const.path]
             fileName = os.path.basename(filePath)
@@ -126,7 +126,7 @@ class photonPublish:
             self.updateFile(fullPath, pathName)
 
         #push new files
-        print 'Pushing %d new files' % newCount
+        print('Pushing %d new files' % newCount)
         for new in checkResults[const.new]:
             filePath = new[const.path]
             fileName = os.path.basename(filePath)
@@ -142,11 +142,11 @@ class photonPublish:
         filesToPush = glob.glob(filePath)
         for fileToPush in filesToPush:
             result = self.pushFile(fileToPush, pathName)
-            print result
+            print(result)
             results.append(result)
 
     def pushFile(self, fileToPush, pathName):
-        print 'Pushing file %s to path %s' % (fileToPush, pathName)
+        print('Pushing file %s to path %s' % (fileToPush, pathName))
         result = {}
         auth = HTTPBasicAuth(self._config['user'], self._config['apikey'])
 
@@ -182,7 +182,7 @@ class photonPublish:
         return result 
 
     def updateFile(self, fileToPush, pathName):
-        print 'Updating file %s at path %s' % (fileToPush, pathName)
+        print('Updating file %s at path %s' % (fileToPush, pathName))
         result = {}
         auth = HTTPBasicAuth(self._config['user'], self._config['apikey'])
 
@@ -219,10 +219,10 @@ class photonPublish:
 
     #publishes pending content. Works with details from conf file.
     def publish(self):
-        print 'Publishing pending files to %s/%s/%s' \
+        print('Publishing pending files to %s/%s/%s' \
                % (self._config['repo'],
                   self._config['package'],
-                  self._config['version'])
+                  self._config['version']))
         result = {}
         auth = HTTPBasicAuth(self._config['user'], self._config['apikey'])
 
@@ -242,10 +242,10 @@ class photonPublish:
         return req.json()
 
 def showUsage():
-    print 'photonpublish.py --files /rpms/*.rpm'
-    print 'if you need to override config, --config /conf.conf'
-    print 'if you need to override user/apikey, provide'
-    print '--user username --apikey apikey'
+    print('photonpublish.py --files /rpms/*.rpm')
+    print('if you need to override config, --config /conf.conf')
+    print('if you need to override user/apikey, provide')
+    print('--user username --apikey apikey')
 
 def validate(context):
     return len(context['config']) > 0 and len(context['files']) > 0
@@ -287,10 +287,10 @@ def main(argv):
         if(context['mode'] == 'upload'):
             publish.push(context['files'], context['path'])
         elif(context['mode'] == 'check'):
-            print publish.check(context['files'])
+            print(publish.check(context['files']))
 
-    except Exception, e:
-        print "Error: %s" % e
+    except Exception as e:
+        print("Error: %s" % e)
         sys.exit(1)
 
 if __name__ == "__main__":
