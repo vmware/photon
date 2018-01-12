@@ -1,0 +1,49 @@
+From 179d1c5602997fef5a940c6ddcf31212cbfebd14 Mon Sep 17 00:00:00 2001
+From: Jann Horn <jannh@google.com>
+Date: Mon, 18 Dec 2017 20:11:59 -0800
+Subject: [PATCH 6/7] bpf: don't prune branches when a scalar is replaced with
+ a pointer
+
+This could be made safe by passing through a reference to env and checking
+for env->allow_ptr_leaks, but it would only work one way and is probably
+not worth the hassle - not doing it will not directly lead to program
+rejection.
+
+Fixes: f1174f77b50c ("bpf/verifier: rework value tracking")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ kernel/bpf/verifier.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 102c519..982bd9e 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -3467,15 +3467,14 @@ static bool regsafe(struct bpf_reg_state *rold, struct bpf_reg_state *rcur,
+ 			return range_within(rold, rcur) &&
+ 			       tnum_in(rold->var_off, rcur->var_off);
+ 		} else {
+-			/* if we knew anything about the old value, we're not
+-			 * equal, because we can't know anything about the
+-			 * scalar value of the pointer in the new value.
++			/* We're trying to use a pointer in place of a scalar.
++			 * Even if the scalar was unbounded, this could lead to
++			 * pointer leaks because scalars are allowed to leak
++			 * while pointers are not. We could make this safe in
++			 * special cases if root is calling us, but it's
++			 * probably not worth the hassle.
+ 			 */
+-			return rold->umin_value == 0 &&
+-			       rold->umax_value == U64_MAX &&
+-			       rold->smin_value == S64_MIN &&
+-			       rold->smax_value == S64_MAX &&
+-			       tnum_is_unknown(rold->var_off);
++			return false;
+ 		}
+ 	case PTR_TO_MAP_VALUE:
+ 		/* If the new min/max/var_off satisfy the old ones and
+-- 
+2.7.4
+

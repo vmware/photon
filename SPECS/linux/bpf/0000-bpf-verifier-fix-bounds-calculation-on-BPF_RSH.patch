@@ -1,0 +1,66 @@
+From 4374f256ce8182019353c0c639bb8d0695b4c941 Mon Sep 17 00:00:00 2001
+From: Edward Cree <ecree@solarflare.com>
+Date: Mon, 18 Dec 2017 20:11:53 -0800
+Subject: [PATCH] bpf/verifier: fix bounds calculation on BPF_RSH
+
+Incorrect signed bounds were being computed.
+If the old upper signed bound was positive and the old lower signed bound was
+negative, this could cause the new upper signed bound to be too low,
+leading to security issues.
+
+Fixes: b03c9f9fdc37 ("bpf/verifier: track signed and unsigned min/max values")
+Reported-by: Jann Horn <jannh@google.com>
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+Acked-by: Alexei Starovoitov <ast@kernel.org>
+[jannh@google.com: changed description to reflect bug impact]
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ kernel/bpf/verifier.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index e39b013..625e358 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -2190,20 +2190,22 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 			mark_reg_unknown(env, regs, insn->dst_reg);
+ 			break;
+ 		}
+-		/* BPF_RSH is an unsigned shift, so make the appropriate casts */
+-		if (dst_reg->smin_value < 0) {
+-			if (umin_val) {
+-				/* Sign bit will be cleared */
+-				dst_reg->smin_value = 0;
+-			} else {
+-				/* Lost sign bit information */
+-				dst_reg->smin_value = S64_MIN;
+-				dst_reg->smax_value = S64_MAX;
+-			}
+-		} else {
+-			dst_reg->smin_value =
+-				(u64)(dst_reg->smin_value) >> umax_val;
+-		}
++		/* BPF_RSH is an unsigned shift.  If the value in dst_reg might
++		 * be negative, then either:
++		 * 1) src_reg might be zero, so the sign bit of the result is
++		 *    unknown, so we lose our signed bounds
++		 * 2) it's known negative, thus the unsigned bounds capture the
++		 *    signed bounds
++		 * 3) the signed bounds cross zero, so they tell us nothing
++		 *    about the result
++		 * If the value in dst_reg is known nonnegative, then again the
++		 * unsigned bounts capture the signed bounds.
++		 * Thus, in all cases it suffices to blow away our signed bounds
++		 * and rely on inferring new ones from the unsigned bounds and
++		 * var_off of the result.
++		 */
++		dst_reg->smin_value = S64_MIN;
++		dst_reg->smax_value = S64_MAX;
+ 		if (src_known)
+ 			dst_reg->var_off = tnum_rshift(dst_reg->var_off,
+ 						       umin_val);
+-- 
+2.7.4
+

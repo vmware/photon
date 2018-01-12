@@ -1,0 +1,49 @@
+From 95a762e2c8c942780948091f8f2a4f32fce1ac6f Mon Sep 17 00:00:00 2001
+From: Jann Horn <jannh@google.com>
+Date: Mon, 18 Dec 2017 20:11:54 -0800
+Subject: [PATCH 1/7] bpf: fix incorrect sign extension in check_alu_op()
+
+Distinguish between
+BPF_ALU64|BPF_MOV|BPF_K (load 32-bit immediate, sign-extended to 64-bit)
+and BPF_ALU|BPF_MOV|BPF_K (load 32-bit immediate, zero-padded to 64-bit);
+only perform sign extension in the first case.
+
+Starting with v4.14, this is exploitable by unprivileged users as long as
+the unprivileged_bpf_disabled sysctl isn't set.
+
+Debian assigned CVE-2017-16995 for this issue.
+
+v3:
+ - add CVE number (Ben Hutchings)
+
+Fixes: 484611357c19 ("bpf: allow access into map value arrays")
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Edward Cree <ecree@solarflare.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ kernel/bpf/verifier.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 625e358..c086010 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -2408,7 +2408,13 @@ static int check_alu_op(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 			 * remember the value we stored into this reg
+ 			 */
+ 			regs[insn->dst_reg].type = SCALAR_VALUE;
+-			__mark_reg_known(regs + insn->dst_reg, insn->imm);
++			if (BPF_CLASS(insn->code) == BPF_ALU64) {
++				__mark_reg_known(regs + insn->dst_reg,
++						 insn->imm);
++			} else {
++				__mark_reg_known(regs + insn->dst_reg,
++						 (u32)insn->imm);
++			}
+ 		}
+ 
+ 	} else if (opcode > BPF_END) {
+-- 
+2.7.4
+

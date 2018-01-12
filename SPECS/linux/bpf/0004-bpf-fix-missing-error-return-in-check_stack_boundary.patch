@@ -1,0 +1,31 @@
+From ea25f914dc164c8d56b36147ecc86bc65f83c469 Mon Sep 17 00:00:00 2001
+From: Jann Horn <jannh@google.com>
+Date: Mon, 18 Dec 2017 20:11:57 -0800
+Subject: [PATCH 4/7] bpf: fix missing error return in check_stack_boundary()
+
+Prevent indirect stack accesses at non-constant addresses, which would
+permit reading and corrupting spilled pointers.
+
+Fixes: f1174f77b50c ("bpf/verifier: rework value tracking")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ kernel/bpf/verifier.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index ecdc265..77e4b52 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1303,6 +1303,7 @@ static int check_stack_boundary(struct bpf_verifier_env *env, int regno,
+ 		tnum_strn(tn_buf, sizeof(tn_buf), regs[regno].var_off);
+ 		verbose(env, "invalid variable stack read R%d var_off=%s\n",
+ 			regno, tn_buf);
++		return -EACCES;
+ 	}
+ 	off = regs[regno].off + regs[regno].var_off.value;
+ 	if (off >= 0 || off < -MAX_BPF_STACK || off + access_size > 0 ||
+-- 
+2.7.4
+

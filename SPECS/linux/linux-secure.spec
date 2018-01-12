@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.76
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -77,6 +77,16 @@ Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 Patch68: 0170-x86-syscall-Clear-unused-extra-registers-on-32-bit-c.patch
+# CVE fixes for BPF
+Patch80: 0000-bpf-verifier-fix-bounds-calculation-on-BPF_RSH.patch
+# This patch was already applied in 4.9.72; so skip it.
+#Patch81: 0001-bpf-fix-incorrect-sign-extension-in-check_alu_op.patch
+Patch82: 0002-bpf-fix-incorrect-tracking-of-register-size-truncati.patch
+Patch83: 0003-bpf-fix-32-bit-ALU-op-verification.patch
+Patch84: 0004-bpf-fix-missing-error-return-in-check_stack_boundary.patch
+Patch85: 0005-bpf-force-strict-alignment-checks-for-stack-pointers.patch
+Patch86: 0006-bpf-don-t-prune-branches-when-a-scalar-is-replaced-w.patch
+Patch87: 0007-bpf-fix-integer-overflows.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -209,6 +219,16 @@ EOF
 %patch67 -p1
 %patch68 -p1
 
+%patch80 -p1
+# This patch was already applied in 4.9.72; so skip it.
+#%patch81 -p1
+%patch82 -p1
+%patch83 -p1
+%patch84 -p1
+%patch85 -p1
+%patch86 -p1
+%patch87 -p1
+
 # secure
 %patch13 -p1
 %patch14 -p1
@@ -339,6 +359,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.76-2
+-   Fix multiple CVEs related to BPF.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.9.76-1
 -   Version update
 *   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-3

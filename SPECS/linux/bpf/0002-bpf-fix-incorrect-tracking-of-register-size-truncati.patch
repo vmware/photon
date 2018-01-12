@@ -1,0 +1,123 @@
+From 0c17d1d2c61936401f4702e1846e2c19b200f958 Mon Sep 17 00:00:00 2001
+From: Jann Horn <jannh@google.com>
+Date: Mon, 18 Dec 2017 20:11:55 -0800
+Subject: [PATCH 2/7] bpf: fix incorrect tracking of register size truncation
+
+Properly handle register truncation to a smaller size.
+
+The old code first mirrors the clearing of the high 32 bits in the bitwise
+tristate representation, which is correct. But then, it computes the new
+arithmetic bounds as the intersection between the old arithmetic bounds and
+the bounds resulting from the bitwise tristate representation. Therefore,
+when coerce_reg_to_32() is called on a number with bounds
+[0xffff'fff8, 0x1'0000'0007], the verifier computes
+[0xffff'fff8, 0xffff'ffff] as bounds of the truncated number.
+This is incorrect: The truncated number could also be in the range [0, 7],
+and no meaningful arithmetic bounds can be computed in that case apart from
+the obvious [0, 0xffff'ffff].
+
+Starting with v4.14, this is exploitable by unprivileged users as long as
+the unprivileged_bpf_disabled sysctl isn't set.
+
+Debian assigned CVE-2017-16996 for this issue.
+
+v2:
+ - flip the mask during arithmetic bounds calculation (Ben Hutchings)
+v3:
+ - add CVE number (Ben Hutchings)
+
+Fixes: b03c9f9fdc37 ("bpf/verifier: track signed and unsigned min/max values")
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Edward Cree <ecree@solarflare.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+---
+ kernel/bpf/verifier.c | 44 +++++++++++++++++++++++++++-----------------
+ 1 file changed, 27 insertions(+), 17 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index c086010..f716bdf 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1067,6 +1067,29 @@ static int check_ptr_alignment(struct bpf_verifier_env *env,
+ 					   strict);
+ }
+ 
++/* truncate register to smaller size (in bytes)
++ * must be called with size < BPF_REG_SIZE
++ */
++static void coerce_reg_to_size(struct bpf_reg_state *reg, int size)
++{
++	u64 mask;
++
++	/* clear high bits in bit representation */
++	reg->var_off = tnum_cast(reg->var_off, size);
++
++	/* fix arithmetic bounds */
++	mask = ((u64)1 << (size * 8)) - 1;
++	if ((reg->umin_value & ~mask) == (reg->umax_value & ~mask)) {
++		reg->umin_value &= mask;
++		reg->umax_value &= mask;
++	} else {
++		reg->umin_value = 0;
++		reg->umax_value = mask;
++	}
++	reg->smin_value = reg->umin_value;
++	reg->smax_value = reg->umax_value;
++}
++
+ /* check whether memory at (regno + off) is accessible for t = (read | write)
+  * if t==write, value_regno is a register which value is stored into memory
+  * if t==read, value_regno is a register which will receive the value from memory
+@@ -1200,9 +1223,7 @@ static int check_mem_access(struct bpf_verifier_env *env, int insn_idx, u32 regn
+ 	if (!err && size < BPF_REG_SIZE && value_regno >= 0 && t == BPF_READ &&
+ 	    regs[value_regno].type == SCALAR_VALUE) {
+ 		/* b/h/w load zero-extends, mark upper bits as known 0 */
+-		regs[value_regno].var_off =
+-			tnum_cast(regs[value_regno].var_off, size);
+-		__update_reg_bounds(&regs[value_regno]);
++		coerce_reg_to_size(&regs[value_regno], size);
+ 	}
+ 	return err;
+ }
+@@ -1772,14 +1793,6 @@ static int check_call(struct bpf_verifier_env *env, int func_id, int insn_idx)
+ 	return 0;
+ }
+ 
+-static void coerce_reg_to_32(struct bpf_reg_state *reg)
+-{
+-	/* clear high 32 bits */
+-	reg->var_off = tnum_cast(reg->var_off, 4);
+-	/* Update bounds */
+-	__update_reg_bounds(reg);
+-}
+-
+ static bool signed_add_overflows(s64 a, s64 b)
+ {
+ 	/* Do the add in u64, where overflow is well-defined */
+@@ -2017,8 +2030,8 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 
+ 	if (BPF_CLASS(insn->code) != BPF_ALU64) {
+ 		/* 32-bit ALU ops are (32,32)->64 */
+-		coerce_reg_to_32(dst_reg);
+-		coerce_reg_to_32(&src_reg);
++		coerce_reg_to_size(dst_reg, 4);
++		coerce_reg_to_size(&src_reg, 4);
+ 	}
+ 	smin_val = src_reg.smin_value;
+ 	smax_val = src_reg.smax_value;
+@@ -2398,10 +2411,7 @@ static int check_alu_op(struct bpf_verifier_env *env, struct bpf_insn *insn)
+ 					return -EACCES;
+ 				}
+ 				mark_reg_unknown(env, regs, insn->dst_reg);
+-				/* high 32 bits are known zero. */
+-				regs[insn->dst_reg].var_off = tnum_cast(
+-						regs[insn->dst_reg].var_off, 4);
+-				__update_reg_bounds(&regs[insn->dst_reg]);
++				coerce_reg_to_size(&regs[insn->dst_reg], 4);
+ 			}
+ 		} else {
+ 			/* case: R = imm
+-- 
+2.7.4
+
