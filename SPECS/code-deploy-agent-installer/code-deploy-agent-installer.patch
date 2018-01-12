@@ -1,0 +1,27 @@
+--- b/install	2017-11-14 14:24:08.000000000 -0800
++++ a/install	2018-01-02 16:34:18.261486655 -0800
+@@ -297,10 +297,10 @@ EOF
+     if @sanity_check
+       @log.info("Waiting for 3 minutes before I check for a running agent")
+       sleep(3 * 60)
+-      res = run_command(cmd, 'codedeploy-agent', 'status')
++      res = run_command(cmd, 'status', 'codedeploy-agent')
+       if (res.nil? || res == false)
+         @log.info("No codedeploy agent seems to be running. Starting the agent.")
+-        run_command(cmd, 'codedeploy-agent', 'start-no-update')
++        run_command(cmd, 'restart', 'codedeploy-agent')
+       end
+     end
+   end
+@@ -356,9 +356,9 @@ EOF
+       @log.info('Running version matches target version, skipping install')
+     else
+       #use -y to answer yes to confirmation prompts
+-      install_cmd = ['/usr/bin/yum', '-y', 'localinstall']
++      install_cmd = ['/usr/bin/rpm', '-Uvh']
+       install_from_s3(region, bucket, version_file_key, @type, install_cmd)
+-      do_sanity_check('/sbin/service')
++      do_sanity_check('/usr/bin/systemctl')
+     end
+   when 'deb'
+     running_agent = `dpkg -s codedeploy-agent`
