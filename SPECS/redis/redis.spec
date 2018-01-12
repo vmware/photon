@@ -1,62 +1,82 @@
-Summary:	redis database
+Summary:	advanced key-value store
 Name:		redis
 Version:	4.0.6
 Release:	1%{?dist}
-Vendor:		VMware, Inc.
-Distribution:	Photon
 License:	BSD
-Url:		http://redis.io
-Group:		Applications/Database
-
-Source0:	%{name}-%{version}.tar.gz
+URL:		http://redis.io/
+Group:		Applications/Databases
+Vendor:		VMware, Inc.
+Distribution:   Photon
+Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
 %define sha1 redis=9097893771863d56a69dbf233c6c97a78aaddedf
+Patch0:         redis-conf.patch
+BuildRequires:  gcc
+BuildRequires:  systemd
+BuildRequires:  make
+Requires:	systemd
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 %description
-Redis is an in-memory database that persists on disk. The data model is key-value, but many different kind of values are supported: Strings, Lists, Sets, Sorted Sets, Hashes, HyperLogLogs, Bitmaps.
+Redis is an in-memory data structure store, used as database, cache and message broker.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
-cd src
-make OPTIMIZATION="-g" %{?_smp_mflags}
+make %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}%{_prefix}
-make PREFIX=%{buildroot}%{_prefix} install
+install -vdm 755 %{buildroot}
+make PREFIX=%{buildroot}/usr install
+install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
+mkdir -p %{buildroot}/var/lib/redis
+mkdir -p %{buildroot}/var/log/redis
+mkdir -p %{buildroot}/usr/lib/systemd/system
+cat << EOF >>  %{buildroot}/usr/lib/systemd/system/redis.service
+[Unit]
+Description=Redis in-memory key-value database
+After=network.target
 
-# Pre-install
+[Service]
+ExecStart=/usr/bin/redis-server /etc/redis.conf --daemonize no
+ExecStop=/usr/bin/redis-cli shutdown
+User=redis
+Group=redis
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+%check
+#check requires tcl which is not supported in Photon OS right now.
+
+
 %pre
+getent group %{name} &> /dev/null || \
+groupadd -r %{name} &> /dev/null
+getent passwd %{name} &> /dev/null || \
+useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
+-c 'Redis Database Server' %{name} &> /dev/null
+exit 0
 
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
-# Post-install
 %post
+/sbin/ldconfig
+%systemd_post  redis.service
 
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
-    /sbin/ldconfig
-
-# Pre-uninstall
-%preun
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
-# Post-uninstall
 %postun
+/sbin/ldconfig
+%systemd_postun_with_restart redis.service
 
-    /sbin/ldconfig
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
 
 %files
-    %defattr(-,root,root)
-    %{_bindir}/*
+%defattr(-,root,root)
+%dir %attr(0750, redis, redis) /var/lib/redis
+%dir %attr(0750, redis, redis) /var/log/redis
+%{_bindir}/*
+%{_libdir}/systemd/*
+%config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
-*       Wed Dec 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.0.6-1
--       Initial build for photon.
+* Thu Jan 11 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.0.6-1
+- Initial build for photon
