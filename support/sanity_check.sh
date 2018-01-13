@@ -15,7 +15,7 @@ done < <(find "${SCRIPTS_DIR}/../" -name "*.json" -type f -not -path "*stage*")
 echo "Checking all python code is compilable..."
 while read f; do
 	echo "Checking:${f}"
-	if ! python -m py_compile "${f}"; then
+	if ! python3 -m py_compile "${f}"; then
 		echo "Please check:${f} for complitation errors"
 		exit 1
 	fi
