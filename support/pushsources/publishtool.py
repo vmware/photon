@@ -22,10 +22,10 @@ class publishTool:
     #check local files against remote repo
     def check(self):
         result = self._publish.check(self._context['srcroot'])
-        print 'Updates: %d'   % len(result[const.updates])
-        print 'New: %d'       % len(result[const.new])
-        print 'Verified: %d'  % len(result[const.verified])
-        print 'Obsoletes: %d' % len(result[const.obsoletes])
+        print('Updates: %d'   % len(result[const.updates]))
+        print('New: %d'       % len(result[const.new]))
+        print('Verified: %d'  % len(result[const.verified]))
+        print('Obsoletes: %d' % len(result[const.obsoletes]))
         return result
 
     def hasPendingSync(self, advice):
@@ -37,26 +37,26 @@ class publishTool:
         advice = self.check()
         if(not self._context['silent']):
             if not self.hasPendingSync(advice):
-                print 'No changes to push.'
+                print('No changes to push.')
                 return
             choice = raw_input('Continue? y/N:')
-            if choice <> 'y':
-                print 'Aborted on user command'
+            if choice != 'y':
+                print('Aborted on user command')
                 return
-        print 'push local changes to remote...'
+        print('push local changes to remote...')
         self._publish.syncRemote(self._context['srcroot'], advice)
 
 
     def printsha1(self, files, label):
-        print 'sha1sum of %s >>>' % label
+        print('sha1sum of %s >>>' % label)
         for f in files:
-            print '%s - %s' % (f['name'], f['sha1'])
+            print('%s - %s' % (f['name'], f['sha1']))
         
     def makesha1(self):
         advice = self.check()
         verified = len(advice[const.verified])
         if(verified <= 0):
-            print 'no files verified. nothing to do.'
+            print('no files verified. nothing to do.')
             return
         self.printsha1(advice[const.verified], const.verified)
 
@@ -68,7 +68,7 @@ class publishTool:
         verified = advice[const.verified]
         verifiedLen = len(advice[const.verified])
         if(verifiedLen <= 0):
-            print 'no files verified. nothing to do.'
+            print('no files verified. nothing to do.')
             return
 
         with open(self._context['sha1file'], 'w') as sha1file:
@@ -82,31 +82,31 @@ class publishTool:
         pendingCount = len(pending)
         if(not self._context['silent']):
             if pendingCount == 0:
-                print 'No pending changes to publish.'
+                print('No pending changes to publish.')
                 return
-            print 'Found %d pending files to publish' % pendingCount
+            print('Found %d pending files to publish' % pendingCount)
             choice = raw_input('Continue? y/N:')
-            if choice <> 'y':
-                print 'Aborted on user command'
+            if choice != 'y':
+                print('Aborted on user command')
                 return
-            print self._publish.publish()
+            print(self._publish.publish())
 
 def showUsage():
-        print 'Usage:'
-        print 'check status: publishTool.py \
+        print('Usage:')
+        print('check status: publishTool.py \
 --config <config file> --srcroot <source root folder> \
---action check'
-        print 'push files: publishTool.py \
+--action check')
+        print('push files: publishTool.py \
 --config <config file> --srcroot <source root folder> \
---action push'
-        print 'publish pushed files: publishTool.py \
---config <config file> folder> --action publish'
-        print 'make sha1 file: publishTool.py \
+--action push')
+        print('publish pushed files: publishTool.py \
+--config <config file> folder> --action publish')
+        print('make sha1 file: publishTool.py \
 --config <config file> folder> --srcroot <source root folder> \
---action makesha1'
-        print 'write sha1 file: publishTool.py \
+--action makesha1')
+        print('write sha1 file: publishTool.py \
 --config <config file> folder> --srcroot <source root folder> \
---sha1file <sha1 file path> --action writesha1'
+--sha1file <sha1 file path> --action writesha1')
 
 #
 def main(argv):
@@ -135,7 +135,7 @@ def main(argv):
             elif opt == '--help':
                 showUsage()
                 return
-    except Exception, e:
+    except Exception as e:
         showUsage()
         sys.exit(1)
 
@@ -151,8 +151,8 @@ def main(argv):
             tool.writesha1()
         elif(context['action'] == 'publish'):
             tool.publish()
-    except Exception, e:
-        print "Error: %s" % e
+    except Exception as e:
+        print("Error: %s" % e)
         sys.exit(1)
 
 
