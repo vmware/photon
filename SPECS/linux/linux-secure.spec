@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.76
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -57,6 +57,9 @@ Patch33:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 # Fix CVE-2017-17450
 Patch34:        netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch35:        revert-SMB-validate-negotiate-even-if-signing-off.patch
+# Fix CVE-2017-17741
+Patch36:        KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
+
 # For Spectre
 Patch50: 0139-x86-cpu-AMD-Make-the-LFENCE-instruction-serialized.patch
 Patch51: 0140-x86-cpu-AMD-Remove-now-unused-definition-of-MFENCE_R.patch
@@ -187,6 +190,7 @@ EOF
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
 
 # spectre
 %patch50 -p1
@@ -339,6 +343,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.76-2
+-   Fix CVE-2017-17741.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.9.76-1
 -   Version update
 *   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-3

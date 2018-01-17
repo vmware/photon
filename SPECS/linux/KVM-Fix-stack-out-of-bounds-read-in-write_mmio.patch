@@ -1,0 +1,167 @@
+
+[Srivatsa: Applied the ARM kvm changes to its location
+in 4.9: arch/arm/kvm/mmio.c; Note that its location in mainline is:
+virt/kvm/arm/mmio.c]
+
+From e39d200fa5bf5b94a0948db0dae44c1b73b84a56 Mon Sep 17 00:00:00 2001
+From: Wanpeng Li <wanpeng.li@hotmail.com>
+Date: Thu, 14 Dec 2017 17:40:50 -0800
+Subject: [PATCH] KVM: Fix stack-out-of-bounds read in write_mmio
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Reported by syzkaller:
+
+  BUG: KASAN: stack-out-of-bounds in write_mmio+0x11e/0x270 [kvm]
+  Read of size 8 at addr ffff8803259df7f8 by task syz-executor/32298
+
+  CPU: 6 PID: 32298 Comm: syz-executor Tainted: G           OE    4.15.0-rc2+ #18
+  Hardware name: LENOVO ThinkCentre M8500t-N000/SHARKBAY, BIOS FBKTC1AUS 02/16/2016
+  Call Trace:
+   dump_stack+0xab/0xe1
+   print_address_description+0x6b/0x290
+   kasan_report+0x28a/0x370
+   write_mmio+0x11e/0x270 [kvm]
+   emulator_read_write_onepage+0x311/0x600 [kvm]
+   emulator_read_write+0xef/0x240 [kvm]
+   emulator_fix_hypercall+0x105/0x150 [kvm]
+   em_hypercall+0x2b/0x80 [kvm]
+   x86_emulate_insn+0x2b1/0x1640 [kvm]
+   x86_emulate_instruction+0x39a/0xb90 [kvm]
+   handle_exception+0x1b4/0x4d0 [kvm_intel]
+   vcpu_enter_guest+0x15a0/0x2640 [kvm]
+   kvm_arch_vcpu_ioctl_run+0x549/0x7d0 [kvm]
+   kvm_vcpu_ioctl+0x479/0x880 [kvm]
+   do_vfs_ioctl+0x142/0x9a0
+   SyS_ioctl+0x74/0x80
+   entry_SYSCALL_64_fastpath+0x23/0x9a
+
+The path of patched vmmcall will patch 3 bytes opcode 0F 01 C1(vmcall)
+to the guest memory, however, write_mmio tracepoint always prints 8 bytes
+through *(u64 *)val since kvm splits the mmio access into 8 bytes. This
+leaks 5 bytes from the kernel stack (CVE-2017-17741).  This patch fixes
+it by just accessing the bytes which we operate on.
+
+Before patch:
+
+syz-executor-5567  [007] .... 51370.561696: kvm_mmio: mmio write len 3 gpa 0x10 val 0x1ffff10077c1010f
+
+After patch:
+
+syz-executor-13416 [002] .... 51302.299573: kvm_mmio: mmio write len 3 gpa 0x10 val 0xc1010f
+
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
+Reviewed-by: Darren Kenny <darren.kenny@oracle.com>
+Reviewed-by: Marc Zyngier <marc.zyngier@arm.com>
+Tested-by: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Radim Krčmář <rkrcmar@redhat.com>
+Cc: Marc Zyngier <marc.zyngier@arm.com>
+Cc: Christoffer Dall <christoffer.dall@linaro.org>
+Signed-off-by: Wanpeng Li <wanpeng.li@hotmail.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[srivatsa@csail.mit.edu: Applied the ARM kvm changes to its location
+in 4.9: arch/arm/kvm/mmio.c; Note that its location in mainline is:
+virt/kvm/arm/mmio.c]
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/arm/kvm/mmio.c        | 6 +++---
+ arch/x86/kvm/x86.c         | 8 ++++----
+ include/trace/events/kvm.h | 7 +++++--
+ 3 files changed, 12 insertions(+), 9 deletions(-)
+
+diff --git a/arch/arm/kvm/mmio.c b/arch/arm/kvm/mmio.c
+index b6e715f..dac7ceb 100644
+--- a/arch/arm/kvm/mmio.c
++++ b/arch/arm/kvm/mmio.c
+@@ -112,7 +112,7 @@ int kvm_handle_mmio_return(struct kvm_vcpu *vcpu, struct kvm_run *run)
+ 		}
+ 
+ 		trace_kvm_mmio(KVM_TRACE_MMIO_READ, len, run->mmio.phys_addr,
+-			       data);
++			       &data);
+ 		data = vcpu_data_host_to_guest(vcpu, data, len);
+ 		vcpu_set_reg(vcpu, vcpu->arch.mmio_decode.rt, data);
+ 	}
+@@ -182,14 +182,14 @@ int io_mem_abort(struct kvm_vcpu *vcpu, struct kvm_run *run,
+ 		data = vcpu_data_guest_to_host(vcpu, vcpu_get_reg(vcpu, rt),
+ 					       len);
+ 
+-		trace_kvm_mmio(KVM_TRACE_MMIO_WRITE, len, fault_ipa, data);
++		trace_kvm_mmio(KVM_TRACE_MMIO_WRITE, len, fault_ipa, &data);
+ 		kvm_mmio_write_buf(data_buf, len, data);
+ 
+ 		ret = kvm_io_bus_write(vcpu, KVM_MMIO_BUS, fault_ipa, len,
+ 				       data_buf);
+ 	} else {
+ 		trace_kvm_mmio(KVM_TRACE_MMIO_READ_UNSATISFIED, len,
+-			       fault_ipa, 0);
++			       fault_ipa, NULL);
+ 
+ 		ret = kvm_io_bus_read(vcpu, KVM_MMIO_BUS, fault_ipa, len,
+ 				      data_buf);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 73304b1..d3f80cc 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -4264,7 +4264,7 @@ static int vcpu_mmio_read(struct kvm_vcpu *vcpu, gpa_t addr, int len, void *v)
+ 					 addr, n, v))
+ 		    && kvm_io_bus_read(vcpu, KVM_MMIO_BUS, addr, n, v))
+ 			break;
+-		trace_kvm_mmio(KVM_TRACE_MMIO_READ, n, addr, *(u64 *)v);
++		trace_kvm_mmio(KVM_TRACE_MMIO_READ, n, addr, v);
+ 		handled += n;
+ 		addr += n;
+ 		len -= n;
+@@ -4517,7 +4517,7 @@ static int read_prepare(struct kvm_vcpu *vcpu, void *val, int bytes)
+ {
+ 	if (vcpu->mmio_read_completed) {
+ 		trace_kvm_mmio(KVM_TRACE_MMIO_READ, bytes,
+-			       vcpu->mmio_fragments[0].gpa, *(u64 *)val);
++			       vcpu->mmio_fragments[0].gpa, val);
+ 		vcpu->mmio_read_completed = 0;
+ 		return 1;
+ 	}
+@@ -4539,14 +4539,14 @@ static int write_emulate(struct kvm_vcpu *vcpu, gpa_t gpa,
+ 
+ static int write_mmio(struct kvm_vcpu *vcpu, gpa_t gpa, int bytes, void *val)
+ {
+-	trace_kvm_mmio(KVM_TRACE_MMIO_WRITE, bytes, gpa, *(u64 *)val);
++	trace_kvm_mmio(KVM_TRACE_MMIO_WRITE, bytes, gpa, val);
+ 	return vcpu_mmio_write(vcpu, gpa, bytes, val);
+ }
+ 
+ static int read_exit_mmio(struct kvm_vcpu *vcpu, gpa_t gpa,
+ 			  void *val, int bytes)
+ {
+-	trace_kvm_mmio(KVM_TRACE_MMIO_READ_UNSATISFIED, bytes, gpa, 0);
++	trace_kvm_mmio(KVM_TRACE_MMIO_READ_UNSATISFIED, bytes, gpa, NULL);
+ 	return X86EMUL_IO_NEEDED;
+ }
+ 
+diff --git a/include/trace/events/kvm.h b/include/trace/events/kvm.h
+index 8ade3eb..90fce4d 100644
+--- a/include/trace/events/kvm.h
++++ b/include/trace/events/kvm.h
+@@ -208,7 +208,7 @@ TRACE_EVENT(kvm_ack_irq,
+ 	{ KVM_TRACE_MMIO_WRITE, "write" }
+ 
+ TRACE_EVENT(kvm_mmio,
+-	TP_PROTO(int type, int len, u64 gpa, u64 val),
++	TP_PROTO(int type, int len, u64 gpa, void *val),
+ 	TP_ARGS(type, len, gpa, val),
+ 
+ 	TP_STRUCT__entry(
+@@ -222,7 +222,10 @@ TRACE_EVENT(kvm_mmio,
+ 		__entry->type		= type;
+ 		__entry->len		= len;
+ 		__entry->gpa		= gpa;
+-		__entry->val		= val;
++		__entry->val		= 0;
++		if (val)
++			memcpy(&__entry->val, val,
++			       min_t(u32, sizeof(__entry->val), len));
+ 	),
+ 
+ 	TP_printk("mmio %s len %u gpa 0x%llx val 0x%llx",

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.76
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -54,6 +54,9 @@ Patch30:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 # Fix CVE-2017-17450
 Patch31:        netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch32:        revert-SMB-validate-negotiate-even-if-signing-off.patch
+# Fix CVE-2017-17741
+Patch33:        KVM-Fix-stack-out-of-bounds-read-in-write_mmio.patch
+
 # For Spectre
 Patch50: 0139-x86-cpu-AMD-Make-the-LFENCE-instruction-serialized.patch
 Patch51: 0140-x86-cpu-AMD-Remove-now-unused-definition-of-MFENCE_R.patch
@@ -177,6 +180,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 
 %patch50 -p1
 %patch51 -p1
@@ -364,6 +368,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jan 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.76-2
+-   Fix CVE-2017-17741.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.9.76-1
 -   Version update
 *   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-3
