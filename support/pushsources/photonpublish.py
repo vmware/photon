@@ -1,10 +1,10 @@
-#! /usr/bin/python2
+#! /usr/bin/python3
 #
 #    Copyright (C) 2015 VMware, Inc. All rights reserved.
-#    photonpublish.py 
-#    Allows pushing rpms and other artifacts to 
+#    photonpublish.py
+#    Allows pushing rpms and other artifacts to
 #    a bintray repository.
-#    Allows queying a repository to get existing 
+#    Allows queying a repository to get existing
 #    file details.
 #
 #    Author(s): Priyesh Padmavilasom
@@ -15,7 +15,6 @@ import getopt
 import json
 import glob
 import os
-import hashlib
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -35,14 +34,14 @@ class photonPublish:
 
     def loadConfig(self):
         confFile = self._context['config']
-        if(len(confFile) == 0):
+        if not confFile:
             return
         with open(confFile) as jsonFile:
             self._config = json.load(jsonFile)
         #override cmdline supplied params
-        if('user' in self._context and len(self._context['user']) > 0):
+        if 'user' in self._context and self._context['user']:
             self._config['user'] = self._context['user']
-        if('apikey' in self._context and len(self._context['apikey']) > 0):
+        if 'apikey' in self._context and self._context['apikey']:
             self._config['apikey'] = self._context['apikey']
 
 
@@ -57,9 +56,9 @@ class photonPublish:
                self._config['repo'],\
                self._config['package'],\
                self._config['version'])
-        
+
         req = requests.get(url, auth=auth)
-        if(req.status_code >= 300):
+        if req.status_code >= 300:
             raise Exception(req.text)
 
         return req.json()
@@ -74,27 +73,27 @@ class photonPublish:
                 result.append(pkg)
         return result
 
-    #Check if the local path has any diffs with the 
+    #Check if the local path has any diffs with the
     #remote repo. Compare sha1 hash
     def check(self, pkgsRoot):
         result = {
-                     const.updates:[],
-                     const.new:[],
-                     const.obsoletes:[],
-                     const.verified:[]
-                 }        
+            const.updates:[],
+            const.new:[],
+            const.obsoletes:[],
+            const.verified:[]
+            }
         localFiles = publishUtils.getFilesWithRelativePath(pkgsRoot)
         pkgs = self.getPackages()
         for pkg in pkgs:
             remotePath = pkg[const.path]
 
-            if(remotePath in localFiles):
+            if remotePath in localFiles:
                 localFiles.remove(remotePath)
 
             localPath = os.path.join(pkgsRoot, remotePath)
-            if(os.path.isfile(localPath)):
+            if os.path.isfile(localPath):
                 sha1 = publishUtils.sha1OfFile(localPath)
-                if(sha1 == pkg[const.sha1]):
+                if sha1 == pkg[const.sha1]:
                     result[const.verified].append(pkg)
                 else:
                     result[const.updates].append(pkg)
@@ -112,7 +111,7 @@ class photonPublish:
         updateCount = len(checkResults[const.updates])
         newCount = len(checkResults[const.new])
 
-        if(updateCount + newCount == 0):
+        if updateCount + newCount == 0:
             print('Remote is up to date.')
             return
 
@@ -133,9 +132,8 @@ class photonPublish:
             fullPath = os.path.join(root, filePath)
             pathName = filePath.rstrip(fileName).rstrip('/')
             self.pushFile(fullPath, pathName)
-        
 
-    #push a folder with rpms to a specified pathname 
+    #push a folder with rpms to a specified pathname
     #in the remote repo
     def push(self, filePath, pathName):
         results = []
@@ -151,7 +149,7 @@ class photonPublish:
         auth = HTTPBasicAuth(self._config['user'], self._config['apikey'])
 
         fileName = os.path.basename(fileToPush)
-        if(len(pathName) > 0):
+        if pathName:
             pathAndFileName = '%s/%s' % (pathName, fileName)
         else:
             pathAndFileName = fileName
@@ -165,21 +163,21 @@ class photonPublish:
                self._config['version'],\
                pathAndFileName)
 
-        headers={'Content-Type': 'application/octet-stream'}
+        headers = {'Content-Type': 'application/octet-stream'}
         with open(fileToPush, 'rb') as chunkedData:
             req = requests.put(url,
                                auth=auth,
                                data=chunkedData,
                                headers=headers)
 
-        if(req.status_code >= 300):
+        if req.status_code >= 300:
             raise Exception(req.text)
 
         result['destPath'] = pathAndFileName
         result['sourcePath'] = fileToPush
         result['returnCode'] = req.status_code
         result['msg'] = req.text
-        return result 
+        return result
 
     def updateFile(self, fileToPush, pathName):
         print('Updating file %s at path %s' % (fileToPush, pathName))
@@ -187,7 +185,7 @@ class photonPublish:
         auth = HTTPBasicAuth(self._config['user'], self._config['apikey'])
 
         fileName = os.path.basename(fileToPush)
-        if(len(pathName) > 0):
+        if pathName:
             pathAndFileName = '%s/%s' % (pathName, fileName)
         else:
             pathAndFileName = fileName
@@ -201,21 +199,21 @@ class photonPublish:
                self._config['version'],\
                pathAndFileName)
 
-        headers={'Content-Type': 'application/octet-stream'}
+        headers = {'Content-Type': 'application/octet-stream'}
         with open(fileToPush, 'rb') as chunkedData:
             req = requests.put(url,
                                auth=auth,
                                data=chunkedData,
                                headers=headers)
 
-        if(req.status_code >= 300):
+        if req.status_code >= 300:
             raise Exception(req.text)
 
         result['destPath'] = pathAndFileName
         result['sourcePath'] = fileToPush
         result['returnCode'] = req.status_code
         result['msg'] = req.text
-        return result 
+        return result
 
     #publishes pending content. Works with details from conf file.
     def publish(self):
@@ -223,7 +221,6 @@ class photonPublish:
                % (self._config['repo'],
                   self._config['package'],
                   self._config['version']))
-        result = {}
         auth = HTTPBasicAuth(self._config['user'], self._config['apikey'])
 
         #form url: https://api.com/content/vmware/photon/releases/0.9 for eg.
@@ -236,7 +233,7 @@ class photonPublish:
 
         req = requests.post(url, auth=auth)
 
-        if(req.status_code >= 300):
+        if req.status_code >= 300:
             raise Exception(req.text)
 
         return req.json()
@@ -248,23 +245,23 @@ def showUsage():
     print('--user username --apikey apikey')
 
 def validate(context):
-    return len(context['config']) > 0 and len(context['files']) > 0
+    return context['config'] and context['files']
 
 #test photonPublish
 def main(argv):
     try:
         context = {
-                      'config':'/etc/photonpublish.conf',
-                      'user':'',
-                      'apikey':'',
-                      'files':'',
-                      'path':'',
-                      'mode':''
-                  }
+            'config':'/etc/photonpublish.conf',
+            'user':'',
+            'apikey':'',
+            'files':'',
+            'path':'',
+            'mode':''
+            }
         opts, args = getopt.getopt(
-                         sys.argv[1:],
-                         '',
-                         ['config=','user=','apikey=','files=','path=','mode='])
+            sys.argv[1:],
+            '',
+            ['config=', 'user=', 'apikey=', 'files=', 'path=', 'mode='])
         for opt, arg in opts:
             if opt == '--config':
                 context['config'] = arg
@@ -279,14 +276,14 @@ def main(argv):
             elif opt == '--mode':
                 context['mode'] = arg
 
-        if(not validate(context)):
+        if not validate(context):
             showUsage()
             sys.exit(1)
 
         publish = photonPublish(context)
-        if(context['mode'] == 'upload'):
+        if context['mode'] == 'upload':
             publish.push(context['files'], context['path'])
-        elif(context['mode'] == 'check'):
+        elif context['mode'] == 'check':
             print(publish.check(context['files']))
 
     except Exception as e:

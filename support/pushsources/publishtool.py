@@ -1,4 +1,4 @@
-#! /usr/bin/python2
+#! /usr/bin/python3
 #
 #    Copyright (C) 2015 VMware, Inc. All rights reserved.
 #    publishtool for working with photonpublish
@@ -26,20 +26,21 @@ class publishTool:
         print('New: %d'       % len(result[const.new]))
         print('Verified: %d'  % len(result[const.verified]))
         print('Obsoletes: %d' % len(result[const.obsoletes]))
+        print('New files are : %s' %(result[const.new]))
         return result
 
     def hasPendingSync(self, advice):
-        return (len(advice[const.updates]) > 0 or len(advice[const.new]) > 0)
+        return advice[const.updates] or advice[const.new]
 
     #apply advices to sync remote.
     #note: discarding/removing is stll getting resolved pending bintray api
     def push(self):
         advice = self.check()
-        if(not self._context['silent']):
+        if not self._context['silent']:
             if not self.hasPendingSync(advice):
                 print('No changes to push.')
                 return
-            choice = raw_input('Continue? y/N:')
+            choice = input('Continue? y/N:')
             if choice != 'y':
                 print('Aborted on user command')
                 return
@@ -51,11 +52,11 @@ class publishTool:
         print('sha1sum of %s >>>' % label)
         for f in files:
             print('%s - %s' % (f['name'], f['sha1']))
-        
+
     def makesha1(self):
         advice = self.check()
         verified = len(advice[const.verified])
-        if(verified <= 0):
+        if verified <= 0:
             print('no files verified. nothing to do.')
             return
         self.printsha1(advice[const.verified], const.verified)
@@ -67,44 +68,44 @@ class publishTool:
         advice = self.check()
         verified = advice[const.verified]
         verifiedLen = len(advice[const.verified])
-        if(verifiedLen <= 0):
+        if verifiedLen <= 0:
             print('no files verified. nothing to do.')
             return
 
         with open(self._context['sha1file'], 'w') as sha1file:
             for f in verified:
                 if f['name'] == const.sha1allfilename:
-                    continue 
+                    continue
                 sha1file.write('%s - %s\n' % (f['name'], f['sha1']))
 
     def publish(self):
         pending = self._publish.getUnpublished()
         pendingCount = len(pending)
-        if(not self._context['silent']):
+        if not self._context['silent']:
             if pendingCount == 0:
                 print('No pending changes to publish.')
                 return
             print('Found %d pending files to publish' % pendingCount)
-            choice = raw_input('Continue? y/N:')
+            choice = input('Continue? y/N:')
             if choice != 'y':
                 print('Aborted on user command')
                 return
             print(self._publish.publish())
 
 def showUsage():
-        print('Usage:')
-        print('check status: publishTool.py \
+    print('Usage:')
+    print('check status: publishTool.py \
 --config <config file> --srcroot <source root folder> \
 --action check')
-        print('push files: publishTool.py \
+    print('push files: publishTool.py \
 --config <config file> --srcroot <source root folder> \
 --action push')
-        print('publish pushed files: publishTool.py \
+    print('publish pushed files: publishTool.py \
 --config <config file> folder> --action publish')
-        print('make sha1 file: publishTool.py \
+    print('make sha1 file: publishTool.py \
 --config <config file> folder> --srcroot <source root folder> \
 --action makesha1')
-        print('write sha1 file: publishTool.py \
+    print('write sha1 file: publishTool.py \
 --config <config file> folder> --srcroot <source root folder> \
 --sha1file <sha1 file path> --action writesha1')
 
@@ -113,14 +114,14 @@ def main(argv):
     try:
         context = {'silent':False}
         opts, args = getopt.getopt(
-                         sys.argv[1:],
-                         '',
-                         ['config=',
-                          'srcroot=',
-                          'action=',
-                          'sha1file=',
-                          'silent=',
-                          'help'])
+            sys.argv[1:],
+            '',
+            ['config=',
+             'srcroot=',
+             'action=',
+             'sha1file=',
+             'silent=',
+             'help'])
         for opt, arg in opts:
             if opt == '--config':
                 context['config'] = arg
@@ -141,15 +142,15 @@ def main(argv):
 
     try:
         tool = publishTool(context)
-        if(context['action'] == 'push'):
+        if context['action'] == 'push':
             tool.push()
-        elif(context['action'] == 'check'):
+        elif context['action'] == 'check':
             tool.check()
-        elif(context['action'] == 'makesha1'):
+        elif context['action'] == 'makesha1':
             tool.makesha1()
-        elif(context['action'] == 'writesha1'):
+        elif context['action'] == 'writesha1':
             tool.writesha1()
-        elif(context['action'] == 'publish'):
+        elif context['action'] == 'publish':
             tool.publish()
     except Exception as e:
         print("Error: %s" % e)
@@ -158,4 +159,3 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv)
-
