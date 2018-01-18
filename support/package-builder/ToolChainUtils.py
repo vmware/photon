@@ -161,6 +161,11 @@ class ToolChainUtils(object):
             print(constants.perPackageToolChain[packageName])
             self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName],
                                             packageName)
+        #convert rpm db to lmdb (if required)
+        convertLogFile = self.logPath+"/rpmdbconvert.log"
+        pkgUtilsConvert=PackageUtils(self.logName,self.logPath)
+        pkgUtilsConvert.ensureLMDBForRPMDB(chrootID, convertLogFile)
+
 
     def installCustomToolChainRPMS(self, chrootID, listOfToolChainPkgs, packageName):
         self.logger.info("Installing package specific tool chain RPMs for " + packageName +
