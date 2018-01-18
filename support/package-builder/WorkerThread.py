@@ -40,10 +40,7 @@ class WorkerThread(threading.Thread):
                                                      self.listBuildOptionPackages,
                                                      self.pkgBuildOptionFile,
                                                      self.pkgBuildType)
-            t = threading.Thread(target=pkgBuilder.buildPackageThreadAPI,
-                                 args=(pkg, outputMap, pkg))
-            t.start()
-            t.join()
+            pkgBuilder.buildPackageFunction(pkg, outputMap, pkg)
             if pkg not in outputMap or outputMap[pkg] == False:
                 buildThreadFailed = True
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
