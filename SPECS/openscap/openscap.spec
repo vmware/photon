@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.2.14
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
@@ -20,6 +20,7 @@ BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
 BuildRequires:  popt-devel
 BuildRequires:  python2-devel
+BuildRequires:  lmdb-devel
 Requires:       curl
 Requires:       popt
 %description
@@ -95,6 +96,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python2.7/*
 
 %changelog
+*   Sun Mar 04 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.14-4
+-   added build requires lmdb-devel
 *   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3
 -   Disable make check which need per-XML-XPATH for bug 1900358
 *   Fri May 5 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.14-2

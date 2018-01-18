@@ -1,0 +1,28 @@
+--- a/lib/backend/dbi.c	2017-10-05 10:04:56.946602155 +0000
++++ b/lib/backend/dbi-new.c	2018-01-12 01:31:12.606373152 +0000
+@@ -50,11 +50,6 @@
+     } else
+ #endif
+     {
+-	rdb->db_ops = &db3_dbops;
+-	if (*db_backend == '\0') {
+-	    free(db_backend);
+-	    db_backend = xstrdup("bdb");
+-	}
+     }
+ 
+ #if defined(WITH_LMDB)
+@@ -75,13 +70,6 @@
+     free(path);
+ #endif
+ 
+-    path = rstrscat(NULL, dbhome, "/Packages", NULL);
+-    if (access(path, F_OK) == 0 && rdb->db_ops != &db3_dbops) {
+-	rdb->db_ops = &db3_dbops;
+-	rpmlog(RPMLOG_WARNING, _("Found BDB Packages database while attempting %s backend: using bdb backend.\n"), db_backend);
+-    }
+-    free(path);
+-
+     if (db_backend)
+ 	free(db_backend);
+ }

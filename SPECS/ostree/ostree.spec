@@ -148,7 +148,7 @@ rm -rf %{buildroot}
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  2015.7-8
 -   Change systemd dependency
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.7-7
--   Use %setup instead of %autosetup
+-   Use setup instead of autosetup
 *   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 2015.7-6
 -   Modified %check
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2015.7-5
