@@ -1,0 +1,288 @@
+diff --git a/configure b/configure
+index 8cba213..df53973 100755
+--- a/configure
++++ b/configure
+@@ -713,7 +713,6 @@ LMDB_LIBS
+ LMDB_CFLAGS
+ NDB_FALSE
+ NDB_TRUE
+-WITH_DB_LIB
+ HAVE_LIBDW_STRTAB_FALSE
+ HAVE_LIBDW_STRTAB_TRUE
+ LIBDW_FALSE
+@@ -957,7 +956,6 @@ with_crypto
+ with_beecrypt
+ with_internal_beecrypt
+ with_archive
+-with_external_db
+ enable_ndb
+ enable_lmdb
+ enable_nls
+@@ -1668,7 +1666,6 @@ Optional Packages:
+ 
+   --with-internal-beecrypt build with internal beecrypt library
+   --with-archive          build rpm2archive - requires libarchive
+-  --with-external-db      build against an external Berkeley db
+   --with-gnu-ld           assume the C compiler uses GNU ld default=no
+   --with-libiconv-prefix[=DIR]  search for libiconv in DIR/include and DIR/lib
+   --without-libiconv-prefix     don't search for libiconv in includedir and libdir
+@@ -20191,8 +20188,8 @@ if test "x$enable_zstd" != "xno"; then :
+ 
+ 
+ pkg_failed=no
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ZSTD" >&5
+-$as_echo_n "checking for ZSTD... " >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libzstd" >&5
++$as_echo_n "checking for libzstd... " >&6; }
+ 
+ if test -n "$ZSTD_CFLAGS"; then
+     pkg_cv_ZSTD_CFLAGS="$ZSTD_CFLAGS"
+@@ -20232,7 +20229,7 @@ fi
+ 
+ 
+ if test $pkg_failed = yes; then
+-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 
+ if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+@@ -20250,7 +20247,7 @@ fi
+ 
+ 	have_zstd=no
+ elif test $pkg_failed = untried; then
+-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 	have_zstd=no
+ else
+@@ -21966,114 +21963,6 @@ fi
+ 
+ 
+ #=================
+-# Process --with/without-external-db
+-
+-# Check whether --with-external_db was given.
+-if test "${with_external_db+set}" = set; then :
+-  withval=$with_external_db; case "$with_external_db" in
+-yes|no) ;;
+-*) as_fn_error $? "invalid argument to --with-external-db" "$LINENO" 5 ;;
+-esac
+-else
+-  with_external_db=maybe
+-fi
+-
+-
+-case "$with_external_db" in
+-yes )
+-  for ac_header in db.h
+-do :
+-  ac_fn_c_check_header_mongrel "$LINENO" "db.h" "ac_cv_header_db_h" "$ac_includes_default"
+-if test "x$ac_cv_header_db_h" = xyes; then :
+-  cat >>confdefs.h <<_ACEOF
+-#define HAVE_DB_H 1
+-_ACEOF
+-
+-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+-/* end confdefs.h.  */
+-
+-
+-	#include <db.h>
+-	#if ((DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5))
+-	#error Berkeley DB too old
+-	#endif
+-
+-
+-_ACEOF
+-if ac_fn_c_try_cpp "$LINENO"; then :
+-   WITH_DB_LIB=-ldb
+-else
+-   as_fn_error $? "Berkeley DB version >= 4.5 required" "$LINENO" 5
+-
+-fi
+-rm -f conftest.err conftest.i conftest.$ac_ext
+-
+-else
+-
+-    as_fn_error $? "missing required header db.h" "$LINENO" 5
+-
+-fi
+-
+-done
+-
+-  ;;
+-no|maybe )
+-  # Try internal database first, then fall back to external
+-  # unless --without-external-db (no) was explicitly given.
+-  if  test -x db/dist/configure ; then
+-
+-$as_echo "#define HAVE_DB_H 1" >>confdefs.h
+-
+-  else
+-    case "$with_external_db" in
+-    maybe)
+-      for ac_header in db.h
+-do :
+-  ac_fn_c_check_header_mongrel "$LINENO" "db.h" "ac_cv_header_db_h" "$ac_includes_default"
+-if test "x$ac_cv_header_db_h" = xyes; then :
+-  cat >>confdefs.h <<_ACEOF
+-#define HAVE_DB_H 1
+-_ACEOF
+-
+-        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+-/* end confdefs.h.  */
+-
+-
+-	    #include <db.h>
+-	    #if ((DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5))
+-	    #error Berkeley DB too old
+-	    #endif
+-
+-
+-_ACEOF
+-if ac_fn_c_try_cpp "$LINENO"; then :
+-   WITH_DB_LIB=-ldb
+-else
+-   as_fn_error $? "Berkeley DB version >= 4.5 required" "$LINENO" 5
+-
+-fi
+-rm -f conftest.err conftest.i conftest.$ac_ext
+-
+-else
+-
+-        as_fn_error $? "missing required header db.h" "$LINENO" 5
+-
+-fi
+-
+-done
+-
+-    ;;
+-    no)
+-      as_fn_error $? "internal Berkeley DB directory not present, see INSTALL" "$LINENO" 5
+-    ;;
+-    esac
+-  fi
+-  ;;
+-esac
+-
+-
+-
+-#=================
+ # Process --enable-ndb
+ # Check whether --enable-ndb was given.
+ if test "${enable_ndb+set}" = set; then :
+@@ -22116,8 +22005,8 @@ if test "x$enable_lmdb" != "xno"; then :
+ 
+ 
+ pkg_failed=no
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LMDB" >&5
+-$as_echo_n "checking for LMDB... " >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for lmdb" >&5
++$as_echo_n "checking for lmdb... " >&6; }
+ 
+ if test -n "$LMDB_CFLAGS"; then
+     pkg_cv_LMDB_CFLAGS="$LMDB_CFLAGS"
+@@ -22157,7 +22046,7 @@ fi
+ 
+ 
+ if test $pkg_failed = yes; then
+-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 
+ if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+@@ -22175,7 +22064,7 @@ fi
+ 
+ 	have_lmdb=no
+ elif test $pkg_failed = untried; then
+-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 	have_lmdb=no
+ else
+@@ -25227,8 +25116,8 @@ $as_echo "$am_cv_python_pyexecdir" >&6; }
+ 
+ 
+ pkg_failed=no
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PYTHON" >&5
+-$as_echo_n "checking for PYTHON... " >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for python-${PYTHON_VERSION}" >&5
++$as_echo_n "checking for python-${PYTHON_VERSION}... " >&6; }
+ 
+ if test -n "$PYTHON_CFLAGS"; then
+     pkg_cv_PYTHON_CFLAGS="$PYTHON_CFLAGS"
+@@ -25268,7 +25157,7 @@ fi
+ 
+ 
+ if test $pkg_failed = yes; then
+-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 
+ if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+@@ -25295,7 +25184,7 @@ Alternatively, you may set the environment variables PYTHON_CFLAGS
+ and PYTHON_LIBS to avoid the need to call pkg-config.
+ See the pkg-config man page for more details." "$LINENO" 5
+ elif test $pkg_failed = untried; then
+-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+ $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+@@ -26124,8 +26013,8 @@ if test "$with_lua" != no; then :
+ 
+ 
+ pkg_failed=no
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LUA" >&5
+-$as_echo_n "checking for LUA... " >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for lua >= 5.1" >&5
++$as_echo_n "checking for lua >= 5.1... " >&6; }
+ 
+ if test -n "$LUA_CFLAGS"; then
+     pkg_cv_LUA_CFLAGS="$LUA_CFLAGS"
+@@ -26165,7 +26054,7 @@ fi
+ 
+ 
+ if test $pkg_failed = yes; then
+-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 
+ if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+@@ -26183,7 +26072,7 @@ fi
+ 
+ 	as_fn_error $? "lua not present (--without-lua to disable)" "$LINENO" 5
+ elif test $pkg_failed = untried; then
+-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 	as_fn_error $? "lua not present (--without-lua to disable)" "$LINENO" 5
+ else
+@@ -26236,8 +26125,8 @@ if test "$enable_plugins" != no; then :
+ 
+ 
+ pkg_failed=no
+-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for DBUS" >&5
+-$as_echo_n "checking for DBUS... " >&6; }
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for dbus-1 >= 1.3" >&5
++$as_echo_n "checking for dbus-1 >= 1.3... " >&6; }
+ 
+ if test -n "$DBUS_CFLAGS"; then
+     pkg_cv_DBUS_CFLAGS="$DBUS_CFLAGS"
+@@ -26277,7 +26166,7 @@ fi
+ 
+ 
+ if test $pkg_failed = yes; then
+-   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 
+ if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+@@ -26295,7 +26184,7 @@ fi
+ 
+ 	with_dbus=no
+ elif test $pkg_failed = untried; then
+-     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+ 	with_dbus=no
+ else

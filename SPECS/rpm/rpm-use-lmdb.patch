@@ -1,0 +1,75 @@
+diff --git a/autogen.sh b/autogen.sh.1
+index f7ea2cf..efabeef 100755
+--- a/autogen.sh
++++ b/autogen.sh.1
+@@ -4,7 +4,7 @@ export CPPFLAGS
+ export CFLAGS
+ export LDFLAGS
+ 
+-autoreconf -i
++autoreconf -mif
+ 
+ case "$1" in
+   "--noconfigure")
+diff --git a/configure.ac b/configure.ac.1
+index 373d694..b562e94 100644
+--- a/configure.ac
++++ b/configure.ac.1
+@@ -509,6 +509,19 @@ AM_CONDITIONAL(LIBDW,[test "$WITH_LIBDW" = yes])
+ AM_CONDITIONAL(HAVE_LIBDW_STRTAB,[test "$HAVE_LIBDW_STRTAB" = yes])
+ 
+ #=================
++# control bdb defaulting
++AC_ARG_ENABLE([bdb],
++              [AS_HELP_STRING([--enable-bdb=@<:@yes/no@:>@]
++,
++                              [build with default bdb rpm database format support (default=yes)])],
++              [enable_bdb="$enableval"],
++              [enable_bdb=yes])
++
++AS_IF([test "$enable_bdb" = "yes"], [
++
++  AC_DEFINE([ENABLE_BDB], [], [engage bdb code paths])
++
++#=================
+ # Process --with/without-external-db
+ AC_ARG_WITH(external_db, [AS_HELP_STRING([--with-external-db],[build against an external Berkeley db])],
+ [case "$with_external_db" in
+@@ -566,6 +579,8 @@ no|maybe )
+ esac
+ 
+ AC_SUBST([WITH_DB_LIB])
++])
++AM_CONDITIONAL([BDB], [test "$enable_bdb" = yes])
+ 
+ #=================
+ # Process --enable-ndb
+diff --git a/lib/Makefile.am b/lib/Makefile.am.1
+index baf3238..8ab4f1e 100644
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am.1
+@@ -24,7 +24,7 @@ EXTRA_PROGRAMS =
+ 
+ usrlib_LTLIBRARIES = librpm.la
+ librpm_la_SOURCES = \
+-	backend/db3.c backend/dbi.c backend/dbi.h \
++	backend/dbi.c backend/dbi.h \
+ 	backend/dbiset.c backend/dbiset.h \
+ 	headerutil.c header.c headerfmt.c header_internal.h \
+ 	rpmdb.c rpmdb_internal.h \
+@@ -59,11 +59,15 @@ librpm_la_LIBADD += @LUA_LIBS@
+ librpm_la_SOURCES += rpmliblua.c rpmliblua.h
+ endif
+ 
++if BDB
++librpm_la_SOURCES += \
++	backend/db3.c
+ if WITH_INTERNAL_DB
+ librpm_la_LIBADD += $(libdb_la)
+ else
+ librpm_la_LIBADD += @WITH_DB_LIB@
+ endif
++endif
+ 
+ if NDB
+ librpm_la_SOURCES += \
