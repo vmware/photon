@@ -86,7 +86,7 @@ VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
 IMGCONVERTER := $(TOOLS_BIN)/imgconverter
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
-check-tools check-docker check-bison check-g++ check-gawk check-createrepo check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
+check-tools check-docker check-bison check-g++ check-gawk check-repo-tool check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot build-updated-packages check generate-yaml-files
 
 THREADS?=1
@@ -416,7 +416,7 @@ generate-dep-lists:
 		-a $(PHOTON_DATA_DIR)
 
 photon-docker-image:
-	createrepo $(PHOTON_RPMS_DIR)
+	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
 		-it \
@@ -519,7 +519,7 @@ cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(P
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova_micro $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
 
 
-check-tools: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity check-docker
+check-tools: check-bison check-g++ check-gawk check-repo-tool check-texinfo check-sanity check-docker
 
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
@@ -542,8 +542,8 @@ check-g++:
 check-gawk:
 	@command -v gawk >/dev/null 2>&1 || { echo "Package gawk not installed. Aborting." >&2; exit 1; }
 
-check-createrepo:
-	@command -v createrepo >/dev/null 2>&1 || { echo "Package createrepo not installed. Aborting." >&2; exit 1; }
+check-repo-tool:
+	@command -v $(PHOTON_REPO_TOOL) >/dev/null 2>&1 || { echo "Package $(PHOTON_REPO_TOOL) not installed. Aborting." >&2; exit 1; }
 
 check-kpartx:
 	@command -v kpartx >/dev/null 2>&1 || { echo "Package kpartx not installed. Aborting." >&2; exit 1; }
