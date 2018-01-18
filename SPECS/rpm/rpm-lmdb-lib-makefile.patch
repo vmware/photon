@@ -1,0 +1,26 @@
+diff --git a/lib/Makefile.am b/lib/Makefile.am
+index baf3238..874dbec 100644
+--- a/lib/Makefile.am
++++ b/lib/Makefile.am
+@@ -24,7 +24,7 @@ EXTRA_PROGRAMS =
+ 
+ usrlib_LTLIBRARIES = librpm.la
+ librpm_la_SOURCES = \
+-	backend/db3.c backend/dbi.c backend/dbi.h \
++	backend/dbi.c backend/dbi.h \
+ 	backend/dbiset.c backend/dbiset.h \
+ 	headerutil.c header.c headerfmt.c header_internal.h \
+ 	rpmdb.c rpmdb_internal.h \
+@@ -59,12 +59,6 @@ librpm_la_LIBADD += @LUA_LIBS@
+ librpm_la_SOURCES += rpmliblua.c rpmliblua.h
+ endif
+ 
+-if WITH_INTERNAL_DB
+-librpm_la_LIBADD += $(libdb_la)
+-else
+-librpm_la_LIBADD += @WITH_DB_LIB@
+-endif
+-
+ if NDB
+ librpm_la_SOURCES += \
+ 	backend/ndb/glue.c \
