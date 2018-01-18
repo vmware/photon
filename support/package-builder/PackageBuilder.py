@@ -12,7 +12,7 @@ import docker
 class PackageBuilderBase(object):
     def __init__(self, mapPackageToCycles, listAvailableCyclicPackages,
                  listBuildOptionPackages, pkgBuildOptionFile, pkgBuildType):
-        # will be initialized in buildPackageThreadAPI()
+        # will be initialized in buildPackageFunction()
         self.logName = None
         self.logPath = None
         self.logger = None
@@ -26,7 +26,7 @@ class PackageBuilderBase(object):
         self.pkgBuildOptionFile = pkgBuildOptionFile
         self.pkgBuildType = pkgBuildType
 
-    def buildPackageThreadAPIPrepare(self, package, outputMap, threadName):
+    def buildPackagePrepareFunction(self, package, outputMap, threadName):
         self.package = package
         self.logName = "build-" + package
         self.logPath = constants.logPath + "/build-" + package
@@ -130,8 +130,8 @@ class PackageBuilderContainer(object):
         self.base = PackageBuilderBase(mapPackageToCycles, listAvailableCyclicPackages,
                                        listBuildOptionPackages, pkgBuildOptionFile, pkgBuildType)
 
-    def buildPackageThreadAPI(self, package, outputMap, threadName):
-        self.base.buildPackageThreadAPIPrepare(package, outputMap, threadName)
+    def buildPackageFunction(self, package, outputMap, threadName):
+        self.base.buildPackagePrepareFunction(package, outputMap, threadName)
         try:
             self.buildPackage()
             outputMap[threadName] = True
@@ -298,8 +298,8 @@ class PackageBuilderChroot(object):
         self.base = PackageBuilderBase(mapPackageToCycles, listAvailableCyclicPackages,
                                        listBuildOptionPackages, pkgBuildOptionFile, pkgBuildType)
 
-    def buildPackageThreadAPI(self, package, outputMap, threadName):
-        self.base.buildPackageThreadAPIPrepare(package, outputMap, threadName)
+    def buildPackageFunction(self, package, outputMap, threadName):
+        self.base.buildPackagePrepareFunction(package, outputMap, threadName)
         try:
             self.buildPackage()
             outputMap[threadName] = True

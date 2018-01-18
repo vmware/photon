@@ -184,52 +184,45 @@ class Scheduler(object):
     @staticmethod
     def getNextPackageToBuild():
         Scheduler.logger.info("Waiting to acquire scheduler lock")
-        Scheduler.lock.acquire()
+        with Scheduler.lock:
 
-        if Scheduler.stopScheduling:
-            Scheduler.logger.info("Released scheduler lock")
-            Scheduler.lock.release()
-            return None
-
-        if len(Scheduler.listOfPackagesToBuild) == 0:
-            if Scheduler.event is not None:
-                Scheduler.event.set()
-
-        try:
-            if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
-                listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
-                Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
-        except:
-            if len(Scheduler.listOfPackagesNextToBuild) == 0:
-                listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
-                Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
-
-        if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
-            Scheduler.logger.info("Released scheduler lock")
-            Scheduler.lock.release()
-            return None
-
-        packageTup = Scheduler.listOfPackagesNextToBuild.get()
-
-        if packageTup[0] == 0 and Scheduler.isPriorityScheduler == 1:
-            listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
-            Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
-            if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
+            if Scheduler.stopScheduling:
                 Scheduler.logger.info("Released scheduler lock")
-                Scheduler.lock.release()
                 return None
+
+            if len(Scheduler.listOfPackagesToBuild) == 0:
+                if Scheduler.event is not None:
+                    Scheduler.event.set()
+
+            try:
+                if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
+                    listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
+                    Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
+            except:
+                if len(Scheduler.listOfPackagesNextToBuild) == 0:
+                    listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
+                    Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
+
+            if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
+                return None
+
             packageTup = Scheduler.listOfPackagesNextToBuild.get()
 
-        package = packageTup[1]
-        Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
-        if Scheduler.listOfPackagesNextToBuild.qsize() > 0:
-            ThreadPool.ThreadPool.activateWorkerThreads(
-                Scheduler.listOfPackagesNextToBuild.qsize())
-        Scheduler.logger.info("Released scheduler lock")
-        Scheduler.lock.release()
-        Scheduler.listOfPackagesCurrentlyBuilding.append(package)
-        Scheduler.listOfPackagesToBuild.remove(package)
-        return package
+            if packageTup[0] == 0 and Scheduler.isPriorityScheduler == 1:
+                listOfPackagesNextToBuild = Scheduler.__getListNextPackagesReadyToBuild()
+                Scheduler.listOfPackagesNextToBuild = listOfPackagesNextToBuild
+                if Scheduler.listOfPackagesNextToBuild.qsize() == 0:
+                    return None
+                packageTup = Scheduler.listOfPackagesNextToBuild.get()
+
+            package = packageTup[1]
+            Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
+            if Scheduler.listOfPackagesNextToBuild.qsize() > 0:
+                ThreadPool.ThreadPool.activateWorkerThreads(
+                    Scheduler.listOfPackagesNextToBuild.qsize())
+            Scheduler.listOfPackagesCurrentlyBuilding.append(package)
+            Scheduler.listOfPackagesToBuild.remove(package)
+            return package
 
     #can be synchronized TODO
     @staticmethod
