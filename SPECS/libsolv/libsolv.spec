@@ -6,14 +6,14 @@ License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 %define sha1    libsolv=7699af00e648bf3e631246559c48ceb7f3f544b9
+Patch0:         libsolv-lmdb.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Requires:       libdb
+Requires:       lmdb
 Requires:       expat-libs
-BuildRequires:  libdb-devel
+BuildRequires:  lmdb-devel
 BuildRequires:  cmake
-BuildRequires:  rpm-devel
 BuildRequires:  expat-devel
 Provides:       pkgconfig(libsolv)
 %description
@@ -30,16 +30,19 @@ for developing applications that use libsolv.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DRPM5=ON \
-    -DENABLE_RPMDB=ON \
-    -DENABLE_COMPLEX_DEPS=ON
+    -DPHOTON=ON
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
+#cp ext/repo_*.h %{buildroot}%{_includedir}/solv
+
 
 %check
 make %{?_smp_mflags} test

@@ -3,27 +3,26 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.13.0.1
-Release:        7%{?dist}
+Version:        4.14.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=2119489397d7e4da19320ef9330ab717ac05587d
+Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
+%define sha1    rpm=b15344d67b1bf4b15498efa3667f2ad5de40623f
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
-Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
-Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch2:         rpm-CVE-2017-7501.patch
+Source4:        convert_bdb_to_lmdb.sh
+Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
+Patch1:         rpm-use-lmdb.patch
 Requires:       bash
-Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 Requires:       libarchive
 BuildRequires:  libarchive-devel
-BuildRequires:  libdb-devel
+BuildRequires:  lmdb-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
 BuildRequires:  elfutils-devel
@@ -38,6 +37,7 @@ RPM package manager
 Summary:        Libraries and header files for rpm
 Provides:       pkgconfig(rpm)
 Requires:       %{name} = %{version}-%{release}
+Requires:       lmdb-devel
 %description devel
 Static libraries and header files for the support library for rpm
 
@@ -51,6 +51,7 @@ Requires:       zlib
 Requires:       bzip2-libs
 Requires:       elfutils-libelf
 Requires:       xz-libs
+Requires:       lmdb
 %description    libs
 Shared libraries librpm and librpmio
 
@@ -85,17 +86,25 @@ Requires:       python3
 %description -n python3-rpm
 Python3 rpm.
 
+%package convert-db
+Summary:        Tools to convert bdb to lmdb
+Group:          Applications/Utilities
+Requires:       libdb-utils
+Requires:       lmdb
+%description convert-db
+Tools to convert existing rpm db from bdb to lmdb.
+
 %prep
-%setup -n rpm-%{name}-%{version}-release
+%setup -n %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
 # pass -L opts to gcc as well to prioritize it over standard libs
 sed -i 's/-Wl,-L//g' python/setup.py.in
 sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
+sed -i 's/_db_backend\s*bdb/_db_backend lmdb/' macros.in
 
 ./autogen.sh --noconfigure
 ./configure \
@@ -120,7 +129,8 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --with-cap \
         --without-lua \
         --disable-silent-rules \
-        --with-external-db
+        --disable-bdb \
+        --enable-lmdb
 make %{?_smp_mflags}
 
 pushd python
@@ -140,6 +150,7 @@ install -dm 755 %{buildroot}%{_sysconfdir}/rpm
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
 install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
+install -vm744 %{SOURCE4} %{buildroot}%{_bindir}
 
 pushd python
 python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -154,7 +165,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-/bin/rpm
+%{_bindir}/rpm
 %{_bindir}/gendiff
 %{_bindir}/rpm2archive
 %{_bindir}/rpm2cpio
@@ -232,12 +243,15 @@ rm -rf %{buildroot}
 
 %{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/rpmdeps
+%{_libdir}/rpm/pythondistdeps.py
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
 %{_mandir}/man8/rpmdeps.8*
 %{_mandir}/man8/rpmspec.8*
 %{_mandir}/man8/rpmsign.8.gz
+%{_mandir}/man8/rpm-misc.8.gz
+%{_mandir}/man8/rpm-plugin-systemd-inhibit.8.gz
 
 %files devel
 %defattr(-,root,root)
@@ -259,9 +273,13 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
+%files convert-db
+%defattr(-,root,root)
+%{_bindir}/convert_bdb_to_lmdb.sh
+
 %changelog
-*   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
--   Fix CVE-2017-7501
+*   Fri Dec 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.14.0-1
+-   Update to 4.14.0, remove bdb dependences and use lmdb.
 *   Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
 -   make python{,3}-rpm depend on current version of librpm
 *   Wed Jun 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-5
