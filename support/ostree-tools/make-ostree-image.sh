@@ -11,8 +11,6 @@ fi
 PROGRAM=$0
 SRCROOT=$1
 
-createrepo stage/RPMS
-
 cp ${SRCROOT}/installer/photon-ostree.repo ${SRCROOT}/installer/photon-ostree.repo.bak
 echo "baseurl=file:///RPMS" >> ${SRCROOT}/installer/photon-ostree.repo
 

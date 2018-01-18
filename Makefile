@@ -64,7 +64,7 @@ VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
 IMGCONVERTER := $(TOOLS_BIN)/imgconverter
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
-check check-docker check-bison check-g++ check-gawk check-createrepo check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
+check check-docker check-bison check-g++ check-gawk check-repo-tool check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot build-updated-packages generate-yaml-files
 
 THREADS?=1
@@ -422,6 +422,7 @@ install-photon-docker-image: photon-docker-image
 	sudo docker build -t photon:tdnf .
 
 ostree-repo: $(PHOTON_PACKAGES)
+	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
 	@echo "Creating OSTree repo from local PRMs in ostree-repo.tar.gz..."
 	@if [ -f  $(PHOTON_STAGE)/ostree-repo.tar.gz ]; then \
 		echo "ostree-repo.tar.gz already present, not creating again..."; \
@@ -499,7 +500,7 @@ cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) iso
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso $(ADDITIONAL_RPMS_PATH)
 
 
-check: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity check-docker
+check: check-bison check-g++ check-gawk check-repo-tool check-texinfo check-sanity check-docker
 
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
@@ -516,8 +517,8 @@ check-g++:
 check-gawk:
 	@command -v gawk >/dev/null 2>&1 || { echo "Package gawk not installed. Aborting." >&2; exit 1; }
 
-check-createrepo:
-	@command -v createrepo >/dev/null 2>&1 || { echo "Package createrepo not installed. Aborting." >&2; exit 1; }
+check-repo-tool:
+	@command -v $(PHOTON_REPO_TOOL) >/dev/null 2>&1 || { echo "Package $(PHOTON_REPO_TOOL) not installed. Aborting." >&2; exit 1; }
 
 check-kpartx:
 	@command -v kpartx >/dev/null 2>&1 || { echo "Package kpartx not installed. Aborting." >&2; exit 1; }
