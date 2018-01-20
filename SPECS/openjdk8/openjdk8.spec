@@ -2,15 +2,15 @@
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.152
-Release:	2%{?dist}
+Version:	1.8.0.162
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.gz
-%define sha1 openjdk=bdb67157673789aa2ad368c9e237be7215097fdd
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
+%define sha1 openjdk=e639499b4e333ac4a9e0fe530af58a1a63dda32a
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 BuildRequires:  pcre-devel
@@ -237,6 +237,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Fri Jan 19 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.162-1
+-   Upgraded to version 1.8.0.162
 *   Thu Dec 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.152-2
 -   Reduce list of published rpms dependencies
 *   Thu Oct 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.152-1
