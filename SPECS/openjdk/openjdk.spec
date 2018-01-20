@@ -2,15 +2,15 @@
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk
-Version:	1.8.0.151
-Release:	2%{?dist}
+Version:	1.8.0.162
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.gz
-%define sha1 openjdk=2714c58d1bdc8a83ba83518b1608eb50221ba964
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
+%define sha1 openjdk=e639499b4e333ac4a9e0fe530af58a1a63dda32a
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 BuildRequires:  pcre-devel
@@ -231,6 +231,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*	Fri Jan 19 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.162-1
+-	Upgraded to version 1.8.0.162
 *       Fri Nov 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.151-2
 -       Upgrade requires to include freetype2 from photon OS repo
 *	Thu Oct 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.151-1
