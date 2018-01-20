@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.111
+Version:    	4.4.112
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=15b1027ef42d40253fc2f88030a8aa11ae4ab095
+%define sha1 linux=f0ad0285af9b59f3d56e8413126b3b3327d588e2
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -49,8 +49,6 @@ Patch24:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 Patch50: 0139-x86-cpu-AMD-Make-the-LFENCE-instruction-serialized.patch
 Patch51: 0140-x86-cpu-AMD-Remove-now-unused-definition-of-MFENCE_R.patch
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
-Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
-#Patch54: 0143-x86-bpf-jit-prevent-speculative-execution-when-JIT-i.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
 Patch56: 0145-carl9170-prevent-speculative-execution.patch
 Patch57: 0146-p54-prevent-speculative-execution.patch
@@ -166,8 +164,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch50 -p1
 %patch51 -p1
 %patch52 -p1
-%patch53 -p1
-#%patch54 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
@@ -338,6 +334,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Jan 19 2018 Bo Gan <ganb@vmware.com> 4.4.112-1
+-   Version update to 4.4.112
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.4.111-1
 -   Version update to 4.4.111
 *   Mon Jan 08 2018 Bo Gan <ganb@vmware.com> 4.4.110-2

@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.111
-Release:       2%{?dist}
+Version:       4.4.112
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=15b1027ef42d40253fc2f88030a8aa11ae4ab095
+%define sha1 linux=f0ad0285af9b59f3d56e8413126b3b3327d588e2
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -50,8 +50,6 @@ Patch30:       revert-SMB-validate-negotiate-even-if-signing-off.patch
 Patch50: 0139-x86-cpu-AMD-Make-the-LFENCE-instruction-serialized.patch
 Patch51: 0140-x86-cpu-AMD-Remove-now-unused-definition-of-MFENCE_R.patch
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
-Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
-#Patch54: 0143-x86-bpf-jit-prevent-speculative-execution-when-JIT-i.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
 Patch56: 0145-carl9170-prevent-speculative-execution.patch
 Patch57: 0146-p54-prevent-speculative-execution.patch
@@ -137,8 +135,6 @@ The Linux package contains the Linux kernel doc files
 %patch50 -p1
 %patch51 -p1
 %patch52 -p1
-%patch53 -p1
-#%patch54 -p1
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
@@ -241,6 +237,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 19 2018 Bo Gan <ganb@vmware.com> 4.4.112-1
+-   Version update to 4.4.112
 *   Thu Jan 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.111-2
 -   Enable the 'deadline' and 'cfq' I/O schedulers.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.4.111-1
