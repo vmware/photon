@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.10
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -13,6 +13,7 @@ Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassa
 %define sha1    apache-cassandra=fa2bbeb62f930f5ff6fccee60cfb837d0794633a
 Source1:        cassandra.service
 Patch0:         build-fix.patch
+Patch1:         fix-building-openjdk-1.8.0.162.patch
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
@@ -25,6 +26,7 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 %prep
 %setup -qn apache-%{name}-%{version}-src
 %patch0 -p1
+%patch1 -p1
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
 rm lib/logback-*
@@ -128,6 +130,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Sat Jan 20 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-7
+-   Add patch to build on openjdk-1.8.0.162
 *   Thu Aug 17 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-6
 -   Add SuccessExitStatus to cassandra service file
 *   Thu Aug 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-5
