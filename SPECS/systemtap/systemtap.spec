@@ -7,15 +7,15 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       3.1
-Release:       5%{?dist}
+Version:       3.2
+Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=2927ee7e780b45e47d770798f80dfd5be62e095d
+%define sha1 systemtap=cd4482870015b9429f9945588ea8846d4ace20d1
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -31,6 +31,7 @@ BuildRequires: libxml2-devel
 BuildRequires: perl
 BuildRequires: python-setuptools
 BuildRequires: nss
+BuildRequires: shadow
 %if %with_boost
 BuildRequires: boost-devel
 %endif
@@ -275,6 +276,7 @@ fi
 %{_bindir}/stap-prep
 %{_bindir}/stap-report
 %{_bindir}/stapsh
+%{_bindir}/stapbpf
 %dir %{_datadir}/systemtap
 %dir %{_datadir}/systemtap/runtime
 %{_datadir}/systemtap/runtime/*.h
@@ -295,6 +297,7 @@ fi
 %{_mandir}/man7/stappaths.7*
 %{_mandir}/man8/stapsh.8*
 %{_mandir}/man8/systemtap.8*
+%{_mandir}/man8/stapbpf.8*
 %doc AUTHORS COPYING
 %{_bindir}/dtrace
 
@@ -351,6 +354,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*   Tue Jan 23 2018 Divya Thaluru <dthaluru@vmware.com>  3.2-1
+-   Updated to version 3.2
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.1-5
 -   Fixed the log file directory structure
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1-4
