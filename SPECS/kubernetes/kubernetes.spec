@@ -1,13 +1,14 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.8.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
 %define sha1    kubernetes-v%{version}.tar.gz=74bad7a52f3fc0b3c70e5ccc986a46a9fdfe358b
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
+Patch0:         k8s-cascade.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -47,6 +48,7 @@ cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
+%patch0 -p1
 
 %build
 make
@@ -184,6 +186,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Tue Jan 23 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-4
+-   Add Cascade cloud provider.
 *   Fri Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
 -   Specify --kubeconfig to pass in config file.
 *   Fri Nov 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-2
