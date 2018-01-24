@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.9.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -13,12 +13,14 @@ Patch0:         subversion-CVE-2017-9800.patch
 Patch1:         subversion-CVE-2016-8734.patch
 Requires:       apr
 Requires:       apr-util
+Requires:       serf
 BuildRequires:  apr-devel
 BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
 BuildRequires:  sqlite-autoconf
 BuildRequires:  libtool
 BuildRequires:  expat
+BuildRequires:  serf-devel
 
 %description
 The Apache version control system.
@@ -36,7 +38,8 @@ Requires:   %{name} = %{version}
 %build
 ./configure --prefix=%{_prefix}         \
             --disable-static            \
-            --with-apache-libexecdir
+            --with-apache-libexecdir    \
+            --with-serf=%{_prefix}
 
 make %{?_smp_mflags}
 
@@ -56,6 +59,8 @@ make -j1 DESTDIR=%{buildroot} install
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-5
+-   Compile subversion with https repository access module support
 *   Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-4
 -   Fix CVE-2016-8734
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 1.9.4-3
