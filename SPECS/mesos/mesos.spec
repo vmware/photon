@@ -3,7 +3,7 @@
 Summary:	Mesos
 Name:		mesos
 Version:	1.2.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://mesos.apache.org
 Group:		Applications/System
@@ -21,6 +21,7 @@ BuildRequires:	apr-util >= 1.5.4
 BuildRequires:	apr-util-devel >= 1.5.4
 BuildRequires:	subversion >= 1.8.13
 BuildRequires:	subversion-devel >= 1.8.13
+BuildRequires:	serf-devel
 BuildRequires:	cyrus-sasl >= 2.1.26
 BuildRequires:	python2 >= 2.6
 BuildRequires:	python2-libs
@@ -123,6 +124,8 @@ find %{buildroot}%{python2_sitelib}/mesos -name '*.pyc' -delete
 %{python2_sitelib}/mesos/*
 
 %changelog
+*   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
+-   Add serf-devel to BuildRequires.
 *       Tue Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
 -       Updated to version 1.2.2
 *	Thu Sep 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.0-3
