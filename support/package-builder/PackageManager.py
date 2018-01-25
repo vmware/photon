@@ -85,7 +85,7 @@ class PackageManager(object):
                     packageIsAlreadyBuilt = False
             if packageIsAlreadyBuilt:
                 listAvailablePackages.append(package)
-        self.logger.info("List of Already built packages")
+        self.logger.info("List of already built RPMs")
         self.logger.info(listAvailablePackages)
         return listAvailablePackages
 
@@ -99,8 +99,7 @@ class PackageManager(object):
         self.sortedPackageList = []
 
         listOfPackagesAlreadyBuilt = []
-        listOfPackagesAlreadyBuilt = self.readAlreadyAvailablePackages()
-        self.listOfPackagesAlreadyBuilt = listOfPackagesAlreadyBuilt[:]
+        self.listOfPackagesAlreadyBuilt = self.readAlreadyAvailablePackages()
 
         updateBuiltRPMSList = False
         while not updateBuiltRPMSList:
@@ -122,24 +121,27 @@ class PackageManager(object):
                     not constants.rpmCheck):
                 listPackagesToBuild.remove(pkg)
 
+        self.logger.info("calculateParams")
+        self.logger.info(listOfPackagesAlreadyBuilt)
+
         if not self.readPackageBuildData(listPackagesToBuild):
             return False
         return True
 
-    def buildToolChain(self):
+    def buildCoreToolChain(self):
         pkgCount = 0
         try:
-            tUtils = ToolChainUtils()
-            pkgCount = tUtils.buildCoreToolChainPackages(self.listBuildOptionPackages,
-                                                         self.pkgBuildOptionFile)
+            pkgCount = ToolChainUtils().buildCoreToolChainPackages(self.listBuildOptionPackages,
+                                                                   self.pkgBuildOptionFile)
         except Exception as e:
             self.logger.error("Unable to build tool chain")
-            self.logger.error(e)
+            self.logger.exception(e)
+            # TODO: Handle the exception more elegantly
             raise e
         return pkgCount
 
     def buildToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
-        pkgCount = self.buildToolChain()
+        pkgCount = self.buildCoreToolChain()
         if self.pkgBuildType == "container":
             # Stage 1 build container
             #TODO image name constants.buildContainerImageName
@@ -152,7 +154,7 @@ class PackageManager(object):
             self.createBuildContainer()
 
     def buildTestPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
-        self.buildToolChain()
+        self.buildCoreToolChain()
         self.buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
 
     def buildPackages(self, listPackages, listBuildOptionPackages, pkgBuildOptionFile,
@@ -160,6 +162,7 @@ class PackageManager(object):
         self.listBuildOptionPackages = listBuildOptionPackages
         self.pkgBuildOptionFile = pkgBuildOptionFile
         self.pkgBuildType = pkgBuildType
+
         if constants.rpmCheck:
             constants.rpmCheck = False
             self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
@@ -180,11 +183,12 @@ class PackageManager(object):
         ThreadPool.statusEvent = statusEvent
         ThreadPool.pkgBuildType = self.pkgBuildType
 
-    def initializeScheduler(self, statusEvent):
+    def initializeScheduler(self, statusEvent, buildThreads):
         Scheduler.setLog(self.logName, self.logPath)
         Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling = False
+        Scheduler.threadCnt = buildThreads
 
     def buildGivenPackages(self, listPackages, buildThreads):
         if constants.rpmCheck:
@@ -198,15 +202,13 @@ class PackageManager(object):
             raise Exception("Unable to set paramaters")
 
         statusEvent = threading.Event()
-        self.initializeScheduler(statusEvent)
+        self.initializeScheduler(statusEvent, buildThreads)
         self.initializeThreadPool(statusEvent)
 
-        i = 0
-        while i < buildThreads:
+        for i in range(buildThreads):
             workerName = "WorkerThread" + str(i)
             ThreadPool.addWorkerThread(workerName)
             ThreadPool.startWorkerThread(workerName)
-            i = i + 1
 
         statusEvent.wait()
         Scheduler.stopScheduling = True

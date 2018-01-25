@@ -10,6 +10,7 @@ from SpecUtils import Specutils
 from SpecData import SerializableSpecObject
 from SpecData import SerializedSpecObjects
 from jsonwrapper import JsonWrapper
+import logging
 
 DEFAULT_INPUT_TYPE = "pkg"
 DEFAULT_DISPLAY_OPTION = "tree"
@@ -60,8 +61,8 @@ def main():
                     options.spec_dir,
                     options.input_type, install_option[1]["file"],
                     displayOption)
-    except Exception as error:
-        sys.stderr.write("Failed to generate dependency lists from spec files\n")
+    except Exception as e:
+        logging.getLogger().exception("Failed to generate dependency lists from spec files\n")
         sys.exit(1)
 
     sys.stderr.write("Successfully generated dependency lists from spec files\n")

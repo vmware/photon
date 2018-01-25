@@ -19,7 +19,7 @@ class constants(object):
     dockerUnixSocket = "/var/run/docker.sock"
     userDefinedMacros = {}
 
-    noDepsPackageList = [
+    noDepsRPMList = [
         "texinfo",
         "bzip2",
         "bzip2-libs",
@@ -30,6 +30,15 @@ class constants(object):
         "sqlite",
         "sqlite-devel",
         "sqlite-libs"]
+
+    noDepsPkgList = [
+        "texinfo",
+        "bzip2",
+        "gettext",
+        "nspr",
+        "bison",
+        "go",
+        "sqlite"]
 
     # These packages will be built in first order as build-core-toolchain stage
     listCoreToolChainPackages = [
@@ -65,6 +74,7 @@ class constants(object):
         "gcc",
         "pkg-config",
         "ncurses",
+        "readline",
         "bash",
         "bzip2",
         "sed",
@@ -72,7 +82,6 @@ class constants(object):
         "coreutils",
         "m4",
         "grep",
-        "readline",
         "diffutils",
         "gawk",
         "findutils",

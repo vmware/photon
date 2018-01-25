@@ -86,8 +86,12 @@ class PackageBuilderBase(object):
 
     def installPackage(self, pkgUtils, package, instanceID, destLogPath,
                        listInstalledPackages, listInstalledRPMs):
-        latestRPM = os.path.basename(
-            pkgUtils.findRPMFileForGivenPackage(package)).replace(".rpm", "")
+        rpmfile = pkgUtils.findRPMFileForGivenPackage(package)
+        if rpmfile is None:
+            self.logger.error("No rpm file found for package: " + package)
+            raise Exception("Missing rpm file")
+
+        latestRPM = os.path.basename(rpmfile).replace(".rpm", "")
         if package in listInstalledPackages and latestRPM in listInstalledRPMs:
             return
         # mark it as installed -  to avoid cyclic recursion
@@ -100,7 +104,7 @@ class PackageBuilderBase(object):
             noDeps = True
         if package in self.listNodepsPackages:
             noDeps = True
-        if package in constants.noDepsPackageList:
+        if package in constants.noDepsRPMList:
             noDeps = True
         if self.pkgBuildType == "chroot":
             pkgUtils.installRPM(package, instanceID, noDeps, destLogPath)

@@ -24,7 +24,8 @@ class WorkerThread(threading.Thread):
         self.logger.info("Thread " + self.name + " is starting now")
         while True:
             outputMap = {}
-            pkg = Scheduler.Scheduler.getNextPackageToBuild()
+            #pkg = Scheduler.Scheduler.getNextPackageToBuild()
+            pkg = Scheduler.Scheduler.getNextPkgToBuild()
             if pkg is None:
                 break
             self.logger.info("Thread " + self.name + " is building package:" + pkg)
@@ -50,7 +51,8 @@ class WorkerThread(threading.Thread):
                 self.logger.info("Thread "+self.name +" stopped building package:" + pkg)
                 break
             self.logger.info("Thread "+ self.name + " finished building package:" + pkg)
-            Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)
+            #Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)
+            Scheduler.Scheduler.notifyPkgBuildCompleted(pkg)
 
         if buildThreadFailed:
             self.statusEvent.set()

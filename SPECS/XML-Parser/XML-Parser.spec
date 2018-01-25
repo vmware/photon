@@ -10,6 +10,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	expat-devel
+BuildRequires:	perl
 Requires:	expat
 %description
 The XML::Parser module is a Perl extension interface to James Clark's XML parser, expat

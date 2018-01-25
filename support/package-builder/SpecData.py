@@ -10,15 +10,15 @@ from constants import constants
 
 class SerializableSpecObject(object):
     def __init__(self):
-        self.listPackages = []
+        self.listRPMs = []
         self.listRPMPackages = []
         self.name = ""
         self.version = ""
         self.release = ""
-        self.buildRequirePackages = []
-        self.checkBuildRequirePackages = []
-        self.installRequiresAllPackages = []
-        self.installRequiresPackages = {}
+        self.buildRequireRPMs = []
+        self.checkBuildRequireRPMs = []
+        self.installRequireAllRPMs = []
+        self.installRequireRPMs = {}
         self.specFile = ""
         self.listSources = []
         self.checksums = {}
@@ -33,7 +33,11 @@ class SerializableSpecObjectsUtils(object):
 
     def __init__(self, logPath):
         self.mapSerializableSpecObjects = {}
-        self.mapPackageToSpec = {}
+        self.mapRPMToSpec = {}
+        # pkg -> # of BuildRequires pkgs
+        self.pkgDepsCntMap = {}
+        # BuildRequire RPM -> pkg set
+        self.buildReqToPkgMap = {}
         self.logger = Logger.getLogger("Serializable Spec objects", logPath)
 
     def readSpecsAndConvertToSerializableObjects(self, specFilesPath):
@@ -45,10 +49,15 @@ class SerializableSpecObjectsUtils(object):
             specName = spec.getBasePackageName()
             specObj = SerializableSpecObject()
             specObj.name = specName
-            specObj.buildRequirePackages = spec.getBuildRequiresAllPackages()
-            specObj.installRequiresAllPackages = spec.getRequiresAllPackages()
-            specObj.checkBuildRequirePackages = spec.getCheckBuildRequiresAllPackages()
-            specObj.listPackages = spec.getPackageNames()
+            specObj.buildRequireRPMs = spec.getBuildRequiresAllPackages()
+            for rpm in specObj.buildRequireRPMs:
+                if rpm not in self.buildReqToPkgMap:
+                    self.buildReqToPkgMap[rpm] = set()
+                self.buildReqToPkgMap[rpm].add(specObj.name)
+
+            specObj.installRequireAllRPMs = spec.getRequiresAllPackages()
+            specObj.checkBuildRequireRPMs = spec.getCheckBuildRequiresAllPackages()
+            specObj.listRPMs = spec.getPackageNames()
             specObj.specFile = specFile
             specObj.version = spec.getVersion()
             specObj.release = spec.getRelease()
@@ -61,18 +70,19 @@ class SerializableSpecObjectsUtils(object):
             specObj.license = spec.getLicense()
             specObj.url = spec.getURL()
             specObj.sourceurl = spec.getSourceURL()
-            for specPkg in specObj.listPackages:
-                if specPkg in self.mapPackageToSpec:
-                    existingObj = self.mapSerializableSpecObjects[self.mapPackageToSpec[specPkg]]
+            for rpm in specObj.listRPMs:
+                if rpm in self.mapRPMToSpec:
+                    existingObj = self.mapSerializableSpecObjects[self.mapRPMToSpec[rpm]]
                     if self.compareVersions(existingObj, specObj) == 1:
                         skipUpdating = True
                         break
-                specObj.installRequiresPackages[specPkg] = spec.getRequires(specPkg)
-                self.mapPackageToSpec[specPkg] = specName
-                if spec.getIsRPMPackage(specPkg):
-                    specObj.listRPMPackages.append(specPkg)
+                specObj.installRequireRPMs[rpm] = spec.getRequires(rpm)
+                self.mapRPMToSpec[rpm] = specName
+                if spec.getIsRPMPackage(rpm):
+                    specObj.listRPMPackages.append(rpm)
             if skipUpdating == False:
                 self.mapSerializableSpecObjects[specName] = specObj
+            self.pkgDepsCntMap[specObj.name] = len(specObj.buildRequireRPMs)
 
     def getListSpecFiles(self, listSpecFiles, path):
         for dirEntry in os.listdir(path):
@@ -85,23 +95,28 @@ class SerializableSpecObjectsUtils(object):
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles, dirEntryPath)
 
+    def getDepPkgForRPM(self, rpm):
+        if rpm in self.buildReqToPkgMap:
+            return list(self.buildReqToPkgMap[rpm])
+        return []
+
     def getBuildRequiresForPackage(self, package):
         specName = self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].buildRequirePackages
+        return self.mapSerializableSpecObjects[specName].buildRequireRPMs
 
     def getRequiresAllForPackage(self, package):
         specName = self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].installRequiresAllPackages
+        return self.mapSerializableSpecObjects[specName].installRequireAllRPMs
 
     def getRequiresForPackage(self, package):
         specName = self.getSpecName(package)
-        if package in self.mapSerializableSpecObjects[specName].installRequiresPackages:
-            return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
+        if package in self.mapSerializableSpecObjects[specName].installRequireRPMs:
+            return self.mapSerializableSpecObjects[specName].installRequireRPMs[package]
         return None
 
     def getCheckBuildRequiresForPackage(self, package):
         specName = self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].checkBuildRequirePackages
+        return self.mapSerializableSpecObjects[specName].checkBuildRequireRPMs
 
     def getRelease(self, package):
         specName = self.getSpecName(package)
@@ -127,9 +142,9 @@ class SerializableSpecObjectsUtils(object):
         specName = self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].checksums.get(source)
 
-    def getPackages(self, package):
+    def getRPMs(self, package):
         specName = self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].listPackages
+        return self.mapSerializableSpecObjects[specName].listRPMs
 
     def getRPMPackages(self, package):
         specName = self.getSpecName(package)
@@ -155,16 +170,16 @@ class SerializableSpecObjectsUtils(object):
                 return -1
 
     def getSpecName(self, package):
-        if package in self.mapPackageToSpec:
-            specName = self.mapPackageToSpec[package]
+        if package in self.mapRPMToSpec:
+            specName = self.mapRPMToSpec[package]
             if specName in self.mapSerializableSpecObjects:
                 return specName
         self.logger.error("Could not able to find " + package + " package from specs")
         raise Exception("Invalid package:" + package)
 
     def isRPMPackage(self, package):
-        if package in self.mapPackageToSpec:
-            specName = self.mapPackageToSpec[package]
+        if package in self.mapRPMToSpec:
+            specName = self.mapRPMToSpec[package]
             if specName in self.mapSerializableSpecObjects:
                 return True
         return False
@@ -209,17 +224,17 @@ class SerializableSpecObjectsUtils(object):
             self.logger.info(" ")
             self.logger.info(" ")
             self.logger.info("List RPM packages")
-            self.logger.info(specObj.listPackages)
+            self.logger.info(specObj.listRPMs)
             self.logger.info(" ")
             self.logger.info(" ")
             self.logger.info("Build require packages")
-            self.logger.info(specObj.buildRequirePackages)
+            self.logger.info(specObj.buildRequireRPMs)
             self.logger.info(" ")
             self.logger.info(" ")
             self.logger.info("install require packages")
-            self.logger.info(specObj.installRequiresAllPackages)
+            self.logger.info(specObj.installRequireAllRPMs)
             self.logger.info(" ")
-            self.logger.info(specObj.installRequiresPackages)
+            self.logger.info(specObj.installRequireRPMs)
             self.logger.info("security_hardening: " + specObj.securityHardening)
             self.logger.info("------------------------------------------------")
 
@@ -280,7 +295,7 @@ class SerializedSpecObjects(object):
 
     def __init__(self, inputDataDir, stageDir):
         self.mapSerializableSpecObjects = {}
-        self.mapPackageToSpec = {}
+        self.mapRPMToSpec = {}
         self.jsonFilesOutPath = stageDir + "/common/data/"
         self.inputDataDir = inputDataDir
 
@@ -291,7 +306,7 @@ class SerializedSpecObjects(object):
             if specName is None:
                 print(specPkg + " is missing")
             specObj = self.mapSerializableSpecObjects[specName]
-            for depPkg in specObj.installRequiresPackages[specPkg]:
+            for depPkg in specObj.installRequireRPMs[specPkg]:
                 if depPkg in allDeps:
                     if allDeps[depPkg] < allDeps[specPkg] + 1:
                         allDeps[depPkg] = allDeps[specPkg] + 1
@@ -335,10 +350,10 @@ class SerializedSpecObjects(object):
     def updateLevels(self, allDeps, inPkg, parent, level):
         specName = self.getSpecName(inPkg)
         specObj = self.mapSerializableSpecObjects[specName]
-        for depPkg in specObj.installRequiresPackages[inPkg]:
+        for depPkg in specObj.installRequireRPMs[inPkg]:
             # ignore circular deps within single spec file
-            if (depPkg in specObj.installRequiresPackages and
-                    inPkg in specObj.installRequiresPackages[depPkg] and
+            if (depPkg in specObj.installRequireRPMs and
+                    inPkg in specObj.installRequireRPMs[depPkg] and
                     self.getSpecName(depPkg) == specName):
                 continue
             if depPkg in allDeps and allDeps[depPkg] < level + 1:
@@ -365,41 +380,41 @@ class SerializedSpecObjects(object):
             specName = spec.getBasePackageName()
             specObj = SerializableSpecObject()
             specObj.name = specName
-            specObj.buildRequirePackages = spec.getBuildRequiresAllPackages()
-            specObj.installRequiresAllPackages = spec.getRequiresAllPackages()
-            specObj.listPackages = spec.getPackageNames()
+            specObj.buildRequireRPMs = spec.getBuildRequiresAllPackages()
+            specObj.installRequireAllRPMs = spec.getRequiresAllPackages()
+            specObj.listRPMs = spec.getPackageNames()
             specObj.specFile = specFile
             specObj.version = spec.getVersion()
             specObj.release = spec.getRelease()
             specObj.listSources = spec.getSourceNames()
             specObj.listPatches = spec.getPatchNames()
             specObj.securityHardening = spec.getSecurityHardeningOption()
-            for specPkg in specObj.listPackages:
-                specObj.installRequiresPackages[specPkg] = spec.getRequires(specPkg)
-                if inputType == "pkg" and inputValue == specPkg:
+            for rpm in specObj.listRPMs:
+                specObj.installRequireRPMs[rpm] = spec.getRequires(rpm)
+                if inputType == "pkg" and inputValue == rpm:
                 # all the first level dependencies to a dictionary and queue
                     packageFound = True
-                    for depPkg in specObj.installRequiresPackages[specPkg]:
+                    for depPkg in specObj.installRequireRPMs[rpm]:
                         if depPkg not in allDeps:
                             allDeps[depPkg] = 0
                             parent[depPkg] = ""
                             depQue.put(depPkg)
                 elif (inputType == "who-needs" and
-                      inputValue in specObj.installRequiresPackages[specPkg]):
-                    whoNeedsList.append(specPkg)
+                      inputValue in specObj.installRequireRPMs[rpm]):
+                    whoNeedsList.append(rpm)
                 elif inputType == "who-needs-build":
-                    for bdrq in specObj.buildRequirePackages:
+                    for bdrq in specObj.buildRequireRPMs:
                         if bdrq in whoBuildDeps:
-                            whoBuildDeps[bdrq].add(specPkg)
+                            whoBuildDeps[bdrq].add(rpm)
                         else:
                             whoBuildDeps[bdrq] = set()
-                            whoBuildDeps[bdrq].add(specPkg)
-                    if inputValue == specPkg:
+                            whoBuildDeps[bdrq].add(rpm)
+                    if inputValue == rpm:
                         packageFound = True
-                        for depPkg in specObj.listPackages:
+                        for depPkg in specObj.listRPMs:
                             depQue.put(depPkg)
 
-                self.mapPackageToSpec[specPkg] = specName
+                self.mapRPMToSpec[rpm] = specName
             self.mapSerializableSpecObjects[specName] = specObj
 
         # Generate dependencies for individual packages
@@ -492,12 +507,12 @@ class SerializedSpecObjects(object):
 
     def getBuildRequiresForPackage(self, package):
         specName = self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].buildRequirePackages
+        return self.mapSerializableSpecObjects[specName].buildRequireRPMs
 
     def getRequiresForPackage(self, package):
         specName = self.getSpecName(package)
-        if package in self.mapSerializableSpecObjects[specName].installRequiresPackages:
-            return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
+        if package in self.mapSerializableSpecObjects[specName].installRequireRPMs:
+            return self.mapSerializableSpecObjects[specName].installRequireRPMs[package]
         return None
 
     def getRelease(self, package):
@@ -520,13 +535,13 @@ class SerializedSpecObjects(object):
         specName = self.getSpecName(package)
         return self.mapSerializableSpecObjects[specName].listSources
 
-    def getPackages(self, package):
+    def getRPMs(self, package):
         specName = self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].listPackages
+        return self.mapSerializableSpecObjects[specName].listRPMs
 
     def getSpecName(self, package):
-        if package in self.mapPackageToSpec:
-            specName = self.mapPackageToSpec[package]
+        if package in self.mapRPMToSpec:
+            specName = self.mapRPMToSpec[package]
             if specName in self.mapSerializableSpecObjects:
                 return specName
             else:
@@ -536,8 +551,8 @@ class SerializedSpecObjects(object):
             return None
 
     def isRPMPackage(self, package):
-        if package in self.mapPackageToSpec:
-            specName = self.mapPackageToSpec[package]
+        if package in self.mapRPMToSpec:
+            specName = self.mapRPMToSpec[package]
         if specName in self.mapSerializableSpecObjects:
             return True
         return False
@@ -547,4 +562,4 @@ class SerializedSpecObjects(object):
         return self.mapSerializableSpecObjects[specName].securityHardening
 
     def getSpecDetails(self, name):
-        print(self.mapSerializableSpecObjects[name].installRequiresAllPackages)
+        print(self.mapSerializableSpecObjects[name].installRequireAllRPMs)

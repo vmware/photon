@@ -9,7 +9,7 @@ from SpecData import SPECS
 class Scheduler(object):
 
     lock = threading.Lock()
-    listOfAlreadyBuiltPackages = []
+    listOfAlreadyBuiltRPMs = []
     listOfPackagesToBuild = []
     listOfPackagesCurrentlyBuilding = []
     sortedList = []
@@ -24,6 +24,16 @@ class Scheduler(object):
     event = None
     stopScheduling = False
 
+    # New thread scheduler stuff
+    threadCnt = 0
+    pkgDepsCntLock = threading.Lock()
+    pkgDepsCntMap = {}
+    buildReqToPkgMap = {}
+    pkgToBuildCnt = 0
+    setOfAlreadyBuiltPkgs = set()
+    # The Priority Queue to hold all the ready to be built packages
+    pkgBuildQueue = PriorityQueue()
+
     @staticmethod
     def setEvent(event):
         Scheduler.event = event
@@ -33,19 +43,14 @@ class Scheduler(object):
         Scheduler.logger = Logger.getLogger(logName, logPath)
 
     @staticmethod
-    def getBuildRequiredPackages(package):
-        listRequiredRPMPackages = []
-        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
+    def getBuildRequiredPkgs(package):
+        requiredPkgsSet = set()
 
-        listRequiredPackages = []
+        for rpm in SPECS.getData().getBuildRequiresForPackage(package):
+            basePkg = SPECS.getData().getSpecName(rpm)
+            requiredPkgsSet.add(basePkg)
 
-        for pkg in listRequiredRPMPackages:
-            basePkg = SPECS.getData().getSpecName(pkg)
-            if basePkg not in listRequiredPackages:
-                listRequiredPackages.append(basePkg)
-
-        return listRequiredPackages
-
+        return list(requiredPkgsSet)
 
     @staticmethod
     def getDependencies(package, parentPackage, k):
@@ -114,7 +119,7 @@ class Scheduler(object):
         for package in Scheduler.sortedList:
             Scheduler.dependencyGraph[package] = {}
             Scheduler.alldependencyGraph[package] = {}
-            for child_package in Scheduler.getBuildRequiredPackages(package):
+            for child_package in Scheduler.getBuildRequiredPkgs(package):
                 Scheduler.dependencyGraph[package][child_package] = 1
             for child_package in Scheduler.getRequiredPackages(package):
                 Scheduler.alldependencyGraph[package][child_package] = 1
@@ -132,17 +137,44 @@ class Scheduler(object):
         Scheduler.logger.info(Scheduler.priorityMap)
 
 
-    @staticmethod
-    def setParams(sortedList, listOfAlreadyBuiltPackages):
-        Scheduler.sortedList = sortedList
-        Scheduler.listOfAlreadyBuiltPackages = listOfAlreadyBuiltPackages
-        for x in Scheduler.sortedList:
-            if x not in Scheduler.listOfAlreadyBuiltPackages or x in constants.testForceRPMS:
-                Scheduler.listOfPackagesToBuild.append(x)
-        Scheduler.listOfPackagesCurrentlyBuilding = []
-        Scheduler.listOfPackagesNextToBuild = []
-        Scheduler.listOfFailedPackages = []
-        Scheduler.setPriorities()
+    @classmethod
+    def setParams(cls, sortedList, listOfAlreadyBuiltRPMs):
+        cls.logger.info("Within the caller")
+        cls.logger.info(listOfAlreadyBuiltRPMs)
+        cls.sortedList = sortedList
+        cls.listOfAlreadyBuiltRPMs = listOfAlreadyBuiltRPMs
+        cls.pkgDepsCntMap = SPECS.getData().pkgDepsCntMap
+        cls.buildReqToPkgMap = SPECS.getData().buildReqToPkgMap
+        pkgToBuildSet = set()
+        for rpm in cls.listOfAlreadyBuiltRPMs:
+            cls.setOfAlreadyBuiltPkgs.add(SPECS.getData().getSpecName(rpm))
+        cls.logger.info("List of packages that have already been built:")
+        cls.logger.info(cls.setOfAlreadyBuiltPkgs)
+        # 0. Calculate the noDeps packages and add to the set.
+        for pkg, v in cls.pkgDepsCntMap.items():
+            if v == 0 and pkg not in cls.setOfAlreadyBuiltPkgs:
+                cls.logger.info("Pkg {0} is put to the toBuild set due to No Deps".format(pkg))
+                pkgToBuildSet.add(pkg)
+        # 1. Calculate what packages to build based on previous built packages.
+        for rpm in cls.listOfAlreadyBuiltRPMs:
+            cls.logger.info("RPM " + rpm + " is already built.")
+            for dep in SPECS.getData().getDepPkgForRPM(rpm):
+                cls.pkgDepsCntMap[dep] -= 1
+                if cls.pkgDepsCntMap[dep] == 0 and dep not in cls.setOfAlreadyBuiltPkgs:
+                    cls.logger.info("Pkg {0} is put to the toBuild set due to {1}".format(dep, rpm))
+                    pkgToBuildSet.add(dep)
+        # 2. Add the packages to the build queue.
+        for pkg in pkgToBuildSet:
+            cls.pkgBuildQueue.put(pkg)
+        for pkg in cls.sortedList:
+            if (pkg not in cls.listOfAlreadyBuiltRPMs) or (pkg in constants.testForceRPMS):
+                cls.listOfPackagesToBuild.append(pkg)
+        cls.pkgToBuildCnt = len(cls.listOfPackagesToBuild)
+        cls.logger.info("Summary: Before build start, " + str(cls.pkgToBuildCnt) + " pkgs to build.")
+        cls.listOfPackagesCurrentlyBuilding = []
+        cls.listOfPackagesNextToBuild = []
+        cls.listOfFailedPackages = []
+        cls.setPriorities()
 
     @staticmethod
     def getRequiredPackages(package):
@@ -171,7 +203,7 @@ class Scheduler(object):
             Scheduler.logger.info("Required packages for " + pkg + " are:")
             Scheduler.logger.info(listRequiredPackages)
             for reqPkg in listRequiredPackages:
-                if reqPkg not in Scheduler.listOfAlreadyBuiltPackages:
+                if reqPkg not in Scheduler.listOfAlreadyBuiltRPMs:
                     canBuild = False
                     Scheduler.logger.info(reqPkg + " is not available. So we cannot build " +
                                           pkg + " at this moment.")
@@ -231,12 +263,47 @@ class Scheduler(object):
         Scheduler.listOfPackagesToBuild.remove(package)
         return package
 
+    @classmethod
+    def getNextPkgToBuild(cls):
+        cls.logger.info("Scheduler is trying to grab a pkg from pkgBuildQueue")
+        pkg = cls.pkgBuildQueue.get(block=True)
+        if pkg == "NoMorePkgs":
+            return None
+        return pkg
+
+    @classmethod
+    def notifyPkgBuildCompleted(cls, package):
+        cls.logger.info("Package {0} is finished. Analyzing who build requires this package".format(package))
+        for rpm in SPECS.getData().getRPMs(package):
+            cls.logger.info("RPM {0} is provided".format(rpm))
+            with cls.pkgDepsCntLock:
+                if rpm not in cls.buildReqToPkgMap:
+                    return
+                for pkg in cls.buildReqToPkgMap[rpm]:
+                    assert cls.pkgDepsCntMap[pkg] >= 1, "ERROR: Pkg deps count of {0} is below 0".format(pkg)
+                    cls.logger.info("Pkg {0} decrements due to {1}".format(pkg, rpm))
+                    cls.pkgDepsCntMap[pkg] -= 1
+                    if cls.pkgDepsCntMap[pkg] == 0 and pkg not in cls.setOfAlreadyBuiltPkgs:
+                        cls.pkgBuildQueue.put(pkg)
+                        cls.logger.info("Pkg {0} is put to the BuildQueue due to {1}".format(pkg, rpm))
+                        cls.pkgToBuildCnt -= 1
+                    if cls.pkgToBuildCnt == 0:
+                        for n in range(cls.threadCnt):
+                            cls.logger.info("NoMorePkgs is put to the BuildQueue".format(pkg))
+                            cls.pkgBuildQueue.put("NoMorePkgs")
+                        # Set the threading event to True to unblock at the main thread
+                        if cls.event is not None:
+                            cls.event.set()
+            cls.logger.info("Summary: " + str(cls.pkgToBuildCnt) + " pkgs to build.")
+            cls.logger.info("Pkg Dependency Count Map:")
+            cls.logger.info(cls.pkgDepsCntMap)
+
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildCompleted(package):
         if package in Scheduler.listOfPackagesCurrentlyBuilding:
             Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
-            Scheduler.listOfAlreadyBuiltPackages.append(package)
+            Scheduler.listOfAlreadyBuiltRPMs.append(package)
 
     #can be synchronized TODO
     @staticmethod
