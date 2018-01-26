@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.76
+Version:        4.9.78
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=3ba38a58da7301e50c85ec6a20d37bf63f7c686f
+%define sha1 linux=57f67ae03ca89feed08302c2c47d1a385d727cc2
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -58,8 +58,6 @@ Patch33:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 Patch34:        netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch35:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
-Patch50: 0139-x86-cpu-AMD-Make-the-LFENCE-instruction-serialized.patch
-Patch51: 0140-x86-cpu-AMD-Remove-now-unused-definition-of-MFENCE_R.patch
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
 Patch54: 0143-x86-bpf-jit-prevent-speculative-execution-when-JIT-i.patch
@@ -189,8 +187,6 @@ EOF
 %patch35 -p1
 
 # spectre
-%patch50 -p1
-%patch51 -p1
 %patch52 -p1
 %patch53 -p1
 %patch54 -p1
@@ -339,6 +335,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.78-1
+-   Update version to 4.9.78.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.9.76-1
 -   Version update
 *   Sun Jan 07 2018 Bo Gan <ganb@vmware.com> 4.9.75-3
