@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.112
+Version:    	4.4.113
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=f0ad0285af9b59f3d56e8413126b3b3327d588e2
+%define sha1 linux=91900902c63d8beb1a556c87d277329b8d6a11ff
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -46,8 +46,6 @@ Patch22:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 Patch23:        netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch24:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
-Patch50: 0139-x86-cpu-AMD-Make-the-LFENCE-instruction-serialized.patch
-Patch51: 0140-x86-cpu-AMD-Remove-now-unused-definition-of-MFENCE_R.patch
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
 Patch56: 0145-carl9170-prevent-speculative-execution.patch
@@ -161,8 +159,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch23 -p1
 %patch24 -p1
 
-%patch50 -p1
-%patch51 -p1
 %patch52 -p1
 %patch55 -p1
 %patch56 -p1
@@ -334,6 +330,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Jan 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.113-1
+-   Update version to 4.4.113.
 *   Fri Jan 19 2018 Bo Gan <ganb@vmware.com> 4.4.112-1
 -   Version update to 4.4.112
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.4.111-1

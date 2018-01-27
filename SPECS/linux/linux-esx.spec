@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.112
+Version:       4.4.113
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f0ad0285af9b59f3d56e8413126b3b3327d588e2
+%define sha1 linux=91900902c63d8beb1a556c87d277329b8d6a11ff
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -47,8 +47,6 @@ Patch28:       netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
 Patch29:       netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch30:       revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
-Patch50: 0139-x86-cpu-AMD-Make-the-LFENCE-instruction-serialized.patch
-Patch51: 0140-x86-cpu-AMD-Remove-now-unused-definition-of-MFENCE_R.patch
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
 Patch56: 0145-carl9170-prevent-speculative-execution.patch
@@ -132,8 +130,6 @@ The Linux package contains the Linux kernel doc files
 %patch29 -p1
 %patch30 -p1
 
-%patch50 -p1
-%patch51 -p1
 %patch52 -p1
 %patch55 -p1
 %patch56 -p1
@@ -237,6 +233,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.113-1
+-   Update version to 4.4.113.
 *   Fri Jan 19 2018 Bo Gan <ganb@vmware.com> 4.4.112-1
 -   Version update to 4.4.112
 *   Thu Jan 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.111-2
