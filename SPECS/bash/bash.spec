@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        4.4.12
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash/
 Group:          System Environment/Base
@@ -159,11 +159,16 @@ EOF
 
 # bash completion
 cat > %{buildroot}/etc/profile.d/bash_completion.sh << "EOF"
+# check for interactive bash and only bash
+if [ -n "$BASH_VERSION" -a -n "$PS1" ]; then
+
 # enable bash completion in interactive shells
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
   fi
+fi
+
 fi
 EOF
 
@@ -343,6 +348,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Fri Jan 26 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.12-3
+-   Run bash_completion only for bash interactive shell
 *   Mon Dec 11 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.12-2
 -   conditionally apply grep color alias
 *   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.4.12-1
