@@ -11,7 +11,7 @@ import docker
 
 class PackageBuilderBase(object):
     def __init__(self, mapPackageToCycles, listAvailableCyclicPackages,
-                 listBuildOptionPackages, pkgBuildOptionFile, pkgBuildType):
+                 pkgBuildType):
         # will be initialized in buildPackageFunction()
         self.logName = None
         self.logPath = None
@@ -22,8 +22,6 @@ class PackageBuilderBase(object):
         self.listNodepsPackages = ["glibc", "gmp", "zlib", "file", "binutils", "mpfr",
                                    "mpc", "gcc", "ncurses", "util-linux", "groff", "perl",
                                    "texinfo", "rpm", "openssl", "go"]
-        self.listBuildOptionPackages = listBuildOptionPackages
-        self.pkgBuildOptionFile = pkgBuildOptionFile
         self.pkgBuildType = pkgBuildType
 
     def buildPackagePrepareFunction(self, package, outputMap, threadName):
@@ -122,13 +120,13 @@ class PackageBuilderBase(object):
                                     listInstalledPackages, listInstalledRPMs)
 
 class PackageBuilderContainer(object):
-    def __init__(self, mapPackageToCycles, listAvailableCyclicPackages, listBuildOptionPackages,
-                 pkgBuildOptionFile, pkgBuildType):
+    def __init__(self, mapPackageToCycles, listAvailableCyclicPackages,
+                 pkgBuildType):
         self.buildContainerImage = "photon_build_container:latest"
         self.dockerClient = docker.from_env(version="auto")
 
         self.base = PackageBuilderBase(mapPackageToCycles, listAvailableCyclicPackages,
-                                       listBuildOptionPackages, pkgBuildOptionFile, pkgBuildType)
+                                       pkgBuildType)
 
     def buildPackageFunction(self, package, outputMap, threadName):
         self.base.buildPackagePrepareFunction(package, outputMap, threadName)
@@ -269,8 +267,6 @@ class PackageBuilderContainer(object):
             pkgUtils.buildRPMSForGivenPackageInContainer(
                 self.base.package,
                 containerID,
-                self.base.listBuildOptionPackages,
-                self.base.pkgBuildOptionFile,
                 destLogPath)
             self.base.logger.info("BuildContainer-buildPackage: Successfully built the package: " +
                                   self.base.package)
@@ -293,10 +289,10 @@ class PackageBuilderContainer(object):
             chrUtils.destroyChroot(chrootID)
 
 class PackageBuilderChroot(object):
-    def __init__(self, mapPackageToCycles, listAvailableCyclicPackages, listBuildOptionPackages,
-                 pkgBuildOptionFile, pkgBuildType):
+    def __init__(self, mapPackageToCycles, listAvailableCyclicPackages,
+                 pkgBuildType):
         self.base = PackageBuilderBase(mapPackageToCycles, listAvailableCyclicPackages,
-                                       listBuildOptionPackages, pkgBuildOptionFile, pkgBuildType)
+                                       pkgBuildType)
 
     def buildPackageFunction(self, package, outputMap, threadName):
         self.base.buildPackagePrepareFunction(package, outputMap, threadName)
@@ -364,8 +360,6 @@ class PackageBuilderChroot(object):
 
             pkgUtils.adjustGCCSpecs(self.base.package, chrootID, self.base.logPath)
             pkgUtils.buildRPMSForGivenPackage(self.base.package, chrootID,
-                                              self.base.listBuildOptionPackages,
-                                              self.base.pkgBuildOptionFile,
                                               self.base.logPath)
             self.base.logger.info("Successfully built the package:" + self.base.package)
         except Exception as e:

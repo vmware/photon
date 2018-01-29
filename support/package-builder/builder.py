@@ -123,7 +123,7 @@ def main():
         cmdUtils.runCommandInShell("mkdir -p "+options.sourceRpmPath)
 
     if not os.path.isdir(options.buildRootPath):
-        cmdUtils.runCommandInShell("mkdir -p "+options.buildRootPath)
+        cmdUtils.runCommandInShell("mkdir -p " + options.buildRootPath)
 
     logger.info("Source Path :"+options.sourcePath)
     logger.info("Spec Path :" + options.specPath)
@@ -134,9 +134,9 @@ def main():
     logger.info("Publish X RPMS Path :" + options.publishXRPMSPath)
 
     if options.installPackage:
-        logger.info("Package to build:"+package)
+        logger.info("Package to build:" + package)
 
-    listBuildOptionPackages = get_packages_with_build_options(options.pkgBuildOptionFile)
+    get_packages_with_build_options(options.pkgBuildOptionFile)
 
     try:
 
@@ -170,11 +170,9 @@ def main():
             pkgManager = PackageManager()
             pkgManager.buildToolChainPackages(options.buildThreads)
         elif options.installPackage:
-            buildAPackage(package, listBuildOptionPackages, options.pkgBuildOptionFile,
-                          options.buildThreads, options.pkgBuildType)
+            buildAPackage(package, options.buildThreads, options.pkgBuildType)
         else:
-            buildPackagesForAllSpecs(listBuildOptionPackages, options.pkgBuildOptionFile,
-                                     logger, options.buildThreads, pkgInfoJsonFile,
+            buildPackagesForAllSpecs(logger, options.buildThreads, pkgInfoJsonFile,
                                      options.pkgBuildType)
     except Exception as e:
         logger.error("Caught an exception")
@@ -185,18 +183,15 @@ def main():
     sys.exit(0)
 
 
-def buildAPackage(package, listBuildOptionPackages, pkgBuildOptionFile,
-                  buildThreads, pkgBuildType):
+def buildAPackage(package, buildThreads, pkgBuildType):
     listPackages = [package]
     pkgManager = PackageManager(pkgBuildType=pkgBuildType)
     if constants.rpmCheck:
         constants.setTestForceRPMS(listPackages[:])
-    pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile,
-                             buildThreads, pkgBuildType)
+    pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
 
 
-def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger,
-                             buildThreads, pkgInfoJsonFile, pkgBuildType):
+def buildPackagesForAllSpecs(logger, buildThreads, pkgInfoJsonFile, pkgBuildType):
     listPackages = SPECS.getData().getListPackages()
 
     logger.info("List of packages to build:")
@@ -204,29 +199,20 @@ def buildPackagesForAllSpecs(listBuildOptionPackages, pkgBuildOptionFile, logger
     if constants.rpmCheck:
         constants.setTestForceRPMS(listPackages[:])
     pkgManager = PackageManager(pkgBuildType=pkgBuildType)
-    pkgManager.buildPackages(listPackages, listBuildOptionPackages, pkgBuildOptionFile,
-                             buildThreads, pkgBuildType)
+    pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
 
     # Generating package info file which is required by installer
-    logger.info("Writing Package info to the file:"+pkgInfoJsonFile)
+    logger.info("Writing Package info to the file:" + pkgInfoJsonFile)
     pkgInfo = PackageInfo()
     pkgInfo.loadPackagesData()
     pkgInfo.writePkgListToFile(pkgInfoJsonFile)
 
 
 def get_packages_with_build_options(pkg_build_options_file):
-    packages = []
     if os.path.exists(pkg_build_options_file):
-        jsonData = open(pkg_build_options_file)
-        pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
-        jsonData.close()
-        pkgs_sorted = pkg_build_option_json.items()
-        for pkg in pkgs_sorted:
-            p = pkg[0].encode('utf-8')
-            packages.append(str(p))
-
-    return packages
-
+        with open(pkg_build_options_file) as jsonData:
+            pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+            constants.setBuidOptions(pkg_build_option_json)
 
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)

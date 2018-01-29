@@ -24,6 +24,7 @@ class constants(object):
     katBuild = None
     testForceRPMS = []
     tmpDirPath = "/dev/shm"
+    buildOptions = {}
 
     noDepsPackageList = [
         "texinfo",
@@ -532,3 +533,7 @@ class constants(object):
     @staticmethod
     def addMacro(macroName, macroValue):
         constants.userDefinedMacros[macroName] = macroValue
+
+    @staticmethod
+    def setBuidOptions(options):
+        constants.buildOptions = options

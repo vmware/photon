@@ -7,15 +7,13 @@ import ThreadPool
 class WorkerThread(threading.Thread):
 
     def __init__(self, event, name, mapPackageToCycle, listAvailableCyclicPackages, logger,
-                 listBuildOptionPackages, pkgBuildOptionFile, pkgBuildType):
+                 pkgBuildType):
         threading.Thread.__init__(self)
         self.statusEvent = event
         self.name = name
         self.mapPackageToCycle = mapPackageToCycle
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
         self.logger = logger
-        self.listBuildOptionPackages = listBuildOptionPackages
-        self.pkgBuildOptionFile = pkgBuildOptionFile
         self.pkgBuildType = pkgBuildType
 
     def run(self):
@@ -31,14 +29,10 @@ class WorkerThread(threading.Thread):
             if self.pkgBuildType == "chroot":
                 pkgBuilder = PackageBuilderChroot(self.mapPackageToCycle,
                                                   self.listAvailableCyclicPackages,
-                                                  self.listBuildOptionPackages,
-                                                  self.pkgBuildOptionFile,
                                                   self.pkgBuildType)
             elif self.pkgBuildType == "container":
                 pkgBuilder = PackageBuilderContainer(self.mapPackageToCycle,
                                                      self.listAvailableCyclicPackages,
-                                                     self.listBuildOptionPackages,
-                                                     self.pkgBuildOptionFile,
                                                      self.pkgBuildType)
             pkgBuilder.buildPackageFunction(pkg, outputMap, pkg)
             if pkg not in outputMap or outputMap[pkg] == False:

@@ -156,34 +156,29 @@ class PackageUtils(object):
     def copyAdditionalBuildFiles(self, listAdditionalFiles, chrootID):
         cmdUtils = CommandUtils()
         for additionalFile in listAdditionalFiles:
-            source = additionalFile["src"].encode('utf-8')
-            destDir = chrootID + additionalFile["dst"].encode('utf-8')
+            source = additionalFile["src"]
+            destDir = chrootID + additionalFile["dst"]
+            self.logger.info("Copying additional Source build files :" + source)
             if os.path.exists(source):
                 if os.path.isfile(source):
                     shutil.copy(source, destDir)
                 else:
                     shutil.copytree(source, destDir)
 
-    def getAdditionalBuildFiles(self, package, pkgBuildOptionFile):
+    def getAdditionalBuildFiles(self, package):
         listAdditionalFiles = []
         macros = []
-        jsonData = open(pkgBuildOptionFile)
-        pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
-        jsonData.close()
-        pkgs_sorted = pkg_build_option_json.items()
-        for pkg in pkgs_sorted:
-            p = str(pkg[0].encode('utf-8'))
-            if p == package:
-                filelist = pkg[1]["files"]
-                for f in filelist:
-                    listAdditionalFiles.append(f)
-                macrolist = pkg[1]["macros"]
-                for macro in macrolist:
-                    macros.append(str(macro.encode('utf-8')))
+        if package in constants.buildOptions.keys():
+            pkg = constants.buildOptions[package]
+            filelist = pkg["files"]
+            for f in filelist:
+                listAdditionalFiles.append(f)
+            macrolist = pkg["macros"]
+            for macro in macrolist:
+                macros.append(macro)
         return listAdditionalFiles, macros
 
-    def buildRPMSForGivenPackage(self, package, chrootID, listBuildOptionPackages,
-                                 pkgBuildOptionFile, destLogPath=None):
+    def buildRPMSForGivenPackage(self, package, chrootID, destLogPath=None):
         self.logger.info("Building rpm's for package:" + package)
 
         listSourcesFiles = SPECS.getData().getSources(package)
@@ -201,11 +196,10 @@ class PackageUtils(object):
         #        if os.geteuid()==0:
         self.copySourcesTobuildroot(listSourcesFiles, package, chrootSourcePath)
         self.copySourcesTobuildroot(listPatchFiles, package, chrootSourcePath)
-
         macros = []
-        if package in listBuildOptionPackages:
-            listAdditionalFiles, macros = self.getAdditionalBuildFiles(package, pkgBuildOptionFile)
-            self.copyAdditionalBuildFiles(listAdditionalFiles, chrootID)
+
+        listAdditionalFiles, macros = self.getAdditionalBuildFiles(package)
+        self.copyAdditionalBuildFiles(listAdditionalFiles, chrootID)
 
         #Adding rpm macros
         listRPMMacros = constants.userDefinedMacros
@@ -411,18 +405,18 @@ class PackageUtils(object):
         #                  containerID.short_id)
         #self.logger.debug(listAdditionalFiles)
         for additionalFile in listAdditionalFiles:
-            source = additionalFile["src"].encode('utf-8')
-            destDir = additionalFile["dst"].encode('utf-8')
+            source = additionalFile["src"]
+            destDir = additionalFile["dst"]
             destPath = containerID.short_id + ":" + destDir
             #TODO: exit status of exec_run
             containerID.exec_run("mkdir -p " + destDir)
             if os.path.exists(source):
                 copyCmd = "docker cp " + source
                 if os.path.isfile(source):
-                    self.logger.info("Copying addl source file: " + source)
+                    self.logger.info("Copying additional source file: " + source)
                     copyCmd += " " + destPath
                 else:
-                    self.logger.info("Copying addl source file tree: " + source)
+                    self.logger.info("Copying additional source file tree: " + source)
                     copyCmd += "/. " + destPath
                 #TODO: cmd error code
                 cmdUtils.runCommandInShell(copyCmd)
@@ -555,8 +549,7 @@ class PackageUtils(object):
         self.logger.error("Failed while adjusting gcc specs")
         raise Exception("Failed while adjusting gcc specs")
 
-    def buildRPMSForGivenPackageInContainer(self, package, containerID, listBuildOptionPackages,
-                                            pkgBuildOptionFile, destLogPath=None):
+    def buildRPMSForGivenPackageInContainer(self, package, containerID, destLogPath=None):
         self.logger.info("Building rpm's for package " + package + " in container " +
                          containerID.short_id)
 
@@ -585,9 +578,8 @@ class PackageUtils(object):
         self.copySourcesToContainer(listSourcesFiles, package, containerID, sourcePath)
         #TODO: mount it in, don't copy
         self.copySourcesToContainer(listPatchFiles, package, containerID, sourcePath)
-        if package in listBuildOptionPackages:
-            listAdditionalFiles, macros = self.getAdditionalBuildFiles(package, pkgBuildOptionFile)
-            self.copyAdditionalBuildFilesToContainer(listAdditionalFiles, containerID)
+        listAdditionalFiles, macros = self.getAdditionalBuildFiles(package)
+        self.copyAdditionalBuildFilesToContainer(listAdditionalFiles, containerID)
 
         # Add rpm macros
         listRPMMacros = constants.userDefinedMacros

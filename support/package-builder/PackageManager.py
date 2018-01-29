@@ -30,8 +30,6 @@ class PackageManager(object):
         self.mapOutputThread = {}
         self.mapThreadsLaunchTime = {}
         self.listAvailableCyclicPackages = []
-        self.listBuildOptionPackages = []
-        self.pkgBuildOptionFile = ""
         self.pkgBuildType = pkgBuildType
         if self.pkgBuildType == "container":
             self.dockerClient = docker.from_env(version="auto")
@@ -130,15 +128,14 @@ class PackageManager(object):
         pkgCount = 0
         try:
             tUtils = ToolChainUtils()
-            pkgCount = tUtils.buildCoreToolChainPackages(self.listBuildOptionPackages,
-                                                         self.pkgBuildOptionFile)
+            pkgCount = tUtils.buildCoreToolChainPackages()
         except Exception as e:
             self.logger.error("Unable to build tool chain")
             self.logger.error(e)
             raise e
         return pkgCount
 
-    def buildToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
+    def buildToolChainPackages(self, buildThreads):
         pkgCount = self.buildToolChain()
         if self.pkgBuildType == "container":
             # Stage 1 build container
@@ -151,31 +148,26 @@ class PackageManager(object):
             #TODO: rebuild container only if anything in listToolChainPackages was built
             self.createBuildContainer()
 
-    def buildTestPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
+    def buildTestPackages(self, buildThreads):
         self.buildToolChain()
         self.buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
 
-    def buildPackages(self, listPackages, listBuildOptionPackages, pkgBuildOptionFile,
-                      buildThreads, pkgBuildType):
-        self.listBuildOptionPackages = listBuildOptionPackages
-        self.pkgBuildOptionFile = pkgBuildOptionFile
+    def buildPackages(self, listPackages, buildThreads, pkgBuildType):
         self.pkgBuildType = pkgBuildType
         if constants.rpmCheck:
             constants.rpmCheck = False
-            self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
-            self.buildTestPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+            self.buildToolChainPackages(buildThreads)
+            self.buildTestPackages(buildThreads)
             constants.rpmCheck = True
             self.buildGivenPackages(listPackages, buildThreads)
         else:
-            self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
+            self.buildToolChainPackages(buildThreads)
             self.buildGivenPackages(listPackages, buildThreads)
 
     def initializeThreadPool(self, statusEvent):
         ThreadPool.clear()
         ThreadPool.mapPackageToCycle = self.mapPackageToCycle
         ThreadPool.listAvailableCyclicPackages = self.listAvailableCyclicPackages
-        ThreadPool.listBuildOptionPackages = self.listBuildOptionPackages
-        ThreadPool.pkgBuildOptionFile = self.pkgBuildOptionFile
         ThreadPool.logger = self.logger
         ThreadPool.statusEvent = statusEvent
         ThreadPool.pkgBuildType = self.pkgBuildType

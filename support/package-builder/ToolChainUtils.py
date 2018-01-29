@@ -74,7 +74,7 @@ class ToolChainUtils(object):
                               "Unable to determine the rpm file for package:" + package)
             return None
 
-    def buildCoreToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile):
+    def buildCoreToolChainPackages(self):
         self.logger.info("Building core toolchain packages.....")
         chrootID = None
         pkgCount = 0
@@ -97,8 +97,7 @@ class ToolChainUtils(object):
                     raise Exception("creating chroot failed")
                 self.installToolChainRPMS(chrootID, package, destLogPath)
                 pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
-                pkgUtils.buildRPMSForGivenPackage(package, chrootID, listBuildOptionPackages,
-                                                  pkgBuildOptionFile, destLogPath)
+                pkgUtils.buildRPMSForGivenPackage(package, chrootID, destLogPath)
                 pkgCount += 1
                 chrUtils.destroyChroot(chrootID)
                 chrootID = None
