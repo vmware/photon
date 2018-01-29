@@ -7,8 +7,6 @@ class ThreadPool(object):
     inactiveWorkerThreads = []
     mapPackageToCycle = {}
     listAvailableCyclicPackages = []
-    listBuildOptionPackages = []
-    pkgBuildOptionFile = ""
     pkgBuildType = "chroot"
     logger = None
     statusEvent = None
@@ -36,8 +34,6 @@ class ThreadPool(object):
             ThreadPool.mapPackageToCycle,
             ThreadPool.listAvailableCyclicPackages,
             ThreadPool.logger,
-            ThreadPool.listBuildOptionPackages,
-            ThreadPool.pkgBuildOptionFile,
             ThreadPool.pkgBuildType)
         ThreadPool.mapWorkerThreads[workerThreadName] = workerThread
 
