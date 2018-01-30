@@ -82,8 +82,13 @@ endif
 
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
+ifeq ($(ARCH),x86_64)
 VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
 IMGCONVERTER := $(TOOLS_BIN)/imgconverter
+else
+VIXDISKUTIL :=
+IMGCONVERTER :=
+endif
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
 check-tools check-docker check-bison check-g++ check-gawk check-repo-tool check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \

@@ -13,7 +13,8 @@
     "additionalfiles": [
                             {"photon-dev.repo": "/etc/yum.repos.d/photon-dev.repo"},
                             {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
-                            {"resizefs.service": "/lib/systemd/system/resizefs.service"}
+                            {"resizefs.service": "/lib/systemd/system/resizefs.service"},
+			    {"root/lib/firmware": "/lib/firmware"}
                        ],
     "artifacttype": "xz",
     "keeprawdisk": "true"
