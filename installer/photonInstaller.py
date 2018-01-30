@@ -63,13 +63,16 @@ def create_vmdk_and_partition(config, vmdk_path):
             partitions_data['root'] = line.replace("ROOT_PARTITION=", "").strip()
             partitions_data['boot'] = partitions_data['root']
             partitions_data['bootdirectory'] = '/boot/'
+            partitions_data['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/',
+                                          'filesystem': 'ext4'}]
+            count += 1
+        elif line.startswith("ESP_PARTITION="):
+            partitions_data['esp'] = line.replace("ESP_PARTITION=", "").strip()
+            partitions_data['partitions'].append({'path': partitions_data['esp'], 'mountpoint': '/boot/esp',
+                                          'filesystem': 'vfat'})
             count += 1
 
-    if count == 2:
-        partitions_data['partitions'] = [{'path': partitions_data['root'], 'mountpoint': '/',
-                                          'filesystem': 'ext4'}]
-
-    return partitions_data, count == 2
+    return partitions_data, count == 2 or count == 3
 
 def get_file_name_with_last_folder(filename):
     basename = os.path.basename(filename)

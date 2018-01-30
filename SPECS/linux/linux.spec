@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.8
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -25,6 +25,8 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         x86-vmware-STA-support.patch
+# rpi3 dts
+Patch10:	arm-dts-add-vchiq-entry.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
@@ -105,6 +107,15 @@ Requires:       audit
 %description tools
 This package contains the 'perf' performance analysis tools for Linux kernel.
 
+%ifarch aarch64
+%package dtb-rpi3
+Summary:        Kernel Device Tree Blob files for Raspberry Pi3
+Group:          System Environment/Kernel
+Requires:       %{name} = %{version}-%{release}
+%description dtb-rpi3
+Kernel Device Tree Blob files for Raspberry Pi3
+%endif
+
 
 %prep
 %setup -q -n linux-%{version}
@@ -117,6 +128,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch10 -p1
 %patch13 -p1
 %patch24 -p1
 %patch26 -p1
@@ -176,6 +188,7 @@ install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
+
 %ifarch x86_64
 # install ENA module
 bldroot=`pwd`
@@ -197,9 +210,14 @@ if [ "$ID1" != "$ID2" ] ; then
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
+
 %ifarch aarch64
 install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
+# Install DTB files
+install -vdm 755 %{buildroot}/boot/dtb
+install -vm 640 arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dtb %{buildroot}/boot/dtb/
 %endif
+
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
@@ -316,7 +334,16 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
 
+%ifarch aarch64
+%files dtb-rpi3
+%defattr(-,root,root)
+/boot/dtb/bcm2837-rpi-3-b.dtb
+%endif
+
 %changelog
+*   Fri Jan 26 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2
+-   Added vchiq entry to rpi3 dts
+-   Added dtb-rpi3 subpackage
 *   Fri Dec 22 2017 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
 -   Version update
 *   Wed Dec 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.66-4
