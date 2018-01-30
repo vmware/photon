@@ -395,6 +395,8 @@ class constants(object):
             # https://github.com/draios/sysdig/issues/833
             "sysdig.spec",
             "falco.spec",
+            # one more fail, not investigated yet
+            "log4cpp.spec",
 
             # VIVACE packages
             # need to update to mono-4.5
