@@ -1,28 +1,15 @@
-Summary:    Contains a linker, an assembler, and other tools
-Name:       binutils
-Version:    2.29.1
-Release:    3%{?dist}
-License:    GPLv2+
-URL:        http://www.gnu.org/software/binutils
-Group:      System Environment/Base
-Vendor:     VMware, Inc.
+Summary:        Contains a linker, an assembler, and other tools
+Name:           binutils
+Version:        2.30
+Release:        1%{?dist}
+License:        GPLv2+
+URL:            http://www.gnu.org/software/binutils
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha1 binutils=172244a349d07ec205c39c0321cbc354c125e78e
-Patch0:     binutils-2.29.1-CVE-2017-14729.patch
-Patch1:     binutils-2.29.1-CVE-2017-15020.patch
-Patch2:     binutils-2.29.1-CVE-2017-16826.patch
-Patch3:     binutils-2.29.1-CVE-2017-16827.patch
-Patch4:     binutils-2.29.1-CVE-2017-16828.patch
-Patch5:     binutils-2.29.1-CVE-2017-16829.patch
-Patch6:     binutils-2.29.1-CVE-2017-16830.patch
-Patch7:     binutils-2.29.1-CVE-2017-16831.patch
-Patch8:     binutils-2.29.1-CVE-2017-16832.patch
-Patch9:     binutils-2.29.1-CVE-2017-17121.patch
-Patch10:    binutils-2.29.1-CVE-2017-17122.patch
-Patch11:    binutils-2.29.1-CVE-2017-17123.patch
-Patch12:    binutils-2.29.1-CVE-2017-17124.patch
-Patch13:    binutils-2.29.1-CVE-2017-17125.patch
+Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
+%define sha1    binutils=574d3b5650413d6ee65195a4f5ecbddc3a38f718
+
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -36,20 +23,6 @@ for handling compiled objects.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -102,89 +75,7 @@ make %{?_smp_mflags} check
 %{_bindir}/ranlib
 %{_bindir}/readelf
 %{_bindir}/strip
-%{_libdir}/ldscripts/elf32_x86_64.xu
-%{_libdir}/ldscripts/elf32_x86_64.xr
-%{_libdir}/ldscripts/i386linux.xr
-%{_libdir}/ldscripts/elf_l1om.xw
-%{_libdir}/ldscripts/elf_l1om.xdc
-%{_libdir}/ldscripts/elf_x86_64.xdw
-%{_libdir}/ldscripts/elf_k1om.xn
-%{_libdir}/ldscripts/elf_x86_64.xr
-%{_libdir}/ldscripts/i386linux.x
-%{_libdir}/ldscripts/elf_l1om.xd
-%{_libdir}/ldscripts/elf_k1om.xw
-%{_libdir}/ldscripts/elf_l1om.xs
-%{_libdir}/ldscripts/elf_i386.xc
-%{_libdir}/ldscripts/elf_i386.xdc
-%{_libdir}/ldscripts/elf_k1om.xd
-%{_libdir}/ldscripts/elf_i386.xw
-%{_libdir}/ldscripts/elf32_x86_64.x
-%{_libdir}/ldscripts/elf_i386.xsc
-%{_libdir}/ldscripts/elf_x86_64.xw
-%{_libdir}/ldscripts/i386linux.xn
-%{_libdir}/ldscripts/elf_k1om.xdw
-%{_libdir}/ldscripts/elf_k1om.x
-%{_libdir}/ldscripts/elf_i386.xr
-%{_libdir}/ldscripts/elf32_x86_64.xc
-%{_libdir}/ldscripts/elf_x86_64.xsw
-%{_libdir}/ldscripts/elf_x86_64.xd
-%{_libdir}/ldscripts/elf_i386.x
-%{_libdir}/ldscripts/elf_i386.xu
-%{_libdir}/ldscripts/elf_k1om.xdc
-%{_libdir}/ldscripts/elf32_x86_64.xn
-%{_libdir}/ldscripts/elf32_x86_64.xs
-%{_libdir}/ldscripts/elf_x86_64.x
-%{_libdir}/ldscripts/elf32_x86_64.xdc
-%{_libdir}/ldscripts/elf_l1om.xsc
-%{_libdir}/ldscripts/elf_l1om.x
-%{_libdir}/ldscripts/elf_x86_64.xsc
-%{_libdir}/ldscripts/elf_k1om.xu
-%{_libdir}/ldscripts/elf32_x86_64.xbn
-%{_libdir}/ldscripts/elf_x86_64.xu
-%{_libdir}/ldscripts/elf32_x86_64.xw
-%{_libdir}/ldscripts/elf_k1om.xs
-%{_libdir}/ldscripts/elf_x86_64.xn
-%{_libdir}/ldscripts/elf_l1om.xu
-%{_libdir}/ldscripts/elf32_x86_64.xdw
-%{_libdir}/ldscripts/elf_l1om.xsw
-%{_libdir}/ldscripts/elf_l1om.xc
-%{_libdir}/ldscripts/elf_l1om.xr
-%{_libdir}/ldscripts/i386linux.xbn
-%{_libdir}/ldscripts/elf_l1om.xn
-%{_libdir}/ldscripts/elf_i386.xsw
-%{_libdir}/ldscripts/elf32_x86_64.xd
-%{_libdir}/ldscripts/elf_k1om.xbn
-%{_libdir}/ldscripts/elf_i386.xn
-%{_libdir}/ldscripts/elf_i386.xbn
-%{_libdir}/ldscripts/i386linux.xu
-%{_libdir}/ldscripts/elf_k1om.xc
-%{_libdir}/ldscripts/elf32_x86_64.xsw
-%{_libdir}/ldscripts/elf_k1om.xr
-%{_libdir}/ldscripts/elf32_x86_64.xsc
-%{_libdir}/ldscripts/elf_k1om.xsw
-%{_libdir}/ldscripts/elf_i386.xdw
-%{_libdir}/ldscripts/elf_i386.xd
-%{_libdir}/ldscripts/elf_x86_64.xdc
-%{_libdir}/ldscripts/elf_i386.xs
-%{_libdir}/ldscripts/elf_x86_64.xs
-%{_libdir}/ldscripts/elf_x86_64.xc
-%{_libdir}/ldscripts/elf_k1om.xsc
-%{_libdir}/ldscripts/elf_l1om.xbn
-%{_libdir}/ldscripts/elf_x86_64.xbn
-%{_libdir}/ldscripts/elf_l1om.xdw
-%{_libdir}/ldscripts/elf_iamcu.x
-%{_libdir}/ldscripts/elf_iamcu.xbn
-%{_libdir}/ldscripts/elf_iamcu.xc
-%{_libdir}/ldscripts/elf_iamcu.xd
-%{_libdir}/ldscripts/elf_iamcu.xdc
-%{_libdir}/ldscripts/elf_iamcu.xdw
-%{_libdir}/ldscripts/elf_iamcu.xn
-%{_libdir}/ldscripts/elf_iamcu.xr
-%{_libdir}/ldscripts/elf_iamcu.xs
-%{_libdir}/ldscripts/elf_iamcu.xsc
-%{_libdir}/ldscripts/elf_iamcu.xsw
-%{_libdir}/ldscripts/elf_iamcu.xu
-%{_libdir}/ldscripts/elf_iamcu.xw
+%{_libdir}/ldscripts/*
 %{_mandir}/man1/readelf.1.gz
 %{_mandir}/man1/windmc.1.gz
 %{_mandir}/man1/ranlib.1.gz
@@ -220,6 +111,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Mon Jan 29 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-1
+-   Update to version 2.30
 *   Mon Dec 18 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-3
 -   Fix CVEs CVE-2017-17121, CVE-2017-17122, CVE-2017-17123,
 -   CVE-2017-17124, CVE-2017-17125
