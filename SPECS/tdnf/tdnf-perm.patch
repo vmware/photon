@@ -1,0 +1,49 @@
+diff --git a/client/defines.h b/client/defines.h
+index 3eee2b6..aa2afc1 100644
+--- a/client/defines.h
++++ b/client/defines.h
+@@ -212,4 +212,5 @@ typedef enum
+     {ERROR_TDNF_RPM_CHECK,           "ERROR_TDNF_RPM_CHECK",           "rpm check reported errors"}, \
+     {ERROR_TDNF_METADATA_EXPIRE_PARSE, "ERROR_TDNF_METADATA_EXPIRE_PARSE", "metadata_expire value could not be parsed. Check your repo files."},\
+     {ERROR_TDNF_SELF_ERASE, "ERROR_TDNF_SELF_ERASE", "The operation would result in removing the protected package : tdnf"},\
++    {ERROR_TDNF_PERM, "ERROR_TDNF_PERM", "Operation not permitted. You have to be root."},\
+ };
+diff --git a/include/tdnferror.h b/include/tdnferror.h
+index e858694..199c3a8 100644
+--- a/include/tdnferror.h
++++ b/include/tdnferror.h
+@@ -129,10 +129,11 @@ extern "C" {
+ #define ERROR_TDNF_TRANS_INCOMPLETE     1525
+ #define ERROR_TDNF_TRANS_PKG_NOT_FOUND  1526
+ 
+-//System errors 1600 and up
+-#define ERROR_TDNF_SYSTEM_BASE          1600
+ // No search results found
+-#define ERROR_TDNF_NO_SEARCH_RESULTS    1601
++#define ERROR_TDNF_NO_SEARCH_RESULTS    1599
++#define ERROR_TDNF_SYSTEM_BASE          1600
++//System errors 1600 and up
++#define ERROR_TDNF_PERM                 (ERROR_TDNF_SYSTEM_BASE + EPERM)
+ #define ERROR_TDNF_INVALID_PARAMETER    (ERROR_TDNF_SYSTEM_BASE + EINVAL)
+ #define ERROR_TDNF_OUT_OF_MEMORY        (ERROR_TDNF_SYSTEM_BASE + ENOMEM)
+ #define ERROR_TDNF_NO_DATA              (ERROR_TDNF_SYSTEM_BASE + ENODATA)
+diff --git a/tools/cli/main.c b/tools/cli/main.c
+index c0a2b5f..e6d6026 100644
+--- a/tools/cli/main.c
++++ b/tools/cli/main.c
+@@ -63,6 +63,15 @@ int main(int argc, char* argv[])
+     PTDNF pTdnf = NULL;
+     int nFound = 0;
+ 
++    //granular permissions for non root users are pending.
++    //blocking all operations for non root and show the
++    //right error to avoid confusion.
++    if(geteuid() != 0)
++    {
++        dwError = ERROR_TDNF_PERM;
++        BAIL_ON_CLI_ERROR(dwError);
++    }
++
+     _context.pFnCheck = TDNFCliInvokeCheck;
+     _context.pFnCheckLocal = TDNFCliInvokeCheckLocal;
+     _context.pFnCheckUpdate = TDNFCliInvokeCheckUpdate;
