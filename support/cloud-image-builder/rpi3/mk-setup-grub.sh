@@ -15,15 +15,20 @@
 
 grub_efi_install()
 {
-    mkdir -p $BUILDROOT/boot/efi
-    #
-    # if it is a loop device then we should mount the dev mapped boot partition
-    #
     BOOT_PARTITION=/dev/mapper/`basename ${HDD}`p1
-    mkfs.fat $BOOT_PARTITION
-    mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
-    cp -r esp/* $BUILDROOT/boot/efi/
-    umount $BUILDROOT/boot/efi
+#    mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/esp
+    # Raspberry prorpiaetary GPU bootloader (1st stage)
+    cp -r esp/* $BUILDROOT/boot/esp/
+    # u-boot (2nd stage) was copied earlier by installer.py
+    # grub efi bootloader (3rd stage)
+    mkdir -p $BUILDROOT/boot/esp/EFI/BOOT/
+    cp EFI_aarch64/BOOT/* $BUILDROOT/boot/esp/EFI/BOOT/
+    mkdir -p $BUILDROOT/boot/esp/boot/grub2
+    cat > $BUILDROOT/boot/esp/boot/grub2/grub.cfg << EOF
+search -n -u ${BOOT_UUID} -s
+configfile ${BOOT_DIRECTORY}grub2/grub.cfg
+EOF
+#    umount $BUILDROOT/boot/esp
 }
 
 set -o errexit        # exit if error...insurance ;)
@@ -50,7 +55,7 @@ fi
 #
 #    Install grub2.
 #
-#BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
+BOOT_UUID=$(blkid -s UUID -o value $BOOT_PARTITION_PATH)
 
 mkdir -p $BUILDROOT/boot/grub2
 ln -sfv grub2 $BUILDROOT/boot/grub
@@ -64,7 +69,7 @@ cp boot/splash.png ${BUILDROOT}/boot/grub2/themes/photon/photon.png
 cp boot/terminal_*.tga ${BUILDROOT}/boot/grub2/themes/photon/
 cp boot/theme.txt ${BUILDROOT}/boot/grub2/themes/photon/
 
-EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0"
+EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0 cma=256M"
 
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg

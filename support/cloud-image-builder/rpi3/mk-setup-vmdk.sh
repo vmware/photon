@@ -83,10 +83,11 @@ echo "Creating raw disk file " $VMDK_IMAGE_NAME " of size " $TOTAL_SIZE
 dd if=/dev/zero of=$VMDK_IMAGE_NAME bs=1024 count=$(($TOTAL_SIZE * 1024 * 512))
 chmod 755 $VMDK_IMAGE_NAME
 
-echo "Associating loopdevice to raw disk"
-DISK_DEVICE=`losetup --show -f $VMDK_IMAGE_NAME`
+parted -s $VMDK_IMAGE_NAME mklabel msdos mkpart primary fat32 1M 30M mkpart primary ext4 30M 100%
 
-parted -s $DISK_DEVICE mklabel msdos mkpart primary fat32 1M 30M mkpart primary ext4 30M 100%
+echo "Associating loopdevice to raw disk"
+DISK_DEVICE=`losetup --show -f -P $VMDK_IMAGE_NAME`
+
 #echo "Creating partition on raw disk"
 #if [ $SWAP_PARTITION_SIZE -gt 0 ] 
 #then
@@ -103,15 +104,18 @@ parted -s $DISK_DEVICE mklabel msdos mkpart primary fat32 1M 30M mkpart primary 
 #    echo "BIOS boot partition"
 #    sgdisk -t1:ef02 $DISK_DEVICE >> $LOGFILE
 #fi
+
 echo "Mapping device partition to loop device"
 kpartx -avs $DISK_DEVICE >> $LOGFILE
 
 DEVICE_NAME=`echo $DISK_DEVICE|cut -c6- `
 
-echo "Adding file system to device partition"
-mkfs -t ext4 /dev/mapper/${DEVICE_NAME}p2
+echo "Formatting partitions"
+mkfs.ext4 /dev/mapper/${DEVICE_NAME}p2
+mkfs.fat /dev/mapper/${DEVICE_NAME}p1
 
 echo "DISK_DEVICE=$DISK_DEVICE"
 echo "ROOT_PARTITION=/dev/mapper/${DEVICE_NAME}p2"
+echo "ESP_PARTITION=/dev/mapper/${DEVICE_NAME}p1"
 
 
