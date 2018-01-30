@@ -276,7 +276,7 @@ if [ "$LIVE_CD" = false ] ; then
 fi
 
 # Set password max days to 99999 (disable aging)
-chage -R ${BUILDROOT} -M 99999 root
+sed -i '/^root.*/root::0:0:99999:7:::' "${BUILDROOT}/etc/shadow"
 
 # Generate the intird
 pushd $BUILDROOT
