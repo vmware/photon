@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.78
+Version:        4.9.79
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=57f67ae03ca89feed08302c2c47d1a385d727cc2
+%define sha1 linux=edbd6a3f738b304242a358bdae7872699401403d
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -43,16 +43,10 @@ Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11472
-Patch27:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Fix CVE-2017-8824
 Patch29:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
-# Fix CVE-2017-17448
-Patch30:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
-# Fix CVE-2017-17450
-Patch31:        netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch32:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -169,11 +163,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch29 -p1
-%patch30 -p1
-%patch31 -p1
 %patch32 -p1
 
 %patch52 -p1
@@ -360,6 +351,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.79-1
+-   Update version to 4.9.79
 *   Fri Jan 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.78-1
 -   Update version to 4.9.78.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.9.76-1
