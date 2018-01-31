@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.113
+Version:       4.4.114
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=91900902c63d8beb1a556c87d277329b8d6a11ff
+%define sha1 linux=13da90cd2f7844a55dfb9387918adb2c9b3eea9a
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -36,15 +36,9 @@ Patch21:       vmci-1.1.5.0-doorbell-create-and-destroy-fixes.patch
 Patch22:       vsock-transport-for-9p.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
-# Fix CVE-2017-11472
-Patch25:       ACPICA-Namespace-fix-operand-cache-leak.patch
 Patch26:       init-do_mounts-recreate-dev-root.patch
 # Fix CVE-2017-8824
 Patch27:       dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
-# Fix CVE-2017-17448
-Patch28:       netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
-# Fix CVE-2017-17450
-Patch29:       netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch30:       revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -123,11 +117,8 @@ The Linux package contains the Linux kernel doc files
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
-%patch25 -p1
 %patch26 -p1
 %patch27 -p1
-%patch28 -p1
-%patch29 -p1
 %patch30 -p1
 
 %patch52 -p1
@@ -233,6 +224,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.114-1
+-   Update version to 4.4.114
 *   Fri Jan 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.113-1
 -   Update version to 4.4.113.
 *   Fri Jan 19 2018 Bo Gan <ganb@vmware.com> 4.4.112-1
