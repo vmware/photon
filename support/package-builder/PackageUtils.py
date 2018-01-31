@@ -283,22 +283,21 @@ class PackageUtils(object):
                 raise Exception("RPM build failed")
 
         #Extracting rpms created from log file
-        logfile = open(logFile, 'r')
-        fileContents = logfile.readlines()
-        logfile.close()
         listRPMFiles = []
         listSRPMFiles = []
-        for i in range(0, len(fileContents)):
-            if re.search("^Wrote:", fileContents[i]):
-                listcontents = fileContents[i].split()
-                if ((len(listcontents) == 2) and
-                        listcontents[1].strip().endswith(".rpm") and
-                        "/RPMS/" in listcontents[1]):
-                    listRPMFiles.append(listcontents[1])
-                if ((len(listcontents) == 2) and
-                        listcontents[1].strip().endswith(".src.rpm") and
-                        "/SRPMS/" in listcontents[1]):
-                    listSRPMFiles.append(listcontents[1])
+        with open(logFile, 'r') as logfile:
+            fileContents = logfile.readlines()
+            for i in range(0, len(fileContents)):
+                if re.search("^Wrote:", fileContents[i]):
+                    listcontents = fileContents[i].split()
+                    if ((len(listcontents) == 2) and
+                            listcontents[1].strip().endswith(".rpm") and
+                            "/RPMS/" in listcontents[1]):
+                        listRPMFiles.append(listcontents[1])
+                    if ((len(listcontents) == 2) and
+                            listcontents[1].strip().endswith(".src.rpm") and
+                            "/SRPMS/" in listcontents[1]):
+                        listSRPMFiles.append(listcontents[1])
         return listRPMFiles, listSRPMFiles
 
     def findRPMFileForGivenPackage(self, package):
@@ -688,20 +687,19 @@ class PackageUtils(object):
         #Extracting rpms created from log file
         listRPMFiles = []
         listSRPMFiles = []
-        logfile = open(destLogFile, 'r')
-        rpmBuildLogLines = logfile.readlines()
-        logfile.close()
-        for i in range(0, len(rpmBuildLogLines)):
-            if re.search("^Wrote:", rpmBuildLogLines[i]):
-                listcontents = rpmBuildLogLines[i].split()
-                if ((len(listcontents) == 2) and
-                        listcontents[1].strip().endswith(".rpm") and
-                        "/RPMS/" in listcontents[1]):
-                    listRPMFiles.append(listcontents[1])
-                if ((len(listcontents) == 2) and
-                        listcontents[1].strip().endswith(".src.rpm") and
-                        "/SRPMS/" in listcontents[1]):
-                    listSRPMFiles.append(listcontents[1])
+        with open(destLogFile, 'r') as logfile:
+            rpmBuildLogLines = logfile.readlines()
+            for i in range(0, len(rpmBuildLogLines)):
+                if re.search("^Wrote:", rpmBuildLogLines[i]):
+                    listcontents = rpmBuildLogLines[i].split()
+                    if ((len(listcontents) == 2) and
+                            listcontents[1].strip().endswith(".rpm") and
+                            "/RPMS/" in listcontents[1]):
+                        listRPMFiles.append(listcontents[1])
+                    if ((len(listcontents) == 2) and
+                            listcontents[1].strip().endswith(".src.rpm") and
+                            "/SRPMS/" in listcontents[1]):
+                        listSRPMFiles.append(listcontents[1])
         #if not listRPMFiles:
         #    self.logger.error("Building rpm failed for " + specFile)
         #    raise Exception("RPM Build failed")

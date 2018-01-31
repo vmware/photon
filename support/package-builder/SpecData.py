@@ -319,11 +319,10 @@ class SpecDependencyGenerator(object):
                 self.printTree(children, child, depth + 1)
 
     def getAllPackageNames(self, jsonFilePath):
-        jsonData = open(jsonFilePath)
-        option_list_json = json.load(jsonData)
-        jsonData.close()
-        packages = option_list_json["packages"]
-        return packages
+        with open(jsonFilePath) as jsonData:
+            option_list_json = json.load(jsonData)
+            packages = option_list_json["packages"]
+            return packages
 
     def updateLevels(self, mapDependencies, inPkg, parent, level):
         listPackages = SPECS.getData().getPackages(inPkg)

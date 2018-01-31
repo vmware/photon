@@ -108,72 +108,71 @@ class SpecParser(object):
     def parseSpecFile(self, specfile):
         self.createDefaultPackage()
         currentPkg = "default"
-        specFile = open(specfile)
-        lines = specFile.readlines()
-        totalLines = len(lines)
-        i = 0
-        while i < totalLines:
-            line = lines[i].strip()
-            if self.isConditionalArch(line):
-                if platform.machine() != self.readConditionalArch(line):
-                    # skip conditional body
-                    deep = 1
-                    while i < totalLines and deep != 0:
-                        i = i + 1
-                        line = lines[i].strip()
-                        if self.isConditionalMacroStart(line):
-                            deep = deep + 1
-                        elif self.isConditionalMacroEnd(line):
-                            deep = deep - 1
-            elif self.isIfCondition(line):
-                if not self.isConditionTrue(line):
-                    # skip conditional body
-                    deep = 1
-                    while i < totalLines and deep != 0:
-                        i = i + 1
-                        line = lines[i].strip()
-                        if self.isConditionalMacroStart(line):
-                            deep = deep + 1
-                        elif self.isConditionalMacroEnd(line):
-                            deep = deep - 1
-            elif self.isSpecMacro(line):
-                macro, i = self.readMacroFromFile(i, lines)
-                self.updateMacro(macro)
-            elif self.isPackageMacro(line):
-                defaultpkg = self.packages.get('default')
-                returnVal, packageName = self.readPkgNameFromPackageMacro(line, defaultpkg.name)
-                packageName = self.replaceMacros(packageName)
-                if not returnVal:
-                    return False
-                if line.startswith('%package'):
-                    pkg = Package(defaultpkg)
-                    pkg.name = packageName
-                    currentPkg = packageName
-                    self.packages[pkg.name] = pkg
-                else:
-                    if defaultpkg.name == packageName:
-                        packageName = 'default'
+        with open(specfile) as specFile:
+            lines = specFile.readlines()
+            totalLines = len(lines)
+            i = 0
+            while i < totalLines:
+                line = lines[i].strip()
+                if self.isConditionalArch(line):
+                    if platform.machine() != self.readConditionalArch(line):
+                        # skip conditional body
+                        deep = 1
+                        while i < totalLines and deep != 0:
+                            i = i + 1
+                            line = lines[i].strip()
+                            if self.isConditionalMacroStart(line):
+                                deep = deep + 1
+                            elif self.isConditionalMacroEnd(line):
+                                deep = deep - 1
+                elif self.isIfCondition(line):
+                    if not self.isConditionTrue(line):
+                        # skip conditional body
+                        deep = 1
+                        while i < totalLines and deep != 0:
+                            i = i + 1
+                            line = lines[i].strip()
+                            if self.isConditionalMacroStart(line):
+                                deep = deep + 1
+                            elif self.isConditionalMacroEnd(line):
+                                deep = deep - 1
+                elif self.isSpecMacro(line):
                     macro, i = self.readMacroFromFile(i, lines)
-                    if packageName not in self.packages:
-                        i = i + 1
-                        continue
-                    self.packages[packageName].updatePackageMacro(macro)
-            elif self.isPackageHeaders(line):
-                self.readPackageHeaders(line, self.packages[currentPkg])
-            elif self.isGlobalSecurityHardening(line):
-                self.readSecurityHardening(line)
-            elif self.isChecksum(line):
-                self.readChecksum(line, self.packages[currentPkg])
-            elif self.isDefinition(line):
-                self.readDefinition(line)
-            elif self.isConditionalCheckMacro(line):
-                self.conditionalCheckMacroEnabled = True
-            elif self.conditionalCheckMacroEnabled and self.isConditionalMacroEnd(line):
-                self.conditionalCheckMacroEnabled = False
-            else:
-                self.specAdditionalContent += line + "\n"
-            i = i + 1
-        specFile.close()
+                    self.updateMacro(macro)
+                elif self.isPackageMacro(line):
+                    defaultpkg = self.packages.get('default')
+                    returnVal, packageName = self.readPkgNameFromPackageMacro(line, defaultpkg.name)
+                    packageName = self.replaceMacros(packageName)
+                    if not returnVal:
+                        return False
+                    if line.startswith('%package'):
+                        pkg = Package(defaultpkg)
+                        pkg.name = packageName
+                        currentPkg = packageName
+                        self.packages[pkg.name] = pkg
+                    else:
+                        if defaultpkg.name == packageName:
+                            packageName = 'default'
+                        macro, i = self.readMacroFromFile(i, lines)
+                        if packageName not in self.packages:
+                            i = i + 1
+                            continue
+                        self.packages[packageName].updatePackageMacro(macro)
+                elif self.isPackageHeaders(line):
+                    self.readPackageHeaders(line, self.packages[currentPkg])
+                elif self.isGlobalSecurityHardening(line):
+                    self.readSecurityHardening(line)
+                elif self.isChecksum(line):
+                    self.readChecksum(line, self.packages[currentPkg])
+                elif self.isDefinition(line):
+                    self.readDefinition(line)
+                elif self.isConditionalCheckMacro(line):
+                    self.conditionalCheckMacroEnabled = True
+                elif self.conditionalCheckMacroEnabled and self.isConditionalMacroEnd(line):
+                    self.conditionalCheckMacroEnabled = False
+                else:
+                    self.specAdditionalContent += line + "\n"
+                i = i + 1
 
     def createDefaultPackage(self):
         pkg = Package()
