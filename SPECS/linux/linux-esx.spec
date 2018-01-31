@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.78
+Version:        4.9.79
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=57f67ae03ca89feed08302c2c47d1a385d727cc2
+%define sha1 linux=edbd6a3f738b304242a358bdae7872699401403d
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -36,17 +36,11 @@ Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
 Patch21:        vmware-balloon-late-initcall.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11472
-Patch23:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 Patch25:        init-do_mounts-recreate-dev-root.patch
 # Fix CVE-2017-8824
 Patch26:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
-# Fix CVE-2017-17448
-Patch27:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
-# Fix CVE-2017-17450
-Patch28:        netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch29:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -125,12 +119,9 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
-%patch27 -p1
-%patch28 -p1
 %patch29 -p1
 
 %patch52 -p1
@@ -246,6 +237,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.79-1
+-   Update version to 4.9.79
 *   Fri Jan 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.78-1
 -   Update version to 4.9.78.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.9.76-1

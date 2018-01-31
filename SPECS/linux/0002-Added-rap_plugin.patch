@@ -14431,7 +14431,7 @@ index d9d52c0..e38856d 100644
  
  extern struct hlist_nulls_head *nf_conntrack_hash;
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index aa6d981..ed2389d 100644
+index 879ca84..d893396 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
 @@ -208,6 +208,8 @@ struct bpf_prog *bpf_patch_insn_single(struct bpf_prog *prog, u32 off,
@@ -14468,7 +14468,7 @@ index aa6d981..ed2389d 100644
  	return hdr;
  }
  
-@@ -465,7 +480,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
+@@ -466,7 +481,7 @@ EXPORT_SYMBOL_GPL(__bpf_call_base);
   *
   * Decode and execute eBPF instructions.
   */
@@ -14477,15 +14477,27 @@ index aa6d981..ed2389d 100644
  {
  	u64 stack[MAX_BPF_STACK / sizeof(u64)];
  	u64 regs[MAX_BPF_REG], tmp;
-@@ -970,7 +985,7 @@ static int bpf_check_tail_call(const struct bpf_prog *fp)
-  */
+@@ -925,7 +940,7 @@ static unsigned int __bpf_prog_run(void *ctx, const struct bpf_insn *insn)
+ STACK_FRAME_NON_STANDARD(__bpf_prog_run); /* jump table */
+ 
+ #else
+-static unsigned int __bpf_prog_ret0(void *ctx, const struct bpf_insn *insn)
++static unsigned int __bpf_prog_ret0(const struct sk_buff *ctx, const struct bpf_insn *insn)
+ {
+ 	return 0;
+ }
+@@ -979,9 +994,9 @@ static int bpf_check_tail_call(const struct bpf_prog *fp)
  struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
  {
+ #ifndef CONFIG_BPF_JIT_ALWAYS_ON
 -	fp->bpf_func = (void *) __bpf_prog_run;
 +	fp->bpf_func = __bpf_prog_run;
+ #else
+-	fp->bpf_func = (void *) __bpf_prog_ret0;
++	fp->bpf_func = __bpf_prog_ret0;
+ #endif
  
  	/* eBPF JITs can rewrite the program in case constant
- 	 * blinding is active. However, in case of error during
 diff --git a/kernel/events/core.c b/kernel/events/core.c
 index b1cfd74..b7608ec 100644
 --- a/kernel/events/core.c
