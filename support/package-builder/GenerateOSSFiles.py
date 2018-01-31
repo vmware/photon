@@ -85,26 +85,25 @@ def main():
 
 
 def buildPackagesList(csvFilename):
-    csvFile = open(csvFilename, "w")
-    csvFile.write("Package,Version,License,URL,Sources,Patches\n")
-    listPackages = SPECS.getData().getListPackages()
-    listPackages.sort()
-    for package in listPackages:
-        name = package
-        version = SPECS.getData().getVersion(package)
-        license = SPECS.getData().getLicense(package)
-        listPatches = SPECS.getData().getPatches(package)
-        url = SPECS.getData().getURL(package)
-        listSourceNames = SPECS.getData().getSources(package)
-        sources = ""
-        patches = ""
-        if listPatches is not None:
-            patches = " ".join(listPatches)
-        if listSourceNames is not None:
-            sources = " ".join(listSourceNames)
-        csvFile.write(name + "," + version + "," + license + "," + url + "," + sources + "," + patches + "\n")
-    csvFile.close()
-
+    with open(csvFilename, "w") as csvFile:
+        csvFile.write("Package,Version,License,URL,Sources,Patches\n")
+        listPackages = SPECS.getData().getListPackages()
+        listPackages.sort()
+        for package in listPackages:
+            name = package
+            version = SPECS.getData().getVersion(package)
+            license = SPECS.getData().getLicense(package)
+            listPatches = SPECS.getData().getPatches(package)
+            url = SPECS.getData().getURL(package)
+            listSourceNames = SPECS.getData().getSources(package)
+            sources = ""
+            patches = ""
+            if listPatches is not None:
+                patches = " ".join(listPatches)
+            if listSourceNames is not None:
+                sources = " ".join(listSourceNames)
+            csvFile.write(name + "," + version + "," + license + "," + url + "," +
+                          sources + "," + patches + "\n")
 
 def readBlackListPackages(pkgBlackListFile):
     blackListPkgs = []

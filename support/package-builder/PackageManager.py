@@ -26,10 +26,6 @@ class PackageManager(object):
         self.mapPackageToCycle = {}
         self.sortedPackageList = []
         self.listOfPackagesAlreadyBuilt = []
-        self.listThreads = {}
-        self.mapOutputThread = {}
-        self.mapThreadsLaunchTime = {}
-        self.listAvailableCyclicPackages = []
         self.pkgBuildType = pkgBuildType
         if self.pkgBuildType == "container":
             self.dockerClient = docker.from_env(version="auto")
@@ -88,10 +84,6 @@ class PackageManager(object):
         return listAvailablePackages
 
     def calculateParams(self, listPackages):
-        self.listThreads.clear()
-        self.mapOutputThread.clear()
-        self.mapThreadsLaunchTime.clear()
-        self.listAvailableCyclicPackages = []
         self.mapCyclesToPackageList.clear()
         self.mapPackageToCycle.clear()
         self.sortedPackageList = []
@@ -167,7 +159,6 @@ class PackageManager(object):
     def initializeThreadPool(self, statusEvent):
         ThreadPool.clear()
         ThreadPool.mapPackageToCycle = self.mapPackageToCycle
-        ThreadPool.listAvailableCyclicPackages = self.listAvailableCyclicPackages
         ThreadPool.logger = self.logger
         ThreadPool.statusEvent = statusEvent
         ThreadPool.pkgBuildType = self.pkgBuildType
@@ -193,19 +184,15 @@ class PackageManager(object):
         self.initializeScheduler(statusEvent)
         self.initializeThreadPool(statusEvent)
 
-        i = 0
-        while i < buildThreads:
+        for i in range(0, buildThreads):
             workerName = "WorkerThread" + str(i)
             ThreadPool.addWorkerThread(workerName)
             ThreadPool.startWorkerThread(workerName)
-            i = i + 1
 
         statusEvent.wait()
         Scheduler.stopScheduling = True
         self.logger.info("Waiting for all remaining worker threads")
-        listWorkerObjs = ThreadPool.getAllWorkerObjects()
-        for w in listWorkerObjs:
-            w.join()
+        ThreadPool.join_all()
 
         setFailFlag = False
         allPackagesBuilt = False

@@ -1,7 +1,7 @@
 import threading
 from queue import PriorityQueue
 import json
-import ThreadPool
+from ThreadPool import ThreadPool
 from constants import constants
 from Logger import Logger
 from SpecData import SPECS
@@ -85,16 +85,14 @@ class Scheduler(object):
                 dependencyLists[package] = []
                 for dependency in list(Scheduler.dependencyGraph[package].keys()):
                     dependencyLists[package].append(dependency)
-            graphfile = open(str(constants.logPath) + "/BuildDependencies.json", 'w')
-            graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
-            graphfile.close()
+            with open(str(constants.logPath) + "/BuildDependencies.json", 'w') as graphfile:
+                graphfile.write(json.dumps(dependencyLists, sort_keys=True, indent=4))
 
     @staticmethod
     def parseWeights():
         Scheduler.pkgWeights.clear()
-        weightFile = open(constants.packageWeightsPath, 'r')
-        Scheduler.pkgWeights = json.load(weightFile)
-        weightFile.close()
+        with open(constants.packageWeightsPath, 'r') as weightFile:
+            Scheduler.pkgWeights = json.load(weightFile)
 
     @staticmethod
     def getWeight(package):
@@ -168,13 +166,9 @@ class Scheduler(object):
                 continue
             listRequiredPackages = Scheduler.getRequiredPackages(pkg)
             canBuild = True
-            Scheduler.logger.info("Required packages for " + pkg + " are:")
-            Scheduler.logger.info(listRequiredPackages)
             for reqPkg in listRequiredPackages:
                 if reqPkg not in Scheduler.listOfAlreadyBuiltPackages:
                     canBuild = False
-                    Scheduler.logger.info(reqPkg + " is not available. So we cannot build " +
-                                          pkg + " at this moment.")
                     break
             if canBuild:
                 listOfPackagesNextToBuild.put((-Scheduler.priorityMap[pkg], pkg))
@@ -185,9 +179,7 @@ class Scheduler(object):
     def getNextPackageToBuild():
         Scheduler.logger.info("Waiting to acquire scheduler lock")
         with Scheduler.lock:
-
             if Scheduler.stopScheduling:
-                Scheduler.logger.info("Released scheduler lock")
                 return None
 
             if len(Scheduler.listOfPackagesToBuild) == 0:
@@ -218,7 +210,7 @@ class Scheduler(object):
             package = packageTup[1]
             Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
             if Scheduler.listOfPackagesNextToBuild.qsize() > 0:
-                ThreadPool.ThreadPool.activateWorkerThreads(
+                ThreadPool.activateWorkerThreads(
                     Scheduler.listOfPackagesNextToBuild.qsize())
             Scheduler.listOfPackagesCurrentlyBuilding.append(package)
             Scheduler.listOfPackagesToBuild.remove(package)
@@ -227,25 +219,27 @@ class Scheduler(object):
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildCompleted(package):
-        if package in Scheduler.listOfPackagesCurrentlyBuilding:
-            Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
-            Scheduler.listOfAlreadyBuiltPackages.append(package)
+        with Scheduler.lock:
+            if package in Scheduler.listOfPackagesCurrentlyBuilding:
+                Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
+                Scheduler.listOfAlreadyBuiltPackages.append(package)
 
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildFailed(package):
-        if package in Scheduler.listOfPackagesCurrentlyBuilding:
-            Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
-            Scheduler.listOfFailedPackages.append(package)
+        with Scheduler.lock:
+            if package in Scheduler.listOfPackagesCurrentlyBuilding:
+                Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
+                Scheduler.listOfFailedPackages.append(package)
 
     @staticmethod
     def isAllPackagesBuilt():
-        if len(Scheduler.listOfPackagesToBuild) == 0:
-            return True
-        return False
+        if Scheduler.listOfPackagesToBuild:
+            return False
+        return True
 
     @staticmethod
     def isAnyPackagesFailedToBuild():
-        if len(Scheduler.listOfFailedPackages) != 0:
+        if Scheduler.listOfFailedPackages:
             return True
         return False
