@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.78
+Version:        4.9.79
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=57f67ae03ca89feed08302c2c47d1a385d727cc2
+%define sha1 linux=edbd6a3f738b304242a358bdae7872699401403d
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -46,16 +46,10 @@ Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11472
-Patch30:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # Fix CVE-2017-8824
 Patch32:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
-# Fix CVE-2017-17448
-Patch33:        netfilter-nfnetlink_cthelper-Add-missing-permission-checks.patch
-# Fix CVE-2017-17450
-Patch34:        netfilter-xt_osf-Add-missing-permission-checks.patch
 Patch35:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -179,11 +173,8 @@ EOF
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
-%patch30 -p1
 %patch31 -p1
 %patch32 -p1
-%patch33 -p1
-%patch34 -p1
 %patch35 -p1
 
 # spectre
@@ -335,6 +326,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.79-1
+-   Update version to 4.9.79
 *   Fri Jan 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.78-1
 -   Update version to 4.9.78.
 *   Wed Jan 10 2018 Bo Gan <ganb@vmware.com> 4.9.76-1
