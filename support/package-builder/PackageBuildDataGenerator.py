@@ -2,12 +2,10 @@ import copy
 from Logger import Logger
 from constants import constants
 from SpecData import SPECS
+from collections import OrderedDict
 
-def removeDuplicateEntriesInList(myList):
-    myListCopy = []
-    for p in myList:
-        if p not in myListCopy:
-            myListCopy.append(p)
+def removeDuplicateEntries(myList):
+    myListCopy = list(OrderedDict.fromkeys(myList))
     return myListCopy
 
 class PackageBuildDataGenerator(object):
@@ -30,15 +28,15 @@ class PackageBuildDataGenerator(object):
         self.__sortedBuildDependencyGraph = {}
 
     def getPackageBuildData(self, listPackages):
-        self.__readDependencyGraphAndCyclesForGivenPackages(listPackages)
-        self.__getSortedBuildOrderListForGivenPackages(listPackages)
+        self._readDependencyGraphAndCyclesForGivenPackages(listPackages)
+        self._getSortedBuildOrderListForGivenPackages(listPackages)
         return self.__mapCyclesToPackageList, self.__mapPackageToCycle, self.__sortedPackageList
 
     #todo
-    def findCompleteListOfPackagesRequiredToBuildGivenPackages(self, listPackages):
+    def _findCompleteListOfPackagesRequiredToBuildGivenPackages(self, listPackages):
         return list(self.__buildDependencyGraph.keys())
 
-    def createSortListForPkg(self, pkg):
+    def _createSortListForPkg(self, pkg):
         runTimeDepPkgList = self.__runTimeDependencyGraph[pkg]
         runTimeDepPkgList.append(pkg)
         sortListForPkg = []
@@ -51,7 +49,7 @@ class PackageBuildDataGenerator(object):
 
         return sortListForPkg
 
-    def getCircularDependentPackages(self, pkg):
+    def _getCircularDependentPackages(self, pkg):
         circularDependentPackages = []
         if pkg in self.__mapPackageToCycle:
             circularDependentPackages.extend(
@@ -59,11 +57,11 @@ class PackageBuildDataGenerator(object):
             circularDependentPackages.remove(pkg)
         return circularDependentPackages
 
-    def __getSortedBuildOrderListForGivenPackages(self, listPackages):
+    def _getSortedBuildOrderListForGivenPackages(self, listPackages):
 
         alreadyProcessedPackages = []
         sortedList = []
-        completeListPackagesToBuild = self.findCompleteListOfPackagesRequiredToBuildGivenPackages(
+        completeListPackagesToBuild = self._findCompleteListOfPackagesRequiredToBuildGivenPackages(
             listPackages)
         packageIndexInSortedList = 0
         prevSortListLen = 0
@@ -74,7 +72,7 @@ class PackageBuildDataGenerator(object):
             pkg = None
             index = -1
             lenList = len(sortedList)
-            for  i in range(lenList):
+            for i in range(lenList):
                 if sortedList[i] in alreadyProcessedPackages:
                     continue
                 pkg = sortedList[i]
@@ -86,10 +84,10 @@ class PackageBuildDataGenerator(object):
                 packageIndexInSortedList = len(sortedList)
 
             #creating sort list for package
-            sortListForPkg = self.createSortListForPkg(pkg)
+            sortListForPkg = self._createSortListForPkg(pkg)
 
             #remove any cyclic packages in sortListForPkg if they already exists in sortedList
-            circularDependentPackages = self.getCircularDependentPackages(pkg)
+            circularDependentPackages = self._getCircularDependentPackages(pkg)
             for p in circularDependentPackages:
                 if p in sortedList and p in sortListForPkg:
                     sortListForPkg.remove(p)
@@ -109,18 +107,18 @@ class PackageBuildDataGenerator(object):
             # Remove duplicate entries in sorted list in intervals
             if (len(sortedList) - prevSortListLen) > 100:
                 self.logger.info("Removing duplicates in sortedList")
-                sortedList = removeDuplicateEntriesInList(sortedList)
+                sortedList = removeDuplicateEntries(sortedList)
             else:
                 prevSortListLen = len(sortedList)
 
         self.logger.info("Removing duplicates in sorted list")
-        sortedList = removeDuplicateEntriesInList(sortedList)
+        sortedList = removeDuplicateEntries(sortedList)
 
         self.logger.info("Sorted list:")
         self.logger.info(sortedList)
         self.__sortedPackageList = sortedList
 
-    def __constructBuildAndRunTimeDependencyGraph(self, package):
+    def _constructBuildAndRunTimeDependencyGraph(self, package):
         basePackage = SPECS.getData().getSpecName(package)
 
         addBuildTimeGraph = True
@@ -149,27 +147,27 @@ class PackageBuildDataGenerator(object):
                 nextPackagesToConstructGraph.extend(listDependentRpmPackages)
 
         for pkg in nextPackagesToConstructGraph:
-            self.__constructBuildAndRunTimeDependencyGraph(pkg)
+            self._constructBuildAndRunTimeDependencyGraph(pkg)
 
-    def __readDependencyGraphAndCyclesForGivenPackages(self, listPackages):
+    def _readDependencyGraphAndCyclesForGivenPackages(self, listPackages):
         self.logger.info("Reading dependency graph to check for cycles")
         for pkg in listPackages:
-            self.__constructBuildAndRunTimeDependencyGraph(pkg)
+            self._constructBuildAndRunTimeDependencyGraph(pkg)
 
         for pkg in self.__buildDependencyGraph.keys():
-            sortedPackageList, circularDependentPackages = self.topologicalSortPackages(
+            sortedPackageList, circularDependentPackages = self._topologicalSortPackages(
                 self.__buildDependencyGraph, pkg)
             if len(circularDependentPackages) > 0:
                 self.logger.error("Found circular dependency")
                 self.logger.error(circularDependentPackages)
                 raise Exception("Build Time Circular Dependency")
             self.__sortedBuildDependencyGraph[pkg] = sortedPackageList
-        sortedPackageList, circularDependentPackages = self.topologicalSortPackages(
+        sortedPackageList, circularDependentPackages = self._topologicalSortPackages(
             self.__runTimeDependencyGraph)
         if len(circularDependentPackages) > 0:
-            self.__findCircularDependencies(circularDependentPackages)
+            self._findCircularDependencies(circularDependentPackages)
 
-    def topologicalSortPackages(self, dependencyGraph, package=None):
+    def _topologicalSortPackages(self, dependencyGraph, package=None):
         noDepPackages = set()
         sortedPackageList = []
         dependentOfPackage = dict()
@@ -220,7 +218,7 @@ class PackageBuildDataGenerator(object):
         #package list in a dependencyGraph)
         return sortedPackageList, circularDependencyGraph
 
-    def __constructDependencyMap(self, yclicDependencyGraph):
+    def _constructDependencyMap(self, yclicDependencyGraph):
         self.logger.info("Constructing dependency map from circular dependency graph.....")
         constructDependencyMap = {}
         for node in cyclicDependencyGraph.keys():
@@ -243,12 +241,12 @@ class PackageBuildDataGenerator(object):
         self.logger.info(constructDependencyMap)
         return constructDependencyMap
 
-    def __findCircularDependencies(self, cyclicDependencyGraph):
+    def _findCircularDependencies(self, cyclicDependencyGraph):
         self.logger.info("Looking for circular dependencies")
         if len(cyclicDependencyGraph) == 0:
             return
         #step1: construct dependency map from dependency graph
-        constructDependencyMap = self.__constructDependencyMap(cyclicDependencyGraph)
+        constructDependencyMap = self._constructDependencyMap(cyclicDependencyGraph)
 
         #step2: find cycles in dependency map
         self.logger.info("Finding and adding cycles using constructed dependency map......")

@@ -55,6 +55,5 @@ class PackageInfo(object):
         dirPath = os.path.basename(fileName)
         if not os.path.isdir(dirPath):
             cmdUtils.runCommandInShell("mkdir -p " + dirPath)
-        pkgInfoFile = open(fileName, 'w+')
-        json.dump(self.pkgList, pkgInfoFile, indent=4)
-        pkgInfoFile.close()
+        with open(fileName, 'w+') as pkgInfoFile:
+            json.dump(self.pkgList, pkgInfoFile, indent=4)
