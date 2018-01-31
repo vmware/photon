@@ -3,7 +3,7 @@
 Summary:        Mesos
 Name:           mesos
 Version:        1.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
@@ -21,6 +21,7 @@ BuildRequires:  apr-util >= 1.5.4
 BuildRequires:  apr-util-devel >= 1.5.4
 BuildRequires:  subversion >= 1.8.13
 BuildRequires:  subversion-devel >= 1.8.13
+BuildRequires:  serf-devel
 BuildRequires:  cyrus-sasl >= 2.1.26
 BuildRequires:  which
 BuildRequires:  python2 >= 2.6
@@ -98,6 +99,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Tue Jan 30 2018 Xiaolin Li <xiaolinl@vmware.com> 1.4.1-2
+-   Add serf-devel to BuildRequires.
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.4.1-1
 -   Version update. Aarch64 support
 *   Wed Oct 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1

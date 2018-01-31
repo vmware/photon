@@ -6,7 +6,6 @@ class ThreadPool(object):
     activeWorkerThreads = []
     inactiveWorkerThreads = []
     mapPackageToCycle = {}
-    listAvailableCyclicPackages = []
     pkgBuildType = "chroot"
     logger = None
     statusEvent = None
@@ -18,21 +17,11 @@ class ThreadPool(object):
         ThreadPool.inactiveWorkerThreads = []
 
     @staticmethod
-    def getAllWorkerObjects():
-        listWorkerObjs = []
-        listWorkerKeys = ThreadPool.mapWorkerThreads.keys()
-        for x in listWorkerKeys:
-            xobj = ThreadPool.mapWorkerThreads[x]
-            listWorkerObjs.append(xobj)
-        return listWorkerObjs
-
-    @staticmethod
     def addWorkerThread(workerThreadName):
         workerThread = WorkerThread.WorkerThread(
             ThreadPool.statusEvent,
             workerThreadName,
             ThreadPool.mapPackageToCycle,
-            ThreadPool.listAvailableCyclicPackages,
             ThreadPool.logger,
             ThreadPool.pkgBuildType)
         ThreadPool.mapWorkerThreads[workerThreadName] = workerThread
@@ -59,9 +48,14 @@ class ThreadPool(object):
 
     @staticmethod
     def activateWorkerThreads(numOfThreadsToActivate):
-        while len(ThreadPool.inactiveWorkerThreads) > 0 and numOfThreadsToActivate > 0:
+        while ThreadPool.inactiveWorkerThreads and numOfThreadsToActivate > 0:
             threadName = ThreadPool.inactiveWorkerThreads.pop()
             ThreadPool.addWorkerThread(threadName)
             ThreadPool.startWorkerThread(threadName)
             ThreadPool.makeWorkerThreadActive(threadName)
             numOfThreadsToActivate = numOfThreadsToActivate -1
+
+    @staticmethod
+    def join_all():
+        for p in ThreadPool.mapWorkerThreads.values():
+            p.join()
