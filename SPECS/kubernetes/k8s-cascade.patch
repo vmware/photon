@@ -1,6 +1,6 @@
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1alpha1.json cascade-kubernetes/api/swagger-spec/apps_v1alpha1.json
---- kubernetes-1.8.1/api/swagger-spec/apps_v1alpha1.json	2018-01-23 22:47:25.146819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/apps_v1alpha1.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/apps_v1alpha1.json	2018-01-31 02:55:29.836980990 +0000
++++ cascade-kubernetes/api/swagger-spec/apps_v1alpha1.json	2018-01-31 02:12:47.000000000 +0000
 @@ -1459,6 +1459,10 @@
       "photonPersistentDisk": {
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
@@ -37,8 +37,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1alpha1.json 
       }
      }
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta1.json cascade-kubernetes/api/swagger-spec/apps_v1beta1.json
---- kubernetes-1.8.1/api/swagger-spec/apps_v1beta1.json	2018-01-23 22:47:25.146819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/apps_v1beta1.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/apps_v1beta1.json	2018-01-31 02:55:29.836980990 +0000
++++ cascade-kubernetes/api/swagger-spec/apps_v1beta1.json	2018-01-31 02:12:47.000000000 +0000
 @@ -4400,6 +4400,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -75,8 +75,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta1.json c
       }
      }
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta2.json cascade-kubernetes/api/swagger-spec/apps_v1beta2.json
---- kubernetes-1.8.1/api/swagger-spec/apps_v1beta2.json	2018-01-23 22:47:25.146819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/apps_v1beta2.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/apps_v1beta2.json	2018-01-31 02:55:29.836980990 +0000
++++ cascade-kubernetes/api/swagger-spec/apps_v1beta2.json	2018-01-31 02:12:47.000000000 +0000
 @@ -6730,6 +6730,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -113,8 +113,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta2.json c
       }
      }
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1beta1.json cascade-kubernetes/api/swagger-spec/batch_v1beta1.json
---- kubernetes-1.8.1/api/swagger-spec/batch_v1beta1.json	2018-01-23 22:47:25.150819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/batch_v1beta1.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/batch_v1beta1.json	2018-01-31 02:55:29.836980990 +0000
++++ cascade-kubernetes/api/swagger-spec/batch_v1beta1.json	2018-01-31 02:12:47.000000000 +0000
 @@ -1850,6 +1850,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -151,8 +151,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1beta1.json 
       }
      }
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1.json cascade-kubernetes/api/swagger-spec/batch_v1.json
---- kubernetes-1.8.1/api/swagger-spec/batch_v1.json	2018-01-23 22:47:25.150819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/batch_v1.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/batch_v1.json	2018-01-31 02:55:29.836980990 +0000
++++ cascade-kubernetes/api/swagger-spec/batch_v1.json	2018-01-31 02:12:47.000000000 +0000
 @@ -1795,6 +1795,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -189,8 +189,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1.json casca
       }
      }
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v2alpha1.json cascade-kubernetes/api/swagger-spec/batch_v2alpha1.json
---- kubernetes-1.8.1/api/swagger-spec/batch_v2alpha1.json	2018-01-23 22:47:25.150819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/batch_v2alpha1.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/batch_v2alpha1.json	2018-01-31 02:55:29.836980990 +0000
++++ cascade-kubernetes/api/swagger-spec/batch_v2alpha1.json	2018-01-31 02:12:47.000000000 +0000
 @@ -1865,6 +1865,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
@@ -227,8 +227,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v2alpha1.json
      "id": "v1.Container",
      "description": "A single application container that you want to run within a pod.",
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/extensions_v1beta1.json cascade-kubernetes/api/swagger-spec/extensions_v1beta1.json
---- kubernetes-1.8.1/api/swagger-spec/extensions_v1beta1.json	2018-01-23 22:47:25.150819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/extensions_v1beta1.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/extensions_v1beta1.json	2018-01-31 02:55:29.840980990 +0000
++++ cascade-kubernetes/api/swagger-spec/extensions_v1beta1.json	2018-01-31 02:12:47.000000000 +0000
 @@ -7363,6 +7363,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
@@ -265,8 +265,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/extensions_v1beta1.
       }
      }
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/settings.k8s.io_v1alpha1.json cascade-kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json
---- kubernetes-1.8.1/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-01-23 22:47:25.154819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-01-31 02:55:29.840980990 +0000
++++ cascade-kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-01-31 02:12:47.000000000 +0000
 @@ -1661,6 +1661,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
@@ -303,8 +303,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/settings.k8s.io_v1a
       }
      }
 diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/v1.json cascade-kubernetes/api/swagger-spec/v1.json
---- kubernetes-1.8.1/api/swagger-spec/v1.json	2018-01-23 22:47:25.154819339 +0000
-+++ cascade-kubernetes/api/swagger-spec/v1.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/api/swagger-spec/v1.json	2018-01-31 02:55:29.844980990 +0000
++++ cascade-kubernetes/api/swagger-spec/v1.json	2018-01-31 02:12:47.000000000 +0000
 @@ -20271,6 +20271,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -352,8 +352,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/v1.json cascade-kub
      }
     },
 diff -uNr --no-dereference kubernetes-1.8.1/cmd/kube-controller-manager/app/BUILD cascade-kubernetes/cmd/kube-controller-manager/app/BUILD
---- kubernetes-1.8.1/cmd/kube-controller-manager/app/BUILD	2018-01-23 22:47:25.198819341 +0000
-+++ cascade-kubernetes/cmd/kube-controller-manager/app/BUILD	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/cmd/kube-controller-manager/app/BUILD	2018-01-31 02:55:30.164981002 +0000
++++ cascade-kubernetes/cmd/kube-controller-manager/app/BUILD	2018-01-31 02:12:47.000000000 +0000
 @@ -42,6 +42,7 @@
          "//pkg/cloudprovider/providers:go_default_library",
          "//pkg/cloudprovider/providers/aws:go_default_library",
@@ -371,8 +371,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/cmd/kube-controller-manager/app/BUIL
          "//pkg/volume/fc:go_default_library",
          "//pkg/volume/flexvolume:go_default_library",
 diff -uNr --no-dereference kubernetes-1.8.1/cmd/kube-controller-manager/app/plugins.go cascade-kubernetes/cmd/kube-controller-manager/app/plugins.go
---- kubernetes-1.8.1/cmd/kube-controller-manager/app/plugins.go	2018-01-23 22:47:25.198819341 +0000
-+++ cascade-kubernetes/cmd/kube-controller-manager/app/plugins.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/cmd/kube-controller-manager/app/plugins.go	2018-01-31 02:55:30.164981002 +0000
++++ cascade-kubernetes/cmd/kube-controller-manager/app/plugins.go	2018-01-31 02:12:47.000000000 +0000
 @@ -32,6 +32,7 @@
  	"k8s.io/kubernetes/pkg/cloudprovider"
  	"k8s.io/kubernetes/pkg/cloudprovider/providers/aws"
@@ -415,8 +415,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/cmd/kube-controller-manager/app/plug
  	}
  
 diff -uNr --no-dereference kubernetes-1.8.1/cmd/kubelet/app/BUILD cascade-kubernetes/cmd/kubelet/app/BUILD
---- kubernetes-1.8.1/cmd/kubelet/app/BUILD	2018-01-23 22:47:25.214819342 +0000
-+++ cascade-kubernetes/cmd/kubelet/app/BUILD	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/cmd/kubelet/app/BUILD	2018-01-31 02:55:30.160981001 +0000
++++ cascade-kubernetes/cmd/kubelet/app/BUILD	2018-01-31 02:12:47.000000000 +0000
 @@ -73,6 +73,7 @@
          "//pkg/volume/aws_ebs:go_default_library",
          "//pkg/volume/azure_dd:go_default_library",
@@ -426,8 +426,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/cmd/kubelet/app/BUILD cascade-kubern
          "//pkg/volume/cinder:go_default_library",
          "//pkg/volume/configmap:go_default_library",
 diff -uNr --no-dereference kubernetes-1.8.1/cmd/kubelet/app/plugins.go cascade-kubernetes/cmd/kubelet/app/plugins.go
---- kubernetes-1.8.1/cmd/kubelet/app/plugins.go	2018-01-23 22:47:25.214819342 +0000
-+++ cascade-kubernetes/cmd/kubelet/app/plugins.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/cmd/kubelet/app/plugins.go	2018-01-31 02:55:30.160981001 +0000
++++ cascade-kubernetes/cmd/kubelet/app/plugins.go	2018-01-31 02:12:47.000000000 +0000
 @@ -32,6 +32,7 @@
  	"k8s.io/kubernetes/pkg/volume/aws_ebs"
  	"k8s.io/kubernetes/pkg/volume/azure_dd"
@@ -445,8 +445,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/cmd/kubelet/app/plugins.go cascade-k
  }
  
 diff -uNr --no-dereference kubernetes-1.8.1/federation/apis/openapi-spec/swagger.json cascade-kubernetes/federation/apis/openapi-spec/swagger.json
---- kubernetes-1.8.1/federation/apis/openapi-spec/swagger.json	2018-01-23 22:47:25.278819344 +0000
-+++ cascade-kubernetes/federation/apis/openapi-spec/swagger.json	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/federation/apis/openapi-spec/swagger.json	2018-01-31 02:55:29.044980962 +0000
++++ cascade-kubernetes/federation/apis/openapi-spec/swagger.json	2018-01-31 02:12:47.000000000 +0000
 @@ -10540,6 +10540,22 @@
       }
      }
@@ -482,8 +482,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/federation/apis/openapi-spec/swagger
      }
     },
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/types.go cascade-kubernetes/pkg/api/types.go
---- kubernetes-1.8.1/pkg/api/types.go	2018-01-23 22:47:25.350819346 +0000
-+++ cascade-kubernetes/pkg/api/types.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/pkg/api/types.go	2018-01-31 02:55:29.552980980 +0000
++++ cascade-kubernetes/pkg/api/types.go	2018-01-31 02:12:47.000000000 +0000
 @@ -316,6 +316,8 @@
  	// StorageOS represents a StorageOS volume that is attached to the kubelet's host machine and mounted into the pod
  	// +optional
@@ -520,8 +520,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/types.go cascade-kubernetes/
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/validation/validation.go cascade-kubernetes/pkg/api/validation/validation.go
---- kubernetes-1.8.1/pkg/api/validation/validation.go	2018-01-23 22:47:25.354819347 +0000
-+++ cascade-kubernetes/pkg/api/validation/validation.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/pkg/api/validation/validation.go	2018-01-31 02:55:29.560980980 +0000
++++ cascade-kubernetes/pkg/api/validation/validation.go	2018-01-31 02:12:47.000000000 +0000
 @@ -612,6 +612,14 @@
  			allErrs = append(allErrs, validateScaleIOVolumeSource(source.ScaleIO, fldPath.Child("scaleIO"))...)
  		}
@@ -568,8 +568,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/validation/validation.go cas
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/apis/extensions/types.go cascade-kubernetes/pkg/apis/extensions/types.go
---- kubernetes-1.8.1/pkg/apis/extensions/types.go	2018-01-23 22:47:25.370819347 +0000
-+++ cascade-kubernetes/pkg/apis/extensions/types.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/pkg/apis/extensions/types.go	2018-01-31 02:55:29.576980981 +0000
++++ cascade-kubernetes/pkg/apis/extensions/types.go	2018-01-31 02:12:47.000000000 +0000
 @@ -1002,6 +1002,7 @@
  	Projected             FSType = "projected"
  	PortworxVolume        FSType = "portworxVolume"
@@ -579,8 +579,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/apis/extensions/types.go cascade
  )
  
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/BUILD cascade-kubernetes/pkg/cloudprovider/providers/BUILD
---- kubernetes-1.8.1/pkg/cloudprovider/providers/BUILD	2018-01-23 22:47:25.414819349 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/BUILD	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/pkg/cloudprovider/providers/BUILD	2018-01-31 02:55:29.700980985 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/BUILD	2018-01-31 02:12:47.000000000 +0000
 @@ -11,6 +11,7 @@
      deps = [
          "//pkg/cloudprovider/providers/aws:go_default_library",
@@ -599,7 +599,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/BUILD ca
          "//pkg/cloudprovider/providers/gce:all-srcs",
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/apitypes.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/apitypes.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,224 @@
 +package cascade
 +
@@ -828,8 +828,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/auth.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/auth.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/auth.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/auth.go	2018-01-25 06:19:37.000000000 +0000
-@@ -0,0 +1,129 @@
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/auth.go	2018-01-31 02:12:47.000000000 +0000
+@@ -0,0 +1,145 @@
 +package cascade
 +
 +import (
@@ -841,6 +841,11 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +
 +const (
 +	tScope = "openid offline_access rs_admin_server at_groups rs_vmdir"
++
++	afdCli                     = "/opt/vmware/bin/vmafd-cli"
++	afdCliMachineAccountCmd    = "get-machine-account-info"
++	afdCliPasswordPrefix       = "Password: "
++	afdCliSeparator            = "\n"
 +)
 +
 +// AuthConfig contains configuration information for the authentication client.
@@ -867,20 +872,19 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +}
 +
 +func (c *AuthClient) GetTokensByMachineAccount() (*TokenOptions, error) {
-+	// Execute a lwregshell command which gets the machine account password, trims it and un-escapes it.
-+	cmd := "/opt/likewise/bin/lwregshell list_values '[\\Services\\vmdir]' | grep dcAccountPassword | " +
-+		"awk '{print $NF}' | rev | cut -c2- | rev | cut -c2-"
-+	output, err := exec.Command("bash", "-c", cmd).Output()
++	// Use the VMAFD CLI to get the machine account password
++	cmd := exec.Command(afdCli, afdCliMachineAccountCmd)
++	output, err := cmd.Output()
 +	if err != nil {
 +		glog.Errorf("Cascade Cloud Provider: Failed to get machine account credentials. Cannot create Client.")
 +		return nil, fmt.Errorf("Failed to get machine account credentials, err: %v", err)
 +	}
-+	// Unescape the escaped machine account password. This could not be done as a part of the shell command itself
-+	// because characters like ` are not escaped correctly by Lightwave causing failures while unescaping using shell
-+	// commands like echo or printf. So this is done by the unescape function below which is written based on
-+	// recommendation from the Lightwave team.
-+	escapedPassword := strings.TrimSpace(string(output))
-+	password := unescape(escapedPassword)
++
++	password, err := parseMachineAccountInfo(output)
++	if err != nil {
++		glog.Errorf("Cascade Cloud Provider: Failed to parse machine account credentials. Cannot create Client.")
++		return nil, fmt.Errorf("Failed to parse machine account credentials, err: %v", err)
++	}
 +
 +	return c.GetTokensByCredentials(c.cfg.machineAccountName, password)
 +}
@@ -942,27 +946,39 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	}
 +}
 +
-+// unescape function unescapes an escaped string. It does so by removing a backslash character and keeping the character
-+// following the backslash character.
-+func unescape(input string) string {
-+	var output string
-+	escaped := false
-+	for _, character := range input {
-+		if character == '\\' && !escaped {
-+			escaped = true
-+		} else {
-+			if escaped {
-+				escaped = false
-+			}
-+			output = output + string(character)
-+		}
++// parseMachineAccountInfo parses the machine account password from the machine-account-info output which looks like
++// this:
++//MachineAccount: photon-8rwdscr1.lw-testdom.com
++//Password: FT`])}]d/3\EPwRpz9k1
++func parseMachineAccountInfo(output []byte) (string, error) {
++	if len(output) <= 0 {
++		return "", fmt.Errorf("account info is not specified")
 +	}
-+	return output
++
++	strOut := string(output)
++	strOutLen := len(strOut)
++
++	pwdStart := strings.Index(strOut, afdCliPasswordPrefix)
++	if pwdStart < 0 {
++		return "", fmt.Errorf("account info is not in expected format")
++	}
++	pwdStart = pwdStart + len(afdCliPasswordPrefix)
++	if pwdStart >= strOutLen {
++		return "", fmt.Errorf("account info is not in expected format")
++	}
++	pwdEnd := strings.LastIndex(strOut, afdCliSeparator)
++	if pwdEnd < 0 || pwdEnd <= pwdStart || pwdEnd >= strOutLen {
++		return "", fmt.Errorf("account info is not in expected format")
++	}
++
++	pwd := strOut[pwdStart:pwdEnd]
++
++	return pwd, nil
 +}
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/BUILD cascade-kubernetes/pkg/cloudprovider/providers/cascade/BUILD
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/BUILD	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/BUILD	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/BUILD	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,44 @@
 +package(default_visibility = ["//visibility:public"])
 +
@@ -1010,7 +1026,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +)
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_disks.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_disks.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,197 @@
 +package cascade
 +
@@ -1212,7 +1228,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,216 @@
 +// The use of Cascade cloud provider requires the kubelet, kube-apiserver, and kube-controller-manager to be started
 +// with config flag: '--cloud-provider=cascade --cloud-config=[path_to_config_file]'.
@@ -1433,7 +1449,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_instances.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_instances.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,90 @@
 +package cascade
 +
@@ -1527,7 +1543,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +}
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,283 @@
 +package cascade
 +
@@ -1815,7 +1831,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/client.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/client.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/client.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/client.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/client.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,382 @@
 +package cascade
 +
@@ -2202,7 +2218,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/oidcclient.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/oidcclient.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,297 @@
 +package cascade
 +
@@ -2503,14 +2519,14 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +}
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/OWNERS cascade-kubernetes/pkg/cloudprovider/providers/cascade/OWNERS
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/OWNERS	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/OWNERS	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/OWNERS	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,3 @@
 +maintainers:
 +- ashokc
 +- ysheng
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/restclient.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/restclient.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/restclient.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/restclient.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/restclient.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,262 @@
 +package cascade
 +
@@ -2776,7 +2792,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +}
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/utils.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/utils.go
 --- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/utils.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/utils.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/utils.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,25 @@
 +package cascade
 +
@@ -2805,8 +2821,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +}
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/providers.go cascade-kubernetes/pkg/cloudprovider/providers/providers.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/providers.go	2018-01-23 22:47:25.422819349 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/providers.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/pkg/cloudprovider/providers/providers.go	2018-01-31 02:55:29.700980985 +0000
++++ cascade-kubernetes/pkg/cloudprovider/providers/providers.go	2018-01-31 02:12:47.000000000 +0000
 @@ -20,6 +20,7 @@
  	// Cloud providers
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/aws"
@@ -2816,8 +2832,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/provider
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/printers/internalversion/describe.go cascade-kubernetes/pkg/printers/internalversion/describe.go
---- kubernetes-1.8.1/pkg/printers/internalversion/describe.go	2018-01-23 22:47:25.518819352 +0000
-+++ cascade-kubernetes/pkg/printers/internalversion/describe.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/pkg/printers/internalversion/describe.go	2018-01-31 02:55:29.752980987 +0000
++++ cascade-kubernetes/pkg/printers/internalversion/describe.go	2018-01-31 02:12:47.000000000 +0000
 @@ -764,6 +764,8 @@
  			printFlexVolumeSource(volume.VolumeSource.FlexVolume, w)
  		case volume.VolumeSource.Flocker != nil:
@@ -2851,8 +2867,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/printers/internalversion/describ
  			w.Write(LEVEL_1, "<unknown>\n")
  		}
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/security/podsecuritypolicy/util/util.go cascade-kubernetes/pkg/security/podsecuritypolicy/util/util.go
---- kubernetes-1.8.1/pkg/security/podsecuritypolicy/util/util.go	2018-01-23 22:47:25.558819354 +0000
-+++ cascade-kubernetes/pkg/security/podsecuritypolicy/util/util.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/pkg/security/podsecuritypolicy/util/util.go	2018-01-31 02:55:29.792980988 +0000
++++ cascade-kubernetes/pkg/security/podsecuritypolicy/util/util.go	2018-01-31 02:12:47.000000000 +0000
 @@ -67,6 +67,7 @@
  		string(extensions.Projected),
  		string(extensions.PortworxVolume),
@@ -2872,7 +2888,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/security/podsecuritypolicy/util/
  	return "", fmt.Errorf("unknown volume type for volume: %#v", v)
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go cascade-kubernetes/pkg/volume/cascade_disk/attacher.go
 --- kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/attacher.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/volume/cascade_disk/attacher.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,278 @@
 +package cascade_disk
 +
@@ -3154,7 +3170,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go 
 +}
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/BUILD cascade-kubernetes/pkg/volume/cascade_disk/BUILD
 --- kubernetes-1.8.1/pkg/volume/cascade_disk/BUILD	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/BUILD	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/volume/cascade_disk/BUILD	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,43 @@
 +package(default_visibility = ["//visibility:public"])
 +
@@ -3201,7 +3217,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/BUILD cascad
 +)
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_disk.go cascade-kubernetes/pkg/volume/cascade_disk/cascade_disk.go
 --- kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_disk.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/cascade_disk.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/volume/cascade_disk/cascade_disk.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,391 @@
 +package cascade_disk
 +
@@ -3597,7 +3613,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_disk
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_util.go cascade-kubernetes/pkg/volume/cascade_disk/cascade_util.go
 --- kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_util.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/cascade_util.go	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/volume/cascade_disk/cascade_util.go	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,107 @@
 +package cascade_disk
 +
@@ -3708,13 +3724,13 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_util
 +}
 diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/OWNERS cascade-kubernetes/pkg/volume/cascade_disk/OWNERS
 --- kubernetes-1.8.1/pkg/volume/cascade_disk/OWNERS	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/OWNERS	2018-01-25 06:19:37.000000000 +0000
++++ cascade-kubernetes/pkg/volume/cascade_disk/OWNERS	2018-01-31 02:12:47.000000000 +0000
 @@ -0,0 +1,2 @@
 +maintainers:
 +- ashokc
 diff -uNr --no-dereference kubernetes-1.8.1/plugin/pkg/admission/persistentvolume/label/admission.go cascade-kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go
---- kubernetes-1.8.1/plugin/pkg/admission/persistentvolume/label/admission.go	2018-01-23 22:47:25.566819354 +0000
-+++ cascade-kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/plugin/pkg/admission/persistentvolume/label/admission.go	2018-01-31 02:55:29.812980989 +0000
++++ cascade-kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go	2018-01-31 02:12:47.000000000 +0000
 @@ -31,6 +31,7 @@
  	kubeapiserveradmission "k8s.io/kubernetes/pkg/kubeapiserver/admission"
  	kubeletapis "k8s.io/kubernetes/pkg/kubelet/apis"
@@ -3796,8 +3812,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/plugin/pkg/admission/persistentvolum
 +}
 \ No newline at end of file
 diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/generated.pb.go cascade-kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go
---- kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-01-23 22:47:25.594819355 +0000
-+++ cascade-kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-01-31 02:55:29.880980991 +0000
++++ cascade-kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-01-31 02:12:47.000000000 +0000
 @@ -34,6 +34,7 @@
  		AzureFileVolumeSource
  		Binding
@@ -4167,8 +4183,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/gener
  			iNdEx = preIndex
  			skippy, err := skipGenerated(dAtA[iNdEx:])
 diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/types.go cascade-kubernetes/staging/src/k8s.io/api/core/v1/types.go
---- kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/types.go	2018-01-23 22:47:25.594819355 +0000
-+++ cascade-kubernetes/staging/src/k8s.io/api/core/v1/types.go	2018-01-25 06:19:37.000000000 +0000
+--- kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/types.go	2018-01-31 02:55:29.880980991 +0000
++++ cascade-kubernetes/staging/src/k8s.io/api/core/v1/types.go	2018-01-31 02:12:47.000000000 +0000
 @@ -350,6 +350,8 @@
  	// StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
  	// +optional
