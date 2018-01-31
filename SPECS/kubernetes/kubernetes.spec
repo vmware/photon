@@ -9,7 +9,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.8.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -193,6 +193,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+*   Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-6
+-   Fix password issue in cascade cloud provider.
 *   Tue Jan 23 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-5
 -   Add Cascade cloud provider.
 *   Wed Nov 15 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.1-4
