@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.1
-Release:       7%{?dist}
+Release:       8%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -18,6 +18,8 @@ Patch2:        socket_logging.patch
 Patch3:        errno_init.patch
 Patch4:        ssl_shutdown.patch
 Patch5:        minimal_request_logging.patch
+Patch6:        connection_timeout.patch
+Patch7:        reqLine_parsing_check.patch
 %define sha1   c-rest-engine=a25927fd98ec92df5e210cc4941fa626604636f6
 
 %description
@@ -42,6 +44,9 @@ development libs and header files for c-rest-engine
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
+
 
 %build
 cd build
@@ -74,6 +79,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed Jan 31 2018 Kumar Kaushik <kaushikk@vmware.com> 1.1-8
+-  Fixing timeout connection cleanup issue.
 *  Fri Dec 15 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-7
 -  Adding patch for minimal packet level logging.
 *  Wed Nov 29 2017 Kumar Kaushik <kaushikk@vmware.com> 1.1-6
