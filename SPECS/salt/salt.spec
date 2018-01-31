@@ -35,6 +35,8 @@ Requires: dmidecode
 %endif
 
 Requires: pciutils
+Requires: python-backports_abc
+Requires: python-singledispatch
 
 
 BuildRequires: python2-devel
