@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.114
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -55,6 +55,34 @@ Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 Patch68: 0170-x86-syscall-Clear-unused-extra-registers-on-32-bit-c.patch
+# Hyper-V patches
+Patch101: 0016-drivers-hv-Define-the-channel-type-for-Hyper-V-PCI-E.patch
+Patch102: 0017-Drivers-hv-vmbus-Use-uuid_le-type-consistently.patch
+Patch103: 0018-Drivers-hv-vmbus-Use-uuid_le_cmp-for-comparing-GUIDs.patch
+Patch104: 0019-Drivers-hv-vmbus-do-sanity-check-of-channel-state-in.patch
+Patch105: 0020-Drivers-hv-vmbus-release-relid-on-error-in-vmbus_pro.patch
+Patch106: 0021-Drivers-hv-vmbus-channge-vmbus_connection.channel_lo.patch
+Patch107: 0022-Drivers-hv-remove-code-duplication-between-vmbus_rec.patch
+Patch108: 0023-Drivers-hv-vmbus-fix-the-building-warning-with-hyper.patch
+Patch109: 0024-Drivers-hv-vmbus-Treat-Fibre-Channel-devices-as-perf.patch
+Patch110: 0025-Drivers-hv-vmbus-Add-vendor-and-device-atttributes.patch
+Patch111: 0026-Drivers-hv-vmbus-add-a-helper-function-to-set-a-chan.patch
+Patch112: 0027-Drivers-hv-vmbus-define-the-new-offer-type-for-Hyper.patch
+Patch113: 0028-Drivers-hv-vmbus-vmbus_sendpacket_ctl-hvsock-avoid-u.patch
+Patch114: 0029-Drivers-hv-vmbus-define-a-new-VMBus-message-type-for.patch
+Patch115: 0030-Drivers-hv-vmbus-add-a-hvsock-flag-in-struct-hv_driv.patch
+Patch116: 0031-Drivers-hv-vmbus-add-a-per-channel-rescind-callback.patch
+Patch117: 0032-Drivers-hv-vmbus-add-an-API-vmbus_hvsock_device_unre.patch
+Patch118: 0033-Drivers-hv-vmbus-Give-control-over-how-the-ring-acce.patch
+Patch119: 0034-Drivers-hv-vmbus-avoid-wait_for_completion-on-crash.patch
+Patch120: 0035-Drivers-hv-vmbus-avoid-unneeded-compiler-optimizatio.patch
+Patch121: 0036-kcm-Kernel-Connection-Multiplexor-module.patch
+Patch122: 0037-net-add-the-AF_KCM-entries-to-family-name-tables.patch
+Patch123: 0038-net-Add-Qualcomm-IPC-router.patch
+Patch124: 0039-hv_sock-introduce-Hyper-V-Sockets.patch
+Patch125: 0040-net-add-the-AF_HYPERV-entries-to-family-name-tables.patch
+Patch126: 0041-Drivers-hv-vmbus-fix-the-race-when-querying-updating.patch
+Patch127: 0042-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -165,6 +193,34 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
+%patch115 -p1
+%patch116 -p1
+%patch117 -p1
+%patch118 -p1
+%patch119 -p1
+%patch120 -p1
+%patch121 -p1
+%patch122 -p1
+%patch123 -p1
+%patch124 -p1
+%patch125 -p1
+%patch126 -p1
+%patch127 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -321,6 +377,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.114-2
+-   Add Hyper-V Sockets (hv_sock) and related patches.
 *   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.114-1
 -   Update version to 4.4.114
 *   Fri Jan 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.113-1
