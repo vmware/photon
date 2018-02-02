@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.9.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -25,9 +25,9 @@ BuildRequires:  serf-devel
 %description
 The Apache version control system.
 
-%package    devel
-Summary:    Header and development files for mesos
-Requires:   %{name} = %{version}
+%package        devel
+Summary:        Header and development files for mesos
+Requires:       %{name} = %{version}
 %description    devel
  subversion-devel package contains header files, libraries.
 
@@ -46,19 +46,24 @@ make %{?_smp_mflags}
 %install
 make -j1 DESTDIR=%{buildroot} install
 %find_lang %{name}
+find %{buildroot}/%{_libdir} -name '*.la' -delete
+
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/svn*
 %{_libdir}/libsvn_*.so.*
-%{_datadir}/*
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man8/*
 
 %files devel
 %{_includedir}/*
-%{_libdir}/libsvn_*.*a
 %{_libdir}/libsvn_*.so
-%exclude %{_libdir}/debug/
+%{_datadir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Feb 01 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-6
+-   Move pkgconfig files to devel package.
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-5
 -   Compile subversion with https repository access module support
 *   Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-4
