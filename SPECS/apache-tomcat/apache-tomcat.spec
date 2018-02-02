@@ -1,24 +1,24 @@
-Summary:	Apache Tomcat
-Name:		apache-tomcat
-Version:	8.5.24
-Release:	1%{?dist}
-License:	Apache
-URL:		http://tomcat.apache.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        Apache Tomcat
+Name:           apache-tomcat
+Version:        8.5.27
+Release:        1%{?dist}
+License:        Apache
+URL:            http://tomcat.apache.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1 apache-tomcat=b0c5990ffae5aa93030db3b3686c2f2eb0e2ff22
+Source0:        http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
+%define sha1    apache-tomcat=a538079e9302ca91092923af3ac578d2b391b3f6
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=1b2ff4a09eed70f568e92b44157b69f5691e148d
+%define sha1    base=1976f76c251d3e249830ad1c290fbed7c07f4ebf
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-BuildRequires: openjre8
-BuildRequires: openjdk8
-BuildRequires: apache-ant
-Requires: openjre8
-Requires: apache-ant
+BuildRequires:  openjre8
+BuildRequires:  openjdk8
+BuildRequires:  apache-ant
+Requires:       openjre8
+Requires:       apache-ant
 
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Fri Feb 02 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.27-1
+-   Upgraded to version 8.5.27
 *   Thu Dec 21 2017 Anish Swaminathan <anishs@vmware.com> 8.5.24-1
 -   Upgraded to version 8.5.24
 *   Mon Oct 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.5.23-2
@@ -134,4 +136,4 @@ rm -rf %{buildroot}/*
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
 -   Updated dependency after repackaging openjdk. 
 *   Wed Jul 8 2015 Sriram Nambakam <snambakam@vmware.com> 7.0.63
--   Initial build.	First version
+-   Initial build.  First version
