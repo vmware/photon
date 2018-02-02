@@ -14,5 +14,5 @@ for spec in $specs; do
 	sed -i '/^Version:/ s/4.9.[0-9]*/'$version'/' SPECS/$spec
 	sed -i '/^Release:/ s/[0-9]*%/1%/' SPECS/$spec
 	sed -i '/^%define sha1 linux/ s/=[0-9a-f]*$/='$sha1'/' SPECS/$spec
-	sed -i '/^%changelog/a*   '"$changelog_entry"'\n-   Update version to '"$version"'' SPECS/$spec
+	sed -i '/^%changelog/a*   '"$changelog_entry"'\n-   Update to version '"$version"'' SPECS/$spec
 done
