@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name,missing-docstring
 import subprocess
 import os
 
@@ -30,12 +31,11 @@ class CommandUtils(object):
             cmd = chrootCmd + " " + cmd
         if logfilePath is None:
             logfilePath = os.devnull
-        logfile = open(logfilePath, "w")
-        process = subprocess.Popen("%s" %cmd, shell=True, stdout=logfile, stderr=logfile)
-        retval = process.wait()
-        logfile.close()
-        if retval == 0:
-            return True
+        with open(logfilePath, "w") as logfile:
+            process = subprocess.Popen("%s" %cmd, shell=True, stdout=logfile, stderr=logfile)
+            retval = process.wait()
+            if retval == 0:
+                return True
         return False
     @staticmethod
     def runCommandInShell2(cmd, chrootCmd=None):

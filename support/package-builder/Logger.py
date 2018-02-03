@@ -12,7 +12,7 @@ class Logger(object):
         if resetFile:
             open(logfile, 'w').close()
         logger = logging.getLogger(mymodule)
-        if len(logger.handlers) == 0:
+        if not logger.handlers:
             #creating file handler
             fhandler = logging.FileHandler(logfile)
             # create console handler
