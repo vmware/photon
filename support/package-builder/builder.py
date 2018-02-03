@@ -7,6 +7,7 @@ import collections
 import traceback
 import sys
 import json
+import copy
 from CommandUtils import CommandUtils
 from Logger import Logger
 from constants import constants
@@ -187,7 +188,7 @@ def buildAPackage(package, buildThreads, pkgBuildType):
     listPackages = [package]
     pkgManager = PackageManager(pkgBuildType=pkgBuildType)
     if constants.rpmCheck:
-        constants.setTestForceRPMS(listPackages[:])
+        constants.setTestForceRPMS(copy.copy(listPackages))
     pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
 
 
@@ -197,7 +198,7 @@ def buildPackagesForAllSpecs(logger, buildThreads, pkgInfoJsonFile, pkgBuildType
     logger.info("List of packages to build:")
     logger.info(listPackages)
     if constants.rpmCheck:
-        constants.setTestForceRPMS(listPackages[:])
+        constants.setTestForceRPMS(copy.copy(listPackages))
     pkgManager = PackageManager(pkgBuildType=pkgBuildType)
     pkgManager.buildPackages(listPackages, buildThreads, pkgBuildType)
 
@@ -216,18 +217,17 @@ def get_packages_with_build_options(pkg_build_options_file):
 
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)
-    jsonData = open(build_install_option)
-    option_list_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
-    jsonData.close()
-    options_sorted = option_list_json.items()
     packages = []
 
-    for install_option in options_sorted:
-        filename = os.path.join(base_path, install_option[1]["file"])
-        jsonData = open(filename)
-        package_list_json = json.load(jsonData)
-        jsonData.close()
-        packages = packages + package_list_json["packages"]
+    with open(build_install_option) as jsonData:
+        option_list_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+        options_sorted = option_list_json.items()
+
+        for install_option in options_sorted:
+            filename = os.path.join(base_path, install_option[1]["file"])
+            with open(filename) as pkgJsonData:
+                package_list_json = json.load(pkgJsonData)
+            packages = packages + package_list_json["packages"]
 
     return packages
 

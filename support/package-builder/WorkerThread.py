@@ -6,13 +6,12 @@ import ThreadPool
 
 class WorkerThread(threading.Thread):
 
-    def __init__(self, event, name, mapPackageToCycle, listAvailableCyclicPackages, logger,
+    def __init__(self, event, name, mapPackageToCycle, logger,
                  pkgBuildType):
         threading.Thread.__init__(self)
         self.statusEvent = event
         self.name = name
         self.mapPackageToCycle = mapPackageToCycle
-        self.listAvailableCyclicPackages = listAvailableCyclicPackages
         self.logger = logger
         self.pkgBuildType = pkgBuildType
 
@@ -21,30 +20,27 @@ class WorkerThread(threading.Thread):
         ThreadPool.ThreadPool.makeWorkerThreadActive(self.name)
         self.logger.info("Thread " + self.name + " is starting now")
         while True:
-            outputMap = {}
             pkg = Scheduler.Scheduler.getNextPackageToBuild()
             if pkg is None:
                 break
             self.logger.info("Thread " + self.name + " is building package:" + pkg)
             if self.pkgBuildType == "chroot":
                 pkgBuilder = PackageBuilderChroot(self.mapPackageToCycle,
-                                                  self.listAvailableCyclicPackages,
                                                   self.pkgBuildType)
             elif self.pkgBuildType == "container":
                 pkgBuilder = PackageBuilderContainer(self.mapPackageToCycle,
-                                                     self.listAvailableCyclicPackages,
                                                      self.pkgBuildType)
-            pkgBuilder.buildPackageFunction(pkg, outputMap, pkg)
-            if pkg not in outputMap or outputMap[pkg] == False:
+            try:
+                pkgBuilder.buildPackageFunction(pkg)
+            except Exception as e:
+                self.logger.exception(e)
                 buildThreadFailed = True
                 Scheduler.Scheduler.notifyPackageBuildFailed(pkg)
-                self.logger.info("Thread "+self.name +" stopped building package:" + pkg)
+                self.logger.info("Thread " + self.name + " stopped building package:" + pkg)
+                self.statusEvent.set()
                 break
-            self.logger.info("Thread "+ self.name + " finished building package:" + pkg)
+            self.logger.info("Thread " + self.name + " finished building package:" + pkg)
             Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)
 
-        if buildThreadFailed:
-            self.statusEvent.set()
-
         ThreadPool.ThreadPool.makeWorkerThreadInActive(self.name)
-        self.logger.info("Thread "+self.name +" is going to rest")
+        self.logger.info("Thread " + self.name + " is going to rest")
