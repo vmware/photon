@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-
+# pylint: disable=invalid-name,missing-docstring
 import os
 import json
 import sys
 import traceback
-from Logger import Logger
 from argparse import ArgumentParser
+from Logger import Logger
 from constants import constants
 from CommandUtils import CommandUtils
 from SpecData import SPECS
@@ -15,14 +15,22 @@ from SpecData import SPECS
 def main():
     usage = "Usage: %prog [options] <package name>"
     parser = ArgumentParser(usage)
-    parser.add_argument("-s", "--spec-path", dest="specPath", default="../../SPECS")
-    parser.add_argument("-l", "--log-path", dest="logPath", default="../../stage/LOGS")
-    parser.add_argument("-a", "--source-rpm-path", dest="sourceRpmPath", default="../../stage/SRPMS")
-    parser.add_argument("-j", "--output-dir", dest="outputDirPath", default="../../stage/")
-    parser.add_argument("-c", "--pullsources-config", dest="pullsourcesConfig", default="pullsources.conf")
-    parser.add_argument("-f", "--pkg-blacklist-file", dest="pkgBlacklistFile", default=None)
-    parser.add_argument("-p", "--generate-pkg-list", dest="generatePkgList", default=False, action="store_true")
-    parser.add_argument("-y", "--generate-yaml-files", dest="generateYamlFiles", default=False, action="store_true")
+    parser.add_argument("-s", "--spec-path", dest="specPath",
+                        default="../../SPECS")
+    parser.add_argument("-l", "--log-path", dest="logPath",
+                        default="../../stage/LOGS")
+    parser.add_argument("-a", "--source-rpm-path", dest="sourceRpmPath",
+                        default="../../stage/SRPMS")
+    parser.add_argument("-j", "--output-dir", dest="outputDirPath",
+                        default="../../stage/")
+    parser.add_argument("-c", "--pullsources-config", dest="pullsourcesConfig",
+                        default="pullsources.conf")
+    parser.add_argument("-f", "--pkg-blacklist-file", dest="pkgBlacklistFile",
+                        default=None)
+    parser.add_argument("-p", "--generate-pkg-list", dest="generatePkgList",
+                        default=False, action="store_true")
+    parser.add_argument("-y", "--generate-yaml-files", dest="generateYamlFiles",
+                        default=False, action="store_true")
 
     options = parser.parse_args()
     errorFlag = False
@@ -37,7 +45,8 @@ def main():
             if (options.pkgBlacklistFile is not None and
                     options.pkgBlacklistFile != "" and
                     not os.path.isfile(options.pkgBlacklistFile)):
-                logger.error("Given package blacklist file is not valid:" + options.pkgBlacklistFile)
+                logger.error("Given package blacklist file is not valid:"
+                             + options.pkgBlacklistFile)
                 errorFlag = True
 
         if not os.path.isdir(options.specPath):
@@ -49,7 +58,8 @@ def main():
             errorFlag = True
 
         if options.generateYamlFiles and not os.path.isfile(options.pullsourcesConfig):
-            logger.error("Given Source config file is not a valid file:" + options.pullsourcesConfig)
+            logger.error("Given Source config file is not a valid file:"
+                         + options.pullsourcesConfig)
             errorFlag = True
 
         if errorFlag:
@@ -77,7 +87,7 @@ def main():
             buildSRPMList(options.sourceRpmPath, options.outputDirPath, blackListPkgs, logger)
 
     except Exception as e:
-        print("Caught Exception: "+str(e))
+        print("Caught Exception: " + str(e))
         traceback.print_exc()
         sys.exit(1)
 
@@ -85,26 +95,25 @@ def main():
 
 
 def buildPackagesList(csvFilename):
-    csvFile = open(csvFilename, "w")
-    csvFile.write("Package,Version,License,URL,Sources,Patches\n")
-    listPackages = SPECS.getData().getListPackages()
-    listPackages.sort()
-    for package in listPackages:
-        name = package
-        version = SPECS.getData().getVersion(package)
-        license = SPECS.getData().getLicense(package)
-        listPatches = SPECS.getData().getPatches(package)
-        url = SPECS.getData().getURL(package)
-        listSourceNames = SPECS.getData().getSources(package)
-        sources = ""
-        patches = ""
-        if listPatches is not None:
-            patches = " ".join(listPatches)
-        if listSourceNames is not None:
-            sources = " ".join(listSourceNames)
-        csvFile.write(name + "," + version + "," + license + "," + url + "," + sources + "," + patches + "\n")
-    csvFile.close()
-
+    with open(csvFilename, "w") as csvFile:
+        csvFile.write("Package,Version,License,URL,Sources,Patches\n")
+        listPackages = SPECS.getData().getListPackages()
+        listPackages.sort()
+        for package in listPackages:
+            name = package
+            version = SPECS.getData().getVersion(package)
+            packagelicense = SPECS.getData().getLicense(package)
+            listPatches = SPECS.getData().getPatches(package)
+            url = SPECS.getData().getURL(package)
+            listSourceNames = SPECS.getData().getSources(package)
+            sources = ""
+            patches = ""
+            if listPatches is not None:
+                patches = " ".join(listPatches)
+            if listSourceNames is not None:
+                sources = " ".join(listSourceNames)
+            csvFile.write(name + "," + version + "," + packagelicense + "," + url + "," +
+                          sources + "," + patches + "\n")
 
 def readBlackListPackages(pkgBlackListFile):
     blackListPkgs = []
@@ -133,7 +142,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
         ossversion = SPECS.getData().getVersion(package)
         modified = False
         listPatches = SPECS.getData().getPatches(package)
-        if listPatches is not None and len(listPatches) > 0:
+        if listPatches:
             modified = True
         url = SPECS.getData().getSourceURL(package)
         if url is None:
@@ -141,7 +150,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
 
         sourceName = None
         listSourceNames = SPECS.getData().getSources(package)
-        if len(listSourceNames) > 0:
+        if listSourceNames:
             sourceName = listSourceNames[0]
             sha1 = SPECS.getData().getSHA1(package, sourceName)
             if sha1 is not None:
@@ -185,7 +194,8 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
         ossversion = SPECS.getData().getVersion(package)
         ossrelease = SPECS.getData().getRelease(package)
 
-        listFoundSRPMFiles = cmdUtils.findFile(ossname + "-" + ossversion + "-" + ossrelease + ".src.rpm",
+        listFoundSRPMFiles = cmdUtils.findFile(ossname + "-" + ossversion + "-" + ossrelease
+                                               + ".src.rpm",
                                                srpmPath)
         srpmName = None
         if len(listFoundSRPMFiles) == 1:
@@ -199,7 +209,8 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
             logger.error("SRPM file is not found:" + ossname)
 
         if not singleFile:
-            yamlFile = open(yamlSrpmDir + "/" + ossname + "-" + ossversion + "-" + ossrelease + ".yaml", "w")
+            yamlFile = open(yamlSrpmDir + "/" + ossname + "-" + ossversion + "-"
+                            + ossrelease + ".yaml", "w")
 
         yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + ossrelease + ":\n")
         yamlFile.write("  repository: BaseOS\n")
