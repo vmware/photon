@@ -10,10 +10,10 @@ Subject: [PATCH] Patch from Clear Linux
  mm/vmstat.c                   | 2 +-
  4 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
 index 4db10d7990c9..1f84959cc87e 100644
---- a/drivers/video/console/fbcon.c
-+++ b/drivers/video/console/fbcon.c
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
 @@ -146,7 +146,7 @@ static const struct consw fb_con;
  
  static int fbcon_set_origin(struct vc_data *);
@@ -28,14 +28,14 @@ index f6a816129856..f4fb458a91dd 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -39,7 +39,7 @@ struct blk_flush_queue;
- struct pr_ops;
+ struct blk_stat_callback;
  
  #define BLKDEV_MIN_RQ	4
 -#define BLKDEV_MAX_RQ	128	/* Default maximum */
 +#define BLKDEV_MAX_RQ	4096	/* Default maximum */
  
- /*
-  * Maximum number of blkcg policies allowed to be registered concurrently.
+ /* Must be consisitent with blk_mq_poll_stats_bkt() */
+ #define BLK_MQ_POLL_STATS_BKTS 16
 diff --git a/init/do_mounts.c b/init/do_mounts.c
 index dea5de95c2dd..da840946d90b 100644
 --- a/init/do_mounts.c
@@ -63,8 +63,8 @@ index 604f26a4f696..bfbbcd76df57 100644
 --- a/mm/vmstat.c
 +++ b/mm/vmstat.c
 @@ -1549,7 +1549,7 @@ static const struct file_operations proc_vmstat_file_operations = {
+ 
  #ifdef CONFIG_SMP
- static struct workqueue_struct *vmstat_wq;
  static DEFINE_PER_CPU(struct delayed_work, vmstat_work);
 -int sysctl_stat_interval __read_mostly = HZ;
 +int sysctl_stat_interval __read_mostly = 8 * HZ;

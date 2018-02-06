@@ -55,7 +55,7 @@ index d266d800f246..11544ddd6e5c 100644
 +int __pci_read_base_shortcut(struct pci_dev *dev, enum pci_bar_type type,
 +		    struct resource *res, unsigned int pos, u32 sz_in, u32 sz2_in)
 +{
-+	u32 l, sz;
++	u32 l = 0, sz = 0;
 +	u64 l64, sz64, mask64;
 +	struct pci_bus_region region, inverted_region;
 +
@@ -97,7 +97,7 @@ index d266d800f246..11544ddd6e5c 100644
 +			res->flags |= IORESOURCE_ROM_ENABLE;
 +		l64 = l & PCI_ROM_ADDRESS_MASK;
 +		sz64 = sz & PCI_ROM_ADDRESS_MASK;
-+		mask64 = (u32)PCI_ROM_ADDRESS_MASK;
++		mask64 = PCI_ROM_ADDRESS_MASK;
 +	}
 +
 +	if (res->flags & IORESOURCE_MEM_64) {
@@ -120,7 +120,7 @@ index d266d800f246..11544ddd6e5c 100644
 +	}
 +
 +	if (res->flags & IORESOURCE_MEM_64) {
-+		if ((sizeof(dma_addr_t) < 8 || sizeof(resource_size_t) < 8) &&
++		if ((sizeof(pci_bus_addr_t) < 8 || sizeof(resource_size_t) < 8) &&
 +		    sz64 > 0x100000000ULL) {
 +			res->flags |= IORESOURCE_UNSET | IORESOURCE_DISABLED;
 +			res->start = 0;
@@ -130,7 +130,7 @@ index d266d800f246..11544ddd6e5c 100644
 +			goto out;
 +		}
 +
-+		if ((sizeof(dma_addr_t) < 8) && l) {
++		if ((sizeof(pci_bus_addr_t) < 8) && l) {
 +			/* Above 32-bit boundary; try to reallocate */
 +			res->flags |= IORESOURCE_UNSET;
 +			res->start = 0;
@@ -391,8 +391,8 @@ index d266d800f246..11544ddd6e5c 100644
  int __pci_read_base(struct pci_dev *dev, enum pci_bar_type type,
  		    struct resource *res, unsigned int pos)
  {
--	u32 l, sz, mask;
-+	u32 l, sz, known_sz, mask;
+-	u32 l = 0, sz = 0, mask;
++	u32 l = 0, sz = 0, known_sz, mask;
  	u64 l64, sz64, mask64;
  	u16 orig_cmd;
  	struct pci_bus_region region, inverted_region;
