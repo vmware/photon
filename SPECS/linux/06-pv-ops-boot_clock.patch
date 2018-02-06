@@ -40,15 +40,15 @@ index 0f400c0e4979..5f09979f612d 100644
 +# define timespec64 timespec
 +#endif
 +struct timespec64;
+ struct flush_tlb_info;
  
  /*
-  * Wrapper type for pointers to code which uses the non-standard
 @@ -96,6 +100,7 @@ struct pv_lazy_ops {
  struct pv_time_ops {
  	unsigned long long (*sched_clock)(void);
  	unsigned long long (*steal_clock)(int cpu);
 +	void (*read_boot_clock64)(struct timespec64 *ts);
- };
+ } __no_randomize_layout;
  
  struct pv_cpu_ops {
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
