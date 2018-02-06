@@ -15,9 +15,9 @@ index 4eece91ada37..5b8e45f48bf3 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1089,7 +1089,9 @@ static void identify_cpu(struct cpuinfo_x86 *c)
+ 	detect_ht(c);
  #endif
  
- 	init_hypervisor(c);
 +#if 0 /* disable rdrand probbing */
  	x86_init_rdrand(c);
 +#endif
@@ -54,8 +54,8 @@ index 0e1fc6e17efc..59e2cc6a70d2 100644
  #include <linux/cpu.h>
  #include <linux/kmsg_dump.h>
 @@ -378,6 +379,10 @@ static void __init vmware_platform_setup(void)
+ 	vmware_set_capabilities();
  
- 	vmware_paravirt_ops_setup();
  	kmsg_dump_register(&kmsg_dumper);
 +#ifdef CONFIG_PCI
 +	/* PCI BIOS service won't work from a PV guest. */

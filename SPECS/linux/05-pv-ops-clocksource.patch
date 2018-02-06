@@ -15,9 +15,9 @@ index 70b8c4614e22..987ac571d16c 100644
  	pr_info("using clock offset of %llu ns\n", d->cyc2ns_offset);
  }
  
-+static cycle_t vmware_clock_get_cycles(struct clocksource *cs)
++static u64 vmware_clock_get_cycles(struct clocksource *cs)
 +{
-+	return (cycle_t)rdtsc_ordered();
++	return (u64)rdtsc_ordered();
 +}
 +
 +static struct clocksource clocksource_vmware = {
