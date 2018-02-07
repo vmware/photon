@@ -5,9 +5,9 @@ class MiscUtils(object):
     @staticmethod
     def isOutdated(listInputFiles, listOutputFiles):
         thresholdTimeStamp = None
-        if len(listInputFiles) == 0:
+        if not listInputFiles:
             return False
-        if len(listOutputFiles) == 0:
+        if not listOutputFiles:
             return True
         for f in listOutputFiles:
             t = os.path.getmtime(f)
@@ -31,6 +31,6 @@ class MiscUtils(object):
                 MiscUtils.getListSpecFiles(listSpecFiles, dirEntryPath)
 
 if __name__ == "__main__":
-    listInputFiles = ["SpecParser.py", "Logger.py"]
-    listOutputFiles = ["builder.py"]
-    print(MiscUtils.isOutdated(listInputFiles, listOutputFiles))
+    inputFiles = ["SpecParser.py", "Logger.py"]
+    outputFiles = ["builder.py"]
+    print(MiscUtils.isOutdated(inputFiles, outputFiles))

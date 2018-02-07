@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name,missing-docstring
 import os.path
 from Logger import Logger
 from CommandUtils import CommandUtils

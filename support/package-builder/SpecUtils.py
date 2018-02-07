@@ -1,4 +1,4 @@
-import platform
+# pylint: disable=invalid-name,missing-docstring
 import os
 from SpecParser import SpecParser
 from StringUtils import StringUtils
@@ -8,11 +8,12 @@ class Specutils(object):
     def __init__(self, specfile):
         self.specfile = ""
         self.spec = SpecParser()
-        if self.isSpecFile(specfile):
+        if Specutils._isSpecFile(specfile):
             self.specfile = specfile
             self.spec.parseSpecFile(self.specfile)
 
-    def isSpecFile(self, specfile):
+    @staticmethod
+    def _isSpecFile(specfile):
         if os.path.isfile(specfile) and specfile.endswith(".spec"):
             return True
         return False
@@ -31,20 +32,6 @@ class Specutils(object):
     def getChecksums(self):
         pkg = self.spec.packages.get('default')
         return pkg.checksums
-
-    def getChecksumForSource(self, source):
-        pkg = self.spec.packages.get('default')
-        return pkg.checksums.get(source)
-
-    def getSourceURLs(self):
-        sourceNames = []
-        strUtils = StringUtils()
-        pkg = self.spec.packages.get('default')
-        if pkg is None:
-            return None
-        for source in pkg.sources:
-            sourceNames.append(source)
-        return sourceNames
 
     def getPatchNames(self):
         patchNames = []
@@ -80,32 +67,7 @@ class Specutils(object):
             rpmNames.append(rpmName)
         return rpmNames
 
-    def getRPMName(self, pkgName):
-        rpmName = None
-        for pkg in self.spec.packages.values():
-            if pkg.name == pkgName:
-                rpmName = pkg.name + "-" + pkg.version + "-" + pkg.release
-                break
-        return rpmName
-
-    def getRPMVersion(self, pkgName):
-        version = None
-        for pkg in self.spec.packages.values():
-            if pkg.name == pkgName:
-                version = pkg.version
-                break
-        return version
-
-    def getRPMRelease(self, pkgName):
-        release = None
-        for pkg in self.spec.packages.values():
-            if pkg.name == pkgName:
-                release = pkg.release
-                break
-        return release
-
     def getLicense(self):
-        licenseInfo = None
         pkg = self.spec.packages.get('default')
         if pkg is None:
             return None
@@ -121,20 +83,12 @@ class Specutils(object):
         pkg = self.spec.packages.get('default')
         if pkg is None:
             return None
-        if len(pkg.sources) == 0:
+        if not pkg.sources:
             return None
         sourceURL = pkg.sources[0]
         if sourceURL.startswith("http") or sourceURL.startswith("ftp"):
             return sourceURL
         return None
-
-    def getBuildArch(self, pkgName):
-        buildArch = platform.machine()
-        for pkg in self.spec.packages.values():
-            if pkg.name == pkgName:
-                buildArch = pkg.buildarch
-                break
-        return buildArch
 
     def getRequiresAllPackages(self):
         dependentPackages = []
@@ -173,14 +127,6 @@ class Specutils(object):
         for pkg in self.spec.packages.values():
             if pkg.name == pkgName:
                 for dpkg in pkg.requires:
-                    dependentPackages.append(dpkg.package)
-        return dependentPackages
-
-    def getBuildRequires(self, pkgName):
-        dependentPackages = []
-        for pkg in self.spec.packages.values():
-            if pkg.name == pkgName:
-                for dpkg in pkg.buildrequires:
                     dependentPackages.append(dpkg.package)
         return dependentPackages
 
