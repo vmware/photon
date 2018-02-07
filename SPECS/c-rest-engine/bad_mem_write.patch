@@ -1,0 +1,158 @@
+From 4c271a2f34167495ed82da3e7ada52f4808fe121 Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Tue, 6 Feb 2018 16:51:09 -0800
+Subject: [PATCH] Fixing bad memory write bug
+
+Change-Id: I483b13d2b2f99be7ebbbc77ed4f2dbf41aa7f580
+---
+ test/scripts/BUGS_TC/BUG-2052415/README       | 41 ++++++++++++++
+ test/scripts/BUGS_TC/BUG-2052415/restclient.c | 79 +++++++++++++++++++++++++++
+ transport/posix/socket.c                      |  1 +
+ 3 files changed, 121 insertions(+)
+ create mode 100644 test/scripts/BUGS_TC/BUG-2052415/README
+ create mode 100644 test/scripts/BUGS_TC/BUG-2052415/restclient.c
+
+diff --git a/test/scripts/BUGS_TC/BUG-2052415/README b/test/scripts/BUGS_TC/BUG-2052415/README
+new file mode 100644
+index 0000000..814a32a
+--- /dev/null
++++ b/test/scripts/BUGS_TC/BUG-2052415/README
+@@ -0,0 +1,41 @@
++Bugzilla Id: 2052415
++
++Category: Catastrophic/Crash 
++
++Description:
++Server crash observed when client opens number of connection and times out. No data is sent.
++
++Step to reproduce:
++
++Specific configuration:
++1. Worker threads count 2.
++2. No Secure connection required.
++
++
++Start server( Keep it running ) 
++Refer RUN-SIMPLE-SERVER doc in test/scripts directory. (TODO)
++
++Open terminal on Ubuntu VM( or any other distro)
++1. Wget the source file from the same directory (restclient.c)
++2. Edit SERVER_IP and SERVER_PORT macro in the source file to your server.
++3. Compile the downloaded client source (gcc -o restclient restclient.c)
++4. Install "parallel" on the Ubuntu distro
++5. Run following command
++   "seq 0 100 | parallel -j50 ./restclient"
++
++
++Server will crash. This might take anything between couple of second to 10-15 mins.
++
++
++ROOT CAUSE:
++Bad memory write happened for back pointer reference for timer socket which was already freed.
++This was reported by valgrind also.
++
++Fix:
++Setting appropiate back pointer to NULL at right place.
++
++
++Test:
++Ran the same test for serveral hours. No crash seen.
++Ran under valgrind, no bad write reported.
++All c-rest-engine BVT
+diff --git a/test/scripts/BUGS_TC/BUG-2052415/restclient.c b/test/scripts/BUGS_TC/BUG-2052415/restclient.c
+new file mode 100644
+index 0000000..a352055
+--- /dev/null
++++ b/test/scripts/BUGS_TC/BUG-2052415/restclient.c
+@@ -0,0 +1,79 @@
++/**************************************************************************
++* This test client will open connection to server but will not send any
++* data. This will make server to timeout and execute the timeout code
++* path. Please refer README in the same folder for more information 
++**************************************************************************/ 
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <errno.h>
++#include <string.h>
++#include <netdb.h>
++#include <sys/types.h>
++#include <netinet/in.h>
++#include <sys/socket.h>
++#include <arpa/inet.h>
++#include <fcntl.h>
++
++/************** EDIT THIS **************/
++
++#define  SERVER_IP     "172.16.127.131"
++#define  SERVER_PORT   "81"
++
++/***************************************/
++
++
++#define MAXDATASIZE 4096
++
++
++int main(int argc, char *argv[])
++{
++    int sockfd = -1;
++    int nBytes = 0;
++    char buf[MAXDATASIZE] = {0};
++    struct addrinfo hints, *servinfo, *p;
++    int rv;
++    char s[INET6_ADDRSTRLEN];
++
++again:
++    memset(&hints, 0, sizeof(hints));
++    hints.ai_family = AF_UNSPEC;
++    hints.ai_socktype = SOCK_STREAM;
++
++    if ((rv = getaddrinfo(SERVER_IP, SERVER_PORT, &hints, &servinfo)) != 0) {
++        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
++        return 1;
++    }
++
++    for(p = servinfo; p != NULL; p = p->ai_next) {
++        if ((sockfd = socket(p->ai_family, p->ai_socktype,
++                p->ai_protocol)) == -1) {
++            perror("client: socket");
++            continue;
++        }
++
++        if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
++            close(sockfd);
++            perror("client: connect");
++            continue;
++        }
++
++        break;
++    }
++
++    if (p == NULL) {
++        printf("client: failed to connect\n");
++        return 2;
++    }
++
++    freeaddrinfo(servinfo);
++
++    nBytes = read(sockfd, buf, MAXDATASIZE);
++
++    close(sockfd);
++    goto again;
++
++    return 0;
++
++}
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index 207075b..ec7ed3d 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -661,6 +661,7 @@ VmSockPosixWaitForEvent(
+                                            );
+                         }
+                     }
++                    pEventSocket->pIoSocket->pTimerSocket = NULL;
+                 }
+ 
+                 /** Close and free the timer socket ****/
