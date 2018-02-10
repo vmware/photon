@@ -3,42 +3,40 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        1.2.2
-Release:        3%{?dist}
+Version:        2.0.0
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
 Url:            http://www.vmware.com
 Group:          Applications/RPM
-Requires:       hawkey >= 2017.1
 Requires:       rpm-libs
 Requires:       curl
+Requires:       tdnf-cli-libs = %{version}-%{release}
+Requires:       libsolv
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
-BuildRequires:  hawkey-devel >= 2017.1
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
 Obsoletes:      yum
 Provides:       yum
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    tdnf=51e084e294e1ae4eae800dbf6f4e435c3d18a8ff
+Source0:        %{name}-%{version}-alpha.1.tar.gz
+%define sha1    tdnf=625331f1b2e72fdacd64c137667553be1c4236cf
 Source1:        cache-updateinfo
 Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
-Patch0:         tdnf_fix_protected_pkgs_in_obsolete.patch
-Patch1:         tdnf-perm.patch
+Patch0:         tdnf-epoch-and-perm.patch
 
 %description
-tdnf is a yum/dnf equivalent
-which uses libsolv and libhawkey
+tdnf is a yum/dnf equivalent which uses libsolv and libcurl
 
 %package    devel
 Summary:    A Library providing C API for tdnf
 Group:      Development/Libraries
 Requires:   tdnf = %{version}-%{release}
-Requires:   hawkey-devel >= 2017.1
+Requires:   libsolv-devel
 
 %description devel
 Development files for tdnf
@@ -51,13 +49,10 @@ Group:		Development/Libraries
 Library providing cli libs for tdnf like clients.
 
 %prep
-%setup -q
+%setup -qn %{name}-%{version}-alpha.1
 %patch0 -p1
-%patch1 -p1
-
 
 %build
-sed -i 's/tdnf, 1.2.0/tdnf, 1.2.2/' configure.ac
 autoreconf -i
 ./configure \
     --prefix=%{_prefix} \
@@ -136,7 +131,7 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_bindir}/tyum
     %{_bindir}/yum
     %{_bindir}/tdnf-cache-updateinfo
-    %{_libdir}/*.so.*
+    %{_libdir}/libtdnf.so.*
     %config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
     %config %{_libdir}/systemd/system/tdnf-cache-updateinfo.service
     %config(noreplace) %{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
@@ -146,7 +141,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %files devel
     %defattr(-,root,root)
     %{_includedir}/tdnf/*.h
-    %{_libdir}/*.so
+    %{_libdir}/libtdnf.so
+    %{_libdir}/libtdnfcli.so
     %exclude %{_libdir}/debug
     %{_libdir}/pkgconfig/tdnf.pc
     %{_libdir}/pkgconfig/tdnf-cli-libs.pc
@@ -156,6 +152,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Fri Feb 09 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.0-1
+-   update to 2.0.0
 *   Tue Jan 30 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.2-3
 -   patch to error out early for permission issues.
 *   Tue Oct 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.2-2
