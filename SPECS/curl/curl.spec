@@ -1,15 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.56.1
-Release:        2%{?dist}
+Version:        7.58.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.xz
-%define sha1    curl=c26bd88fdd5fe5d31a3b9e7a0a6b3dffff3168df
-Patch0:         curl-CVE-2017-8818.patch
+Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
+%define sha1    curl=089f17884d672aca7a661a65d847135f2f0ccbbf
 Requires:       ca-certificates
 BuildRequires:  ca-certificates
 Requires:       openssl
@@ -25,7 +24,6 @@ upload files can be incorporated into other programs to support
 functions like streaming media.
 %prep
 %setup -q
-%patch0 -p1
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 %build
 ./configure \
@@ -65,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/aclocal/libcurl.m4
 %{_docdir}/%{name}-%{version}
 %changelog
+*   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 7.58.0-1
+-   Update to version 7.58.0
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 7.56.1-2
 -   Fix CVE-2017-8818.
 *   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 7.56.1-1
