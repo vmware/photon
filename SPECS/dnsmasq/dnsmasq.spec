@@ -1,16 +1,17 @@
-Summary:	DNS proxy with integrated DHCP server
-Name:		dnsmasq
-Version:	2.76
-Release:	4%{?dist}
-License:	GPLv2 or GPLv3
-Group:		System Environment/Daemons
-URL:		http://www.thekelleys.org.uk/dnsmasq/
-Source:	        %{name}-%{version}.tar.xz
-%define sha1 dnsmasq=db42d7297dc0a05d51588baa2f298ebb42fcef99
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Patch0:		dnsmasq.patch
-Patch1:		CVE-2017-13704.patch
+Summary:        DNS proxy with integrated DHCP server
+Name:           dnsmasq
+Version:        2.76
+Release:        5%{?dist}
+License:        GPLv2 or GPLv3
+Group:          System Environment/Daemons
+URL:            http://www.thekelleys.org.uk/dnsmasq/
+Source:         %{name}-%{version}.tar.xz
+%define sha1    dnsmasq=db42d7297dc0a05d51588baa2f298ebb42fcef99
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Patch0:         dnsmasq.patch
+Patch1:         CVE-2017-13704.patch
+Patch2:         CVE-2017-15107.patch
 
 %description
 Dnsmasq a lightweight, caching DNS proxy with integrated DHCP server.
@@ -19,6 +20,7 @@ Dnsmasq a lightweight, caching DNS proxy with integrated DHCP server.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 make %{?_smp_mflags}
@@ -70,6 +72,8 @@ rm -rf %{buildroot}
 %config  /usr/share/dnsmasq/trust-anchors.conf
 
 %changelog
+*   Tue Feb 13 2018 Xiaolin Li <xiaolinl@vmware.com> 2.76-5
+-   Fix CVE-2017-15107
 *   Mon Nov 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.76-4
 -   Always restart dnsmasq service on exit
 *   Wed Oct 11 2017 Alexey Makhalov <amakhalov@vmware.com> 2.76-3
