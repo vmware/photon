@@ -1,14 +1,14 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        7.7.4
-Release:        4%{?dist}
+Version:        8.3.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
-Source0:        node-%{version}.tar.gz
-%define         sha1 node=31f7b14476b90037516449aec233c68d9b21edd3
+Source0:        https://nodejs.org/download/release/v8.3.0/node-v%{version}.tar.xz
+%define         sha1 node=62969b076013b20370fd42b7441b3c7ab7ac924f
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
 Requires:       (coreutils >= 8.22 or toybox)
@@ -27,7 +27,7 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%setup -q -n node-%{version}
+%setup -q -n node-v%{version}
 
 %build
 ./configure --prefix=%{_prefix} \
@@ -64,11 +64,14 @@ make cctest
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_datadir}/systemtap/tapset
+%{_docdir}/node/lldb_commands.py
+%{_docdir}/node/lldbinit
 %{_docdir}/node/gdbinit
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Wed Feb 14 2018 Xiaolin Li <xiaolinl@vmware.com> 8.3.0-1
+-   Updated to version 8.3.0
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-4
 -   Remove BuildArch
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.7.4-3
