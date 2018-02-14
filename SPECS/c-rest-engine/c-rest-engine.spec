@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.1
-Release:       9%{?dist}
+Release:       10%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -21,6 +21,7 @@ Patch5:        minimal_request_logging.patch
 Patch6:        connection_timeout.patch
 Patch7:        reqLine_parsing_check.patch
 Patch8:        bad_mem_write.patch
+Patch9:        instance_state.patch
 %define sha1   c-rest-engine=a25927fd98ec92df5e210cc4941fa626604636f6
 
 %description
@@ -48,6 +49,7 @@ development libs and header files for c-rest-engine
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 %build
 cd build
@@ -80,6 +82,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed Feb 14 2018 Kumar Kaushik <kaushikk@vmware.com> 1.1-10
+-  Maintaing instance state for API calls safety.
 *  Tue Feb 06 2018 Kumar Kaushik <kaushikk@vmware.com> 1.1-9
 -  Fixing bad memory write crash.
 *  Mon Jan 29 2018 Kumar Kaushik <kaushikk@vmware.com> 1.1-8
