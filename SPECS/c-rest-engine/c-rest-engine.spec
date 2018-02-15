@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
-Version:       1.1
-Release:       10%{?dist}
+Version:       1.2
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -12,17 +12,7 @@ Requires:      openssl >= 1.0.1
 BuildRequires: coreutils >= 8.22
 BuildRequires: openssl-devel >= 1.0.1
 Source0:       %{name}-%{version}.tar.gz
-Patch0:        socket_RW.patch
-Patch1:        syslog_noInit.patch
-Patch2:        socket_logging.patch
-Patch3:        errno_init.patch
-Patch4:        ssl_shutdown.patch
-Patch5:        minimal_request_logging.patch
-Patch6:        connection_timeout.patch
-Patch7:        reqLine_parsing_check.patch
-Patch8:        bad_mem_write.patch
-Patch9:        instance_state.patch
-%define sha1   c-rest-engine=a25927fd98ec92df5e210cc4941fa626604636f6
+%define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
 
 %description
 c-rest-engine is a minimal embedded http(s) server written in C.
@@ -40,16 +30,6 @@ development libs and header files for c-rest-engine
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
 
 %build
 cd build
@@ -82,6 +62,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed Feb 14 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-1
+-  Upgrading to version 1.2. Removing all upstream patches.
 *  Wed Feb 14 2018 Kumar Kaushik <kaushikk@vmware.com> 1.1-10
 -  Maintaing instance state for API calls safety.
 *  Tue Feb 06 2018 Kumar Kaushik <kaushikk@vmware.com> 1.1-9
