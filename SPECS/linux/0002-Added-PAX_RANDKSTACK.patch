@@ -1,20 +1,20 @@
-From 07525c4e9e9371a71456f1111da0623639f6ab58 Mon Sep 17 00:00:00 2001
+From 2b47c1cf5f3aeceb383cd020d3934ddc12ccb594 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Sat, 4 Feb 2017 04:15:14 +0000
-Subject: [PATCH 3/3] Added PAX_RANDKSTACK
+Subject: [PATCH 2/3] Added PAX_RANDKSTACK
 
 ---
  arch/x86/entry/entry_64.S    | 16 ++++++++++++++++
  arch/x86/kernel/process_64.c | 21 +++++++++++++++++++++
- security/Kconfig             | 14 ++++++++++++++
- 3 files changed, 51 insertions(+)
+ security/Kconfig             | 16 ++++++++++++++++
+ 3 files changed, 53 insertions(+)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index be9df51..7f18cd3 100644
+index 2e956af..53d4110 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -54,6 +54,16 @@ ENTRY(native_usergs_sysret64)
- ENDPROC(native_usergs_sysret64)
+@@ -51,6 +51,16 @@ ENTRY(native_usergs_sysret64)
+ END(native_usergs_sysret64)
  #endif /* CONFIG_PARAVIRT */
  
 +.macro pax_rand_kstack
@@ -27,10 +27,10 @@ index be9df51..7f18cd3 100644
 +#endif
 +.endm
 +
- .macro TRACE_IRQS_FLAGS flags:req
+ .macro TRACE_IRQS_IRETQ
  #ifdef CONFIG_TRACE_IRQFLAGS
- 	bt	$9, \flags		/* interrupts off? */
-@@ -227,6 +237,8 @@ entry_SYSCALL_64_fastpath:
+ 	bt	$9, EFLAGS(%rsp)		/* interrupts off? */
+@@ -217,6 +227,8 @@ entry_SYSCALL_64_fastpath:
  	testl	$_TIF_ALLWORK_MASK, TASK_TI_flags(%r11)
  	jnz	1f
  
@@ -39,7 +39,7 @@ index be9df51..7f18cd3 100644
  	LOCKDEP_SYS_EXIT
  	TRACE_IRQS_ON		/* user mode is traced as IRQs on */
  	movq	RIP(%rsp), %rcx
-@@ -255,6 +267,8 @@ entry_SYSCALL64_slow_path:
+@@ -246,6 +258,8 @@ entry_SYSCALL64_slow_path:
  	call	do_syscall_64		/* returns with IRQs disabled */
  
  return_from_SYSCALL_64:
@@ -48,15 +48,15 @@ index be9df51..7f18cd3 100644
  	RESTORE_EXTRA_REGS
  	TRACE_IRQS_IRETQ		/* we're about to change IF */
  
-@@ -427,6 +441,7 @@ ENTRY(ret_from_fork)
- 2:
+@@ -422,6 +436,7 @@ ENTRY(ret_from_fork)
+ 	UNWIND_HINT_REGS
  	movq	%rsp, %rdi
  	call	syscall_return_slowpath	/* returns with IRQs disabled */
 +	pax_rand_kstack
  	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
  	SWAPGS
  	jmp	restore_regs_and_iret
-@@ -538,6 +553,7 @@ ret_from_intr:
+@@ -611,6 +626,7 @@ ret_from_intr:
  GLOBAL(retint_user)
  	mov	%rsp,%rdi
  	call	prepare_exit_to_usermode
@@ -65,10 +65,10 @@ index be9df51..7f18cd3 100644
  	SWAPGS
  	jmp	restore_regs_and_iret
 diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 0887d2a..cd76ae8 100644
+index 302e7b2..bc45b66 100644
 --- a/arch/x86/kernel/process_64.c
 +++ b/arch/x86/kernel/process_64.c
-@@ -262,7 +262,13 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
+@@ -274,7 +274,13 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
  	struct inactive_task_frame *frame;
  	struct task_struct *me = current;
  
@@ -82,7 +82,7 @@ index 0887d2a..cd76ae8 100644
  	childregs = task_pt_regs(p);
  	fork_frame = container_of(childregs, struct fork_frame, regs);
  	frame = &fork_frame->frame;
-@@ -647,3 +653,18 @@ unsigned long KSTK_ESP(struct task_struct *task)
+@@ -699,3 +705,18 @@ unsigned long KSTK_ESP(struct task_struct *task)
  {
  	return task_pt_regs(task)->sp;
  }
@@ -102,13 +102,14 @@ index 0887d2a..cd76ae8 100644
 +}
 +#endif
 diff --git a/security/Kconfig b/security/Kconfig
-index c18980a..78fb7e1 100644
+index 3cef193..edb7fcd 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
-@@ -99,6 +99,20 @@ config PAX_RAP
- 	  i.e., gcc 4.5 or newer.  You may need to install the supporting
- 	  headers explicitly in addition to the normal gcc package.
+@@ -80,6 +80,22 @@ config PAX_MPROTECT
+ 	  the enforcement of non-executable pages.
  
+ endif
++
 +config PAX_RANDKSTACK
 +	bool "Randomize kernel stack base"
 +	depends on X86_TSC && X86
@@ -122,6 +123,7 @@ index c18980a..78fb7e1 100644
 +	  may cause unexpected stack overflows, therefore you should very
 +	  carefully test your system.  Note that once enabled in the kernel
 +	  configuration, this feature cannot be disabled on a per file basis.
++
 +
  endif
  
