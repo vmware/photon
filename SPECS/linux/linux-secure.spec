@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.66
+Version:        4.14.8
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,45 +9,27 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ecb5adfa84ab6f06f2cb07b56517883310710a0b
+%define sha1 linux=45f140e0eab08428d78d81d4169d531a3e65a297
 Source1:        config-secure
-Source2:        aufs4.9.tar.gz
-%define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
-Source3:        initramfs.trigger
+Source2:        initramfs.trigger
 # common
-Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
-Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
-Patch2:         x86-vmware-add-basic-paravirt-ops-support.patch
-Patch3:         x86-vmware-add-paravirt-sched-clock.patch
-Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
-Patch5:         double-tcp_mem-limits.patch
-Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch11:        net-9p-vsock.patch
-Patch12:        x86-vmware-sta.patch
+Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
+Patch1:         double-tcp_mem-limits.patch
+# TODO: disable this patch, check for regressions
+#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch5:         vsock-transport-for-9p.patch
+Patch6:         x86-vmware-STA-support.patch
 # secure
 Patch13:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
-Patch14:        0002-Added-rap_plugin.patch
-Patch15:        0003-Added-PAX_RANDKSTACK.patch
+Patch14:        0002-Added-PAX_RANDKSTACK.patch
+Patch15:        0003-Added-rap_plugin.patch
 # HyperV Patches
 Patch16:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
-Patch17:        0005-Drivers-hv-utils-Fix-the-mapping-between-host-versio.patch
-Patch18:        0006-Drivers-hv-vss-Improve-log-messages.patch
-Patch19:        0007-Drivers-hv-vss-Operation-timeouts-should-match-host-.patch
-Patch20:        0008-Drivers-hv-vmbus-Use-all-supported-IC-versions-to-ne.patch
-Patch21:        0009-Drivers-hv-Log-the-negotiated-IC-versions.patch
-Patch22:        0010-vmbus-fix-missed-ring-events-on-boot.patch
-Patch23:        0011-vmbus-remove-goto-error_clean_msglist-in-vmbus_open.patch
-Patch24:        0012-vmbus-dynamically-enqueue-dequeue-the-channel-on-vmb.patch
-Patch26:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
-Patch27:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
-Patch28:        0002-allow-also-ecb-cipher_null.patch
-Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11472
-Patch30:        ACPICA-Namespace-fix-operand-cache-leak.patch
+Patch24:        Allow-some-algo-tests-for-FIPS.patch
+Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # NSX requirements (should be removed)
@@ -99,69 +81,25 @@ The Linux package contains the Linux kernel doc files
 
 %prep
 %setup -q -n linux-%{version}
-%setup -D -b 2 -n linux-%{version}
-
-# apply aufs patch
-patch -p1 < ../aufs4-standalone-aufs4.9/aufs4-kbuild.patch
-patch -p1 < ../aufs4-standalone-aufs4.9/aufs4-base.patch
-patch -p1 < ../aufs4-standalone-aufs4.9/aufs4-mmap.patch
-patch -p1 < ../aufs4-standalone-aufs4.9/aufs4-standalone.patch
-cp -a ../aufs4-standalone-aufs4.9/Documentation/ .
-cp -a ../aufs4-standalone-aufs4.9/fs/ .
-cp ../aufs4-standalone-aufs4.9/include/uapi/linux/aufs_type.h include/uapi/linux/
-
-cat >> %{SOURCE1} << "EOF"
-CONFIG_AUFS_FS=m
-CONFIG_AUFS_BRANCH_MAX_127=y
-# CONFIG_AUFS_BRANCH_MAX_511 is not set
-# CONFIG_AUFS_BRANCH_MAX_1023 is not set
-# CONFIG_AUFS_BRANCH_MAX_32767 is not set
-CONFIG_AUFS_SBILIST=y
-# CONFIG_AUFS_HNOTIFY is not set
-# CONFIG_AUFS_EXPORT is not set
-# CONFIG_AUFS_XATTR is not set
-# CONFIG_AUFS_FHSM is not set
-# CONFIG_AUFS_RDU is not set
-# CONFIG_AUFS_SHWH is not set
-# CONFIG_AUFS_BR_RAMFS is not set
-# CONFIG_AUFS_BR_FUSE is not set
-CONFIG_AUFS_BDEV_LOOP=y
-# CONFIG_AUFS_DEBUG is not set
-EOF
 
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
-%patch17 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1
-%patch23 -p1
 %patch24 -p1
 %patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
-%patch30 -p1
 %patch31 -p1
 
 pushd ..
 %patch99 -p0
 popd
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -178,6 +116,8 @@ make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="
 # build LKCM module
 bldroot=`pwd`
 pushd ../LKCM
+sed -i '/#include <asm\/uaccess.h>/d' drv_fips_test.c
+sed -i '/#include <asm\/uaccess.h>/d' fips_test.c
 make -C $bldroot M=`pwd` modules
 popd
 
@@ -202,7 +142,6 @@ done \
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
-install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/linux-headers-%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 # install LKCM module
@@ -248,7 +187,7 @@ cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
 
 
-%include %{SOURCE3}
+%include %{SOURCE2}
 
 %post
 /sbin/depmod -a %{uname_r}
@@ -264,7 +203,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /boot/vmlinuz-%{uname_r}
 %config(noreplace) /boot/linux-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
-/lib/firmware/*
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
@@ -284,6 +222,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 16 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
+-   Version update to v4.14 LTS. Drop aufs support.
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
 -   Version update
 *   Tue Nov 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.64-1
