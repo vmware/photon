@@ -1,0 +1,52 @@
+From d23213e68a7d5aee9e1fb08b9453f21b2a3ebc9f Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Mon, 30 Oct 2017 18:48:48 +0000
+Subject: xen-netfront: add longer default freeze timeout as a module parameter
+
+Freezing netfront devices is normally expected to finish within a few
+hundred milliseconds, but it can rarely take more than 5 seconds and
+hit the hard coded timeout, it would depend on backend state which may
+be congested and/or have complex configuration. While it's rare case,
+longer default timeout seems a bit more reasonable here to avoid hitting
+the timeout. Also, make it configurable via module parameter so that we
+can cover broader setups than what we know currently.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Alakesh Haloi <alakeshh@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+
+CR: https://cr.amazon.com/r/7902188/
+---
+ drivers/net/xen-netfront.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 7e5233e..16b7654 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -69,6 +69,12 @@ module_param_named(max_queues, xennet_max_queues, uint, 0644);
+ MODULE_PARM_DESC(max_queues,
+ 		 "Maximum number of queues per virtual interface");
+ 
++static unsigned int netfront_freeze_timeout_secs = 10;
++module_param_named(freeze_timeout_secs,
++		   netfront_freeze_timeout_secs, uint, 0644);
++MODULE_PARM_DESC(freeze_timeout_secs,
++		 "timeout when freezing netfront device in seconds");
++
+ static const struct ethtool_ops xennet_ethtool_ops;
+ 
+ struct netfront_cb {
+@@ -1845,8 +1851,7 @@ static int xennet_create_queues(struct netfront_info *info,
+ static int netfront_freeze(struct xenbus_device *dev)
+ {
+ 	struct netfront_info *info = dev_get_drvdata(&dev->dev);
+-	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
+-	unsigned long timeout = 5 * HZ;
++	unsigned long timeout = netfront_freeze_timeout_secs * HZ;
+ 	int err = 0;
+ 
+ 	xennet_disable_interrupts(info->netdev);
+-- 
+2.7.5
+
