@@ -1,0 +1,47 @@
+From 20296698bc14f5f4ad7e05384032cc2369d81d08 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Fri, 17 Mar 2017 11:25:01 +0000
+Subject: drivers/amazon: introduce AMAZON_ENA_ETHERNET
+
+This option is for out-of-tree ENA driver.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834621/
+---
+ drivers/amazon/Kconfig      | 9 +++++++++
+ drivers/amazon/net/Makefile | 1 +
+ 2 files changed, 10 insertions(+)
+
+diff --git a/drivers/amazon/Kconfig b/drivers/amazon/Kconfig
+index 11fc079..2283d99 100644
+--- a/drivers/amazon/Kconfig
++++ b/drivers/amazon/Kconfig
+@@ -34,4 +34,13 @@ config AMAZON_IXGBEVF
+ 	  will be called ixgbevf.  MSI-X interrupt support is required
+ 	  for this driver to work correctly.
+ 
++config AMAZON_ENA_ETHERNET
++	tristate "Elastic Network Adapter (ENA) support"
++	depends on PCI_MSI && !ENA_ETHERNET
++	---help---
++	  This driver supports Elastic Network Adapter (ENA)
++
++	  To compile this driver as a module, choose M here.
++	  The module will be called ena.
++
+ endif # AMAZON_DRIVER_UPDATES
+diff --git a/drivers/amazon/net/Makefile b/drivers/amazon/net/Makefile
+index be6b282..6e23f47 100644
+--- a/drivers/amazon/net/Makefile
++++ b/drivers/amazon/net/Makefile
+@@ -2,3 +2,4 @@
+ # Amazon Driver Updates
+ #
+ obj-$(CONFIG_AMAZON_IXGBEVF)	+= ixgbevf/
++obj-$(CONFIG_AMAZON_ENA_ETHERNET)	+= ena/
+-- 
+2.7.5
+

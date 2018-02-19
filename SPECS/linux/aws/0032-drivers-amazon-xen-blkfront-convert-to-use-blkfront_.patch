@@ -1,0 +1,52 @@
+From af31d96c42d1bb3d55c6c4f443ae6cd5670402a1 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Wed, 16 Aug 2017 00:21:38 +0000
+Subject: drivers/amazon: xen-blkfront: convert to use
+ blkfront_use_request_based macro
+
+Use the macro instead of blkfront_use_blk_mq when checking if the driver
+uses request-based block layer.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/7561618/
+---
+ drivers/amazon/block/xen-blkfront.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/amazon/block/xen-blkfront.c b/drivers/amazon/block/xen-blkfront.c
+index c0615ff..1e44f06 100644
+--- a/drivers/amazon/block/xen-blkfront.c
++++ b/drivers/amazon/block/xen-blkfront.c
+@@ -2004,7 +2004,7 @@ static int negotiate_mq(struct blkfront_info *info)
+ 	 * We need at least one ring. Also, do not allow to have multiple rings if blk-mq is
+ 	 * not used.
+ 	 */
+-	if (!info->nr_rings || !blkfront_use_blk_mq)
++	if (!info->nr_rings || blkfront_use_request_based)
+ 		info->nr_rings = 1;
+ 
+ 	info->rinfo = kzalloc(sizeof(struct blkfront_ring_info) * info->nr_rings, GFP_KERNEL);
+@@ -2142,7 +2142,7 @@ static int blkif_recover(struct blkfront_info *info)
+ 	xenbus_switch_state(info->xbdev, XenbusStateConnected);
+ 
+ 	/* blk_requeue_request below must be called with queue lock held */
+-	if (!blkfront_use_blk_mq)
++	if (blkfront_use_request_based)
+ 		spin_lock_irq(&info->rinfo[FIRST_RING_ID].ring_lock);
+ 
+ 	/* Now safe for us to use the shared ring */
+@@ -2169,7 +2169,7 @@ static int blkif_recover(struct blkfront_info *info)
+ 			blk_requeue_request(info->rq, req);
+ 	}
+ 
+-	if (!blkfront_use_blk_mq)
++	if (blkfront_use_request_based)
+ 		spin_unlock_irq(&info->rinfo[FIRST_RING_ID].ring_lock);
+ 
+ 	if (blkfront_use_blk_mq)
+-- 
+2.7.5
+

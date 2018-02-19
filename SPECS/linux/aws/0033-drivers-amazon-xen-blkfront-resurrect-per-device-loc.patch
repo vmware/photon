@@ -1,0 +1,178 @@
+From 273be9b2b0a8aada88a06fa0e059672575bb6c70 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Mon, 24 Jul 2017 20:43:32 +0000
+Subject: drivers/amazon: xen-blkfront: resurrect per-device lock
+
+In requset-based mode, a spin lock in the first blkfront_ring_info is
+also used as a queue lock. However, the structure is freed and re-created
+while resuming from Xen suspend. Therefore, the block layer may still
+continue to use the freed memory as a queue lock. Obviously, it can
+result in crash, hang or corruption.
+
+Not to make the queue lock stale, resurrect per-device (vbd) lock in
+blkfront_info which is never freed during Xen suspend and use it in
+request-based mode. This is bascially the same as what the driver was
+doing until commit 11659569f720 ("xen/blkfront: split per device
+io_lock"). If the driver is in blk-mq mode, just use the lock(s) in
+blkfront_ring_info.
+
+Reported-by: Imre Palik <imrep@amazon.com>
+Reported-and-tested-by: Thomas Friebel <friebelt@amazon.com>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/7475903/
+---
+ drivers/amazon/block/xen-blkfront.c | 48 +++++++++++++++++++++++++------------
+ 1 file changed, 33 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/amazon/block/xen-blkfront.c b/drivers/amazon/block/xen-blkfront.c
+index 1e44f06..105ad17 100644
+--- a/drivers/amazon/block/xen-blkfront.c
++++ b/drivers/amazon/block/xen-blkfront.c
+@@ -205,6 +205,12 @@ struct blkfront_ring_info {
+  */
+ struct blkfront_info
+ {
++	/*
++	 * Per vbd lock which protects an associated blkfront_ring_info if the
++	 * driver is in request-based mode. Use this lock always instead of per
++	 * ring lock in that mode.
++	 */
++	spinlock_t io_lock;
+ 	struct mutex mutex;
+ 	struct xenbus_device *xbdev;
+ 	struct gendisk *gd;
+@@ -1055,12 +1061,8 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
+ 			return PTR_ERR(rq);
+ 		}
+ 	} else {
+-		/*
+-		 * Per-device lock no longer exists. Use the spin lock in the first
+-		 * available ring as queue lock.
+-		 */
+-		rq = blk_init_queue(do_blkif_request,
+-					&info->rinfo[FIRST_RING_ID].ring_lock);
++		spin_lock_init(&info->io_lock);
++		rq = blk_init_queue(do_blkif_request, &info->io_lock);
+ 		if (IS_ERR(rq))
+ 			return PTR_ERR(rq);
+ 	}
+@@ -1279,10 +1281,10 @@ static void xlvbd_release_gendisk(struct blkfront_info *info)
+ 			flush_work(&rinfo->work);
+ 		}
+ 	} else {
+-		spin_lock_irqsave(&info->rinfo[FIRST_RING_ID].ring_lock, flags);
++		spin_lock_irqsave(&info->io_lock, flags);
+ 		blk_stop_queue(info->rq);
+ 		gnttab_cancel_free_callback(&info->rinfo[FIRST_RING_ID].callback);
+-		spin_unlock_irqrestore(&info->rinfo[FIRST_RING_ID].ring_lock, flags);
++		spin_unlock_irqrestore(&info->io_lock, flags);
+ 	}
+ 
+ 	del_gendisk(info->gd);
+@@ -1319,10 +1321,14 @@ static inline void kick_pending_request_queues_locked(struct blkfront_ring_info
+ static void kick_pending_request_queues(struct blkfront_ring_info *rinfo)
+ {
+ 	unsigned long flags;
++	struct blkfront_info *info = rinfo->dev_info;
++	spinlock_t *lock;
+ 
+-	spin_lock_irqsave(&rinfo->ring_lock, flags);
++	lock = blkfront_use_blk_mq ? &rinfo->ring_lock : &info->io_lock;
++
++	spin_lock_irqsave(lock, flags);
+ 	kick_pending_request_queues_locked(rinfo);
+-	spin_unlock_irqrestore(&rinfo->ring_lock, flags);
++	spin_unlock_irqrestore(lock, flags);
+ }
+ 
+ static void blkif_restart_queue(struct work_struct *work)
+@@ -1333,6 +1339,7 @@ static void blkif_restart_queue(struct work_struct *work)
+ 		kick_pending_request_queues(rinfo);
+ }
+ 
++/* Must be called with per vbd lock held if the frontend uses request-based */
+ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+ {
+ 	struct grant *persistent_gnt, *n;
+@@ -1415,6 +1422,9 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+ 	/* No more gnttab callback work. */
+ 	gnttab_cancel_free_callback(&rinfo->callback);
+ 
++	if (blkfront_use_request_based)
++		spin_unlock_irq(&info->io_lock);
++
+ 	/* Flush gnttab callback work. Must be done with no locks held. */
+ 	flush_work(&rinfo->work);
+ 
+@@ -1438,6 +1448,9 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+ 	unsigned int i;
+ 
+ 	/* Prevent new requests being issued until we fix things up. */
++	if (blkfront_use_request_based)
++		spin_lock_irq(&info->io_lock);
++
+ 	info->connected = suspend ?
+ 		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
+ 	/* No more blkif_request(). */
+@@ -1650,12 +1663,15 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 	unsigned long flags;
+ 	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
+ 	struct blkfront_info *info = rinfo->dev_info;
++	spinlock_t *lock;
+ 	int error;
+ 
+ 	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
+ 		return IRQ_HANDLED;
+ 
+-	spin_lock_irqsave(&rinfo->ring_lock, flags);
++	lock = blkfront_use_blk_mq ? &rinfo->ring_lock : &info->io_lock;
++
++	spin_lock_irqsave(lock, flags);
+  again:
+ 	rp = rinfo->ring.sring->rsp_prod;
+ 	rmb(); /* Ensure we see queued responses up to 'rp'. */
+@@ -1755,7 +1771,7 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 
+ 	kick_pending_request_queues_locked(rinfo);
+ 
+-	spin_unlock_irqrestore(&rinfo->ring_lock, flags);
++	spin_unlock_irqrestore(lock, flags);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -2021,8 +2037,10 @@ static int negotiate_mq(struct blkfront_info *info)
+ 		INIT_LIST_HEAD(&rinfo->grants);
+ 		rinfo->dev_info = info;
+ 		INIT_WORK(&rinfo->work, blkif_restart_queue);
+-		spin_lock_init(&rinfo->ring_lock);
++		if (blkfront_use_blk_mq)
++			spin_lock_init(&rinfo->ring_lock);
+ 	}
++
+ 	return 0;
+ }
+ /**
+@@ -2143,7 +2161,7 @@ static int blkif_recover(struct blkfront_info *info)
+ 
+ 	/* blk_requeue_request below must be called with queue lock held */
+ 	if (blkfront_use_request_based)
+-		spin_lock_irq(&info->rinfo[FIRST_RING_ID].ring_lock);
++		spin_lock_irq(&info->io_lock);
+ 
+ 	/* Now safe for us to use the shared ring */
+ 	info->connected = BLKIF_STATE_CONNECTED;
+@@ -2170,7 +2188,7 @@ static int blkif_recover(struct blkfront_info *info)
+ 	}
+ 
+ 	if (blkfront_use_request_based)
+-		spin_unlock_irq(&info->rinfo[FIRST_RING_ID].ring_lock);
++		spin_unlock_irq(&info->io_lock);
+ 
+ 	if (blkfront_use_blk_mq)
+ 		blk_mq_kick_requeue_list(info->rq);
+-- 
+2.7.5
+

@@ -1,0 +1,98 @@
+From 0bc3cb55087fc49692e0546340d6ec69011d8e7c Mon Sep 17 00:00:00 2001
+From: Ming Lei <ming.lei@redhat.com>
+Date: Fri, 14 Apr 2017 13:58:29 -0600
+Subject: block: fix bio_will_gap() for first bvec with offset
+
+Commit 729204ef49ec("block: relax check on sg gap") allows us to merge
+bios, if both are physically contiguous.  This change can merge a huge
+number of small bios, through mkfs for example, mkfs.ntfs running time
+can be decreased to ~1/10.
+
+But if one rq starts with a non-aligned buffer (the 1st bvec's bv_offset
+is non-zero) and if we allow the merge, it is quite difficult to respect
+sg gap limit, especially the max segment size, or we risk having an
+unaligned virtual boundary.  This patch tries to avoid the issue by
+disallowing a merge, if the req starts with an unaligned buffer.
+
+Also add comments to explain why the merged segment can't end in
+unaligned virt boundary.
+
+Fixes: 729204ef49ec ("block: relax check on sg gap")
+Tested-by: Johannes Thumshirn <jthumshirn@suse.de>
+Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+
+Rewrote parts of the commit message and comments.
+
+Signed-off-by: Jens Axboe <axboe@fb.com>
+(cherry picked from commit 5a8d75a1b8c99bdc926ba69b7b7dbe4fae81a5af)
+Signed-off-by: Qian Lu <luqia@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+
+CR: https://cr.amazon.com/r/7255235/
+---
+ include/linux/blkdev.h | 32 ++++++++++++++++++++++++++++----
+ 1 file changed, 28 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 2696a26..6c645c1 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1434,12 +1434,36 @@ static inline bool bios_segs_mergeable(struct request_queue *q,
+ 	return true;
+ }
+ 
+-static inline bool bio_will_gap(struct request_queue *q, struct bio *prev,
+-			 struct bio *next)
++static inline bool bio_will_gap(struct request_queue *q,
++				struct request *prev_rq,
++				struct bio *prev,
++				struct bio *next)
+ {
+ 	if (bio_has_data(prev) && queue_virt_boundary(q)) {
+ 		struct bio_vec pb, nb;
+ 
++		/*
++		 * don't merge if the 1st bio starts with non-zero
++		 * offset, otherwise it is quite difficult to respect
++		 * sg gap limit. We work hard to merge a huge number of small
++		 * single bios in case of mkfs.
++		 */
++		if (prev_rq)
++			bio_get_first_bvec(prev_rq->bio, &pb);
++		else
++			bio_get_first_bvec(prev, &pb);
++		if (pb.bv_offset)
++			return true;
++
++		/*
++		 * We don't need to worry about the situation that the
++		 * merged segment ends in unaligned virt boundary:
++		 *
++		 * - if 'pb' ends aligned, the merged segment ends aligned
++		 * - if 'pb' ends unaligned, the next bio must include
++		 *   one single bvec of 'nb', otherwise the 'nb' can't
++		 *   merge with 'pb'
++		 */
+ 		bio_get_last_bvec(prev, &pb);
+ 		bio_get_first_bvec(next, &nb);
+ 
+@@ -1452,12 +1476,12 @@ static inline bool bio_will_gap(struct request_queue *q, struct bio *prev,
+ 
+ static inline bool req_gap_back_merge(struct request *req, struct bio *bio)
+ {
+-	return bio_will_gap(req->q, req->biotail, bio);
++	return bio_will_gap(req->q, req, req->biotail, bio);
+ }
+ 
+ static inline bool req_gap_front_merge(struct request *req, struct bio *bio)
+ {
+-	return bio_will_gap(req->q, bio, req->bio);
++	return bio_will_gap(req->q, NULL, bio, req->bio);
+ }
+ 
+ int kblockd_schedule_work(struct work_struct *work);
+-- 
+2.7.5
+

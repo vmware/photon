@@ -1,0 +1,35 @@
+From 8f5bc599d5934eaaf5fad5ff97c84d2b709fd668 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Wed, 27 Apr 2016 03:31:33 +0000
+Subject: xen/pvhvm: unplug block deivces driven by out-of-tree xen-blkfront
+
+Otherwise, given devices will be also visible as emulated SCSI devices.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Marc Olson <marcolso@amazon.com>
+Reviewed-by: Jonghun Yoo <jhyoo@amazon.de>
+Reviewed-by: Jesus Velazquez Reyes <jesuv@amazon.com>
+
+CR: https://cr.amazon.com/r/5184256/
+---
+ include/xen/platform_pci.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/include/xen/platform_pci.h b/include/xen/platform_pci.h
+index 5c52b55..eba9904 100644
+--- a/include/xen/platform_pci.h
++++ b/include/xen/platform_pci.h
+@@ -38,7 +38,9 @@ static inline int xen_must_unplug_nics(void) {
+ 
+ static inline int xen_must_unplug_disks(void) {
+ #if (defined(CONFIG_XEN_BLKDEV_FRONTEND) || \
+-		defined(CONFIG_XEN_BLKDEV_FRONTEND_MODULE)) && \
++		defined(CONFIG_XEN_BLKDEV_FRONTEND_MODULE) || \
++		defined(CONFIG_AMAZON_XEN_BLKDEV_FRONTEND) || \
++		defined(CONFIG_AMAZON_XEN_BLKDEV_FRONTEND_MODULE)) && \
+ 		defined(CONFIG_XEN_PVHVM)
+         return 1;
+ #else
+-- 
+2.7.5
+
