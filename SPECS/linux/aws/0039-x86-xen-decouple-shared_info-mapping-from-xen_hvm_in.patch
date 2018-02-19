@@ -1,0 +1,70 @@
+From 03c2bc2648ba37f433bbe8a36fa0d3c54f3ede05 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Thu, 13 Jul 2017 20:13:07 +0000
+Subject: x86/xen: decouple shared_info mapping from xen_hvm_init_shared_info()
+
+Currently, xen_hvm_init_shared_info() actually does two things, mapping
+shared_info page and setting up vcpu_info in the mapped page. However,
+when resuming Xen PVHVM guests from PS suspend or hibernation, we don't
+have to setup vcpu_info in the shared_info page as it's already moved
+off the page. Otherwise, interrupts via event channel are no longer
+delivered to VCPU after resuming. To handle this situation, introduce
+a small function which only does the mapping and convert
+xen_hvm_init_shared_info() to use the function. So this change won't
+affect existing callers of xen_hvm_init_shared_info().
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+
+CR: https://cr.amazon.com/r/7367668/
+---
+ arch/x86/xen/enlighten.c | 10 ++++++++--
+ arch/x86/xen/xen-ops.h   |  1 +
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/xen/enlighten.c b/arch/x86/xen/enlighten.c
+index 2bea87c..1a87443 100644
+--- a/arch/x86/xen/enlighten.c
++++ b/arch/x86/xen/enlighten.c
+@@ -1782,9 +1782,8 @@ asmlinkage __visible void __init xen_start_kernel(void)
+ #endif
+ }
+ 
+-void __ref xen_hvm_init_shared_info(void)
++void __ref xen_hvm_map_shared_info(void)
+ {
+-	int cpu;
+ 	struct xen_add_to_physmap xatp;
+ 	static struct shared_info *shared_info_page = 0;
+ 
+@@ -1799,6 +1798,13 @@ void __ref xen_hvm_init_shared_info(void)
+ 		BUG();
+ 
+ 	HYPERVISOR_shared_info = (struct shared_info *)shared_info_page;
++}
++
++void __ref xen_hvm_init_shared_info(void)
++{
++	int cpu;
++
++	xen_hvm_map_shared_info();
+ 
+ 	/* xen_vcpu is a pointer to the vcpu_info struct in the shared_info
+ 	 * page, we use it in the event channel upcall and in some pvclock
+diff --git a/arch/x86/xen/xen-ops.h b/arch/x86/xen/xen-ops.h
+index 3cbce3b..7b4bb36 100644
+--- a/arch/x86/xen/xen-ops.h
++++ b/arch/x86/xen/xen-ops.h
+@@ -57,6 +57,7 @@ void xen_enable_syscall(void);
+ void xen_vcpu_restore(void);
+ 
+ void xen_callback_vector(void);
++void xen_hvm_map_shared_info(void);
+ void xen_hvm_init_shared_info(void);
+ void xen_unplug_emulated_devices(void);
+ 
+-- 
+2.7.5
+

@@ -1,0 +1,44 @@
+From ba1d4c053e99dbce0da2fde0ba7d67c1845c8eb9 Mon Sep 17 00:00:00 2001
+From: Marc Olson <marcolso@amazon.com>
+Date: Thu, 4 May 2017 21:54:34 +0000
+Subject: drivers/amazon: xen-blkfront: add uevent for size change
+
+When a blkfront device is resized from dom0, emit a KOBJ_CHANGE uevent to
+notify the guest about the change. This allows for custom udev rules, such as
+automatically resizing a filesystem, when an event occurs.
+
+Signed-off-by: Marc Olson <marcolso@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Valentin Priescu <priescuv@amazon.de>
+Reviewed-by: Christoph Egger <chegger@amazon.de>
+
+CR: https://cr.amazon.com/r/6870331/
+---
+ drivers/amazon/block/xen-blkfront.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/amazon/block/xen-blkfront.c b/drivers/amazon/block/xen-blkfront.c
+index 9c13857..516434f 100644
+--- a/drivers/amazon/block/xen-blkfront.c
++++ b/drivers/amazon/block/xen-blkfront.c
+@@ -2501,6 +2501,7 @@ static void blkfront_connect(struct blkfront_info *info)
+ 	unsigned long sector_size;
+ 	unsigned int physical_sector_size;
+ 	unsigned int binfo;
++	char *envp[] = { "RESIZE=1", NULL };
+ 	int err, i;
+ 
+ 	switch (info->connected) {
+@@ -2517,6 +2518,8 @@ static void blkfront_connect(struct blkfront_info *info)
+ 		       sectors);
+ 		set_capacity(info->gd, sectors);
+ 		revalidate_disk(info->gd);
++		kobject_uevent_env(&disk_to_dev(info->gd)->kobj,
++				   KOBJ_CHANGE, envp);
+ 
+ 		return;
+ 	case BLKIF_STATE_SUSPENDED:
+-- 
+2.7.5
+

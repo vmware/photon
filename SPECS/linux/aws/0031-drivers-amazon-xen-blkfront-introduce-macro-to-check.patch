@@ -1,0 +1,34 @@
+From 6292164b6c51a9cc0289f832f0678615882211ae Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Wed, 16 Aug 2017 00:19:46 +0000
+Subject: drivers/amazon: xen-blkfront: introduce macro to check the current
+ block layer
+
+Introduce a simple macro to check if the driver uses the request-based
+block layer.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/7561608/
+---
+ drivers/amazon/block/xen-blkfront.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/amazon/block/xen-blkfront.c b/drivers/amazon/block/xen-blkfront.c
+index 516434f..c0615ff 100644
+--- a/drivers/amazon/block/xen-blkfront.c
++++ b/drivers/amazon/block/xen-blkfront.c
+@@ -160,6 +160,8 @@ static unsigned int blkfront_use_blk_mq = 0;
+ module_param_named(use_blk_mq, blkfront_use_blk_mq, int, S_IRUGO);
+ MODULE_PARM_DESC(use_blk_mq, "Override default block layer to use (0=request-based,1=blk-mq)");
+ 
++#define blkfront_use_request_based !blkfront_use_blk_mq
++
+ /*
+  * Index to the first available ring.
+  */
+-- 
+2.7.5
+

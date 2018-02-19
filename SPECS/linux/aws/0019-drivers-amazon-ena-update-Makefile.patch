@@ -1,0 +1,29 @@
+From 7b104e1859b87700c1614bf7948062e0b32da8b9 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Fri, 17 Mar 2017 11:34:14 +0000
+Subject: drivers/amazon: ena: update Makefile
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834623/
+---
+ drivers/amazon/net/ena/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/amazon/net/ena/Makefile b/drivers/amazon/net/ena/Makefile
+index eaeeae06..c46bdab 100644
+--- a/drivers/amazon/net/ena/Makefile
++++ b/drivers/amazon/net/ena/Makefile
+@@ -2,6 +2,6 @@
+ # Makefile for the Elastic Network Adapter (ENA) device drivers.
+ #
+ 
+-obj-$(CONFIG_ENA_ETHERNET) += ena.o
++obj-$(CONFIG_AMAZON_ENA_ETHERNET) += ena.o
+ 
+ ena-y := ena_netdev.o ena_com.o ena_eth_com.o ena_ethtool.o
+-- 
+2.7.5
+

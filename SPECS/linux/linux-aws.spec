@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.80
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,9 +12,6 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar
 %define sha1 linux=1e815669d45b0e0ebfa14bfa9823e9795274f067
 Source1:	config-aws
 Source2:	initramfs.trigger
-%define ena_version 1.1.3
-Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
-%define sha1 ena_linux=84138e8d7eb230b45cb53835edf03ca08043d471
 # common
 Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
 Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
@@ -66,6 +63,53 @@ Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 Patch68: 0170-x86-syscall-Clear-unused-extra-registers-on-32-bit-c.patch
+# Amazon AWS
+Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
+Patch102: 0009-bump-the-default-TTL-to-255.patch
+Patch103: 0010-bump-default-tcp_wmem-from-16KB-to-20KB.patch
+Patch104: 0012-drivers-introduce-AMAZON_DRIVER_UPDATES.patch
+Patch105: 0013-drivers-amazon-add-network-device-drivers-support.patch
+Patch106: 0014-drivers-amazon-introduce-AMAZON_IXGBEVF.patch
+Patch107: 0015-drivers-amazon-import-out-of-tree-ixgbevf-4.0.3.patch
+Patch108: 0016-drivers-amazon-ixgbevf-update-Makefile.patch
+Patch109: 0017-drivers-amazon-introduce-AMAZON_ENA_ETHERNET.patch
+Patch110: 0018-drivers-amazon-import-out-of-tree-ENA-driver-1.1.3.patch
+Patch111: 0019-drivers-amazon-ena-update-Makefile.patch
+Patch112: 0020-drivers-amazon-add-block-device-drivers-support.patch
+Patch113: 0021-drivers-amazon-introduce-AMAZON_XEN_BLKDEV_FRONTEND.patch
+Patch114: 0022-drivers-amazon-import-xen-blkfront-from-the-tree.patch
+Patch115: 0023-drivers-amazon-xen-blkfront-add-persistent_grants-pa.patch
+Patch116: 0024-drivers-amazon-xen-blkfront-resurrect-request-based-.patch
+Patch117: 0025-xen-pvhvm-unplug-block-deivces-driven-by-out-of-tree.patch
+Patch118: 0026-drivers-amazon-introduce-AMAZON_GPU_MODULES.patch
+Patch119: 0027-drivers-amazon-xen-blkfront-add-uevent-for-size-chan.patch
+Patch120: 0028-block-relax-check-on-sg-gap.patch
+Patch121: 0029-block-fix-bio_will_gap-for-first-bvec-with-offset.patch
+Patch122: 0030-drivers-amazon-ena-update-to-1.2.0.patch
+Patch123: 0031-drivers-amazon-xen-blkfront-introduce-macro-to-check.patch
+Patch124: 0032-drivers-amazon-xen-blkfront-convert-to-use-blkfront_.patch
+Patch125: 0033-drivers-amazon-xen-blkfront-resurrect-per-device-loc.patch
+Patch126: 0034-drivers-amazon-xen-blkfront-empty-the-request-queue-.patch
+Patch127: 0035-drivers-amazon-xen-blkfront-use-a-right-index-when-c.patch
+Patch128: 0036-xen-manage-keep-track-of-the-on-going-suspend-mode.patch
+Patch129: 0037-xen-manage-introduce-helper-function-to-know-the-on-.patch
+Patch130: 0038-xenbus-add-freeze-thaw-restore-callbacks-support.patch
+Patch131: 0039-x86-xen-decouple-shared_info-mapping-from-xen_hvm_in.patch
+Patch132: 0040-x86-xen-add-system-core-suspend-and-resume-callbacks.patch
+Patch133: 0041-drivers-amazon-xen-blkfront-add-callbacks-for-PM-sus.patch
+Patch134: 0042-xen-netfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch135: 0043-drivers-amazon-ixgbevf-use-pci-drvdata-correctly-in-.patch
+Patch136: 0044-xen-time-introduce-xen_-save-restore-_steal_clock.patch
+Patch137: 0045-x86-xen-save-and-restore-steal-clock.patch
+Patch138: 0046-xen-events-add-xen_shutdown_pirqs-helper-function.patch
+Patch139: 0047-x86-xen-close-event-channels-for-PIRQs-in-system-cor.patch
+Patch140: 0048-drivers-amazon-ena-update-to-1.3.0.patch
+Patch141: 0049-nvme-update-timeout-module-parameter-type.patch
+Patch142: 0050-drivers-amazon-xen-blkfront-ensure-no-reqs-rsps-in-r.patch
+Patch143: 0051-xen-netfront-add-longer-default-freeze-timeout-as-a-.patch
+Patch144: 0052-drivers-amazon-ena-update-to-1.4.0.patch
+Patch145: 0053-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
+Patch146: 0054-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -138,7 +182,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %prep
 %setup -q -n linux-%{version}
-%setup -D -b 3 -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -185,6 +228,53 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch67 -p1
 %patch68 -p1
 
+%patch101 -p1
+%patch102 -p1
+%patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
+%patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
+%patch115 -p1
+%patch116 -p1
+%patch117 -p1
+%patch118 -p1
+%patch119 -p1
+%patch120 -p1
+%patch121 -p1
+%patch122 -p1
+%patch123 -p1
+%patch124 -p1
+%patch125 -p1
+%patch126 -p1
+%patch127 -p1
+%patch128 -p1
+%patch129 -p1
+%patch130 -p1
+%patch131 -p1
+%patch132 -p1
+%patch133 -p1
+%patch134 -p1
+%patch135 -p1
+%patch136 -p1
+%patch137 -p1
+%patch138 -p1
+%patch139 -p1
+%patch140 -p1
+%patch141 -p1
+%patch142 -p1
+%patch143 -p1
+%patch144 -p1
+%patch145 -p1
+%patch146 -p1
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -196,11 +286,6 @@ sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .co
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 make -C tools perf
-# build ENA module
-bldroot=`pwd`
-pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
-popd
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -227,11 +312,6 @@ install -vdm 755 %{buildroot}/etc/modprobe.d
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-# install ENA module
-bldroot=`pwd`
-pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
 
 # Verify for build-id match
 # We observe different IDs sometimes
@@ -351,5 +431,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Feb 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-2
+-   Add enhancements from Amazon.
 *   Mon Feb 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-1
 -   First build based on linux.spec and config. No AWS-specific patches yet.

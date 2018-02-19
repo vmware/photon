@@ -1,0 +1,50 @@
+From 4355db0b2c76ecba4949006d34d9ad0c22b53cfa Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Fri, 17 Mar 2017 17:39:25 +0000
+Subject: drivers/amazon: introduce AMAZON_XEN_BLKDEV_FRONTEND
+
+This option is for out-of-tree xen-blkfront driver.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834650/
+---
+ drivers/amazon/Kconfig        | 12 ++++++++++++
+ drivers/amazon/block/Makefile |  1 +
+ 2 files changed, 13 insertions(+)
+
+diff --git a/drivers/amazon/Kconfig b/drivers/amazon/Kconfig
+index 2283d99..aeecd56 100644
+--- a/drivers/amazon/Kconfig
++++ b/drivers/amazon/Kconfig
+@@ -43,4 +43,16 @@ config AMAZON_ENA_ETHERNET
+ 	  To compile this driver as a module, choose M here.
+ 	  The module will be called ena.
+ 
++config AMAZON_XEN_BLKDEV_FRONTEND
++	tristate "Xen virtual block device support"
++	depends on XEN && !XEN_BLKDEV_FRONTEND
++	select XEN_XENBUS_FRONTEND
++	---help---
++	  This driver implements the front-end of the Xen virtual
++	  block device driver.  It communicates with a back-end driver
++	  in another domain which drives the actual block device.
++
++	  This driver is separately maintained from drivers/block/xen-blkfront.c
++	  and will include our changes which may not available in the upstream.
++
+ endif # AMAZON_DRIVER_UPDATES
+diff --git a/drivers/amazon/block/Makefile b/drivers/amazon/block/Makefile
+index 5298efe..23c2637 100644
+--- a/drivers/amazon/block/Makefile
++++ b/drivers/amazon/block/Makefile
+@@ -1,3 +1,4 @@
+ #
+ # Amazon Driver updates
+ #
++obj-$(CONFIG_AMAZON_XEN_BLKDEV_FRONTEND)	+= xen-blkfront.o
+-- 
+2.7.5
+
