@@ -1,0 +1,34 @@
+From 74007e633d37ddecdabb2131240d38696b8dc6b1 Mon Sep 17 00:00:00 2001
+From: Cristian Gafton <gafton@amazon.com>
+Date: Wed, 13 Feb 2013 05:34:40 +0000
+Subject: bump default tcp_wmem from 16KB to 20KB
+
+to account for skb structure growth since the 3.4.x kernel series
+
+(cherry picked from commit 4859c886f6ee760a0d99a68ee7711026090a1746)
+Signed-off-by: Cristian Gafton <gafton@amazon.com>
+(cherry picked from commit 64f08e9da01ff957cbebd44de8797373c589545f)
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834769/
+---
+ net/ipv4/tcp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 05d2bde..4237e9e 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3358,7 +3358,7 @@ void __init tcp_init(void)
+ 	max_rshare = min(6UL*1024*1024, limit);
+ 
+ 	sysctl_tcp_wmem[0] = SK_MEM_QUANTUM;
+-	sysctl_tcp_wmem[1] = 16*1024;
++	sysctl_tcp_wmem[1] = 20*1024;
+ 	sysctl_tcp_wmem[2] = max(64*1024, max_wshare);
+ 
+ 	sysctl_tcp_rmem[0] = SK_MEM_QUANTUM;
+-- 
+2.7.5
+

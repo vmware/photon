@@ -1,0 +1,43 @@
+From 0712fb763746576e0960b1812d5a881dfd1b14f8 Mon Sep 17 00:00:00 2001
+From: Josh Boyer <jwboyer@fedoraproject.org>
+Date: Mon, 11 Nov 2013 08:39:16 -0500
+Subject: lib/cpumask: Make CPUMASK_OFFSTACK usable without debug dependency
+
+When CPUMASK_OFFSTACK was added in 2008, it was dependent upon
+DEBUG_PER_CPU_MAPS being enabled, or an architecture could select it.
+The debug dependency adds additional overhead that isn't required for
+operation of the feature, and we need CPUMASK_OFFSTACK to increase the
+NR_CPUS value beyond 512 on x86.  We drop the current dependency and make
+sure SMP is set.
+
+Bugzilla: N/A
+Upstream-status: Nak'd, supposedly replacement coming to auto-select
+
+Signed-off-by: Josh Boyer <jwboyer@fedoraproject.org>
+(cherry picked from commit c9df8b57b85bf43b564ddad0151ed5790ec2bf25)
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834769/
+---
+ lib/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/lib/Kconfig b/lib/Kconfig
+index 260a80e..f361d8e 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -399,7 +399,8 @@ config CHECK_SIGNATURE
+ 	bool
+ 
+ config CPUMASK_OFFSTACK
+-	bool "Force CPU masks off stack" if DEBUG_PER_CPU_MAPS
++	bool "Force CPU masks off stack"
++	depends on SMP
+ 	help
+ 	  Use dynamic allocation for cpumask_var_t, instead of putting
+ 	  them on the stack.  This is a bit more expensive, but avoids
+-- 
+2.7.5
+
