@@ -1,0 +1,129 @@
+From 74b1e1cc1c089840e6f8f48fd70e315def86ae6d Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Sat, 11 Feb 2017 00:53:56 +0000
+Subject: x86/xen: add system core suspend and resume callbacks
+
+Add Xen PVHVM specific system core callbacks for PM suspend and
+hibernation support. The callbacks suspend and resume Xen primitives,
+like shared_info, pvclock and grant table. Note that Xen suspend can
+handle them in a different manner, but system core callbacks are called
+from the context. So if the callbacks are called from Xen suspend
+context, return immediately.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
+
+CR: https://cr.amazon.com/r/7367674/
+---
+ arch/x86/xen/enlighten.c |  3 +++
+ arch/x86/xen/suspend.c   | 53 ++++++++++++++++++++++++++++++++++++++++++++++++
+ include/xen/xen-ops.h    |  2 ++
+ 3 files changed, 58 insertions(+)
+
+diff --git a/arch/x86/xen/enlighten.c b/arch/x86/xen/enlighten.c
+index 1a87443..ea4a86e 100644
+--- a/arch/x86/xen/enlighten.c
++++ b/arch/x86/xen/enlighten.c
+@@ -1938,6 +1938,9 @@ static void __init xen_hvm_guest_init(void)
+ 
+ 	if (xen_feature(XENFEAT_hvm_callback_vector))
+ 		xen_have_vector_callback = 1;
++
++	xen_setup_syscore_ops();
++
+ 	xen_hvm_smp_init();
+ 	WARN_ON(xen_cpuhp_setup());
+ 	xen_unplug_emulated_devices();
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index 7f664c4..a88065e 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -1,14 +1,19 @@
+ #include <linux/types.h>
+ #include <linux/tick.h>
++#include <linux/syscore_ops.h>
++#include <linux/kernel_stat.h>
+ 
+ #include <xen/xen.h>
+ #include <xen/interface/xen.h>
++#include <xen/interface/memory.h>
+ #include <xen/grant_table.h>
+ #include <xen/events.h>
++#include <xen/xen-ops.h>
+ 
+ #include <asm/xen/hypercall.h>
+ #include <asm/xen/page.h>
+ #include <asm/fixmap.h>
++#include <asm/pvclock.h>
+ 
+ #include "xen-ops.h"
+ #include "mmu.h"
+@@ -115,3 +120,51 @@ void xen_arch_suspend(void)
+ 
+ 	on_each_cpu(xen_vcpu_notify_suspend, NULL, 1);
+ }
++
++static int xen_syscore_suspend(void)
++{
++	struct xen_remove_from_physmap xrfp;
++	int ret;
++
++	/* Xen suspend does similar stuffs in its own logic */
++	if (xen_suspend_mode_is_xen_suspend())
++		return 0;
++
++	xrfp.domid = DOMID_SELF;
++	xrfp.gpfn = __pa(HYPERVISOR_shared_info) >> PAGE_SHIFT;
++
++	ret = HYPERVISOR_memory_op(XENMEM_remove_from_physmap, &xrfp);
++	if (!ret)
++		HYPERVISOR_shared_info = &xen_dummy_shared_info;
++
++	return ret;
++}
++
++static void xen_syscore_resume(void)
++{
++	/* Xen suspend does similar stuffs in its own logic */
++	if (xen_suspend_mode_is_xen_suspend())
++		return;
++
++	/* No need to setup vcpu_info as it's already moved off */
++	xen_hvm_map_shared_info();
++
++	pvclock_resume();
++
++	gnttab_resume();
++}
++
++/*
++ * These callbacks will be called with interrupts disabled and when having only
++ * one CPU online.
++ */
++static struct syscore_ops xen_hvm_syscore_ops = {
++	.suspend = xen_syscore_suspend,
++	.resume = xen_syscore_resume
++};
++
++void __init xen_setup_syscore_ops(void)
++{
++	if (xen_hvm_domain())
++		register_syscore_ops(&xen_hvm_syscore_ops);
++}
+diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
+index f3c4814..7a9de07 100644
+--- a/include/xen/xen-ops.h
++++ b/include/xen/xen-ops.h
+@@ -37,6 +37,8 @@ bool xen_suspend_mode_is_xen_suspend(void);
+ bool xen_suspend_mode_is_pm_suspend(void);
+ bool xen_suspend_mode_is_pm_hibernation(void);
+ 
++void xen_setup_syscore_ops(void);
++
+ extern unsigned long *xen_contiguous_bitmap;
+ int xen_create_contiguous_region(phys_addr_t pstart, unsigned int order,
+ 				unsigned int address_bits,
+-- 
+2.7.5
+

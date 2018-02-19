@@ -1,0 +1,76 @@
+From 54fff0b06ed5d4f3a9cf0dbf935ba57057b7f6dc Mon Sep 17 00:00:00 2001
+From: Ming Lei <ming.lei@canonical.com>
+Date: Sat, 17 Dec 2016 18:49:09 +0800
+Subject: block: relax check on sg gap
+
+If the last bvec of the 1st bio and the 1st bvec of the next
+bio are physically contigious, and the latter can be merged
+to last segment of the 1st bio, we should think they don't
+violate sg gap(or virt boundary) limit.
+
+Both Vitaly and Dexuan reported lots of unmergeable small bios
+are observed when running mkfs on Hyper-V virtual storage, and
+performance becomes quite low. This patch fixes that performance
+issue.
+
+The same issue should exist on NVMe, since it sets virt boundary too.
+
+Reported-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Reported-by: Dexuan Cui <decui@microsoft.com>
+Tested-by: Dexuan Cui <decui@microsoft.com>
+Cc: Keith Busch <keith.busch@intel.com>
+Signed-off-by: Ming Lei <ming.lei@canonical.com>
+Signed-off-by: Jens Axboe <axboe@fb.com>
+(cherry picked from commit 729204ef49ec00b788ce23deb9eb922a5769f55d)
+Signed-off-by: Qian Lu <luqia@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+
+CR: https://cr.amazon.com/r/7255224/
+---
+ include/linux/blkdev.h | 22 +++++++++++++++++++++-
+ 1 file changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index f6a8161..2696a26 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -1415,6 +1415,25 @@ static inline bool bvec_gap_to_prev(struct request_queue *q,
+ 	return __bvec_gap_to_prev(q, bprv, offset);
+ }
+ 
++/*
++ * Check if the two bvecs from two bios can be merged to one segment.
++ * If yes, no need to check gap between the two bios since the 1st bio
++ * and the 1st bvec in the 2nd bio can be handled in one segment.
++ */
++static inline bool bios_segs_mergeable(struct request_queue *q,
++		struct bio *prev, struct bio_vec *prev_last_bv,
++		struct bio_vec *next_first_bv)
++{
++	if (!BIOVEC_PHYS_MERGEABLE(prev_last_bv, next_first_bv))
++		return false;
++	if (!BIOVEC_SEG_BOUNDARY(q, prev_last_bv, next_first_bv))
++		return false;
++	if (prev->bi_seg_back_size + next_first_bv->bv_len >
++			queue_max_segment_size(q))
++		return false;
++	return true;
++}
++
+ static inline bool bio_will_gap(struct request_queue *q, struct bio *prev,
+ 			 struct bio *next)
+ {
+@@ -1424,7 +1443,8 @@ static inline bool bio_will_gap(struct request_queue *q, struct bio *prev,
+ 		bio_get_last_bvec(prev, &pb);
+ 		bio_get_first_bvec(next, &nb);
+ 
+-		return __bvec_gap_to_prev(q, &pb, nb.bv_offset);
++		if (!bios_segs_mergeable(q, prev, &pb, &nb))
++			return __bvec_gap_to_prev(q, &pb, nb.bv_offset);
+ 	}
+ 
+ 	return false;
+-- 
+2.7.5
+

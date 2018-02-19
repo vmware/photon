@@ -1,0 +1,60 @@
+From 52b9db5c0c561ad38b53c0b5b6628bbfe9dfe5d5 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Fri, 17 Mar 2017 10:38:37 +0000
+Subject: drivers/amazon: introduce AMAZON_IXGBEVF
+
+This option is for out-of-tree ixgbevf driver.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834593/
+---
+ drivers/amazon/Kconfig      | 22 ++++++++++++++++++++++
+ drivers/amazon/net/Makefile |  1 +
+ 2 files changed, 23 insertions(+)
+
+diff --git a/drivers/amazon/Kconfig b/drivers/amazon/Kconfig
+index 1a018dd..11fc079 100644
+--- a/drivers/amazon/Kconfig
++++ b/drivers/amazon/Kconfig
+@@ -12,4 +12,26 @@ config AMAZON_DRIVER_UPDATES
+ 
+ if AMAZON_DRIVER_UPDATES
+ 
++config AMAZON_IXGBEVF
++	tristate "Intel(R) 82599 Virtual Function Ethernet support"
++	depends on PCI_MSI && !IXGBEVF
++	---help---
++	  This driver supports Intel(R) 82599 virtual functions.  For more
++	  information on how to identify your adapter, go to the Adapter &
++	  Driver ID Guide at:
++
++	  <http://support.intel.com/support/network/sb/CS-008441.htm>
++
++	  For general information and support, go to the Intel support
++	  website at:
++
++	  <http://support.intel.com>
++
++	  More specific information on configuring the driver is in
++	  <file:Documentation/networking/ixgbevf.txt>.
++
++	  To compile this driver as a module, choose M here. The module
++	  will be called ixgbevf.  MSI-X interrupt support is required
++	  for this driver to work correctly.
++
+ endif # AMAZON_DRIVER_UPDATES
+diff --git a/drivers/amazon/net/Makefile b/drivers/amazon/net/Makefile
+index 6b4996d..be6b282 100644
+--- a/drivers/amazon/net/Makefile
++++ b/drivers/amazon/net/Makefile
+@@ -1,3 +1,4 @@
+ #
+ # Amazon Driver Updates
+ #
++obj-$(CONFIG_AMAZON_IXGBEVF)	+= ixgbevf/
+-- 
+2.7.5
+

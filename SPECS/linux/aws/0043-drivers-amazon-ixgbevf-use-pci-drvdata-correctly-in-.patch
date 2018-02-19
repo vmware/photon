@@ -1,0 +1,45 @@
+From abb9ff26964c67718763dd2494a2ee3914e6f47d Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Fri, 14 Jul 2017 21:39:23 +0000
+Subject: drivers/amazon: ixgbevf: use pci drvdata correctly in
+ ixgbevf_resume()
+
+We had set the pci driver-specific data in ixgbevf_probe() as a type of
+struct net_device, so we should use it as netdev in ixgbevf_resume().
+
+Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+Tested-by: Phil Schmitt <phillip.j.schmitt@intel.com>
+Signed-off-by: Aaron Brown <aaron.f.brown@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+
+This is equivalent to the upstream commit 27ae296716e5 ("ixgbevf: use
+pci drvdata correctly in ixgbevf_suspend()").
+
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+
+CR: https://cr.amazon.com/r/7411826/
+---
+ drivers/amazon/net/ixgbevf/ixgbevf_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/amazon/net/ixgbevf/ixgbevf_main.c b/drivers/amazon/net/ixgbevf/ixgbevf_main.c
+index 88f87cc..e9adbc8 100644
+--- a/drivers/amazon/net/ixgbevf/ixgbevf_main.c
++++ b/drivers/amazon/net/ixgbevf/ixgbevf_main.c
+@@ -4448,8 +4448,8 @@ static int ixgbevf_suspend(struct pci_dev *pdev, pm_message_t __maybe_unused sta
+ #ifdef CONFIG_PM
+ static int ixgbevf_resume(struct pci_dev *pdev)
+ {
+-	struct ixgbevf_adapter *adapter = pci_get_drvdata(pdev);
+-	struct net_device *netdev = adapter->netdev;
++	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct ixgbevf_adapter *adapter = netdev_priv(netdev);
+ 	u32 err;
+ 
+ 	pci_restore_state(pdev);
+-- 
+2.7.5
+

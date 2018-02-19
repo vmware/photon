@@ -1,0 +1,72 @@
+From 6ff7aa7bf71ee6898dda332bccee4bcafa83046a Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Tue, 25 Jul 2017 18:42:36 +0000
+Subject: drivers/amazon: xen-blkfront: use a right index when checking
+ requests
+
+Since commit d05d7f40791c ("Merge branch 'for-4.8/core' of
+git://git.kernel.dk/linux-block") and commit 3fc9d690936f ("Merge branch
+'for-4.8/drivers' of git://git.kernel.dk/linux-block"), blkfront_resume()
+has been using an index for iterating ring_info to check request when
+iterating blk_shadow in an inner loop. This seems to have been
+accidentally introduced during the massive rewrite of the block layer
+macros in the commits.
+
+This might cause crash like this:
+
+[11798.057074] BUG: unable to handle kernel NULL pointer dereference at 0000000000000048
+[11798.058832] IP: [<ffffffff814411fa>] blkfront_resume+0x10a/0x610
+....
+[11798.061063] Call Trace:
+[11798.061063]  [<ffffffff8139ce93>] xenbus_dev_resume+0x53/0x140
+[11798.061063]  [<ffffffff8139ce40>] ? xenbus_dev_probe+0x150/0x150
+[11798.061063]  [<ffffffff813f359e>] dpm_run_callback+0x3e/0x110
+[11798.061063]  [<ffffffff813f3a08>] device_resume+0x88/0x190
+[11798.061063]  [<ffffffff813f4cc0>] dpm_resume+0x100/0x2d0
+[11798.061063]  [<ffffffff813f5221>] dpm_resume_end+0x11/0x20
+[11798.061063]  [<ffffffff813950a8>] do_suspend+0xe8/0x1a0
+[11798.061063]  [<ffffffff813954bd>] shutdown_handler+0xfd/0x130
+[11798.061063]  [<ffffffff8139aba0>] ? split+0x110/0x110
+[11798.061063]  [<ffffffff8139ac26>] xenwatch_thread+0x86/0x120
+[11798.061063]  [<ffffffff810b4570>] ? prepare_to_wait_event+0x110/0x110
+[11798.061063]  [<ffffffff8108fe57>] kthread+0xd7/0xf0
+[11798.061063]  [<ffffffff811da811>] ? kfree+0x121/0x170
+[11798.061063]  [<ffffffff8108fd80>] ? kthread_park+0x60/0x60
+[11798.061063]  [<ffffffff810863b0>] ?  call_usermodehelper_exec_work+0xb0/0xb0
+[11798.061063]  [<ffffffff810864ea>] ?  call_usermodehelper_exec_async+0x13a/0x140
+[11798.061063]  [<ffffffff81534a45>] ret_from_fork+0x25/0x30
+
+Use the right index in the inner loop.
+
+Fixes: d05d7f40791c ("Merge branch 'for-4.8/core' of git://git.kernel.dk/linux-block")
+Fixes: 3fc9d690936f ("Merge branch 'for-4.8/drivers' of git://git.kernel.dk/linux-block")
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Thomas Friebel <friebelt@amazon.de>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/7475929/
+---
+ drivers/amazon/block/xen-blkfront.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/amazon/block/xen-blkfront.c b/drivers/amazon/block/xen-blkfront.c
+index ae05b44..e9ce452 100644
+--- a/drivers/amazon/block/xen-blkfront.c
++++ b/drivers/amazon/block/xen-blkfront.c
+@@ -2258,9 +2258,9 @@ static int blkfront_resume(struct xenbus_device *dev)
+ 			/*
+ 			 * Get the bios in the request so we can re-queue them.
+ 			 */
+-			if (req_op(shadow[i].request) == REQ_OP_FLUSH ||
+-			    req_op(shadow[i].request) == REQ_OP_DISCARD ||
+-			    req_op(shadow[i].request) == REQ_OP_SECURE_ERASE ||
++			if (req_op(shadow[j].request) == REQ_OP_FLUSH ||
++			    req_op(shadow[j].request) == REQ_OP_DISCARD ||
++			    req_op(shadow[j].request) == REQ_OP_SECURE_ERASE ||
+ 			    shadow[j].request->cmd_flags & REQ_FUA) {
+ 				/*
+ 				 * Flush operations don't contain bios, so
+-- 
+2.7.5
+

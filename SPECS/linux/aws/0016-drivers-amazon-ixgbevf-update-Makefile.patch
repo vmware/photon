@@ -1,0 +1,194 @@
+From b9ead375cd5942c23068aa1bb1954a2875704d19 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Fri, 17 Mar 2017 19:41:09 +0000
+Subject: drivers/amazon: ixgbevf: update Makefile
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/6834596/
+---
+ drivers/amazon/net/ixgbevf/Makefile | 145 +++++++-----------------------------
+ 1 file changed, 28 insertions(+), 117 deletions(-)
+
+diff --git a/drivers/amazon/net/ixgbevf/Makefile b/drivers/amazon/net/ixgbevf/Makefile
+index d85c225..454d96f 100644
+--- a/drivers/amazon/net/ixgbevf/Makefile
++++ b/drivers/amazon/net/ixgbevf/Makefile
+@@ -1,7 +1,7 @@
+ ################################################################################
+ #
+-# Intel(R) 10GbE PCI Express Virtual Function Driver
+-# Copyright(c) 1999 - 2016 Intel Corporation.
++# Intel 82599 Virtual Function driver
++# Copyright(c) 1999 - 2012 Intel Corporation.
+ #
+ # This program is free software; you can redistribute it and/or modify it
+ # under the terms and conditions of the GNU General Public License,
+@@ -12,136 +12,47 @@
+ # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ # more details.
+ #
++# You should have received a copy of the GNU General Public License along with
++# this program; if not, write to the Free Software Foundation, Inc.,
++# 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
++#
+ # The full GNU General Public License is included in this distribution in
+ # the file called "COPYING".
+ #
+ # Contact Information:
+-# Linux NICS <linux.nics@intel.com>
+ # e1000-devel Mailing List <e1000-devel@lists.sourceforge.net>
+ # Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
+ #
+ ################################################################################
+ 
+-ifneq ($(KERNELRELEASE),)
+-# kbuild part of makefile
+ #
+-# Makefile for the Intel(R) 10GbE PCI Express Virtual Function Driver
++# Makefile for the Intel(R) 82599 VF ethernet driver
+ #
+ 
+-obj-$(CONFIG_IXGBE) += ixgbevf.o
+-
+-define ixgbevf-y
+-	ixgbevf_main.o
+-	ixgbevf_ethtool.o
+-	ixgbe_vf.o
+-	ixgbe_mbx.o
+-endef
+-ixgbevf-y := $(strip ${ixgbevf-y})
+-ixgbevf-${CONFIG_PCI_HYPERV:m=y} += ixgbe_hv_vf.o
+-ixgbevf-y += kcompat.o
+-
+-else	# ifneq($(KERNELRELEASE),)
+-# normal makefile
+-
+-DRIVER := ixgbevf
+-
+-ifeq (,$(wildcard common.mk))
+-  $(error Cannot find common.mk build rules)
+-else
+-  include common.mk
+-endif
+-
+-# Check that kernel version is at least 2.6.0, since we don't support 2.4.x
+-# kernels with the ixgbe driver. We can't use minimum_kver_check since SLES 10
+-# SP4's Make has a bug which causes $(eval) inside an ifeq conditional to error
+-# out. This was fixed in Make 3.81, but SLES 10 SP4 does not have a fix for
+-# this yet.
+-ifeq (0,$(shell [ ${KVER_CODE} -lt $(call get_kvercode,2,6,0) ]; echo "$?"))
+-  $(warning *** Aborting the build.)
+-  $(error This driver is not supported on kernel versions older than 2.6.0)
+-endif
+-
+-###############
+-# Build rules #
+-###############
++###########################################################################
++# Driver files
++DRIVER_NAME=ixgbevf
+ 
+-# Standard compilation, with regular output
+-default:
+-	@+$(call kernelbuild,modules)
++# core driver files
++$(DRIVER_NAME)-CFILES = ixgbevf_main.c ixgbevf_ethtool.c \
++	                kcompat.c \
++                        ixgbe_vf.c ixgbe_mbx.c
++$(DRIVER_NAME)-HFILES = ixgbevf.h ixgbe_vf.h ixgbe_common.h ixgbe_mbx.h
+ 
+-# Noisy output, for extra debugging
+-noisy:
+-	@+$(call kernelbuild,modules,V=1)
++# extra flags for module builds
++EXTRA_CFLAGS += -DDRIVER_$(shell echo $(DRIVER_NAME) | tr '[a-z]' '[A-Z]')
++EXTRA_CFLAGS += -DDRIVER_NAME=$(DRIVER_NAME)
++EXTRA_CFLAGS += -DDRIVER_NAME_CAPS=$(shell echo $(DRIVER_NAME) | tr '[a-z]' '[A-Z]')
++EXTRA_CFLAGS += -DAMAZON_NOHW_VLAN
+ 
+-# Silence any output generated
+-silent:
+-	@+$(call kernelbuild,modules,>/dev/null)
++obj-$(CONFIG_AMAZON_IXGBEVF) += $(DRIVER_NAME).o
+ 
+-# Enable higher warning level
+-checkwarnings: clean
+-	@+$(call kernelbuild,modules,W=1)
++$(DRIVER_NAME)-objs := $($(DRIVER_NAME)-CFILES:.c=.o)
+ 
+-# Run sparse static analyzer
+-sparse: clean
+-	@+$(call kernelbuild,modules,C=2 CF="-D__CHECK_ENDIAN__ -Wbitwise -Wcontext")
+-
+-# Run coccicheck static analyzer
+-ccc: clean
+-	@+$(call kernelbuild,modules,coccicheck MODE=report))
+-
+-# Build manfiles
+-manfile:
+-	@gzip -c ../${DRIVER}.${MANSECTION} > ${DRIVER}.${MANSECTION}.gz
+-
+-# Clean the module subdirectories
+ clean:
+-	@+$(call kernelbuild,clean)
+-	@-rm -rf *.${MANSECTION}.gz *.ko
+-
+-# Install the modules and manpage
+-install: default manfile
+-	@echo "Copying manpages..."
+-	@install -D -m 644 ${DRIVER}.${MANSECTION}.gz ${INSTALL_MOD_PATH}${MANDIR}/man${MANSECTION}/${DRIVER}.${MANSECTION}.gz
+-	@echo "Installing modules..."
+-	@+$(call kernelbuild,modules_install)
+-	@echo "Running depmod..."
+-	@$(call cmd_depmod)
+-
+-uninstall:
+-	rm -f ${INSTALL_MOD_PATH}/lib/modules/${KVER}/${INSTALL_MOD_DIR}/${DRIVER}.ko;
+-	$(call cmd_depmod)
+-	if [ -e ${INSTALL_MOD_PATH}${MANDIR}/man${MANSECTION}/${DRIVER}.${MANSECTION}.gz ] ; then \
+-		rm -f ${INSTALL_MOD_PATH}${MANDIR}/man${MANSECTION}/${DRIVER}.${MANSECTION}.gz ; \
+-	fi;
+-
+-########
+-# Help #
+-########
+-help:
+-	@echo 'Cleaning targets:'
+-	@echo '  clean               - Clean files generated by kernel module build'
+-	@echo 'Build targets:'
+-	@echo '  default             - Build module(s) with standard verbosity'
+-	@echo '  noisy               - Build module(s) with V=1 verbosity -- very noisy'
+-	@echo '  silent              - Build module(s), squelching all output'
+-	@echo 'Static Analysis:'
+-	@echo '  checkwarnings       - Clean, then build module(s) with W=1 warnings enabled'
+-	@echo '  sparse              - Clean, then check module(s) using sparse'
+-	@echo '  ccc                 - Clean, then check module(s) using coccicheck'
+-	@echo 'Other targets:'
+-	@echo '  manfile             - Generate a gzipped manpage'
+-	@echo '  install             - Build then install the module(s) and manpage'
+-	@echo '  uninstall           - Uninstall the module(s) and manpage'
+-	@echo '  help                - Display this help message'
+-	@echo 'Variables:'
+-	@echo '  LINUX_VERSION       - Debug tool to force kernel LINUX_VERSION_CODE. Use at your own risk.'
+-	@echo '  W=N                 - Kernel variable for setting warning levels'
+-	@echo '  V=N                 - Kernel variable for setting output verbosity'
+-	@echo '  INSTALL_MOD_PATH    - Add prefix for the module and manpage installation path'
+-	@echo '  INSTALL_MOD_DIR     - Use module directory other than updates/drivers/net/ethernet/intel/${DRIVER}'
+-	@echo ' Other variables may be available for tuning make process, see'
+-	@echo ' Kernel Kbuild documentation for more information'
+-
+-.PHONY: default noisy clean manfile silent sparse ccc install uninstall help
+-
+-endif	# ifneq($(KERNELRELEASE),)
++ifeq ($(KOBJ),$(KSRC))
++	$(MAKE) -C $(KSRC) SUBDIRS=$(shell pwd) clean
++else
++	$(MAKE) -C $(KSRC) O=$(KOBJ) SUBDIRS=$(shell pwd) clean
++endif
++	rm -rf $(TARGET) $(TARGET:.ko=.o) $(TARGET:.ko=.mod.c) $(TARGET:.ko=.mod.o) $(CFILES:.c=.o) $(MANFILE).gz .*cmd .tmp_versions
+-- 
+2.7.5
+
