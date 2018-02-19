@@ -1,0 +1,70 @@
+From b4241b8fe78f0ea29ca8f9aeb3d6a787a54ed178 Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Mon, 24 Jul 2017 19:03:54 +0000
+Subject: drivers/amazon: xen-blkfront: empty the request queue while resuming
+
+In commit b7420c1eaeac ("drivers/amazon: xen-blkfront: resurrect
+request-based mode"), we accidentally didn't bring piece of code which
+empties the request queue while saving bios. The logic was originally
+introduced in commit 402b27f9f2c2 ("xen-block: implement indirect
+descriptors"). It seems to be still required for request-based mode,
+so just do the same thing as before.
+
+Note that some suspend/resume logic were moved from blkif_recover() to
+blkfront_resume() in commit 7b427a59538a ("xen-blkfront: save uncompleted
+reqs in blkfront_resume()"), so add the logic to blkfront_resume().
+
+Fixes: b7420c1eaeac ("drivers/amazon: xen-blkfront: resurrect request-based mode")
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+
+CR: https://cr.amazon.com/r/7475918/
+---
+ drivers/amazon/block/xen-blkfront.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
+
+diff --git a/drivers/amazon/block/xen-blkfront.c b/drivers/amazon/block/xen-blkfront.c
+index 105ad17..ae05b44 100644
+--- a/drivers/amazon/block/xen-blkfront.c
++++ b/drivers/amazon/block/xen-blkfront.c
+@@ -2283,6 +2283,36 @@ static int blkfront_resume(struct xenbus_device *dev)
+ 		}
+ 	}
+ 
++	if (blkfront_use_request_based) {
++		struct request *req;
++		struct bio_list merge_bio;
++
++		/*
++		 * Empty the queue, this is important because we might have
++		 * requests in the queue with more segments than what we
++		 * can handle now.
++		 */
++		spin_lock_irq(&info->io_lock);
++		while ((req = blk_fetch_request(info->rq)) != NULL) {
++			if (req_op(req) == REQ_OP_FLUSH ||
++			    req_op(req) == REQ_OP_DISCARD ||
++			    req_op(req) == REQ_OP_SECURE_ERASE ||
++			    req->cmd_flags & REQ_FUA) {
++				list_add(&req->queuelist, &info->requests);
++				continue;
++			}
++			merge_bio.head = req->bio;
++			merge_bio.tail = req->biotail;
++			bio_list_merge(&info->bio_list, &merge_bio);
++			req->bio = NULL;
++			if (req_op(req) == REQ_OP_FLUSH ||
++			    req->cmd_flags & REQ_FUA)
++				pr_alert("diskcache flush request found!\n");
++			__blk_end_request_all(req, 0);
++		}
++		spin_unlock_irq(&info->io_lock);
++	}
++
+ 	blkif_free(info, info->connected == BLKIF_STATE_CONNECTED);
+ 
+ 	err = negotiate_mq(info);
+-- 
+2.7.5
+

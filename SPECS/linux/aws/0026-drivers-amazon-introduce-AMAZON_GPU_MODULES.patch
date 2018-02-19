@@ -1,0 +1,46 @@
+From d15e01c9feb359a813c8e42c7c99678a0767e45d Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Fri, 17 Mar 2017 21:23:02 +0000
+Subject: drivers/amazon: introduce AMAZON_GPU_MODULES
+
+Enable some kernel modules required by out-of-tree GPU drivers.
+Note that the option itself doesn't provide any hardware-specific
+driver modules. Renamed from AMAZON_DRM_TTM.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Johnathan Davis <davjhna@amazon.com>
+Reviewed-by: Vineeth Remanan Pillai <vineethp@amazon.com>
+Reviewed-by: Rashika Kheria <rashika@amazon.de>
+
+CR: https://cr.amazon.com/r/6512577/
+---
+ drivers/amazon/Kconfig | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/amazon/Kconfig b/drivers/amazon/Kconfig
+index 986ed17..cf8eaa2 100644
+--- a/drivers/amazon/Kconfig
++++ b/drivers/amazon/Kconfig
+@@ -67,4 +67,19 @@ config AMAZON_XEN_BLKDEV_FRONTEND_MQ_DEFAULT
+           The boot time parameter xen_blkfront.use_blk_mq can be used to
+           change the setting regardless of this option.
+ 
++config AMAZON_GPU_MODULES
++        bool "Modules required by out-of-tree GPU drivers"
++        depends on DRM && PCI
++        select FW_LOADER
++        select DRM_KMS_HELPER
++        select DRM_TTM
++        select POWER_SUPPLY
++        select HWMON
++        select BACKLIGHT_CLASS_DEVICE
++        select BACKLIGHT_LCD_SUPPORT
++        select INTERVAL_TREE
++        help
++          This enables some GPU-related modules for out-of-tree GPU drivers.
++          This optoin itself doesn't provide any hardware-specific driver modules.
++
+ endif # AMAZON_DRIVER_UPDATES
+-- 
+2.7.5
+
