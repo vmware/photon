@@ -1,0 +1,13 @@
+diff --git a/goal.c b/goal.c2
+index 1f197a3..f5b5669 100644
+--- a/src/goal.c
++++ b/src/goal.c
+@@ -221,6 +221,8 @@ init_solver(HyGoal goal, int flags)
+     solver_set_flag(solv, SOLVER_FLAG_BEST_OBEY_POLICY, 1);
+     /* support package splits via obsoletes */
+     solver_set_flag(solv, SOLVER_FLAG_YUM_OBSOLETES, 1);
++    if(goal->actions & HY_DOWNGRADE)
++        solver_set_flag(solv, SOLVER_FLAG_ALLOW_DOWNGRADE, 1);
+ 
+ #if defined(LIBSOLV_FLAG_URPMREORDER)
+     /* support urpm-like solution reordering */
