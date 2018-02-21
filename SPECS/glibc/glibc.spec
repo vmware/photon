@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.26
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -22,6 +22,7 @@ Patch4:         glibc-fix-CVE-2017-15670.patch
 Patch5:         glibc-fix-CVE-2017-15804.patch
 Patch6:         glibc-fix-CVE-2017-17426.patch
 Patch7:         glibc-fix-CVE-2017-16997.patch
+Patch8:         glibc-fix-CVE-2018-1000001.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -286,6 +287,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Tue Jan 20 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-9
+-   Fix CVE-2018-1000001
 *   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-8
 -   Fix CVE-2017-16997
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 2.26-7
