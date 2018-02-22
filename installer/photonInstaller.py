@@ -273,6 +273,11 @@ if __name__ == '__main__':
         packages = PackageSelector.get_packages_to_install(options_sorted, config['type'],
                                                            options.output_data_path)
 
+	# Use the optimized linux-aws kernel for AMI images.
+	if options.vmdk_path and config['type'] == 'ami':
+		packages.remove('linux')
+		packages.append('linux-aws')
+
         config['packages'] = packages
 
         if os.path.isdir(options.working_directory):

@@ -373,6 +373,7 @@ class constants(object):
             # only generic linux is for arm64
             "linux-esx.spec",
             "linux-secure.spec",
+            "linux-aws.spec",
             # only linux-secure supports aufs
             "aufs-util.spec",
             # open-vm-tools does not support aarch64
