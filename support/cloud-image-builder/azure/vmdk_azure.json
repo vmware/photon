@@ -3,16 +3,16 @@
     "password": 
         {
             "crypted": false,
-            "text": "PASSWORD"
+            "text": "changeme"
         },
     "type": "azure",
-    "size": {"root": "16", "swap": "0"},
+    "size": {"root": "8", "swap": "0"},
     "public_key":"<ssh-key-here>",
     "postinstallscripts": [ "azure-patch.sh", "../password-expiry.sh" ],
     "additionalfiles": [
                             {"cloud-photon.cfg": "/etc/cloud/cloud.cfg"}
                        ],
     "artifacttype": "vhd",
-    "keeprawdisk": "false"
+    "keeprawdisk": "true"
 }
 

@@ -23,6 +23,7 @@ Patch4:         resizePartitionUUID.patch
 Patch5:         datasource-guestinfo.patch
 Patch6:         systemd-service-changes.patch
 Patch7:         systemd-resolved-config.patch
+Patch8:         azure1.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -65,6 +66,7 @@ ssh keys and to let the user run various scripts.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 

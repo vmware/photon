@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.0.18
-Release:        3%{?dist}
+Version:        2.2.14
+Release:        2.ph2
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            http://go.microsoft.com/fwlink/?LinkId=250998

@@ -1,6 +1,6 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.4.115
+Version:	4.4.114
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/

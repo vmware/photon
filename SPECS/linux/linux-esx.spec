@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.115
+Version:       4.4.114
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
