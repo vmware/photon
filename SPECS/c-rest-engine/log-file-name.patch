@@ -1,0 +1,23 @@
+From f1730c60abc1cdd28d0adc54b61c361f3924dfd4 Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Wed, 14 Feb 2018 17:58:37 -0800
+Subject: [PATCH] Fixing typo in debug file name length
+
+Change-Id: Id94672c816728ca0165a68634fb9f3c501f46dde
+---
+ server/restengine/httpUtilsInternal.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/server/restengine/httpUtilsInternal.c b/server/restengine/httpUtilsInternal.c
+index edc4033..ad7203f 100644
+--- a/server/restengine/httpUtilsInternal.c
++++ b/server/restengine/httpUtilsInternal.c
+@@ -520,7 +520,7 @@ VmRESTCopyConfig(
+ 
+     if (!(IsNullOrEmptyString(pConfig->pszDebugLogFile)))
+     {
+-        strncpy(pRESTConfig->pszDebugLogFile, pConfig->pszDebugLogFile, (MAX_DEAMON_NAME_LEN - 1));
++        strncpy(pRESTConfig->pszDebugLogFile, pConfig->pszDebugLogFile, (MAX_PATH_LEN - 1));
+     }
+ 
+     if (!(IsNullOrEmptyString(pConfig->pszDaemonName)))
