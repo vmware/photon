@@ -1,3 +1,3 @@
 {
-    "packages":["sudo", "gawk", "cloud-utils", "gptfdisk", "tar"]
+    "packages":["sudo", "gawk", "cloud-utils", "gptfdisk", "tar", "linux-aws"]
 }
