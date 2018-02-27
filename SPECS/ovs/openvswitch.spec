@@ -2,7 +2,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.8.0
+Version:        2.8.2
 Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
@@ -11,8 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=51baa3d01f28dd2b237da8071a57809247e9eefc
-Patch0:         OVS-CVE-2017-14970.patch
+%define sha1 openvswitch=1d0e8cbf6d6e649e0f518219a599d7411f863875
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -119,7 +118,6 @@ It contains the documentation and manpages for OVN.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 ./configure \
@@ -280,6 +278,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Tue Feb 27 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-1
+-   Update to OVS 2.8.2
 *   Mon Feb 26 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.0-1
 -   Update to OVS 2.8.0
 *   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-9
