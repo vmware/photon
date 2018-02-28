@@ -1,17 +1,19 @@
-Summary:    NFS client utils
-Name:       nfs-utils
-Version:    1.3.3
-Release:    6%{?dist}
-License:    GPLv2+
-URL:        http://sourceforge.net/projects/nfs
-Group:      Applications/Nfs-utils-client
-Source0:    http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.bz2
-%define sha1 nfs-utils=7c561e6a22a626aed93766bdb0c34e9a4e77b9e7
-Source1:    nfs-client.service
-Source2:    nfs-client.target
-Source3:    rpc-statd.service
-Source4:    rpc-statd-notify.service
-Source5:    nfs-utils.defaults
+Summary:        NFS client utils
+Name:           nfs-utils
+Version:        1.3.3
+Release:        7%{?dist}
+License:        GPLv2+
+URL:            http://sourceforge.net/projects/nfs
+Group:          Applications/Nfs-utils-client
+Source0:        http://downloads.sourceforge.net/nfs/%{name}-%{version}.tar.bz2
+%define sha1    nfs-utils=7c561e6a22a626aed93766bdb0c34e9a4e77b9e7
+Source1:        nfs-client.service
+Source2:        nfs-client.target
+Source3:        rpc-statd.service
+Source4:        rpc-statd-notify.service
+Source5:        nfs-utils.defaults
+Source6:        nfs-server.service
+Source7:        nfs-mountd.service
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  krb5
@@ -49,9 +51,9 @@ install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE4} %{buildroot}/lib/systemd/system/
 install -m644 %{SOURCE5} %{buildroot}/etc/default/nfs-utils
-install -m644 systemd/nfs-server.service %{buildroot}/lib/systemd/system/
+install -m644 %{SOURCE6} %{buildroot}/lib/systemd/system/
+install -m644 %{SOURCE7} %{buildroot}/lib/systemd/system/
 install -m644 systemd/proc-fs-nfsd.mount %{buildroot}/lib/systemd/system/
-install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 
 %files
 %defattr(-,root,root)
@@ -64,6 +66,8 @@ install -m644 systemd/nfs-mountd.service %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*   Tue Feb 27 2018 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-7
+-   Updated nfs-server.service and nfs-mountd.service.
 *   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.3.3-6
 -   Removed requires python2-libs
 *   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.3.3-5
