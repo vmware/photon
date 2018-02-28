@@ -1,6 +1,6 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.27
+Version:        8.5.28
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -9,10 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=a538079e9302ca91092923af3ac578d2b391b3f6
+%define sha1    apache-tomcat=26625cae8a5457df1cd1b59da376180f5b6ac383
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=1976f76c251d3e249830ad1c290fbed7c07f4ebf
+%define sha1    base=993b4f276ea6bd88ba17de628393e9421ac92c0b
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Feb 28 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.28-1
+-   Upgraded to version 8.5.28
 *   Fri Feb 02 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.27-1
 -   Upgraded to version 8.5.27
 *   Thu Dec 21 2017 Anish Swaminathan <anishs@vmware.com> 8.5.24-1
