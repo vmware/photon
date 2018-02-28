@@ -134,6 +134,13 @@ class Scheduler(object):
     def _makeGraph():
         k = 2
         for package in Scheduler.sortedList:
+                Scheduler.dependencyGraph[package] = {}
+                Scheduler.alldependencyGraph[package] = {}
+                for child_package in Scheduler._getBuildRequiredPackages(package):
+                    Scheduler.dependencyGraph[package][child_package] = 1
+                for child_package in Scheduler._getRequiredPackages(package):
+                    Scheduler.alldependencyGraph[package][child_package] = 1
+        for package in Scheduler.sortedList:
             for child_pkg in list(Scheduler.dependencyGraph[package].keys()):
                 Scheduler._getDependencies(child_pkg, package, k)
                 for node in list(Scheduler.alldependencyGraph[child_pkg].keys()):
@@ -167,20 +174,24 @@ class Scheduler(object):
             return 0
 
     @staticmethod
+    def _getPriority(package):
+        try:
+            return float(Scheduler.priorityMap[package])
+        except KeyError:
+            return 0
+
+
+    @staticmethod
     def _setPriorities():
         if constants.packageWeightsPath is None:
             Scheduler.logger.info("Priority Scheduler disabled")
+            if constants.publishBuildDependencies:
+                Scheduler.logger.info("Publishing Build dependencies")
+                Scheduler._makeGraph()
         else:
             Scheduler.logger.info("Priority Scheduler enabled")
             Scheduler._parseWeights()
 
-            for package in Scheduler.sortedList:
-                Scheduler.dependencyGraph[package] = {}
-                Scheduler.alldependencyGraph[package] = {}
-                for child_package in Scheduler._getBuildRequiredPackages(package):
-                    Scheduler.dependencyGraph[package][child_package] = 1
-                for child_package in Scheduler._getRequiredPackages(package):
-                    Scheduler.alldependencyGraph[package][child_package] = 1
             Scheduler._makeGraph()
             for package in Scheduler.sortedList:
                 try:
@@ -224,5 +235,5 @@ class Scheduler(object):
                     canBuild = False
                     break
             if canBuild:
-                Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getWeight(pkg), pkg))
+                Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getPriority(pkg), pkg))
                 Scheduler.logger.info("Adding " + pkg + " to the schedule list")
