@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -149,6 +149,10 @@ for service in openvswitch ovsdb-server ovs-vswitchd ovn-controller ovn-controll
 	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
 done
 
+mkdir -p %{buildroot}/%{_sysconfdir}/openvswitch
+install -p -D -m 0644 rhel/etc_openvswitch_default.conf %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
+sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
@@ -200,13 +204,13 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_unitdir}/ovs-vswitchd.service
 %{_unitdir}/ovsdb-server.service
 %{_libdir}/lib*
+%{_sysconfdir}/openvswitch/default.conf
 %{_sysconfdir}/bash_completion.d/ovs-*-bashcomp.bash
 %{_datadir}/openvswitch/*.ovsschema
 %{_datadir}/openvswitch/bugtool-plugins/*
 %{_datadir}/openvswitch/python/*
 %{_datadir}/openvswitch/scripts/ovs-*
 %config(noreplace) %{_sysconfdir}/sysconfig/openvswitch
-
 
 %files -n python-openvswitch
 %{python2_sitelib}/*
@@ -275,6 +279,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Wed Feb 28 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-2
+-   Setup the default conf file for local ovsdb server.
 *   Tue Feb 27 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-1
 -   Update to OVS 2.8.2
 *   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-9
