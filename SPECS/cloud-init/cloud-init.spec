@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -21,6 +21,7 @@ Patch5:         datasource-guestinfo.patch
 Patch6:         systemd-service-changes.patch
 Patch7:         makecheck.patch
 Patch8:         systemd-resolved-config.patch
+Patch9:         cloud-init-azureds.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -66,6 +67,7 @@ ssh keys and to let the user run various scripts.
 %patch6 -p1
 %patch7 -p1
 %patch8 -p1
+%patch9 -p1
 
 find systemd -name cloud*.service | xargs sed -i s/StandardOutput=journal+console/StandardOutput=journal/g
 
@@ -136,6 +138,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Feb 28 2018 Anish Swaminathan <anishs@vmware.com> 0.7.9-14
+-   Add support for systemd constructs for azure DS
 *   Mon Oct 16 2017 Vinay Kulkarni <kulakrniv@vmware.com> 0.7.9-13
 -   Support configuration of systemd resolved.conf
 *   Wed Sep 20 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.9-12
