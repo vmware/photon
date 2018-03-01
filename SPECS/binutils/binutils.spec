@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.30
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 %define sha1    binutils=574d3b5650413d6ee65195a4f5ecbddc3a38f718
+Patch0:         binutils-2.30-CVE-2018-6543.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -20,6 +21,7 @@ It contains the libraries and header files to create applications
 for handling compiled objects.
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -107,6 +109,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Wed Feb 28 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-2
+-   Fix CVE-2018-6543.
 *   Mon Jan 29 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-1
 -   Update to version 2.30
 *   Mon Dec 18 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-4
