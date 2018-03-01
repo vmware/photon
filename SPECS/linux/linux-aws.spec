@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.80
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -137,7 +137,6 @@ The Linux package contains the Linux kernel.
 %package devel
 Summary:        Kernel Dev
 Group:          System Environment/Kernel
-Obsoletes:      linux-dev
 Requires:       %{name} = %{version}-%{release}
 Requires:       python2 gawk
 %description devel
@@ -430,6 +429,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Mar 1 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-3
+-   Fix upgrade issue by removing 'Obsoletes: linux-dev'.
 *   Mon Feb 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-2
 -   Add enhancements from Amazon.
 *   Mon Feb 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-1
