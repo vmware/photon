@@ -8,9 +8,6 @@ ln -s ../docker.service docker.service
 ln -s ../waagent.service waagent.service
 ln -s ../sshd-keygen.service sshd-keygen.service
 
-#Disable cloud-init
-rm -rf /etc/systemd/system/cloud-init.target.wants
-
 # Remove ssh host keys and add script to regenerate them at boot time.
 
 rm -f /etc/ssh/ssh_host_*

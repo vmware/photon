@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.8.20p2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -11,6 +11,7 @@ Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
 %define sha1    sudo=7aa187518735312a82c5fcb3d253ed700cb8c68e
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
+BuildRequires:  sed
 Requires:       Linux-PAM
 Requires:       shadow
 
@@ -40,10 +41,9 @@ make install DESTDIR=%{buildroot}
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 find %{buildroot}/%{_libdir} -name '*.so~' -delete
-cat >> %{buildroot}/etc/sudoers << EOF
-%wheel ALL=(ALL) ALL
-%sudo   ALL=(ALL) ALL
-EOF
+sed -i '/#includedir.*/i \
+%wheel ALL=(ALL) ALL \
+%sudo   ALL=(ALL) ALL' %{buildroot}/etc/sudoers
 install -vdm755 %{buildroot}/etc/pam.d
 cat > %{buildroot}/etc/pam.d/sudo << EOF
 #%%PAM-1.0
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Thu Mar 01 2018 Anish Swaminathan <anishs@vmware.com> 1.8.20p2-5
+-   Move includedir sudoers.d to end of sudoers file
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-4
 -   No direct toybox dependency, shadow depends on toybox
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-3
