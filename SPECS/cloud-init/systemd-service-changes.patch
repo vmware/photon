@@ -20,7 +20,8 @@ diff -rup cloud-init-0.7.9/systemd/cloud-init.service cloud-init-0.7.9-new/syste
  Wants=sshd-keygen.service
  Wants=sshd.service
 @@ -9,9 +8,7 @@ After=networking.service
- Before=network-online.target
+-Before=network-online.target
++After=systemd-networkd-wait-online.service
  Before=sshd-keygen.service
  Before=sshd.service
 -Before=sysinit.target
