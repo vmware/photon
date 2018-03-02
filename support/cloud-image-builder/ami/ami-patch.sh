@@ -9,6 +9,7 @@ echo "127.0.0.1 localhost" >> /etc/hosts
 
 echo "DNS=169.254.169.253" >> /etc/systemd/resolved.conf
 echo "Domains=ec2.internal" >> /etc/systemd/network/99-dhcp-en.network
+echo -e "\n[DHCP]\nUseMTU=true" >> /etc/systemd/network/99-dhcp-en.network
 
 # Remove ssh host keys and add script to regenerate them at boot time.
 rm -f /etc/ssh/ssh_host_*
