@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -14,6 +14,7 @@ BuildRequires: openssl-devel >= 1.0.1
 Source0:       %{name}-%{version}.tar.gz
 Patch0:        log-file-name.patch
 Patch1:        preprocess-timeout.patch
+Patch2:        typo_fixes.patch
 %define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
 
 %description
@@ -34,6 +35,7 @@ development libs and header files for c-rest-engine
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 cd build
@@ -66,6 +68,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Mon Mar 05 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-3
+-  Appying patch for some typo in code.
 *  Fri Feb 23 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-2
 -  Appying patch for preprocess timeout.
 *  Wed Feb 14 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-1
