@@ -1,0 +1,43 @@
+From 4484acf47c572b5a1272fc85182f1432ce9606c2 Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Fri, 2 Mar 2018 16:57:00 -0800
+Subject: [PATCH] Fixing some typo in code
+
+Change-Id: Ia193afde3224f4adde5d7c25d58e08ded679f911
+---
+ transport/posix/socket.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index 44cfbfd..355610f 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -426,7 +426,7 @@ VmSockPosixAddEventToQueueInLock(
+     )
+ {
+     DWORD                            dwError = REST_ENGINE_SUCCESS;
+-    BOOLEAN                          bLocked = TRUE;
++    BOOLEAN                          bLocked = FALSE;
+ 
+     if (!pQueue || !pSocket)
+     {
+@@ -579,7 +579,6 @@ VmSockPosixWaitForEvent(
+             {
+                 eventType = VM_SOCK_EVENT_TYPE_CONNECTION_CLOSED;
+                 pSocket = pEventSocket;
+-                BAIL_ON_VMREST_ERROR(dwError);
+             }
+             else if (pEventSocket->type == VM_SOCK_TYPE_LISTENER)    // New connection request
+             {
+@@ -651,10 +650,10 @@ VmSockPosixWaitForEvent(
+             else if (pEventSocket->type == VM_SOCK_TYPE_TIMER) // Time out event
+             {
+                 pSocket = pEventSocket;
+-                VMREST_LOG_INFO(pRESTHandle, "Timeout event happened on IO Socket fd %d, timer fd %d", pSocket->pIoSocket->fd, pSocket->fd);
+ 
+                 if (pSocket->pIoSocket)
+                 {
++                   VMREST_LOG_INFO(pRESTHandle, "Timeout event happened on IO Socket fd %d, timer fd %d", pSocket->pIoSocket->fd, pSocket->fd);
+                    /**** Delete IO socket from queue so that we don't get any further notification ****/
+                     dwError = VmSockPosixDeleteEventFromQueue(
+                                   pRESTHandle,
