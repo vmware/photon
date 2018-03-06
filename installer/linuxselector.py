@@ -21,7 +21,7 @@ class LinuxSelector(object):
         self.menu_starty = self.win_starty + 6
 
         self.menu_items = []
-        self.menu_items.append(("1. Hypervisor optimized", self.set_linux_esx_installation, True))
+        self.menu_items.append(("1. VMware hypervisor optimized", self.set_linux_esx_installation, True))
         self.menu_items.append(("2. Generic", self.set_linux_esx_installation, False))
 
         self.host_menu = Menu(self.menu_starty, self.maxx, self.menu_items,
