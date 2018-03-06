@@ -63,7 +63,7 @@ class IsoConfig(object):
         out, err = process.communicate()
         if err is not None and err != 0:
             return False
-        return out == 'vmware\n'
+        return out.decode() == 'vmware\n'
 
     def get_config(self, path):
         """kick start configuration"""
