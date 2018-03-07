@@ -70,6 +70,7 @@ BuildRequires:  libmspack
 BuildRequires:  Linux-PAM
 BuildRequires:  openssl-devel audit-devel
 BuildRequires:  procps-ng-devel
+BuildRequires:  elfutils-libelf-devel
 Requires:       filesystem kmod coreutils
 %define uname_r %{version}-%{release}
 
