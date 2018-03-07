@@ -1,14 +1,14 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p10
-Release:        4%{?dist}
+Version:        4.2.8p11
+Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    ntp=503d68cfd3e6a9354e0e28dd38b39d850b1228b2
+%define sha1    ntp=b20352bb76963a0ef5ec07ba99c2bb97ec6b6aeb
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
@@ -28,6 +28,16 @@ The ntp package contains a client and server to keep the time
 synchronized between various computers over a network. This 
 package is the official reference implementation of the 
 NTP protocol.
+
+%package        perl
+Summary:        Perl scripts for ntp
+Group:          Utilities
+Requires:       ntp = %{version}-%{release}, perl >= 5
+Requires:       perl-Net-SSLeay
+Requires:       perl-IO-Socket-SSL
+%description    perl
+Perl scripts for ntp.
+
 
 %package -n ntpstat
 Summary:    Utilities
@@ -127,16 +137,35 @@ rm -rf %{buildroot}/*
 %attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
 %{_libdir}/systemd/system-preset/50-ntpd.preset
-%exclude %{_bindir}/ntpstat
-%exclude %{_mandir}/man8/ntpstat.8*
-%{_bindir}/*
+%{_bindir}/ntpd
+%{_bindir}/ntpdate
+%{_bindir}/ntpdc
+%{_bindir}/ntp-keygen
+%{_bindir}/ntpq
+%{_bindir}/ntptime
+%{_bindir}/sntp
+%{_bindir}/tickadj
 %{_datadir}/doc/%{name}-%{version}/*
 %{_datadir}/doc/ntp/*
 %{_datadir}/doc/sntp/*
 %{_datadir}/licenses/ntp/LICENSE
-%{_mandir}/man1/*
+%{_mandir}/man1/ntpd.1.gz
+%{_mandir}/man1/ntpdc.1.gz
+%{_mandir}/man1/ntp-keygen.1.gz
+%{_mandir}/man1/ntpq.1.gz
+%{_mandir}/man1/sntp.1.gz
 %{_mandir}/man5/*
+
+%files perl
+%{_bindir}/calc_tickadj
+%{_bindir}/ntptrace
+%{_bindir}/ntp-wait
+%{_bindir}/update-leap
 %{_datadir}/ntp/lib/NTP/Util.pm
+%{_mandir}/man1/calc_tickadj.1.gz
+%{_mandir}/man1/ntptrace.1.gz
+%{_mandir}/man1/ntp-wait.1.gz
+%{_mandir}/man1/update-leap.1.gz
 
 %files -n ntpstat
 %defattr(-,root,root)
@@ -144,6 +173,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Mon Mar 05 2018 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p11-1
+-   Upgrade version to 4.2.8p11 and move perl scripts to perl subpackage.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.8p10-4
 -   Remove shadow from requires and use explicit tools for post actions
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  4.2.8p10-3
