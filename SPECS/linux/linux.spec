@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.115
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -70,6 +70,7 @@ BuildRequires:  libmspack
 BuildRequires:  Linux-PAM
 BuildRequires:  openssl-devel audit-devel
 BuildRequires:  procps-ng-devel
+BuildRequires:  elfutils-libelf-devel
 Requires:       filesystem kmod coreutils
 %define uname_r %{version}-%{release}
 
@@ -321,6 +322,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Mar 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.115-2
+-   Add build dependency of libelf. Needed by perf to resolve symbols.
 *   Mon Feb 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.115-1
 -   Update to version 4.4.115
 *   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.114-1
