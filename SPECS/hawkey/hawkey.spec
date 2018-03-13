@@ -4,7 +4,7 @@
 Summary:        Hawkey
 Name:           hawkey
 Version:        2017.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
 Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -14,6 +14,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         hawkey-corrupt-metadata.patch
 Patch1:         hawkey-allow-downgrade-flag.patch
+Patch2:         hawkey-severity-reboot_suggested.patch
 BuildRequires:  libsolv-devel
 BuildRequires:  check
 BuildRequires:  cmake
@@ -63,6 +64,7 @@ Python 3 bindings for the hawkey library.
 %setup -qn hawkey-hawkey-0.6.4-1
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 sed -i 's/ADD_SUBDIRECTORY (doc)//' CMakeLists.txt
 mkdir build
 mkdir build-py3
@@ -118,6 +120,8 @@ popd
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Mon Mar 12 2018 Xiaolin Li <xiaolinl@vmware.com> 2017.1-6
+-   Return severity and reboot_suggested.
 *   Thu Feb 15 2018 Xiaolin Li <xiaolinl@vmware.com> 2017.1-5
 -   Set SOLVER_FLAG_ALLOW_DOWNGRADE to true for downgrade operation.
 *   Thu Sep 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2017.1-4

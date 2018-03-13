@@ -1,0 +1,34 @@
+diff --git a/p2/advisory.c b/p1/advisory.c
+index 4303de6..2ac80ae 100644
+--- a/src/advisory.c
++++ b/src/advisory.c
+@@ -135,6 +135,16 @@ hy_advisory_get_rights(HyAdvisory advisory)
+     return pool_lookup_str(advisory->pool, advisory->a_id, UPDATE_RIGHTS);
+ }
+ 
++const char *hy_advisory_get_severity(HyAdvisory advisory)
++{
++    return pool_lookup_str(advisory->pool, advisory->a_id, UPDATE_SEVERITY);
++}
++
++int hy_advisory_get_reboot_suggested(HyAdvisory advisory)
++{
++    return pool_lookup_void(advisory->pool, advisory->a_id, UPDATE_REBOOT);
++}
++
+ unsigned long long
+ hy_advisory_get_updated(HyAdvisory advisory)
+ {
+diff --git a/p2/advisory.h b/p1/advisory.h
+index 203fe74..ace37de 100644
+--- a/src/advisory.h
++++ b/src/advisory.h
+@@ -41,6 +41,8 @@ const char *hy_advisory_get_id(HyAdvisory advisory);
+ HyAdvisoryType hy_advisory_get_type(HyAdvisory advisory);
+ const char *hy_advisory_get_description(HyAdvisory advisory);
+ const char *hy_advisory_get_rights(HyAdvisory advisory);
++const char *hy_advisory_get_severity(HyAdvisory advisory);
++int hy_advisory_get_reboot_suggested(HyAdvisory advisory);
+ unsigned long long hy_advisory_get_updated(HyAdvisory advisory);
+ HyAdvisoryPkgList hy_advisory_get_packages(HyAdvisory advisory);
+ HyAdvisoryRefList hy_advisory_get_references(HyAdvisory advisory);
