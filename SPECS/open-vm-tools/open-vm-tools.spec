@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -10,7 +10,7 @@ Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
 %define sha1 open-vm-tools=adba97493c4f96db6281a6964ee26b17b5adc5c5
 Source1:        gosc-scripts-1.0.tar.gz
-%define sha1 gosc-scripts-1.0=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
+%define sha1 gosc-scripts-1.0=655ed8832165a60eb2493b8cecf1b26d0c979d2a
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 Patch0:         GOSC-libDeploy.patch
@@ -98,6 +98,8 @@ fi
 
 
 %changelog
+*   Wed Mar 14 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-2
+-   Fix gosc scripts to take care of multiple network files per interface
 *   Wed Jan 24 2018 Kumar Kaushik <kaushikk@vmware.com> 10.2.0-1
 -   Updating to version 10.2.0
 *   Thu Nov 30 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.5-3
