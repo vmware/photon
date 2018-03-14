@@ -1,19 +1,8 @@
-From 2b47c1cf5f3aeceb383cd020d3934ddc12ccb594 Mon Sep 17 00:00:00 2001
-From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Sat, 4 Feb 2017 04:15:14 +0000
-Subject: [PATCH 2/3] Added PAX_RANDKSTACK
-
----
- arch/x86/entry/entry_64.S    | 16 ++++++++++++++++
- arch/x86/kernel/process_64.c | 21 +++++++++++++++++++++
- security/Kconfig             | 16 ++++++++++++++++
- 3 files changed, 53 insertions(+)
-
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 2e956af..53d4110 100644
+index 68a2d76e..82c02ab 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -51,6 +51,16 @@ ENTRY(native_usergs_sysret64)
+@@ -53,6 +53,16 @@ ENTRY(native_usergs_sysret64)
  END(native_usergs_sysret64)
  #endif /* CONFIG_PARAVIRT */
  
@@ -30,59 +19,62 @@ index 2e956af..53d4110 100644
  .macro TRACE_IRQS_IRETQ
  #ifdef CONFIG_TRACE_IRQFLAGS
  	bt	$9, EFLAGS(%rsp)		/* interrupts off? */
-@@ -217,6 +227,8 @@ entry_SYSCALL_64_fastpath:
- 	testl	$_TIF_ALLWORK_MASK, TASK_TI_flags(%r11)
- 	jnz	1f
- 
-+	pax_rand_kstack
-+
- 	LOCKDEP_SYS_EXIT
- 	TRACE_IRQS_ON		/* user mode is traced as IRQs on */
- 	movq	RIP(%rsp), %rcx
-@@ -246,6 +258,8 @@ entry_SYSCALL64_slow_path:
+@@ -232,6 +242,8 @@ GLOBAL(entry_SYSCALL_64_after_hwframe)
+ 	movq	%rsp, %rdi
  	call	do_syscall_64		/* returns with IRQs disabled */
  
- return_from_SYSCALL_64:
 +	pax_rand_kstack
 +
- 	RESTORE_EXTRA_REGS
  	TRACE_IRQS_IRETQ		/* we're about to change IF */
  
-@@ -422,6 +436,7 @@ ENTRY(ret_from_fork)
+ 	/*
+@@ -394,6 +406,7 @@ ENTRY(ret_from_fork)
  	UNWIND_HINT_REGS
  	movq	%rsp, %rdi
  	call	syscall_return_slowpath	/* returns with IRQs disabled */
 +	pax_rand_kstack
  	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
- 	SWAPGS
- 	jmp	restore_regs_and_iret
-@@ -611,6 +626,7 @@ ret_from_intr:
+ 	jmp	swapgs_restore_regs_and_return_to_usermode
+ 
+@@ -584,6 +597,7 @@ ret_from_intr:
  GLOBAL(retint_user)
  	mov	%rsp,%rdi
  	call	prepare_exit_to_usermode
 +	pax_rand_kstack
  	TRACE_IRQS_IRETQ
- 	SWAPGS
- 	jmp	restore_regs_and_iret
-diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 302e7b2..bc45b66 100644
---- a/arch/x86/kernel/process_64.c
-+++ b/arch/x86/kernel/process_64.c
-@@ -274,7 +274,13 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
- 	struct inactive_task_frame *frame;
- 	struct task_struct *me = current;
+ 
+ GLOBAL(swapgs_restore_regs_and_return_to_usermode)
+diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
+index 15fc074..3cfe1e6 100644
+--- a/arch/x86/include/asm/processor.h
++++ b/arch/x86/include/asm/processor.h
+@@ -819,12 +819,21 @@ static inline void spin_lock_prefetch(const void *x)
+ 
+ #define task_top_of_stack(task) ((unsigned long)(task_pt_regs(task) + 1))
  
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	/* -16 to start from prev page (c000 -> bff0)
-+           to avoid stack overflow after randomizarion */
-+	p->thread.sp0 = (unsigned long)task_stack_page(p) + THREAD_SIZE - 16;
++#define task_pt_regs(task) \
++({                                                                      \
++        unsigned long __ptr = (unsigned long)task_stack_page(task);     \
++        __ptr += THREAD_SIZE - TOP_OF_KERNEL_STACK_PADDING - 16;        \
++        ((struct pt_regs *)__ptr) - 1;                                  \
++})
 +#else
- 	p->thread.sp0 = (unsigned long)task_stack_page(p) + THREAD_SIZE;
+ #define task_pt_regs(task) \
+ ({									\
+ 	unsigned long __ptr = (unsigned long)task_stack_page(task);	\
+ 	__ptr += THREAD_SIZE - TOP_OF_KERNEL_STACK_PADDING;		\
+ 	((struct pt_regs *)__ptr) - 1;					\
+ })
 +#endif
- 	childregs = task_pt_regs(p);
- 	fork_frame = container_of(childregs, struct fork_frame, regs);
- 	frame = &fork_frame->frame;
-@@ -699,3 +705,18 @@ unsigned long KSTK_ESP(struct task_struct *task)
+ 
+ #ifdef CONFIG_X86_32
+ /*
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index 9eb448c..7979a1d 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -698,3 +698,17 @@ unsigned long KSTK_ESP(struct task_struct *task)
  {
  	return task_pt_regs(task)->sp;
  }
@@ -90,19 +82,18 @@ index 302e7b2..bc45b66 100644
 +#ifdef CONFIG_PAX_RANDKSTACK
 +void pax_randomize_kstack(void)
 +{
-+	struct thread_struct *thread = &current->thread;
++	struct task_struct *task = current;
 +	unsigned long time;
 +
 +	if (!randomize_va_space)
 +		return;
 +
 +	time = rdtsc() & 0xFUL;
-+	thread->sp0 ^= (time << 4);
-+	load_sp0(&per_cpu(cpu_tss, smp_processor_id()), thread);
++	load_sp0(task_top_of_stack(task)^(time << 4));
 +}
 +#endif
 diff --git a/security/Kconfig b/security/Kconfig
-index 3cef193..edb7fcd 100644
+index 0dec261..08d4882 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -80,6 +80,22 @@ config PAX_MPROTECT
@@ -128,6 +119,3 @@ index 3cef193..edb7fcd 100644
  endif
  
  source security/keys/Kconfig
--- 
-2.8.1
-

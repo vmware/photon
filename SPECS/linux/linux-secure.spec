@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.14.8
+Version:        4.14.25
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=45f140e0eab08428d78d81d4169d531a3e65a297
+%define sha1 linux=80aa76c6f937e5675b3a0e85267535568f080ec9
 Source1:        config-secure
 Source2:        initramfs.trigger
 # common
@@ -222,6 +222,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Mar 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.25-1
+-   Update to version 4.14.25
 *   Fri Feb 16 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
 -   Version update to v4.14 LTS. Drop aufs support.
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
