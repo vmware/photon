@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        7.8.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.gz
@@ -13,11 +13,13 @@ Patch0:         gdb-7.12-pstack.patch
 Requires:       python3
 Requires:       expat
 Requires:       ncurses >= 6.0-3
+Requires:       xz
 BuildRequires:  expat
 BuildRequires:  ncurses-devel >= 6.0-3
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
+BuildRequires:  xz-devel
 %description
 GDB, the GNU Project debugger, allows you to see what is going on 
 `inside' another program while it executes -- or what 
@@ -60,6 +62,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 
 %changelog
+*   Tue Mar 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.8.2-9
+-   Enable LZMA support.
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 7.8.2-8
 -   Release bump for expat version update
 *   Fri Aug 25 2017 Anish Swaminathan <anishs@vmware.com> 7.8.2-7
