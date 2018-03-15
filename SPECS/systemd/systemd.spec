@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          44%{?dist}
+Release:          45%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -43,6 +43,7 @@ Patch26:          systemd-228-CVE-2015-7510-long-machinename.patch
 Patch27:          systemd-228-resolved-null-deferencing-fix.patch
 Patch28:          systemd-228-link-disabled-nullptr-fix.patch
 Patch29:          systemd-228-CVE-2017-15908-dns-pkt-loop-fix.patch
+Patch30:          systemd-228-CVE-2017-18078.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -106,6 +107,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -244,6 +246,9 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+%changelog
+*    Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com>  228-45
+-    Fix CVE-2017-18078.
 *    Wed Nov 29 2017 Anish Swaminathan <anishs@vmware.com> 228-44
 -    Remove the sed replace to autovt (autovt is a symlink to getty service)
 *    Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-43
