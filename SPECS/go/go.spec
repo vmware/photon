@@ -9,15 +9,15 @@
 
 Summary:        Go 
 Name:           go
-Version:        1.9.1
+Version:        1.9.4
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
-%define sha1    go=87cf0af3820834faeb6e63b035a1abae1f5b60b3
+Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
+%define sha1    go=12b0ecee83525cd594f4fbf30380d4832e06f189
 Patch0:         go_imports_fix.patch
 BuildRequires:  mercurial
 Requires:       mercurial
@@ -115,6 +115,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-1
+-   Update to golang release v1.9.4
 *   Mon Oct 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.1-1
 -   Update to golang release v1.9.1
 *   Thu Oct 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-2
