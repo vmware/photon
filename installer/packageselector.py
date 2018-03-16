@@ -38,6 +38,11 @@ class PackageSelector(object):
                 json_wrapper_package_list = JsonWrapper(os.path.join(output_data_path, install_option[1]["file"]))
                 package_list_json = json_wrapper_package_list.read()
                 package_list = package_list + package_list_json["packages"]
+
+                if "remove" in install_option[1]:
+                    for package in install_option[1]["remove"]:
+                        package_list.remove(package)
+
                 break
         return package_list
 
