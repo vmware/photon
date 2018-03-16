@@ -1,6 +1,6 @@
 Name:           mongodb
 Version:        3.4.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The MongoDB Database
 Group:          Applications/Database
 License:        AGPLv3
@@ -64,6 +64,8 @@ fi
 %attr(0766, mongod, mongod) %dir /var/lib/mongo
 
 %changelog
+*   Fri Mar 16 2018 Dheeraj Shetty <dheerajs@vmware.com> 3.4.10-2
+-   Ignore warnings during install
 *   Tue Dec 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1
 -   Update to version 3.4.10, fix CVE-2017-15535
 *   Sun Oct 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.4-1
