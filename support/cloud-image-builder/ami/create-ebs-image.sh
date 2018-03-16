@@ -301,7 +301,7 @@ while : ; do
 done
 
 #register the image name
-AMI_IMAGE_ID=`aws ec2 register-image --region $AWS_DEFAULT_REGION --name $TAR_FILE --root-device-name $EBS_IMAGE_ROOT_DEVICE_NAME --ena-support --block-device-mappings DeviceName=$EBS_IMAGE_ROOT_DEVICE_NAME,Ebs={SnapshotId=$SNAPSHOT_ID} --virtualization-type hvm --architecture x86_64 --output=text --query 'ImageId'`
+AMI_IMAGE_ID=`aws ec2 register-image --region $AWS_DEFAULT_REGION --name $TAR_FILE --root-device-name $EBS_IMAGE_ROOT_DEVICE_NAME --sriov-net-support simple --ena-support --block-device-mappings DeviceName=$EBS_IMAGE_ROOT_DEVICE_NAME,Ebs={SnapshotId=$SNAPSHOT_ID} --virtualization-type hvm --architecture x86_64 --output=text --query 'ImageId'`
 
 #check the status of the AMI
 count=0
