@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.80
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -429,6 +429,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Mar 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-4
+-   Enable graphics drivers to fix instance screenshot feature on AWS.
 *   Thu Mar 1 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-3
 -   Fix upgrade issue by removing 'Obsoletes: linux-dev'.
 *   Mon Feb 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-2
