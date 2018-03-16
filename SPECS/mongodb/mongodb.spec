@@ -23,8 +23,9 @@ scons %{?_smp_mflags} MONGO_VERSION=%{version} \
     --disable-warnings-as-errors
 
 %install
-scons %{?_smp_mflags} MONGO_VERSION=%{version} install \
-    --prefix=%{buildroot}%{_prefix}
+scons  %{?_smp_mflags} MONGO_VERSION=%{version} install \
+    --prefix=%{buildroot}%{_prefix} \
+    --disable-warnings-as-errors
 install -d %{buildroot}/var/log/%{name}
 install -d %{buildroot}/var/lib/mongo
 install -d -m 755 %{buildroot}%{_unitdir}
