@@ -291,7 +291,7 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 %changelog
 *   Tue Jan 20 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-10
--   Fix CVE-2018-6485
+-   Fix CVE-2018-6485, CVE-2018-6551
 *   Tue Jan 20 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-9
 -   Fix CVE-2018-1000001
 *   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-8
