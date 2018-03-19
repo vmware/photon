@@ -692,11 +692,3 @@ class PackageUtils(object):
         #    self.logger.error("Building rpm failed for " + specFile)
         #    raise Exception("RPM Build failed")
         return listRPMFiles, listSRPMFiles
-
-    #run db conversion. needs to be run in chroot.
-    #its important to do this after rpm operations from
-    #outside chroot is done.
-    def ensureLMDBForRPMDB(self, chrootID, logFile):
-        convertCmd= "convert_bdb_to_lmdb.sh"
-        chrootCmd=self.runInChrootCommand+" "+chrootID
-        CommandUtils().runCommandInShell(convertCmd, logFile, chrootCmd)

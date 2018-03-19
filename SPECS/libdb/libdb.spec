@@ -1,7 +1,7 @@
 Summary:	The Berkley DB database library for C
 Name:		libdb
 Version:	5.3.28
-Release:	3%{?dist}
+Release:	2%{?dist}
 License:	BSD and LGPLv2 and Sleepycat
 URL:		https://oss.oracle.com/berkeley-db.html
 Source0:	http://download.oracle.com/berkeley-db/db-%{version}.tar.gz
@@ -12,12 +12,6 @@ Distribution:	Photon
 Obsoletes:      db
 %description
 The Berkeley DB package contains libraries used by many other applications for database related functions.
-
-%package	utils
-Summary:	Header and development files
-Requires:	%{name} = %{version}
-%description	utils
-db dump utility
 
 %package	devel
 Summary:	Header and development files
@@ -62,10 +56,6 @@ rm -rf %{buildroot}
 %{_libdir}/*.so
 %{_datadir}/licenses/*
 
-%files utils
-%defattr(-,root,root)
-%{_bindir}/db_dump
-
 %files docs
 %defattr(-,root,root)
 %{_docdir}/%{name}-%{version}/*
@@ -76,8 +66,6 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
-*   Wed Jan 17 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.28-3
--   add libdb-utils for db_dump
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.28-2
 -   Aarch64 support
 *	Thu Oct 27 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.28-1
