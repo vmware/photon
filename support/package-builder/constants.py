@@ -111,11 +111,11 @@ class constants(object):
         "openssl",
         "openssl-devel",
         "python2",
+        "libdb",
         "rpm",
         "groff",
         "man-pages",
-        "cpio",
-        "lmdb"]
+        "cpio"]
 
     # List or RPMS that will be installed in a chroot prior to build each
     # package. This list should be ordered by install order. On a stage1
@@ -214,13 +214,10 @@ class constants(object):
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
-        "rpm-convert-db",
         "groff",
         "man-pages",
         "cpio",
-        "go",
-        "lmdb",
-        "libdb-utils"]
+        "go"]
 
     perPackageToolChain = dict.fromkeys(
         ["openjdk8",
