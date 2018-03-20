@@ -1,0 +1,72 @@
+From 086e774a57fba4695f14383c0818994c0b31da7c Mon Sep 17 00:00:00 2001
+From: "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>
+Date: Tue, 11 Oct 2016 13:53:43 -0700
+Subject: [PATCH] pipe: cap initial pipe capacity according to pipe-max-size
+ limit
+
+This is a patch that provides behavior that is more consistent, and
+probably less surprising to users. I consider the change optional, and
+welcome opinions about whether it should be applied.
+
+By default, pipes are created with a capacity of 64 kiB.  However,
+/proc/sys/fs/pipe-max-size may be set smaller than this value.  In this
+scenario, an unprivileged user could thus create a pipe whose initial
+capacity exceeds the limit. Therefore, it seems logical to cap the
+initial pipe capacity according to the value of pipe-max-size.
+
+The test program shown earlier in this patch series can be used to
+demonstrate the effect of the change brought about with this patch:
+
+    # cat /proc/sys/fs/pipe-max-size
+    1048576
+    # sudo -u mtk ./test_F_SETPIPE_SZ 1
+    Initial pipe capacity: 65536
+    # echo 10000 > /proc/sys/fs/pipe-max-size
+    # cat /proc/sys/fs/pipe-max-size
+    16384
+    # sudo -u mtk ./test_F_SETPIPE_SZ 1
+    Initial pipe capacity: 16384
+    # ./test_F_SETPIPE_SZ 1
+    Initial pipe capacity: 65536
+
+The last two executions of 'test_F_SETPIPE_SZ' show that pipe-max-size
+caps the initial allocation for a new pipe for unprivileged users, but
+not for privileged users.
+
+Link: http://lkml.kernel.org/r/31dc7064-2a17-9c5b-1df1-4e3012ee992c@gmail.com
+Signed-off-by: Michael Kerrisk <mtk.manpages@gmail.com>
+Reviewed-by: Vegard Nossum <vegard.nossum@oracle.com>
+Cc: Willy Tarreau <w@1wt.eu>
+Cc: <socketpair@gmail.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Jens Axboe <axboe@fb.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[Update context and add max_size initialization for kernel version 4.4]
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+---
+ fs/pipe.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/fs/pipe.c b/fs/pipe.c
+index 39eff9a..98624af 100644
+--- a/fs/pipe.c
++++ b/fs/pipe.c
+@@ -610,12 +610,16 @@ static bool too_many_pipe_buffers_hard(struct user_struct *user)
+ struct pipe_inode_info *alloc_pipe_info(void)
+ {
+ 	struct pipe_inode_info *pipe;
++	unsigned int max_size = READ_ONCE(pipe_max_size);
+ 
+ 	pipe = kzalloc(sizeof(struct pipe_inode_info), GFP_KERNEL);
+ 	if (pipe) {
+ 		unsigned long pipe_bufs = PIPE_DEF_BUFFERS;
+ 		struct user_struct *user = get_current_user();
+ 
++		if (pipe_bufs * PAGE_SIZE > max_size && !capable(CAP_SYS_RESOURCE))
++                        pipe_bufs = max_size >> PAGE_SHIFT;
++
+ 		if (!too_many_pipe_buffers_hard(user)) {
+ 			if (too_many_pipe_buffers_soft(user))
+ 				pipe_bufs = 1;
