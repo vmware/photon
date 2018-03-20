@@ -3,7 +3,7 @@
 Summary:      Z shell
 Name:         zsh
 Version:      5.3.1
-Release:      4%{?dist}
+Release:      5%{?dist}
 License:      MIT
 URL:          http://zsh.sourceforge.net/
 Group:        System Environment/Shells
@@ -13,6 +13,7 @@ Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
 %define sha1  zsh=ec2a98c080f213c1c6c465c0c64662b5eae6818f
 Source1:      zprofile.rhs
 Source2:      zshrc
+Patch0:       zsh-CVE-2018-7548.patch
 
 BuildRequires: coreutils
 BuildRequires: tar
@@ -58,6 +59,7 @@ This package contains the Zsh manual in html format.
 %prep
 
 %setup -q
+%patch0 -p1
 
 %build
 # make loading of module's dependencies work again (#1277996)
@@ -144,6 +146,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Mon Mar 19 2018 Xiaolin Li <xiaolinl@vmware.com> 5.3.1-5
+-   Fix CVE-2018-7548
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.1-4
 -   Requires coreutils or toybox and /bin/grep
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 5.3.1-3
