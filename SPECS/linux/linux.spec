@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.115
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -55,6 +55,7 @@ Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 Patch68: 0170-x86-syscall-Clear-unused-extra-registers-on-32-bit-c.patch
+Patch69: cap_initial_pipe_capacity_to_pipe-max-size.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -166,6 +167,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+%patch69 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -322,6 +324,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Mar 20 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.115-3
+-   cap initial pipe capacity of unprivilaged user to pipe-max-size
 *   Thu Mar 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.115-2
 -   Add build dependency of libelf. Needed by perf to resolve symbols.
 *   Mon Feb 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.115-1
