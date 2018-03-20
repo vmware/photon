@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.14.8
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -160,7 +160,7 @@ cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_
 # because .ko files will be loaded from the memory (LoadPin: obj=<unknown>)
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta loadpin.enabled=0 slub_debug=P page_poison=1
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta loadpin.enabled=0 slub_debug=P page_poison=1 slab_nomerge
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -222,6 +222,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2
+-   Extra hardening: slab_nomerge and some .config changes
 *   Fri Feb 16 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
 -   Version update to v4.14 LTS. Drop aufs support.
 *   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
