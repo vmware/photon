@@ -36,9 +36,12 @@ mkdir $TEMP_CHROOT
 
 rpm --root $TEMP_CHROOT/ --initdb
 
-tdnf --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos
+tdnf --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos rpm-convert-db
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
+
+#convert rpmdb to lmdb. do this as a final step.
+chroot $TEMP_CHROOT/ /bin/bash -c "convert_bdb_to_lmdb.sh"
 
 cd $TEMP_CHROOT
 # cleanup anything not needed inside rootfs

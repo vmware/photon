@@ -1,7 +1,7 @@
 {
     "micro" : {
         "title" : "Photon Micro",
-        "file" : "packages_micro.json",
+        "file" : "packages_micro_ova.json",
         "visible" : true,
         "include" : []
     }
