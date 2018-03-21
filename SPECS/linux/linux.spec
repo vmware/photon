@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.14.8
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.14.28
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=45f140e0eab08428d78d81d4169d531a3e65a297
+%define sha1 linux=f77510a7db8806456591bec49e2f87d735c36223
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.5.0
@@ -341,6 +341,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 19 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.28-1
+-   Update to version 4.14.28
 *   Fri Jan 26 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2
 -   Added vchiq entry to rpi3 dts
 -   Added dtb-rpi3 subpackage
