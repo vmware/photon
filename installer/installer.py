@@ -135,6 +135,9 @@ class Installer(object):
         self.rpms_tobeinstalled = []
         selected_packages = self.install_config['packages']
 
+        # install rpm-convert-db to convert rpm db from bdb.
+        selected_packages += "rpm-convert-db"
+
         for pkg in selected_packages:
             if pkg in pkg_to_rpm_map:
                 if pkg_to_rpm_map[pkg]['rpm'] is not None:

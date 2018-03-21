@@ -8,7 +8,7 @@
     "type": "micro",
     "size": { "root": "16", "swap": "0" },
     "public_key":"<ssh-key-here>",
-    "postinstallscripts": ["ova_micro-custom-patch.sh"],
+    "postinstallscripts": ["ova_micro-custom-patch.sh", "../common/rpm-convert-db.sh"],
     "artifacttype": "ova",
     "keeprawdisk": "false"
 }
