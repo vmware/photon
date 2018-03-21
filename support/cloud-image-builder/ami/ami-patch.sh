@@ -10,6 +10,13 @@ echo "127.0.0.1 localhost" >> /etc/hosts
 echo "DNS=169.254.169.253" >> /etc/systemd/resolved.conf
 echo "Domains=ec2.internal" >> /etc/systemd/network/99-dhcp-en.network
 
+# Add a DHCP section, but comment out the MTU setting that enables
+# jumbo frames (9001 byte MTU) on AWS. Users who have the right
+# overall setup (eg: who have configured the necessary ICMP rules in
+# their security group to handle large MTUs correctly for
+# internet-bound traffic) can then choose to enable jumbo frames on
+# the system by simply uncommenting this line.
+echo -e "\n[DHCP]\n#UseMTU=true" >> /etc/systemd/network/99-dhcp-en.network
 
 # Remove ssh host keys and add script to regenerate them at boot time.
 rm -f /etc/ssh/ssh_host_*
