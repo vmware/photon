@@ -8,6 +8,7 @@
     "type": "ovs",
     "size": {"root": "16", "swap": "0"},
     "public_key":"<ssh-key-here>",
+    "postinstallscripts":["../common/rpm-convert-db.sh"],
     "artifacttype": "ova",
     "keeprawdisk": "false"
 }
