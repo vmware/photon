@@ -1,15 +1,13 @@
-From 5da729255406ae4da5bc539569b8d7a10407dcbf Mon Sep 17 00:00:00 2001
-From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Fri, 22 Dec 2017 14:59:28 -0800
-Subject: [PATCH] Log kmsg dump on panic
+commit 0bc7298669b4523cf85cde57d5b6aab1ab7a3855
+Author: Alexey Makhalov <amakhalov@vmware.com>
+Date:   Fri Dec 22 14:59:28 2017 -0800
 
-In case of panic kmsg will be dumped to vmware.log file
----
- arch/x86/kernel/cpu/vmware.c | 145 ++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 142 insertions(+), 3 deletions(-)
+    Log kmsg dump on panic
+    
+    In case of panic kmsg will be dumped to vmware.log file
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 40ed2685..50ed5769 100644
+index 8e00532..eb8515b 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -30,19 +30,24 @@
@@ -63,10 +61,10 @@ index 40ed2685..50ed5769 100644
  }
  
  /*
-@@ -212,3 +226,128 @@ const __refconst struct hypervisor_x86 x86_hyper_vmware = {
- 	.x2apic_available	= vmware_legacy_x2apic_available,
+@@ -212,3 +226,128 @@ const __initconst struct hypervisor_x86 x86_hyper_vmware = {
+ 	.init.init_platform	= vmware_platform_setup,
+ 	.init.x2apic_available	= vmware_legacy_x2apic_available,
  };
- EXPORT_SYMBOL(x86_hyper_vmware);
 +
 +#define MESSAGE_STATUS_SUCCESS  (0x01 << 16)
 +#define MESSAGE_STATUS_CPT      (0x10 << 16)
@@ -192,6 +190,3 @@ index 40ed2685..50ed5769 100644
 +			break;
 +	}
 +}
--- 
-2.11.0
-
