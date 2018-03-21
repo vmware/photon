@@ -89,7 +89,7 @@ rm -rf $RPM_BUILD_ROOT
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.1-4
 -   BuildRequired attr-devel.
 *   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 2015.1-3
--   Use %setup instead of %autosetup
+-   Use setup instead of autosetup
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.1-2
 -   GA - Bump release of all rpms
 *   Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 2014.2-1
