@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -98,6 +98,8 @@ fi
 
 
 %changelog
+*   Wed Mar 14 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-3
+-   Fix gosc patch to call customization
 *   Wed Mar 14 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-2
 -   Fix gosc scripts to take care of multiple network files per interface
 *   Wed Jan 24 2018 Kumar Kaushik <kaushikk@vmware.com> 10.2.0-1
