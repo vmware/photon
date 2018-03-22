@@ -1172,13 +1172,14 @@ index 9976fce..bf5f3e0 100644
 +CFLAGS_REMOVE_syscall_32.o = $(RAP_PLUGIN_ABS_CFLAGS)
 +CFLAGS_REMOVE_syscall_64.o = $(RAP_PLUGIN_ABS_CFLAGS)
 diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index bdd9cc5..790badd 100644
+index b0cd306..f384da6 100644
 --- a/arch/x86/entry/common.c
 +++ b/arch/x86/entry/common.c
-@@ -277,9 +277,29 @@ __visible void do_syscall_64(struct pt_regs *regs)
- 	 * regs->orig_ax, which changes the behavior of some syscalls.
+@@ -279,9 +279,30 @@ __visible void do_syscall_64(struct pt_regs *regs)
  	 */
  	if (likely((nr & __SYSCALL_MASK) < NR_syscalls)) {
+ 		nr = array_index_nospec(nr & __SYSCALL_MASK, NR_syscalls);
++
 +#ifdef CONFIG_PAX_RAP
 +		asm volatile("movq %[param1],%%rdi\n\t"
 +			     "movq %[param2],%%rsi\n\t"
@@ -1189,7 +1190,7 @@ index bdd9cc5..790badd 100644
 +			     "call *%P[syscall]\n\t"
 +			     "mov %%rax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
-+			: [syscall] "m" (sys_call_table[nr & __SYSCALL_MASK]),
++			: [syscall] "m" (sys_call_table[nr]),
 +			  [param1] "m" (regs->di),
 +			  [param2] "m" (regs->si),
 +			  [param3] "m" (regs->dx),
@@ -1198,7 +1199,7 @@ index bdd9cc5..790badd 100644
 +			  [param6] "m" (regs->r9)
 +			: "ax", "di", "si", "dx", "cx", "r8", "r9", "r10", "r11", "memory");
 +#else
- 		regs->ax = sys_call_table[nr & __SYSCALL_MASK](
+ 		regs->ax = sys_call_table[nr](
  			regs->di, regs->si, regs->dx,
  			regs->r10, regs->r8, regs->r9);
 +#endif
@@ -4544,10 +4545,10 @@ index a260cde..1b99d3b 100644
  	int len = strlen(kmessage);
  
 diff --git a/drivers/video/console/dummycon.c b/drivers/video/console/dummycon.c
-index 9269d56..78d2a06 100644
+index b90ef96..12f6ec5 100644
 --- a/drivers/video/console/dummycon.c
 +++ b/drivers/video/console/dummycon.c
-@@ -41,12 +41,60 @@ static void dummycon_init(struct vc_data *vc, int init)
+@@ -41,12 +41,55 @@ static void dummycon_init(struct vc_data *vc, int init)
  	vc_resize(vc, DUMMY_COLUMNS, DUMMY_ROWS);
  }
  
@@ -4593,11 +4594,6 @@ index 9269d56..78d2a06 100644
 +    return 0;
 +}
 +
-+static int dummycon_font_get(struct vc_data *a, struct console_font *b)
-+{
-+    return 0;
-+}
-+
 +static int dummycon_font_default(struct vc_data *a, struct console_font *b , char *c)
 +{
 +    return 0;
@@ -4610,7 +4606,7 @@ index 9269d56..78d2a06 100644
  
  /*
   *  The console `switch' structure for the dummy console
-@@ -58,17 +106,17 @@ const struct consw dummy_con = {
+@@ -58,16 +101,16 @@ const struct consw dummy_con = {
      .owner =		THIS_MODULE,
      .con_startup =	dummycon_startup,
      .con_init =		dummycon_init,
@@ -4623,7 +4619,6 @@ index 9269d56..78d2a06 100644
 -    .con_switch =	DUMMY,
 -    .con_blank =	DUMMY,
 -    .con_font_set =	DUMMY,
--    .con_font_get =	DUMMY,
 -    .con_font_default =	DUMMY,
 -    .con_font_copy =	DUMMY,
 +    .con_deinit =	dummycon_deinit,
@@ -4635,7 +4630,6 @@ index 9269d56..78d2a06 100644
 +    .con_switch =	dummycon_switch,
 +    .con_blank =	dummycon_blank,
 +    .con_font_set =	dummycon_font_set,
-+    .con_font_get =	dummycon_font_get,
 +    .con_font_default =	dummycon_font_default,
 +    .con_font_copy =	dummycon_font_copy,
  };

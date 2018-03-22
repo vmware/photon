@@ -36,12 +36,13 @@ index 1a87443..ea4a86e 100644
  	WARN_ON(xen_cpuhp_setup());
  	xen_unplug_emulated_devices();
 diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
-index 7f664c4..a88065e 100644
+index 4ecd0de..8ad0c96 100644
 --- a/arch/x86/xen/suspend.c
 +++ b/arch/x86/xen/suspend.c
-@@ -1,14 +1,19 @@
+@@ -1,17 +1,22 @@
  #include <linux/types.h>
  #include <linux/tick.h>
+ #include <linux/percpu-defs.h>
 +#include <linux/syscore_ops.h>
 +#include <linux/kernel_stat.h>
  
@@ -52,6 +53,8 @@ index 7f664c4..a88065e 100644
  #include <xen/events.h>
 +#include <xen/xen-ops.h>
  
+ #include <asm/cpufeatures.h>
+ #include <asm/msr-index.h>
  #include <asm/xen/hypercall.h>
  #include <asm/xen/page.h>
  #include <asm/fixmap.h>

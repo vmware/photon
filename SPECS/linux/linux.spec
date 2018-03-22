@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.80
+Version:        4.9.89
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1e815669d45b0e0ebfa14bfa9823e9795274f067
+%define sha1 linux=81a81adbdc191ce09133d1d512b87a53e87fa967
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -45,8 +45,6 @@ Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
-# Fix CVE-2017-8824
-Patch29:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 Patch32:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -60,12 +58,9 @@ Patch59: 0148-cw1200-prevent-speculative-execution.patch
 Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
 Patch61: 0150-ipv4-prevent-speculative-execution.patch
 Patch62: 0151-ipv6-prevent-speculative-execution.patch
-Patch63: 0152-fs-prevent-speculative-execution.patch
 Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
-Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
-Patch68: 0170-x86-syscall-Clear-unused-extra-registers-on-32-bit-c.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -164,7 +159,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch25 -p1
 %patch26 -p1
 %patch28 -p1
-%patch29 -p1
 %patch32 -p1
 
 %patch52 -p1
@@ -178,12 +172,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
-%patch63 -p1
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
-%patch67 -p1
-%patch68 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -351,6 +342,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Mar 22 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.89-1
+-   Update to version 4.9.89
 *   Mon Feb 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-1
 -   Update to version 4.9.80
 *   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.79-1
