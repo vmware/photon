@@ -1,11 +1,11 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        2.6.3
+Version:        2.6.7
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico=6cc983c49618c95fbe6b3d63d6f45725df577c7c
+%define sha1 calico=d74b2103f84ed470322b5f33b75cf552db93d830
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -50,6 +50,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Tue Mar 20 2018 Dheeraj Shetty <dheerajs@vmware.com> 2.6.7-1
+-   Calico Node v2.6.7.
 *   Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.3-1
 -   Calico Node v2.6.3.
 *   Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.2-1

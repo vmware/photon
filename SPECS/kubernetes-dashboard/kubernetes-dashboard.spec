@@ -1,11 +1,11 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
-Version:        1.6.3
+Version:        1.8.3
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-v%{version}.tar.gz
-%define sha1    kubernetes-dashboard=8e06cb5cd145ffa5c691c3af5fc6e49caececfb2
+%define sha1    kubernetes-dashboard=4003c4a6d3ef311fe72ac81fa7b1b92b7d6cc04e
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,7 +14,6 @@ BuildRequires:  git
 BuildRequires:  glibc-devel
 BuildRequires:  go
 BuildRequires:  linux-api-headers
-BuildRequires:  nodejs
 BuildRequires:  nodejs
 BuildRequires:  openjre8
 BuildRequires:  which
@@ -29,9 +28,12 @@ Kubernetes Dashboard UI.
 
 %build
 export PATH=${PATH}:/usr/bin
-npm install
-npm install babel-loader@7.1.1
-./build/postinstall.sh
+mkdir vendor/src
+cd vendor
+cp -rf {github.com/,golang.org/,gopkg.in/,k8s.io/} src/
+cd ../
+#Remove the lines which strips the debuginfo. 
+sed -i '/https:\/\/golang.org\/cmd\/link\//,+2d' ./build/backend.js
 ./node_modules/.bin/gulp build
 
 %install
@@ -53,6 +55,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*    Tue Mar 13 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.8.3-1
+-    kubernetes-dashboard 1.8.3.
 *    Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.3-1
 -    kubernetes-dashboard 1.6.3.
 *    Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.1-1
