@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.80
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.89
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1e815669d45b0e0ebfa14bfa9823e9795274f067
+%define sha1 linux=81a81adbdc191ce09133d1d512b87a53e87fa967
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -48,8 +48,6 @@ Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
-# Fix CVE-2017-8824
-Patch32:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 Patch35:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -63,12 +61,9 @@ Patch59: 0148-cw1200-prevent-speculative-execution.patch
 Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
 Patch61: 0150-ipv4-prevent-speculative-execution.patch
 Patch62: 0151-ipv6-prevent-speculative-execution.patch
-Patch63: 0152-fs-prevent-speculative-execution.patch
 Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
-Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
-Patch68: 0170-x86-syscall-Clear-unused-extra-registers-on-32-bit-c.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -174,7 +169,6 @@ EOF
 %patch28 -p1
 %patch29 -p1
 %patch31 -p1
-%patch32 -p1
 %patch35 -p1
 
 # spectre
@@ -189,12 +183,9 @@ EOF
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
-%patch63 -p1
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
-%patch67 -p1
-%patch68 -p1
 
 # secure
 %patch13 -p1
@@ -326,7 +317,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Mon Mar 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.80-2
+*   Thu Mar 22 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.89-1
+-   Update to version 4.9.89
+*   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.80-2
 -   Extra hardening: slab_nomerge, disable /proc/kcore
 *   Mon Feb 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.80-1
 -   Update to version 4.9.80
