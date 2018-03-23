@@ -1,0 +1,25 @@
+From ce1e44ec82c5725e03f1e7f811cffe2c4c163094 Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Fri, 16 Mar 2018 12:05:35 -0700
+Subject: [PATCH] Extra SSL_read error case handling
+
+Change-Id: I39cb4beca2c82f8ad46eaf452ac6a09727c2e583
+---
+ transport/posix/socket.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index 355610f..982ae5c 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -940,7 +940,9 @@ VmSockPosixRead(
+ 
+     if (nRead == -1)
+     {
+-        if (((pSocket->fd > 0) && (errorCode == EAGAIN || errorCode == EWOULDBLOCK)) || ((pRESTHandle->pSSLInfo->isSecure) && (errorCode == SSL_ERROR_WANT_READ)))
++        if (((pSocket->fd > 0) && (errorCode == EAGAIN || errorCode == EWOULDBLOCK)) || 
++           ((pRESTHandle->pSSLInfo->isSecure) && 
++           ((errorCode == SSL_ERROR_WANT_READ) || ((errorCode == SSL_ERROR_SSL) && (errno == EAGAIN)))))
+         {
+             dwError = REST_ENGINE_SUCCESS;
+         }
