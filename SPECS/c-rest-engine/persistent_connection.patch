@@ -1,0 +1,603 @@
+From f8320a22d54e51052478ce6421a9cfc454a4255e Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Tue, 20 Mar 2018 16:36:00 -0700
+Subject: [PATCH] Support persistent connection
+
+Change-Id: I05d60c56f5f9e62e5c7b0bd6c10b7fad9e0e329a
+---
+ common/sockinterface.c                             |  55 +++++---
+ include/vmrestcommon.h                             |   7 +
+ include/vmsock.h                                   |   4 +-
+ server/restengine/httpProtocolHead.c               | 145 +++++++++++----------
+ server/restengine/libmain.c                        |   2 +-
+ server/restengine/prototype.h                      |   5 -
+ test/scripts/BUGS_TC/BUG-2076723/README            |  26 ++++
+ .../BUGS_TC/BUG-2076723/persistentConnection.c     | 121 +++++++++++++++++
+ transport/api/api.c                                |   4 +-
+ transport/posix/prototypes.h                       |   2 +-
+ transport/posix/socket.c                           |  27 +++-
+ 11 files changed, 288 insertions(+), 110 deletions(-)
+ create mode 100644 test/scripts/BUGS_TC/BUG-2076723/README
+ create mode 100644 test/scripts/BUGS_TC/BUG-2076723/persistentConnection.c
+
+diff --git a/common/sockinterface.c b/common/sockinterface.c
+index 197dd48..103c69c 100644
+--- a/common/sockinterface.c
++++ b/common/sockinterface.c
+@@ -476,6 +476,7 @@ VmRESTTcpReceiveNewData(
+     uint32_t                         nProcessed = 0;
+     uint32_t                         nBufLen = 0;
+     BOOLEAN                          bNextIO = FALSE;
++    BOOLEAN                          bKeepConnOpen = FALSE;
+ 
+     if (!pSocket || !pRESTHandle || !pQueue)
+     {
+@@ -543,6 +544,16 @@ VmRESTTcpReceiveNewData(
+     {
+         pSetReq = pRequest;
+     }
++    else
++    {
++        /**** Verify and act on persistent connection requests ****/
++        dwError = VmRESTEntertainPersistentConn(
++                      pRESTHandle,
++                      pRequest,
++                      &bKeepConnOpen
++                      );
++        BAIL_ON_VMREST_ERROR(dwError);
++    }
+ 
+     /**** Save state of request processing in socket context ****/
+     dwError = VmwSockSetRequestHandle(
+@@ -550,31 +561,35 @@ VmRESTTcpReceiveNewData(
+                   pSocket,
+                   pSetReq,
+                   nProcessed,
+-                  pQueue
++                  bKeepConnOpen
+                   );
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
+ cleanup:
+ 
+-   if (!bNextIO && dwError != REST_ENGINE_ERROR_DOUBLE_FAILURE)
+-   {
+-       VMREST_LOG_DEBUG(pRESTHandle,"%s","Calling closed connection....");
+-       /**** Close connection ****/ 
+-       VmRESTDisconnectClient(
+-           pRESTHandle,
+-           pSocket
+-           );
+-
+-       /****  free request object memory ****/
+-       if (pRequest)
+-       {
+-           VmRESTFreeRequestHandle(
+-               pRESTHandle,
+-               pRequest
+-               );
+-           pRequest = NULL;
+-       }
+-   }
++    if (!bNextIO && dwError != REST_ENGINE_ERROR_DOUBLE_FAILURE)
++    {
++
++        if (!bKeepConnOpen)
++        {
++            VMREST_LOG_DEBUG(pRESTHandle,"%s","Calling closed connection....");
++            /**** Close connection ****/
++            VmRESTDisconnectClient(
++                pRESTHandle,
++                pSocket
++                );
++        }
++
++        /****  free request object memory ****/
++        if (pRequest)
++        {
++            VmRESTFreeRequestHandle(
++                pRESTHandle,
++                pRequest
++                );
++            pRequest = NULL;
++        }
++    }
+ 
+     return dwError;
+ 
+diff --git a/include/vmrestcommon.h b/include/vmrestcommon.h
+index 3b7f17c..16f90ad 100644
+--- a/include/vmrestcommon.h
++++ b/include/vmrestcommon.h
+@@ -350,6 +350,13 @@ VmRESTProcessBuffer(
+     uint32_t*                        nProcessed
+     );
+ 
++uint32_t
++VmRESTEntertainPersistentConn(
++    PVMREST_HANDLE                   pRESTHandle,
++    PREST_REQUEST                    pRequest,
++    BOOLEAN*                         bKeepOpen
++    );
++
+ uint32_t
+ VmRESTSendFailureResponse(
+      PVMREST_HANDLE                  pRESTHandle,
+diff --git a/include/vmsock.h b/include/vmsock.h
+index 5075aa7..5213e67 100644
+--- a/include/vmsock.h
++++ b/include/vmsock.h
+@@ -265,7 +265,7 @@ VmwSockSetRequestHandle(
+     PVM_SOCKET                       pSocket,
+     PREST_REQUEST                    pRequest,
+     uint32_t                         nProcessed,
+-    PVM_SOCK_EVENT_QUEUE             pQueue
++    BOOLEAN                          bPersistentConn
+     );
+ 
+ DWORD
+@@ -368,7 +368,7 @@ typedef DWORD(*PFN_SET_REQUEST_HANDLE)(
+                     PVM_SOCKET            pSocket,
+                     PREST_REQUEST         pRequest,
+                     uint32_t              nProcessed,
+-                    PVM_SOCK_EVENT_QUEUE  pQueue
++                    BOOLEAN               bPersistentConn
+                     );
+ 
+ typedef DWORD(*PFN_GET_PEER_INFO)(
+diff --git a/server/restengine/httpProtocolHead.c b/server/restengine/httpProtocolHead.c
+index c5b9f3c..be3ff09 100644
+--- a/server/restengine/httpProtocolHead.c
++++ b/server/restengine/httpProtocolHead.c
+@@ -783,77 +783,6 @@ VmRESTSendHeaderAndPayload(
+     goto cleanup;
+ }
+ 
+-uint32_t
+-VmRESTCloseClient(
+-    PVM_REST_HTTP_RESPONSE_PACKET    pResPacket
+-    )
+-{
+-    uint32_t                         dwError = REST_ENGINE_SUCCESS;
+-    char*                            connection = NULL;
+-    uint32_t                         closeSocket = 1;
+-    char*                            statusStartChar = NULL;
+-
+-    if (!pResPacket)
+-    {
+-        dwError = VMREST_HTTP_INVALID_PARAMS;
+-    }
+-    BAIL_ON_VMREST_ERROR(dwError);
+-
+-    /**** Look for response status ****/
+-    statusStartChar = pResPacket->statusLine->statusCode;
+-
+-    if(statusStartChar != NULL && (*statusStartChar == '4' || *statusStartChar == '5'))
+-    {
+-        /**** Failure response sent, must close client ****/
+-        closeSocket = 1;
+-    }
+-    else
+-    {
+-        /**** Non failure response sent, respect client say on connection close ****/
+-        if (pResPacket->requestPacket != NULL)
+-        {
+-            dwError = VmRESTGetHttpHeader(
+-                          pResPacket->requestPacket,
+-                          "Connection",
+-                          &connection
+-                          );
+-        }
+-
+-        if ((connection != NULL) && (strcmp(connection, " keep-alive") == 0))
+-        {
+-            closeSocket = 0;
+-        }
+-    }
+-    if (closeSocket == 1)
+-    {
+-        /**** TODO: Inform transport to close connection else MUST NOT close it****/
+-    }
+-
+-    /**** Free all associcated request and response object memory ****/
+-    if (pResPacket->requestPacket)
+-    {
+-        VmRESTFreeHTTPRequestPacket(
+-            &(pResPacket->requestPacket)
+-            );
+-        pResPacket->requestPacket = NULL;
+-    }
+-        
+-    VmRESTFreeHTTPResponsePacket(
+-        &pResPacket
+-        );
+-    BAIL_ON_VMREST_ERROR(dwError);
+-
+-cleanup:
+-    if (connection != NULL)
+-    {
+-        VmRESTFreeMemory(connection);
+-        connection = NULL;
+-    }
+-    return dwError;
+-error:
+-    goto cleanup;
+-}
+-
+ uint32_t
+ VmRESTGetRequestHandle(
+     PVMREST_HANDLE                   pRESTHandle,
+@@ -1360,7 +1289,6 @@ VmRESTProcessBuffer(
+     }
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
+-
+     /**** Get the request processing state ****/
+     currState = pRequest->state;
+     *nBytesProcessed = 0;
+@@ -1692,3 +1620,76 @@ VmRESTSetHttpPayloadZeroCopy(
+     VMREST_LOG_ERROR(pRESTHandle,"%s","Set Zero copy payload Failed");
+     goto cleanup;
+ }
++
++uint32_t
++VmRESTEntertainPersistentConn(
++    PVMREST_HANDLE                   pRESTHandle,
++    PREST_REQUEST                    pRequest,
++    BOOLEAN*                         bKeepOpen
++    )
++{
++    uint32_t                         dwError = REST_ENGINE_SUCCESS;
++    char*                            pszKeepAliveRequest = NULL;
++    char*                            pszKeepAliveResponse = NULL;
++    BOOLEAN                          bKeepConnOpen = FALSE;
++
++    if (!pRESTHandle || !pRequest || !bKeepOpen || !pRequest->pResponse)
++    {
++        VMREST_LOG_ERROR(pRESTHandle,"%s","Invalid params");
++        dwError = VMREST_HTTP_INVALID_PARAMS;
++    }
++
++    /**** Get client's say on persistent connection ****/
++    dwError = VmRESTGetHttpHeader(
++                  pRequest,
++                  "Connection",
++                  &pszKeepAliveRequest
++                  );
++    BAIL_ON_VMREST_ERROR(dwError);
++
++    if ((pszKeepAliveRequest != NULL) && (strncmp(pszKeepAliveRequest, "keep-alive", strlen("keep-alive")) == 0))
++    {
++        bKeepConnOpen = TRUE;
++    }
++
++    /**** Inspect application response on connection (set from application callback) ****/
++    if (bKeepConnOpen)
++    {
++        dwError = VmRESTGetHttpResponseHeader(
++                      pRequest->pResponse,
++                      "Connection",
++                      &pszKeepAliveResponse
++                      );
++        BAIL_ON_VMREST_ERROR(dwError);
++
++        if (!((pszKeepAliveResponse != NULL) && (strncmp(pszKeepAliveResponse, "keep-alive", strlen("keep-alive")) == 0)))
++        {
++            VMREST_LOG_WARNING(pRESTHandle,"%s","Client's request for persistent connection not entertained by server");
++            bKeepConnOpen = FALSE;
++        }
++    }
++
++    *bKeepOpen = bKeepConnOpen;
++
++cleanup:
++
++    if (pszKeepAliveRequest)
++    {
++        VmRESTFreeMemory(
++            pszKeepAliveRequest
++            );
++        pszKeepAliveRequest = NULL;
++    }
++
++    return dwError;
++
++error:
++
++    if (bKeepOpen)
++    {
++        *bKeepOpen = FALSE;
++    }
++
++    goto cleanup;
++}    
++
+diff --git a/server/restengine/libmain.c b/server/restengine/libmain.c
+index 3992b76..e227a76 100644
+--- a/server/restengine/libmain.c
++++ b/server/restengine/libmain.c
+@@ -612,7 +612,7 @@ VmRESTSetSuccessResponse(
+                   );
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
+-    if ((connection != NULL) && (strcmp(connection, " keep-alive") == 0))
++    if ((connection != NULL) && ((strncmp(connection, "keep-alive", strlen("keep-alive")) == 0)))
+     {
+         dwError = VmRESTSetHttpHeader(
+                       ppResponse,
+diff --git a/server/restengine/prototype.h b/server/restengine/prototype.h
+index dfb8bda..d4dcf51 100644
+--- a/server/restengine/prototype.h
++++ b/server/restengine/prototype.h
+@@ -116,11 +116,6 @@ VmRESTTriggerAppCb(
+     PVM_REST_HTTP_RESPONSE_PACKET*   ppResponse
+     );
+ 
+-uint32_t
+-VmRESTCloseClient(
+-    PVM_REST_HTTP_RESPONSE_PACKET    pResPacket
+-    );
+-
+ uint32_t
+ VmRESTSetHttpPayloadZeroCopy(
+     PVMREST_HANDLE                   pRESTHandle,
+diff --git a/test/scripts/BUGS_TC/BUG-2076723/README b/test/scripts/BUGS_TC/BUG-2076723/README
+new file mode 100644
+index 0000000..79cf1a2
+--- /dev/null
++++ b/test/scripts/BUGS_TC/BUG-2076723/README
+@@ -0,0 +1,26 @@
++Bugzilla Id: 2076723
++
++Category: New feature/Critical
++
++Description:
++In secure version (HTTPS) of c-rest-engine, all connection requests are transactional. 
++This means each request is served via new connection. This introduces steps involving 
++openssl handshake which is known to cause significant performance delays.
++
++Requirements:
++1. Re-use TCP connections originating from same host and port to server.
++2. Support HTTP header "connection: keep-alive"
++
++Feature Testing:
++Use available libcurl based client to open one single connection and send multiple
++HTTP(S) request.
++
++Steps to test.
++1. Compile the persistentConnection.c file with the following command.
++   "gcc -o persistentConnection persistentConnection.c -lcurl"
++2. Run the test with following command.
++   "./persistentConnection https://<SERVER_IP>:<PORT>/v1/pkg?x=y 2>/dev/null"
++
++   Example:
++   "./persistentConnection https://172.16.127.131:81/v1/pkg?x=y 2>/dev/null"
++
+diff --git a/test/scripts/BUGS_TC/BUG-2076723/persistentConnection.c b/test/scripts/BUGS_TC/BUG-2076723/persistentConnection.c
+new file mode 100644
+index 0000000..e0f83e6
+--- /dev/null
++++ b/test/scripts/BUGS_TC/BUG-2076723/persistentConnection.c
+@@ -0,0 +1,121 @@
++/**************************************************************************
++* This test client uses libcurl to open connection to server and re-uses
++* the same connection to send multiple HTTPS requests.
++**************************************************************************/
++
++
++#include <stdio.h>
++#include <unistd.h>
++#include <curl/curl.h>
++#include <stdlib.h>
++#include <string.h>
++
++
++struct string
++{
++    char                            *ptr;
++    size_t                          len;
++};
++
++void init_string(struct string *s)
++{
++      s->len = 0;
++      s->ptr = malloc(s->len+1);
++      if (s->ptr == NULL)
++      {
++          fprintf(stderr, "malloc() failed\n");
++          exit(EXIT_FAILURE);
++      }
++      s->ptr[0] = '\0';
++}
++
++size_t writefunc(void *ptr, size_t size, size_t nmemb, struct string *s)
++{
++    size_t                           new_len = s->len + size*nmemb;
++    s->ptr = realloc(s->ptr, new_len+1);
++    if (s->ptr == NULL)
++    {
++        fprintf(stderr, "realloc() failed\n");
++        exit(EXIT_FAILURE);
++    }
++    memcpy(s->ptr+s->len, ptr, size*nmemb);
++    s->ptr[new_len] = '\0';
++    s->len = new_len;
++    return size*nmemb;
++}
++
++int main (int argc, char *argv[])
++{
++    CURL*                            curl = NULL;
++    CURLcode                         res = 0;
++    int                              ct = 0;
++    char                             expected[512] = {0};
++
++    if (argc != 2) {
++        printf("Wrong number of arguments supplied to test program\n");
++        exit(1);
++    }
++
++    struct string s;
++    curl_global_init(CURL_GLOBAL_ALL);
++
++    curl = curl_easy_init();
++    if(curl)
++    {
++try:
++        init_string(&s);
++        struct curl_slist *chunk = NULL;
++
++        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
++        curl_easy_setopt(curl, CURLOPT_HEADER, 1L);
++        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
++        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
++        curl_easy_setopt(curl, CURLOPT_TCP_KEEPALIVE, 1L);
++
++        if (ct == 500)
++        {
++            chunk = curl_slist_append(chunk, "Connection:close");
++            strcpy(expected,"HTTP/1.1 200 OK\r\nConnection:close\r\nContent-Length:13\r\n\r\nKumar Kaushik");
++        }
++        else
++        {
++            chunk = curl_slist_append(chunk, "Connection:keep-alive");
++            strcpy(expected,"HTTP/1.1 200 OK\r\nConnection:keep-alive\r\nContent-Length:13\r\n\r\nKumar Kaushik");
++        }
++        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
++
++        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "Kumar Kaushik");
++        curl_easy_setopt(curl, CURLOPT_URL, argv[1]);
++
++        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writefunc);
++        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &s);
++        res = curl_easy_perform(curl);
++        if(res != CURLE_OK)
++        {
++            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
++        }
++
++        if (strcmp(expected, s.ptr) == 0)
++        {
++            printf("Test passed, iteration %d\n", ct);
++        }
++        else
++        {
++           printf("Test failed, iteration %d\n", ct);
++        }
++        //printf("\n===============\n%s\n==========\n", s.ptr);
++        free(s.ptr);
++
++        ct++;
++
++        if (ct <= 500)
++        {
++            goto try;
++        }
++
++        curl_easy_cleanup(curl);
++    }
++
++  return 0;
++}
++
+diff --git a/transport/api/api.c b/transport/api/api.c
+index cc2c930..5389ff0 100644
+--- a/transport/api/api.c
++++ b/transport/api/api.c
+@@ -268,12 +268,12 @@ VmwSockSetRequestHandle(
+     PVM_SOCKET                       pSocket,
+     PREST_REQUEST                    pRequest,
+     uint32_t                         nProcessed,
+-    PVM_SOCK_EVENT_QUEUE             pQueue
++    BOOLEAN                          bPersistentConn
+     )
+ {
+      DWORD                            dwError = REST_ENGINE_SUCCESS;
+ 
+-     dwError = pRESTHandle->pPackage->pfnSetRequestHandle(pRESTHandle,pSocket,pRequest, nProcessed, pQueue);
++     dwError = pRESTHandle->pPackage->pfnSetRequestHandle(pRESTHandle,pSocket,pRequest, nProcessed, bPersistentConn);
+ 
+      return dwError;
+ }
+diff --git a/transport/posix/prototypes.h b/transport/posix/prototypes.h
+index d60e5e2..b1e4b57 100644
+--- a/transport/posix/prototypes.h
++++ b/transport/posix/prototypes.h
+@@ -101,7 +101,7 @@ VmSockPosixSetRequestHandle(
+     PVM_SOCKET                       pSocket,
+     PREST_REQUEST                    pRequest,
+     uint32_t                         nProcessed,
+-    PVM_SOCK_EVENT_QUEUE             pQueue
++    BOOLEAN                          bKeepAlive
+     );
+ 
+ DWORD
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index 982ae5c..f50356d 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -1592,7 +1592,7 @@ VmSockPosixSetRequestHandle(
+     PVM_SOCKET                       pSocket,
+     PREST_REQUEST                    pRequest,
+     uint32_t                         nProcessed,
+-    PVM_SOCK_EVENT_QUEUE             pQueue
++    BOOLEAN                          bPersistentConn
+     )
+ {
+     uint32_t                         dwError = REST_ENGINE_SUCCESS;
+@@ -1600,7 +1600,7 @@ VmSockPosixSetRequestHandle(
+     BOOLEAN                          bCompleted = FALSE;
+     struct                           epoll_event event = {0};
+ 
+-    if (!pSocket || !pRESTHandle || !pQueue)
++    if (!pSocket || !pRESTHandle || !pRESTHandle->pSockContext || !pRESTHandle->pSockContext->pEventQueue)
+     {
+         VMREST_LOG_ERROR(pRESTHandle, "%s", "Invalid params ...");
+         dwError = ERROR_INVALID_PARAMETER;
+@@ -1615,14 +1615,28 @@ VmSockPosixSetRequestHandle(
+     if (pRequest)
+     {
+         pSocket->pRequest = pRequest;
++        pSocket->nProcessed = nProcessed;
+     }
+     else
+     {
+         pSocket->pRequest = NULL;
+-        bCompleted = TRUE;
+-    }
+ 
+-    pSocket->nProcessed = nProcessed;
++        if (bPersistentConn)
++        {
++            /**** reset the socket object for new request *****/
++            if (pSocket->pszBuffer)
++            {
++                VmRESTFreeMemory(pSocket->pszBuffer);
++                pSocket->pszBuffer = NULL;
++            }
++            pSocket->nProcessed = 0;
++            pSocket->nBufData = 0;
++        }
++        else
++        {
++            bCompleted = TRUE;
++        }
++    }
+ 
+     if (!bCompleted)
+     {
+@@ -1639,7 +1653,7 @@ VmSockPosixSetRequestHandle(
+ 
+         event.events = event.events | EPOLLONESHOT;
+ 
+-        if (epoll_ctl(pQueue->epollFd, EPOLL_CTL_MOD, pSocket->fd, &event) < 0)
++        if (epoll_ctl(pRESTHandle->pSockContext->pEventQueue->epollFd, EPOLL_CTL_MOD, pSocket->fd, &event) < 0)
+         {
+             dwError = VM_SOCK_POSIX_ERROR_SYS_CALL_FAILED;
+         }
+@@ -1659,7 +1673,6 @@ VmSockPosixSetRequestHandle(
+ 
+     goto cleanup;
+     
+-
+ }
