@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2n
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha1    openssl=0ca2957869206de193603eca6d89f532f61680b1
+Source1:        rehash_ca_certificates.sh
 Patch0:         c_rehash.patch
 Patch1:         openssl-1.0.2n-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
@@ -72,6 +73,7 @@ make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
+install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
 ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
@@ -113,8 +115,11 @@ rm -rf %{buildroot}/*
 
 %files c_rehash
 /%{_bindir}/c_rehash
+/%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.0.2n-2
+-   Add script which rehashes the certificates
 *   Tue Jan 02 2018 Xiaolin Li <xiaolinl@vmware.com> 1.0.2n-1
 -   Upgrade to 1.0.2n
 *   Tue Nov 07 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2m-1
