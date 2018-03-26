@@ -2,7 +2,7 @@
 
 set -e
 
-CERTIFICATES_PATH="/etc/ssl/cers/"
+CERTIFICATES_PATH="/etc/ssl/certs/"
 CONCATENATED_CERT_FILE="/etc/pki/tls/certs/ca-bundle.crt"
 
 /usr/bin/c_rehash $CERTIFICATES_PATH
