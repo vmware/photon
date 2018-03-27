@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.115
+Version:       4.4.124
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d8a244092f001d149bbe673bd5b685d204fcf298
+%define sha1 linux=d5241400e6e5ed97fbdba1f92cf62c0a4382a30a
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -37,9 +37,6 @@ Patch22:       vsock-transport-for-9p.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 Patch26:       init-do_mounts-recreate-dev-root.patch
-# Fix CVE-2017-8824
-Patch27:       dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
-Patch30:       revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
@@ -50,7 +47,6 @@ Patch59: 0148-cw1200-prevent-speculative-execution.patch
 Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
 Patch61: 0150-ipv4-prevent-speculative-execution.patch
 Patch62: 0151-ipv6-prevent-speculative-execution.patch
-Patch63: 0152-fs-prevent-speculative-execution.patch
 Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
@@ -118,8 +114,6 @@ The Linux package contains the Linux kernel doc files
 %patch23 -p1
 %patch24 -p1
 %patch26 -p1
-%patch27 -p1
-%patch30 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -130,7 +124,6 @@ The Linux package contains the Linux kernel doc files
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
-%patch63 -p1
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
@@ -224,6 +217,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Mar 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-1
+-   Update to version 4.4.124
 *   Mon Feb 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.115-1
 -   Update to version 4.4.115
 *   Wed Jan 31 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.114-1

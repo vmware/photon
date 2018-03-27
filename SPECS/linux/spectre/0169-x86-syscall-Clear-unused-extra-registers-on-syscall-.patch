@@ -50,13 +50,13 @@ index 952b23b5..d16bfe2 100644
  	movq	%rsp, %rdi
  	movl	$AUDIT_ARCH_X86_64, %esi
  	movq	%rax, %rdx
-@@ -267,7 +274,6 @@ tracesys_phase2:
+@@ -276,7 +276,6 @@ tracesys_phase2:
  	 * the value it wants us to use in the table lookup.
  	 */
  	RESTORE_C_REGS_EXCEPT_RAX
 -	RESTORE_EXTRA_REGS
  #if __SYSCALL_MASK == ~0
- 	cmpq	$__NR_syscall_max, %rax
+ 	cmpq	$NR_syscalls, %rax
  #else
 @@ -286,10 +292,8 @@ tracesys_phase2:
   * Has correct iret frame.
