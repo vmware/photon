@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.115
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.124
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=d8a244092f001d149bbe673bd5b685d204fcf298
+%define sha1 linux=d5241400e6e5ed97fbdba1f92cf62c0a4382a30a
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -36,8 +36,6 @@ Patch16:        vsock-transport-for-9p.patch
 #allow some algorithms in FIPS mode
 Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
-# Fix CVE-2017-8824
-Patch21:        dccp-CVE-2017-8824-use-after-free-in-DCCP-code.patch
 Patch24:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -49,7 +47,6 @@ Patch59: 0148-cw1200-prevent-speculative-execution.patch
 Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
 Patch61: 0150-ipv4-prevent-speculative-execution.patch
 Patch62: 0151-ipv6-prevent-speculative-execution.patch
-Patch63: 0152-fs-prevent-speculative-execution.patch
 Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
@@ -148,7 +145,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
-%patch21 -p1
 %patch24 -p1
 
 %patch52 -p1
@@ -160,7 +156,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
-%patch63 -p1
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
@@ -322,6 +317,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Mar 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-1
+-   Update to version 4.4.124
 *   Thu Mar 08 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.115-2
 -   Add build dependency of libelf. Needed by perf to resolve symbols.
 *   Mon Feb 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.115-1
