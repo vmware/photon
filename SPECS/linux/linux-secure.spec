@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.89
+Version:        4.9.90
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=81a81adbdc191ce09133d1d512b87a53e87fa967
+%define sha1 linux=e6f8a32fdfe078407073514fbdda968f59406725
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -48,7 +48,6 @@ Patch28:        0002-allow-also-ecb-cipher_null.patch
 Patch29:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
-Patch35:        revert-SMB-validate-negotiate-even-if-signing-off.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
@@ -169,7 +168,6 @@ EOF
 %patch28 -p1
 %patch29 -p1
 %patch31 -p1
-%patch35 -p1
 
 # spectre
 %patch52 -p1
@@ -317,6 +315,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Mar 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.90-1
+-   Update to version 4.9.90
 *   Thu Mar 22 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.89-1
 -   Update to version 4.9.89
 *   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.80-2
