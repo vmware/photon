@@ -3,7 +3,7 @@ Name:		initscripts
 Version:	9.65
 License:	GPLv2
 Group:		System Environment/Base
-Release:	3%{?dist}
+Release:	4%{?dist}
 URL:		http://fedorahosted.org/releases/i/n/initscripts/
 Source0:	https://fedorahosted.org/releases/i/n/initscripts/initscripts-9.65.tar.bz2
 %define sha1 initscripts=0a231ab94ce7ef050a7c2c35a5183450abe58a39
@@ -142,7 +142,6 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 /usr/lib/udev/rules.d/60-net.rules
 %{_sbindir}/service
 %{_mandir}/man*/*
-%dir %attr(775,root,root) /var/run/netreport
 %dir %{_sysconfdir}/NetworkManager
 %dir %{_sysconfdir}/NetworkManager/dispatcher.d
 %{_sysconfdir}/NetworkManager/dispatcher.d/00-netreport
@@ -162,6 +161,8 @@ rm -rf %{buildroot}%{_prefix}/lib/systemd
 %{_sysconfdir}/profile.d/debug*
 
 %changelog
+*   Wed Mar 28 2018 Alexey Makhalov <amakhalov@vmware.com> 9.65-4
+-   Remote /var/run/netreport
 *   Tue Dec 26 2017 Divya Thaluru <dthaluru@vmware.com> 9.65-3
 -   Fixed return code in /etc/init.d/functions bash script
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.65-2
