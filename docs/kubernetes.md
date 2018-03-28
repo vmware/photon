@@ -37,11 +37,24 @@ The following packages should already be installed on the full version of Photon
 tdnf install kubernetes
 ``` 
 
-* Install iptables on photon-master:
+* Install iptables on photon-master and photon-node:
 
 ```sh
 tdnf install iptables
 ```
+
+* Open the tcp port 8080 (api service) on the photon-master in the firewall
+
+```sh
+iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+```
+
+* Open the tcp port 10250 (api service) on the photon-node in the firewall
+
+```sh
+iptables -A INPUT -p tcp --dport 10250 -j ACCEPT
+```
+
 
 * Install Docker on photon-node:
 
