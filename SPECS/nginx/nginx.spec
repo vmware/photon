@@ -1,6 +1,6 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
-Version:        1.13.5
+Version:        1.13.8
 Release:        1%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nginx=8eac59db4ee2a90373a8a44f174317110b666526
+%define sha1    nginx=a1f9348c9c46f449a0b549d0519dd34191d30cee
 Source1:        nginx.service
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -47,6 +47,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %dir %{_var}/log/nginx
 
 %changelog
+*   Wed Mar 28 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.13.8-1
+-   Update to version 1.13.8 to support nginx-ingress
 *   Wed Oct 04 2017 Xiaolin Li <xiaolinl@vmware.com> 1.13.5-1
 -   Update to version 1.13.5
 *   Mon May 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.11.13-2
