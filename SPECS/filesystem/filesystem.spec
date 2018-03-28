@@ -1,7 +1,7 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
@@ -36,7 +36,6 @@ install -vdm 755 %{buildroot}/run
 install -vdm 755 %{buildroot}/run/media
 install -vdm 755 %{buildroot}/run/media/floppy
 install -vdm 755 %{buildroot}/run/media/cdrom
-install -vdm 755 %{buildroot}/run/lock
 install -vdm 755 %{buildroot}/sys
 install -vdm 1777 %{buildroot}/tmp
 install -vdm 755 %{buildroot}/usr/bin
@@ -510,11 +509,9 @@ EOF
 #	media filesystem
 %dir /run/media/cdrom
 %dir /run/media/floppy
-#	run filesystem
-%dir /run/lock
-#	usr filesystem
 %ghost /mnt/cdrom
 %dir /mnt/hgfs
+#	usr filesystem
 %dir /usr/bin
 %dir /usr/include
 %dir /usr/lib
@@ -581,7 +578,6 @@ EOF
 %attr(600,root,root)	/var/log/btmp
 /var/lock
 %ghost /var/run
-/var/run/lock
 #	Symlinks for AMD64
 %ifarch x86_64
 /lib64
@@ -589,6 +585,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Wed Mar 28 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1-3
+-   Do not package /var/run as a folder
 *   Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.1-2
 -   ghost /mnt/cdrom
 *   Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  1.1-1
