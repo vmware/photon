@@ -2,7 +2,7 @@
 Summary:	SELinux library and simple utilities
 Name:		libselinux
 Version:	2.6
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Public Domain
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}.tar.gz
@@ -74,8 +74,7 @@ make LIBDIR="%{_libdir}" %{?_smp_mflags} pywrap
 make DESTDIR="%{buildroot}" LIBDIR="%{buildroot}%{_libdir}" SHLIBDIR="%{buildroot}/%{_lib}" BINDIR="%{buildroot}%{_bindir}" SBINDIR="%{buildroot}%{_sbindir}" install install-pywrap
 
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
-mkdir -p %{buildroot}/var/run/setrans
-echo "d /var/run/setrans 0755 root root" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/libselinux.conf
+echo "d /run/setrans 0755 root root" > %{buildroot}/%{_prefix}/lib/tmpfiles.d/libselinux.conf
 
 %clean
 rm -rf %{buildroot}
@@ -87,7 +86,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_lib}/libselinux.so.*
-%ghost /var/run/setrans
+%ghost /run/setrans
 %{_prefix}/lib/tmpfiles.d/libselinux.conf
 
 %files utils
@@ -112,6 +111,8 @@ rm -rf %{buildroot}
 %{python_sitearch}/_selinux.so
 
 %changelog
+*       Wed Mar 28 2018 Anish Swaminathan <anishs@vmware.com> 2.6-2
+-       Change setrans path to run
 *	Mon May 22 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6-1
 -	Update to version 2.6 (CVE bug:1836427)
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
