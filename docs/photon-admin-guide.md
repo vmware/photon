@@ -985,11 +985,11 @@ Using the `ip route` version of a command instead of the net-tools version often
 Network configuration files for systemd-networkd reside in /etc/systemd/network and /usr/lib/systemd/network. Example:
 
 	root@photon-rc [ ~ ]# ls /etc/systemd/network/
-	10-dhcp-en.network
+	99-dhcp-en.network
 
-By default, when Photon OS starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files:
+By default, when Photon OS starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files with the lowest priority filename:
 
-	cat /etc/systemd/network/10-dhcp-en.network
+	cat /etc/systemd/network/99-dhcp-en.network
 	[Match]
 	Name=e*
 
@@ -1001,7 +1001,7 @@ Network configuration files can also appear in the system network directory, /us
 	root@photon-rc [ ~ ]# updatedb
 	root@photon-rc [ ~ ]# locate systemd/network
 	/etc/systemd/network
-	/etc/systemd/network/10-dhcp-en.network
+	/etc/systemd/network/99-dhcp-en.network
 	/usr/lib/systemd/network
 	/usr/lib/systemd/network/80-container-host0.network
 	/usr/lib/systemd/network/80-container-ve.network
@@ -1061,9 +1061,8 @@ For more information, see the man page for systemd-networkd: `man systemd.networ
 
 ### Turning Off DHCP
 
-By default, when Photon OS first starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files:
-
-	cat /etc/systemd/network/10-dhcp-en.network
+By default, when Photon OS first starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files with the lowest priority filename:
+	cat /etc/systemd/network/99-dhcp-en.network
 	[Match]
 	Name=e*
 
@@ -1073,6 +1072,8 @@ By default, when Photon OS first starts, it creates a DHCP network configuration
 To turn off DHCP for all Ethernet interfaces, change the value of `DHCP` from `yes` to `no`, save the changes, and then restart the `systemd-networkd` service: 
 
 	systemctl restart systemd-networkd
+
+If you create a configuration file with a higher priority filename (e.g. `10-static-en.network`), it is not necessary but still recommended to turn off DHCP.
 
 ### Adding a DNS Server 
 
@@ -1281,7 +1282,7 @@ You can then add a network link, such as the Ethernet connection, as the argumen
 	root@photon-rc [ ~ ]# networkctl status eth0
 	* 2: eth0
 	       Link File: /usr/lib/systemd/network/99-default.link
-	    Network File: /etc/systemd/network/10-dhcp-en.network
+	    Network File: /etc/systemd/network/99-dhcp-en.network
 	            Type: ether
 	           State: routable (configured)
 	            Path: pci-0000:02:01.0
