@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.30
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -34,6 +34,7 @@ cd ../binutils-build
             --enable-shared     \
             --disable-werror    \
             --with-system-zlib  \
+	    --enable-install-libiberty \
             --disable-silent-rules
 make %{?_smp_mflags} tooldir=%{_prefix}
 %install
@@ -103,12 +104,16 @@ make %{?_smp_mflags} check
 %{_includedir}/ansidecl.h
 %{_includedir}/bfdlink.h
 %{_includedir}/dis-asm.h
+%{_includedir}/libiberty/*
 %{_libdir}/libbfd.a
 %{_libdir}/libopcodes.a
 %{_libdir}/libbfd.so
 %{_libdir}/libopcodes.so
+%{_lib64dir}/libiberty.a
 
 %changelog
+*   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 2.30-3
+-   Add libiberty to the -devel package
 *   Wed Feb 28 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-2
 -   Fix CVE-2018-6543.
 *   Mon Jan 29 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-1
