@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.90
+Version:        4.9.94
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e6f8a32fdfe078407073514fbdda968f59406725
+%define sha1 linux=82437991bdd6284fd3fd1fe21eb13f97abac203b
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -45,6 +45,9 @@ Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
+Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
+Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
+Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
@@ -158,6 +161,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch25 -p1
 %patch26 -p1
 %patch28 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
 
 %patch52 -p1
 %patch53 -p1
@@ -340,6 +346,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Apr 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.94-1
+-   Update to version 4.9.94. Fix panic in ip_set.
+*   Mon Apr 02 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.92-1
+-   Update to version 4.9.92. Apply vmxnet3 patches.
 *   Tue Mar 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.90-1
 -   Update to version 4.9.90
 *   Thu Mar 22 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.89-1
