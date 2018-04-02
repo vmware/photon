@@ -1,0 +1,65 @@
+commit 7525a238be8f46617cdda29d1be5b85ffe3b042d
+Author: Namhyung Kim <namhyung@kernel.org>
+Date:   Thu Jun 8 16:31:07 2017 +0900
+
+    perf tests: Decompress kernel module before objdump
+    
+    
+    [ Upstream commit 94df1040b1e6aacd8dec0ba3c61d7e77cd695f26 ]
+    
+    If a kernel modules is compressed, it should be decompressed before
+    running objdump to parse binary data correctly.  This fixes a failure of
+    object code reading test for me.
+    
+    Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+    Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+    Acked-by: Jiri Olsa <jolsa@kernel.org>
+    Cc: David Ahern <dsahern@gmail.com>
+    Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
+    Cc: Wang Nan <wangnan0@huawei.com>
+    Cc: kernel-team@lge.com
+    Link: http://lkml.kernel.org/r/20170608073109.30699-8-namhyung@kernel.org
+    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/tools/perf/tests/code-reading.c b/tools/perf/tests/code-reading.c
+index ff5bc6363a79..150334064071 100644
+--- a/tools/perf/tests/code-reading.c
++++ b/tools/perf/tests/code-reading.c
+@@ -224,6 +224,8 @@ static int read_object_code(u64 addr, size_t len, u8 cpumode,
+ 	unsigned char buf2[BUFSZ];
+ 	size_t ret_len;
+ 	u64 objdump_addr;
++	const char *objdump_name;
++	char decomp_name[KMOD_DECOMP_LEN];
+ 	int ret;
+ 
+ 	pr_debug("Reading object code for memory address: %#"PRIx64"\n", addr);
+@@ -284,9 +286,25 @@ static int read_object_code(u64 addr, size_t len, u8 cpumode,
+ 		state->done[state->done_cnt++] = al.map->start;
+ 	}
+ 
++	objdump_name = al.map->dso->long_name;
++	if (dso__needs_decompress(al.map->dso)) {
++		if (dso__decompress_kmodule_path(al.map->dso, objdump_name,
++						 decomp_name,
++						 sizeof(decomp_name)) < 0) {
++			pr_debug("decompression failed\n");
++			return -1;
++		}
++
++		objdump_name = decomp_name;
++	}
++
+ 	/* Read the object code using objdump */
+ 	objdump_addr = map__rip_2objdump(al.map, al.addr);
+-	ret = read_via_objdump(al.map->dso->long_name, objdump_addr, buf2, len);
++	ret = read_via_objdump(objdump_name, objdump_addr, buf2, len);
++
++	if (dso__needs_decompress(al.map->dso))
++		unlink(objdump_name);
++
+ 	if (ret > 0) {
+ 		/*
+ 		 * The kernel maps are inaccurate - assume objdump is right in
