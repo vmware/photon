@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.6.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-v%{version}.tar.gz
@@ -30,6 +30,7 @@ Kubernetes Dashboard UI.
 
 %build
 export PATH=${PATH}:/usr/bin
+sed -i 's/"google-closure-library": "\*"/"google-closure-library": "v20170521"/' ./bower.json
 npm install
 npm install babel-loader@7.1.1
 ./build/postinstall.sh
@@ -51,6 +52,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*    Tue Apr 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.6.3-2
+-    Fix build break in google-closure-library.
 *    Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.3-1
 -    kubernetes-dashboard 1.6.3.
 *    Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.1-1
