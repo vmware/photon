@@ -1,6 +1,6 @@
-diff -up openssl-1.0.2a/apps/s_apps.h.ipv6-apps openssl-1.0.2a/apps/s_apps.h
---- openssl-1.0.2a/apps/s_apps.h.ipv6-apps	2015-04-20 15:01:24.029120104 +0200
-+++ openssl-1.0.2a/apps/s_apps.h	2015-04-20 15:05:00.353137701 +0200
+diff -rup openssl-1.0.2o/apps/s_apps.h openssl-1.0.2o-new/apps/s_apps.h
+--- openssl-1.0.2o/apps/s_apps.h	2018-03-27 06:54:46.000000000 -0700
++++ openssl-1.0.2o-new/apps/s_apps.h	2018-04-03 14:04:09.704887325 -0700
 @@ -151,7 +151,7 @@ typedef fd_mask fd_set;
  #define PORT_STR        "4433"
  #define PROTOCOL        "tcp"
@@ -24,10 +24,10 @@ diff -up openssl-1.0.2a/apps/s_apps.h.ipv6-apps openssl-1.0.2a/apps/s_apps.h
  
  long MS_CALLBACK bio_dump_callback(BIO *bio, int cmd, const char *argp,
                                     int argi, long argl, long ret);
-diff -up openssl-1.0.2a/apps/s_client.c.ipv6-apps openssl-1.0.2a/apps/s_client.c
---- openssl-1.0.2a/apps/s_client.c.ipv6-apps	2015-04-20 15:01:24.022119942 +0200
-+++ openssl-1.0.2a/apps/s_client.c	2015-04-20 15:06:42.338503234 +0200
-@@ -662,7 +662,7 @@ int MAIN(int argc, char **argv)
+diff -rup openssl-1.0.2o/apps/s_client.c openssl-1.0.2o-new/apps/s_client.c
+--- openssl-1.0.2o/apps/s_client.c	2018-03-27 06:54:46.000000000 -0700
++++ openssl-1.0.2o-new/apps/s_client.c	2018-04-03 14:04:09.704887325 -0700
+@@ -668,7 +668,7 @@ int MAIN(int argc, char **argv)
      int cbuf_len, cbuf_off;
      int sbuf_len, sbuf_off;
      fd_set readfds, writefds;
@@ -36,7 +36,7 @@ diff -up openssl-1.0.2a/apps/s_client.c.ipv6-apps openssl-1.0.2a/apps/s_client.c
      int full_log = 1;
      char *host = SSL_HOST_NAME;
      char *cert_file = NULL, *key_file = NULL, *chain_file = NULL;
-@@ -785,13 +785,11 @@ int MAIN(int argc, char **argv)
+@@ -792,13 +792,11 @@ int MAIN(int argc, char **argv)
          } else if (strcmp(*argv, "-port") == 0) {
              if (--argc < 1)
                  goto bad;
@@ -52,7 +52,7 @@ diff -up openssl-1.0.2a/apps/s_client.c.ipv6-apps openssl-1.0.2a/apps/s_client.c
                  goto bad;
          } else if (strcmp(*argv, "-verify") == 0) {
              verify = SSL_VERIFY_PEER;
-@@ -1417,7 +1415,7 @@ int MAIN(int argc, char **argv)
+@@ -1449,7 +1447,7 @@ int MAIN(int argc, char **argv)
  
   re_start:
  
@@ -61,10 +61,11 @@ diff -up openssl-1.0.2a/apps/s_client.c.ipv6-apps openssl-1.0.2a/apps/s_client.c
          BIO_printf(bio_err, "connect:errno=%d\n", get_last_socket_error());
          SHUTDOWN(s);
          goto end;
-diff -up openssl-1.0.2a/apps/s_server.c.ipv6-apps openssl-1.0.2a/apps/s_server.c
---- openssl-1.0.2a/apps/s_server.c.ipv6-apps	2015-04-20 15:01:24.030120127 +0200
-+++ openssl-1.0.2a/apps/s_server.c	2015-04-20 15:10:47.245187746 +0200
-@@ -1061,7 +1061,7 @@ int MAIN(int argc, char *argv[])
+Only in openssl-1.0.2o-new/apps: s_client.c.orig
+diff -rup openssl-1.0.2o/apps/s_server.c openssl-1.0.2o-new/apps/s_server.c
+--- openssl-1.0.2o/apps/s_server.c	2018-03-27 06:54:46.000000000 -0700
++++ openssl-1.0.2o-new/apps/s_server.c	2018-04-03 14:04:09.704887325 -0700
+@@ -1082,7 +1082,7 @@ int MAIN(int argc, char *argv[])
  {
      X509_VERIFY_PARAM *vpm = NULL;
      int badarg = 0;
@@ -73,7 +74,7 @@ diff -up openssl-1.0.2a/apps/s_server.c.ipv6-apps openssl-1.0.2a/apps/s_server.c
      char *CApath = NULL, *CAfile = NULL;
      char *chCApath = NULL, *chCAfile = NULL;
      char *vfyCApath = NULL, *vfyCAfile = NULL;
-@@ -1148,7 +1148,8 @@ int MAIN(int argc, char *argv[])
+@@ -1170,7 +1170,8 @@ int MAIN(int argc, char *argv[])
          if ((strcmp(*argv, "-port") == 0) || (strcmp(*argv, "-accept") == 0)) {
              if (--argc < 1)
                  goto bad;
@@ -83,7 +84,7 @@ diff -up openssl-1.0.2a/apps/s_server.c.ipv6-apps openssl-1.0.2a/apps/s_server.c
                  goto bad;
          } else if (strcmp(*argv, "-naccept") == 0) {
              if (--argc < 1)
-@@ -2020,13 +2021,13 @@ int MAIN(int argc, char *argv[])
+@@ -2058,13 +2059,13 @@ int MAIN(int argc, char *argv[])
      BIO_printf(bio_s_out, "ACCEPT\n");
      (void)BIO_flush(bio_s_out);
      if (rev)
@@ -100,9 +101,10 @@ diff -up openssl-1.0.2a/apps/s_server.c.ipv6-apps openssl-1.0.2a/apps/s_server.c
                    naccept);
      print_stats(bio_s_out, ctx);
      ret = 0;
-diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
---- openssl-1.0.2a/apps/s_socket.c.ipv6-apps	2015-03-19 14:30:36.000000000 +0100
-+++ openssl-1.0.2a/apps/s_socket.c	2015-04-20 15:32:53.960079507 +0200
+Only in openssl-1.0.2o-new/apps: s_server.c.orig
+diff -rup openssl-1.0.2o/apps/s_socket.c openssl-1.0.2o-new/apps/s_socket.c
+--- openssl-1.0.2o/apps/s_socket.c	2018-03-27 06:54:46.000000000 -0700
++++ openssl-1.0.2o-new/apps/s_socket.c	2018-04-03 14:31:17.626470644 -0700
 @@ -106,9 +106,7 @@ static struct hostent *GetHostByName(cha
  static void ssl_sock_cleanup(void);
  # endif
@@ -114,7 +116,7 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
  static int do_accept(int acc_sock, int *sock, char **host);
  static int host_ip(char *str, unsigned char ip[4]);
  
-@@ -231,65 +229,66 @@ static int ssl_sock_init(void)
+@@ -231,65 +229,67 @@ static int ssl_sock_init(void)
      return (1);
  }
  
@@ -123,7 +125,7 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
  {
 -    unsigned char ip[4];
 -
--    memset(ip, '\0', sizeof ip);
+-    memset(ip, '\0', sizeof(ip));
 -    if (!host_ip(host, &(ip[0])))
 -        return 0;
 -    return init_client_ip(sock, ip, port, type);
@@ -177,6 +179,7 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
 +            failed_call = "socket";
 +            goto nextres;
 +        }
++
  # if defined(SO_KEEPALIVE) && !defined(OPENSSL_SYS_MPE)
 -    if (type == SOCK_STREAM) {
 -        i = 0;
@@ -227,7 +230,7 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
                int (*cb) (char *hostname, int s, int stype,
                           unsigned char *context), unsigned char *context,
                int naccept)
-@@ -328,69 +327,89 @@ int do_server(int port, int type, int *r
+@@ -328,69 +328,88 @@ int do_server(int port, int type, int *r
      }
  }
  
@@ -295,7 +298,7 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
  # if defined SOL_SOCKET && defined SO_REUSEADDR
 -    {
 -        int j = 1;
--        setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&j, sizeof j);
+-        setsockopt(s, SOL_SOCKET, SO_REUSEADDR, (void *)&j, sizeof(j));
 -    }
 -# endif
 -    if (bind(s, (struct sockaddr *)&server, sizeof(server)) == -1) {
@@ -307,6 +310,15 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
 +        }
  # endif
 -        goto err;
+-    }
+-    /* Make it 128 for linux */
+-    if (type == SOCK_STREAM && listen(s, 128) == -1)
+-        goto err;
+-    *sock = s;
+-    ret = 1;
+- err:
+-    if ((ret == 0) && (s != -1)) {
+-        SHUTDOWN(s);
 +
 +        if (bind(s, (struct sockaddr *)res->ai_addr, res->ai_addrlen) == -1) {
 +            failed_call = "bind";
@@ -325,17 +337,14 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
 +            close(s);
 +        res = res->ai_next;
      }
--    /* Make it 128 for linux */
--    if (type == SOCK_STREAM && listen(s, 128) == -1)
--        goto err;
--    *sock = s;
--    ret = 1;
-- err:
--    if ((ret == 0) && (s != -1)) {
--        SHUTDOWN(s);
+-    return (ret);
+-}
 +    if (res0)
 +        freeaddrinfo(res0);
-+
+ 
+-static int init_server(int *sock, int port, int type)
+-{
+-    return (init_server_long(sock, port, NULL, type));
 +    if (s == INVALID_SOCKET) {
 +        if (hints.ai_family == AF_INET6) {
 +            hints.ai_family = AF_INET;
@@ -343,13 +352,7 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
 +        }
 +        perror("socket");
 +        return (0);
-     }
--    return (ret);
--}
- 
--static int init_server(int *sock, int port, int type)
--{
--    return (init_server_long(sock, port, NULL, type));
++    }
 +    perror(failed_call);
 +    return (0);
  }
@@ -523,4 +526,3 @@ diff -up openssl-1.0.2a/apps/s_socket.c.ipv6-apps openssl-1.0.2a/apps/s_socket.c
      return (1);
  }
  
-
