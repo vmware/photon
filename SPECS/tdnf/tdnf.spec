@@ -3,8 +3,8 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        1.2.2
-Release:        3%{?dist}
+Version:        1.2.3
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -22,40 +22,37 @@ BuildRequires:  curl-devel
 Obsoletes:      yum
 Provides:       yum
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    tdnf=51e084e294e1ae4eae800dbf6f4e435c3d18a8ff
+%define sha1    tdnf=d04e003bcdf9d9f0bf2ec0f6e5ca26a4a0174db8
 Source1:        cache-updateinfo
 Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
-Patch0:         tdnf_fix_protected_pkgs_in_obsolete.patch
 
 %description
 tdnf is a yum/dnf equivalent
 which uses libsolv and libhawkey
 
-%package    devel
-Summary:    A Library providing C API for tdnf
-Group:      Development/Libraries
-Requires:   tdnf = %{version}-%{release}
-Requires:   hawkey-devel >= 2017.1
+%package        devel
+Summary:        A Library providing C API for tdnf
+Group:          Development/Libraries
+Requires:       tdnf = %{version}-%{release}
+Requires:       hawkey-devel >= 2017.1
 
 %description devel
 Development files for tdnf
 
-%package	cli-libs
-Summary:	Library providing cli libs for tdnf like clients
-Group:		Development/Libraries
+%package        cli-libs
+Summary:        Library providing cli libs for tdnf like clients
+Group:          Development/Libraries
 
 %description cli-libs
 Library providing cli libs for tdnf like clients.
 
 %prep
 %setup -q
-%patch0 -p1
-
 
 %build
-sed -i 's/tdnf, 1.2.0/tdnf, 1.2.2/' configure.ac
+sed -i 's/tdnf, 1.2.0/tdnf, 1.2.3/' configure.ac
 autoreconf -i
 ./configure \
     --prefix=%{_prefix} \
@@ -154,6 +151,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Thu Apr 05 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.3-1
+-   Update to v1.2.3
 *   Thu Feb 15 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-3
 -   Bump version after set SOLVER_FLAG_ALLOW_DOWNGRADE to
 -   true for downgrade in hawkey.
