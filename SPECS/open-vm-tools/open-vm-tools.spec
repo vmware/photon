@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -9,8 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
 %define sha1 open-vm-tools=adba97493c4f96db6281a6964ee26b17b5adc5c5
-Source1:        gosc-scripts-1.1.tar.gz
-%define sha1 gosc-scripts-1.1=655ed8832165a60eb2493b8cecf1b26d0c979d2a
+Source1:        gosc-scripts-1.2.tar.gz
+%define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 Patch0:         GOSC-libDeploy.patch
@@ -98,6 +98,8 @@ fi
 
 
 %changelog
+*   Mon Apr 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-4
+-   Revert regex changes to gosc scripts.
 *   Wed Mar 14 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-3
 -   Fix gosc patch to call customization
 *   Wed Mar 14 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-2
