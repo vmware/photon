@@ -8,17 +8,66 @@ from constants import constants
 import shutil
 from SpecData import SPECS
 
-class PackageBuilder(object):
+class PackageBuilderBase(object):
+    def __init__(self, mapPackageToCycles, pkgBuildType):
+        # will be initialized in buildPackageFunction()
+        self.logName = None
+        self.logPath = None
+        self.logger = None
+        self.package = None
+        self.mapPackageToCycles = mapPackageToCycles
+        self.listNodepsPackages = ["glibc", "gmp", "zlib", "file", "binutils", "mpfr",
+                                   "mpc", "gcc", "ncurses", "util-linux", "groff", "perl",
+                                   "texinfo", "rpm", "openssl", "go"]
+        self.pkgBuildType = pkgBuildType
+
+    def findPackageNameFromRPMFile(self,rpmfile):
+        rpmfile=os.path.basename(rpmfile)
+        releaseindex=rpmfile.rfind("-")
+        if releaseindex == -1:
+            self.logger.error("Invalid rpm file:"+rpmfile)
+            return None
+        versionindex=rpmfile[0:releaseindex].rfind("-")
+        if versionindex == -1:
+            self.logger.error("Invalid rpm file:"+rpmfile)
+            return None
+        packageName=rpmfile[0:versionindex]
+        return packageName
+
+    def checkIfPackageIsAlreadyBuilt(self, index=0):
+        basePkg=SPECS.getData().getSpecName(self.package)
+        listRPMPackages=SPECS.getData().getRPMPackages(basePkg, index)
+        packageIsAlreadyBuilt=True
+        pkgUtils = PackageUtils(self.logName,self.logPath)
+        for pkg in listRPMPackages:
+            if pkgUtils.findRPMFileForGivenPackage(pkg, index) is None:
+                packageIsAlreadyBuilt=False
+                break
+        return packageIsAlreadyBuilt
+
+    def findRunTimeRequiredRPMPackages(self,rpmPackage):
+        listRequiredPackages=SPECS.getData().getRequiresForPackage(rpmPackage)
+        return listRequiredPackages
+
+    def findBuildTimeRequiredPackages(self):
+        listRequiredPackages=SPECS.getData().getBuildRequiresForPackage(self.package)
+        return listRequiredPackages
+
+    def findBuildTimeCheckRequiredPackages(self):
+        listRequiredPackages=SPECS.getData().getCheckBuildRequiresForPackage(self.package)
+        return listRequiredPackages
+
+    @staticmethod
+    def getNumOfVersions(package):
+        return SPECS.getData().getNumberOfVersions(package)
+
+class PackageBuilder(PackageBuilderBase):
 
     def __init__(self,mapPackageToCycles,listAvailableCyclicPackages,listBuildOptionPackages,pkgBuildOptionFile):
+        PackageBuilderBase.__init__(self, mapPackageToCycles, "chroot")
         # will be initialized in buildPackageThreadAPI()
-        self.logName=None
-        self.logPath=None
-        self.logger=None
-        self.package=None
-        self.mapPackageToCycles = mapPackageToCycles
         self.listAvailableCyclicPackages = listAvailableCyclicPackages
-        self.listNodepsPackages = ["glibc","gmp","zlib","file","binutils","mpfr","mpc","gcc","ncurses","util-linux","groff","perl","texinfo","rpm","openssl","go"]
+
         self.listBuildOptionPackages=listBuildOptionPackages
         self.pkgBuildOptionFile=pkgBuildOptionFile
 
@@ -40,19 +89,6 @@ class PackageBuilder(object):
             raise e
         return chrootID
 
-    def findPackageNameFromRPMFile(self,rpmfile):
-        rpmfile=os.path.basename(rpmfile)
-        releaseindex=rpmfile.rfind("-")
-        if releaseindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
-            return None
-        versionindex=rpmfile[0:releaseindex].rfind("-")
-        if versionindex == -1:
-            self.logger.error("Invalid rpm file:"+rpmfile)
-            return None
-        packageName=rpmfile[0:versionindex]
-        return packageName
-
     def findInstalledPackages(self,chrootID):
         pkgUtils = PackageUtils(self.logName,self.logPath)
         listInstalledRPMs=pkgUtils.findInstalledRPMPackages(chrootID)
@@ -71,32 +107,24 @@ class PackageBuilder(object):
             cmdUtils = CommandUtils()
             cmdUtils.runCommandInShell("mkdir -p "+self.logPath)
         self.logger=Logger.getLogger(self.logName,self.logPath)
+        versions = self.getNumOfVersions(package)
+        if(versions < 1):
+            raise Exception("No package exists")
+        for version in range(0, versions):
+            try:
+                self.buildPackage(version)
+                outputMap[threadName]=True
+            except Exception as e:
+                # TODO: self.logger might be None
+                self.logger.error(e)
+                outputMap[threadName]=False
+                raise e
 
-        try:
-            self.buildPackage()
-            outputMap[threadName]=True
-        except Exception as e:
-            # TODO: self.logger might be None
-            self.logger.error(e)
-            outputMap[threadName]=False
-            raise e
-
-    def checkIfPackageIsAlreadyBuilt(self):
-        basePkg=SPECS.getData().getSpecName(self.package)
-        listRPMPackages=SPECS.getData().getRPMPackages(basePkg)
-        packageIsAlreadyBuilt=True
-        pkgUtils = PackageUtils(self.logName,self.logPath)
-        for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg) is None:
-                packageIsAlreadyBuilt=False
-                break
-        return packageIsAlreadyBuilt
-
-    def buildPackage(self):
+    def buildPackage(self, index):
         #do not build if RPM is already built
         #test only if the package is in the testForceRPMS with rpmCheck
         #build only if the package is not in the testForceRPMS with rpmCheck
-        if self.checkIfPackageIsAlreadyBuilt():
+        if self.checkIfPackageIsAlreadyBuilt(index):
             if not constants.rpmCheck:
                 self.logger.info("Skipping building the package:"+self.package)
                 return
@@ -125,7 +153,7 @@ class PackageBuilder(object):
                 self.logger.info("Finished installing the build time dependent packages......")
 
             pkgUtils.adjustGCCSpecs(self.package, chrootID, self.logPath)
-            pkgUtils.buildRPMSForGivenPackage(self.package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,self.logPath)
+            pkgUtils.buildRPMSForGivenPackage(self.package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,self.logPath, index)
             self.logger.info("Successfully built the package:"+self.package)
         except Exception as e:
             self.logger.error("Failed while building package:" + self.package)
@@ -136,19 +164,6 @@ class PackageBuilder(object):
             raise e
         if chrootID is not None:
             chrUtils.destroyChroot(chrootID)
-
-
-    def findRunTimeRequiredRPMPackages(self,rpmPackage):
-        listRequiredPackages=SPECS.getData().getRequiresForPackage(rpmPackage)
-        return listRequiredPackages
-
-    def findBuildTimeRequiredPackages(self):
-        listRequiredPackages=SPECS.getData().getBuildRequiresForPackage(self.package)
-        return listRequiredPackages
-
-    def findBuildTimeCheckRequiredPackages(self):
-        listRequiredPackages=SPECS.getData().getCheckBuildRequiresForPackage(self.package)
-        return listRequiredPackages
 
     def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
         if package in listInstalledPackages:
@@ -174,4 +189,5 @@ class PackageBuilder(object):
                 if pkg in listInstalledPackages:
                     continue
                 self.installPackage(pkgUtils,pkg,chrootID,destLogPath,listInstalledPackages)
+
 
