@@ -3,28 +3,16 @@
 %define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
-Version:        17.06.0
-Release:        4%{?dist}
+Version:        18.03.0
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#Git commits must be in sync with docker/hack/dockerfile/binaries-commits
-Source0:        https://github.com/docker/moby/archive/docker-ce-02c1d87.tar.gz
-%define sha1 docker-ce=40deab51330b39d16abc23831063a6123ff0a570
-Source1:        https://github.com/docker/containerd/tree/containerd-cfb82a8.tar.gz
-%define sha1 containerd=2adb56ddd2d89af5c6ab649de93c34d421b62649
-Source2:        https://github.com/docker/runc/tree/runc-2d41c04.tar.gz
-%define sha1 runc=41cd104b168cef29032c268e0d6de1bad5dadc25
-Source3:        https://github.com/docker/libnetwork/tree/libnetwork-7b2b1fe.tar.gz
-%define sha1 libnetwork=0afeb8c802998344753fb933f827427da23975f8
-#Source4:        https://github.com/docker/cli/tree/cli-3dfb834.tar.gz
-#%define sha1 cli=9dd33ca7d8e554fe875138000c6767167228e125
-Source4:        https://github.com/krallin/tini/tree/tini-949e6fa.tar.gz
-%define sha1 tini=e1a0e72ff74e1486e0701dd52983014777a7d949
-Source5:        https://github.com/cpuguy83/go-md2man/tree/go-md2man-a65d4d2.tar.gz
-%define sha1 go-md2man=e3d0865c583150f7c76e385a8b4a3f2432ca8ad8
+Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce.tar.gz
+%define sha1 docker=873472d4b722aaf0e000ba0d0b1fa3d63d276ffc
+%define DOCKER_GITCOMMIT 0520e243029d1361649afb0706a1c5d9a1c012b8
 Source6:        default-disable.preset
 Patch0:         remove-firewalld.patch
 
@@ -62,56 +50,42 @@ Documentation and vimfiles for docker
 
 %prep
 %setup -q -c
-%setup -T -D -a 1
-%setup -T -D -a 2
-%setup -T -D -a 3
-%setup -T -D -a 4
-%setup -T -D -a 5
 
-ln -s docker-ce/components/cli cli
-ln -s docker-ce/components/engine engine
-ln -s docker-ce/components/packaging packaging
+#ln -s docker-ce/components/cli cli
+#ln -s docker-ce/components/engine engine
+#ln -s docker-ce/components/packaging packaging
 
-%patch0 -p2
+%patch0 -p1
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
 mkdir opencontainers
-mkdir containerd
-mkdir cpuguy83
 mkdir docker
 
-ln -snrf "$OLDPWD/containerd" containerd/
-ln -snrf "$OLDPWD/engine" docker/docker
-ln -snrf "$OLDPWD/runc" opencontainers/
-ln -snrf "$OLDPWD/go-md2man" cpuguy83/
-ln -snrf "$OLDPWD/libnetwork" docker/
-ln -snrf "$OLDPWD/cli" docker/
-
-ln -snrf "$OLDPWD/tini" /go/
-
-sed -i '/^\s*git clone.*$/d' docker/docker/hack/dockerfile/install-binaries.sh
-
-#catch git clone
-git config --global http.proxy http://localhost:0
+ln -snrf "$OLDPWD/components/engine" docker/docker
+ln -snrf "$OLDPWD/components/cli" docker/cli
 
 %build
 
 export GOPATH="/go"
 export PATH="$PATH:$GOPATH/bin"
 
-export DOCKER_BUILDTAGS="pkcs11 seccomp exclude_graphdriver_aufs"
-export RUNC_BUILDTAGS="seccomp"
+GIT_COMMIT=%{DOCKER_GITCOMMIT}
+GIT_COMMIT_SHORT=${GIT_COMMIT:0:7}
 
-cd /go/src/github.com
+cd "$GOPATH/src/github.com/docker"
 
-pushd docker/cli
-make VERSION="$(cat VERSION)" dynbinary manpages
+pushd cli
+DISABLE_WARN_OUTSIDE_CONTAINER=1 make VERSION=%{version} GITCOMMIT=${GIT_COMMIT_SHORT} dynbinary manpages
 popd
 
-pushd docker/docker
-TMP_GOPATH="$GOPATH" ./hack/dockerfile/install-binaries.sh runc-dynamic containerd-dynamic proxy-dynamic tini
-DOCKER_GITCOMMIT="$(git rev-parse --short HEAD)" ./hack/make.sh dynbinary
+pushd docker
+for component in tini "proxy dynamic" "runc all" "containerd dynamic"; do
+  DOCKER_BUILDTAGS="pkcs11 seccomp exclude_graphdriver_aufs" \
+  RUNC_BUILDTAGS="seccomp" \
+  hack/dockerfile/install/install.sh $component
+done
+VERSION=%{version} DOCKER_GITCOMMIT=${GIT_COMMIT_SHORT} hack/make.sh dynbinary
 popd
 
 %install
@@ -121,12 +95,12 @@ install -d -m755 %{buildroot}%{_mandir}/man5
 install -d -m755 %{buildroot}%{_mandir}/man8
 install -d -m755 %{buildroot}%{_bindir}
 install -d -m755 %{buildroot}%{_unitdir}
-install -d -m755 %{buildroot}lib/udev/rules.d
+install -d -m755 %{buildroot}/lib/udev/rules.d
 install -d -m755 %{buildroot}%{_datadir}/bash-completion/completions
 
 # install binary
-install -p -m 755 cli/build/docker %{buildroot}%{_bindir}/docker
-install -p -m 755 "$(readlink -f engine/bundles/latest/dynbinary-daemon/dockerd)" %{buildroot}%{_bindir}/dockerd
+install -p -m 755 "$(readlink -f components/cli/build/docker)" %{buildroot}%{_bindir}/docker
+install -p -m 755 "$(readlink -f components/engine/bundles/latest/dynbinary-daemon/dockerd)" %{buildroot}%{_bindir}/dockerd
 
 # install proxy
 install -p -m 755 /usr/local/bin/docker-proxy %{buildroot}%{_bindir}/docker-proxy
@@ -143,33 +117,33 @@ install -p -m 755 /usr/local/bin/docker-runc %{buildroot}%{_bindir}/docker-runc
 install -p -m 755 /usr/local/bin/docker-init %{buildroot}%{_bindir}/docker-init
 
 # install udev rules
-install -p -m 644 engine/contrib/udev/80-docker.rules %{buildroot}lib/udev/rules.d/80-docker.rules
+install -p -m 644 components/engine/contrib/udev/80-docker.rules %{buildroot}/lib/udev/rules.d/80-docker.rules
 
 # add init scripts
-install -p -m 644 packaging/rpm/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
+install -p -m 644 components/packaging/rpm/systemd/docker.service %{buildroot}%{_unitdir}/docker.service
 
-# add bash, zsh, and fish completions
-install -p -m 644 engine/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
+# add bash completions
+install -p -m 644 components/cli/contrib/completion/bash/docker %{buildroot}%{_datadir}/bash-completion/completions/docker
 
 # install manpages
-install -p -m 644 cli/man/man1/*.1 %{buildroot}%{_mandir}/man1
-install -p -m 644 cli/man/man5/*.5 %{buildroot}%{_mandir}/man5
-install -p -m 644 cli/man/man8/*.8 %{buildroot}%{_mandir}/man8
+install -p -m 644 components/cli/man/man1/*.1 %{buildroot}%{_mandir}/man1
+install -p -m 644 components/cli/man/man5/*.5 %{buildroot}%{_mandir}/man5
+install -p -m 644 components/cli/man/man8/*.8 %{buildroot}%{_mandir}/man8
 
 # add vimfiles
 install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/doc
 install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/ftdetect
 install -d -m 755 %{buildroot}%{_datadir}/vim/vimfiles/syntax
-install -p -m 644 engine/contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc/dockerfile.txt
-install -p -m 644 engine/contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
-install -p -m 644 engine/contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
+install -p -m 644 components/engine/contrib/syntax/vim/doc/dockerfile.txt %{buildroot}%{_datadir}/vim/vimfiles/doc/dockerfile.txt
+install -p -m 644 components/engine/contrib/syntax/vim/ftdetect/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/ftdetect/dockerfile.vim
+install -p -m 644 components/engine/contrib/syntax/vim/syntax/dockerfile.vim %{buildroot}%{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 mkdir -p build-docs
 for engine_file in AUTHORS CHANGELOG.md CONTRIBUTING.md LICENSE MAINTAINERS NOTICE README.md; do
-    cp "engine/$engine_file" "build-docs/engine-$engine_file"
+    cp "components/engine/$engine_file" "build-docs/engine-$engine_file"
 done
 for cli_file in LICENSE MAINTAINERS NOTICE README.md; do
-    cp "cli/$cli_file" "build-docs/cli-$cli_file"
+    cp "components/cli/$cli_file" "build-docs/cli-$cli_file"
 done
 
 install -v -D -m 0644 %{SOURCE6} %{buildroot}%{_presetdir}/50-docker.preset
@@ -206,6 +180,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/docker-runc
 %{_bindir}/docker-init
 %{_datadir}/bash-completion/completions/docker
+/lib/udev/rules.d/80-docker.rules
 
 %files doc
 %defattr(-,root,root)
@@ -220,6 +195,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Apr 09 2018 Bo Gan <ganb@vmware.com> 18.03.0-1
+-   Update to 18.03.0-ce
 *   Fri Sep 22 2017 Bo Gan <ganb@vmware.com> 17.06.0-4
 -   disable docker service by default
 *   Fri Sep 08 2017 Bo Gan <ganb@vmware.com> 17.06.0-3
