@@ -71,32 +71,35 @@ class PackageBuilder(object):
             cmdUtils = CommandUtils()
             cmdUtils.runCommandInShell("mkdir -p "+self.logPath)
         self.logger=Logger.getLogger(self.logName,self.logPath)
+        versions = self.getNumOfVersions()
+        if(versions < 1):
+            raise Exception("No package exists")
+        for version in range(0, versions):
+            try:
+                self.buildPackage(version)
+                outputMap[threadName]=True
+            except Exception as e:
+                # TODO: self.logger might be None
+                self.logger.error(e)
+                outputMap[threadName]=False
+                raise e
 
-        try:
-            self.buildPackage()
-            outputMap[threadName]=True
-        except Exception as e:
-            # TODO: self.logger might be None
-            self.logger.error(e)
-            outputMap[threadName]=False
-            raise e
-
-    def checkIfPackageIsAlreadyBuilt(self):
+    def checkIfPackageIsAlreadyBuilt(self, index):
         basePkg=SPECS.getData().getSpecName(self.package)
-        listRPMPackages=SPECS.getData().getRPMPackages(basePkg)
+        listRPMPackages=SPECS.getData().getRPMPackages(basePkg, index)
         packageIsAlreadyBuilt=True
         pkgUtils = PackageUtils(self.logName,self.logPath)
         for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg) is None:
+            if pkgUtils.findRPMFileForGivenPackage(pkg, index) is None:
                 packageIsAlreadyBuilt=False
                 break
         return packageIsAlreadyBuilt
 
-    def buildPackage(self):
+    def buildPackage(self, index):
         #do not build if RPM is already built
         #test only if the package is in the testForceRPMS with rpmCheck
         #build only if the package is not in the testForceRPMS with rpmCheck
-        if self.checkIfPackageIsAlreadyBuilt():
+        if self.checkIfPackageIsAlreadyBuilt(index):
             if not constants.rpmCheck:
                 self.logger.info("Skipping building the package:"+self.package)
                 return
@@ -125,7 +128,7 @@ class PackageBuilder(object):
                 self.logger.info("Finished installing the build time dependent packages......")
 
             pkgUtils.adjustGCCSpecs(self.package, chrootID, self.logPath)
-            pkgUtils.buildRPMSForGivenPackage(self.package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,self.logPath)
+            pkgUtils.buildRPMSForGivenPackage(self.package,chrootID,self.listBuildOptionPackages,self.pkgBuildOptionFile,self.logPath, index)
             self.logger.info("Successfully built the package:"+self.package)
         except Exception as e:
             self.logger.error("Failed while building package:" + self.package)
@@ -174,4 +177,7 @@ class PackageBuilder(object):
                 if pkg in listInstalledPackages:
                     continue
                 self.installPackage(pkgUtils,pkg,chrootID,destLogPath,listInstalledPackages)
+    def getNumOfVersions(self):
+        return SPECS.getData().getNumberOfVersions(self.package)
+
 
