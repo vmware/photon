@@ -32,7 +32,7 @@ class SerializableSpecObject(object):
 class SerializableSpecObjectsUtils(object):
 
     def __init__(self,logPath):
-        self.mapSerializableSpecObjects={}
+        self.mapSpecObjects={}
         self.mapPackageToSpec={}
         self.logger=Logger.getLogger("Serializable Spec objects", logPath )
 
@@ -62,17 +62,14 @@ class SerializableSpecObjectsUtils(object):
             specObj.url=spec.getURL()
             specObj.sourceurl=spec.getSourceURL()
             for specPkg in specObj.listPackages:
-                if specPkg in self.mapPackageToSpec:
-                    existingObj = self.mapSerializableSpecObjects[self.mapPackageToSpec[specPkg]]
-                    if self.compareVersions(existingObj,specObj) == 1:
-                        skipUpdating = True
-                        break;
-            	specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
+                specObj.installRequiresPackages[specPkg]=spec.getRequires(specPkg)
                 self.mapPackageToSpec[specPkg]=specName
                 if spec.getIsRPMPackage(specPkg):
                     specObj.listRPMPackages.append(specPkg)
-            if skipUpdating == False:
-                self.mapSerializableSpecObjects[specName]=specObj
+            if specName in self.mapSpecObjects:
+                self.mapSpecObjects[specName].append(specObj)
+            else:
+                self.mapSpecObjects[specName]=[specObj]
 
     def getListSpecFiles(self,listSpecFiles,path):
         for dirEntry in os.listdir(path):
@@ -82,116 +79,109 @@ class SerializableSpecObjectsUtils(object):
             elif os.path.isdir(dirEntryPath):
                 self.getListSpecFiles(listSpecFiles,dirEntryPath)
 
-    def getBuildRequiresForPackage(self, package):
+    def getBuildRequiresForPackage(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].buildRequirePackages
+        return self.mapSpecObjects[specName][index].buildRequirePackages
 
-    def getRequiresAllForPackage(self, package):
+    def getRequiresAllForPackage(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].installRequiresAllPackages
+        return self.mapSpecObjects[specName][index].installRequiresAllPackages
 
-    def getRequiresForPackage(self, package):
+    def getRequiresForPackage(self, package, index=0):
         specName=self.getSpecName(package)
-        if self.mapSerializableSpecObjects[specName].installRequiresPackages.has_key(package):
-            return self.mapSerializableSpecObjects[specName].installRequiresPackages[package]
+        if self.mapSpecObjects[specName][index].installRequiresPackages.has_key(package):
+            return self.mapSpecObjects[specName][index].installRequiresPackages[package]
         return None
 
-    def getCheckBuildRequiresForPackage(self, package):
+    def getCheckBuildRequiresForPackage(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].checkBuildRequirePackages
+        return self.mapSpecObjects[specName][index].checkBuildRequirePackages
 
-    def getRelease(self, package):
+    def getRelease(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].release
+        return self.mapSpecObjects[specName][index].release
 
-    def getVersion(self, package):
+    def getVersion(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].version
+        return self.mapSpecObjects[specName][index].version
 
-    def getSpecFile(self, package):
+    def getSpecFile(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].specFile
+        return self.mapSpecObjects[specName][index].specFile
 
-    def getPatches(self, package):
+    def getPatches(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].listPatches
+        return self.mapSpecObjects[specName][index].listPatches
 
-    def getSources(self, package):
+    def getSources(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].listSources
+        return self.mapSpecObjects[specName][index].listSources
 
-    def getSHA1(self, package, source):
+    def getSHA1(self, package, source, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].checksums.get(source)
+        return self.mapSpecObjects[specName][index].checksums.get(source)
 
-    def getPackages(self, package):
+    def getPackages(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].listPackages
+        return self.mapSpecObjects[specName][index].listPackages
 
-    def getRPMPackages(self, package):
+    def getRPMPackages(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].listRPMPackages
+        return self.mapSpecObjects[specName][index].listRPMPackages
 
     def getReleaseNum(self, releaseVal):
-	id = releaseVal.find("%")
-	if (id != -1):
-	    return releaseVal[0:id]
-	else:
-	    return releaseVal
-
-    def compareVersions(self, existingObj, newObject):
-	if StrictVersion(existingObj.version) > StrictVersion(newObject.version):
-	    return 1;
-	elif StrictVersion(existingObj.version) < StrictVersion(newObject.version):
-	    return -1
-	else:
-	    if int(self.getReleaseNum(existingObj.release)) > int(self.getReleaseNum(newObject.release)):
-		return 1;
-	    else:
-	     	return -1;
+        id = releaseVal.find("%")
+        if (id != -1):
+            return releaseVal[0:id]
+        else:
+            return releaseVal
 
     def getSpecName(self,package):
-        if self.mapPackageToSpec.has_key(package):
+        if package in self.mapPackageToSpec:
             specName=self.mapPackageToSpec[package]
-            if self.mapSerializableSpecObjects.has_key(specName):
+            if specName in self.mapSpecObjects:
                 return specName
         self.logger.error("Could not able to find "+package+" package from specs")
         raise Exception("Invalid package:"+package)
 
-    def isRPMPackage(self,package):
-        if self.mapPackageToSpec.has_key(package):
+    def isRPMPackage(self,package, index=0):
+        if package in self.mapPackageToSpec:
             specName=self.mapPackageToSpec[package]
-            if self.mapSerializableSpecObjects.has_key(specName):
+            if specName in self.mapSpecObjects:
                 return True
         return False
 
-    def getSecurityHardeningOption(self, package):
+    def getSecurityHardeningOption(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].securityHardening
+        return self.mapSpecObjects[specName][index].securityHardening
 
-    def isCheckAvailable(self, package):
+    def isCheckAvailable(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].isCheckAvailable
+        return self.mapSpecObjects[specName][index].isCheckAvailable
 
     def getListPackages(self):
-        return self.mapSerializableSpecObjects.keys()
+        return self.mapSpecObjects.keys()
 
-    def getURL(self, package):
+    def getURL(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].url
+        return self.mapSpecObjects[specName][index].url
 
-    def getSourceURL(self, package):
+    def getSourceURL(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].sourceurl
+        return self.mapSpecObjects[specName][index].sourceurl
 
-    def getLicense(self, package):
+    def getLicense(self, package, index=0):
         specName=self.getSpecName(package)
-        return self.mapSerializableSpecObjects[specName].license
+        return self.mapSpecObjects[specName][index].license
+
+    def getNumberOfVersions(self, package):
+        specName=self.getSpecName(package)
+        return len(self.mapSpecObjects[specName])
 
     def printAllObjects(self):
-        listSpecs=self.mapSerializableSpecObjects.keys()
+        listSpecs=self.mapSpecObjects.keys()
         for spec in listSpecs:
-            specObj=self.mapSerializableSpecObjects[spec]
+            specObj=self.mapSpecObjects[spec]
             self.logger.info("-----------Spec:"+specObj.name+"--------------")
             self.logger.info("Version:"+specObj.version)
             self.logger.info("Release:"+specObj.release)
