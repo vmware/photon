@@ -49,6 +49,7 @@ def main():
     parser.add_argument("-F",  "--kat-build", dest="katBuild",  default=None)
     parser.add_argument("PackageName", nargs='?')
     options = parser.parse_args()
+    print(options)
     cmdUtils=CommandUtils()
     if not os.path.isdir(options.logPath):
         cmdUtils.runCommandInShell("mkdir -p "+options.logPath)
@@ -346,4 +347,6 @@ def get_all_package_names(build_install_option):
     return packages
 
 if __name__=="__main__":
+    print 'Number of arguments:', len(sys.argv), 'arguments.'
+    print 'Argument List:', str(sys.argv)
     main()
