@@ -24,12 +24,16 @@ class PackageBuilderBase(object):
 
     def buildPackageFunction(self, package):
         self._buildPackagePrepareFunction(package)
-        try:
-            self._buildPackage()
-        except Exception as e:
-            # TODO: self.logger might be None
-            self.logger.exception(e)
-            raise e
+        versions = self.getNumOfVersions(package)
+        if(versions < 1):
+            raise Exception("No package exists")
+        for version in range(0, versions):
+            try:
+                self._buildPackage(version)
+            except Exception as e:
+                # TODO: self.logger might be None
+                self.logger.exception(e)
+                raise e
 
     def _buildPackagePrepareFunction(self, package):
         self.package = package
@@ -66,25 +70,25 @@ class PackageBuilderBase(object):
                 listInstalledPackages.append(packageName)
         return listInstalledPackages, listInstalledRPMs
 
-    def _checkIfPackageIsAlreadyBuilt(self):
+    def _checkIfPackageIsAlreadyBuilt(self, index=0):
         basePkg = SPECS.getData().getSpecName(self.package)
-        listRPMPackages = SPECS.getData().getRPMPackages(basePkg)
+        listRPMPackages = SPECS.getData().getRPMPackages(basePkg, index)
         packageIsAlreadyBuilt = True
         pkgUtils = PackageUtils(self.logName, self.logPath)
         for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg) is None:
+            if pkgUtils.findRPMFileForGivenPackage(pkg, index) is None:
                 packageIsAlreadyBuilt = False
                 break
         return packageIsAlreadyBuilt
 
-    def _findRunTimeRequiredRPMPackages(self, rpmPackage):
-        return SPECS.getData().getRequiresForPackage(rpmPackage)
+    def _findRunTimeRequiredRPMPackages(self, rpmPackage, index=0):
+        return SPECS.getData().getRequiresForPackage(rpmPackage, index)
 
-    def _findBuildTimeRequiredPackages(self):
-        return SPECS.getData().getBuildRequiresForPackage(self.package)
+    def _findBuildTimeRequiredPackages(self, index=0):
+        return SPECS.getData().getBuildRequiresForPackage(self.package, index)
 
-    def _findBuildTimeCheckRequiredPackages(self):
-        return SPECS.getData().getCheckBuildRequiresForPackage(self.package)
+    def _findBuildTimeCheckRequiredPackages(self, index=0):
+        return SPECS.getData().getCheckBuildRequiresForPackage(self.package, index)
 
     def _installPackage(self, pkgUtils, package, instanceID, destLogPath,
                         listInstalledPackages, listInstalledRPMs):
@@ -121,12 +125,12 @@ class PackageBuilderBase(object):
                 self._installPackage(pkgUtils, pkg, instanceID, destLogPath,
                                      listInstalledPackages, listInstalledRPMs)
 
-    def _findDependentPackagesAndInstalledRPM(self, instanceID):
+    def _findDependentPackagesAndInstalledRPM(self, instanceID, index=0):
         listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(instanceID)
         self.logger.info(listInstalledPackages)
-        listDependentPackages = self._findBuildTimeRequiredPackages()
+        listDependentPackages = self._findBuildTimeRequiredPackages(index)
         if constants.rpmCheck and self.package in constants.testForceRPMS:
-            listDependentPackages.extend(self._findBuildTimeCheckRequiredPackages())
+            listDependentPackages.extend(self._findBuildTimeCheckRequiredPackages(index))
             testPackages = (set(constants.listMakeCheckRPMPkgtoInstall) -
                             set(listInstalledPackages) -
                             set([self.package]))
@@ -134,6 +138,9 @@ class PackageBuilderBase(object):
             listDependentPackages = list(set(listDependentPackages))
         return listDependentPackages, listInstalledPackages, listInstalledRPMs
 
+    @staticmethod
+    def getNumOfVersions(package):
+        return SPECS.getData().getNumberOfVersions(package)
 
 class PackageBuilderContainer(PackageBuilderBase):
     def __init__(self, mapPackageToCycles, pkgBuildType):
@@ -210,11 +217,11 @@ class PackageBuilderContainer(PackageBuilderBase):
             raise e
         return containerID, chrootID
 
-    def _buildPackage(self):
+    def _buildPackage(self, index=0):
         #do not build if RPM is already built
         #test only if the package is in the testForceRPMS with rpmCheck
         #build only if the package is not in the testForceRPMS with rpmCheck
-        if self._checkIfPackageIsAlreadyBuilt():
+        if self._checkIfPackageIsAlreadyBuilt(index):
             if not constants.rpmCheck:
                 self.logger.info("Skipping building the package:" + self.package)
                 return
@@ -243,7 +250,7 @@ class PackageBuilderContainer(PackageBuilderBase):
                     self.package)
 
             listDependentPackages, listInstalledPackages, listInstalledRPMs = (
-                self._findDependentPackagesAndInstalledRPM(containerID))
+                self._findDependentPackagesAndInstalledRPM(containerID, index))
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
             if listDependentPackages:
@@ -258,11 +265,12 @@ class PackageBuilderContainer(PackageBuilderBase):
 
             self.logger.info("BuildContainer-buildPackage: Start building the package: " +
                              self.package)
-            pkgUtils.adjustGCCSpecsInContainer(self.package, containerID, destLogPath)
+            pkgUtils.adjustGCCSpecsInContainer(self.package, containerID, destLogPath, index)
             pkgUtils.buildRPMSForGivenPackageInContainer(
                 self.package,
                 containerID,
-                destLogPath)
+                destLogPath,
+                index)
             self.logger.info("BuildContainer-buildPackage: Successfully built the package: " +
                              self.package)
         except Exception as e:
@@ -305,11 +313,11 @@ class PackageBuilderChroot(PackageBuilderBase):
             raise e
         return chrootID
 
-    def _buildPackage(self):
+    def _buildPackage(self, index=0):
         #do not build if RPM is already built
         #test only if the package is in the testForceRPMS with rpmCheck
         #build only if the package is not in the testForceRPMS with rpmCheck
-        if self._checkIfPackageIsAlreadyBuilt():
+        if self._checkIfPackageIsAlreadyBuilt(index):
             if not constants.rpmCheck:
                 self.logger.info("Skipping building the package:" + self.package)
                 return
@@ -322,9 +330,10 @@ class PackageBuilderChroot(PackageBuilderBase):
         try:
             chrootID = self._prepareBuildRoot()
             listDependentPackages, listInstalledPackages, listInstalledRPMs = (
-                self._findDependentPackagesAndInstalledRPM(chrootID))
+                self._findDependentPackagesAndInstalledRPM(chrootID, index))
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
+
             if listDependentPackages:
                 self.logger.info("Installing the build time dependent packages......")
                 for pkg in listDependentPackages:
@@ -333,9 +342,9 @@ class PackageBuilderChroot(PackageBuilderBase):
                 pkgUtils.installRPMSInAOneShot(chrootID, self.logPath)
                 self.logger.info("Finished installing the build time dependent packages....")
 
-            pkgUtils.adjustGCCSpecs(self.package, chrootID, self.logPath)
+            pkgUtils.adjustGCCSpecs(self.package, chrootID, self.logPath, index)
             pkgUtils.buildRPMSForGivenPackage(self.package, chrootID,
-                                              self.logPath)
+                                              self.logPath, index)
             self.logger.info("Successfully built the package:" + self.package)
         except Exception as e:
             self.logger.error("Failed while building package:" + self.package)
