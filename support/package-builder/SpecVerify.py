@@ -4,7 +4,6 @@
 #
 #Author:    Harish    Udaiya    Kumar    <hudaiyakumar@vmware.com>
 from SpecUtils import Specutils
-from SpecData import SerializableSpecObject
 from SpecData import SerializedSpecObjects
 from RepoDeps import RepoQueryDependency
 import sys

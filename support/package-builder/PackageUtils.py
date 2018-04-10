@@ -108,10 +108,10 @@ class PackageUtils(object):
                 self.logger.error("Unable to install rpms")
                 raise Exception("RPM installation failed")
 
-    def verifyShaAndGetSourcePath(self, source, package):
+    def verifyShaAndGetSourcePath(self, source, package, index=0):
         cmdUtils = CommandUtils()
         # Fetch/verify sources if sha1 not None.
-        sha1 = SPECS.getData().getSHA1(package, source)
+        sha1 = SPECS.getData().getSHA1(package, source, index)
         if sha1 is not None:
             PullSources.get(source, sha1, constants.sourcePath, constants.pullsourcesConfig, self.logger)
 
@@ -134,9 +134,14 @@ class PackageUtils(object):
             raise Exception("Multiple sources found")
         return sourcePath
 
-    def copySourcesTobuildroot(self,listSourceFiles,package,destDir):
+    def copySourcesTobuildroot(
+            self,
+            listSourceFiles,
+            package,
+            destDir,
+            index=0):
         for source in listSourceFiles:
-            sourcePath = self.verifyShaAndGetSourcePath(source, package)
+            sourcePath = self.verifyShaAndGetSourcePath(source, package, index)
             self.logger.info("Copying... Source path :" + source + " Source filename: " + sourcePath[0])
             shutil.copy2(sourcePath[0], destDir)
 
@@ -169,14 +174,20 @@ class PackageUtils(object):
                     macros.append(str(macro.encode('utf-8')))
         return listAdditionalFiles, macros
 
-    def buildRPMSForGivenPackage(self,package,chrootID,listBuildOptionPackages,pkgBuildOptionFile,destLogPath=None):
+    def buildRPMSForGivenPackage(
+            self,
+            package,
+            chrootID,
+            listBuildOptionPackages,
+            pkgBuildOptionFile,
+            destLogPath=None,
+            index=0):
         self.logger.info("Building rpm's for package:"+package)
 
-        listSourcesFiles = SPECS.getData().getSources(package)
-        listPatchFiles =  SPECS.getData().getPatches(package)
-        specFile = SPECS.getData().getSpecFile(package)
+        listSourcesFiles = SPECS.getData().getSources(package, index)
+        listPatchFiles =  SPECS.getData().getPatches(package, index)
+        specFile = SPECS.getData().getSpecFile(package, index)
         specName = SPECS.getData().getSpecName(package) + ".spec"
-
         chrootSourcePath=chrootID+constants.topDirPath+"/SOURCES/"
         chrootSpecPath=constants.topDirPath+"/SPECS/"
         chrootLogsFilePath=chrootID+constants.topDirPath+"/LOGS/"+package+".log"
@@ -185,8 +196,8 @@ class PackageUtils(object):
 
 # FIXME: some sources are located in SPECS/.. how to mount?
 #        if os.geteuid()==0:
-        self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath)
-        self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath)
+        self.copySourcesTobuildroot(listSourcesFiles,package,chrootSourcePath, index)
+        self.copySourcesTobuildroot(listPatchFiles,package,chrootSourcePath, index)
 
         macros = []
         if package in listBuildOptionPackages:
@@ -225,7 +236,6 @@ class PackageUtils(object):
             srpmDestFile = self.copyRPM(chrootID+"/"+srpmFile, constants.sourceRpmPath)
 
     def buildRPM(self,specFile,logFile,chrootCmd,package,macros):
-
         rpmBuildcmd=self.rpmbuildBinary+" "+self.rpmbuildBuildallOption
 
         if constants.rpmCheck and package in constants.testForceRPMS:
@@ -280,10 +290,10 @@ class PackageUtils(object):
                     listSRPMFiles.append(listcontents[1])
         return listRPMFiles,listSRPMFiles
 
-    def findRPMFileForGivenPackage(self,package):
+    def findRPMFileForGivenPackage(self,package, index=0):
         cmdUtils = CommandUtils()
-        version = SPECS.getData().getVersion(package)
-        release = SPECS.getData().getRelease(package)
+        version = SPECS.getData().getVersion(package,index)
+        release = SPECS.getData().getRelease(package,index)
         listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+"."+platform.machine()+".rpm",constants.rpmPath),
                             cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
         if constants.inputRPMSPath is not None:
@@ -358,10 +368,10 @@ class PackageUtils(object):
         self.logger.error("Failed while adjusting gcc specs")
         raise Exception("Failed while adjusting gcc specs")
 
-    def copySourcesToContainer(self, listSourceFiles, package, containerID, destDir):
+    def copySourcesToContainer(self, listSourceFiles, package, containerID, destDir, index=0):
         cmdUtils = CommandUtils()
         for source in listSourceFiles:
-            sourcePath = self.verifyShaAndGetSourcePath(source, package)
+            sourcePath = self.verifyShaAndGetSourcePath(source, package, index)
             self.logger.info("Copying source file: " + sourcePath[0])
             copyCmd = "docker cp " + sourcePath[0] + " " + containerID.short_id + ":" + destDir
             cmdUtils.runCommandInShell(copyCmd)
@@ -511,13 +521,19 @@ class PackageUtils(object):
         self.logger.error("Failed while adjusting gcc specs")
         raise Exception("Failed while adjusting gcc specs")
 
-    def buildRPMSForGivenPackageInContainer(self, package, containerID, listBuildOptionPackages,
-                                            pkgBuildOptionFile, destLogPath=None):
+    def buildRPMSForGivenPackageInContainer(
+            self,
+            package,
+            containerID,
+            listBuildOptionPackages,
+            pkgBuildOptionFile,
+            destLogPath=None,
+            index=0):
         self.logger.info("Building rpm's for package " + package + " in container " + containerID.short_id)
 
-        listSourcesFiles = SPECS.getData().getSources(package)
-        listPatchFiles = SPECS.getData().getPatches(package)
-        specFile = SPECS.getData().getSpecFile(package)
+        listSourcesFiles = SPECS.getData().getSources(package, index)
+        listPatchFiles = SPECS.getData().getPatches(package, index)
+        specFile = SPECS.getData().getSpecFile(package, index)
         specName = SPECS.getData().getSpecName(package) + ".spec"
         sourcePath = constants.topDirPath + "/SOURCES/"
         specPath = constants.topDirPath + "/SPECS/"
@@ -537,9 +553,9 @@ class PackageUtils(object):
 #        if os.geteuid()==0:
         #TODO: mount it in, don't copy
         macros = []
-        self.copySourcesToContainer(listSourcesFiles, package, containerID, sourcePath)
+        self.copySourcesToContainer(listSourcesFiles, package, containerID, sourcePath, index)
         #TODO: mount it in, don't copy
-        self.copySourcesToContainer(listPatchFiles, package, containerID, sourcePath)
+        self.copySourcesToContainer(listPatchFiles, package, containerID, sourcePath, index)
         if package in listBuildOptionPackages:
             listAdditionalFiles, macros = self.getAdditionalBuildFiles(package, pkgBuildOptionFile)
             self.copyAdditionalBuildFilesToContainer(listAdditionalFiles, containerID)
