@@ -35,7 +35,7 @@ class PackageBuilder(object):
 #            if isToolChainPackage:
 #                tUtils.installCoreToolChainPackages(chrootID)
 #            else:
-            tUtils.installToolChain(chrootID, packageName)
+            tUtils.installToolChain(chrootID, packageName, self.listBuildOptionPackages, self.pkgBuildOptionFile)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)
