@@ -80,7 +80,7 @@ class ToolChainUtils(object):
 
         self.logger.info("Successfully prepared chroot:"+chrootID)
 
-    def installToolChain(self, chrootID, packageName):
+    def installToolChain(self, chrootID, packageName, listBuildOptionPackages, pkgBuildOptionFile):
         self.logger.info("Installing toolchain.....")
         self.prepareBuildRoot(chrootID)
         cmdUtils = CommandUtils()
@@ -89,9 +89,24 @@ class ToolChainUtils(object):
         packages = ""
         for package in constants.listToolChainRPMPkgsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
-            rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+
+            version=None
+            if packageName in listBuildOptionPackages:
+                jsonData = open(pkgBuildOptionFile)
+                pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+                jsonData.close()
+                pkgs_sorted = pkg_build_option_json.items()
+                for pkg in pkgs_sorted:
+                    p = str(pkg[0].encode('utf-8'))
+                    if p == packageName:
+                        overridelist = pkg[1]["override_toolchain"]
+                        for override in overridelist:
+                            if package == str(override["package"].encode('utf-8')):
+                                version = str(override["version"].encode('utf-8'))
+
+            rpmFile=pkgUtils.findRPMFileForGivenPackage(package, version)
             if rpmFile is None:
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo, version)
                 if rpmFile is None:
                     if package == "util-linux-devel":
                         self.logger.info("No old version of util-linux-devel exists, skip until the new version is built")
@@ -100,7 +115,7 @@ class ToolChainUtils(object):
                         self.logger.info("No old version of flex-devel exists, skip until the new version is built")
                         continue
 
-                    self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
+                    self.logger.error("Unable to find rpm "+ package + version +" in current and previous versions")
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package
@@ -147,9 +162,11 @@ class ToolChainUtils(object):
 
         self.logger.info("Installed core tool chain packages successfully on chroot:"+chrootID)
 
-    def findRPMFileInGivenLocation(self,package,rpmdirPath):
+    def findRPMFileInGivenLocation(self, package, rpmdirPath, version=None):
         cmdUtils = CommandUtils()
-        listFoundRPMFiles = cmdUtils.findFile(package+"-*.rpm",rpmdirPath)
+        if version is None:
+            version = "*"
+        listFoundRPMFiles = cmdUtils.findFile(package+"-"+version+"-*.rpm",rpmdirPath)
         listFilterRPMFiles=[]
         for f in listFoundRPMFiles:
             rpmFileName=os.path.basename(f)
@@ -162,8 +179,13 @@ class ToolChainUtils(object):
         if len(listFilterRPMFiles) == 0 :
             return None
         if len(listFilterRPMFiles) > 1 :
-            self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
-            return None
+            # We use findRPMFileInGivenLocation() only when bootstrapping;
+            # so it is okay to use any version for the core toolchain packages.
+            if package in constants.listCoreToolChainRPMPackages:
+                return listFilterRPMFiles[0]
+            else:
+                self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
+                return None
 
     def buildCoreToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile):
         self.logger.info("Building core tool chain packages.....")
@@ -184,7 +206,7 @@ class ToolChainUtils(object):
                 if not returnVal:
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
-                self.installToolChainRPMS(chrootID, package)
+                self.installToolChainRPMS(chrootID, package, listBuildOptionPackages, pkgBuildOptionFile)
                 pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
                 pkgUtils.buildRPMSForGivenPackage(package, chrootID, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
                 chrUtils.destroyChroot(chrootID)
@@ -198,7 +220,7 @@ class ToolChainUtils(object):
             traceback.print_exc()
             raise e
 
-    def installToolChainRPMS(self,chrootID, packageName):
+    def installToolChainRPMS(self, chrootID, packageName, listBuildOptionPackages, pkgBuildOptionFile):
         cmdUtils = CommandUtils()
         self.prepareBuildRoot(chrootID)
         self.logger.info("Installing Tool Chain RPMS.......")
@@ -207,11 +229,26 @@ class ToolChainUtils(object):
         for package in constants.listToolChainRPMPkgsToBuild:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile = None
+
+            version=None
+            if packageName in listBuildOptionPackages:
+                jsonData = open(pkgBuildOptionFile)
+                pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+                jsonData.close()
+                pkgs_sorted = pkg_build_option_json.items()
+                for pkg in pkgs_sorted:
+                    p = str(pkg[0].encode('utf-8'))
+                    if p == packageName:
+                        overridelist = pkg[1]["override_toolchain"]
+                        for override in overridelist:
+                            if package == str(override["package"].encode('utf-8')):
+                                version = str(override["version"].encode('utf-8'))
+
             if ((packageName not in constants.listToolChainRPMPkgsToBuild) or
                     (constants.listToolChainRPMPkgsToBuild.index(packageName) > constants.listToolChainRPMPkgsToBuild.index(package))):
-                rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+                rpmFile=pkgUtils.findRPMFileForGivenPackage(package, version)
             if rpmFile is None:
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo, version)
                 if rpmFile is None:
                     if package == "util-linux-devel":
                         self.logger.info("No old version of util-linux-devel exists, skip until the new version is built")
@@ -219,7 +256,7 @@ class ToolChainUtils(object):
                     if package == "flex-devel":
                         self.logger.info("No old version of flex-devel exists, skip until the new version is built")
                         continue
-                    self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
+                    self.logger.error("Unable to find rpm "+ package + version +" in current and previous versions")
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package
