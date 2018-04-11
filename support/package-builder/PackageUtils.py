@@ -238,10 +238,15 @@ class PackageUtils(object):
                     listSRPMFiles.append(listcontents[1])
         return listRPMFiles,listSRPMFiles
 
-    def findRPMFileForGivenPackage(self,package):
+    def findRPMFileForGivenPackage(self, package, version = "*"):
         cmdUtils = CommandUtils()
-        version = constants.specData.getVersion(package)
-        release = constants.specData.getRelease(package)
+        release = "*"
+
+        # If no version is specified, use the latest from the source
+        # code.
+        if version == "*":
+            version = constants.specData.getVersion(package)
+            release = constants.specData.getRelease(package)
         listFoundRPMFiles = sum([cmdUtils.findFile(package+"-"+version+"-"+release+".x86_64.rpm",constants.rpmPath),
                             cmdUtils.findFile(package+"-"+version+"-"+release+".noarch.rpm",constants.rpmPath)], [])
         if constants.inputRPMSPath is not None:
