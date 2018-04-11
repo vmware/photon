@@ -1,9 +1,68 @@
 {
-    "dummy_package": { 
+    "dummy_package": {
         "files": [
-                     {"src": "path_to_file1_to_be_copied", "dst": "file1_destination"}, 
+                     {"src": "path_to_file1_to_be_copied", "dst": "file1_destination"},
                      {"src": "path_to_file2_to_be_copied", "dst": "file2_destination"}
-        ], 
-        "macros": ["macro1 value1","macro2 value2"]
+        ],
+        "macros": ["macro1 value1","macro2 value2"],
+        "override_toolchain": [
+                     {"package": "package_name", "version": "version_to_use"}
+        ]
+    },
+
+    "linux": {
+        "files": [],
+        "macros": [],
+        "override_toolchain": [
+                     {"package": "gcc", "version": "5.3.0"},
+                     {"package": "libgcc", "version": "5.3.0"},
+                     {"package": "libgcc-devel", "version": "5.3.0"},
+                     {"package": "libstdc++", "version": "5.3.0"},
+                     {"package": "libstdc++-devel", "version": "5.3.0"},
+                     {"package": "libgomp", "version": "5.3.0"},
+                     {"package": "libgomp-devel", "version": "5.3.0"}
+        ]
+    },
+
+    "linux-esx": {
+        "files": [],
+        "macros": [],
+        "override_toolchain": [
+                     {"package": "gcc", "version": "5.3.0"},
+                     {"package": "libgcc", "version": "5.3.0"},
+                     {"package": "libgcc-devel", "version": "5.3.0"},
+                     {"package": "libstdc++", "version": "5.3.0"},
+                     {"package": "libstdc++-devel", "version": "5.3.0"},
+                     {"package": "libgomp", "version": "5.3.0"},
+                     {"package": "libgomp-devel", "version": "5.3.0"}
+        ]
+    },
+
+    "linux-secure": {
+        "files": [],
+        "macros": [],
+        "override_toolchain": [
+                     {"package": "gcc", "version": "5.3.0"},
+                     {"package": "libgcc", "version": "5.3.0"},
+                     {"package": "libgcc-devel", "version": "5.3.0"},
+                     {"package": "libstdc++", "version": "5.3.0"},
+                     {"package": "libstdc++-devel", "version": "5.3.0"},
+                     {"package": "libgomp", "version": "5.3.0"},
+                     {"package": "libgomp-devel", "version": "5.3.0"}
+        ]
+    },
+
+    "linux-aws": {
+        "files": [],
+        "macros": [],
+        "override_toolchain": [
+                     {"package": "gcc", "version": "5.3.0"},
+                     {"package": "libgcc", "version": "5.3.0"},
+                     {"package": "libgcc-devel", "version": "5.3.0"},
+                     {"package": "libstdc++", "version": "5.3.0"},
+                     {"package": "libstdc++-devel", "version": "5.3.0"},
+                     {"package": "libgomp", "version": "5.3.0"},
+                     {"package": "libgomp-devel", "version": "5.3.0"}
+        ]
     }
 }
