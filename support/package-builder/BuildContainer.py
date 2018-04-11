@@ -3,6 +3,7 @@ from Logger import Logger
 from ToolChainUtils import ToolChainUtils
 from CommandUtils import CommandUtils
 from ChrootUtils import ChrootUtils
+from PackageBuilder import PackageBuilderBase
 import os.path
 import sys
 from constants import constants
@@ -10,15 +11,17 @@ import shutil
 import docker
 from SpecData import SPECS
 
-class BuildContainer(object):
+class BuildContainer(PackageBuilderBase):
 
     def __init__(self, mapPackageToCycles, listAvailableCyclicPackages, listBuildOptionPackages, pkgBuildOptionFile, logName=None, logPath=None):
+        PackageBuilderBase.__init__(self, mapPackageToCycles, "continer")
         if logName is None:
             logName = "BuildContainer"
         if logPath is None:
             logPath = constants.logPath
         self.logName = logName
         self.logPath = logPath
+        self.package = None
         self.logger = Logger.getLogger(logName, logPath, True)
         self.buildContainerImage = "photon_build_container:latest"
         self.dockerClient = docker.from_env(version="auto")
@@ -86,19 +89,6 @@ class BuildContainer(object):
             raise e
         return containerID, chrootID
 
-    def findPackageNameFromRPMFile(self, rpmfile):
-        rpmfile = os.path.basename(rpmfile)
-        releaseindex = rpmfile.rfind("-")
-        if releaseindex == -1:
-            self.logger.error("Invalid rpm file:" + rpmfile)
-            return None
-        versionindex=rpmfile[0:releaseindex].rfind("-")
-        if versionindex == -1:
-            self.logger.error("Invalid rpm file:" + rpmfile)
-            return None
-        packageName = rpmfile[0:versionindex]
-        return packageName
-
     def findInstalledPackages(self, containerID):
         pkgUtils = PackageUtils(self.logName, self.logPath)
         listInstalledRPMs = pkgUtils.findInstalledRPMPackagesInContainer(containerID)
@@ -110,29 +100,23 @@ class BuildContainer(object):
         return listInstalledPackages, listInstalledRPMs
 
     def buildPackageThreadAPI(self, package, outputMap, threadName,):
-        try:
-            self.buildPackage(package)
-            outputMap[threadName] = True
-        except Exception as e:
-            self.logger.error(e)
-            outputMap[threadName] = False
+        self.package = package
+        versions = self.getNumOfVersions(package)
+        if(versions < 1):
+            raise Exception("No package exists")
+        for version in range(0, versions):
+            try:
+                self.buildPackage(package, version)
+                outputMap[threadName] = True
+            except Exception as e:
+                self.logger.error(e)
+                outputMap[threadName] = False
 
-    def checkIfPackageIsAlreadyBuilt(self, package):
-        basePkg = SPECS.getData().getSpecName(package)
-        listRPMPackages = SPECS.getData().getRPMPackages(basePkg)
-        packageIsAlreadyBuilt = True
-        pkgUtils = PackageUtils(self.logName,self.logPath)
-        for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg) is None:
-                packageIsAlreadyBuilt = False
-                break
-        return packageIsAlreadyBuilt
-
-    def buildPackage(self, package):
+    def buildPackage(self, package, index=0):
         #do not build if RPM is already built
         #test only if the package is in the testForceRPMS with rpmCheck
         #build only if the package is not in the testForceRPMS with rpmCheck
-        if self.checkIfPackageIsAlreadyBuilt(package):
+        if self.checkIfPackageIsAlreadyBuilt(index):
             if not constants.rpmCheck:
                 self.logger.info("Skipping building the package:"+package)
                 return
@@ -161,9 +145,9 @@ class BuildContainer(object):
 
             listInstalledPackages, listInstalledRPMs = self.findInstalledPackages(containerID)
             self.logger.info(listInstalledPackages)
-            listDependentPackages = self.findBuildTimeRequiredPackages(package)
+            listDependentPackages = self.findBuildTimeRequiredPackages(index)
             if constants.rpmCheck and package in constants.testForceRPMS:
-                listDependentPackages.extend(self.findBuildTimeCheckRequiredPackages(package))
+                listDependentPackages.extend(self.findBuildTimeCheckRequiredPackages(index))
                 testPackages=set(constants.listMakeCheckRPMPkgtoInstall)-set(listInstalledPackages)-set([package])
                 listDependentPackages.extend(testPackages)
                 listDependentPackages=list(set(listDependentPackages))
@@ -184,14 +168,15 @@ class BuildContainer(object):
                         self.installPackage(pkgUtils, "sqlite-libs", containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
                 pkgUtils.installRPMSInAOneShotInContainer(containerID, destLogPath)
 
-            pkgUtils.adjustGCCSpecsInContainer(package, containerID, destLogPath)
+            pkgUtils.adjustGCCSpecsInContainer(package, containerID, destLogPath, index)
 
             pkgUtils.buildRPMSForGivenPackageInContainer(
                                                package,
                                                containerID,
                                                self.listBuildOptionPackages,
                                                self.pkgBuildOptionFile,
-                                               destLogPath)
+                                               destLogPath,
+                                               index)
             self.logger.info("BuildContainer-buildPackage: Successfully built the package: " + package)
         except Exception as e:
             self.logger.error("Failed while building package:" + package)
@@ -209,18 +194,6 @@ class BuildContainer(object):
         if chrootID is not None:
             chrUtils = ChrootUtils(self.logName,self.logPath)
             chrUtils.destroyChroot(chrootID)
-
-    def findRunTimeRequiredRPMPackages(self, rpmPackage):
-        listRequiredPackages = SPECS.getData().getRequiresForPackage(rpmPackage)
-        return listRequiredPackages
-
-    def findBuildTimeRequiredPackages(self, package):
-        listRequiredPackages = SPECS.getData().getBuildRequiresForPackage(package)
-        return listRequiredPackages
-
-    def findBuildTimeCheckRequiredPackages(self,package):
-        listRequiredPackages=SPECS.getData().getCheckBuildRequiresForPackage(package)
-        return listRequiredPackages
 
     def installPackage(self, pkgUtils, package, containerID, destLogPath, listInstalledPackages, listInstalledRPMs):
         latestRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(package)).replace(".rpm", "")
