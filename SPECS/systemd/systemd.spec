@@ -18,6 +18,7 @@ Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
 Patch2:           systemd-236-default-dns-from-env.patch
 Patch3:           systemd-macros.patch
+Patch4:           systemd-236-util-linux-build-failure.patch
 
 #TODO: Verify this patch is necessary or not
 #Patch4:           systemd-233-query-duid.patch
@@ -78,6 +79,7 @@ EOF
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -231,6 +233,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Apr 11 2018 Xiaolin Li <xiaolinl@vmware.com>  236-3
+-    Build systemd with util-linux 2.32.
 *    Wed Jan 17 2018 Divya Thaluru <dthaluru@vmware.com>  236-2
 -    Fixed the log file directory structure
 *    Fri Dec 29 2017 Anish Swaminathan <anishs@vmware.com>  236-1
