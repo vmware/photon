@@ -67,7 +67,7 @@ rm -rf %{buildroot}/*
 
 %files
     %defattr(-,root,root,0755)
-    %{_libdir}/*
+    %{_lib64dir}/*
     %{_includedir}/*
 
 %changelog
