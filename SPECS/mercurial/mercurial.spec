@@ -1,14 +1,14 @@
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
-Version:        4.3.3
-Release:        2%{?dist}
+Version:        4.5.3
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
-%define sha1    mercurial=921c3c6302c4b1d4be6a56fcfa0a41553dd4bd44
+%define sha1    mercurial=465216f1fabc571a8de731531e2aa0aa12833e56
 Patch0:         mercurial-disable-zstd.patch
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
@@ -50,6 +50,8 @@ rm -rf %{buildroot}/*
 %{python_sitelib}/*
 
 %changelog
+*   Mon Apr 16 2018 Xiaolin Li <xiaolinl@vmware.com> 4.5.3-1
+-   Update version to 4.5.3 for CVE-2018-1000132
 *   Tue Nov 14 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-2
 -   Disable zstd.
 *   Tue Oct 17 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
