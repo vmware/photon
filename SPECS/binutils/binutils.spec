@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.30
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -10,6 +10,8 @@ Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 %define sha1    binutils=574d3b5650413d6ee65195a4f5ecbddc3a38f718
 Patch0:         binutils-2.30-CVE-2018-6543.patch
+Patch1:         binutils-2.30-CVE-2018-7643.patch
+Patch2:         binutils-2.30-CVE-2018-7208.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -22,6 +24,8 @@ for handling compiled objects.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -109,6 +113,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-3
+-   Fix CVE-2018-7643, CVE-2018-7208
 *   Wed Feb 28 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-2
 -   Fix CVE-2018-6543.
 *   Mon Jan 29 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-1
