@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -13,6 +13,8 @@ Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
 #https://github.com/python/cpython/pull/1320/commits/a252330d53afad6f8a4645933989bb017dc35ad8
 Patch2:         skip-imaplib-test.patch
+Patch3:         python3-CVE-2018-1000117.patch
+Patch4:         python3-CVE-2017-18207.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -135,6 +137,8 @@ The test package contains all regression tests for Python as well as the modules
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -263,6 +267,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.6/test/*
 
 %changelog
+*   Wed Apr 18 2018 Xiaolin Li <xiaolinl@vmware.com> 3.6.1-10
+-   Fix CVE-2018-1000117 and CVE-2017-18207
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.1-9
 -   Requires coreutils or toybox
 -   Requires bzip2-libs
