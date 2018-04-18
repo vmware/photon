@@ -2,7 +2,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite-autoconf
 Version:        3.22.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -10,6 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sqlite.org/2018/%{name}-3220000.tar.gz
 %define sha1    sqlite=2fb24ec12001926d5209d2da90d252b9825366ac
+Patch0:         sqlite-3.22.0-CVE-2018-8740.patch
 Obsoletes:      libsqlite
 Provides:       sqlite3
 %description
@@ -18,6 +19,7 @@ www.sqlite.org website including all of the SQL Syntax and the
 C/C++ interface specs and other miscellaneous documentation.
 %prep
 %setup -q -n %{name}-%{sourcever}
+%patch0 -p1
 
 %build
 ./configure \
@@ -53,6 +55,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 %{_mandir}/man1/*
 %changelog
+*   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-2
+-   Apply patch for CVE-2018-8740
 *   Tue Feb 20 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-1
 -   Upgrade to version 3.22.0
 *   Fri Nov 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.21.0-1
