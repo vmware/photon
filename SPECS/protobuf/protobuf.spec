@@ -1,18 +1,18 @@
 Summary:        Google's data interchange format
 Name:           protobuf
-Version:        2.6.1
-Release:        4%{?dist}
+Version:        3.5.1
+Release:        1%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
-%define         sha1 protobuf=a8f11eced7352edfefa814996ebf086ab3cfbaa0
+%define         sha1 protobuf=a6596d63ad6b01de22453a0e85ba6a4001bae1a2
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
-BuildRequires:	which
+BuildRequires:  which
 BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
@@ -103,7 +103,8 @@ popd
 pushd java
 mvn install
 install -vdm755 %{buildroot}%{_libdir}/java/protobuf
-install -vm644 target/protobuf-java-2.6.1.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 core/target/protobuf-java-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
+install -vm644 util/target/protobuf-java-util-%{version}.jar %{buildroot}%{_libdir}/java/protobuf
 popd
 
 %check
@@ -146,6 +147,8 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.1-1
+-   Update to version 3.5.1, fix CVE-2015-5237
 *   Fri May 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.6.1-4
 -   Use JAVA_VERSION macro instead of hard coded version.
 *   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-3
