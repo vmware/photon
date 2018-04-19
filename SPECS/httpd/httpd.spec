@@ -1,14 +1,14 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.28
+Version:        2.4.33
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://httpd.apache.org/dev/dist/%{name}-%{version}.tar.bz2
-%define sha1    httpd=0b37522b808dcee72e1d56d656b0def530b820a2
+Source0:        http://apache.mirrors.hoobly.com//httpd/%{name}-%{version}.tar.bz2
+%define sha1    httpd=9e56042515793a6992adc4b9f3a0345a0cb98176
 Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.27-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
 BuildRequires:  openssl
@@ -181,6 +181,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Thu Apr 19 2018 Xiaolin Li <xiaolinl@vmware.com> 2.4.33-1
+-   Updated to version 2.4.33, fix CVE-2018-1303
 *   Mon Oct 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.28-1
 -   Updated to version 2.4.28
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.27-3
