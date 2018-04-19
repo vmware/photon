@@ -1,18 +1,17 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.6.1
-Release:        9%{?dist}
+Version:        3.6.5
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=91d880a2a9fcfc6753cbfa132bf47a47e17e7b16
+%define sha1    Python=5a7a833a36f1006257d298787f4c38493c5d1689
 Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
-#https://github.com/python/cpython/pull/1320/commits/a252330d53afad6f8a4645933989bb017dc35ad8
-Patch2:         skip-imaplib-test.patch
+Patch2:         python3-CVE-2017-18207.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -134,7 +133,7 @@ The test package contains all regression tests for Python as well as the modules
 %setup -q -n Python-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
+#%patch2 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -200,7 +199,7 @@ rm -rf %{buildroot}/*
 %files libs
 %defattr(-,root,root)
 %doc LICENSE README.rst
-%{_libdir}/python3.6
+%{_libdir}/python3.6/*
 %{_libdir}/python3.6/site-packages/easy_install.py
 %{_libdir}/python3.6/site-packages/README.txt
 %exclude %{_libdir}/python3.6/site-packages/
@@ -249,20 +248,23 @@ rm -rf %{buildroot}/*
 %files pip
 %defattr(-,root,root,755)
 %{_libdir}/python3.6/site-packages/pip/*
-%{_libdir}/python3.6/site-packages/pip-9.0.1.dist-info/*
+%{_libdir}/python3.6/site-packages/pip-9.0.3.dist-info/*
 %{_bindir}/pip*
 
 %files setuptools
 %defattr(-,root,root,755)
 %{_libdir}/python3.6/site-packages/pkg_resources/*
 %{_libdir}/python3.6/site-packages/setuptools/*
-%{_libdir}/python3.6/site-packages/setuptools-28.8.0.dist-info/*
+%{_libdir}/python3.6/site-packages/setuptools-39.0.1.dist-info/*
 %{_bindir}/easy_install-3.6
 
 %files test
 %{_libdir}/python3.6/test/*
 
 %changelog
+*   Thu Apr 19 2018 Xiaolin Li <xiaolinl@vmware.com> 3.6.5-1
+-   Update to version 3.6.5 to fix CVE-2018-1000117
+-   Apply patch for CVE-2017-18207
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.6.1-9
 -   Requires coreutils or toybox
 -   Requires bzip2-libs
