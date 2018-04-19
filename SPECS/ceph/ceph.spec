@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %bcond_with lowmem_builder
 %{!?_udevrulesdir: %define _udevrulesdir /lib/udev/rules.d}
 %{!?tmpfiles_create: %define tmpfiles_create systemd-tmpfiles --create}
@@ -12,15 +13,15 @@
 # common
 #################################################################################
 Name:       ceph
-Version:    11.2.0
-Release:    10%{?dist}
+Version:    12.2.4
+Release:    1%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
 Group:      System/Filesystems
 URL:        http://ceph.com/
 Source0:    http://ceph.com/download/%{name}-%{version}.tar.gz
-%define sha1 ceph=8bb87494c9b47b2ef02bfe51bb981a8cd94fa9fb
+%define sha1 ceph=df93bc3fac55249f5f0d30caa567962b387693dd
 Vendor:     VMware, Inc.
 Distribution:   Photon
 #################################################################################
@@ -77,6 +78,7 @@ BuildRequires:  cython
 BuildRequires:  cython3
 BuildRequires:  python-setuptools
 BuildRequires:  fcgi-devel
+BuildRequires:  gperf
 
 
 %description
@@ -473,7 +475,7 @@ cmake .. \
     -DWITH_XIO=OFF \
     -DWITH_TESTS=OFF \
     -DWITH_LTTNG=OFF \
-    -DHAVE_BABELTRACE=OFF \
+    -DWITH_BABELTRACE=OFF \
     $CEPH_EXTRA_CMAKE_ARGS \
     -DWITH_OCF=OFF
 
@@ -997,6 +999,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Thu Apr 19 2018 Xiaolin Li <xiaolinl@vmware.com> 12.2.4-1
+-   Updated to version 12.2.4, fix CVE-2018-7262
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 11.2.0-10
 -   Requires /bin/grep, /usr/bin/which, or toybox
 *   Tue Aug 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 11.2.0-9
