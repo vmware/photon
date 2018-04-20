@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.5.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -11,6 +11,8 @@ Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.t
 %define         sha1 Python=4aacbd09ca6988255de84a98ab9e4630f584efba
 Patch0:         cgi3.patch
 Patch1:         sockWarning.patch
+Patch3:         python3-CVE-2018-1000117.patch
+Patch4:         python3-CVE-2017-18207.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel >= 6.0-3
@@ -89,6 +91,8 @@ to build python programs.
 %setup -q -n Python-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -193,6 +197,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
+*   Wed Apr 18 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.4-2
+-   Fix CVE-2018-1000117 and CVE-2017-18207
 *   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.4-1
 -   Upgrading to 3.5.4
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 3.5.3-7
