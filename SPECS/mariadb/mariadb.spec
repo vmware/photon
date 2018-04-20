@@ -1,6 +1,6 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.2.10
+Version:        10.2.14
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
 Source0:        http://mirrors.nodesdirect.com/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=14a7d6b5c77de5235b60ffa13bf80a1dd2dda49c
+%define         sha1 mariadb=e809ea91405ddb4b3239ca67f1bba6414172b283
 
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM
@@ -217,6 +217,7 @@ rm -rf %{buildroot}
 %{_bindir}/aria_read_log
 %{_bindir}/innochecksum
 %{_bindir}/mariabackup
+%{_bindir}/myrocks_hotbackup
 %{_bindir}/mariadb-service-convert
 %{_bindir}/mbstream
 %{_bindir}/myisam_ftdump
@@ -305,7 +306,12 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
 %{_datadir}/mysql/mysql_to_mariadb.sql
-
+%{_datadir}/mysql/mroonga/AUTHORS
+%{_datadir}/mysql/mroonga/COPYING
+%{_datadir}/groonga-normalizer-mysql/README.md
+%{_datadir}/groonga-normalizer-mysql/lgpl-2.0.txt
+%{_datadir}/groonga/COPYING
+%{_datadir}/groonga/README.md
 
 %files server-galera
 %{_bindir}/galera_new_cluster
@@ -349,6 +355,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Fri Apr 20 2018 Xiaolin Li <<xiaolinl@vmware.com> 10.2.14-1
+-   Update to verion 10.2.14
 *   Mon Nov 06 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.10-1
 -   Update to verion 10.2.10 to address CVE-2017-10378, CVE-2017-10268
 *   Wed Sep 06 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.8-1
