@@ -347,8 +347,11 @@ class constants(object):
 
     # list of spec files to skip for parsing for given arch
     skipSpecsForArch={
-        "x86_64":[],
+        "x86_64":[
+            "docker-volume-vsphere.spec"
+        ],
         "aarch64":[
+            "docker-volume-vsphere.spec",
             # fakeroot-ng does not support aarch64
             "fakeroot-ng.spec",
             # ipxe does not support aarch64
