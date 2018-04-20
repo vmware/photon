@@ -3,7 +3,7 @@
 %define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
-Version:        17.09.1
+Version:        17.12.1
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
@@ -11,8 +11,8 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce.tar.gz
-%define sha1 docker=fa734169d40ae8017f9ec2708fbbbc2734c58475
-%define DOCKER_GITCOMMIT 19e2cf6259bd7f027a3fff180876a22945ce4ba8
+%define sha1 docker=e93e57fb285998dd21e98d7abd22fec473cc7da2
+%define DOCKER_GITCOMMIT 7390fc6103da41cf98ae66cfac80fa143268bf60
 Source99:       default-disable.preset
 Patch99:        remove-firewalld.patch
 
@@ -189,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Apr 09 2018 Bo Gan <ganb@vmware.com> 17.12.1-1
+-   Update to 17.12.1-ce
 *   Mon Apr 09 2018 Bo Gan <ganb@vmware.com> 17.09.1-1
 -   Update to 17.09.1-ce
 *   Mon Jan 15 2018 Bo Gan <ganb@vmware.com> 17.06.0-3
