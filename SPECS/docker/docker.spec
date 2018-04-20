@@ -3,7 +3,7 @@
 %define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
-Version:        17.12.1
+Version:        18.03.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
@@ -11,8 +11,8 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/docker/docker-ce/archive/docker-%{version}-ce.tar.gz
-%define sha1 docker=e93e57fb285998dd21e98d7abd22fec473cc7da2
-%define DOCKER_GITCOMMIT 7390fc6103da41cf98ae66cfac80fa143268bf60
+%define sha1 docker=873472d4b722aaf0e000ba0d0b1fa3d63d276ffc
+%define DOCKER_GITCOMMIT 0520e243029d1361649afb0706a1c5d9a1c012b8
 Source99:       default-disable.preset
 Patch99:        remove-firewalld.patch
 
@@ -74,9 +74,9 @@ DISABLE_WARN_OUTSIDE_CONTAINER=1 make VERSION=%{version} GITCOMMIT=${GIT_COMMIT_
 popd
 
 pushd docker
-for component in runc-dynamic containerd-dynamic proxy-dynamic tini; do
+for component in tini "proxy dynamic" "runc all" "containerd dynamic"; do
   RUNC_BUILDTAGS="seccomp" \
-  hack/dockerfile/install-binaries.sh $component
+  hack/dockerfile/install/install.sh $component
 done
 DOCKER_BUILDTAGS="pkcs11 seccomp exclude_graphdriver_aufs" \
 VERSION=%{version} DOCKER_GITCOMMIT=${GIT_COMMIT_SHORT} hack/make.sh dynbinary
@@ -188,6 +188,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Apr 09 2018 Bo Gan <ganb@vmware.com> 18.03.0-1
+-   Update to 18.03.0-ce
 *   Mon Apr 09 2018 Bo Gan <ganb@vmware.com> 17.12.1-1
 -   Update to 17.12.1-ce
 *   Mon Apr 09 2018 Bo Gan <ganb@vmware.com> 17.09.1-1
