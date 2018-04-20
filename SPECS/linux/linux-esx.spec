@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.94
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -232,6 +232,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Apr 20 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.94-2
+-   Add support for USB_SERIAL drivers.
 *   Wed Apr 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.94-1
 -   Update to version 4.9.94. Fix panic in ip_set.
 *   Mon Apr 02 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.92-1
