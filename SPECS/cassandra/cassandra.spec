@@ -13,7 +13,6 @@ Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassa
 %define sha1    apache-cassandra=fa2bbeb62f930f5ff6fccee60cfb837d0794633a
 Source1:        cassandra.service
 Patch0:         build-fix.patch
-Patch1:         fix-building-openjdk-1.8.0.162.patch
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
@@ -26,7 +25,6 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 %prep
 %setup -qn apache-%{name}-%{version}-src
 %patch0 -p1
-%patch1 -p1
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
 rm lib/logback-*
