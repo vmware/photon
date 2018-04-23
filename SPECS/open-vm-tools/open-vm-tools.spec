@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.2.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -98,6 +98,8 @@ fi
 
 
 %changelog
+*   Mon Apr 23 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-5
+-   Bump release number to pick up changes to xerces-c.
 *   Mon Apr 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-4
 -   Revert regex changes to gosc scripts.
 *   Wed Mar 14 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-3
