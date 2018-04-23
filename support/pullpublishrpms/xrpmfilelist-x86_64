@@ -1,5 +1,14 @@
 noarch/proto-7.7-1.noarch.rpm
 noarch/util-macros-1.19.0-1.noarch.rpm
+x86_64/cups-2.2.7-1.x86_64.rpm
+x86_64/cups-devel-2.2.7-1.x86_64.rpm
+x86_64/xorg-proto-devel-2018.4-1.x86_64.rpm
+x86_64/libXfixes-5.0.1-1.x86_64.rpm
+x86_64/libXfixes-devel-5.0.1-1.x86_64.rpm
+x86_64/libXi-1.7.4-1.x86_64.rpm
+x86_64/libXi-devel-1.7.4-1.x86_64.rpm
+x86_64/libXtst-1.2.2-1.x86_64.rpm
+x86_64/libXtst-devel-1.2.2-1.x86_64.rpm
 x86_64/openjdk-1.8.0.112-1.x86_64.rpm
 x86_64/openjre-1.8.0.112-1.x86_64.rpm
 x86_64/alsa-lib-1.0.29-1.x86_64.rpm
