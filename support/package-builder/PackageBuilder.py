@@ -40,7 +40,7 @@ class PackageBuilderBase(object):
         packageIsAlreadyBuilt=True
         pkgUtils = PackageUtils(self.logName,self.logPath)
         for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg, index) is None:
+            if pkgUtils.findRPMFileForGivenPackage(pkg, "*", index) is None:
                 packageIsAlreadyBuilt=False
                 break
         return packageIsAlreadyBuilt
@@ -81,7 +81,7 @@ class PackageBuilder(PackageBuilderBase):
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
-            tUtils.installToolChainRPMS(chrootID, self.package, self.logPath)
+            tUtils.installToolChainRPMS(chrootID, self.package, self.listBuildOptionPackages, self.pkgBuildOptionFile, self.logPath)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)

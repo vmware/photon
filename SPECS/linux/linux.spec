@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.94
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -355,6 +355,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Apr 23 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.94-2
+-   Add full retpoline support by building with retpoline-enabled gcc.
 *   Wed Apr 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.94-1
 -   Update to version 4.9.94. Fix panic in ip_set.
 -   .config: disable XEN_BALLOON_MEMORY_HOTPLUG

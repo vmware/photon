@@ -8,6 +8,8 @@ import os.path
 import platform
 import traceback
 import shutil
+import json
+import collections
 
 class ToolChainUtils(object):
 
@@ -56,9 +58,9 @@ class ToolChainUtils(object):
 
         self.logger.info("Successfully prepared chroot:"+chrootID)
 
-    def findRPMFileInGivenLocation(self,package,rpmdirPath):
+    def findRPMFileInGivenLocation(self, package, rpmdirPath, version = "*"):
         cmdUtils = CommandUtils()
-        listFoundRPMFiles = cmdUtils.findFile(package+"-*.rpm",rpmdirPath)
+        listFoundRPMFiles = cmdUtils.findFile(package+"-"+version+"-*.rpm",rpmdirPath)
         listFilterRPMFiles=[]
         for f in listFoundRPMFiles:
             rpmFileName=os.path.basename(f)
@@ -71,6 +73,11 @@ class ToolChainUtils(object):
         if len(listFilterRPMFiles) == 0 :
             return None
         if len(listFilterRPMFiles) > 1 :
+            # We use findRPMFileInGivenLocation() only when bootstrapping;
+            # so it is okay to use any version for the core toolchain packages.
+            if package in constants.listToolChainRPMsToInstall:
+                return listFilterRPMFiles[0]
+        else:
             self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
             return None
 
@@ -95,7 +102,7 @@ class ToolChainUtils(object):
                 if not returnVal:
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
-                self.installToolChainRPMS(chrootID, package, destLogPath)
+                self.installToolChainRPMS(chrootID, package, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
                 pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
                 pkgUtils.buildRPMSForGivenPackage(package, chrootID, listBuildOptionPackages, pkgBuildOptionFile, destLogPath)
                 pkgCount += 1
@@ -111,7 +118,7 @@ class ToolChainUtils(object):
             raise e
         return pkgCount
                 
-    def installToolChainRPMS(self,chrootID, packageName, logPath=None):
+    def installToolChainRPMS(self,chrootID, packageName, listBuildOptionPackages, pkgBuildOptionFile, logPath=None):
         if logPath is None:
             logPath=self.logPath
         cmdUtils = CommandUtils()
@@ -122,22 +129,38 @@ class ToolChainUtils(object):
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile = None
+
+            # Default to any version.
+            version = "*"
+            if packageName in listBuildOptionPackages:
+               jsonData = open(pkgBuildOptionFile)
+                pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
+                jsonData.close()
+                pkgs_sorted = pkg_build_option_json.items()
+                for pkg in pkgs_sorted:
+                    p = str(pkg[0].encode('utf-8'))
+                    if p == packageName:
+                        overridelist = pkg[1]["override_toolchain"]
+                        for override in overridelist:
+                            if package == str(override["package"].encode('utf-8')):
+                                version = str(override["version"].encode('utf-8'))
+
             if constants.rpmCheck:
                 rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
             else:
                 if (packageName not in constants.listToolChainRPMsToInstall or
                         constants.listToolChainRPMsToInstall.index(packageName) > constants.listToolChainRPMsToInstall.index(package)):
-                    rpmFile=pkgUtils.findRPMFileForGivenPackage(package)
+                    rpmFile=pkgUtils.findRPMFileForGivenPackage(package, version)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
                 if package == "sqlite":
                     package = "sqlite-autoconf"
-                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+                rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo, version)
                 if rpmFile is None:
                     if package in constants.listOfRPMsProvidedAfterBuild:
                         self.logger.info("No old version of "+package+" exists, skip until the new version is built")
                         continue
-                    self.logger.error("Unable to find rpm "+ package +" in current and previous versions")
+                    self.logger.error("Unable to find rpm "+ package + version +" in current and previous versions")
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
             packages += " " + package
