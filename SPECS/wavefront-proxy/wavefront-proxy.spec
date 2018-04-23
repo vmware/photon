@@ -1,12 +1,11 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
-Version:        4.16
-Release:        4%{?dist}
+Version:        4.26
+Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz 
-%define sha1    wavefront=ff6ff22118e69c9df8de1427aa67659ebeb3341f
-Patch0:         CVE-2017-9735.patch
+%define sha1    wavefront=07a1006c4c47dcda48b2cca8464075283f8f457d
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -27,7 +26,6 @@ It handles authentication and the transmission of your metrics to your Wavefront
 
 %prep
 %setup -n java-wavefront-%{version} 
-%patch0 -p1
 
 cat << EOF >>wavefront-proxy.service
 [Unit]
@@ -106,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Fri Apr 20 2018 Dheeraj Shetty <dheerajs@vmware.com> 4.26-1
+- upgrade to 4.26
 * Mon Oct 08 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-4
 - Add Docker related files to the package
 * Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.16-3
