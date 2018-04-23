@@ -1,6 +1,7 @@
 import os.path
 import platform
 import traceback
+import re
 from CommandUtils import CommandUtils
 from ChrootUtils import ChrootUtils
 from Logger import Logger
@@ -170,7 +171,7 @@ class ToolChainUtils(object):
         for package in listOfToolChainPkgs:
             pkgUtils = PackageUtils(self.logName, self.logPath)
             print("DEBUG:" + package)
-            if "openjre8" in packageName or "openjdk8" in packageName:
+            if re.match("openjre*", packageName) is not None or re.match("openjdk*", packageName):
                 # x86_64 has openjdk/jre as a published rpms but aarch64 has openjdk8/jre8
                 # Remove this condition after publishxrpms for x86_^4 got updated
                 if ((package == "openjdk" or package == "openjre") and
@@ -244,7 +245,7 @@ class ToolChainUtils(object):
         rpmFiles = ""
         packages = ""
         for package in listOfToolChainPkgs:
-            if "openjre8" in packageName or "openjdk8" in packageName:
+            if re.match("openjre*", packageName) is not None or re.match("openjdk*", packageName):
                 rpmFile = self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             else:
                 rpmFile = self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
