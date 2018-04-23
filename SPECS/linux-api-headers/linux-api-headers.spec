@@ -1,7 +1,7 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
 Version:	4.9.94
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
@@ -25,6 +25,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Mon Apr 23 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.94-2
+-   Add full retpoline support by building with retpoline-enabled gcc.
 *   Wed Apr 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.94-1
 -   Update to version 4.9.94
 *   Mon Apr 02 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.92-1

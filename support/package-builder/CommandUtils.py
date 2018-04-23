@@ -4,13 +4,17 @@ import os
 class CommandUtils(object):
     def __init__(self):
         self.findBinary = "find"
+        self.sortBinary = "sort"
 
     def findFile (self, filename, sourcePath):
-        process = subprocess.Popen([self.findBinary,  "-L", sourcePath,  "-name", filename, "-not", "-type", "d"],  stdout=subprocess.PIPE)
-        returnVal = process.wait()
+        # Perform an alphabetical sort of the output from find, to get consistent ordering.
+        processFind = subprocess.Popen([self.findBinary,  "-L", sourcePath,  "-name", filename, "-not", "-type", "d"],  stdout=subprocess.PIPE)
+        processSort = subprocess.Popen([self.sortBinary,  "-d"], stdin=processFind.stdout, stdout=subprocess.PIPE)
+        processFind.stdout.close() # Allow processFind to receive a SIGPIPE if processSort exits.
+        returnVal = processSort.wait()
         if returnVal != 0:
             return None
-        result=process.communicate()[0]
+        result=processSort.communicate()[0]
         if result is None:
             return None
         return result.split()

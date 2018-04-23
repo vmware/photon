@@ -133,6 +133,7 @@ class constants(object):
         "mpc",
         "libgcc",
         "libgcc-devel",
+        "libgcc-atomic",
         "libstdc++",
         "libstdc++-devel",
         "libgomp",
