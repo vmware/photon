@@ -1,3 +1,4 @@
+%global debug_package %{nil}
 %bcond_with lowmem_builder
 %{!?_udevrulesdir: %define _udevrulesdir /lib/udev/rules.d}
 %{!?tmpfiles_create: %define tmpfiles_create systemd-tmpfiles --create}
@@ -12,15 +13,15 @@
 # common
 #################################################################################
 Name:       ceph
-Version:    11.2.0
-Release:    10%{?dist}
+Version:    12.2.4
+Release:    1%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
 Group:      System/Filesystems
 URL:        http://ceph.com/
 Source0:    http://ceph.com/download/%{name}-%{version}.tar.gz
-%define sha1 ceph=8bb87494c9b47b2ef02bfe51bb981a8cd94fa9fb
+%define sha1 ceph=df93bc3fac55249f5f0d30caa567962b387693dd
 Vendor:     VMware, Inc.
 Distribution:   Photon
 #################################################################################
@@ -77,6 +78,7 @@ BuildRequires:  cython
 BuildRequires:  cython3
 BuildRequires:  python-setuptools
 BuildRequires:  fcgi-devel
+BuildRequires:  gperf
 
 
 %description
@@ -216,6 +218,7 @@ License:    LGPL-2.0
 %if 0%{?rhel} || 0%{?fedora}
 Obsoletes:  ceph-libs < %{epoch}:%{version}-%{release}
 Requires:   libatomic_ops
+Requires:   libceph-common = %{epoch}:%{version}-%{release}
 %endif
 %description -n librados2
 RADOS is a reliable, autonomic distributed object storage cluster
@@ -240,6 +243,7 @@ Summary:    RADOS gateway client library
 Group:      System Environment/Libraries
 License:    LGPL-2.0
 Requires:   librados2 = %{epoch}:%{version}-%{release}
+Requires:   libceph-common = %{epoch}:%{version}-%{release}
 %description -n librgw2
 This package provides a library implementation of the RADOS gateway
 (distributed object store with S3 and Swift personalities).
@@ -297,11 +301,19 @@ Requires:   librados2 = %{epoch}:%{version}-%{release}
 This package contains Python 3 libraries for interacting with Cephs RADOS
 object store.
 
+%package -n libceph-common
+Summary:    libceph-common
+Group:      System Environment/Libraries
+License:    LGPL-2.0
+%description -n libceph-common
+libceph-common.
+
 %package -n libradosstriper1
 Summary:    RADOS striping interface
 Group:      System Environment/Libraries
 License:    LGPL-2.0
 Requires:   librados2 = %{epoch}:%{version}-%{release}
+Requires:   libceph-common = %{epoch}:%{version}-%{release}
 %description -n libradosstriper1
 Striping interface built on top of the rados library, allowing
 to stripe bigger objects onto several standard rados objects using
@@ -326,6 +338,8 @@ Group:      System Environment/Libraries
 License:    LGPL-2.0
 Requires:   librados2 = %{epoch}:%{version}-%{release}
 Obsoletes:  ceph-libs < %{epoch}:%{version}-%{release}
+Requires:   libceph-common = %{epoch}:%{version}-%{release}
+
 %description -n librbd1
 RBD is a block device striped across multiple distributed objects in
 RADOS, a reliable, autonomic distributed object storage cluster
@@ -372,6 +386,7 @@ Group:      System Environment/Libraries
 License:    LGPL-2.0
 Obsoletes:  ceph-libs < %{epoch}:%{version}-%{release}
 Obsoletes:  ceph-libcephfs
+Requires:   libceph-common = %{epoch}:%{version}-%{release}
 %description -n libcephfs2
 Ceph is a distributed network file system designed to provide excellent
 performance, reliability, and scalability. This is a shared library
@@ -473,7 +488,7 @@ cmake .. \
     -DWITH_XIO=OFF \
     -DWITH_TESTS=OFF \
     -DWITH_LTTNG=OFF \
-    -DHAVE_BABELTRACE=OFF \
+    -DWITH_BABELTRACE=OFF \
     $CEPH_EXTRA_CMAKE_ARGS \
     -DWITH_OCF=OFF
 
@@ -496,7 +511,6 @@ sed -i 's/\/bin/\/usr\/bin/g' %{buildroot}%{_bindir}/ceph-detect-init
 sed -i 's/\/bin/\/usr\/bin/g' %{buildroot}%{_sbindir}/ceph-disk
 install -m 0644 -D src/logrotate.conf %{buildroot}%{_sysconfdir}/logrotate.d/ceph
 chmod 0644 %{buildroot}%{_docdir}/ceph/sample.ceph.conf
-chmod 0644 %{buildroot}%{_docdir}/ceph/sample.fetch_config
 
 # udev rules
 install -m 0644 -D udev/50-rbd.rules %{buildroot}%{_udevrulesdir}/50-rbd.rules
@@ -530,7 +544,6 @@ rm -rf %{buildroot}
 %docdir %{_docdir}
 %dir %{_docdir}/ceph
 %{_docdir}/ceph/sample.ceph.conf
-%{_docdir}/ceph/sample.fetch_config
 %{_bindir}/crushtool
 %{_bindir}/monmaptool
 %{_bindir}/osdmaptool
@@ -593,7 +606,10 @@ rm -rf %{buildroot}
 %{_bindir}/rbd-replay
 %{_bindir}/rbd-replay-many
 %{_bindir}/rbdmap
+%{_bindir}/ceph-bluestore-tool
 %{_sbindir}/mount.ceph
+%{_sbindir}/ceph-volume
+%{_sbindir}/ceph-volume-systemd
 %if %{with lttng}
 %{_bindir}/rbd-replay-prep
 %endif
@@ -609,6 +625,7 @@ rm -rf %{buildroot}
 %config %{_sysconfdir}/bash_completion.d/rbd
 %config(noreplace) %{_sysconfdir}/ceph/rbdmap
 %{_unitdir}/rbdmap.service
+%{_unitdir}/ceph-volume@.service
 %{python_sitelib}/ceph_argparse.py*
 %{python_sitelib}/ceph_daemon.py*
 %dir %{_udevrulesdir}
@@ -770,6 +787,8 @@ fi
 %{_bindir}/radosgw-admin
 %{_bindir}/radosgw-token
 %{_bindir}/radosgw-object-expirer
+%{_bindir}/radosgw-es
+
 %config %{_sysconfdir}/bash_completion.d/radosgw-admin
 %dir %{_localstatedir}/lib/ceph/radosgw
 %{_unitdir}/ceph-radosgw@.service
@@ -799,11 +818,9 @@ fi
 
 %files osd
 %{_bindir}/ceph-clsinfo
-%{_bindir}/ceph-bluefs-tool
 %{_bindir}/ceph-objectstore-tool
 %{_bindir}/ceph-osd
 %{_sbindir}/ceph-disk
-%{_sbindir}/ceph-disk-udev
 %{_libexecdir}/ceph/ceph-osd-prestart.sh
 %dir %{_udevrulesdir}
 %{_udevrulesdir}/60-ceph-by-parttypeuuid.rules
@@ -834,6 +851,11 @@ if [ $FIRST_ARG -ge 1 ] ; then
     /usr/bin/systemctl try-restart ceph-disk@\*.service ceph-osd@\*.service > /dev/null 2>&1 || :
   fi
 fi
+
+%files -n libceph-common
+%defattr(-,root,root,-)
+%{_libdir}/ceph/libceph-common.so*
+
 
 %files -n librados2
 %defattr(-,root,root,-)
@@ -935,6 +957,7 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %dir %{_includedir}/rados
 %{_includedir}/rados/librgw.h
 %{_includedir}/rados/rgw_file.h
+%{_includedir}/rados/objclass.h
 %{_libdir}/librgw.so
 
 %files -n python-rgw
@@ -979,6 +1002,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{python_sitearch}/cephfs.so
 %{python_sitearch}/cephfs-*.egg-info
 %{python_sitelib}/ceph_volume_client.py*
+%{python_sitelib}/ceph_volume/*
+%{python_sitearch}/ceph_volume-*.egg-info
 
 %files -n python3-cephfs
 %defattr(-,root,root,-)
@@ -997,6 +1022,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Thu Apr 19 2018 Xiaolin Li <xiaolinl@vmware.com> 12.2.4-1
+-   Updated to version 12.2.4, fix CVE-2018-7262
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 11.2.0-10
 -   Requires /bin/grep, /usr/bin/which, or toybox
 *   Tue Aug 22 2017 Dheeraj Shetty <dheerajs@vmware.com> 11.2.0-9
