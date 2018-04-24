@@ -1,15 +1,17 @@
+%global security_hardening none
 %define _use_internal_dependency_generator 0
 Summary:	Contains the GNU compiler collection
 Name:		gcc
-Version:	5.3.0
-Release:	4%{?dist}
+Version:	7.3.0
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha1 gcc=0612270b103941da08376df4d0ef4e5662a2e9eb
+Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
+%define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
+Patch0:         PLUGIN_TYPE_CAST.patch
 Requires:	libstdc++-devel = %{version}-%{release}
 Requires:	libgcc-devel = %{version}-%{release}
 Requires:	libgomp-devel = %{version}-%{release}
@@ -71,8 +73,10 @@ This package contains development headers and static library for libgomp
 
 %prep
 %setup -q
-sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
-sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
+%patch0 -p1
+
+# sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
+# sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 
 install -vdm 755 ../gcc-build
 %build
@@ -87,6 +91,8 @@ SED=sed \
 	--enable-languages=c,c++ \
 	--disable-multilib \
 	--disable-bootstrap \
+	--enable-linker-build-id \
+	--enable-plugin \
 	--with-system-zlib
 #	--disable-silent-rules
 #sed -i '/-D_FORTIFY_SOURCE=2 for preprocessor/,+2d' `dirname $(gcc --print-libgcc-file-name)`/../specs
@@ -211,6 +217,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Mon Apr 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.3.0-1
+-   Update to 7.3.0 to get retpoline support.
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 5.3.0-4
 -   Bump release to built with latest toolchain
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.0-3
