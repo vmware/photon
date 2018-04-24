@@ -1,7 +1,7 @@
 Summary:    Provide tools to manage multipath devices
 Name:       device-mapper-multipath
 Version:    0.7.3
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPL+
 Group:      System Environment/Base
 URL:        http://christophe.varoqui.free.fr/
@@ -9,7 +9,7 @@ Source0:    multipath-tools-a0e0752.tar.gz
 %define git_commit_short a0e0752
 %define sha1 multipath-tools=56c171d5ed567654a10996b6d9892944d9d0cb48
 BuildRequires:  userspace-rcu-devel
-BuildRequires:  librados-devel
+BuildRequires:  librados-devel >= 12.2.4
 BuildRequires:  libaio-devel
 BuildRequires:  device-mapper-devel
 BuildRequires:  readline-devel
@@ -95,6 +95,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+*   Mon Apr 23 2018 Xiaolin Li <xiaolinl@vmware.com> 0.7.3-2
+-   Build with librados-devel 12.2.4
 *   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.7.3-1
 -   Update to 0.7.3
 *   Tue May 9  2017 Bo Gan <ganb@vmware.com> 0.7.1-1
