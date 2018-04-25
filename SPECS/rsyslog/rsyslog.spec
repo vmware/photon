@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.26.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -55,6 +55,7 @@ rm -f %{buildroot}/lib/systemd/system/rsyslog.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rsyslog.conf
+install -vdm 644 %{buildroot}%{_sysconfdir}/rsyslog.d
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -80,7 +81,10 @@ make %{?_smp_mflags} check
 %{_libdir}/systemd/system/rsyslog.service
 %{_sysconfdir}/systemd/journald.conf.d/*
 %{_sysconfdir}/rsyslog.conf
+%{_sysconfdir}/rsyslog.d
 %changelog
+*   Tue Apr 24 2018 Xiaolin Li <xiaolinl@vmware.com> 8.26.0-6
+-   Include /etc/rsyslog.d/ in rpm.
 *   Thu Apr 12 2018 Xiaolin Li <xiaolinl@vmware.com> 8.26.0-5
 -   Add $IncludeConfig /etc/rsyslog.d/ to rsyslog.conf
 *   Fri Dec 15 2017 Anish Swaminathan <anishs@vmware.com>  8.26.0-4
