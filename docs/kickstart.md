@@ -45,7 +45,7 @@ Here is an example:
 
     ks=cdrom:/isolinux/my_ks.cfg
 
-The syntax to serve the config-file to the kernel from an HTTP server takes the following form: 
+The syntax to serve the config-file to the kernel from an HTTP server (NOTE: DO NOT use https:// here) takes the following form: 
 
     ks=http://<server>/<config_file_path>
 
