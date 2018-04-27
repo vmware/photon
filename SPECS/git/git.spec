@@ -1,6 +1,6 @@
 Summary:	Fast distributed version control system
 Name:		git
-Version:	2.14.2
+Version:	2.17.0
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://git-scm.com/
@@ -8,7 +8,7 @@ Group:		System Environment/Programming
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1 git=9515fd4a068027f2c3d6ea9b8a8a298e990123a0
+%define sha1 git=f0d4139af75bfdbe306387358b2e40eb541ccc06
 BuildRequires:  curl
 BuildRequires:	python2
 BuildRequires:	python2-libs
@@ -70,9 +70,8 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/perl5/*
+%{_datadir}/perl5/*
 %{_libexecdir}/git-core/*
-%{_mandir}/man3/*
 %{_datarootdir}/git-core/*
 %{_datarootdir}/git-gui/*
 %{_datarootdir}/gitk/*
@@ -80,14 +79,16 @@ rm -rf %{buildroot}/*
 #excluding git svn files
 %exclude %{_libexecdir}/git-core/*svn*
 %exclude %{_mandir}/man3/*:SVN:*
-%exclude %{perl_sitelib}/Git/SVN
-%exclude %{perl_sitelib}/Git/SVN.pm
+%exclude %{_datadir}/perl5/Git/SVN
+%exclude %{_datadir}/perl5/Git/SVN.pm
 %exclude /usr/lib/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*       Tue Apr 24 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.17.0-1
+-       Updated to version 2.17.0, fix CVE-2018-1000021, CVE-2018-1000110
 *        Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
 -       Updated to version 2.14.2, fix CVE-2017-14867
 *       Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
