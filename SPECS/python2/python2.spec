@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.13
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -32,6 +32,7 @@ Provides:       python-sqlite
 Provides:       python(abi)
 Provides:       /bin/python
 Provides:       /bin/python2
+Provides:       /bin/python2.7
 
 %description
 The Python 2 package contains the Python development environment. It 
@@ -243,6 +244,8 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Fri Apr 27 2018 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-13
+-   Provides /bin/python2.7 for ceph 12.2.4
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-12
 -   Fix CVE-2017-1000030
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-11
