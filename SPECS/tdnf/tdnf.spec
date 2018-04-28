@@ -4,18 +4,18 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
 Url:            http://www.vmware.com
 Group:          Applications/RPM
-Requires:       hawkey >= 2017.1
+Requires:       hawkey >= 2017.1-6
 Requires:       rpm-libs
 Requires:       curl
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
-BuildRequires:  hawkey-devel >= 2017.1
+BuildRequires:  hawkey-devel >= 2017.1-6
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
@@ -36,7 +36,7 @@ which uses libsolv and libhawkey
 Summary:        A Library providing C API for tdnf
 Group:          Development/Libraries
 Requires:       tdnf = %{version}-%{release}
-Requires:       hawkey-devel >= 2017.1
+Requires:       hawkey-devel >= 2017.1-6
 
 %description devel
 Development files for tdnf
@@ -151,6 +151,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Fri Apr 27 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.3-2
+-   Requires hawkey >= 2017.1-6
 *   Thu Apr 05 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.3-1
 -   Update to v1.2.3
 *   Thu Feb 15 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-3
