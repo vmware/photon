@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.14.8
+Version:        4.14.37
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=45f140e0eab08428d78d81d4169d531a3e65a297
+%define sha1 linux=d1c47bdf9f4285fb2722af44fff99f830356ab9c
 Source1:	config-aws
 Source2:	initramfs.trigger
 %define ena_version 1.5.0
@@ -305,5 +305,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Apr 27 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.37-1
+-   Update to version 4.14.37
 *   Thu Feb 22 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.8-1
 -   First build based on linux.spec and config. No AWS-specific patches yet.
