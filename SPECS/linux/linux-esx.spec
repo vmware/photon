@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.94
-Release:        2%{?dist}
+Version:        4.9.95
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=82437991bdd6284fd3fd1fe21eb13f97abac203b
+%define sha1 linux=e7b46a2e27544fa9751b317a86a2c8bb0bbc17da
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -42,6 +42,7 @@ Patch25:        init-do_mounts-recreate-dev-root.patch
 Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
+Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
@@ -121,6 +122,7 @@ The Linux package contains the Linux kernel doc files
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 
 %patch52 -p1
 %patch53 -p1
@@ -232,6 +234,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Apr 30 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.95-1
+-   Update to version 4.9.95. Apply 3rd vmxnet3 patch.
 *   Mon Apr 23 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.94-2
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Wed Apr 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.94-1

@@ -1,14 +1,14 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.9.94
-Release:	2%{?dist}
+Version:	4.9.95
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=82437991bdd6284fd3fd1fe21eb13f97abac203b
+%define sha1 linux=e7b46a2e27544fa9751b317a86a2c8bb0bbc17da
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
@@ -25,6 +25,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Mon Apr 30 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.95-1
+-   Update to version 4.9.95
 *   Mon Apr 23 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.94-2
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Wed Apr 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.94-1
