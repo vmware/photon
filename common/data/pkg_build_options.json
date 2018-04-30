@@ -53,35 +53,5 @@
                      {"package": "libgomp", "version": "7.3.0"},
                      {"package": "libgomp-devel", "version": "7.3.0"}
         ]
-    },
-
-    "linux-secure": {
-        "files": [],
-        "macros": [],
-        "override_toolchain": [
-                     {"package": "gcc", "version": "7.3.0"},
-                     {"package": "libgcc", "version": "7.3.0"},
-                     {"package": "libgcc-devel", "version": "7.3.0"},
-                     {"package": "libgcc-atomic", "version": "7.3.0"},
-                     {"package": "libstdc++", "version": "7.3.0"},
-                     {"package": "libstdc++-devel", "version": "7.3.0"},
-                     {"package": "libgomp", "version": "7.3.0"},
-                     {"package": "libgomp-devel", "version": "7.3.0"}
-        ]
-    },
-
-    "linux-aws": {
-        "files": [],
-        "macros": [],
-        "override_toolchain": [
-                     {"package": "gcc", "version": "7.3.0"},
-                     {"package": "libgcc", "version": "7.3.0"},
-                     {"package": "libgcc-devel", "version": "7.3.0"},
-                     {"package": "libgcc-atomic", "version": "7.3.0"},
-                     {"package": "libstdc++", "version": "7.3.0"},
-                     {"package": "libstdc++-devel", "version": "7.3.0"},
-                     {"package": "libgomp", "version": "7.3.0"},
-                     {"package": "libgomp-devel", "version": "7.3.0"}
-        ]
     }
 }
