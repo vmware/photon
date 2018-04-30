@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.94
+Version:        4.9.95
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=82437991bdd6284fd3fd1fe21eb13f97abac203b
+%define sha1 linux=e7b46a2e27544fa9751b317a86a2c8bb0bbc17da
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -51,6 +51,7 @@ Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 Patch32:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch33:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch34:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
+Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
@@ -174,6 +175,7 @@ EOF
 %patch32 -p1
 %patch33 -p1
 %patch34 -p1
+%patch35 -p1
 
 # spectre
 %patch52 -p1
@@ -321,6 +323,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.95-1
+-   Update to version 4.9.95. Apply 3rd vmxnet3 patch.
 *   Wed Apr 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.94-1
 -   Update to version 4.9.94. Fix panic in ip_set.
 *   Mon Apr 02 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.92-1

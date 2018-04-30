@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.94
+Version:        4.9.95
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=82437991bdd6284fd3fd1fe21eb13f97abac203b
+%define sha1 linux=e7b46a2e27544fa9751b317a86a2c8bb0bbc17da
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -47,12 +47,13 @@ Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.pat
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
+# To fix kernel PANIC in cascade
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
+Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 
 # TODO: remove these patches on update
 # 4.9.94 has a compile time error. Revert this commit to fix it.
 # https://www.spinics.net/lists/stable/msg235266.html
-Patch33:        perf-tests-Decompress-kernel-module-before-objdump.patch
 Patch34:        perf-tests-Decompress-kernel-module-when-reading-DSO-data.patch
 
 # For Spectre
@@ -171,7 +172,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
-%patch33 -p1 -R
+%patch33 -p1
 %patch34 -p1 -R
 
 %patch52 -p1
@@ -355,6 +356,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.95-1
+-   Update to version 4.9.95. Apply 3rd vmxnet3 patch.
 *   Wed Apr 18 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.94-1
 -   Update to version 4.9.94. Fix panic in ip_set.
 -   .config: disable XEN_BALLOON_MEMORY_HOTPLUG
