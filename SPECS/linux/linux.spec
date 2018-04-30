@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.124
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.130
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=d5241400e6e5ed97fbdba1f92cf62c0a4382a30a
+%define sha1 linux=301ecffcd9714f17b229c0eaff8a711a419bbbdb
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -36,6 +36,9 @@ Patch16:        vsock-transport-for-9p.patch
 #allow some algorithms in FIPS mode
 Patch17:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch18:        0002-allow-also-ecb-cipher_null.patch
+# Fixes for CVE-2018-1000026
+Patch19:        0001-net-create-skb_gso_validate_mac_len.patch
+Patch20:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
@@ -144,6 +147,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
+%patch20 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -315,6 +320,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Apr 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-1
+-   Update to version 4.4.130 and fix CVE-2018-1000026.
 *   Thu Apr 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-2
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Tue Mar 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-1
