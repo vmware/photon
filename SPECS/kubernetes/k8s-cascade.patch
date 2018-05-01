@@ -1,8 +1,6 @@
-Binary files kubernetes-original/api/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/api/._.DS_Store differ
-Binary files kubernetes-original/api/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/api/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/apps_v1alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1alpha1.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/apps_v1alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1alpha1.json
 --- kubernetes-original/api/swagger-spec/apps_v1alpha1.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1alpha1.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1alpha1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -1459,6 +1459,10 @@
       "photonPersistentDisk": {
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
@@ -38,9 +36,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/apps_v1alpha1.js
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/apps_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta1.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/apps_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta1.json
 --- kubernetes-original/api/swagger-spec/apps_v1beta1.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta1.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -4479,6 +4479,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -76,9 +74,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/apps_v1beta1.jso
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/apps_v1beta2.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta2.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/apps_v1beta2.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta2.json
 --- kubernetes-original/api/swagger-spec/apps_v1beta2.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta2.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta2.json	2018-04-30 21:11:51.000000000 +0000
 @@ -6845,6 +6845,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -114,9 +112,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/apps_v1beta2.jso
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/batch_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1beta1.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/batch_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1beta1.json
 --- kubernetes-original/api/swagger-spec/batch_v1beta1.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1beta1.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1beta1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -1874,6 +1874,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -152,9 +150,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/batch_v1beta1.js
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/batch_v1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/batch_v1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1.json
 --- kubernetes-original/api/swagger-spec/batch_v1.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -1819,6 +1819,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -190,9 +188,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/batch_v1.json ku
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/batch_v2alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v2alpha1.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/batch_v2alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v2alpha1.json
 --- kubernetes-original/api/swagger-spec/batch_v2alpha1.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v2alpha1.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v2alpha1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -1889,6 +1889,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
@@ -228,9 +226,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/batch_v2alpha1.j
     "v1.Container": {
      "id": "v1.Container",
      "description": "A single application container that you want to run within a pod.",
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/extensions_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/extensions_v1beta1.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/extensions_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/extensions_v1beta1.json
 --- kubernetes-original/api/swagger-spec/extensions_v1beta1.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/extensions_v1beta1.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/extensions_v1beta1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -7502,6 +7502,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
@@ -266,9 +264,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/extensions_v1bet
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/settings.k8s.io_v1alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/settings.k8s.io_v1alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json
 --- kubernetes-original/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -1676,6 +1676,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
@@ -304,9 +302,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/settings.k8s.io_
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff --no-dereference -uNr kubernetes-original/api/swagger-spec/v1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/v1.json
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/v1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/v1.json
 --- kubernetes-original/api/swagger-spec/v1.json	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/v1.json	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/v1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -20629,6 +20629,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
@@ -353,11 +351,9 @@ diff --no-dereference -uNr kubernetes-original/api/swagger-spec/v1.json kubernet
       }
      }
     },
-Binary files kubernetes-original/cmd/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/cmd/._.DS_Store differ
-Binary files kubernetes-original/cmd/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/cmd/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/cmd/kube-controller-manager/app/BUILD kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/BUILD
+diff -uNr --no-dereference kubernetes-original/cmd/kube-controller-manager/app/BUILD kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/BUILD
 --- kubernetes-original/cmd/kube-controller-manager/app/BUILD	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/BUILD	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/BUILD	2018-04-30 21:11:51.000000000 +0000
 @@ -86,6 +86,7 @@
          "//pkg/volume/aws_ebs:go_default_library",
          "//pkg/volume/azure_dd:go_default_library",
@@ -366,9 +362,9 @@ diff --no-dereference -uNr kubernetes-original/cmd/kube-controller-manager/app/B
          "//pkg/volume/cinder:go_default_library",
          "//pkg/volume/csi:go_default_library",
          "//pkg/volume/fc:go_default_library",
-diff --no-dereference -uNr kubernetes-original/cmd/kube-controller-manager/app/plugins.go kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/plugins.go
+diff -uNr --no-dereference kubernetes-original/cmd/kube-controller-manager/app/plugins.go kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/plugins.go
 --- kubernetes-original/cmd/kube-controller-manager/app/plugins.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/plugins.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/plugins.go	2018-04-30 21:11:51.000000000 +0000
 @@ -34,6 +34,7 @@
  	"k8s.io/kubernetes/pkg/volume/aws_ebs"
  	"k8s.io/kubernetes/pkg/volume/azure_dd"
@@ -401,11 +397,9 @@ diff --no-dereference -uNr kubernetes-original/cmd/kube-controller-manager/app/p
  
  	return allPlugins
  }
-Binary files kubernetes-original/cmd/kube-controller-manager/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/._.DS_Store differ
-Binary files kubernetes-original/cmd/kube-controller-manager/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/cmd/kubelet/app/BUILD kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/BUILD
+diff -uNr --no-dereference kubernetes-original/cmd/kubelet/app/BUILD kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/BUILD
 --- kubernetes-original/cmd/kubelet/app/BUILD	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/BUILD	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/BUILD	2018-04-30 21:11:51.000000000 +0000
 @@ -74,6 +74,7 @@
          "//pkg/volume/aws_ebs:go_default_library",
          "//pkg/volume/azure_dd:go_default_library",
@@ -414,9 +408,9 @@ diff --no-dereference -uNr kubernetes-original/cmd/kubelet/app/BUILD kubernetes-
          "//pkg/volume/cephfs:go_default_library",
          "//pkg/volume/cinder:go_default_library",
          "//pkg/volume/configmap:go_default_library",
-diff --no-dereference -uNr kubernetes-original/cmd/kubelet/app/plugins.go kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/plugins.go
+diff -uNr --no-dereference kubernetes-original/cmd/kubelet/app/plugins.go kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/plugins.go
 --- kubernetes-original/cmd/kubelet/app/plugins.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/plugins.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/plugins.go	2018-04-30 21:11:51.000000000 +0000
 @@ -32,6 +32,7 @@
  	"k8s.io/kubernetes/pkg/volume/aws_ebs"
  	"k8s.io/kubernetes/pkg/volume/azure_dd"
@@ -433,15 +427,258 @@ diff --no-dereference -uNr kubernetes-original/cmd/kubelet/app/plugins.go kubern
  	if utilfeature.DefaultFeatureGate.Enabled(features.CSIPersistentVolume) {
  		allPlugins = append(allPlugins, csi.ProbeVolumePlugins()...)
  	}
-Binary files kubernetes-original/cmd/kubelet/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/._.DS_Store differ
-Binary files kubernetes-original/cmd/kubelet/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/.DS_Store differ
-Binary files kubernetes-original/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/._.DS_Store differ
-Binary files kubernetes-original/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/.DS_Store differ
-Binary files kubernetes-original/pkg/apis/core/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/._.DS_Store differ
-Binary files kubernetes-original/pkg/apis/core/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/pkg/apis/core/types.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/types.go
+diff -uNr --no-dereference kubernetes-original/.idea/kubernetes.iml kubernetes-modified/src/k8s.io/kubernetes/.idea/kubernetes.iml
+--- kubernetes-original/.idea/kubernetes.iml	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/.idea/kubernetes.iml	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+diff -uNr --no-dereference kubernetes-original/.idea/modules.xml kubernetes-modified/src/k8s.io/kubernetes/.idea/modules.xml
+--- kubernetes-original/.idea/modules.xml	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/.idea/modules.xml	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/kubernetes.iml" filepath="$PROJECT_DIR$/.idea/kubernetes.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+diff -uNr --no-dereference kubernetes-original/.idea/workspace.xml kubernetes-modified/src/k8s.io/kubernetes/.idea/workspace.xml
+--- kubernetes-original/.idea/workspace.xml	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/.idea/workspace.xml	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,217 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ChangeListManager">
++    <list default="true" id="76c7d3c7-31f8-4430-8717-7c15514d1ce9" name="Default" comment="" />
++    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
++    <option name="TRACKING_ENABLED" value="true" />
++    <option name="SHOW_DIALOG" value="false" />
++    <option name="HIGHLIGHT_CONFLICTS" value="true" />
++    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
++    <option name="LAST_RESOLUTION" value="IGNORE" />
++  </component>
++  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
++  <component name="GradleLocalSettings">
++    <option name="externalProjectsViewState">
++      <projects_view />
++    </option>
++  </component>
++  <component name="ProjectFrameBounds">
++    <option name="x" value="1680" />
++    <option name="y" value="-235" />
++    <option name="width" value="2560" />
++    <option name="height" value="1417" />
++  </component>
++  <component name="ProjectView">
++    <navigator currentView="ProjectPane" proportions="" version="1">
++      <flattenPackages />
++      <showMembers />
++      <showModules />
++      <showLibraryContents />
++      <hideEmptyPackages />
++      <abbreviatePackageNames />
++      <autoscrollToSource />
++      <autoscrollFromSource />
++      <sortByType />
++      <manualOrder />
++      <foldersAlwaysOnTop value="true" />
++    </navigator>
++    <panes>
++      <pane id="Scope" />
++      <pane id="Scratches" />
++      <pane id="PackagesPane" />
++      <pane id="ProjectPane">
++        <subPane>
++          <PATH>
++            <PATH_ELEMENT>
++              <option name="myItemId" value="kubernetes" />
++              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
++            </PATH_ELEMENT>
++            <PATH_ELEMENT>
++              <option name="myItemId" value="kubernetes" />
++              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
++            </PATH_ELEMENT>
++          </PATH>
++        </subPane>
++      </pane>
++    </panes>
++  </component>
++  <component name="PropertiesComponent">
++    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider$1" />
++    <property name="configurable.Global.libraries.is.expanded" value="true" />
++    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
++  </component>
++  <component name="RunDashboard">
++    <option name="ruleStates">
++      <list>
++        <RuleState>
++          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
++        </RuleState>
++        <RuleState>
++          <option name="name" value="StatusDashboardGroupingRule" />
++        </RuleState>
++      </list>
++    </option>
++  </component>
++  <component name="RunManager">
++    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
++      <module name="" />
++      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
++      <option name="PROGRAM_PARAMETERS" />
++      <predefined_log_file id="idea.log" enabled="true" />
++      <method />
++    </configuration>
++    <configuration default="true" type="Applet" factoryName="Applet">
++      <option name="HTML_USED" value="false" />
++      <option name="WIDTH" value="400" />
++      <option name="HEIGHT" value="300" />
++      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
++      <module />
++      <method />
++    </configuration>
++    <configuration default="true" type="Application" factoryName="Application">
++      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
++      <option name="MAIN_CLASS_NAME" />
++      <option name="VM_PARAMETERS" />
++      <option name="PROGRAM_PARAMETERS" />
++      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
++      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
++      <option name="ALTERNATIVE_JRE_PATH" />
++      <option name="ENABLE_SWING_INSPECTOR" value="false" />
++      <option name="ENV_VARIABLES" />
++      <option name="PASS_PARENT_ENVS" value="true" />
++      <module name="" />
++      <envs />
++      <method />
++    </configuration>
++    <configuration default="true" type="JUnit" factoryName="JUnit">
++      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
++      <module name="" />
++      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
++      <option name="ALTERNATIVE_JRE_PATH" />
++      <option name="PACKAGE_NAME" />
++      <option name="MAIN_CLASS_NAME" />
++      <option name="METHOD_NAME" />
++      <option name="TEST_OBJECT" value="class" />
++      <option name="VM_PARAMETERS" value="-ea" />
++      <option name="PARAMETERS" />
++      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
++      <option name="ENV_VARIABLES" />
++      <option name="PASS_PARENT_ENVS" value="true" />
++      <option name="TEST_SEARCH_SCOPE">
++        <value defaultName="singleModule" />
++      </option>
++      <envs />
++      <patterns />
++      <method />
++    </configuration>
++    <configuration default="true" type="Remote" factoryName="Remote">
++      <option name="USE_SOCKET_TRANSPORT" value="true" />
++      <option name="SERVER_MODE" value="false" />
++      <option name="SHMEM_ADDRESS" value="javadebug" />
++      <option name="HOST" value="localhost" />
++      <option name="PORT" value="5005" />
++      <method />
++    </configuration>
++    <configuration default="true" type="TestNG" factoryName="TestNG">
++      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
++      <module name="" />
++      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
++      <option name="ALTERNATIVE_JRE_PATH" />
++      <option name="SUITE_NAME" />
++      <option name="PACKAGE_NAME" />
++      <option name="MAIN_CLASS_NAME" />
++      <option name="METHOD_NAME" />
++      <option name="GROUP_NAME" />
++      <option name="TEST_OBJECT" value="CLASS" />
++      <option name="VM_PARAMETERS" value="-ea" />
++      <option name="PARAMETERS" />
++      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
++      <option name="OUTPUT_DIRECTORY" />
++      <option name="ANNOTATION_TYPE" />
++      <option name="ENV_VARIABLES" />
++      <option name="PASS_PARENT_ENVS" value="true" />
++      <option name="TEST_SEARCH_SCOPE">
++        <value defaultName="singleModule" />
++      </option>
++      <option name="USE_DEFAULT_REPORTERS" value="false" />
++      <option name="PROPERTIES_FILE" />
++      <envs />
++      <properties />
++      <listeners />
++      <method />
++    </configuration>
++  </component>
++  <component name="ShelveChangesManager" show_recycled="false">
++    <option name="remove_strategy" value="false" />
++  </component>
++  <component name="TaskManager">
++    <task active="true" id="Default" summary="Default task">
++      <changelist id="76c7d3c7-31f8-4430-8717-7c15514d1ce9" name="Default" comment="" />
++      <created>1510772775522</created>
++      <option name="number" value="Default" />
++      <option name="presentableId" value="Default" />
++      <updated>1510772775522</updated>
++    </task>
++    <servers />
++  </component>
++  <component name="ToolWindowManager">
++    <frame x="1680" y="-235" width="2560" height="1417" extended-state="6" />
++    <layout>
++      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
++      <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
++      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
++      <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
++      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25178713" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
++      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
++      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
++      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
++      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
++      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
++      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
++      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
++      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
++      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
++    </layout>
++  </component>
++  <component name="VcsContentAnnotationSettings">
++    <option name="myLimit" value="2678400000" />
++  </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager />
++    <watches-manager />
++  </component>
++</project>
+\ No newline at end of file
+diff -uNr --no-dereference kubernetes-original/pkg/apis/core/types.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/types.go
 --- kubernetes-original/pkg/apis/core/types.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/types.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/types.go	2018-04-30 21:11:51.000000000 +0000
 @@ -316,6 +316,8 @@
  	// StorageOS represents a StorageOS volume that is attached to the kubelet's host machine and mounted into the pod
  	// +optional
@@ -477,9 +714,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/apis/core/types.go kubernetes
  // Adapts a ConfigMap into a volume.
  //
  // The contents of the target ConfigMap's Data field will be presented in a
-diff --no-dereference -uNr kubernetes-original/pkg/apis/core/validation/validation.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/validation/validation.go
+diff -uNr --no-dereference kubernetes-original/pkg/apis/core/validation/validation.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/validation/validation.go
 --- kubernetes-original/pkg/apis/core/validation/validation.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/validation/validation.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/validation/validation.go	2018-04-30 21:11:51.000000000 +0000
 @@ -681,6 +681,14 @@
  			allErrs = append(allErrs, validateScaleIOVolumeSource(source.ScaleIO, fldPath.Child("scaleIO"))...)
  		}
@@ -526,11 +763,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/apis/core/validation/validati
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
  	}
-Binary files kubernetes-original/pkg/apis/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/._.DS_Store differ
-Binary files kubernetes-original/pkg/apis/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/pkg/apis/extensions/types.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/extensions/types.go
+diff -uNr --no-dereference kubernetes-original/pkg/apis/extensions/types.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/extensions/types.go
 --- kubernetes-original/pkg/apis/extensions/types.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/extensions/types.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/extensions/types.go	2018-04-30 21:11:51.000000000 +0000
 @@ -925,6 +925,7 @@
  	PortworxVolume        FSType = "portworxVolume"
  	ScaleIO               FSType = "scaleIO"
@@ -539,11 +774,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/apis/extensions/types.go kube
  	All                   FSType = "*"
  )
  
-Binary files kubernetes-original/pkg/cloudprovider/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/._.DS_Store differ
-Binary files kubernetes-original/pkg/cloudprovider/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/BUILD
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/BUILD
 --- kubernetes-original/pkg/cloudprovider/providers/BUILD	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/BUILD	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/BUILD	2018-04-30 21:11:51.000000000 +0000
 @@ -12,6 +12,7 @@
      deps = [
          "//pkg/cloudprovider/providers/aws:go_default_library",
@@ -560,9 +793,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/BUILD
          "//pkg/cloudprovider/providers/cloudstack:all-srcs",
          "//pkg/cloudprovider/providers/fake:all-srcs",
          "//pkg/cloudprovider/providers/gce:all-srcs",
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/apitypes.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/apitypes.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/apitypes.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,227 @@
 +package cascade
 +
@@ -791,9 +1024,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +type LoadBalancerVMUpdate struct {
 +	VMIds []*LoadBalancerVM `json:"vmIds"`
 +}
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/auth.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/auth.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/auth.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/auth.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/auth.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/auth.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/auth.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,145 @@
 +package cascade
 +
@@ -893,7 +1126,7 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +
 +func buildOIDCClient(authEndpoint string) (*OIDCClient, error) {
 +	options := &OIDCClientOptions{
-+		IgnoreCertificate: true,
++		IgnoreCertificate: false,
 +		RootCAs:           nil,
 +		TokenScope:        tScope,
 +	}
@@ -941,9 +1174,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +	return pwd, nil
 +}
 \ No newline at end of file
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/BUILD
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/BUILD
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/BUILD	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/BUILD	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/BUILD	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,44 @@
 +package(default_visibility = ["//visibility:public"])
 +
@@ -989,9 +1222,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +    srcs = [":package-srcs"],
 +    tags = ["automanaged"],
 +)
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_disks.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_disks.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_disks.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,225 @@
 +package cascade
 +
@@ -1218,9 +1451,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +
 +	return labels, nil
 +}
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/cascade.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/cascade.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/cascade.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,216 @@
 +// The use of Cascade cloud provider requires the kubelet, kube-apiserver, and kube-controller-manager to be started
 +// with config flag: '--cloud-provider=cascade --cloud-config=[path_to_config_file]'.
@@ -1439,9 +1672,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +	return true
 +}
 \ No newline at end of file
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_instances.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_instances.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_instances.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,90 @@
 +package cascade
 +
@@ -1533,9 +1766,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +func (cc *CascadeCloud) InstanceType(nodeName k8stypes.NodeName) (string, error) {
 +	return "", nil
 +}
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,284 @@
 +package cascade
 +
@@ -1822,9 +2055,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +	glog.Infoln(l.getLogMsg(msgTemplate, args))
 +}
 \ No newline at end of file
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/client.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/client.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/client.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/client.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/client.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/client.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/client.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,394 @@
 +package cascade
 +
@@ -2220,9 +2453,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +
 +	return errorStep
 +}
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/oidcclient.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/oidcclient.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/oidcclient.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,297 @@
 +package cascade
 +
@@ -2328,7 +2561,7 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +
 +	tr := &http.Transport{
 +		TLSClientConfig: &tls.Config{
-+			InsecureSkipVerify: true,
++			InsecureSkipVerify: false,
 +		},
 +	}
 +	client.setTransport(tr)
@@ -2521,16 +2754,16 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +
 +	return oidcErr
 +}
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/OWNERS kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/OWNERS
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/OWNERS kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/OWNERS
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/OWNERS	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/OWNERS	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/OWNERS	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,3 @@
 +maintainers:
 +- ashokc
 +- ysheng
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/restclient.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/restclient.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/restclient.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/restclient.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/restclient.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/restclient.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/restclient.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,262 @@
 +package cascade
 +
@@ -2794,9 +3027,18 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +	apiError.HttpStatusCode = res.StatusCode
 +	return nil, apiError
 +}
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/cascade/utils.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/utils.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/tests_owed kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/tests_owed
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/tests_owed	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/tests_owed	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,5 @@
++
++Yu Sheng
++Change-Id: Ifc11818f65a3e018aeea6988d9e2c0719b592920
++
++
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/utils.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/utils.go
 --- kubernetes-original/pkg/cloudprovider/providers/cascade/utils.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/utils.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/utils.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,25 @@
 +package cascade
 +
@@ -2824,9 +3066,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/casca
 +	return &s
 +}
 \ No newline at end of file
-diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/providers.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/providers.go
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/providers.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/providers.go
 --- kubernetes-original/pkg/cloudprovider/providers/providers.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/providers.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/providers.go	2018-04-30 21:11:51.000000000 +0000
 @@ -20,6 +20,7 @@
  	// Cloud providers
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/aws"
@@ -2835,13 +3077,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/cloudprovider/providers/provi
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/cloudstack"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
-Binary files kubernetes-original/pkg/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/._.DS_Store differ
-Binary files kubernetes-original/pkg/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/.DS_Store differ
-Binary files kubernetes-original/pkg/printers/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/printers/._.DS_Store differ
-Binary files kubernetes-original/pkg/printers/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/printers/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/pkg/printers/internalversion/describe.go kubernetes-modified/src/k8s.io/kubernetes/pkg/printers/internalversion/describe.go
+diff -uNr --no-dereference kubernetes-original/pkg/printers/internalversion/describe.go kubernetes-modified/src/k8s.io/kubernetes/pkg/printers/internalversion/describe.go
 --- kubernetes-original/pkg/printers/internalversion/describe.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/printers/internalversion/describe.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/printers/internalversion/describe.go	2018-04-30 21:11:51.000000000 +0000
 @@ -751,6 +751,8 @@
  			printFlexVolumeSource(volume.VolumeSource.FlexVolume, w)
  		case volume.VolumeSource.Flocker != nil:
@@ -2874,13 +3112,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/printers/internalversion/desc
  		default:
  			w.Write(LEVEL_1, "<unknown>\n")
  		}
-Binary files kubernetes-original/pkg/security/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/security/._.DS_Store differ
-Binary files kubernetes-original/pkg/security/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/security/.DS_Store differ
-Binary files kubernetes-original/pkg/security/podsecuritypolicy/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/security/podsecuritypolicy/._.DS_Store differ
-Binary files kubernetes-original/pkg/security/podsecuritypolicy/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/security/podsecuritypolicy/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/pkg/security/podsecuritypolicy/util/util.go kubernetes-modified/src/k8s.io/kubernetes/pkg/security/podsecuritypolicy/util/util.go
+diff -uNr --no-dereference kubernetes-original/pkg/security/podsecuritypolicy/util/util.go kubernetes-modified/src/k8s.io/kubernetes/pkg/security/podsecuritypolicy/util/util.go
 --- kubernetes-original/pkg/security/podsecuritypolicy/util/util.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/security/podsecuritypolicy/util/util.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/security/podsecuritypolicy/util/util.go	2018-04-30 21:11:51.000000000 +0000
 @@ -68,6 +68,7 @@
  		string(extensions.PortworxVolume),
  		string(extensions.ScaleIO),
@@ -2898,9 +3132,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/security/podsecuritypolicy/ut
  	}
  
  	return "", fmt.Errorf("unknown volume type for volume: %#v", v)
-diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/attacher.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/attacher.go
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/attacher.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/attacher.go
 --- kubernetes-original/pkg/volume/cascade_disk/attacher.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/attacher.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/attacher.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,269 @@
 +package cascade_disk
 +
@@ -3171,9 +3405,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/attacher.
 +func (detacher *cascadeDiskDetacher) UnmountDevice(deviceMountPath string) error {
 +	return volumeutil.UnmountPath(deviceMountPath, detacher.mounter)
 +}
-diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/BUILD
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/BUILD
 --- kubernetes-original/pkg/volume/cascade_disk/BUILD	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/BUILD	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/BUILD	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,43 @@
 +package(default_visibility = ["//visibility:public"])
 +
@@ -3218,9 +3452,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/BUILD kub
 +    srcs = [":package-srcs"],
 +    tags = ["automanaged"],
 +)
-diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/cascade_disk.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_disk.go
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/cascade_disk.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_disk.go
 --- kubernetes-original/pkg/volume/cascade_disk/cascade_disk.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_disk.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_disk.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,391 @@
 +package cascade_disk
 +
@@ -3614,9 +3848,9 @@ diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/cascade_d
 +	return nil, false, fmt.Errorf("Spec does not reference a Cascade disk type")
 +}
 \ No newline at end of file
-diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/cascade_util.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_util.go
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/cascade_util.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_util.go
 --- kubernetes-original/pkg/volume/cascade_disk/cascade_util.go	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_util.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_util.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,107 @@
 +package cascade_disk
 +
@@ -3725,23 +3959,15 @@ diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/cascade_u
 +	}
 +	return cc, nil
 +}
-diff --no-dereference -uNr kubernetes-original/pkg/volume/cascade_disk/OWNERS kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/OWNERS
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/OWNERS kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/OWNERS
 --- kubernetes-original/pkg/volume/cascade_disk/OWNERS	1970-01-01 00:00:00.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/OWNERS	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/OWNERS	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,2 @@
 +maintainers:
 +- ashokc
-Binary files kubernetes-original/pkg/volume/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/._.DS_Store differ
-Binary files kubernetes-original/pkg/volume/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/.DS_Store differ
-Binary files kubernetes-original/plugin/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/plugin/._.DS_Store differ
-Binary files kubernetes-original/plugin/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/plugin/.DS_Store differ
-Binary files kubernetes-original/plugin/pkg/admission/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/._.DS_Store differ
-Binary files kubernetes-original/plugin/pkg/admission/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/.DS_Store differ
-Binary files kubernetes-original/plugin/pkg/admission/persistentvolume/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/persistentvolume/._.DS_Store differ
-Binary files kubernetes-original/plugin/pkg/admission/persistentvolume/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/persistentvolume/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/plugin/pkg/admission/persistentvolume/label/admission.go kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go
+diff -uNr --no-dereference kubernetes-original/plugin/pkg/admission/persistentvolume/label/admission.go kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go
 --- kubernetes-original/plugin/pkg/admission/persistentvolume/label/admission.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go	2018-04-30 21:11:51.000000000 +0000
 @@ -27,6 +27,7 @@
  	api "k8s.io/kubernetes/pkg/apis/core"
  	"k8s.io/kubernetes/pkg/cloudprovider"
@@ -3821,17 +4047,9 @@ diff --no-dereference -uNr kubernetes-original/plugin/pkg/admission/persistentvo
 +	}
 +	return l.cascadeDisks, nil
 +}
-Binary files kubernetes-original/plugin/pkg/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/._.DS_Store differ
-Binary files kubernetes-original/plugin/pkg/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/.DS_Store differ
-Binary files kubernetes-original/staging/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/._.DS_Store differ
-Binary files kubernetes-original/staging/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/.DS_Store differ
-Binary files kubernetes-original/staging/src/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/src/._.DS_Store differ
-Binary files kubernetes-original/staging/src/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/src/.DS_Store differ
-Binary files kubernetes-original/staging/src/k8s.io/api/core/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/._.DS_Store differ
-Binary files kubernetes-original/staging/src/k8s.io/api/core/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/.DS_Store differ
-diff --no-dereference -uNr kubernetes-original/staging/src/k8s.io/api/core/v1/generated.pb.go kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go
+diff -uNr --no-dereference kubernetes-original/staging/src/k8s.io/api/core/v1/generated.pb.go kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go
 --- kubernetes-original/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-04-30 21:11:51.000000000 +0000
 @@ -35,6 +35,7 @@
  		Binding
  		CSIPersistentVolumeSource
@@ -4331,9 +4549,9 @@ diff --no-dereference -uNr kubernetes-original/staging/src/k8s.io/api/core/v1/ge
  		default:
  			iNdEx = preIndex
  			skippy, err := skipGenerated(dAtA[iNdEx:])
-diff --no-dereference -uNr kubernetes-original/staging/src/k8s.io/api/core/v1/types.go kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/types.go
+diff -uNr --no-dereference kubernetes-original/staging/src/k8s.io/api/core/v1/types.go kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/types.go
 --- kubernetes-original/staging/src/k8s.io/api/core/v1/types.go	2018-03-20 19:21:10.000000000 +0000
-+++ kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/types.go	2018-03-23 21:44:53.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/types.go	2018-04-30 21:11:51.000000000 +0000
 @@ -333,9 +333,8 @@
  	// Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
  	// +optional
@@ -4395,7 +4613,3 @@ diff --no-dereference -uNr kubernetes-original/staging/src/k8s.io/api/core/v1/ty
  // Adapts a ConfigMap into a volume.
  //
  // The contents of the target ConfigMap's Data field will be presented in a
-Binary files kubernetes-original/staging/src/k8s.io/api/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/._.DS_Store differ
-Binary files kubernetes-original/staging/src/k8s.io/api/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/.DS_Store differ
-Binary files kubernetes-original/staging/src/k8s.io/._.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/._.DS_Store differ
-Binary files kubernetes-original/staging/src/k8s.io/.DS_Store and kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/.DS_Store differ
