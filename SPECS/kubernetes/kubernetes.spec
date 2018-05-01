@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.9.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -185,6 +185,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Tue May 01 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-2
+-   Enable TLS certificate validation in Cascade CLoud Provider
 *   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-1
 -   k8s v1.9.6 and Cascade Cloud Provider patch
 *   Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-5
