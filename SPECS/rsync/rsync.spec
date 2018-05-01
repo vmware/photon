@@ -1,15 +1,11 @@
 Summary:        Fast incremental file transfer. 
 Name:           rsync
-Version:        3.1.2
-Release:        5%{?dist}
+Version:        3.1.3
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org/
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
-%define sha1    rsync=0d4c7fb7fe3fc80eeff922a7c1d81df11dbb8a1a
-Patch0:         rsync-CVE-2017-16548.patch
-Patch1:         rsync-CVE-2017-17433.patch
-Patch2:         rsync-CVE-2017-17434-1.patch
-Patch3:         rsync-CVE-2017-17434-2.patch
+%define sha1    rsync=82e7829c0b3cefbd33c233005341e2073c425629
 Group:          Appication/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,10 +15,6 @@ Requires:       systemd
 Rsync is a fast and extraordinarily versatile file copying tool. It can copy locally, to/from another host over any remote shell, or to/from a remote rsync daemon. It offers a large number of options that control every aspect of its behavior and permit very flexible specification of the set of files to be copied. It is famous for its delta-transfer algorithm, which reduces the amount of data sent over the network by sending only the differences between the source files and the existing files in the destination. Rsync is widely used for backups and mirroring and as an improved copy command for everyday use.
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 %build
 %configure --prefix=/usr
 make %{?_smp_mflags}
@@ -62,6 +54,8 @@ make %{?_smp_mflags} check
 %{_libdir}/systemd/system/rsyncd.service
 %{_sysconfdir}/rsyncd.conf
 %changelog
+*   Tue May 01 2018 Xiaolin Li <xiaolinl@vmware.com> 3.1.3-1
+-   Updated to version 3.1.3, fix CVE-2018-5764
 *   Wed Dec 27 2017 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-5
 -   Fix CVE-2017-17433, CVE-2017-17434
 *   Wed Nov 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.1.2-4
