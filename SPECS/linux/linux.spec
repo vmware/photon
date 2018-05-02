@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.97
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -50,6 +50,9 @@ Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 # To fix kernel PANIC in cascade
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
+# Fixes for CVE-2018-1000026
+Patch34:        0001-net-create-skb_gso_validate_mac_len.patch
+Patch35:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -168,6 +171,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%patch34 -p1
+%patch35 -p1
 
 %patch52 -p1
 %patch53 -p1
@@ -350,6 +355,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue May 01 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.97-2
+-   Fix CVE-2018-1000026.
 *   Mon Apr 30 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.97-1
 -   Update to version 4.9.97. Apply 3rd vmxnet3 patch.
 *   Mon Apr 23 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.94-2
