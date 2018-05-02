@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.97
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -52,6 +52,10 @@ Patch32:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch33:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch34:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
+# Fixes for CVE-2018-1000026
+Patch36:        0001-net-create-skb_gso_validate_mac_len.patch
+Patch37:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
+
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
@@ -176,6 +180,8 @@ EOF
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
+%patch37 -p1
 
 # spectre
 %patch52 -p1
@@ -323,6 +329,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 01 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.97-2
+-   Fix CVE-2018-1000026.
 *   Mon Apr 30 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.97-1
 -   Update to version 4.9.97. Apply 3rd vmxnet3 patch.
 *   Mon Apr 23 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.94-2
