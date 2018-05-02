@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.97
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -55,6 +55,8 @@ Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 # Fixes for CVE-2018-1000026
 Patch36:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch37:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
+# Fix for CVE-2017-18255
+Patch38:        0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -182,6 +184,7 @@ EOF
 %patch35 -p1
 %patch36 -p1
 %patch37 -p1
+%patch38 -p1
 
 # spectre
 %patch52 -p1
@@ -329,6 +332,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed May 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.97-3
+-   Fix CVE-2017-18255.
 *   Tue May 01 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.97-2
 -   Fix CVE-2018-1000026.
 *   Mon Apr 30 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.97-1

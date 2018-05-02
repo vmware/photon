@@ -1,0 +1,47 @@
+From 1572e45a924f254d9570093abde46430c3172e3d Mon Sep 17 00:00:00 2001
+From: Tan Xiaojun <tanxiaojun@huawei.com>
+Date: Thu, 23 Feb 2017 14:04:39 +0800
+Subject: [PATCH] perf/core: Fix the perf_cpu_time_max_percent check
+
+Use "proc_dointvec_minmax" instead of "proc_dointvec" to check the input
+value from user-space.
+
+If not, we can set a big value and some vars will overflow like
+"sysctl_perf_event_sample_rate" which will cause a lot of unexpected
+problems.
+
+Signed-off-by: Tan Xiaojun <tanxiaojun@huawei.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: <acme@kernel.org>
+Cc: <alexander.shishkin@linux.intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Vince Weaver <vincent.weaver@maine.edu>
+Link: http://lkml.kernel.org/r/1487829879-56237-1-git-send-email-tanxiaojun@huawei.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ kernel/events/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index b1d6b98..cbc5182 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -453,7 +453,7 @@ int perf_cpu_time_max_percent_handler(struct ctl_table *table, int write,
+ 				void __user *buffer, size_t *lenp,
+ 				loff_t *ppos)
+ {
+-	int ret = proc_dointvec(table, write, buffer, lenp, ppos);
++	int ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+ 
+ 	if (ret || !write)
+ 		return ret;
+-- 
+2.7.4
+
