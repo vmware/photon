@@ -228,7 +228,11 @@ class constants(object):
          "openjdk9",
          "openjdk9-doc",
          "openjdk9-src",
-         "openjre9"],
+         "openjre9",
+         "openjdk10",
+         "openjdk10-doc",
+         "openjdk10-src",
+         "openjre10"],
         [
             "icu-devel",
             "cups",
