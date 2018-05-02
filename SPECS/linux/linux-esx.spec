@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.130
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -40,6 +40,9 @@ Patch26:       init-do_mounts-recreate-dev-root.patch
 # Fixes for CVE-2018-1000026
 Patch27:       0001-net-create-skb_gso_validate_mac_len.patch
 Patch28:       0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
+# Fix for CVE-2017-18255
+Patch29:       0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
+
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
@@ -119,6 +122,7 @@ The Linux package contains the Linux kernel doc files
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
+%patch29 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -222,6 +226,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed May 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-2
+-   Fix CVE-2017-18255.
 *   Mon Apr 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-1
 -   Update to version 4.4.130 and fix CVE-2018-1000026.
 *   Thu Apr 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-2

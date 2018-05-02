@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.130
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -39,6 +39,9 @@ Patch18:        0002-allow-also-ecb-cipher_null.patch
 # Fixes for CVE-2018-1000026
 Patch19:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch20:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
+# Fix for CVE-2017-18255
+Patch21:        0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
+
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
@@ -149,6 +152,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -320,6 +324,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed May 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-2
+-   Fix CVE-2017-18255.
 *   Mon Apr 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-1
 -   Update to version 4.4.130 and fix CVE-2018-1000026.
 *   Thu Apr 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-2
