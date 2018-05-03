@@ -9,6 +9,7 @@ import traceback
 import shutil
 import json
 import collections
+import re
 
 class ToolChainUtils(object):
 
@@ -132,7 +133,7 @@ class ToolChainUtils(object):
             raise Exception("RPM installation failed")
 
         self.logger.info("Installed default toolchain successfully on chroot:"+chrootID)
-        if "openjdk" in packageName or "openjre" in packageName:
+        if re.match("openjdk*", packageName) is not None or re.match("openjdk*", packageName) is not None:
             self.installToolChainXRPMS(chrootID);
 
     def installCoreToolChainPackages(self,chrootID):
@@ -272,7 +273,7 @@ class ToolChainUtils(object):
             raise Exception("RPM installation failed")
 
         self.logger.info("Successfully installed default Tool Chain RPMS in Chroot:"+chrootID)
-        if "openjdk" in packageName or "openjre" in packageName:
+        if re.match("openjdk*", packageName) is not None or re.match("openjdk*", packageName) is not None:
             self.installToolChainXRPMS(chrootID);
 
     def installToolChainXRPMS(self, chrootID):
