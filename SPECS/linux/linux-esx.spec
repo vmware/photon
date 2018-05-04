@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.131
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -42,6 +42,14 @@ Patch27:       0001-net-create-skb_gso_validate_mac_len.patch
 Patch28:       0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2017-18255
 Patch29:       0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
+# Fix for CVE-2018-8043
+Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+# Fix for CVE-2017-18216
+Patch31:       0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
+# Fix for CVE-2018-8087
+Patch32:       0001-mac80211_hwsim-fix-possible-memory-leak-in-hwsim_new.patch
+# Fix for CVE-2017-18241
+Patch33:       0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -123,6 +131,10 @@ The Linux package contains the Linux kernel doc files
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -226,6 +238,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-2
+-   Fix CVE-2018-8043, CVE-2017-18216, CVE-2018-8087, CVE-2017-18241.
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-1
 -   Update to version 4.4.131
 *   Wed May 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-2
