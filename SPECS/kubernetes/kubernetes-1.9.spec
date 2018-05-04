@@ -5,15 +5,14 @@
 %define archname arm64
 %endif
 
-
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.8.1
-Release:        6%{?dist}
+Version:        1.9.6
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=74bad7a52f3fc0b3c70e5ccc986a46a9fdfe358b
+%define sha1    kubernetes-v%{version}.tar.gz=6996c0690a38cda1ae5479a4dde7ebfeb590e5fb
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         k8s-cascade.patch
@@ -70,7 +69,7 @@ popd
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
 
-binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl kubefed)
+binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
@@ -164,7 +163,7 @@ fi
 %{_bindir}/kube-proxy
 %{_bindir}/kube-scheduler
 %{_bindir}/kubectl
-%{_bindir}/kubefed
+#%{_bindir}/kubefed
 %{_lib}/systemd/system/kube-apiserver.service
 %{_lib}/systemd/system/kubelet.service
 %{_lib}/systemd/system/kube-scheduler.service
@@ -193,6 +192,8 @@ fi
 %{_bindir}/pause-%{archname}
 
 %changelog
+*   Thu May 03 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.6-1
+-   Uppdate kubernetes to version 1.9.6.
 *   Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-6
 -   Fix password issue in cascade cloud provider.
 *   Tue Jan 23 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-5

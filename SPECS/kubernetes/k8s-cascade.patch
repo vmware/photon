@@ -1,6 +1,6 @@
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1alpha1.json cascade-kubernetes/api/swagger-spec/apps_v1alpha1.json
---- kubernetes-1.8.1/api/swagger-spec/apps_v1alpha1.json	2018-01-31 02:55:29.836980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/apps_v1alpha1.json	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/apps_v1alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1alpha1.json
+--- kubernetes-original/api/swagger-spec/apps_v1alpha1.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1alpha1.json	2018-04-30 21:11:51.000000000 +0000
 @@ -1459,6 +1459,10 @@
       "photonPersistentDisk": {
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
@@ -36,10 +36,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1alpha1.json 
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta1.json cascade-kubernetes/api/swagger-spec/apps_v1beta1.json
---- kubernetes-1.8.1/api/swagger-spec/apps_v1beta1.json	2018-01-31 02:55:29.836980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/apps_v1beta1.json	2018-01-31 02:12:47.000000000 +0000
-@@ -4400,6 +4400,10 @@
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/apps_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta1.json
+--- kubernetes-original/api/swagger-spec/apps_v1beta1.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta1.json	2018-04-30 21:11:51.000000000 +0000
+@@ -4479,6 +4479,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
@@ -50,7 +50,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta1.json c
       "projected": {
        "$ref": "v1.ProjectedVolumeSource",
        "description": "Items for all in one resources secrets, configmaps, and downward API"
-@@ -5123,6 +5127,23 @@
+@@ -5202,6 +5206,23 @@
       },
       "fsType": {
        "type": "string",
@@ -74,10 +74,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta1.json c
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta2.json cascade-kubernetes/api/swagger-spec/apps_v1beta2.json
---- kubernetes-1.8.1/api/swagger-spec/apps_v1beta2.json	2018-01-31 02:55:29.836980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/apps_v1beta2.json	2018-01-31 02:12:47.000000000 +0000
-@@ -6730,6 +6730,10 @@
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/apps_v1beta2.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta2.json
+--- kubernetes-original/api/swagger-spec/apps_v1beta2.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/apps_v1beta2.json	2018-04-30 21:11:51.000000000 +0000
+@@ -6845,6 +6845,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
@@ -88,7 +88,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta2.json c
       "projected": {
        "$ref": "v1.ProjectedVolumeSource",
        "description": "Items for all in one resources secrets, configmaps, and downward API"
-@@ -7453,6 +7457,23 @@
+@@ -7568,6 +7572,23 @@
       },
       "fsType": {
        "type": "string",
@@ -112,10 +112,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/apps_v1beta2.json c
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1beta1.json cascade-kubernetes/api/swagger-spec/batch_v1beta1.json
---- kubernetes-1.8.1/api/swagger-spec/batch_v1beta1.json	2018-01-31 02:55:29.836980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/batch_v1beta1.json	2018-01-31 02:12:47.000000000 +0000
-@@ -1850,6 +1850,10 @@
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/batch_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1beta1.json
+--- kubernetes-original/api/swagger-spec/batch_v1beta1.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1beta1.json	2018-04-30 21:11:51.000000000 +0000
+@@ -1874,6 +1874,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
@@ -126,7 +126,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1beta1.json 
       "projected": {
        "$ref": "v1.ProjectedVolumeSource",
        "description": "Items for all in one resources secrets, configmaps, and downward API"
-@@ -2573,6 +2577,23 @@
+@@ -2597,6 +2601,23 @@
       },
       "fsType": {
        "type": "string",
@@ -150,10 +150,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1beta1.json 
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1.json cascade-kubernetes/api/swagger-spec/batch_v1.json
---- kubernetes-1.8.1/api/swagger-spec/batch_v1.json	2018-01-31 02:55:29.836980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/batch_v1.json	2018-01-31 02:12:47.000000000 +0000
-@@ -1795,6 +1795,10 @@
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/batch_v1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1.json
+--- kubernetes-original/api/swagger-spec/batch_v1.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v1.json	2018-04-30 21:11:51.000000000 +0000
+@@ -1819,6 +1819,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
@@ -164,7 +164,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1.json casca
       "projected": {
        "$ref": "v1.ProjectedVolumeSource",
        "description": "Items for all in one resources secrets, configmaps, and downward API"
-@@ -2518,6 +2522,23 @@
+@@ -2542,6 +2546,23 @@
       },
       "fsType": {
        "type": "string",
@@ -188,10 +188,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v1.json casca
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v2alpha1.json cascade-kubernetes/api/swagger-spec/batch_v2alpha1.json
---- kubernetes-1.8.1/api/swagger-spec/batch_v2alpha1.json	2018-01-31 02:55:29.836980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/batch_v2alpha1.json	2018-01-31 02:12:47.000000000 +0000
-@@ -1865,6 +1865,10 @@
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/batch_v2alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v2alpha1.json
+--- kubernetes-original/api/swagger-spec/batch_v2alpha1.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/batch_v2alpha1.json	2018-04-30 21:11:51.000000000 +0000
+@@ -1889,6 +1889,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
        "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
@@ -202,7 +202,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v2alpha1.json
       }
      }
     },
-@@ -2769,6 +2773,23 @@
+@@ -2793,6 +2797,23 @@
       }
      }
     },
@@ -226,10 +226,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/batch_v2alpha1.json
     "v1.Container": {
      "id": "v1.Container",
      "description": "A single application container that you want to run within a pod.",
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/extensions_v1beta1.json cascade-kubernetes/api/swagger-spec/extensions_v1beta1.json
---- kubernetes-1.8.1/api/swagger-spec/extensions_v1beta1.json	2018-01-31 02:55:29.840980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/extensions_v1beta1.json	2018-01-31 02:12:47.000000000 +0000
-@@ -7363,6 +7363,10 @@
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/extensions_v1beta1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/extensions_v1beta1.json
+--- kubernetes-original/api/swagger-spec/extensions_v1beta1.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/extensions_v1beta1.json	2018-04-30 21:11:51.000000000 +0000
+@@ -7502,6 +7502,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
        "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
@@ -240,7 +240,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/extensions_v1beta1.
       }
      }
     },
-@@ -8071,6 +8075,23 @@
+@@ -8210,6 +8214,23 @@
       },
       "fsType": {
        "type": "string",
@@ -264,10 +264,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/extensions_v1beta1.
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/settings.k8s.io_v1alpha1.json cascade-kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json
---- kubernetes-1.8.1/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-01-31 02:55:29.840980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-01-31 02:12:47.000000000 +0000
-@@ -1661,6 +1661,10 @@
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/settings.k8s.io_v1alpha1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json
+--- kubernetes-original/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/settings.k8s.io_v1alpha1.json	2018-04-30 21:11:51.000000000 +0000
+@@ -1676,6 +1676,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
        "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
@@ -278,7 +278,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/settings.k8s.io_v1a
       }
      }
     },
-@@ -2331,6 +2335,23 @@
+@@ -2346,6 +2350,23 @@
       },
       "fsType": {
        "type": "string",
@@ -302,10 +302,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/settings.k8s.io_v1a
        "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified."
       }
      }
-diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/v1.json cascade-kubernetes/api/swagger-spec/v1.json
---- kubernetes-1.8.1/api/swagger-spec/v1.json	2018-01-31 02:55:29.844980990 +0000
-+++ cascade-kubernetes/api/swagger-spec/v1.json	2018-01-31 02:12:47.000000000 +0000
-@@ -20271,6 +20271,10 @@
+diff -uNr --no-dereference kubernetes-original/api/swagger-spec/v1.json kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/v1.json
+--- kubernetes-original/api/swagger-spec/v1.json	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/api/swagger-spec/v1.json	2018-04-30 21:11:51.000000000 +0000
+@@ -20629,6 +20629,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
@@ -316,7 +316,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/v1.json cascade-kub
       "portworxVolume": {
        "$ref": "v1.PortworxVolumeSource",
        "description": "PortworxVolume represents a portworx volume attached and mounted on kubelets host machine"
-@@ -20834,6 +20838,23 @@
+@@ -21200,6 +21204,23 @@
       }
      }
     },
@@ -340,7 +340,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/v1.json cascade-kub
     "v1.PortworxVolumeSource": {
      "id": "v1.PortworxVolumeSource",
      "description": "PortworxVolumeSource represents a Portworx volume resource.",
-@@ -21265,6 +21286,10 @@
+@@ -21657,6 +21678,10 @@
       "storageos": {
        "$ref": "v1.StorageOSVolumeSource",
        "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
@@ -351,73 +351,56 @@ diff -uNr --no-dereference kubernetes-1.8.1/api/swagger-spec/v1.json cascade-kub
       }
      }
     },
-diff -uNr --no-dereference kubernetes-1.8.1/cmd/kube-controller-manager/app/BUILD cascade-kubernetes/cmd/kube-controller-manager/app/BUILD
---- kubernetes-1.8.1/cmd/kube-controller-manager/app/BUILD	2018-01-31 02:55:30.164981002 +0000
-+++ cascade-kubernetes/cmd/kube-controller-manager/app/BUILD	2018-01-31 02:12:47.000000000 +0000
-@@ -42,6 +42,7 @@
-         "//pkg/cloudprovider/providers:go_default_library",
-         "//pkg/cloudprovider/providers/aws:go_default_library",
-         "//pkg/cloudprovider/providers/azure:go_default_library",
-+        "//pkg/cloudprovider/providers/cascade:go_default_library",
-         "//pkg/cloudprovider/providers/gce:go_default_library",
-         "//pkg/cloudprovider/providers/openstack:go_default_library",
-         "//pkg/cloudprovider/providers/photon:go_default_library",
-@@ -84,6 +85,7 @@
+diff -uNr --no-dereference kubernetes-original/cmd/kube-controller-manager/app/BUILD kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/BUILD
+--- kubernetes-original/cmd/kube-controller-manager/app/BUILD	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/BUILD	2018-04-30 21:11:51.000000000 +0000
+@@ -86,6 +86,7 @@
          "//pkg/volume/aws_ebs:go_default_library",
          "//pkg/volume/azure_dd:go_default_library",
          "//pkg/volume/azure_file:go_default_library",
 +        "//pkg/volume/cascade_disk:go_default_library",
          "//pkg/volume/cinder:go_default_library",
+         "//pkg/volume/csi:go_default_library",
          "//pkg/volume/fc:go_default_library",
-         "//pkg/volume/flexvolume:go_default_library",
-diff -uNr --no-dereference kubernetes-1.8.1/cmd/kube-controller-manager/app/plugins.go cascade-kubernetes/cmd/kube-controller-manager/app/plugins.go
---- kubernetes-1.8.1/cmd/kube-controller-manager/app/plugins.go	2018-01-31 02:55:30.164981002 +0000
-+++ cascade-kubernetes/cmd/kube-controller-manager/app/plugins.go	2018-01-31 02:12:47.000000000 +0000
-@@ -32,6 +32,7 @@
- 	"k8s.io/kubernetes/pkg/cloudprovider"
- 	"k8s.io/kubernetes/pkg/cloudprovider/providers/aws"
- 	"k8s.io/kubernetes/pkg/cloudprovider/providers/azure"
-+	"k8s.io/kubernetes/pkg/cloudprovider/providers/cascade"
- 	"k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
- 	"k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
- 	"k8s.io/kubernetes/pkg/cloudprovider/providers/photon"
-@@ -58,6 +59,7 @@
- 	"k8s.io/kubernetes/pkg/volume/storageos"
- 	volumeutil "k8s.io/kubernetes/pkg/volume/util"
- 	"k8s.io/kubernetes/pkg/volume/vsphere_volume"
+diff -uNr --no-dereference kubernetes-original/cmd/kube-controller-manager/app/plugins.go kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/plugins.go
+--- kubernetes-original/cmd/kube-controller-manager/app/plugins.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kube-controller-manager/app/plugins.go	2018-04-30 21:11:51.000000000 +0000
+@@ -34,6 +34,7 @@
+ 	"k8s.io/kubernetes/pkg/volume/aws_ebs"
+ 	"k8s.io/kubernetes/pkg/volume/azure_dd"
+ 	"k8s.io/kubernetes/pkg/volume/azure_file"
 +	"k8s.io/kubernetes/pkg/volume/cascade_disk"
- )
- 
- // ProbeAttachableVolumePlugins collects all volume plugins for the attach/
-@@ -78,6 +80,7 @@
- 	allPlugins = append(allPlugins, storageos.ProbeVolumePlugins()...)
+ 	"k8s.io/kubernetes/pkg/volume/cinder"
+ 	"k8s.io/kubernetes/pkg/volume/csi"
+ 	"k8s.io/kubernetes/pkg/volume/fc"
+@@ -77,6 +78,7 @@
  	allPlugins = append(allPlugins, fc.ProbeVolumePlugins()...)
  	allPlugins = append(allPlugins, iscsi.ProbeVolumePlugins()...)
+ 	allPlugins = append(allPlugins, rbd.ProbeVolumePlugins()...)
 +	allPlugins = append(allPlugins, cascade_disk.ProbeVolumePlugins()...)
- 	return allPlugins
- }
- 
-@@ -104,6 +107,7 @@
+ 	if utilfeature.DefaultFeatureGate.Enabled(features.CSIPersistentVolume) {
+ 		allPlugins = append(allPlugins, csi.ProbeVolumePlugins()...)
+ 	}
+@@ -106,6 +108,7 @@
  	allPlugins = append(allPlugins, scaleio.ProbeVolumePlugins()...)
  	allPlugins = append(allPlugins, storageos.ProbeVolumePlugins()...)
  	allPlugins = append(allPlugins, fc.ProbeVolumePlugins()...)
 +	allPlugins = append(allPlugins, cascade_disk.ProbeVolumePlugins()...)
+ 	if !utilfeature.DefaultFeatureGate.Enabled(features.CSIPersistentVolume) {
+ 		allPlugins = append(allPlugins, csi.ProbeVolumePlugins()...)
+ 	}
+@@ -165,6 +168,7 @@
+ 	allPlugins = append(allPlugins, vsphere_volume.ProbeVolumePlugins()...)
+ 	allPlugins = append(allPlugins, azure_dd.ProbeVolumePlugins()...)
+ 	allPlugins = append(allPlugins, photon_pd.ProbeVolumePlugins()...)
++	allPlugins = append(allPlugins, cascade_disk.ProbeVolumePlugins()...)
+ 
  	return allPlugins
  }
- 
-@@ -168,6 +172,8 @@
- 			allPlugins = append(allPlugins, azure_dd.ProbeVolumePlugins()...)
- 		case photon.ProviderName == cloud.ProviderName():
- 			allPlugins = append(allPlugins, photon_pd.ProbeVolumePlugins()...)
-+		case cascade.ProviderName == cloud.ProviderName():
-+			allPlugins = append(allPlugins, cascade_disk.ProbeVolumePlugins()...)
- 		}
- 	}
- 
-diff -uNr --no-dereference kubernetes-1.8.1/cmd/kubelet/app/BUILD cascade-kubernetes/cmd/kubelet/app/BUILD
---- kubernetes-1.8.1/cmd/kubelet/app/BUILD	2018-01-31 02:55:30.160981001 +0000
-+++ cascade-kubernetes/cmd/kubelet/app/BUILD	2018-01-31 02:12:47.000000000 +0000
-@@ -73,6 +73,7 @@
+diff -uNr --no-dereference kubernetes-original/cmd/kubelet/app/BUILD kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/BUILD
+--- kubernetes-original/cmd/kubelet/app/BUILD	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/BUILD	2018-04-30 21:11:51.000000000 +0000
+@@ -74,6 +74,7 @@
          "//pkg/volume/aws_ebs:go_default_library",
          "//pkg/volume/azure_dd:go_default_library",
          "//pkg/volume/azure_file:go_default_library",
@@ -425,9 +408,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/cmd/kubelet/app/BUILD cascade-kubern
          "//pkg/volume/cephfs:go_default_library",
          "//pkg/volume/cinder:go_default_library",
          "//pkg/volume/configmap:go_default_library",
-diff -uNr --no-dereference kubernetes-1.8.1/cmd/kubelet/app/plugins.go cascade-kubernetes/cmd/kubelet/app/plugins.go
---- kubernetes-1.8.1/cmd/kubelet/app/plugins.go	2018-01-31 02:55:30.160981001 +0000
-+++ cascade-kubernetes/cmd/kubelet/app/plugins.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/cmd/kubelet/app/plugins.go kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/plugins.go
+--- kubernetes-original/cmd/kubelet/app/plugins.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/cmd/kubelet/app/plugins.go	2018-04-30 21:11:51.000000000 +0000
 @@ -32,6 +32,7 @@
  	"k8s.io/kubernetes/pkg/volume/aws_ebs"
  	"k8s.io/kubernetes/pkg/volume/azure_dd"
@@ -436,54 +419,266 @@ diff -uNr --no-dereference kubernetes-1.8.1/cmd/kubelet/app/plugins.go cascade-k
  	"k8s.io/kubernetes/pkg/volume/cephfs"
  	"k8s.io/kubernetes/pkg/volume/cinder"
  	"k8s.io/kubernetes/pkg/volume/configmap"
-@@ -96,6 +97,7 @@
+@@ -100,6 +101,7 @@
  	allPlugins = append(allPlugins, scaleio.ProbeVolumePlugins()...)
  	allPlugins = append(allPlugins, local.ProbeVolumePlugins()...)
  	allPlugins = append(allPlugins, storageos.ProbeVolumePlugins()...)
 +	allPlugins = append(allPlugins, cascade_disk.ProbeVolumePlugins()...)
- 	return allPlugins
- }
- 
-diff -uNr --no-dereference kubernetes-1.8.1/federation/apis/openapi-spec/swagger.json cascade-kubernetes/federation/apis/openapi-spec/swagger.json
---- kubernetes-1.8.1/federation/apis/openapi-spec/swagger.json	2018-01-31 02:55:29.044980962 +0000
-+++ cascade-kubernetes/federation/apis/openapi-spec/swagger.json	2018-01-31 02:12:47.000000000 +0000
-@@ -10540,6 +10540,22 @@
-      }
-     }
-    },
-+   "io.k8s.api.core.v1.CascadeDiskVolumeSource": {
-+    "description": "Represents a Cascade persistent disk resource.",
-+    "required": [
-+     "diskID"
-+    ],
-+    "properties": {
-+     "fsType": {
-+      "description": "Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \"ext4\", \"xfs\", \"ntfs\". Implicitly inferred to be \"ext4\" if unspecified.",
-+      "type": "string"
-+     },
-+     "diskID": {
-+      "description": "ID that identifies Cascade persistent disk",
-+      "type": "string"
-+     }
-+    }
-+   },
-    "io.k8s.api.core.v1.Capabilities": {
-     "description": "Adds and removes POSIX capabilities from running containers.",
-     "properties": {
-@@ -12865,6 +12881,10 @@
-      "vsphereVolume": {
-       "description": "VsphereVolume represents a vSphere volume attached and mounted on kubelets host machine",
-       "$ref": "#/definitions/io.k8s.api.core.v1.VsphereVirtualDiskVolumeSource"
-+     },
-+     "cascadeDisk": {
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine",
-+      "$ref": "#/definitions/io.k8s.api.core.v1.CascadeDiskVolumeSource"
-      }
-     }
-    },
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/types.go cascade-kubernetes/pkg/api/types.go
---- kubernetes-1.8.1/pkg/api/types.go	2018-01-31 02:55:29.552980980 +0000
-+++ cascade-kubernetes/pkg/api/types.go	2018-01-31 02:12:47.000000000 +0000
+ 	if utilfeature.DefaultFeatureGate.Enabled(features.CSIPersistentVolume) {
+ 		allPlugins = append(allPlugins, csi.ProbeVolumePlugins()...)
+ 	}
+diff -uNr --no-dereference kubernetes-original/.idea/kubernetes.iml kubernetes-modified/src/k8s.io/kubernetes/.idea/kubernetes.iml
+--- kubernetes-original/.idea/kubernetes.iml	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/.idea/kubernetes.iml	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+diff -uNr --no-dereference kubernetes-original/.idea/modules.xml kubernetes-modified/src/k8s.io/kubernetes/.idea/modules.xml
+--- kubernetes-original/.idea/modules.xml	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/.idea/modules.xml	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/kubernetes.iml" filepath="$PROJECT_DIR$/.idea/kubernetes.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+diff -uNr --no-dereference kubernetes-original/.idea/workspace.xml kubernetes-modified/src/k8s.io/kubernetes/.idea/workspace.xml
+--- kubernetes-original/.idea/workspace.xml	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/.idea/workspace.xml	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,217 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ChangeListManager">
++    <list default="true" id="76c7d3c7-31f8-4430-8717-7c15514d1ce9" name="Default" comment="" />
++    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
++    <option name="TRACKING_ENABLED" value="true" />
++    <option name="SHOW_DIALOG" value="false" />
++    <option name="HIGHLIGHT_CONFLICTS" value="true" />
++    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
++    <option name="LAST_RESOLUTION" value="IGNORE" />
++  </component>
++  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
++  <component name="GradleLocalSettings">
++    <option name="externalProjectsViewState">
++      <projects_view />
++    </option>
++  </component>
++  <component name="ProjectFrameBounds">
++    <option name="x" value="1680" />
++    <option name="y" value="-235" />
++    <option name="width" value="2560" />
++    <option name="height" value="1417" />
++  </component>
++  <component name="ProjectView">
++    <navigator currentView="ProjectPane" proportions="" version="1">
++      <flattenPackages />
++      <showMembers />
++      <showModules />
++      <showLibraryContents />
++      <hideEmptyPackages />
++      <abbreviatePackageNames />
++      <autoscrollToSource />
++      <autoscrollFromSource />
++      <sortByType />
++      <manualOrder />
++      <foldersAlwaysOnTop value="true" />
++    </navigator>
++    <panes>
++      <pane id="Scope" />
++      <pane id="Scratches" />
++      <pane id="PackagesPane" />
++      <pane id="ProjectPane">
++        <subPane>
++          <PATH>
++            <PATH_ELEMENT>
++              <option name="myItemId" value="kubernetes" />
++              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
++            </PATH_ELEMENT>
++            <PATH_ELEMENT>
++              <option name="myItemId" value="kubernetes" />
++              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
++            </PATH_ELEMENT>
++          </PATH>
++        </subPane>
++      </pane>
++    </panes>
++  </component>
++  <component name="PropertiesComponent">
++    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider$1" />
++    <property name="configurable.Global.libraries.is.expanded" value="true" />
++    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
++  </component>
++  <component name="RunDashboard">
++    <option name="ruleStates">
++      <list>
++        <RuleState>
++          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
++        </RuleState>
++        <RuleState>
++          <option name="name" value="StatusDashboardGroupingRule" />
++        </RuleState>
++      </list>
++    </option>
++  </component>
++  <component name="RunManager">
++    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
++      <module name="" />
++      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
++      <option name="PROGRAM_PARAMETERS" />
++      <predefined_log_file id="idea.log" enabled="true" />
++      <method />
++    </configuration>
++    <configuration default="true" type="Applet" factoryName="Applet">
++      <option name="HTML_USED" value="false" />
++      <option name="WIDTH" value="400" />
++      <option name="HEIGHT" value="300" />
++      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
++      <module />
++      <method />
++    </configuration>
++    <configuration default="true" type="Application" factoryName="Application">
++      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
++      <option name="MAIN_CLASS_NAME" />
++      <option name="VM_PARAMETERS" />
++      <option name="PROGRAM_PARAMETERS" />
++      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
++      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
++      <option name="ALTERNATIVE_JRE_PATH" />
++      <option name="ENABLE_SWING_INSPECTOR" value="false" />
++      <option name="ENV_VARIABLES" />
++      <option name="PASS_PARENT_ENVS" value="true" />
++      <module name="" />
++      <envs />
++      <method />
++    </configuration>
++    <configuration default="true" type="JUnit" factoryName="JUnit">
++      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
++      <module name="" />
++      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
++      <option name="ALTERNATIVE_JRE_PATH" />
++      <option name="PACKAGE_NAME" />
++      <option name="MAIN_CLASS_NAME" />
++      <option name="METHOD_NAME" />
++      <option name="TEST_OBJECT" value="class" />
++      <option name="VM_PARAMETERS" value="-ea" />
++      <option name="PARAMETERS" />
++      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
++      <option name="ENV_VARIABLES" />
++      <option name="PASS_PARENT_ENVS" value="true" />
++      <option name="TEST_SEARCH_SCOPE">
++        <value defaultName="singleModule" />
++      </option>
++      <envs />
++      <patterns />
++      <method />
++    </configuration>
++    <configuration default="true" type="Remote" factoryName="Remote">
++      <option name="USE_SOCKET_TRANSPORT" value="true" />
++      <option name="SERVER_MODE" value="false" />
++      <option name="SHMEM_ADDRESS" value="javadebug" />
++      <option name="HOST" value="localhost" />
++      <option name="PORT" value="5005" />
++      <method />
++    </configuration>
++    <configuration default="true" type="TestNG" factoryName="TestNG">
++      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
++      <module name="" />
++      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
++      <option name="ALTERNATIVE_JRE_PATH" />
++      <option name="SUITE_NAME" />
++      <option name="PACKAGE_NAME" />
++      <option name="MAIN_CLASS_NAME" />
++      <option name="METHOD_NAME" />
++      <option name="GROUP_NAME" />
++      <option name="TEST_OBJECT" value="CLASS" />
++      <option name="VM_PARAMETERS" value="-ea" />
++      <option name="PARAMETERS" />
++      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
++      <option name="OUTPUT_DIRECTORY" />
++      <option name="ANNOTATION_TYPE" />
++      <option name="ENV_VARIABLES" />
++      <option name="PASS_PARENT_ENVS" value="true" />
++      <option name="TEST_SEARCH_SCOPE">
++        <value defaultName="singleModule" />
++      </option>
++      <option name="USE_DEFAULT_REPORTERS" value="false" />
++      <option name="PROPERTIES_FILE" />
++      <envs />
++      <properties />
++      <listeners />
++      <method />
++    </configuration>
++  </component>
++  <component name="ShelveChangesManager" show_recycled="false">
++    <option name="remove_strategy" value="false" />
++  </component>
++  <component name="TaskManager">
++    <task active="true" id="Default" summary="Default task">
++      <changelist id="76c7d3c7-31f8-4430-8717-7c15514d1ce9" name="Default" comment="" />
++      <created>1510772775522</created>
++      <option name="number" value="Default" />
++      <option name="presentableId" value="Default" />
++      <updated>1510772775522</updated>
++    </task>
++    <servers />
++  </component>
++  <component name="ToolWindowManager">
++    <frame x="1680" y="-235" width="2560" height="1417" extended-state="6" />
++    <layout>
++      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
++      <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
++      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
++      <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
++      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25178713" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
++      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
++      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
++      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
++      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
++      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
++      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
++      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
++      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
++      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
++      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
++      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
++    </layout>
++  </component>
++  <component name="VcsContentAnnotationSettings">
++    <option name="myLimit" value="2678400000" />
++  </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager />
++    <watches-manager />
++  </component>
++</project>
+\ No newline at end of file
+diff -uNr --no-dereference kubernetes-original/pkg/apis/core/types.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/types.go
+--- kubernetes-original/pkg/apis/core/types.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/types.go	2018-04-30 21:11:51.000000000 +0000
 @@ -316,6 +316,8 @@
  	// StorageOS represents a StorageOS volume that is attached to the kubelet's host machine and mounted into the pod
  	// +optional
@@ -493,16 +688,16 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/types.go cascade-kubernetes/
  }
  
  // Similar to VolumeSource but meant for the administrator who creates PVs.
-@@ -391,6 +393,8 @@
- 	// More info: https://releases.k8s.io/HEAD/examples/volumes/storageos/README.md
+@@ -394,6 +396,8 @@
+ 	// CSI (Container Storage Interface) represents storage that handled by an external CSI driver
  	// +optional
- 	StorageOS *StorageOSPersistentVolumeSource
+ 	CSI *CSIPersistentVolumeSource
 +	// CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine
 +	CascadeDisk *CascadeDiskVolumeSource
  }
  
  type PersistentVolumeClaimVolumeSource struct {
-@@ -1333,6 +1337,16 @@
+@@ -1471,6 +1475,16 @@
  	SecretRef *ObjectReference
  }
  
@@ -519,10 +714,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/types.go cascade-kubernetes/
  // Adapts a ConfigMap into a volume.
  //
  // The contents of the target ConfigMap's Data field will be presented in a
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/validation/validation.go cascade-kubernetes/pkg/api/validation/validation.go
---- kubernetes-1.8.1/pkg/api/validation/validation.go	2018-01-31 02:55:29.560980980 +0000
-+++ cascade-kubernetes/pkg/api/validation/validation.go	2018-01-31 02:12:47.000000000 +0000
-@@ -612,6 +612,14 @@
+diff -uNr --no-dereference kubernetes-original/pkg/apis/core/validation/validation.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/validation/validation.go
+--- kubernetes-original/pkg/apis/core/validation/validation.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/core/validation/validation.go	2018-04-30 21:11:51.000000000 +0000
+@@ -681,6 +681,14 @@
  			allErrs = append(allErrs, validateScaleIOVolumeSource(source.ScaleIO, fldPath.Child("scaleIO"))...)
  		}
  	}
@@ -537,11 +732,11 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/validation/validation.go cas
  
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(fldPath, "must specify a volume type"))
-@@ -1283,6 +1291,14 @@
+@@ -1440,6 +1448,14 @@
  	return allErrs
  }
  
-+func validateCascadeDiskVolumeSource(cd *api.CascadeDiskVolumeSource, fldPath *field.Path) field.ErrorList {
++func validateCascadeDiskVolumeSource(cd *core.CascadeDiskVolumeSource, fldPath *field.Path) field.ErrorList {
 +	allErrs := field.ErrorList{}
 +	if len(cd.DiskID) == 0 {
 +		allErrs = append(allErrs, field.Required(fldPath.Child("diskID"), ""))
@@ -552,10 +747,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/validation/validation.go cas
  // ValidatePersistentVolumeName checks that a name is appropriate for a
  // PersistentVolumeName object.
  var ValidatePersistentVolumeName = NameIsDNSSubdomain
-@@ -1504,6 +1520,14 @@
- 			allErrs = append(allErrs, validateStorageOSPersistentVolumeSource(pv.Spec.StorageOS, specPath.Child("storageos"))...)
+@@ -1674,6 +1690,15 @@
  		}
  	}
+ 
 +	if pv.Spec.CascadeDisk != nil {
 +		if numVolumes > 0 {
 +			allErrs = append(allErrs, field.Forbidden(specPath.Child("cascadeDisk"), "may not specify more than 1 volume type"))
@@ -564,24 +759,25 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/api/validation/validation.go cas
 +			allErrs = append(allErrs, validateCascadeDiskVolumeSource(pv.Spec.CascadeDisk, specPath.Child("cascadeDisk"))...)
 +		}
 +	}
- 
++
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/apis/extensions/types.go cascade-kubernetes/pkg/apis/extensions/types.go
---- kubernetes-1.8.1/pkg/apis/extensions/types.go	2018-01-31 02:55:29.576980981 +0000
-+++ cascade-kubernetes/pkg/apis/extensions/types.go	2018-01-31 02:12:47.000000000 +0000
-@@ -1002,6 +1002,7 @@
- 	Projected             FSType = "projected"
+ 	}
+diff -uNr --no-dereference kubernetes-original/pkg/apis/extensions/types.go kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/extensions/types.go
+--- kubernetes-original/pkg/apis/extensions/types.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/apis/extensions/types.go	2018-04-30 21:11:51.000000000 +0000
+@@ -925,6 +925,7 @@
  	PortworxVolume        FSType = "portworxVolume"
  	ScaleIO               FSType = "scaleIO"
+ 	CSI                   FSType = "csi"
 +	CascadeDisk           FSType = "cascadeDisk"
  	All                   FSType = "*"
  )
  
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/BUILD cascade-kubernetes/pkg/cloudprovider/providers/BUILD
---- kubernetes-1.8.1/pkg/cloudprovider/providers/BUILD	2018-01-31 02:55:29.700980985 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/BUILD	2018-01-31 02:12:47.000000000 +0000
-@@ -11,6 +11,7 @@
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/BUILD
+--- kubernetes-original/pkg/cloudprovider/providers/BUILD	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/BUILD	2018-04-30 21:11:51.000000000 +0000
+@@ -12,6 +12,7 @@
      deps = [
          "//pkg/cloudprovider/providers/aws:go_default_library",
          "//pkg/cloudprovider/providers/azure:go_default_library",
@@ -597,17 +793,19 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/BUILD ca
          "//pkg/cloudprovider/providers/cloudstack:all-srcs",
          "//pkg/cloudprovider/providers/fake:all-srcs",
          "//pkg/cloudprovider/providers/gce:all-srcs",
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/apitypes.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/apitypes.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go	2018-01-31 02:12:47.000000000 +0000
-@@ -0,0 +1,224 @@
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/apitypes.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/apitypes.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/apitypes.go	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,227 @@
 +package cascade
 +
 +import "fmt"
 +
 +const (
 +	NotFoundError     = 1408
++	VMNotFoundError   = 2006
 +	DiskNotFoundError = 3011
++	DiskInUseError    = 3012
 +)
 +
 +// Represents APIError returned by the API in case of an error.
@@ -763,7 +961,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	SelfLink    string           `json:"selfLink,omitempty"`
 +	State       *string          `json:"state"`
 +	Tags        []string         `json:"tags"`
-+	VM          string            `json:"vm"`
++	VM          string           `json:"vm"`
 +	MountDevice string           `json:"mountDevice,omitempty"`
 +	Zone        *string          `json:"zone"`
 +}
@@ -796,6 +994,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	Name        *string                  `json:"name"`
 +	PortMaps    []*LoadBalancerPortMap   `json:"portMaps"`
 +	Type        *string                  `json:"type"`
++	SubDomain   *string                  `json:"subDomain"`
 +}
 +
 +// Represents the health check spec for a load balancer.
@@ -825,10 +1024,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +type LoadBalancerVMUpdate struct {
 +	VMIds []*LoadBalancerVM `json:"vmIds"`
 +}
-\ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/auth.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/auth.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/auth.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/auth.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/auth.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/auth.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/auth.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/auth.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,145 @@
 +package cascade
 +
@@ -928,7 +1126,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +
 +func buildOIDCClient(authEndpoint string) (*OIDCClient, error) {
 +	options := &OIDCClientOptions{
-+		IgnoreCertificate: true,
++		IgnoreCertificate: false,
 +		RootCAs:           nil,
 +		TokenScope:        tScope,
 +	}
@@ -976,9 +1174,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	return pwd, nil
 +}
 \ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/BUILD cascade-kubernetes/pkg/cloudprovider/providers/cascade/BUILD
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/BUILD	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/BUILD	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/BUILD
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/BUILD	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/BUILD	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,44 @@
 +package(default_visibility = ["//visibility:public"])
 +
@@ -1024,45 +1222,56 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +    srcs = [":package-srcs"],
 +    tags = ["automanaged"],
 +)
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_disks.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_disks.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go	2018-01-31 02:12:47.000000000 +0000
-@@ -0,0 +1,197 @@
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_disks.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_disks.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_disks.go	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,225 @@
 +package cascade
 +
 +import (
 +	"github.com/golang/glog"
 +	k8stypes "k8s.io/apimachinery/pkg/types"
-+	"k8s.io/kubernetes/pkg/volume"
 +	"k8s.io/apimachinery/pkg/util/sets"
 +	"k8s.io/kubernetes/pkg/kubelet/apis"
++	"k8s.io/kubernetes/pkg/volume"
 +)
 +
 +// Attaches given virtual disk volume to the node running kubelet.
 +func (cc *CascadeCloud) AttachDisk(diskID string, nodeName k8stypes.NodeName) (string, error) {
-+	operation := &VMDiskOperation{
-+		DiskID: StringPtr(diskID),
-+	}
-+
-+	vmID, err := cc.InstanceID(nodeName)
++	// Check if disk is already attached to that node.
++	attached, err := cc.DiskIsAttached(diskID, nodeName)
 +	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
++		glog.Errorf("Cascade Cloud Provider: cc.DiskIsAttached failed during AttachDisk. Error[%v]", err)
 +		return "", err
 +	}
 +
-+	task, err := cc.apiClient.AttachDisk(vmID, operation)
-+	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to attach disk with ID %s. Error[%v]", diskID, err)
-+		return "", err
++	// If not already attached, attach the disk.
++	if !attached {
++		operation := &VMDiskOperation{
++			DiskID: StringPtr(diskID),
++		}
++
++		vmID, err := cc.InstanceID(nodeName)
++		if err != nil {
++			glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for AttachDisk. Error[%v]", err)
++			return "", err
++		}
++
++		task, err := cc.apiClient.AttachDisk(vmID, operation)
++		if err != nil {
++			glog.Errorf("Cascade Cloud Provider: Failed to attach disk with ID %s. Error[%v]", diskID, err)
++			return "", err
++		}
++
++		_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
++		if err != nil {
++			glog.Errorf("Cascade Cloud Provider: Failed to wait for task to attach disk with ID %s. Error[%v]",
++				diskID, err)
++			return "", err
++		}
 +	}
 +
-+	_, err = cc.apiClient.WaitForTask(StringVal(task.ID))
-+	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to wait for task to attach disk with ID %s. Error[%v]",
-+			diskID, err)
-+		return "", err
-+	}
-+
++	// Get mount device of the attached disk.
 +	disk, err := cc.apiClient.GetDisk(diskID)
 +	if err != nil {
 +		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
@@ -1102,15 +1311,29 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +
 +// DiskIsAttached returns if disk is attached to the VM using controllers supported by the plugin.
 +func (cc *CascadeCloud) DiskIsAttached(diskID string, nodeName k8stypes.NodeName) (bool, error) {
-+	disk, err := cc.apiClient.GetDisk(diskID)
-+	if err != nil {
-+		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
-+		return false, err
-+	}
-+
 +	vmID, err := cc.InstanceID(nodeName)
 +	if err != nil {
 +		glog.Errorf("Cascade Cloud Provider: cc.InstanceID failed for DiskIsAttached. Error[%v]", err)
++		return false, err
++	}
++
++	_, err = cc.apiClient.GetVM(vmID)
++	if err != nil {
++		switch err.(type) {
++		case APIError:
++			if err.(APIError).ErrorCode == VMNotFoundError {
++				// If instance no longer exists, we will assume that the volume is not attached.
++				glog.Warningf("Cascade Cloud Provider: Instance %s does not exist. DiskIsAttached will assume"+
++					" disk %s is not attached to it.", nodeName, diskID)
++				return false, nil
++			}
++		}
++		return false, err
++	}
++
++	disk, err := cc.apiClient.GetDisk(diskID)
++	if err != nil {
++		glog.Errorf("Cascade Cloud Provider: Failed to Get disk with diskID %s. Error[%v]", diskID, err)
 +		return false, err
 +	}
 +
@@ -1198,6 +1421,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +			if err.(APIError).ErrorCode == DiskNotFoundError {
 +				return nil
 +			}
++			if err.(APIError).ErrorCode == DiskInUseError {
++				return volume.NewDeletedVolumeInUseError(err.Error())
++			}
 +		}
 +		return err
 +	}
@@ -1223,12 +1449,11 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	labels[apis.LabelZoneFailureDomain] = StringVal(disk.Zone)
 +	labels[apis.LabelZoneRegion] = cc.cfg.Global.Region
 +
-+	return labels,nil
++	return labels, nil
 +}
-\ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/cascade.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/cascade.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,216 @@
 +// The use of Cascade cloud provider requires the kubelet, kube-apiserver, and kube-controller-manager to be started
 +// with config flag: '--cloud-provider=cascade --cloud-config=[path_to_config_file]'.
@@ -1447,9 +1672,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	return true
 +}
 \ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_instances.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_instances.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_instances.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_instances.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_instances.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,90 @@
 +package cascade
 +
@@ -1541,10 +1766,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +func (cc *CascadeCloud) InstanceType(nodeName k8stypes.NodeName) (string, error) {
 +	return "", nil
 +}
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	2018-01-31 02:12:47.000000000 +0000
-@@ -0,0 +1,283 @@
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,284 @@
 +package cascade
 +
 +import (
@@ -1624,6 +1849,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +		Type:        StringPtr("PUBLIC"),
 +		PortMaps:    portMaps,
 +		HealthCheck: healthCheck,
++		SubDomain:   StringPtr(k8sService.Name),
 +	}
 +	logger.Infof("Load balancer create spec: %+v", *createSpec)
 +
@@ -1829,22 +2055,22 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	glog.Infoln(l.getLogMsg(msgTemplate, args))
 +}
 \ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/client.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/client.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/client.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/client.go	2018-01-31 02:12:47.000000000 +0000
-@@ -0,0 +1,382 @@
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/client.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/client.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/client.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/client.go	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,394 @@
 +package cascade
 +
 +import (
++	"bytes"
 +	"crypto/tls"
 +	"crypto/x509"
 +	"encoding/json"
 +	"fmt"
++	"github.com/golang/glog"
 +	"net/http"
 +	"strings"
 +	"time"
-+	"bytes"
-+	"github.com/golang/glog"
 +)
 +
 +// Represents stateless context needed to call Cascade APIs.
@@ -1891,10 +2117,6 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	// nil by default.
 +	RootCAs *x509.CertPool
 +
-+	// For tasks APIs, defines the delay between each polling attempt.
-+	// Default is 100 milliseconds.
-+	TaskPollDelay time.Duration
-+
 +	// For tasks APIs, defines the number of retries to make in the event
 +	// of an error. Default is 3.
 +	TaskRetryCount int
@@ -1902,6 +2124,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	// Tokens for user authentication. Default is empty.
 +	TokenOptions *TokenOptions
 +}
++
++const minimumTaskPollDelay = 500 * time.Millisecond
 +
 +// Creates a new Cascade client which can be used to make API calls to Cascade.
 +func NewClient(cfg *CascadeConfig, authClient *AuthClient) (c *Client, err error) {
@@ -1913,7 +2137,6 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +
 +	options := &ClientOptions{
 +		TaskPollTimeout:   30 * time.Minute,
-+		TaskPollDelay:     100 * time.Millisecond,
 +		TaskRetryCount:    3,
 +		TokenOptions:      tokenOptions,
 +		IgnoreCertificate: false,
@@ -1936,7 +2159,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +		UpdateAccessTokenCallback: tokenCallback,
 +	}
 +
-+	clientConfig := &ClientConfig {
++	clientConfig := &ClientConfig{
 +		tenantName: cfg.Global.TenantName,
 +		clusterID:  cfg.Global.ClusterID,
 +		region:     cfg.Global.Region,
@@ -1948,7 +2171,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +		restClient: restClient,
 +		// Ensure a copy of options is made, rather than using a pointer
 +		// which may change out from underneath if misused by the caller.
-+		options:    *options,
++		options: *options,
 +	}
 +
 +	return
@@ -2072,6 +2295,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	start := time.Now()
 +	numErrors := 0
 +	maxErrors := api.options.TaskRetryCount
++	backoffMultiplier := 1
 +
 +	for time.Since(start) < api.options.TaskPollTimeout {
 +		task, err = api.GetTask(taskID)
@@ -2098,7 +2322,21 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +				return
 +			}
 +		}
-+		time.Sleep(api.options.TaskPollDelay)
++
++		// Perform backoff based on how long it has been since we started polling. The logic is as follows:
++		// For the first 10 seconds, poll every 500 milliseconds.
++		// From there till the first 1 minute, poll every 1 second.
++		// From there till the first 10 minutes, poll every 5 seconds.
++		// From there till the timeout (30 minutes), poll every 10 seconds.
++		elapsedTime := time.Since(start)
++		if elapsedTime > 10*time.Second && elapsedTime <= 60*time.Second {
++			backoffMultiplier = 2
++		} else if elapsedTime > 60*time.Second && elapsedTime <= 600*time.Second {
++			backoffMultiplier = 10
++		} else if elapsedTime > 600*time.Second && elapsedTime <= api.options.TaskPollTimeout {
++			backoffMultiplier = 20
++		}
++		time.Sleep(time.Duration(backoffMultiplier) * minimumTaskPollDelay)
 +	}
 +	err = TaskTimeoutError{taskID}
 +	return
@@ -2215,10 +2453,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +
 +	return errorStep
 +}
-\ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/oidcclient.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/oidcclient.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/oidcclient.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/oidcclient.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/oidcclient.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,297 @@
 +package cascade
 +
@@ -2324,7 +2561,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +
 +	tr := &http.Transport{
 +		TLSClientConfig: &tls.Config{
-+			InsecureSkipVerify: true,
++			InsecureSkipVerify: false,
 +		},
 +	}
 +	client.setTransport(tr)
@@ -2517,16 +2754,16 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +
 +	return oidcErr
 +}
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/OWNERS cascade-kubernetes/pkg/cloudprovider/providers/cascade/OWNERS
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/OWNERS	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/OWNERS	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/OWNERS kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/OWNERS
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/OWNERS	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/OWNERS	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,3 @@
 +maintainers:
 +- ashokc
 +- ysheng
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/restclient.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/restclient.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/restclient.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/restclient.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/restclient.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/restclient.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/restclient.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/restclient.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,262 @@
 +package cascade
 +
@@ -2790,9 +3027,18 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	apiError.HttpStatusCode = res.StatusCode
 +	return nil, apiError
 +}
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/utils.go cascade-kubernetes/pkg/cloudprovider/providers/cascade/utils.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/utils.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/cascade/utils.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/tests_owed kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/tests_owed
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/tests_owed	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/tests_owed	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,5 @@
++
++Yu Sheng
++Change-Id: Ifc11818f65a3e018aeea6988d9e2c0719b592920
++
++
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/cascade/utils.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/utils.go
+--- kubernetes-original/pkg/cloudprovider/providers/cascade/utils.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/cascade/utils.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,25 @@
 +package cascade
 +
@@ -2820,9 +3066,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/cascade/
 +	return &s
 +}
 \ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/providers.go cascade-kubernetes/pkg/cloudprovider/providers/providers.go
---- kubernetes-1.8.1/pkg/cloudprovider/providers/providers.go	2018-01-31 02:55:29.700980985 +0000
-+++ cascade-kubernetes/pkg/cloudprovider/providers/providers.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/cloudprovider/providers/providers.go kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/providers.go
+--- kubernetes-original/pkg/cloudprovider/providers/providers.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/cloudprovider/providers/providers.go	2018-04-30 21:11:51.000000000 +0000
 @@ -20,6 +20,7 @@
  	// Cloud providers
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/aws"
@@ -2831,10 +3077,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/cloudprovider/providers/provider
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/cloudstack"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/printers/internalversion/describe.go cascade-kubernetes/pkg/printers/internalversion/describe.go
---- kubernetes-1.8.1/pkg/printers/internalversion/describe.go	2018-01-31 02:55:29.752980987 +0000
-+++ cascade-kubernetes/pkg/printers/internalversion/describe.go	2018-01-31 02:12:47.000000000 +0000
-@@ -764,6 +764,8 @@
+diff -uNr --no-dereference kubernetes-original/pkg/printers/internalversion/describe.go kubernetes-modified/src/k8s.io/kubernetes/pkg/printers/internalversion/describe.go
+--- kubernetes-original/pkg/printers/internalversion/describe.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/printers/internalversion/describe.go	2018-04-30 21:11:51.000000000 +0000
+@@ -751,6 +751,8 @@
  			printFlexVolumeSource(volume.VolumeSource.FlexVolume, w)
  		case volume.VolumeSource.Flocker != nil:
  			printFlockerVolumeSource(volume.VolumeSource.Flocker, w)
@@ -2843,8 +3089,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/printers/internalversion/describ
  		default:
  			w.Write(LEVEL_1, "<unknown>\n")
  		}
-@@ -1047,6 +1049,13 @@
- 		flocker.DatasetName, flocker.DatasetUUID)
+@@ -1101,6 +1103,13 @@
+ 		csi.Driver, csi.VolumeHandle, csi.ReadOnly)
  }
  
 +func printCascadeDiskVolumeSource(cascade *api.CascadeDiskVolumeSource, w PrefixWriter) {
@@ -2857,27 +3103,27 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/printers/internalversion/describ
  type PersistentVolumeDescriber struct {
  	clientset.Interface
  }
-@@ -1130,6 +1139,8 @@
- 			printFlexVolumeSource(pv.Spec.FlexVolume, w)
- 		case pv.Spec.Flocker != nil:
+@@ -1189,6 +1198,8 @@
  			printFlockerVolumeSource(pv.Spec.Flocker, w)
+ 		case pv.Spec.CSI != nil:
+ 			printCSIPersistentVolumeSource(pv.Spec.CSI, w)
 +		case pv.Spec.CascadeDisk != nil:
 +			printCascadeDiskVolumeSource(pv.Spec.CascadeDisk, w)
  		default:
  			w.Write(LEVEL_1, "<unknown>\n")
  		}
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/security/podsecuritypolicy/util/util.go cascade-kubernetes/pkg/security/podsecuritypolicy/util/util.go
---- kubernetes-1.8.1/pkg/security/podsecuritypolicy/util/util.go	2018-01-31 02:55:29.792980988 +0000
-+++ cascade-kubernetes/pkg/security/podsecuritypolicy/util/util.go	2018-01-31 02:12:47.000000000 +0000
-@@ -67,6 +67,7 @@
- 		string(extensions.Projected),
+diff -uNr --no-dereference kubernetes-original/pkg/security/podsecuritypolicy/util/util.go kubernetes-modified/src/k8s.io/kubernetes/pkg/security/podsecuritypolicy/util/util.go
+--- kubernetes-original/pkg/security/podsecuritypolicy/util/util.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/security/podsecuritypolicy/util/util.go	2018-04-30 21:11:51.000000000 +0000
+@@ -68,6 +68,7 @@
  		string(extensions.PortworxVolume),
  		string(extensions.ScaleIO),
+ 		string(extensions.CSI),
 +		string(extensions.CascadeDisk),
  	)
  	return fstypes
  }
-@@ -128,6 +129,8 @@
+@@ -129,6 +130,8 @@
  		return extensions.PortworxVolume, nil
  	case v.ScaleIO != nil:
  		return extensions.ScaleIO, nil
@@ -2886,10 +3132,10 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/security/podsecuritypolicy/util/
  	}
  
  	return "", fmt.Errorf("unknown volume type for volume: %#v", v)
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go cascade-kubernetes/pkg/volume/cascade_disk/attacher.go
---- kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/attacher.go	2018-01-31 02:12:47.000000000 +0000
-@@ -0,0 +1,278 @@
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/attacher.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/attacher.go
+--- kubernetes-original/pkg/volume/cascade_disk/attacher.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/attacher.go	2018-04-30 21:11:51.000000000 +0000
+@@ -0,0 +1,269 @@
 +package cascade_disk
 +
 +import (
@@ -2925,7 +3171,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go 
 +	}
 +
 +	return &cascadeDiskAttacher{
-+		host:        plugin.host,
++		host:         plugin.host,
 +		cascadeDisks: cascadeCloud,
 +	}, nil
 +}
@@ -2940,22 +3186,13 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go 
 +		return "", err
 +	}
 +
-+	attached, err := attacher.cascadeDisks.DiskIsAttached(volumeSource.DiskID, nodeName)
++	// cascadeDisks.AttachDisk checks if disk is already attached to the node. So we don't have to do that separately
++	// here.
++	glog.V(4).Infof("Cascade: Attach disk called for host %s", hostName)
++	devicePath, err := attacher.cascadeDisks.AttachDisk(volumeSource.DiskID, nodeName)
 +	if err != nil {
-+		glog.Warningf("Cascade: couldn't check if disk is Attached for host %s, will try attach disk: %+v",
-+			hostName, err)
-+		attached = false
-+	}
-+
-+	var devicePath string
-+	if !attached {
-+		glog.V(4).Infof("Cascade: Attach disk called for host %s", hostName)
-+
-+		devicePath, err = attacher.cascadeDisks.AttachDisk(volumeSource.DiskID, nodeName)
-+		if err != nil {
-+			glog.Errorf("Error attaching volume %q to node %q: %+v", volumeSource.DiskID, nodeName, err)
-+			return "", err
-+		}
++		glog.Errorf("Error attaching volume %q to node %q: %+v", volumeSource.DiskID, nodeName, err)
++		return "", err
 +	}
 +
 +	// Cacsade uses device names of the format /dev/sdX, but newer Linux Kernels mount them under /dev/xvdX
@@ -3026,7 +3263,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go 
 +			checkPath, err := verifyDevicePath(devicePath)
 +			if err != nil {
 +				// Log error, if any, and continue checking periodically. See issue #11321
-+				glog.Warningf("Cascade attacher: WaitForAttach with devicePath %s Checking PD %s Error verify " +
++				glog.Warningf("Cascade attacher: WaitForAttach with devicePath %s Checking PD %s Error verify "+
 +					"path", devicePath, volumeSource.DiskID)
 +			} else if checkPath != "" {
 +				// A device path has successfully been created for the disk
@@ -3034,7 +3271,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go 
 +				return devicePath, nil
 +			}
 +		case <-timer.C:
-+			return "", fmt.Errorf("Could not find attached disk %s. Timeout waiting for mount paths to be " +
++			return "", fmt.Errorf("Could not find attached disk %s. Timeout waiting for mount paths to be "+
 +				"created.", volumeSource.DiskID)
 +		}
 +	}
@@ -3111,7 +3348,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go 
 +	}
 +
 +	return &cascadeDiskDetacher{
-+		mounter:     plugin.host.GetMounter(plugin.GetPluginName()),
++		mounter:      plugin.host.GetMounter(plugin.GetPluginName()),
 +		cascadeDisks: cascadeCloud,
 +	}, nil
 +}
@@ -3124,13 +3361,13 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go 
 +	if err != nil {
 +		// Log error and continue with detach
 +		glog.Errorf(
-+			"Error checking if persistent disk (%q) is already attached to current node (%q). " +
++			"Error checking if persistent disk (%q) is already attached to current node (%q). "+
 +				"Will continue and try detach anyway. err=%v", diskID, hostName, err)
 +	}
 +
 +	if err == nil && !attached {
 +		// Volume is already detached from node.
-+		glog.V(4).Infof("detach operation was successful. persistent disk %q is already detached " +
++		glog.V(4).Infof("detach operation was successful. persistent disk %q is already detached "+
 +			"from node %q.", diskID, hostName)
 +		return nil
 +	}
@@ -3168,9 +3405,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/attacher.go 
 +func (detacher *cascadeDiskDetacher) UnmountDevice(deviceMountPath string) error {
 +	return volumeutil.UnmountPath(deviceMountPath, detacher.mounter)
 +}
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/BUILD cascade-kubernetes/pkg/volume/cascade_disk/BUILD
---- kubernetes-1.8.1/pkg/volume/cascade_disk/BUILD	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/BUILD	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/BUILD kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/BUILD
+--- kubernetes-original/pkg/volume/cascade_disk/BUILD	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/BUILD	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,43 @@
 +package(default_visibility = ["//visibility:public"])
 +
@@ -3215,9 +3452,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/BUILD cascad
 +    srcs = [":package-srcs"],
 +    tags = ["automanaged"],
 +)
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_disk.go cascade-kubernetes/pkg/volume/cascade_disk/cascade_disk.go
---- kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_disk.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/cascade_disk.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/cascade_disk.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_disk.go
+--- kubernetes-original/pkg/volume/cascade_disk/cascade_disk.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_disk.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,391 @@
 +package cascade_disk
 +
@@ -3611,9 +3848,9 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_disk
 +	return nil, false, fmt.Errorf("Spec does not reference a Cascade disk type")
 +}
 \ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_util.go cascade-kubernetes/pkg/volume/cascade_disk/cascade_util.go
---- kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_util.go	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/cascade_util.go	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/cascade_util.go kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_util.go
+--- kubernetes-original/pkg/volume/cascade_disk/cascade_util.go	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/cascade_util.go	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,107 @@
 +package cascade_disk
 +
@@ -3722,23 +3959,23 @@ diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/cascade_util
 +	}
 +	return cc, nil
 +}
-diff -uNr --no-dereference kubernetes-1.8.1/pkg/volume/cascade_disk/OWNERS cascade-kubernetes/pkg/volume/cascade_disk/OWNERS
---- kubernetes-1.8.1/pkg/volume/cascade_disk/OWNERS	1970-01-01 00:00:00.000000000 +0000
-+++ cascade-kubernetes/pkg/volume/cascade_disk/OWNERS	2018-01-31 02:12:47.000000000 +0000
+diff -uNr --no-dereference kubernetes-original/pkg/volume/cascade_disk/OWNERS kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/OWNERS
+--- kubernetes-original/pkg/volume/cascade_disk/OWNERS	1970-01-01 00:00:00.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/pkg/volume/cascade_disk/OWNERS	2018-04-30 21:11:51.000000000 +0000
 @@ -0,0 +1,2 @@
 +maintainers:
 +- ashokc
-diff -uNr --no-dereference kubernetes-1.8.1/plugin/pkg/admission/persistentvolume/label/admission.go cascade-kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go
---- kubernetes-1.8.1/plugin/pkg/admission/persistentvolume/label/admission.go	2018-01-31 02:55:29.812980989 +0000
-+++ cascade-kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go	2018-01-31 02:12:47.000000000 +0000
-@@ -31,6 +31,7 @@
+diff -uNr --no-dereference kubernetes-original/plugin/pkg/admission/persistentvolume/label/admission.go kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go
+--- kubernetes-original/plugin/pkg/admission/persistentvolume/label/admission.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/plugin/pkg/admission/persistentvolume/label/admission.go	2018-04-30 21:11:51.000000000 +0000
+@@ -27,6 +27,7 @@
+ 	api "k8s.io/kubernetes/pkg/apis/core"
+ 	"k8s.io/kubernetes/pkg/cloudprovider"
+ 	"k8s.io/kubernetes/pkg/cloudprovider/providers/aws"
++	"k8s.io/kubernetes/pkg/cloudprovider/providers/cascade"
+ 	"k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	kubeapiserveradmission "k8s.io/kubernetes/pkg/kubeapiserver/admission"
  	kubeletapis "k8s.io/kubernetes/pkg/kubelet/apis"
- 	vol "k8s.io/kubernetes/pkg/volume"
-+	"k8s.io/kubernetes/pkg/cloudprovider/providers/cascade"
- )
- 
- // Register registers a plugin
 @@ -50,6 +51,7 @@
  	ebsVolumes       aws.Volumes
  	cloudConfig      []byte
@@ -3746,8 +3983,8 @@ diff -uNr --no-dereference kubernetes-1.8.1/plugin/pkg/admission/persistentvolum
 +	cascadeDisks     cascade.Disks
  }
  
- var _ kubeapiserveradmission.WantsCloudConfig = &persistentVolumeLabel{}
-@@ -101,6 +103,13 @@
+ var _ admission.MutationInterface = &persistentVolumeLabel{}
+@@ -102,6 +104,13 @@
  		}
  		volumeLabels = labels
  	}
@@ -3761,7 +3998,7 @@ diff -uNr --no-dereference kubernetes-1.8.1/plugin/pkg/admission/persistentvolum
  
  	if len(volumeLabels) != 0 {
  		if volume.Labels == nil {
-@@ -213,3 +222,48 @@
+@@ -214,3 +223,48 @@
  	}
  	return l.gceCloudProvider, nil
  }
@@ -3810,40 +4047,53 @@ diff -uNr --no-dereference kubernetes-1.8.1/plugin/pkg/admission/persistentvolum
 +	}
 +	return l.cascadeDisks, nil
 +}
-\ No newline at end of file
-diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/generated.pb.go cascade-kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go
---- kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-01-31 02:55:29.880980991 +0000
-+++ cascade-kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-01-31 02:12:47.000000000 +0000
-@@ -34,6 +34,7 @@
- 		AzureFileVolumeSource
+diff -uNr --no-dereference kubernetes-original/staging/src/k8s.io/api/core/v1/generated.pb.go kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go
+--- kubernetes-original/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/generated.pb.go	2018-04-30 21:11:51.000000000 +0000
+@@ -35,6 +35,7 @@
  		Binding
+ 		CSIPersistentVolumeSource
  		Capabilities
 +		CascadeDiskVolumeSource
  		CephFSPersistentVolumeSource
  		CephFSVolumeSource
  		CinderVolumeSource
-@@ -992,6 +993,12 @@
- 	return fileDescriptorGenerated, []int{177}
- }
+@@ -260,9 +261,11 @@
+ func (*AvoidPods) ProtoMessage()               {}
+ func (*AvoidPods) Descriptor() ([]byte, []int) { return fileDescriptorGenerated, []int{3} }
  
+-func (m *AzureDiskVolumeSource) Reset()                    { *m = AzureDiskVolumeSource{} }
+-func (*AzureDiskVolumeSource) ProtoMessage()               {}
+-func (*AzureDiskVolumeSource) Descriptor() ([]byte, []int) { return fileDescriptorGenerated, []int{4} }
 +func (m *CascadeDiskVolumeSource) Reset()      { *m = CascadeDiskVolumeSource{} }
 +func (*CascadeDiskVolumeSource) ProtoMessage() {}
 +func (*CascadeDiskVolumeSource) Descriptor() ([]byte, []int) {
-+	return fileDescriptorGenerated, []int{178}
++	return fileDescriptorGenerated, []int{4}
 +}
+ 
+ func (m *AzureFilePersistentVolumeSource) Reset()      { *m = AzureFilePersistentVolumeSource{} }
+ func (*AzureFilePersistentVolumeSource) ProtoMessage() {}
+@@ -1040,6 +1043,11 @@
+ 	return fileDescriptorGenerated, []int{185}
+ }
+ 
++func (m *AzureDiskVolumeSource) Reset()                    { *m = AzureDiskVolumeSource{} }
++func (*AzureDiskVolumeSource) ProtoMessage()               {}
++func (*AzureDiskVolumeSource) Descriptor() ([]byte, []int) { return fileDescriptorGenerated, []int{186} }
++
 +
  func init() {
  	proto.RegisterType((*AWSElasticBlockStoreVolumeSource)(nil), "k8s.io.api.core.v1.AWSElasticBlockStoreVolumeSource")
  	proto.RegisterType((*Affinity)(nil), "k8s.io.api.core.v1.Affinity")
-@@ -1002,6 +1009,7 @@
- 	proto.RegisterType((*AzureFileVolumeSource)(nil), "k8s.io.api.core.v1.AzureFileVolumeSource")
+@@ -1051,6 +1059,7 @@
  	proto.RegisterType((*Binding)(nil), "k8s.io.api.core.v1.Binding")
+ 	proto.RegisterType((*CSIPersistentVolumeSource)(nil), "k8s.io.api.core.v1.CSIPersistentVolumeSource")
  	proto.RegisterType((*Capabilities)(nil), "k8s.io.api.core.v1.Capabilities")
 +	proto.RegisterType((*CascadeDiskVolumeSource)(nil), "k8s.io.api.core.v1.CascadeDiskVolumeSource")
  	proto.RegisterType((*CephFSPersistentVolumeSource)(nil), "k8s.io.api.core.v1.CephFSPersistentVolumeSource")
  	proto.RegisterType((*CephFSVolumeSource)(nil), "k8s.io.api.core.v1.CephFSVolumeSource")
  	proto.RegisterType((*CinderVolumeSource)(nil), "k8s.io.api.core.v1.CinderVolumeSource")
-@@ -1523,6 +1531,32 @@
+@@ -1613,6 +1622,32 @@
  	return i, nil
  }
  
@@ -3876,45 +4126,79 @@ diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/gener
  func (m *CephFSPersistentVolumeSource) Marshal() (dAtA []byte, err error) {
  	size := m.Size()
  	dAtA = make([]byte, size)
-@@ -6080,6 +6114,18 @@
+@@ -6283,13 +6318,13 @@
  		}
- 		i += n121
+ 		i += n120
  	}
+-	if m.AzureDisk != nil {
 +	if m.CascadeDisk != nil {
-+		dAtA[i] = 0xb2
+ 		dAtA[i] = 0x82
+ 		i++
+ 		dAtA[i] = 0x1
+ 		i++
+-		i = encodeVarintGenerated(dAtA, i, uint64(m.AzureDisk.Size()))
+-		n121, err := m.AzureDisk.MarshalTo(dAtA[i:])
++		i = encodeVarintGenerated(dAtA, i, uint64(m.CascadeDisk.Size()))
++		n121, err := m.CascadeDisk.MarshalTo(dAtA[i:])
+ 		if err != nil {
+ 			return 0, err
+ 		}
+@@ -6367,6 +6402,18 @@
+ 		}
+ 		i += n127
+ 	}
++	if m.AzureDisk != nil {
++		dAtA[i] = 0xba
 +		i++
 +		dAtA[i] = 0x1
 +		i++
-+		i = encodeVarintGenerated(dAtA, i, uint64(m.CascadeDisk.Size()))
-+		n122, err := m.CascadeDisk.MarshalTo(dAtA[i:])
++		i = encodeVarintGenerated(dAtA, i, uint64(m.AzureDisk.Size()))
++		n128, err := m.AzureDisk.MarshalTo(dAtA[i:])
 +		if err != nil {
 +			return 0, err
 +		}
-+		i += n122
++		i += n128
 +	}
  	return i, nil
  }
  
-@@ -9824,6 +9870,18 @@
+@@ -10316,13 +10363,13 @@
  		}
- 		i += n220
+ 		i += n223
  	}
+-	if m.AzureDisk != nil {
 +	if m.CascadeDisk != nil {
+ 		dAtA[i] = 0xb2
+ 		i++
+ 		dAtA[i] = 0x1
+ 		i++
+-		i = encodeVarintGenerated(dAtA, i, uint64(m.AzureDisk.Size()))
+-		n224, err := m.AzureDisk.MarshalTo(dAtA[i:])
++		i = encodeVarintGenerated(dAtA, i, uint64(m.CascadeDisk.Size()))
++		n224, err := m.CascadeDisk.MarshalTo(dAtA[i:])
+ 		if err != nil {
+ 			return 0, err
+ 		}
+@@ -10388,6 +10435,18 @@
+ 		}
+ 		i += n229
+ 	}
++	if m.AzureDisk != nil {
 +		dAtA[i] = 0xe2
 +		i++
 +		dAtA[i] = 0x1
 +		i++
-+		i = encodeVarintGenerated(dAtA, i, uint64(m.CascadeDisk.Size()))
-+		n221, err := m.CascadeDisk.MarshalTo(dAtA[i:])
++		i = encodeVarintGenerated(dAtA, i, uint64(m.AzureDisk.Size()))
++		n230, err := m.AzureDisk.MarshalTo(dAtA[i:])
 +		if err != nil {
 +			return 0, err
 +		}
-+		i += n221
++		i += n230
 +	}
  	return i, nil
  }
  
-@@ -10048,6 +10106,16 @@
+@@ -10623,6 +10682,16 @@
  	return n
  }
  
@@ -3931,29 +4215,51 @@ diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/gener
  func (m *CephFSPersistentVolumeSource) Size() (n int) {
  	var l int
  	_ = l
-@@ -11711,6 +11779,10 @@
- 		l = m.StorageOS.Size()
- 		n += 2 + l + sovGenerated(uint64(l))
+@@ -12331,8 +12400,8 @@
+ 		l = m.Quobyte.Size()
+ 		n += 1 + l + sovGenerated(uint64(l))
  	}
+-	if m.AzureDisk != nil {
+-		l = m.AzureDisk.Size()
 +	if m.CascadeDisk != nil {
 +		l = m.CascadeDisk.Size()
+ 		n += 2 + l + sovGenerated(uint64(l))
+ 	}
+ 	if m.PhotonPersistentDisk != nil {
+@@ -12359,6 +12428,10 @@
+ 		l = m.CSI.Size()
+ 		n += 2 + l + sovGenerated(uint64(l))
+ 	}
++	if m.AzureDisk != nil {
++		l = m.AzureDisk.Size()
 +		n += 2 + l + sovGenerated(uint64(l))
 +	}
  	return n
  }
  
-@@ -13055,6 +13127,10 @@
+@@ -13788,8 +13861,8 @@
+ 		l = m.Quobyte.Size()
+ 		n += 2 + l + sovGenerated(uint64(l))
+ 	}
+-	if m.AzureDisk != nil {
+-		l = m.AzureDisk.Size()
++	if m.CascadeDisk != nil {
++		l = m.CascadeDisk.Size()
+ 		n += 2 + l + sovGenerated(uint64(l))
+ 	}
+ 	if m.PhotonPersistentDisk != nil {
+@@ -13812,6 +13885,10 @@
  		l = m.StorageOS.Size()
  		n += 2 + l + sovGenerated(uint64(l))
  	}
-+	if m.CascadeDisk != nil {
-+		l = m.CascadeDisk.Size()
++	if m.AzureDisk != nil {
++		l = m.AzureDisk.Size()
 +		n += 2 + l + sovGenerated(uint64(l))
 +	}
  	return n
  }
  
-@@ -13202,6 +13278,17 @@
+@@ -13971,6 +14048,17 @@
  	}, "")
  	return s
  }
@@ -3971,29 +4277,67 @@ diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/gener
  func (this *CephFSPersistentVolumeSource) String() string {
  	if this == nil {
  		return "nil"
-@@ -14532,6 +14619,7 @@
- 		`ScaleIO:` + strings.Replace(fmt.Sprintf("%v", this.ScaleIO), "ScaleIOVolumeSource", "ScaleIOVolumeSource", 1) + `,`,
+@@ -15335,13 +15423,14 @@
+ 		`AzureFile:` + strings.Replace(fmt.Sprintf("%v", this.AzureFile), "AzureFilePersistentVolumeSource", "AzureFilePersistentVolumeSource", 1) + `,`,
+ 		`VsphereVolume:` + strings.Replace(fmt.Sprintf("%v", this.VsphereVolume), "VsphereVirtualDiskVolumeSource", "VsphereVirtualDiskVolumeSource", 1) + `,`,
+ 		`Quobyte:` + strings.Replace(fmt.Sprintf("%v", this.Quobyte), "QuobyteVolumeSource", "QuobyteVolumeSource", 1) + `,`,
+-		`AzureDisk:` + strings.Replace(fmt.Sprintf("%v", this.AzureDisk), "AzureDiskVolumeSource", "AzureDiskVolumeSource", 1) + `,`,
++		`CascadeDisk:` + strings.Replace(fmt.Sprintf("%v", this.CascadeDisk), "CascadeDiskVolumeSource", "CascadeDiskVolumeSource", 1) + `,`,
+ 		`PhotonPersistentDisk:` + strings.Replace(fmt.Sprintf("%v", this.PhotonPersistentDisk), "PhotonPersistentDiskVolumeSource", "PhotonPersistentDiskVolumeSource", 1) + `,`,
+ 		`PortworxVolume:` + strings.Replace(fmt.Sprintf("%v", this.PortworxVolume), "PortworxVolumeSource", "PortworxVolumeSource", 1) + `,`,
+ 		`ScaleIO:` + strings.Replace(fmt.Sprintf("%v", this.ScaleIO), "ScaleIOPersistentVolumeSource", "ScaleIOPersistentVolumeSource", 1) + `,`,
  		`Local:` + strings.Replace(fmt.Sprintf("%v", this.Local), "LocalVolumeSource", "LocalVolumeSource", 1) + `,`,
  		`StorageOS:` + strings.Replace(fmt.Sprintf("%v", this.StorageOS), "StorageOSPersistentVolumeSource", "StorageOSPersistentVolumeSource", 1) + `,`,
-+		`CascadeDisk:` + strings.Replace(fmt.Sprintf("%v", this.CascadeDisk), "CascadeDiskVolumeSource", "CascadeDiskVolumeSource", 1) + `,`,
+ 		`CSI:` + strings.Replace(fmt.Sprintf("%v", this.CSI), "CSIPersistentVolumeSource", "CSIPersistentVolumeSource", 1) + `,`,
++		`AzureDisk:` + strings.Replace(fmt.Sprintf("%v", this.AzureDisk), "AzureDiskVolumeSource", "AzureDiskVolumeSource", 1) + `,`,
  		`}`,
  	}, "")
  	return s
-@@ -15592,6 +15680,7 @@
+@@ -16468,12 +16557,13 @@
+ 		`ConfigMap:` + strings.Replace(fmt.Sprintf("%v", this.ConfigMap), "ConfigMapVolumeSource", "ConfigMapVolumeSource", 1) + `,`,
+ 		`VsphereVolume:` + strings.Replace(fmt.Sprintf("%v", this.VsphereVolume), "VsphereVirtualDiskVolumeSource", "VsphereVirtualDiskVolumeSource", 1) + `,`,
+ 		`Quobyte:` + strings.Replace(fmt.Sprintf("%v", this.Quobyte), "QuobyteVolumeSource", "QuobyteVolumeSource", 1) + `,`,
+-		`AzureDisk:` + strings.Replace(fmt.Sprintf("%v", this.AzureDisk), "AzureDiskVolumeSource", "AzureDiskVolumeSource", 1) + `,`,
++		`CascadeDisk:` + strings.Replace(fmt.Sprintf("%v", this.CascadeDisk), "CascadeDiskVolumeSource", "CascadeDiskVolumeSource", 1) + `,`,
+ 		`PhotonPersistentDisk:` + strings.Replace(fmt.Sprintf("%v", this.PhotonPersistentDisk), "PhotonPersistentDiskVolumeSource", "PhotonPersistentDiskVolumeSource", 1) + `,`,
+ 		`PortworxVolume:` + strings.Replace(fmt.Sprintf("%v", this.PortworxVolume), "PortworxVolumeSource", "PortworxVolumeSource", 1) + `,`,
  		`ScaleIO:` + strings.Replace(fmt.Sprintf("%v", this.ScaleIO), "ScaleIOVolumeSource", "ScaleIOVolumeSource", 1) + `,`,
  		`Projected:` + strings.Replace(fmt.Sprintf("%v", this.Projected), "ProjectedVolumeSource", "ProjectedVolumeSource", 1) + `,`,
  		`StorageOS:` + strings.Replace(fmt.Sprintf("%v", this.StorageOS), "StorageOSVolumeSource", "StorageOSVolumeSource", 1) + `,`,
-+		`CascadeDisk:` + strings.Replace(fmt.Sprintf("%v", this.CascadeDisk), "CascadeDiskVolumeSource", "CascadeDiskVolumeSource", 1) + `,`,
++		`AzureDisk:` + strings.Replace(fmt.Sprintf("%v", this.AzureDisk), "AzureDiskVolumeSource", "AzureDiskVolumeSource", 1) + `,`,
  		`}`,
  	}, "")
  	return s
-@@ -32799,6 +32888,39 @@
+@@ -34322,7 +34412,7 @@
+ 			iNdEx = postIndex
+ 		case 16:
+ 			if wireType != 2 {
+-				return fmt.Errorf("proto: wrong wireType = %d for field AzureDisk", wireType)
++				return fmt.Errorf("proto: wrong wireType = %d for field CascadeDisk", wireType)
+ 			}
+ 			var msglen int
+ 			for shift := uint(0); ; shift += 7 {
+@@ -34346,10 +34436,10 @@
+ 			if postIndex > l {
+ 				return io.ErrUnexpectedEOF
+ 			}
+-			if m.AzureDisk == nil {
+-				m.AzureDisk = &AzureDiskVolumeSource{}
++			if m.CascadeDisk == nil {
++				m.CascadeDisk = &CascadeDiskVolumeSource{}
+ 			}
+-			if err := m.AzureDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
++			if err := m.CascadeDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
  				return err
  			}
  			iNdEx = postIndex
-+		case 22:
+@@ -34551,6 +34641,39 @@
+ 				return err
+ 			}
+ 			iNdEx = postIndex
++		case 23:
 +			if wireType != 2 {
-+				return fmt.Errorf("proto: wrong wireType = %d for field CascadeDisk", wireType)
++				return fmt.Errorf("proto: wrong wireType = %d for field AzureDisk", wireType)
 +			}
 +			var msglen int
 +			for shift := uint(0); ; shift += 7 {
@@ -4017,17 +4361,17 @@ diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/gener
 +			if postIndex > l {
 +				return io.ErrUnexpectedEOF
 +			}
-+			if m.CascadeDisk == nil {
-+				m.CascadeDisk = &CascadeDiskVolumeSource{}
++			if m.AzureDisk == nil {
++				m.AzureDisk = &AzureDiskVolumeSource{}
 +			}
-+			if err := m.CascadeDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
++			if err := m.AzureDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 +				return err
 +			}
 +			iNdEx = postIndex
  		default:
  			iNdEx = preIndex
  			skippy, err := skipGenerated(dAtA[iNdEx:])
-@@ -33307,6 +33429,114 @@
+@@ -35089,6 +35212,114 @@
  	}
  	return nil
  }
@@ -4142,13 +4486,36 @@ diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/gener
  func (m *PhotonPersistentDiskVolumeSource) Unmarshal(dAtA []byte) error {
  	l := len(dAtA)
  	iNdEx := 0
-@@ -45941,6 +46171,39 @@
+@@ -48522,7 +48753,7 @@
+ 			iNdEx = postIndex
+ 		case 22:
+ 			if wireType != 2 {
+-				return fmt.Errorf("proto: wrong wireType = %d for field AzureDisk", wireType)
++				return fmt.Errorf("proto: wrong wireType = %d for field CascadeDisk", wireType)
+ 			}
+ 			var msglen int
+ 			for shift := uint(0); ; shift += 7 {
+@@ -48546,10 +48777,10 @@
+ 			if postIndex > l {
+ 				return io.ErrUnexpectedEOF
+ 			}
+-			if m.AzureDisk == nil {
+-				m.AzureDisk = &AzureDiskVolumeSource{}
++			if m.CascadeDisk == nil {
++				m.CascadeDisk = &CascadeDiskVolumeSource{}
+ 			}
+-			if err := m.AzureDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
++			if err := m.CascadeDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+ 				return err
+ 			}
+ 			iNdEx = postIndex
+@@ -48718,6 +48949,39 @@
  				return err
  			}
  			iNdEx = postIndex
 +		case 28:
 +			if wireType != 2 {
-+				return fmt.Errorf("proto: wrong wireType = %d for field CascadeDisk", wireType)
++				return fmt.Errorf("proto: wrong wireType = %d for field AzureDisk", wireType)
 +			}
 +			var msglen int
 +			for shift := uint(0); ; shift += 7 {
@@ -4172,38 +4539,64 @@ diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/gener
 +			if postIndex > l {
 +				return io.ErrUnexpectedEOF
 +			}
-+			if m.CascadeDisk == nil {
-+				m.CascadeDisk = &CascadeDiskVolumeSource{}
++			if m.AzureDisk == nil {
++				m.AzureDisk = &AzureDiskVolumeSource{}
 +			}
-+			if err := m.CascadeDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
++			if err := m.AzureDisk.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 +				return err
 +			}
 +			iNdEx = postIndex
  		default:
  			iNdEx = preIndex
  			skippy, err := skipGenerated(dAtA[iNdEx:])
-diff -uNr --no-dereference kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/types.go cascade-kubernetes/staging/src/k8s.io/api/core/v1/types.go
---- kubernetes-1.8.1/staging/src/k8s.io/api/core/v1/types.go	2018-01-31 02:55:29.880980991 +0000
-+++ cascade-kubernetes/staging/src/k8s.io/api/core/v1/types.go	2018-01-31 02:12:47.000000000 +0000
-@@ -350,6 +350,8 @@
+diff -uNr --no-dereference kubernetes-original/staging/src/k8s.io/api/core/v1/types.go kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/types.go
+--- kubernetes-original/staging/src/k8s.io/api/core/v1/types.go	2018-03-20 19:21:10.000000000 +0000
++++ kubernetes-modified/src/k8s.io/kubernetes/staging/src/k8s.io/api/core/v1/types.go	2018-04-30 21:11:51.000000000 +0000
+@@ -333,9 +333,8 @@
+ 	// Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
+ 	// +optional
+ 	Quobyte *QuobyteVolumeSource `json:"quobyte,omitempty" protobuf:"bytes,21,opt,name=quobyte"`
+-	// AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
+-	// +optional
+-	AzureDisk *AzureDiskVolumeSource `json:"azureDisk,omitempty" protobuf:"bytes,22,opt,name=azureDisk"`
++	// CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine
++	CascadeDisk *CascadeDiskVolumeSource `json:"cascadeDisk,omitempty" protobuf:"bytes,22,opt,name=cascadeDisk"`
+ 	// PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
+ 	PhotonPersistentDisk *PhotonPersistentDiskVolumeSource `json:"photonPersistentDisk,omitempty" protobuf:"bytes,23,opt,name=photonPersistentDisk"`
+ 	// Items for all in one resources secrets, configmaps, and downward API
+@@ -349,6 +348,9 @@
  	// StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes.
  	// +optional
  	StorageOS *StorageOSVolumeSource `json:"storageos,omitempty" protobuf:"bytes,27,opt,name=storageos"`
-+	// CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine
-+	CascadeDisk *CascadeDiskVolumeSource `json:"cascadeDisk,omitempty" protobuf:"bytes,28,opt,name=cascadeDisk"`
++	// AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
++	// +optional
++	AzureDisk *AzureDiskVolumeSource `json:"azureDisk,omitempty" protobuf:"bytes,28,opt,name=azureDisk"`
  }
  
  // PersistentVolumeClaimVolumeSource references the user's PVC in the same namespace.
-@@ -448,6 +450,8 @@
- 	// More info: https://releases.k8s.io/HEAD/examples/volumes/storageos/README.md
+@@ -428,9 +430,8 @@
+ 	// Quobyte represents a Quobyte mount on the host that shares a pod's lifetime
  	// +optional
- 	StorageOS *StorageOSPersistentVolumeSource `json:"storageos,omitempty" protobuf:"bytes,21,opt,name=storageos"`
+ 	Quobyte *QuobyteVolumeSource `json:"quobyte,omitempty" protobuf:"bytes,15,opt,name=quobyte"`
+-	// AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
+-	// +optional
+-	AzureDisk *AzureDiskVolumeSource `json:"azureDisk,omitempty" protobuf:"bytes,16,opt,name=azureDisk"`
 +	// CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine
-+	CascadeDisk *CascadeDiskVolumeSource `json:"cascadeDisk,omitempty" protobuf:"bytes,22,opt,name=cascadeDisk"`
++	CascadeDisk *CascadeDiskVolumeSource `json:"cascadeDisk,omitempty" protobuf:"bytes,16,opt,name=cascadeDisk"`
+ 	// PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
+ 	PhotonPersistentDisk *PhotonPersistentDiskVolumeSource `json:"photonPersistentDisk,omitempty" protobuf:"bytes,17,opt,name=photonPersistentDisk"`
+ 	// PortworxVolume represents a portworx volume attached and mounted on kubelets host machine
+@@ -449,6 +450,9 @@
+ 	// CSI represents storage that handled by an external CSI driver
+ 	// +optional
+ 	CSI *CSIPersistentVolumeSource `json:"csi,omitempty" protobuf:"bytes,22,opt,name=csi"`
++	// AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
++	// +optional
++	AzureDisk *AzureDiskVolumeSource `json:"azureDisk,omitempty" protobuf:"bytes,23,opt,name=azureDisk"`
  }
  
  const (
-@@ -1431,6 +1435,16 @@
+@@ -1578,6 +1582,16 @@
  	SecretRef *ObjectReference `json:"secretRef,omitempty" protobuf:"bytes,5,opt,name=secretRef"`
  }
  
