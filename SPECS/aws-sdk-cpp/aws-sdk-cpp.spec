@@ -3,7 +3,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.4.33
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -15,6 +15,7 @@ Requires:       curl-devel
 Requires:       zlib-devel
 Requires:       aws-sdk-core = %{version}-%{release}
 Requires:       aws-sdk-kinesis = %{version}-%{release}
+Requires:       aws-sdk-s3 = %{version}-%{release}
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -45,6 +46,7 @@ aws core libs
 Summary:        aws sdk kinesis
 Group:          Development/Libraries
 Requires:       aws-sdk-core = %{version}-%{release}
+Requires:       aws-kinesis-libs = %{version}-%{release}
 
 %description -n aws-sdk-kinesis
 aws sdk cpp for kinesis
@@ -57,6 +59,23 @@ Requires:       aws-core-libs = %{version}-%{release}
 %description -n aws-kinesis-libs
 aws kinesis libs
 
+%package -n     aws-sdk-s3
+Summary:        aws sdk s3
+Group:          Development/Libraries
+Requires:       aws-sdk-core = %{version}-%{release}
+Requires:       aws-s3-libs = %{version}-%{release}
+
+%description -n aws-sdk-s3
+aws sdk cpp for s3
+
+%package -n     aws-s3-libs
+Summary:        aws s3 libs
+Group:          Development/Libraries
+Requires:       aws-core-libs = %{version}-%{release}
+
+%description -n aws-s3-libs
+aws s3 libs
+
 %prep
 %setup
 
@@ -66,12 +85,20 @@ cd build
 cmake \
 -DCMAKE_INSTALL_PREFIX:PATH=%{_prefix} \
 -DCMAKE_BUILD_TYPE=Release ..
-make %{?_smp_mflags}
+for component in "core" "kinesis" "s3"; do
+  cd aws-cpp-sdk-$component
+  make %{?_smp_mflags}
+  cd ..
+done
 
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+for component in "core" "kinesis" "s3"; do
+  cd aws-cpp-sdk-$component
+  make DESTDIR=%{buildroot} install
+  cd ..
+done
 rm -rf %{buildroot}%{_lib64dir}/cmake
 
 %clean
@@ -109,12 +136,13 @@ rm -rf %{buildroot}/*
     %defattr(-,root,root,0755)
     %exclude %{_includedir}/aws/core
     %exclude %{_includedir}/aws/kinesis
+    %exclude %{_includedir}/aws/s3
     %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-core.pc
     %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-kinesis.pc
+    %exclude %{_lib64dir}/pkgconfig/aws-cpp-sdk-s3.pc
     %exclude %{_lib64dir}/libaws-cpp-sdk-core.so
-    %exclude %{_lib64dir}/libaws-cpp-sdk-core.so
-    %{_lib64dir}/*
-    %{_includedir}/*
+    %exclude %{_lib64dir}/libaws-cpp-sdk-kinesis.so
+    %exclude %{_lib64dir}/libaws-cpp-sdk-s3.so
 
 %files -n aws-sdk-core
     %defattr(-,root,root,0755)
@@ -134,7 +162,18 @@ rm -rf %{buildroot}/*
     %defattr(-,root,root,0755)
     %{_lib64dir}/libaws-cpp-sdk-kinesis.so
 
+%files -n aws-sdk-s3
+    %defattr(-,root,root,0755)
+    %{_includedir}/aws/s3/*
+    %{_lib64dir}/pkgconfig/aws-cpp-sdk-s3.pc
+
+%files -n aws-s3-libs
+    %defattr(-,root,root,0755)
+    %{_lib64dir}/libaws-cpp-sdk-s3.so
+
 %changelog
+*   Thu May 03 2018 Anish Swaminathan <anishs@vmware.com> 1.4.33-3
+-   Add s3 and only build the core, kinesis and s3
 *   Thu Apr 12 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.33-2
 -   Split core and kinesis to separate pkgs
 *   Wed Apr 11 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.33-1
