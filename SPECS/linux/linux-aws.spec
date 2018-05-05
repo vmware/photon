@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.98
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -51,6 +51,16 @@ Patch34:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch35:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 # Fix for CVE-2017-18255
 Patch36:        0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
+# Fix for CVE-2017-18216
+Patch37:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
+# Fix for CVE-2018-8043
+Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
+# Fix for CVE-2018-8087
+Patch39:        0001-mac80211_hwsim-fix-possible-memory-leak-in-hwsim_new.patch
+# Fix for CVE-2017-18241
+Patch40:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
+# Fix for CVE-2017-18224
+Patch41:        0001-ocfs2-ip_alloc_sem-should-be-taken-in-ocfs2_get_bloc.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -217,6 +227,11 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
+%patch41 -p1
 
 %patch52 -p1
 %patch53 -p1
@@ -436,6 +451,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.98-2
+-   Fix CVE-2017-18216, CVE-2018-8043, CVE-2018-8087, CVE-2017-18241,
+-   CVE-2017-18224.
+-   Disable floppy driver support (CONFIG_BLK_DEV_FD) in config-aws.
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.98-1
 -   Update to version 4.9.98
 *   Wed May 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.97-3

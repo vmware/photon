@@ -1,0 +1,38 @@
+From 0ddcff49b672239dda94d70d0fcf50317a9f4b51 Mon Sep 17 00:00:00 2001
+From: "weiyongjun (A)" <weiyongjun1@huawei.com>
+Date: Thu, 18 Jan 2018 02:23:34 +0000
+Subject: [PATCH] mac80211_hwsim: fix possible memory leak in
+ hwsim_new_radio_nl()
+
+'hwname' is malloced in hwsim_new_radio_nl() and should be freed
+before leaving from the error handling cases, otherwise it will cause
+memory leak.
+
+Fixes: ff4dd73dd2b4 ("mac80211_hwsim: check HWSIM_ATTR_RADIO_NAME length")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Reviewed-by: Ben Hutchings <ben.hutchings@codethink.co.uk>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/net/wireless/mac80211_hwsim.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 2681b533..95e9641 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -3084,8 +3084,10 @@ static int hwsim_new_radio_nl(struct sk_buff *msg, struct genl_info *info)
+ 	if (info->attrs[HWSIM_ATTR_REG_CUSTOM_REG]) {
+ 		u32 idx = nla_get_u32(info->attrs[HWSIM_ATTR_REG_CUSTOM_REG]);
+ 
+-		if (idx >= ARRAY_SIZE(hwsim_world_regdom_custom))
++		if (idx >= ARRAY_SIZE(hwsim_world_regdom_custom)) {
++			kfree(hwname);
+ 			return -EINVAL;
++		}
+ 		param.regd = hwsim_world_regdom_custom[idx];
+ 	}
+ 
+-- 
+2.7.4
+
