@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.124
-Release:       2%{?dist}
+Version:       4.4.131
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d5241400e6e5ed97fbdba1f92cf62c0a4382a30a
+%define sha1 linux=6811784d7abf4cd84f99c188c397b893deb35551
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -37,6 +37,12 @@ Patch22:       vsock-transport-for-9p.patch
 Patch23:       p9fs_dir_readdir-offset-support.patch
 Patch24:       Implement-the-f-xattrat-family-of-functions.patch
 Patch26:       init-do_mounts-recreate-dev-root.patch
+# Fixes for CVE-2018-1000026
+Patch27:       0001-net-create-skb_gso_validate_mac_len.patch
+Patch28:       0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
+# Fix for CVE-2017-18255
+Patch29:       0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
+
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
 Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
@@ -114,6 +120,9 @@ The Linux package contains the Linux kernel doc files
 %patch23 -p1
 %patch24 -p1
 %patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -217,6 +226,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-1
+-   Update to version 4.4.131
+*   Wed May 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-2
+-   Fix CVE-2017-18255.
+*   Mon Apr 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-1
+-   Update to version 4.4.130 and fix CVE-2018-1000026.
 *   Thu Apr 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-2
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Tue Mar 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-1

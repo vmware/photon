@@ -1,14 +1,14 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.4.124
-Release:	2%{?dist}
+Version:	4.4.131
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d5241400e6e5ed97fbdba1f92cf62c0a4382a30a
+%define sha1 linux=6811784d7abf4cd84f99c188c397b893deb35551
 BuildArch:	noarch
 # From SPECS/linux and used by linux-esx only
 # It provides f*xattrat syscalls
@@ -29,6 +29,10 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-1
+-   Update to version 4.4.131
+*   Mon Apr 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.130-1
+-   Update to version 4.4.130
 *   Thu Apr 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-2
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Tue Mar 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.124-1
