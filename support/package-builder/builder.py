@@ -213,7 +213,7 @@ def buildSourcesList(yamlDir, blackListPkgs, logger, singleFile=True):
             sourceName=listSourceNames[0]
             sha1 = constants.specData.getSHA1(package, sourceName)
             if sha1 is not None:
-                PullSources.get(sourceName, sha1, yamlSourceDir, constants.pullsourcesConfig, logger)
+                PullSources.get(package, sourceName, sha1, yamlSourceDir, constants.pullsourcesConfig, logger)
 
         if not singleFile:
             yamlFile = open(yamlSourceDir+"/"+ossname+"-"+ossversion+".yaml", "w")
