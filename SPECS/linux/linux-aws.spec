@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.98
+Version:        4.9.99
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5a7f5134f230ebf3f295b67e6232a5087c86fcad
+%define sha1 linux=d35adbca6133a7b5a382bd523f63322d0d56aeff
 Source1:	config-aws
 Source2:	initramfs.trigger
 # common
@@ -436,6 +436,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed May 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.99-1
+-   Update to version 4.9.99
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.98-1
 -   Update to version 4.9.98
 *   Wed May 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.97-3
