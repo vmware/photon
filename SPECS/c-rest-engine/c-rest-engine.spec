@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -13,6 +13,7 @@ Source0:       %{name}-%{version}.tar.gz
 Patch0:        c-rest-engine-aarch64.patch
 Patch1:        c-rest-engine-fix-log-file-len.patch
 Patch2:        preprocess-timeout.patch
+Patch3:        fd_leak.patch
 %define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
 
 %description
@@ -33,6 +34,7 @@ development libs and header files for c-rest-engine
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p3
 
 %build
 cd build
@@ -66,6 +68,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed May 08 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-3
+-  Appying patch for fd leak issue.
 *  Fri Feb 23 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-2
 -  Appying patch for preprocess timeout.
 *  Wed Feb 14 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-1
