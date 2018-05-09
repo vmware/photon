@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.98
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.99
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5a7f5134f230ebf3f295b67e6232a5087c86fcad
+%define sha1 linux=d35adbca6133a7b5a382bd523f63322d0d56aeff
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -55,8 +55,6 @@ Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 # Fixes for CVE-2018-1000026
 Patch36:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch37:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
-# Fix for CVE-2017-18255
-Patch38:        0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
 # Fix for CVE-2017-18216
 Patch39:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 # Fix for CVE-2018-8043
@@ -194,7 +192,6 @@ EOF
 %patch35 -p1
 %patch36 -p1
 %patch37 -p1
-%patch38 -p1
 %patch39 -p1
 %patch40 -p1
 %patch41 -p1
@@ -347,6 +344,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed May 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.99-1
+-   Update to version 4.9.99
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.98-2
 -   Fix CVE-2017-18216, CVE-2018-8043, CVE-2018-8087, CVE-2017-18241,
 -   CVE-2017-18224.
