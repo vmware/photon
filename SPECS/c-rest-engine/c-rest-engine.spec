@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -17,6 +17,7 @@ Patch1:        preprocess-timeout.patch
 Patch2:        typo_fixes.patch
 Patch3:        ssl_read_error.patch
 Patch4:        persistent_connection.patch
+Patch5:        fd_leak.patch
 %define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
 
 %description
@@ -40,6 +41,7 @@ development libs and header files for c-rest-engine
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 cd build
@@ -72,6 +74,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed May 09 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-5
+-  Adding patch for file decriptor leak issue.
 *  Thu Mar 22 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-4
 -  Adding support for persistent connection.
 *  Mon Mar 05 2018 Kumar Kaushik <kaushikk@vmware.com> 1.2-3
