@@ -1,0 +1,93 @@
+From 71654c6fbe669c98c6c8a27cd425713eb916642a Mon Sep 17 00:00:00 2001
+From: Kumar Kaushik <kaushikk@vmware.com>
+Date: Wed, 9 May 2018 12:27:33 -0700
+Subject: [PATCH] Fixing file descriptor leak in case of SSL_accept failure
+
+Change-Id: If5632e67da7843d7aa7ac48f1363dc58bbea2acb
+---
+ transport/posix/socket.c | 43 ++++++++++++++++++++++++-------------------
+ 1 file changed, 24 insertions(+), 19 deletions(-)
+
+diff --git a/transport/posix/socket.c b/transport/posix/socket.c
+index f50356d..364ce0e 100644
+--- a/transport/posix/socket.c
++++ b/transport/posix/socket.c
+@@ -1160,8 +1160,6 @@ VmSockPosixCloseSocket(
+     }
+     BAIL_ON_VMREST_ERROR(dwError);
+ 
+-    VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Closing socket with fd %d, Socket Type %u ( 2-Io / 5-Timer )", pSocket->fd, pSocket->type);
+-
+     pTimerSocket = pSocket->pTimerSocket;
+ 
+     /**** Close the timer socket ****/
+@@ -1196,15 +1194,20 @@ VmSockPosixCloseSocket(
+     /**** Delete from queue if this is NOT timeout ****/
+     if ((pSocket->type == VM_SOCK_TYPE_SERVER) && (!(pSocket->bTimerExpired)))
+     {
+-         dwError = VmSockPosixDeleteEventFromQueue(
+-                       pRESTHandle,
+-                       pRESTHandle->pSockContext->pEventQueue,
+-                       pSocket
+-                       );
+-         BAIL_ON_VMREST_ERROR(dwError);
++        dwError = VmSockPosixDeleteEventFromQueue(
++                      pRESTHandle,
++                      pRESTHandle->pSockContext->pEventQueue,
++                      pSocket
++                      );
++        if (dwError == VM_SOCK_POSIX_ERROR_SYS_CALL_FAILED)
++        {
++            VMREST_LOG_WARNING(pRESTHandle,"Delete of IO socket fd %d from event queue failed, still progressing with conn close", pSocket->fd);
++            dwError = REST_ENGINE_SUCCESS;
++        }
++        BAIL_ON_VMREST_ERROR(dwError);
+     }
+ 
+-    /**** Close IO socket fd ****/
++    /**** Cleanup the SSL object associated with connection ****/
+     if (pRESTHandle->pSSLInfo->isSecure && pSocket->ssl && (pSocket->type != VM_SOCK_TYPE_TIMER))
+     {
+         if (pSocket->bSSLHandShakeCompleted)
+@@ -1220,29 +1223,31 @@ VmSockPosixCloseSocket(
+         pSocket->ssl = NULL;
+     }
+ 
+-    if (pSocket->fd >= 0)
++cleanup:
++
++    /**** Close IO socket fd ****/
++    if (pSocket && pSocket->fd >= 0)
+     {
++        VMREST_LOG_INFO(pRESTHandle,"C-REST-ENGINE: Closing socket with fd %d, Socket Type %u ( 2-Io / 5-Timer )", pSocket->fd, pSocket->type);
+         close(pSocket->fd);
+         pSocket->fd = -1;
+     }
+ 
+-    VmRESTUnlockMutex(pSocket->pMutex);
+-    bLockedIO = FALSE;
+-
+-cleanup:
++    if (bLockedIO)
++    {
++        VmRESTUnlockMutex(pSocket->pMutex);
++        bLockedIO = FALSE;
++    }
+ 
+     return dwError;
+ 
+ error:
++    VMREST_LOG_ERROR(pRESTHandle,"Error while closing socket..dwError = %u", dwError);
+ 
+     if (bLockedTimer)
+     {
+         VmRESTUnlockMutex(pTimerSocket->pMutex);
+-    }
+-
+-    if (bLockedIO)
+-    {
+-        VmRESTUnlockMutex(pSocket->pMutex);
++        bLockedTimer = FALSE;
+     }
+ 
+     goto cleanup;
