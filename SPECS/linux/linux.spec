@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.98
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.99
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5a7f5134f230ebf3f295b67e6232a5087c86fcad
+%define sha1 linux=d35adbca6133a7b5a382bd523f63322d0d56aeff
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -53,8 +53,6 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 # Fixes for CVE-2018-1000026
 Patch34:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch35:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
-# Fix for CVE-2017-18255
-Patch36:        0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
 # Fix for CVE-2017-18216
 Patch37:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 # Fix for CVE-2018-8043
@@ -185,7 +183,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
-%patch36 -p1
 %patch37 -p1
 %patch38 -p1
 %patch39 -p1
@@ -373,6 +370,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed May 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.99-1
+-   Update to version 4.9.99
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.98-2
 -   Fix CVE-2017-18216, CVE-2018-8043, CVE-2018-8087, CVE-2017-18241,
 -   CVE-2017-18224.
