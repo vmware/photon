@@ -1,7 +1,7 @@
 Summary:	RNG deamon and tools
 Name:		rng-tools
 Version:	5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		https://sourceforge.net/projects/gkernel/
 Group:          System Environment/Base
@@ -50,5 +50,7 @@ make  %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+*       Thu May 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5-2
+-       Start rngd before cloud-init-local.service to speed up booting.
 *       Wed Oct 26 2016 Alexey Makhalov <amakhalov@vmware.com> 5-1
 -	Initial version.
