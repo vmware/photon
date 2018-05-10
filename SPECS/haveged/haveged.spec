@@ -3,7 +3,7 @@
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
 Version:        1.9.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
 Distribution:   Discus
@@ -106,8 +106,10 @@ rm -rf %{buildroot}
 
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.1-3
--	GA - Bump release of all rpms
+* Thu May 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.9.1-4
+- Start haveged before cloud-init-local.service to speed up booting.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.1-3
+- GA - Bump release of all rpms
 * Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.9.1-2
 - Add systemd requirement.
 * Sun Jan 13 2013 Jirka Hladky <hladky.jiri@gmail.com> - 1.7h-0
