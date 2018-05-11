@@ -3,15 +3,15 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.6
-Release:        2%{?dist}
+Version:        2.9.8
+Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha1    libxml2=4ab4605fce0f82a004c3b2aeb368efc8f356e020
+%define sha1    libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
 Provides:       pkgconfig(libxml-2.0)
 
 %description
@@ -112,6 +112,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Fri May 11 2018 Sharath George <sharathg@vmware.com> 2.9.8-1
+-   Update to 2.9.8
 *   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.9.6-2
 -   Release bump to use python 3.5.4.
 *   Wed Oct 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
