@@ -43,11 +43,10 @@ if [[   $# -gt 0 ]] && [[ $1 == 'install' ]]; then
     mkswap -v1 ${BUILDROOT}/cache/swapfile
     swapon ${BUILDROOT}/cache/swapfile
     rpm   --root ${BUILDROOT} --initdb
-    tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes
+    tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes -c /root/photon-2.0/stage/photon_iso/photon-chroot/tmp/local_repo_conf.conf
 else
-    RPMPKG="$(find RPMS -name 'filesystem-[0-9]*.rpm' -print)"
-    [ -z ${RPMPKG} ] && fail "  Filesystem rpm package missing: Can not continue"
-    run_command "   Installing filesystem" "rpm -Uvh --nodeps --root ${BUILDROOT} --dbpath /var/lib/rpm ${RPMPKG}" "${LOGFILE}"
+    rpm   --root ${BUILDROOT} --initdb
+    tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes -c $1
 fi
  
 #   Ommited in the filesystem.spec file - not needed for booting

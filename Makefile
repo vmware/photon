@@ -134,6 +134,7 @@ packages-micro: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOUR
 
 live-iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES_MINIMAL)
 	@echo "Building Photon Minimal LIVE ISO..."
+	createrepo $(PHOTON_RPMS_DIR)
 	@cd $(PHOTON_INSTALLER_DIR) && \
         $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-live-iso-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
@@ -170,6 +171,7 @@ packages-minimal: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SO
 
 iso: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Building Photon Full ISO..."
+	createrepo $(PHOTON_RPMS_DIR)
 	@cd $(PHOTON_INSTALLER_DIR) && \
         sudo $(PHOTON_INSTALLER) \
                 -i $(PHOTON_STAGE)/photon-$(PHOTON_RELEASE_VERSION)-$(PHOTON_BUILD_NUMBER).iso \
@@ -505,12 +507,14 @@ photon-vagrant-local: check-packer check-vagrant
 
 cloud-image: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(PHOTON_PACKAGES)
 	@echo "Building cloud image $(IMG_NAME)..."
+	createrepo $(PHOTON_RPMS_DIR)
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) $(IMG_NAME) $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
 
 
 cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(PHOTON_PACKAGES)
 	@echo "Building cloud images - gce, ami, azure and ova..."
+	createrepo $(PHOTON_RPMS_DIR)
 	@cd $(PHOTON_CLOUD_IMAGE_BUILDER_DIR)
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) gce $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ami $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
