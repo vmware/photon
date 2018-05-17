@@ -1,0 +1,7 @@
+[local_repo]
+name=stage-rpms
+baseurl=file:///local_repo
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=0
+enabled=1
+skip_if_unavailable=True

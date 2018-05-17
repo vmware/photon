@@ -81,8 +81,6 @@ fi
 
 cp sample_ks.cfg ${WORKINGDIR}/isolinux/
 
-find ${BUILDROOT} -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
-
 rm -f ${BUILDROOT}/installer/*.pyc
 rm -rf ${BUILDROOT}/installer/BUILD_DVD
 # Copy package list json files, dereference symlinks
@@ -162,6 +160,8 @@ for rpm_name in $RPM_LIST; do
     fi
 done
 )
+
+find ${WORKINGDIR}/RPMS -name linux-[0-9]*.rpm | head -1 | xargs rpm2cpio | cpio -iv --to-stdout ./boot/vmlinuz* > ${WORKINGDIR}/isolinux/vmlinuz
 
 # Work in sub-shell using ( ... ) to come back to original folder.
 (
