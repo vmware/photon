@@ -1,16 +1,16 @@
-Summary:    High-performance HTTP server and reverse proxy
-Name:       nginx
-Version:    1.11.13
-Release:    4%{?dist}
-License:    BSD-2-Clause
-URL:        http://nginx.org/download/nginx-1.11.13.tar.gz
-Group:      Applications/System
-Vendor:     VMware, Inc.
-Distribution: Photon
-Source0:    %{name}-%{version}.tar.gz
-%define sha1 nginx=84f27729754796181dc39d47da761c7e85eb3ae2
-Patch0:     CVE-2017-7529.patch
-Source1:    nginx.service
+Summary:        High-performance HTTP server and reverse proxy
+Name:           nginx
+Version:        1.13.8
+Release:        1%{?dist}
+License:        BSD-2-Clause
+URL:            http://nginx.org/download/nginx-%{version}.tar.gz
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    nginx=a1f9348c9c46f449a0b549d0519dd34191d30cee
+Patch0:         CVE-2017-7529.patch
+Source1:        nginx.service
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 %description
@@ -25,8 +25,8 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
     --prefix=%{_sysconfdir}//nginx              \
     --sbin-path=/usr/sbin/nginx                 \
     --conf-path=/etc/nginx/nginx.conf           \
-    --pid-path=/var/run/nginx.pid         \
-    --lock-path=/var/run/nginx.lock       \
+    --pid-path=/var/run/nginx.pid               \
+    --lock-path=/var/run/nginx.lock             \
     --error-log-path=/var/log/nginx/error.log   \
     --http-log-path=/var/log/nginx/access.log   \
     --with-http_ssl_module \
@@ -52,6 +52,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %dir %{_var}/log/nginx
 
 %changelog
+*   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.13.8-1
+-   Update to version 1.13.8 to support nginx-ingress
 *   Tue Oct 17 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.11.13-4
 -   Add patch for CVE-2017-7529
 *   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.11.13-3
