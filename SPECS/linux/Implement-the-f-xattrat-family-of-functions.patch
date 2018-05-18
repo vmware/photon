@@ -19,10 +19,10 @@ index e62f440..11d05f9 100644
  374	i386	userfaultfd		sys_userfaultfd
  375	i386	membarrier		sys_membarrier
  376	i386	mlock2			sys_mlock2
-+377	i386	fsetxattrat		sys_fsetxattrat
-+378	i386	fgetxattrat		sys_fgetxattrat
-+379	i386	flistxattrat		sys_flistxattrat
-+380	i386	fremovexattrat		sys_fremovexattrat
++448	i386	fsetxattrat		sys_fsetxattrat
++449	i386	fgetxattrat		sys_fgetxattrat
++450	i386	flistxattrat		sys_flistxattrat
++451	i386	fremovexattrat		sys_fremovexattrat
 diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
 index 314a90b..3c2dfa1 100644
 --- a/arch/x86/entry/syscalls/syscall_64.tbl
@@ -31,10 +31,10 @@ index 314a90b..3c2dfa1 100644
  323	common	userfaultfd		sys_userfaultfd
  324	common	membarrier		sys_membarrier
  325	common	mlock2			sys_mlock2
-+326	common	fsetxattrat		sys_fsetxattrat
-+327	common	fgetxattrat		sys_fgetxattrat
-+328	common	flistxattrat		sys_flistxattrat
-+329	common	fremovexattrat		sys_fremovexattrat
++384	common	fsetxattrat		sys_fsetxattrat
++385	common	fgetxattrat		sys_fgetxattrat
++386	common	flistxattrat		sys_flistxattrat
++387	common	fremovexattrat		sys_fremovexattrat
  
  #
  # x32-specific system call numbers start at 512 to avoid cache impact
