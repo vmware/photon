@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.99
+Version:        4.9.100
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d35adbca6133a7b5a382bd523f63322d0d56aeff
+%define sha1 linux=cb106e7408c3eb865c455296d37d0427d01197d2
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -81,6 +81,38 @@ Patch62: 0151-ipv6-prevent-speculative-execution.patch
 Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
+
+# Fix CVE-2018-3639 (Speculative Store Bypass)
+Patch201: 0002-x86-nospec-Simplify-alternative_msr_write.patch
+Patch202: 0003-x86-bugs-Concentrate-bug-detection-into-a-separate-f.patch
+Patch203: 0004-x86-bugs-Concentrate-bug-reporting-into-a-separate-f.patch
+Patch204: 0005-x86-bugs-Read-SPEC_CTRL-MSR-during-boot-and-re-use-r.patch
+Patch205: 0006-x86-bugs-KVM-Support-the-combination-of-guest-and-ho.patch
+Patch206: 0007-x86-bugs-Expose-sys-.-spec_store_bypass.patch
+Patch207: 0008-x86-cpufeatures-Add-X86_FEATURE_RDS.patch
+Patch208: 0009-x86-bugs-Provide-boot-parameters-for-the-spec_store_.patch
+Patch209: 0010-x86-bugs-intel-Set-proper-CPU-features-and-setup-RDS.patch
+Patch210: 0011-x86-bugs-Whitelist-allowed-SPEC_CTRL-MSR-values.patch
+Patch211: 0012-x86-bugs-AMD-Add-support-to-disable-RDS-on-Fam-15-16.patch
+Patch212: 0013-x86-KVM-VMX-Expose-SPEC_CTRL-Bit-2-to-the-guest.patch
+Patch213: 0014-x86-speculation-Create-spec-ctrl.h-to-avoid-include-.patch
+Patch214: 0015-prctl-Add-speculation-control-prctls.patch
+Patch215: 0016-x86-process-Allow-runtime-control-of-Speculative-Sto.patch
+Patch216: 0017-x86-speculation-Add-prctl-for-Speculative-Store-Bypa.patch
+Patch217: 0018-nospec-Allow-getting-setting-on-non-current-task.patch
+Patch218: 0019-proc-Provide-details-on-speculation-flaw-mitigations.patch
+Patch219: 0020-seccomp-Enable-speculation-flaw-mitigations.patch
+Patch220: 0021-x86-bugs-Make-boot-modes-__ro_after_init.patch
+Patch221: 0022-prctl-Add-force-disable-speculation.patch
+Patch222: 0023-seccomp-Use-PR_SPEC_FORCE_DISABLE.patch
+Patch223: 0024-seccomp-Add-filter-flag-to-opt-out-of-SSB-mitigation.patch
+Patch224: 0025-seccomp-Move-speculation-migitation-control-to-arch-.patch
+Patch225: 0026-x86-speculation-Make-seccomp-the-default-mode-for-Sp.patch
+Patch226: 0027-x86-bugs-Rename-_RDS-to-_SSBD.patch
+Patch227: 0028-proc-Use-underscores-for-SSBD-in-status.patch
+Patch228: 0029-Documentation-spec_ctrl-Do-some-minor-cleanups.patch
+Patch229: 0030-x86-bugs-Fix-__ssb_select_mitigation-return-type.patch
+Patch230: 0031-x86-bugs-Make-cpu_show_common-static.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -214,6 +246,37 @@ EOF
 %patch65 -p1
 %patch66 -p1
 
+%patch201 -p1
+%patch202 -p1
+%patch203 -p1
+%patch204 -p1
+%patch205 -p1
+%patch206 -p1
+%patch207 -p1
+%patch208 -p1
+%patch209 -p1
+%patch210 -p1
+%patch211 -p1
+%patch212 -p1
+%patch213 -p1
+%patch214 -p1
+%patch215 -p1
+%patch216 -p1
+%patch217 -p1
+%patch218 -p1
+%patch219 -p1
+%patch220 -p1
+%patch221 -p1
+%patch222 -p1
+%patch223 -p1
+%patch224 -p1
+%patch225 -p1
+%patch226 -p1
+%patch227 -p1
+%patch228 -p1
+%patch229 -p1
+%patch230 -p1
+
 # secure
 %patch13 -p1
 %patch14 -p1
@@ -344,6 +407,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed May 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.100-1
+-   Update to version 4.9.100 and fix CVE-2018-3639
 *   Wed May 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.99-1
 -   Update to version 4.9.99
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.98-2

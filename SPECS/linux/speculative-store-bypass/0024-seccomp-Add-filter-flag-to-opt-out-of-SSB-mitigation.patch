@@ -1,0 +1,139 @@
+From e3aeddbe8cc7c4c8d7d42f408f66b12dca0fa683 Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Thu, 3 May 2018 14:56:12 -0700
+Subject: [PATCH 24/31] seccomp: Add filter flag to opt-out of SSB mitigation
+
+If a seccomp user is not interested in Speculative Store Bypass mitigation
+by default, it can set the new SECCOMP_FILTER_FLAG_SPEC_ALLOW flag when
+adding filters.
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ include/linux/seccomp.h                       |  3 ++-
+ include/uapi/linux/seccomp.h                  |  3 ++-
+ kernel/seccomp.c                              | 19 +++++++++++--------
+ tools/testing/selftests/seccomp/seccomp_bpf.c |  6 +++++-
+ 4 files changed, 20 insertions(+), 11 deletions(-)
+
+diff --git a/include/linux/seccomp.h b/include/linux/seccomp.h
+index ecc296c..50c460a 100644
+--- a/include/linux/seccomp.h
++++ b/include/linux/seccomp.h
+@@ -3,7 +3,8 @@
+ 
+ #include <uapi/linux/seccomp.h>
+ 
+-#define SECCOMP_FILTER_FLAG_MASK	(SECCOMP_FILTER_FLAG_TSYNC)
++#define SECCOMP_FILTER_FLAG_MASK	(SECCOMP_FILTER_FLAG_TSYNC	| \
++					 SECCOMP_FILTER_FLAG_SPEC_ALLOW)
+ 
+ #ifdef CONFIG_SECCOMP
+ 
+diff --git a/include/uapi/linux/seccomp.h b/include/uapi/linux/seccomp.h
+index 0f238a4..8bdf288 100644
+--- a/include/uapi/linux/seccomp.h
++++ b/include/uapi/linux/seccomp.h
+@@ -15,7 +15,8 @@
+ #define SECCOMP_SET_MODE_FILTER	1
+ 
+ /* Valid flags for SECCOMP_SET_MODE_FILTER */
+-#define SECCOMP_FILTER_FLAG_TSYNC	1
++#define SECCOMP_FILTER_FLAG_TSYNC	(1UL << 0)
++#define SECCOMP_FILTER_FLAG_SPEC_ALLOW	(1UL << 2)
+ 
+ /*
+  * All BPF programs must return a 32-bit value.
+diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+index a0bd6ea..62a60e7 100644
+--- a/kernel/seccomp.c
++++ b/kernel/seccomp.c
+@@ -230,7 +230,8 @@ static inline void spec_mitigate(struct task_struct *task,
+ }
+ 
+ static inline void seccomp_assign_mode(struct task_struct *task,
+-				       unsigned long seccomp_mode)
++				       unsigned long seccomp_mode,
++				       unsigned long flags)
+ {
+ 	assert_spin_locked(&task->sighand->siglock);
+ 
+@@ -240,8 +241,9 @@ static inline void seccomp_assign_mode(struct task_struct *task,
+ 	 * filter) is set.
+ 	 */
+ 	smp_mb__before_atomic();
+-	/* Assume seccomp processes want speculation flaw mitigation. */
+-	spec_mitigate(task, PR_SPEC_STORE_BYPASS);
++	/* Assume default seccomp processes want spec flaw mitigation. */
++	if ((flags & SECCOMP_FILTER_FLAG_SPEC_ALLOW) == 0)
++		spec_mitigate(task, PR_SPEC_STORE_BYPASS);
+ 	set_tsk_thread_flag(task, TIF_SECCOMP);
+ }
+ 
+@@ -309,7 +311,7 @@ static inline pid_t seccomp_can_sync_threads(void)
+  * without dropping the locks.
+  *
+  */
+-static inline void seccomp_sync_threads(void)
++static inline void seccomp_sync_threads(unsigned long flags)
+ {
+ 	struct task_struct *thread, *caller;
+ 
+@@ -350,7 +352,8 @@ static inline void seccomp_sync_threads(void)
+ 		 * allow one thread to transition the other.
+ 		 */
+ 		if (thread->seccomp.mode == SECCOMP_MODE_DISABLED)
+-			seccomp_assign_mode(thread, SECCOMP_MODE_FILTER);
++			seccomp_assign_mode(thread, SECCOMP_MODE_FILTER,
++					    flags);
+ 	}
+ }
+ 
+@@ -469,7 +472,7 @@ static long seccomp_attach_filter(unsigned int flags,
+ 
+ 	/* Now that the new filter is in place, synchronize to all threads. */
+ 	if (flags & SECCOMP_FILTER_FLAG_TSYNC)
+-		seccomp_sync_threads();
++		seccomp_sync_threads(flags);
+ 
+ 	return 0;
+ }
+@@ -729,7 +732,7 @@ static long seccomp_set_mode_strict(void)
+ #ifdef TIF_NOTSC
+ 	disable_TSC();
+ #endif
+-	seccomp_assign_mode(current, seccomp_mode);
++	seccomp_assign_mode(current, seccomp_mode, 0);
+ 	ret = 0;
+ 
+ out:
+@@ -787,7 +790,7 @@ static long seccomp_set_mode_filter(unsigned int flags,
+ 	/* Do not free the successfully attached filter. */
+ 	prepared = NULL;
+ 
+-	seccomp_assign_mode(current, seccomp_mode);
++	seccomp_assign_mode(current, seccomp_mode, flags);
+ out:
+ 	spin_unlock_irq(&current->sighand->siglock);
+ 	if (flags & SECCOMP_FILTER_FLAG_TSYNC)
+diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
+index f689981..12a2b81 100644
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -1692,7 +1692,11 @@ TEST_F_SIGNAL(TRACE_syscall, kill_after_ptrace, SIGSYS)
+ #endif
+ 
+ #ifndef SECCOMP_FILTER_FLAG_TSYNC
+-#define SECCOMP_FILTER_FLAG_TSYNC 1
++#define SECCOMP_FILTER_FLAG_TSYNC (1UL << 0)
++#endif
++
++#ifndef SECCOMP_FILTER_FLAG_SPEC_ALLOW
++#define SECCOMP_FILTER_FLAG_SPEC_ALLOW (1UL << 2)
+ #endif
+ 
+ #ifndef seccomp
+-- 
+2.7.4
+

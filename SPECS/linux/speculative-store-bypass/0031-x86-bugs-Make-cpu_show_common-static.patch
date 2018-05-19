@@ -1,0 +1,31 @@
+From 59d0b0b2d5d33d5cd40b4b033d031abf6f079685 Mon Sep 17 00:00:00 2001
+From: Jiri Kosina <jkosina@suse.cz>
+Date: Thu, 10 May 2018 22:47:32 +0200
+Subject: [PATCH 31/31] x86/bugs: Make cpu_show_common() static
+
+cpu_show_common() is not used outside of arch/x86/kernel/cpu/bugs.c, so
+make it static.
+
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/cpu/bugs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index c7b4d11..8187642 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -639,7 +639,7 @@ void x86_spec_ctrl_setup_ap(void)
+ 
+ #ifdef CONFIG_SYSFS
+ 
+-ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr,
++static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr,
+ 			char *buf, unsigned int bug)
+ {
+ 	if (!boot_cpu_has_bug(bug))
+-- 
+2.7.4
+

@@ -1,0 +1,31 @@
+From 6c2e94c3774e7001a3c2b97150e2f876e62414e1 Mon Sep 17 00:00:00 2001
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Date: Wed, 9 May 2018 21:41:38 +0200
+Subject: [PATCH 28/31] proc: Use underscores for SSBD in 'status'
+
+The style for the 'status' file is CamelCase or this. _.
+
+Fixes: fae1fa0fc ("proc: Provide details on speculation flaw mitigations")
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ fs/proc/array.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/proc/array.c b/fs/proc/array.c
+index 25a8992..9ef0fbe 100644
+--- a/fs/proc/array.c
++++ b/fs/proc/array.c
+@@ -347,7 +347,7 @@ static inline void task_seccomp(struct seq_file *m, struct task_struct *p)
+ #ifdef CONFIG_SECCOMP
+ 	seq_put_decimal_ull(m, "\nSeccomp:\t", p->seccomp.mode);
+ #endif
+-	seq_printf(m, "\nSpeculation Store Bypass:\t");
++	seq_printf(m, "\nSpeculation_Store_Bypass:\t");
+ 	switch (arch_prctl_spec_ctrl_get(p, PR_SPEC_STORE_BYPASS)) {
+ 	case -EINVAL:
+ 		seq_printf(m, "unknown");
+-- 
+2.7.4
+
