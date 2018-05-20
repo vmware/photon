@@ -1,9 +1,9 @@
---- a/ceph_deploy/util/pkg_managers.py	2017-01-03 21:38:42.000000000 +0000
-+++ b/ceph_deploy/util/pkg_managers.py	2017-03-30 21:06:24.369709803 +0000
-@@ -181,6 +181,13 @@ class Yum(RPMManagerBase):
+--- ceph-deploy-1.5.39/ceph_deploy/util/pkg_managers.py 2016-08-15 07:34:53.000000000 -0500
++++ ceph-deploy-1.5.39-patched/ceph_deploy/util/pkg_managers.py 2018-05-19 00:18:57.940650317 -0500
+@@ -181,6 +181,13 @@
      executable = 'yum'
      name = 'yum'
- 
+
 +class Tdnf(RPMManagerBase):
 +    """
 +    The Tdnf Package manager
@@ -11,6 +11,6 @@
 +
 +    executable = 'tdnf'
 +    name = 'tdnf'
- 
+
  class Apt(PackageManager):
      """

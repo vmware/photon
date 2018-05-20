@@ -1,15 +1,15 @@
---- a/ceph_deploy/hosts/remotes.py	2017-01-03 21:38:42.000000000 +0000
-+++ b/ceph_deploy/hosts/remotes.py	2017-03-30 21:54:58.410977997 +0000
-@@ -14,6 +14,12 @@ def platform_information(_linux_distribu
+--- ceph-deploy-1.5.39/ceph_deploy/hosts/remotes.py     2017-09-01 06:30:23.000000000 -0500
++++ ceph-deploy-1.5.39-patched/ceph_deploy/hosts/remotes.py     2018-05-19 00:18:57.939650317 -0500
+@@ -14,6 +14,12 @@
      """ detect platform information from remote host """
      linux_distribution = _linux_distribution or platform.linux_distribution
      distro, release, codename = linux_distribution()
++
 +    if 'photon' in distro.lower():
 +        distro = 'photon'
-+        release = '1.0'
++        release = '2.0'
 +        codename = 'photon'
-+
 +
      if not codename and 'debian' in distro.lower():  # this could be an empty string in Debian
          debian_codenames = {
-             '8': 'jessie',
+             '10': 'buster',
