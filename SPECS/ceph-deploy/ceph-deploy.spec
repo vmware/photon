@@ -1,15 +1,15 @@
 %{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           ceph-deploy
-Version:        1.5.37
-Release:        3%{?dist}
+Version:        1.5.39
+Release:        1%{?dist}
 Url:            http://ceph.com/
 Summary:        Admin and deploy tool for Ceph
 License:        MIT
 Group:          System/Filesystems
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://pypi.python.org/packages/23/f0/f144b1b55534a3e10d269dbfbe092e0aaa1c4b826c24f5df9320ae9bdfce/%{name}-%{version}.tar.gz
+Source0:        https://files.pythonhosted.org/packages/63/59/c2752952b7867faa2d63ba47c47da96e2f43f5124029975b579020df3665/%{name}-%{version}.tar.gz
 %define sha1 ceph-deploy=5c19b318320f2729c5b15da7159aa9824b885c1a
 Patch0:		ceph-deploy-init.patch
 Patch1:		ceph-deploy-package-manager.patch
@@ -58,6 +58,8 @@ install -m 0755 -D scripts/ceph-deploy $RPM_BUILD_ROOT/usr/bin
 %{_bindir}/ceph-deploy
 
 %changelog
+*   Fri May 18 2018 Grant Curell <grant.curell@salientcrgt.com> 1.5.39-1
+-   Upgrading to version 1.5.39
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.37-3
 -   Use python2 explicitly
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.37-2

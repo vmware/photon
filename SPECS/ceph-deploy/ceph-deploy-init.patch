@@ -1,37 +1,39 @@
---- a/ceph_deploy/hosts/__init__.py	2017-01-03 21:38:42.000000000 +0000
-+++ b/ceph_deploy/hosts/__init__.py	2017-03-30 23:27:32.453109790 +0000
-@@ -7,7 +7,7 @@ on the type of distribution/version we a
+--- ceph-deploy-1.5.39/ceph_deploy/hosts/__init__.py    2017-04-28 12:32:51.000000000 -0500
++++ ceph-deploy-1.5.39-patched/ceph_deploy/hosts/__init__.py    2018-05-19 00:18:57.938650317 -0500
+@@ -7,7 +7,7 @@
  import logging
  from ceph_deploy import exc
  from ceph_deploy.util import versions
 -from ceph_deploy.hosts import debian, centos, fedora, suse, remotes, rhel
 +from ceph_deploy.hosts import debian, centos, fedora, suse, remotes, rhel, photon
  from ceph_deploy.connection import get_connection
- 
+
  logger = logging.getLogger()
-@@ -68,7 +68,7 @@ def get(hostname,
+@@ -68,7 +68,7 @@
      module.distro = module.normalized_name
-     module.is_el = module.normalized_name in ['redhat', 'centos', 'fedora', 'scientific', 'oracle']
+     module.is_el = module.normalized_name in ['redhat', 'centos', 'fedora', 'scientific', 'oracle', 'virtuozzo']
      module.is_rpm = module.normalized_name in ['redhat', 'centos',
--                                               'fedora', 'scientific', 'suse', 'oracle']
-+                                               'fedora', 'scientific', 'suse', 'oracle', 'photon']
+-                                               'fedora', 'scientific', 'suse', 'oracle', 'virtuozzo']
++                                               'fedora', 'scientific', 'suse', 'oracle', 'virtuozzo', 'photon']
      module.is_deb = not module.is_rpm
      module.release = release
      module.codename = codename
-@@ -97,6 +97,7 @@ def _get_distro(distro, fallback=None, u
+@@ -97,7 +97,8 @@
          'redhat': centos,
          'fedora': fedora,
          'suse': suse,
-+        'photon': photon,
+-        'virtuozzo' : centos
++        'virtuozzo' : centos,
++        'photon': photon
          }
- 
+
      if distro == 'redhat' and use_rhceph:
-@@ -115,6 +116,8 @@ def _normalized_distro_name(distro):
-         return 'oracle'
-     elif distro.startswith(('suse', 'opensuse')):
+@@ -118,6 +119,8 @@
          return 'suse'
-+    elif distro.startswith('photon'):
-+        return 'photon'
      elif distro.startswith('centos'):
          return 'centos'
++    elif distro.startswith('photon'):
++        return 'photon'
      elif distro.startswith('linuxmint'):
+         return 'ubuntu'
+     elif distro.startswith('virtuozzo'):

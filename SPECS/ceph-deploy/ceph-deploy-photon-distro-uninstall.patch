@@ -1,5 +1,5 @@
---- a/ceph_deploy/hosts/photon/uninstall.py	2017-03-30 23:17:51.357073655 +0000
-+++ b/ceph_deploy/hosts/photon/uninstall.py	2017-03-30 21:39:56.753696000 +0000
+--- ceph-deploy-1.5.39/ceph_deploy/hosts/photon/uninstall.py    2018-05-19 00:37:38.354704247 -0500
++++ ceph-deploy-1.5.39-patched/ceph_deploy/hosts/photon/uninstall.py    2018-05-19 00:18:57.939650317 -0500
 @@ -0,0 +1,8 @@
 +def uninstall(distro, purge=False):
 +    packages = [
