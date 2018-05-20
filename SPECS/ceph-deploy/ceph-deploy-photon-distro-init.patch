@@ -1,5 +1,5 @@
---- a/ceph_deploy/hosts/photon/__init__.py	2017-03-30 23:17:33.833686463 +0000
-+++ b/ceph_deploy/hosts/photon/__init__.py	2017-03-30 21:10:40.613127409 +0000
+--- ceph-deploy-1.5.39/ceph_deploy/hosts/photon/__init__.py     2018-05-19 00:37:38.354704247 -0500
++++ ceph-deploy-1.5.39-patched/ceph_deploy/hosts/photon/__init__.py     2018-05-19 00:18:57.939650317 -0500
 @@ -0,0 +1,23 @@
 +from . import mon  # noqa
 +from ceph_deploy.hosts.centos.install import repo_install  # noqa
@@ -23,4 +23,4 @@
 +    return 'systemd'
 +
 +def get_packager(module):
-+        return pkg_managers.Tdnf(module)
++        return pkg_managers.Yum(module)
