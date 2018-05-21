@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.99
+Version:        4.9.101
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d35adbca6133a7b5a382bd523f63322d0d56aeff
+%define sha1 linux=12b399649df63355823d482fd91711b1be3e7f1b
 Source1:	config-aws
 Source2:	initramfs.trigger
 # common
@@ -21,6 +21,7 @@ Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
 Patch5:         double-tcp_mem-limits.patch
 Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
 Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch8:         Implement-the-f-xattrat-family-of-functions.patch
 Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch11:        vsock-transport-for-9p.patch
@@ -201,6 +202,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
@@ -448,6 +450,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon May 21 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.101-1
+-   Update to version 4.9.101
+-   Add the f*xattrat family of syscalls.
 *   Wed May 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.99-1
 -   Update to version 4.9.99
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.98-2
