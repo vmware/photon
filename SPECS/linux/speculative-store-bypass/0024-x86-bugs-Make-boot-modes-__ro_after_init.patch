@@ -1,0 +1,43 @@
+From bb7394efb622c21daa838048937e0ef45674f413 Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Thu, 3 May 2018 15:03:30 -0700
+Subject: [PATCH 24/54] x86/bugs: Make boot modes __ro_after_init
+
+commit f9544b2b076ca90d887c5ae5d74fab4c21bb7c13 upstream
+
+There's no reason for these to be changed after boot.
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kernel/cpu/bugs.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 3760931..65114d2 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -128,7 +128,8 @@ static const char *spectre_v2_strings[] = {
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "Spectre V2 : " fmt
+ 
+-static enum spectre_v2_mitigation spectre_v2_enabled = SPECTRE_V2_NONE;
++static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
++	SPECTRE_V2_NONE;
+ 
+ void x86_spec_ctrl_set(u64 val)
+ {
+@@ -406,7 +407,7 @@ static void __init spectre_v2_select_mitigation(void)
+ #undef pr_fmt
+ #define pr_fmt(fmt)	"Speculative Store Bypass: " fmt
+ 
+-static enum ssb_mitigation ssb_mode = SPEC_STORE_BYPASS_NONE;
++static enum ssb_mitigation ssb_mode __ro_after_init = SPEC_STORE_BYPASS_NONE;
+ 
+ /* The kernel command line selection */
+ enum ssb_mitigation_cmd {
+-- 
+2.7.4
+
