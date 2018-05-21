@@ -1,0 +1,92 @@
+From ff78adefff46730763280872f6c78e9599b58eaf Mon Sep 17 00:00:00 2001
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Date: Wed, 25 Apr 2018 22:04:17 -0400
+Subject: [PATCH 04/54] x86/bugs: Concentrate bug reporting into a separate
+ function
+
+commit d1059518b4789cabe34bb4b714d07e6089c82ca1 upstream
+
+Those SysFS functions have a similar preamble, as such make common
+code to handle them.
+
+Suggested-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kernel/cpu/bugs.c | 46 ++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 32 insertions(+), 14 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index b8b0b6e..4d9c5fe 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -313,30 +313,48 @@ static void __init spectre_v2_select_mitigation(void)
+ #undef pr_fmt
+ 
+ #ifdef CONFIG_SYSFS
+-ssize_t cpu_show_meltdown(struct device *dev, struct device_attribute *attr, char *buf)
++
++ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr,
++			char *buf, unsigned int bug)
+ {
+-	if (!boot_cpu_has_bug(X86_BUG_CPU_MELTDOWN))
++	if (!boot_cpu_has_bug(bug))
+ 		return sprintf(buf, "Not affected\n");
+-	if (boot_cpu_has(X86_FEATURE_KAISER))
+-		return sprintf(buf, "Mitigation: PTI\n");
++
++	switch (bug) {
++	case X86_BUG_CPU_MELTDOWN:
++		if (boot_cpu_has(X86_FEATURE_KAISER))
++			return sprintf(buf, "Mitigation: PTI\n");
++
++		break;
++
++	case X86_BUG_SPECTRE_V1:
++		return sprintf(buf, "Mitigation: __user pointer sanitization\n");
++
++	case X86_BUG_SPECTRE_V2:
++		return sprintf(buf, "%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
++			       boot_cpu_has(X86_FEATURE_USE_IBPB) ? ", IBPB" : "",
++			       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
++			       spectre_v2_module_string());
++
++	default:
++		break;
++	}
++
+ 	return sprintf(buf, "Vulnerable\n");
+ }
+ 
++ssize_t cpu_show_meltdown(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return cpu_show_common(dev, attr, buf, X86_BUG_CPU_MELTDOWN);
++}
++
+ ssize_t cpu_show_spectre_v1(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+-	if (!boot_cpu_has_bug(X86_BUG_SPECTRE_V1))
+-		return sprintf(buf, "Not affected\n");
+-	return sprintf(buf, "Mitigation: __user pointer sanitization\n");
++	return cpu_show_common(dev, attr, buf, X86_BUG_SPECTRE_V1);
+ }
+ 
+ ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+-	if (!boot_cpu_has_bug(X86_BUG_SPECTRE_V2))
+-		return sprintf(buf, "Not affected\n");
+-
+-	return sprintf(buf, "%s%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
+-		       boot_cpu_has(X86_FEATURE_USE_IBPB) ? ", IBPB" : "",
+-		       boot_cpu_has(X86_FEATURE_USE_IBRS_FW) ? ", IBRS_FW" : "",
+-		       spectre_v2_module_string());
++	return cpu_show_common(dev, attr, buf, X86_BUG_SPECTRE_V2);
+ }
+ #endif
+-- 
+2.7.4
+

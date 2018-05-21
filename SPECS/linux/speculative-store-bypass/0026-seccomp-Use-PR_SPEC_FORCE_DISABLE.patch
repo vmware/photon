@@ -1,0 +1,33 @@
+From 80e6b62a0da8f9769f3480b42998b4fead364e06 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 4 May 2018 09:40:03 +0200
+Subject: [PATCH 26/54] seccomp: Use PR_SPEC_FORCE_DISABLE
+
+commit b849a812f7eb92e96d1c8239b06581b2cfd8b275 upstream
+
+Use PR_SPEC_FORCE_DISABLE in seccomp() because seccomp does not allow to
+widen restrictions.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ kernel/seccomp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+index 1d3078b..a0bd6ea 100644
+--- a/kernel/seccomp.c
++++ b/kernel/seccomp.c
+@@ -226,7 +226,7 @@ static inline void spec_mitigate(struct task_struct *task,
+ 	int state = arch_prctl_spec_ctrl_get(task, which);
+ 
+ 	if (state > 0 && (state & PR_SPEC_PRCTL))
+-		arch_prctl_spec_ctrl_set(task, which, PR_SPEC_DISABLE);
++		arch_prctl_spec_ctrl_set(task, which, PR_SPEC_FORCE_DISABLE);
+ }
+ 
+ static inline void seccomp_assign_mode(struct task_struct *task,
+-- 
+2.7.4
+

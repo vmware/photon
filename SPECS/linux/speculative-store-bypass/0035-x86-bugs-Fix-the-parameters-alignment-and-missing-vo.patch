@@ -1,0 +1,42 @@
+From a972acb35aa7282fc471ec9ce4274547f5791460 Mon Sep 17 00:00:00 2001
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Date: Fri, 11 May 2018 16:50:35 -0400
+Subject: [PATCH 35/54] x86/bugs: Fix the parameters alignment and missing void
+
+commit ffed645e3be0e32f8e9ab068d257aee8d0fe8eec upstream
+
+Fixes: 7bb4d366c ("x86/bugs: Make cpu_show_common() static")
+Fixes: 24f7fc83b ("x86/bugs: Provide boot parameters for the spec_store_bypass_disable mitigation")
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kernel/cpu/bugs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 8187642..4f8c88e 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -530,7 +530,7 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
+ 	return mode;
+ }
+ 
+-static void ssb_select_mitigation()
++static void ssb_select_mitigation(void)
+ {
+ 	ssb_mode = __ssb_select_mitigation();
+ 
+@@ -640,7 +640,7 @@ void x86_spec_ctrl_setup_ap(void)
+ #ifdef CONFIG_SYSFS
+ 
+ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr,
+-			char *buf, unsigned int bug)
++			       char *buf, unsigned int bug)
+ {
+ 	if (!boot_cpu_has_bug(bug))
+ 		return sprintf(buf, "Not affected\n");
+-- 
+2.7.4
+

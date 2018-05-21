@@ -1,0 +1,70 @@
+From f30da25e77ba42e685d370e695759910625a885c Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 11 May 2018 15:21:01 +0200
+Subject: [PATCH 37/54] KVM: SVM: Move spec control call after restore of GS
+
+commit 15e6c22fd8e5a42c5ed6d487b7c9fe44c2517765 upstream
+
+svm_vcpu_run() invokes x86_spec_ctrl_restore_host() after VMEXIT, but
+before the host GS is restored. x86_spec_ctrl_restore_host() uses 'current'
+to determine the host SSBD state of the thread. 'current' is GS based, but
+host GS is not yet restored and the access causes a triple fault.
+
+Move the call after the host GS restore.
+
+Fixes: 885f82bfbc6f x86/process: Allow runtime control of Speculative Store Bypass
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kvm/svm.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/arch/x86/kvm/svm.c b/arch/x86/kvm/svm.c
+index 516ddff..d1a4321 100644
+--- a/arch/x86/kvm/svm.c
++++ b/arch/x86/kvm/svm.c
+@@ -5011,6 +5011,18 @@ static void svm_vcpu_run(struct kvm_vcpu *vcpu)
+ #endif
+ 		);
+ 
++	/* Eliminate branch target predictions from guest mode */
++	vmexit_fill_RSB();
++
++#ifdef CONFIG_X86_64
++	wrmsrl(MSR_GS_BASE, svm->host.gs_base);
++#else
++	loadsegment(fs, svm->host.fs);
++#ifndef CONFIG_X86_32_LAZY_GS
++	loadsegment(gs, svm->host.gs);
++#endif
++#endif
++
+ 	/*
+ 	 * We do not use IBRS in the kernel. If this vCPU has used the
+ 	 * SPEC_CTRL MSR it may have left it on; save the value and
+@@ -5031,18 +5043,6 @@ static void svm_vcpu_run(struct kvm_vcpu *vcpu)
+ 
+ 	x86_spec_ctrl_restore_host(svm->spec_ctrl);
+ 
+-	/* Eliminate branch target predictions from guest mode */
+-	vmexit_fill_RSB();
+-
+-#ifdef CONFIG_X86_64
+-	wrmsrl(MSR_GS_BASE, svm->host.gs_base);
+-#else
+-	loadsegment(fs, svm->host.fs);
+-#ifndef CONFIG_X86_32_LAZY_GS
+-	loadsegment(gs, svm->host.gs);
+-#endif
+-#endif
+-
+ 	reload_tss(vcpu);
+ 
+ 	local_irq_disable();
+-- 
+2.7.4
+
