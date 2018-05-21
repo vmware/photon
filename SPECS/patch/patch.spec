@@ -1,12 +1,13 @@
 Summary:        Program for modifying or creating files
 Name:           patch
 Version:        2.7.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
-%define sha1 patch=04d23f6e48e95efb07d12ccf44d1f35fb210f457
+%define sha1    patch=04d23f6e48e95efb07d12ccf44d1f35fb210f457
 Patch0:         patch-CVE-2018-6951.patch
+Patch1:         patch-CVE-2018-1000156.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,6 +17,8 @@ file typically created by the diff program.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+
 %build
 ./configure \
         --prefix=%{_prefix} \
@@ -30,6 +33,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*   Mon May 21 2018 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-4
+-   Apply patch for CVE-2018-1000156
 *   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-3
 -   Apply patch for CVE-2018-6951
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.5-2
