@@ -45,9 +45,9 @@ if [[   $# -gt 0 ]] && [[ $1 == 'install' ]]; then
     rpm   --root ${BUILDROOT} --initdb
     tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes
 else
-    RPMPKG="$(find RPMS -name 'filesystem-[0-9]*.rpm' -print)"
-    [ -z ${RPMPKG} ] && fail "  Filesystem rpm package missing: Can not continue"
-    run_command "   Installing filesystem" "rpm -Uvh --nodeps --root ${BUILDROOT} --dbpath /var/lib/rpm ${RPMPKG}" "${LOGFILE}"
+    run_command "   Initdb" "rpm --root ${BUILDROOT} --initdb" "${LOGFILE}"
+    #rpm   --root ${BUILDROOT} --initdb
+    run_command "   Install file system" "tdnf install filesystem --installroot ${BUILDROOT} --nogpgcheck --assumeyes -c $1" "${LOGFILE}"
 fi
  
 #   Ommited in the filesystem.spec file - not needed for booting

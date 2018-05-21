@@ -28,6 +28,8 @@ class Installer(object):
         self.chroot_command = "./mk-run-chroot.sh"
         self.setup_grub_command = "./mk-setup-grub.sh"
         self.unmount_disk_command = "./mk-unmount-disk.sh"
+        self.tdnf_conf_file = "/etc/tdnf/tdnf.conf"
+        self.local_repo_file = "/etc/yum.repos.d/photon-iso.repo"
 
         if 'working_directory' in self.install_config:
             self.working_directory = self.install_config['working_directory']
@@ -80,183 +82,24 @@ class Installer(object):
 
     def unsafe_install(self, params):
 
-        if self.iso_installer:
-            self.window.show_window()
-            self.progress_bar.initialize('Initializing installation...')
-            self.progress_bar.show()
-            #self.rpm_path = "https://dl.bintray.com/vmware/photon_release_1.0_TP2_x86_64"
-            if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
-                cmdoption = 's/baseurl.*/baseurl={}/g'.format(self.rpm_path.replace('/','\/'))
-                process = subprocess.Popen(['sed', '-i', cmdoption,'/etc/yum.repos.d/photon-iso.repo']) 
-                retval = process.wait()
-                if retval != 0:
-                    modules.commons.log(modules.commons.LOG_INFO, "Failed to reset repo")
-                    self.exit_gracefully(None, None)
-
-            cmdoption = 's/cachedir=\/var/cachedir={}/g'.format(self.photon_root.replace('/','\/'))
-            process = subprocess.Popen(['sed', '-i', cmdoption,'/etc/tdnf/tdnf.conf']) 
-            retval = process.wait()
-            if retval != 0:
-                modules.commons.log(modules.commons.LOG_INFO, "Failed to reset tdnf cachedir")
-                self.exit_gracefully(None, None)
-        self.execute_modules(modules.commons.PRE_INSTALL)
-
         self.initialize_system()
-
-        if self.iso_installer:
-            self.adjust_packages_for_vmware_virt()
-            selected_packages = self.install_config['packages']
-            state = 0
-            packages_to_install = {}
-            total_size = 0
-            with open(modules.commons.TDNF_CMDLINE_FILE_NAME, "w") as tdnf_cmdline_file:
-                tdnf_cmdline_file.write("tdnf install --installroot {0} --nogpgcheck {1}".format(self.photon_root, " ".join(selected_packages)))
-            with open(modules.commons.TDNF_LOG_FILE_NAME, "w") as tdnf_errlog:
-                process = subprocess.Popen(
-                    ['tdnf', 'install'] + selected_packages + ['--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=subprocess.PIPE, stderr=tdnf_errlog)
-                while True:
-                    output = process.stdout.readline()
-                    if output == '':
-                        retval = process.poll()
-                        if retval is not None:
-                            break
-                    if state == 0:
-                        if output == 'Installing:\n':
-                            state = 1
-                    elif state == 1: #N A EVR Size(readable) Size(in bytes)
-                        if output == '\n':
-                            state = 2
-                            self.progress_bar.update_num_items(total_size)
-                        else:
-                            info = output.split()
-                            package = '{0}-{1}.{2}'.format(info[0], info[2], info[1])
-                            packages_to_install[package] = int(info[5])
-                            total_size += int(info[5])
-                    elif state == 2:
-                        if output == 'Downloading:\n':
-                            self.progress_bar.update_message('Preparing ...')
-                            state = 3
-                    elif state == 3:
-                        self.progress_bar.update_message(output)
-                        if output == 'Running transaction\n':
-                            state = 4
-                    else:
-                        modules.commons.log(modules.commons.LOG_INFO, "[tdnf] {0}".format(output))
-                        prefix = 'Installing/Updating: '
-                        if output.startswith(prefix):
-                            package = output[len(prefix):].rstrip('\n')
-                            self.progress_bar.increment(packages_to_install[package])
-
-                        self.progress_bar.update_message(output)
-                # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
-                if retval != 0 and retval != 137:
-                    modules.commons.log(modules.commons.LOG_ERROR, "Failed to install some packages, refer to {0}".format(modules.commons.TDNF_LOG_FILE_NAME))
-                    self.exit_gracefully(None, None)
-        else:
-        #install packages
-            rpms = []
-            for rpm in self.rpms_tobeinstalled:
-                # We already installed the filesystem in the preparation
-                if rpm['package'] == 'filesystem':
-                    continue
-                rpms.append(rpm['filename'])
-            return_value = self.install_package(rpms)
-            if return_value != 0:
-                self.exit_gracefully(None, None)
-
+        self.install_packages()
 
         if self.iso_installer:
             self.progress_bar.show_loading('Finalizing installation')
 
         if os.path.exists("/etc/resolv.conf"):
             shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
+
         self.finalize_system()
+        self.setup_grub()
 
-        if not self.install_config['iso_system']:
-            # Execute post installation modules
-            self.execute_modules(modules.commons.POST_INSTALL)
-            if os.path.exists(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME):
-                shutil.copy(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME, self.photon_root + '/var/log/')
-
-            if self.iso_installer and os.path.isdir("/sys/firmware/efi"):
-                self.install_config['boot'] = 'efi'
-            # install grub
-            if 'boot_partition_number' not in self.install_config['disk']:
-                self.install_config['disk']['boot_partition_number'] = 1
-
-            try:
-                if self.install_config['boot'] == 'bios':
-                    process = subprocess.Popen(
-                                  [self.setup_grub_command, '-w', self.photon_root,
-                                  "bios", self.install_config['disk']['disk'],
-                                  self.install_config['disk']['root'],
-                                  self.install_config['disk']['boot'],
-                                  self.install_config['disk']['bootdirectory'],
-                                  str(self.install_config['disk']['boot_partition_number'])],
-                                  stdout=self.output)
-                elif self.install_config['boot'] == 'efi':
-                    process = subprocess.Popen(
-                                  [self.setup_grub_command, '-w', self.photon_root,
-                                  "efi", self.install_config['disk']['disk'],
-                                  self.install_config['disk']['root'],
-                                  self.install_config['disk']['boot'],
-                                  self.install_config['disk']['bootdirectory'],
-                                  str(self.install_config['disk']['boot_partition_number'])],
-                                  stdout=self.output)
-            except:
-                #install bios if variable is not set.
-                process = subprocess.Popen(
-                              [self.setup_grub_command, '-w', self.photon_root,
-                              "bios", self.install_config['disk']['disk'],
-                              self.install_config['disk']['root'],
-                              self.install_config['disk']['boot'],
-                              self.install_config['disk']['bootdirectory'],
-                              str(self.install_config['disk']['boot_partition_number'])],
-                              stdout=self.output)
-            retval = process.wait()
-
-            self.update_fstab()
 
         if os.path.exists(self.photon_root + '/etc/resolv.conf'):
             os.remove(self.photon_root + '/etc/resolv.conf')
 
-        command = [self.unmount_disk_command, '-w', self.photon_root]
-        if not self.install_config['iso_system']:
-            command.extend(self.generate_partitions_param(reverse = True))
-        process = subprocess.Popen(command, stdout=self.output)
-        retval = process.wait()
-
-        if self.iso_installer:
-            self.progress_bar.hide()
-            self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
-            eject_cdrom = True
-            if 'ui_install' in self.install_config:
-                self.window.content_window().getch()
-            if 'eject_cdrom' in self.install_config and not self.install_config['eject_cdrom']:
-                eject_cdrom = False
-            if eject_cdrom:
-                process = subprocess.Popen(['eject', '-r'], stdout=self.output)
-                process.wait()
+        self.cleanup()
         return ActionResult(True, None)
-        
-    def copy_rpms(self):
-        # prepare the RPMs list
-        json_pkg_to_rpm_map = JsonWrapper(self.install_config["pkg_to_rpm_map_file"])
-        pkg_to_rpm_map = json_pkg_to_rpm_map.read()
-
-        self.rpms_tobeinstalled = []
-        selected_packages = self.install_config['packages']
-
-        for pkg in selected_packages: 
-            if pkg in pkg_to_rpm_map:
-                if not pkg_to_rpm_map[pkg]['rpm'] is None:
-                    name = pkg_to_rpm_map[pkg]['rpm']
-                    basename = os.path.basename(name)
-                    self.rpms_tobeinstalled.append({'filename': basename, 'path': name, 'package' : pkg})
-
-        # Copy the rpms
-        for rpm in self.rpms_tobeinstalled:
-            shutil.copy(rpm['path'], self.photon_root + '/RPMS/')
 
     def copy_files(self):
         # Make the photon_root directory if not exits
@@ -270,7 +113,6 @@ class Installer(object):
         # Create the rpms directory
         process = subprocess.Popen(['mkdir', '-p', self.photon_root + '/RPMS'], stdout=self.output)
         retval = process.wait()
-        self.copy_rpms()
 
     def bind_installer(self):
         # Make the photon_root/installer directory if not exits
@@ -348,16 +190,60 @@ class Installer(object):
             command.extend(self.generate_partitions_param())
             process = subprocess.Popen(command, stdout=self.output)
             retval = process.wait()
-        
+
         if self.iso_installer:
+            self.window.show_window()
+            self.progress_bar.initialize('Initializing installation...')
+            self.progress_bar.show()
+            #self.rpm_path = "https://dl.bintray.com/vmware/photon_release_1.0_TP2_x86_64"
+            if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
+                cmdoption = 's/baseurl.*/baseurl={}/g'.format(self.rpm_path.replace('/','\/'))
+                process = subprocess.Popen(['sed', '-i', cmdoption, self.local_repo_file])
+                retval = process.wait()
+                if retval != 0:
+                    modules.commons.log(modules.commons.LOG_INFO, "Failed to reset repo")
+                    self.exit_gracefully(None, None)
+
+            cmdoption = 's/cachedir=\/var/cachedir={}/g'.format(self.photon_root.replace('/','\/'))
+            process = subprocess.Popen(['sed', '-i', cmdoption, self.tdnf_conf_file])
+            retval = process.wait()
+            if retval != 0:
+                modules.commons.log(modules.commons.LOG_INFO, "Failed to reset tdnf cachedir")
+                self.exit_gracefully(None, None)
+
             self.bind_installer()
             self.bind_repo_dir()
             process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, 'install'], stdout=self.output)
             retval = process.wait()
         else:
+            self.tdnf_conf_file = self.photon_root + '/cache/' + 'local_repo_conf.conf'
+            self.local_repo_file = self.photon_root + '/cache/repo/' + 'local_repo.repo'
+            process = subprocess.Popen(['mkdir', '-p', self.photon_root + '/cache/repo'], stdout=self.output)
+            retval = process.wait()
+            if retval != 0:
+                self.exit_gracefully(None, None)
+            process = subprocess.Popen(['cp', 'local_repo_conf.conf', self.photon_root + '/cache/.'], stdout=self.output)
+            retval = process.wait()
+            process = subprocess.Popen(['cp', "local_repo.repo", self.photon_root + '/cache/repo/.'], stdout=self.output)
+            retval = process.wait()
+
+            cmdoption = 's/cachedir=\/var/cachedir={}/g'.format(self.photon_root.replace('/','\/'))
+            process = subprocess.Popen(['sed', '-i', cmdoption, self.tdnf_conf_file])
+            repo_dir = self.photon_root + '/cache/repo'
+            cmdoption = 's/repodir=/repodir={}/g'.format(repo_dir.replace('/','\/'))
+            process = subprocess.Popen(['sed', '-i', cmdoption, self.tdnf_conf_file])
+
+            cmdoption = 's/\/local_repo/{}/g'.format(self.rpm_path.replace('/','\/'))
+            process = subprocess.Popen(['sed', '-i', cmdoption, self.local_repo_file])
+            retval = process.wait()
+
+            rpm_cache_dir = self.photon_root + '/cache/tdnf/local_repo/rpms'
+            if subprocess.call(['mkdir', '-p', rpm_cache_dir]) != 0:
+                modules.commons.log(modules.commons.LOG_ERROR, "Fail to bind cache rpms")
+                self.exit_gracefully(None, None)
             self.copy_files()
             #Setup the filesystem basics
-            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root], stdout=self.output)
+            process = subprocess.Popen([self.prepare_command, '-w', self.photon_root, self.tdnf_conf_file], stdout=self.output)
             retval = process.wait()
 
     def finalize_system(self):
@@ -380,28 +266,9 @@ class Installer(object):
             # Disable the swap file
             process = subprocess.Popen(['swapoff', '-a'], stdout=self.output)
             retval = process.wait()
-            # remove the tdnf cache directory and the swapfile.
-            process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "cache")], stdout=self.output)
-            retval = process.wait()
-
-    def install_package(self,  rpm_file_names):
-
-        rpms = set(rpm_file_names)
-        rpm_paths = []
-        for root, dirs, files in os.walk(self.rpm_path):
-            for f in files:
-                if f in rpms:
-                    rpm_paths.append(os.path.join(root, f))
-
-        # --nodeps is for hosts which do not support rich dependencies
-        rpm_params = ['--nodeps', '--root', self.photon_root, '--dbpath', '/var/lib/rpm']
-
-        if ('type' in self.install_config and (self.install_config['type'] in ['micro', 'minimal'])) or self.install_config['iso_system']:
-            rpm_params.append('--excludedocs')
-
-        modules.commons.log(modules.commons.LOG_INFO, "installing packages {0}, with params {1}".format(rpm_paths, rpm_params))
-        process = subprocess.Popen(['rpm', '-Uvh'] + rpm_params + rpm_paths, stderr=subprocess.STDOUT)
-        return process.wait()
+        # remove the tdnf cache directory and the swapfile.
+        process = subprocess.Popen(['rm', '-rf', os.path.join(self.photon_root, "cache")], stdout=self.output)
+        retval = process.wait()
 
     def execute_modules(self, phase):
         modules_paths = glob.glob('modules/m_*.py')
@@ -446,6 +313,136 @@ class Installer(object):
                 selected_packages.append('linux-esx')
         except KeyError:
             pass
+
+    def install_packages(self):
+        if self.iso_installer:
+            self.adjust_packages_for_vmware_virt()
+            selected_packages = self.install_config['packages']
+            state = 0
+            packages_to_install = {}
+            total_size = 0
+            with open(modules.commons.TDNF_CMDLINE_FILE_NAME, "w") as tdnf_cmdline_file:
+                tdnf_cmdline_file.write("tdnf install --installroot {0} --nogpgcheck {1}".format(self.photon_root, " ".join(selected_packages)))
+            with open(modules.commons.TDNF_LOG_FILE_NAME, "w") as tdnf_errlog:
+                process = subprocess.Popen(
+                    ['tdnf', 'install'] + selected_packages + ['--installroot', self.photon_root, '--nogpgcheck', '--assumeyes'], stdout=subprocess.PIPE, stderr=tdnf_errlog)
+                while True:
+                    output = process.stdout.readline()
+                    if output == '':
+                        retval = process.poll()
+                        if retval is not None:
+                            break
+                    if state == 0:
+                        if output == 'Installing:\n':
+                            state = 1
+                    elif state == 1: #N A EVR Size(readable) Size(in bytes)
+                        if output == '\n':
+                            state = 2
+                            self.progress_bar.update_num_items(total_size)
+                        else:
+                            info = output.split()
+                            package = '{0}-{1}.{2}'.format(info[0], info[2], info[1])
+                            packages_to_install[package] = int(info[5])
+                            total_size += int(info[5])
+                    elif state == 2:
+                        if output == 'Downloading:\n':
+                            self.progress_bar.update_message('Preparing ...')
+                            state = 3
+                    elif state == 3:
+                        self.progress_bar.update_message(output)
+                        if output == 'Running transaction\n':
+                            state = 4
+                    else:
+                        modules.commons.log(modules.commons.LOG_INFO, "[tdnf] {0}".format(output))
+                        prefix = 'Installing/Updating: '
+                        if output.startswith(prefix):
+                            package = output[len(prefix):].rstrip('\n')
+                            self.progress_bar.increment(packages_to_install[package])
+
+                        self.progress_bar.update_message(output)
+                # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
+                if retval != 0 and retval != 137:
+                    modules.commons.log(modules.commons.LOG_ERROR, "Failed to install some packages, refer to {0}".format(modules.commons.TDNF_LOG_FILE_NAME))
+                    self.exit_gracefully(None, None)
+        else:
+            selected_packages = self.install_config['packages']
+            command = "tdnf install " + "-c " + self.tdnf_conf_file + " --assumeyes --installroot {0} --nogpgcheck {1}".format(self.photon_root, " ".join(selected_packages))
+            with open(modules.commons.TDNF_CMDLINE_FILE_NAME, "w") as tdnf_cmdline_file:
+                tdnf_cmdline_file.write(command)
+            with open(modules.commons.TDNF_LOG_FILE_NAME, "w") as tdnf_errlog:
+
+                process = subprocess.Popen([command], shell=True)
+                retval = process.wait()
+                        #self.progress_bar.update_message(output)
+                # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
+                if retval != 0 and retval != 137:
+                    modules.commons.log(modules.commons.LOG_ERROR, "Failed to install some packages, refer to {0}".format(modules.commons.TDNF_LOG_FILE_NAME))
+                    self.exit_gracefully(None, None)
+
+    def setup_grub(self):
+        if not self.install_config['iso_system']:
+            # Execute post installation modules
+            self.execute_modules(modules.commons.POST_INSTALL)
+            if os.path.exists(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME):
+                shutil.copy(modules.commons.KS_POST_INSTALL_LOG_FILE_NAME, self.photon_root + '/var/log/')
+
+            if self.iso_installer and os.path.isdir("/sys/firmware/efi"):
+                self.install_config['boot'] = 'efi'
+            # install grub
+            if 'boot_partition_number' not in self.install_config['disk']:
+                self.install_config['disk']['boot_partition_number'] = 1
+
+            try:
+                if self.install_config['boot'] == 'bios':
+                    process = subprocess.Popen(
+                                  [self.setup_grub_command, '-w', self.photon_root,
+                                  "bios", self.install_config['disk']['disk'],
+                                  self.install_config['disk']['root'],
+                                  self.install_config['disk']['boot'],
+                                  self.install_config['disk']['bootdirectory'],
+                                  str(self.install_config['disk']['boot_partition_number'])],
+                                  stdout=self.output)
+                elif self.install_config['boot'] == 'efi':
+                    process = subprocess.Popen(
+                                  [self.setup_grub_command, '-w', self.photon_root,
+                                  "efi", self.install_config['disk']['disk'],
+                                  self.install_config['disk']['root'],
+                                  self.install_config['disk']['boot'],
+                                  self.install_config['disk']['bootdirectory'],
+                                  str(self.install_config['disk']['boot_partition_number'])],
+                                  stdout=self.output)
+            except:
+                #install bios if variable is not set.
+                process = subprocess.Popen(
+                              [self.setup_grub_command, '-w', self.photon_root,
+                              "bios", self.install_config['disk']['disk'],
+                              self.install_config['disk']['root'],
+                              self.install_config['disk']['boot'],
+                              self.install_config['disk']['bootdirectory'],
+                              str(self.install_config['disk']['boot_partition_number'])],
+                              stdout=self.output)
+            retval = process.wait()
+
+            self.update_fstab()
+
+    def cleanup(self):
+        command = [self.unmount_disk_command, '-w', self.photon_root]
+        if not self.install_config['iso_system']:
+            command.extend(self.generate_partitions_param(reverse = True))
+        process = subprocess.Popen(command, stdout=self.output)
+        retval = process.wait()
+
+        if self.iso_installer:
+            self.progress_bar.hide()
+            self.window.addstr(0, 0, 'Congratulations, Photon has been installed in {0} secs.\n\nPress any key to continue to boot...'.format(self.progress_bar.time_elapsed))
+            eject_cdrom = True
+            if 'ui_install' in self.install_config:
+                self.window.content_window().getch()
+            if 'eject_cdrom' in self.install_config and not self.install_config['eject_cdrom']:
+                eject_cdrom = False
+            if eject_cdrom:
+                process = subprocess.Popen(['eject', '-r'], stdout=self.output)
+                process.wait()
 
     def run(self, command, comment = None):
         if comment != None:
