@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.131
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.4.132
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=6811784d7abf4cd84f99c188c397b893deb35551
+%define sha1 linux=6d04f62fe435ae7951e90eecc9eb5ccdc959b759
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -26,7 +26,7 @@ Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disa
 Patch8:		perf-top-sigsegv-fix.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-
+Patch11:        Implement-the-f-xattrat-family-of-functions.patch
 Patch12:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
 Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
@@ -150,7 +150,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-
+%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -336,6 +336,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon May 21 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.132-1
+-   Update to version 4.4.132
+-   Add the f*xattrat family of syscalls
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-2
 -   Fix CVE-2018-8043, CVE-2017-18216, CVE-2018-8087, CVE-2017-18241.
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-1
