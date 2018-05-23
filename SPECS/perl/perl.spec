@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.24.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -20,6 +20,10 @@ Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
 Patch0:         CVE-2017-12883.patch
 #https://perl5.git.perl.org/perl.git/patch/96c83ed78aeea1a0496dd2b2d935869a822dc8a5
 Patch1:         CVE-2017-12837.patch
+Patch2:         perl-CVE-2018-6797.patch
+Patch3:         perl-CVE-2018-6798-1.patch
+Patch4:         perl-CVE-2018-6798-2.patch
+Patch5:         perl-CVE-2018-6913.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
@@ -38,6 +42,10 @@ Report Language.
 sed -i 's/-fstack-protector/&-all/' Configure
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 export BUILD_ZLIB=False
@@ -74,6 +82,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Mon May 21 2018 Xiaolin <xiaolinl@vmware.com> 5.24.1-5
+-   Fix CVE-2018-6797, CVE-2018-6798, CVE-2018-6913
 *   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.24.1-4
 -   CVE-2017-12837 and CVE-2017-12883 patch from
 -   https://perl5.git.perl.org/perl.git/commitdiff/2be4edede4ae226e2eebd4eff28cedd2041f300f#patch1
