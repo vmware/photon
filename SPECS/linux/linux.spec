@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.131
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -49,6 +49,7 @@ Patch23:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 Patch24:        0001-mac80211_hwsim-fix-possible-memory-leak-in-hwsim_new.patch
 # Fix for CVE-2017-18241
 Patch25:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
+Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -165,6 +166,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch23 -p1
 %patch24 -p1
 %patch25 -p1
+%patch26 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -336,6 +338,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon May 21 2018 Bo Gan <ganb@vmware.com> 4.4.131-3
+-   Implement the f*xattrat family of syscalls (Previously linux-esx only)
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-2
 -   Fix CVE-2018-8043, CVE-2017-18216, CVE-2018-8087, CVE-2017-18241.
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-1
