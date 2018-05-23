@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.31
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -83,7 +83,16 @@ rm -rf %{buildroot}/*
 %dir %{_logsdir}
 %dir %{_tempdir}
 %{_bindir}/*
-%{_confdir}/*
+%config(noreplace) %{_confdir}/catalina.policy
+%config(noreplace) %{_confdir}/catalina.properties
+%config(noreplace) %{_confdir}/context.xml
+%config(noreplace) %{_confdir}/jaspic-providers.xml
+%config(noreplace) %{_confdir}/jaspic-providers.xsd
+%config(noreplace) %{_confdir}/logging.properties
+%config(noreplace) %{_confdir}/server.xml
+%config(noreplace) %{_confdir}/tomcat-users.xml
+%config(noreplace) %{_confdir}/tomcat-users.xsd
+%config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
 %{_webappsdir}/*
 %{_datadir}/java/tomcat/*.jar
@@ -92,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu May 17 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-2
+-   Mark configuration files as config(noreplace)
 *   Mon May 07 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-1
 -   Upgraded to version 8.5.31
 *   Mon Apr 30 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.30-1
