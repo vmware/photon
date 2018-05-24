@@ -1,14 +1,16 @@
-Summary:	Utilities for internationalization and localization
-Name:		gettext
-Version:	0.19.8
-Release:	1%{?dist}
-License:	GPLv3
-URL:		http://www.gnu.org/software/gettext
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
-%define sha1 gettext=dc551d4783edf691c1f0095ca927d3128b5093e8
+Summary:        Utilities for internationalization and localization
+Name:           gettext
+Version:        0.19.8
+Release:        2%{?dist}
+License:        GPLv3
+URL:            http://www.gnu.org/software/gettext
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
+%define         sha1 gettext=dc551d4783edf691c1f0095ca927d3128b5093e8
+Source1:        libxml2-2.9.8.tar.gz
+%define         sha1 libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
 
 %description
 These allow programs to be compiled with NLS
@@ -17,12 +19,15 @@ messages in the user's native language.
 
 %prep
 %setup -q
+%setup -D -a 1
+rm -rf gnulib-local/lib/libxml
+mv libxml2-2.9.8 gnulib-local/lib/libxml
 
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--docdir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
+        --prefix=%{_prefix} \
+        --docdir=%{_defaultdocdir}/%{name}-%{version} \
+        --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
@@ -35,9 +40,9 @@ rm -rf %{buildroot}%{_infodir}
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files -f %{name}.lang
 %defattr(-,root,root)
@@ -54,13 +59,15 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
-*	Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 0.19.8-1
--	Upgrade to 0.19.8
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.19.5.1-2
--	GA - Bump release of all rpms
-* 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 0.19.5.1-1
-- 	Updated to version 0.19.5.1
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.18.3.2-2
--	Handled locale files with macro find_lang
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 0.18.3.2-1
--	Initial build. First version
+*   Wed May 23 2018 Xiaolin Li <xiaolinl@vmware.com> 0.19.8-2
+-   Rebuild gettext with libxml2-2.9.8
+*   Wed Apr 05 2017 Danut Moraru <dmoraru@vmware.com> 0.19.8-1
+-   Upgrade to 0.19.8
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.19.5.1-2
+-   GA - Bump release of all rpms
+*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 0.19.5.1-1
+-   Updated to version 0.19.5.1
+*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 0.18.3.2-2
+-   Handled locale files with macro find_lang
+*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 0.18.3.2-1
+-   Initial build. First version
