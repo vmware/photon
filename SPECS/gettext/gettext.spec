@@ -1,7 +1,7 @@
 Summary:	Utilities for internationalization and localization
 Name:		gettext
 Version:	0.19.5.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/gettext
 Group:		Applications/System
@@ -9,12 +9,19 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:		http://ftp.gnu.org/gnu/gettext/%{name}-%{version}.tar.xz
 %define sha1 gettext=668562227972d2645ac6c5930448ba74df65a53f
+Source1:        libxml2-2.9.8.tar.gz
+%define         sha1 libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
+
 %description
 These allow programs to be compiled with NLS
 (Native Language Support), enabling them to output
 messages in the user's native language.
 %prep
 %setup -q
+%setup -D -a 1
+rm -rf gnulib-local/lib/libxml
+mv libxml2-2.9.8 gnulib-local/lib/libxml
+
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -45,6 +52,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datarootdir}/%{name}/*
 %{_mandir}/*/*
 %changelog
+*       Wed May 23 2018 Xiaolin Li <xiaolinl@vmware.com> 0.19.5.1-3
+-       Rebuild gettext with libxml2-2.9.8
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.19.5.1-2
 -	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 0.19.5.1-1
