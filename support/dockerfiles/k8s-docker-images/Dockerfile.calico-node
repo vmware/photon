@@ -8,7 +8,7 @@ ENV DOCKER_API_VERSION 1.21
 # Install required packages
 COPY [ "./stage-rpms-tdnf.conf", "./tmp/stage-rpms.repo", "/tmp/tdnf/" ]
 RUN tdnf -c /tmp/tdnf/stage-rpms-tdnf.conf install -y initscripts iproute2 \
-         ipset iptables iputils runit --refresh
+         net-tools ipset iptables iputils runit --refresh
 
 # Copy binaries needed by calico/node
 COPY [ "./tmp/calico/usr/share/calico/docker/fs/etc", "/etc/" ]
