@@ -2,7 +2,7 @@
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.50
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
@@ -10,6 +10,7 @@ Source0:        http://search.cpan.org/CPAN/authors/id/I/IS/ISHIGAKI/DBD-SQLite-
 %define sha1    DBD-SQLite=49463e8cf40deb91db8ce36cd8a5d8ccb9cb28c7
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Patch0:         enable_sqlite_location.patch
 BuildRequires:  sqlite-autoconf >= 3.22.0
 BuildRequires:  perl
 BuildRequires:  perl-DBI
@@ -25,9 +26,10 @@ libraries.
 
 %prep
 %setup -q -n DBD-SQLite-%{version}
+%patch0 -p1
 
 %build
-CFLAGS="%{optflags}" perl Makefile.PL INSTALLDIRS=vendor
+CFLAGS="%{optflags}" perl Makefile.PL SQLITE_LOCATION=/usr INSTALLDIRS=vendor
 make %{?_smp_mflags} OPTIMIZE="%{optflags}"
 
 %install
@@ -45,6 +47,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu May 24 2018 Xiaolin Li <xiaolinl@vmware.com> 1.50-4
+-   Build perl-DBD-SQLite with system sqlite.
 *   Tue Feb 20 2018 Xiaolin Li <xiaolinl@vmware.com> 1.50-3
 -   Build perl-DBD-SQLite with sqlite-autoconf-3.22.0.
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.50-2
