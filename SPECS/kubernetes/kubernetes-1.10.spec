@@ -8,7 +8,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.10.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -42,6 +42,12 @@ Requires:       %{name} = %{version}
 %description    kubeadm
 kubeadm is a tool that enables quick and easy deployment of a kubernetes cluster.
 
+%package	kubectl-extras
+Summary:	kubectl binaries for extra platforms
+Group:		Development/Tools
+%description	kubectl-extras
+Contains kubectl binaries for additional platforms.
+
 %package        pause
 Summary:        pause binary
 Group:          Development/Tools
@@ -62,6 +68,7 @@ mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
 strip bin/pause-%{archname}
 popd
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
@@ -73,6 +80,11 @@ for bin in "${binaries[@]}"; do
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
 done
 install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
+
+# kubectl-extras
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/amd64/ _output/local/bin/darwin/amd64/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/amd64/ _output/local/bin/linux/amd64/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/amd64/ _output/local/bin/windows/amd64/kubectl
 
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
@@ -189,7 +201,15 @@ fi
 %defattr(-,root,root)
 %{_bindir}/pause-%{archname}
 
+%files kubectl-extras
+%defattr(-,root,root)
+/opt/vmware/kubernetes/darwin/amd64/kubectl
+/opt/vmware/kubernetes/linux/amd64/kubectl
+/opt/vmware/kubernetes/windows/amd64/kubectl
+
 %changelog
+*   Tue May 15 2018 A. Walton <waltona@vmware.com> 1.10.2-2
+-   Add kubectl-extras package.
 *   Thu May 03 2018 Xiaolin Li <xiaolinl@vmware.com> 1.10.2-1
 -   Add kubernetes 1.10.2.
 *   Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-6
