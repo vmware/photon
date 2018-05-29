@@ -1,14 +1,14 @@
 Summary:        Security client
 Name:           nss
-Version:        3.31
+Version:        3.31.1
 Release:        1%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/mozilla.org/security/nss
+URL:            http://ftp.mozilla.org/pub/mozilla.org/security/nss/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=006a13a5e52867c49ea1e7d986b7c02a3cd8ebfb
+%define sha1    nss=cd62556e63ad29c42e43e05c0a8bf2398d19059c
 Patch:          nss-3.31-standalone-1.patch
 Requires:       nspr
 Requires:       sqlite-autoconf
@@ -70,6 +70,8 @@ install -vm 644 Linux*/lib/pkgconfig/nss.pc %{buildroot}%{_libdir}/pkgconfig
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue May 29 2018 Xiaolin Li <xiaolinl@vmware.com> 3.31.1-1
+-   Upgrade to 3.31.1
 *   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-1
 -   Upgrade to 3.31.
 *   Tue Jul 05 2016 Anish Swaminathan <anishs@vmware.com> 3.25-1
