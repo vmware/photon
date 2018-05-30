@@ -1,7 +1,7 @@
 Summary:        Unzip-6.0
 Name:           unzip
 Version:        6.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        BSD
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://downloads.sourceforge.net/infozip/unzip60.tar.gz
@@ -15,6 +15,7 @@ Patch1:         cve-2015-1315.patch
 Patch2:         CVE-2015-7696-CVE-2015-7697.patch
 Patch3:         unzip-CVE-2014-9844.patch
 Patch4:         unzip-CVE-2014-9913.patch
+Patch5:         unzip-CVE-2018-1000035.patch
 
 %description
 The UnZip package contains ZIP extraction utilities. These are useful 
@@ -28,6 +29,7 @@ with PKZIP or Info-ZIP utilities, primarily in a DOS environment.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 case `uname -m` in
@@ -61,6 +63,8 @@ make %{?_smp_mflags}  check
 %{_bindir}/*
 
 %changelog
+*   Tue May 29 2018 Xiaolin Li <xiaolinl@vmware.com> 6.0-11
+-   Fix CVE-2018-1000035
 *   Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-10
 -   Fix CVE-2014-9844, CVE-2014-9913
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-9
