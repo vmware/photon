@@ -156,7 +156,7 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_libdir}/libmenu.so
 %changelog
 *   Wed Dec 06 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-8
--   version bump to 20171007, fix CVE-2017-16879
+-   version bump to 20171125, fix CVE-2017-16879
 *   Tue Oct 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0-7
 -   Update to 6.0-7. Fix CVE-2017-13728
 *   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-6
