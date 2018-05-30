@@ -184,7 +184,7 @@ make
 
 %changelog
 *   Wed Dec 06 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-13
--   version bump to 20171007, fix CVE-2017-16879
+-   version bump to 20171125, fix CVE-2017-16879
 *   Tue Oct 10 2017 Bo Gan <ganb@vmware.com> 6.0-12
 -   version bump to 20171007
 -   Fix for CVE-2017-11112, CVE-2017-11113 and CVE-2017-13728
