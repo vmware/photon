@@ -1,24 +1,24 @@
-Summary:	Fast distributed version control system
-Name:		git
-Version:	2.17.0
-Release:	1%{?dist}
-License:	GPLv2
-URL:		http://git-scm.com/
-Group:		System Environment/Programming
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1 git=f0d4139af75bfdbe306387358b2e40eb541ccc06
+Summary:        Fast distributed version control system
+Name:           git
+Version:        2.17.1
+Release:        1%{?dist}
+License:        GPLv2
+URL:            http://git-scm.com/
+Group:          System Environment/Programming
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
+%define sha1    git=cdc8ba409643f6fe19b1bf0653d60f3aac0485f3
 BuildRequires:  curl
-BuildRequires:	python2
-BuildRequires:	python2-libs
-BuildRequires:	openssl-devel
-Requires:	python2
-Requires:	openssl
-Requires:	curl
-Requires:	expat
-Requires:	perl-YAML
-Requires:	perl-DBI
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  openssl-devel
+Requires:       python2
+Requires:       openssl
+Requires:       curl
+Requires:       expat
+Requires:       perl-YAML
+Requires:       perl-DBI
 Requires:       perl-CGI
 
 %description
@@ -42,13 +42,13 @@ These are the additional language files of git.
 %setup -q
 %build
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--libexec=%{_libexecdir} \
-	--with-gitconfig=/etc/gitconfig
+        CFLAGS="%{optflags}" \
+        CXXFLAGS="%{optflags}" \
+        --prefix=%{_prefix} \
+        --bindir=%{_bindir} \
+        --libdir=%{_libdir} \
+        --libexec=%{_libexecdir} \
+        --with-gitconfig=/etc/gitconfig
 make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -87,23 +87,25 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
-*       Tue Apr 24 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.17.0-1
--       Updated to version 2.17.0, fix CVE-2018-1000021, CVE-2018-1000110
-*        Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
--       Updated to version 2.14.2, fix CVE-2017-14867
-*       Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
--	Excluded the perllocal.pod log. 
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
--	GA - Bump release of all rpms
-*       Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
--       Fix if syntax
-*       Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2
--       Handling the upgrade scenario.
-*   	Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 2.8.1-1
--   	Updated to version 2.8.1 
-*   	Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.7.1-1
--   	Updated to version 2.7.1
-*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.1.2-2
--	Add requires for perl-CGI.
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
--	Initial build.	First version
+*   Thu May 31 2018 Xiaolin Li <xiaolinl@vmware.com> 2.17.1-1
+-   Updated to version 2.17.1, fix CVE-2018-11235, CVE-2018-11233
+*   Tue Apr 24 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.17.0-1
+-   Updated to version 2.17.0, fix CVE-2018-1000021, CVE-2018-1000110
+*   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
+-   Updated to version 2.14.2, fix CVE-2017-14867
+*   Thu May 26 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.8.1-5
+-   Excluded the perllocal.pod log. 
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-4
+-   GA - Bump release of all rpms
+*   Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.8.1-3
+-   Fix if syntax
+*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.8.1-2
+-   Handling the upgrade scenario.
+*   Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 2.8.1-1
+-   Updated to version 2.8.1 
+*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.7.1-1
+-   Updated to version 2.7.1
+*   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.1.2-2
+-   Add requires for perl-CGI.
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.2-1
+-   Initial build.  First version
