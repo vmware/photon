@@ -2,7 +2,7 @@
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
 Version:        3.22.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
 Group:          System Environment/GeneralLibraries
@@ -42,10 +42,14 @@ The sqlite3 library.
 
 %build
 ./configure \
-    CFLAGS="%{optflags}"                \
+    CFLAGS="%{optflags}\
+    -DSQLITE_ENABLE_FTS3=1              \
+    -DSQLITE_ENABLE_COLUMN_METADATA     \
+    -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
+    -DSQLITE_SECURE_DELETE=1"           \
     CXXFLAGS="%{optflags}               \
     -DSQLITE_ENABLE_FTS3=1              \
-    -DSQLITE_ENABLE_COLUMN_METADATA=1   \
+    -DSQLITE_ENABLE_COLUMN_METADATA     \
     -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
     -DSQLITE_SECURE_DELETE=1"           \
     --prefix=%{_prefix}                 \
@@ -90,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Thu May 31 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-3
+-   Change cflags.
 *   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-2
 -   Apply patch for CVE-2018-8740
 *   Tue Feb 20 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-1
