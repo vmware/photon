@@ -2,7 +2,7 @@
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
 Version:        1.54
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
@@ -11,11 +11,12 @@ Source0:        http://search.cpan.org/CPAN/authors/id/I/IS/ISHIGAKI/DBD-SQLite-
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Patch0:         enable_sqlite_location.patch
-BuildRequires:  sqlite-devel >= 3.22.0
+BuildRequires:  sqlite-devel >= 3.22.0-3
 BuildRequires:  perl
 BuildRequires:  perl-DBI
 Requires:       perl-DBI
 Requires:       perl
+Requires:       sqlite-libs >= 3.22.0-3
 
 %description
 SQLite is a public domain RDBMS database engine that you can find at
@@ -47,6 +48,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu May 31 2018 Xiaolin Li <xiaolinl@vmware.com> 1.54-4
+-   Rebuild perl-DBD-SQLite after changed cflags in sqlite.spec.
 *   Thu May 24 2018 Xiaolin Li <xiaolinl@vmware.com> 1.54-3
 -   Build perl-DBD-SQLite with system sqlite.
 *   Tue Feb 20 2018 Xiaolin Li <xiaolinl@vmware.com> 1.54-2
