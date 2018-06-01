@@ -1,14 +1,14 @@
 Summary:        Security client
 Name:           nss
-Version:        3.31
-Release:        3%{?dist}
+Version:        3.31.1
+Release:        1%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_RTM/src/%{name}-%{version}.tar.gz
+URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_1_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=006a13a5e52867c49ea1e7d986b7c02a3cd8ebfb
+%define sha1    nss=cd62556e63ad29c42e43e05c0a8bf2398d19059c
 Patch:          nss-3.31-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
@@ -97,6 +97,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Tue May 29 2018 Xiaolin Li <xiaolinl@vmware.com> 3.31.1-1
+-   Upgrade to 3.31.1
 *   Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.31-3
 -   Fix buildrequires.
 *   Thu Jun 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-2
