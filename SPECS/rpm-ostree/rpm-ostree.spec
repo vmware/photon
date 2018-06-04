@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2017.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 %define sha1    rpm-ostree=d34882a455afbf0b57617c0962725276967e838a
 Source1:        libglnx-0c52d85.tar.gz
@@ -46,7 +46,7 @@ BuildRequires:  libarchive-devel
 BuildRequires:  gperf
 BuildRequires:  which
 BuildRequires:  popt-devel
-BuildRequires:  createrepo
+BuildRequires:  createrepo_c
 BuildRequires:  jq
 BuildRequires:  photon-release
 BuildRequires:  photon-repos
@@ -128,6 +128,8 @@ make check
 %{_bindir}/rpm-ostree-host/function.inc
 
 %changelog
+*   Mon Jun 04 2018 Xiaolin Li <xiaolinl@vmware.com> 2017.4-8
+-   Rebuild with createrepo_c after removed createrepo.
 *   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.4-7
 -   Remove hardcoded /dev/loop0
 *   Tue Sep 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.4-6
