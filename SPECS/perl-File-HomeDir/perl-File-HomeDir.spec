@@ -1,18 +1,18 @@
 Summary:        File-HomeDir
 Name:           perl-File-HomeDir
 Version:        1.00
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-HomeDir/
 Source0:        http://search.cpan.org/CPAN/authors/id/A/AD/ADAMK/File-HomeDir-1.00.tar.gz
 %define sha1 File-HomeDir=c89743d57e15fba79238728f0456f80160aff024
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-BuildRequires:	perl
-Requires:	perl
-Requires:   perl-File-Which
+BuildRequires:  perl
+Requires:       perl
+Requires:       perl-File-Which
 
 %description
 File::HomeDir is a module for locating the directories that are "owned" by a user (typicaly your user) and to solve the various issues that arise trying to find them consistently across a wide variety of platforms.
@@ -55,10 +55,12 @@ make test
 %{_mandir}/man3/File::HomeDir::Windows.3.gz
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.00-2
--	GA - Bump release of all rpms
-*	Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.00-1
--	Initial version.
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 1.00-3
+-   Bump release after upgraded perl to 5.24.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.00-2
+-   GA - Bump release of all rpms
+*   Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.00-1
+-   Initial version.
 
 
 

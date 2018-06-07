@@ -5,19 +5,19 @@
 Summary:        Standalone, extensible Perl module installer
 Name:           perl-Module-Install
 Version:        1.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/Module-Install/
 Source0:        http://www.cpan.org/authors/id/B/BI/BINGOS/Module-Install-%{version}.tar.gz
-%define sha1 Module-Install=fd0ad651247e6fb932925f4d7e270ec442a066e1
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha1    Module-Install=fd0ad651247e6fb932925f4d7e270ec442a066e1
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
 BuildRequires:  perl
 BuildRequires:  perl-YAML-Tiny
-Requires:  perl-YAML-Tiny
-Requires:	perl
+Requires:       perl-YAML-Tiny
+Requires:       perl
 
 %description
 Module::Install is a package for writing installers for CPAN (or CPAN-like)
@@ -46,10 +46,12 @@ make test AUTOMATED_TESTING=1
 %{_mandir}/man3/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.16-2
--	GA - Bump release of all rpms
-*	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com> 1.16-1
--	Upgrade version to 1.16
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1
--	Initial version.
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 1.16-3
+-   Bump release after upgraded perl to 5.24.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.16-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com> 1.16-1
+-   Upgrade version to 1.16
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.14-1
+-   Initial version.
 
