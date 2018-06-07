@@ -3,21 +3,21 @@
 Summary:        Handle Common Gateway Interface requests and responses
 Name:           perl-CGI
 Version:        4.26
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 Source0:        http://search.cpan.org/CPAN/authors/id/L/LE/LEEJO/CGI-%{version}.tar.gz
 URL:            http://search.cpan.org/dist/CGI
-%define sha1 CGI=fb3bcc43d832e22ca794ae8b81be69820ac52b20
-Vendor:		VMware, Inc.
-Distribution:	Photon
+%define sha1    CGI=fb3bcc43d832e22ca794ae8b81be69820ac52b20
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
 BuildRequires:  perl
 BuildRequires:  coreutils
 BuildRequires:  findutils
 BuildRequires:  make
 BuildRequires:  sed
-Requires:	perl
+Requires:       perl
 
 %{?perl_default_filter}
 # Remove under-specified dependencies
@@ -63,10 +63,12 @@ make test
 %{_mandir}/man3/*.3*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.26-2
--	GA - Bump release of all rpms
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 4.26-3
+-   Bump release after upgraded perl to 5.24.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.26-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.26-1
 -   Updated to version 4.26
-*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 4.25-1
--	Initial version.
+*   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 4.25-1
+-   Initial version.
 
