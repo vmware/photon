@@ -1,20 +1,20 @@
 # Got the intial spec from Fedora and modified it
-Summary:	Simple data types for common serialization formats
-Name:		perl-Types-Serialiser
-Version:	1.0
-Release:	2%{?dist}
-License:	GPL+ or Artistic
-Group:		Development/Libraries
-URL:		http://search.cpan.org/dist/Types-Serialiser/
-Source0:	http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/Types-Serialiser-%{version}.tar.gz
-%define sha1 Types-Serialiser=72ba9d1d97bb582360c79bcbdb158e73573adb70
-Vendor:		VMware, Inc.
-Distribution:	Photon 
-BuildArch:	noarch
-BuildRequires:	perl
-Requires:	perl
-BuildRequires:	perl-common-sense
-Requires:	perl-common-sense
+Summary:        Simple data types for common serialization formats
+Name:           perl-Types-Serialiser
+Version:        1.0
+Release:        3%{?dist}
+License:        GPL+ or Artistic
+Group:          Development/Libraries
+URL:            http://search.cpan.org/dist/Types-Serialiser/
+Source0:        http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/Types-Serialiser-%{version}.tar.gz
+%define sha1    Types-Serialiser=72ba9d1d97bb582360c79bcbdb158e73573adb70
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildArch:      noarch
+BuildRequires:  perl
+Requires:       perl
+BuildRequires:  perl-common-sense
+Requires:       perl-common-sense
 
 # Filter bogus provide of JSON::PP::Boolean (for rpm ≥ 4.9)
 %global __provides_exclude ^perl\\(JSON::PP::Boolean\\)
@@ -53,7 +53,9 @@ rm -rf %{buildroot}
 %{_mandir}/man3/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-2
--	GA - Bump release of all rpms
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.0-1
--	Initial version.
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 1.0-3
+-   Bump release after upgraded perl to 5.24.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0-2
+-   GA - Bump release of all rpms
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.0-1
+-   Initial version.

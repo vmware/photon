@@ -1,16 +1,17 @@
-Summary:	XML-Parser perl module
-Name:		XML-Parser
-Version:	2.44
-Release:	3%{?dist}
-License:	GPL+
-URL:		http://search.cpan.org/~toddr/%{name}-%{version}/
-Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
-%define sha1 XML-Parser=0ab6b932713ec1f9927a1b1c619b6889a5c12849
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildRequires:	expat
-Requires:	expat
+Summary:        XML-Parser perl module
+Name:           XML-Parser
+Version:        2.44
+Release:        4%{?dist}
+License:        GPL+
+URL:            http://search.cpan.org/~toddr/%{name}-%{version}/
+Source0:        http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
+%define sha1    XML-Parser=0ab6b932713ec1f9927a1b1c619b6889a5c12849
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  expat
+Requires:       expat
+Requires:       perl = 5.24.1
 %description
 The XML::Parser module is a Perl extension interface to James Clark's XML parser, expat
 %prep
@@ -20,10 +21,10 @@ perl Makefile.PL --prefix=%{_prefix}
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
-if [ -e %{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod ]; then
-cat %{buildroot}/%{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod >> %{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
+if [ -e %{_libdir}/perl5/5.24.1/x86_64-linux-thread-multi/perllocal.pod ]; then
+cat %{buildroot}/%{_libdir}/perl5/5.24.1/x86_64-linux-thread-multi/perllocal.pod >> %{_libdir}/perl5/5.24.1/x86_64-linux-thread-multi/perllocal.pod
 fi
-rm %{buildroot}/%{_libdir}/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
+rm %{buildroot}/%{_libdir}/perl5/5.24.1/x86_64-linux-thread-multi/perllocal.pod
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %files
@@ -31,6 +32,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/perl5/*
 %{_mandir}/man3/*
 %changelog
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 2.44-4
+-   Bump release after upgraded perl to 5.24.1
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 2.44-3
 -   Release bump for expat version update
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.44-2
