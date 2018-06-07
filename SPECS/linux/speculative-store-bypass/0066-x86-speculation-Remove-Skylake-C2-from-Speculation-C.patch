@@ -1,0 +1,49 @@
+From a1a47a1fbb27be42f81157f48811f48074b9c95e Mon Sep 17 00:00:00 2001
+From: Alexander Sergeyev <sergeev917@gmail.com>
+Date: Tue, 13 Mar 2018 22:38:56 +0300
+Subject: [PATCH 066/121] x86/speculation: Remove Skylake C2 from Speculation
+ Control microcode blacklist
+
+commit e3b3121fa8da94cb20f9e0c64ab7981ae47fd085 upstream.
+
+In accordance with Intel's microcode revision guidance from March 6 MCU
+rev 0xc2 is cleared on both Skylake H/S and Skylake Xeon E3 processors
+that share CPUID 506E3.
+
+Signed-off-by: Alexander Sergeyev <sergeev917@gmail.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Jia Zhang <qianyue.zj@alibaba-inc.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Kyle Huey <me@kylehuey.com>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Link: https://lkml.kernel.org/r/20180313193856.GA8580@localhost.localdomain
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/cpu/intel.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index 89ec691..a3e77a6 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -28,7 +28,7 @@
+ /*
+  * Early microcode releases for the Spectre v2 mitigation were broken.
+  * Information taken from;
+- * - https://newsroom.intel.com/wp-content/uploads/sites/11/2018/01/microcode-update-guidance.pdf
++ * - https://newsroom.intel.com/wp-content/uploads/sites/11/2018/03/microcode-update-guidance.pdf
+  * - https://kb.vmware.com/s/article/52345
+  * - Microcode revisions observed in the wild
+  * - Release note from 20180108 microcode release
+@@ -46,7 +46,6 @@ static const struct sku_microcode spectre_bad_microcodes[] = {
+ 	{ INTEL_FAM6_KABYLAKE_MOBILE,	0x09,	0x80 },
+ 	{ INTEL_FAM6_SKYLAKE_X,		0x03,	0x0100013e },
+ 	{ INTEL_FAM6_SKYLAKE_X,		0x04,	0x0200003c },
+-	{ INTEL_FAM6_SKYLAKE_DESKTOP,	0x03,	0xc2 },
+ 	{ INTEL_FAM6_BROADWELL_CORE,	0x04,	0x28 },
+ 	{ INTEL_FAM6_BROADWELL_GT3E,	0x01,	0x1b },
+ 	{ INTEL_FAM6_BROADWELL_XEON_D,	0x02,	0x14 },
+-- 
+2.7.4
+

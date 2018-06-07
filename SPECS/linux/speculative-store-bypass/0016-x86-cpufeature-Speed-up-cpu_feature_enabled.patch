@@ -1,0 +1,53 @@
+From f763ac76aac02b5840617809620d50935bed17ce Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Tue, 16 Feb 2016 00:19:18 +0100
+Subject: [PATCH 016/121] x86/cpufeature: Speed up cpu_feature_enabled()
+
+When GCC cannot do constant folding for this macro, it falls back to
+cpu_has(). But static_cpu_has() is optimal and it works at all times
+now. So use it and speedup the fallback case.
+
+Before we had this:
+
+  mov    0x99d674(%rip),%rdx        # ffffffff81b0d9f4 <boot_cpu_data+0x34>
+  shr    $0x2e,%rdx
+  and    $0x1,%edx
+  jne    ffffffff811704e9 <do_munmap+0x3f9>
+
+After alternatives patching, it turns into:
+
+		  jmp    0xffffffff81170390
+		  nopl   (%rax)
+		  ...
+		  callq  ffffffff81056e00 <mpx_notify_unmap>
+ffffffff81170390: mov    0x170(%r12),%rdi
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/1455578358-28347-1-git-send-email-bp@alien8.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeature.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index 1c9d6c5..03ca602 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -88,8 +88,7 @@ extern const char * const x86_bug_flags[NBUGINTS*32];
+  * is not relevant.
+  */
+ #define cpu_feature_enabled(bit)	\
+-	(__builtin_constant_p(bit) && DISABLED_MASK_BIT_SET(bit) ? 0 :	\
+-	 cpu_has(&boot_cpu_data, bit))
++	(__builtin_constant_p(bit) && DISABLED_MASK_BIT_SET(bit) ? 0 : static_cpu_has(bit))
+ 
+ #define boot_cpu_has(bit)	cpu_has(&boot_cpu_data, bit)
+ 
+-- 
+2.7.4
+

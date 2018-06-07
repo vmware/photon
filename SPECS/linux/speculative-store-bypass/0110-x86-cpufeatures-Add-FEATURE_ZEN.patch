@@ -1,0 +1,49 @@
+From 3b2d5220b71071376a6b87553de3d546c37625e5 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 10 May 2018 16:26:00 +0200
+Subject: [PATCH 110/121] x86/cpufeatures: Add FEATURE_ZEN
+
+commit d1035d971829dcf80e8686ccde26f94b0a069472 upstream
+
+Add a ZEN feature bit so family-dependent static_cpu_has() optimizations
+can be built for ZEN.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeatures.h | 2 ++
+ arch/x86/kernel/cpu/amd.c          | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 42cc5c9..d3a50be 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -213,6 +213,8 @@
+ #define X86_FEATURE_IBRS	( 7*32+25) /* Indirect Branch Restricted Speculation */
+ #define X86_FEATURE_IBPB	( 7*32+26) /* Indirect Branch Prediction Barrier */
+ #define X86_FEATURE_STIBP	( 7*32+27) /* Single Thread Indirect Branch Predictors */
++#define X86_FEATURE_ZEN		( 7*32+28) /* "" CPU is AMD family 0x17 (Zen) */
++
+ 
+ /* Virtualization flags: Linux defined, word 8 */
+ #define X86_FEATURE_TPR_SHADOW  ( 8*32+ 0) /* Intel TPR Shadow */
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index 301bbd3..2cbd972 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -715,6 +715,7 @@ static void init_amd_bd(struct cpuinfo_x86 *c)
+ 
+ static void init_amd_zn(struct cpuinfo_x86 *c)
+ {
++	set_cpu_cap(c, X86_FEATURE_ZEN);
+ 	/*
+ 	 * Fix erratum 1076: CPB feature bit not being set in CPUID. It affects
+ 	 * all up to and including B1.
+-- 
+2.7.4
+

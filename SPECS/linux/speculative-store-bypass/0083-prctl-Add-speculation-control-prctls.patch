@@ -1,0 +1,240 @@
+From b61cca906519f2fbed763d3e8f0097e33236721b Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 29 Apr 2018 15:20:11 +0200
+Subject: [PATCH 083/121] prctl: Add speculation control prctls
+
+commit b617cfc858161140d69cc0b5cc211996b557a1c7 upstream
+
+Add two new prctls to control aspects of speculation related vulnerabilites
+and their mitigations to provide finer grained control over performance
+impacting mitigations.
+
+PR_GET_SPECULATION_CTRL returns the state of the speculation misfeature
+which is selected with arg2 of prctl(2). The return value uses bit 0-2 with
+the following meaning:
+
+Bit  Define           Description
+0    PR_SPEC_PRCTL    Mitigation can be controlled per task by
+                      PR_SET_SPECULATION_CTRL
+1    PR_SPEC_ENABLE   The speculation feature is enabled, mitigation is
+                      disabled
+2    PR_SPEC_DISABLE  The speculation feature is disabled, mitigation is
+                      enabled
+
+If all bits are 0 the CPU is not affected by the speculation misfeature.
+
+If PR_SPEC_PRCTL is set, then the per task control of the mitigation is
+available. If not set, prctl(PR_SET_SPECULATION_CTRL) for the speculation
+misfeature will fail.
+
+PR_SET_SPECULATION_CTRL allows to control the speculation misfeature, which
+is selected by arg2 of prctl(2) per task. arg3 is used to hand in the
+control value, i.e. either PR_SPEC_ENABLE or PR_SPEC_DISABLE.
+
+The common return values are:
+
+EINVAL  prctl is not implemented by the architecture or the unused prctl()
+        arguments are not 0
+ENODEV  arg2 is selecting a not supported speculation misfeature
+
+PR_SET_SPECULATION_CTRL has these additional return values:
+
+ERANGE  arg3 is incorrect, i.e. it's not either PR_SPEC_ENABLE or PR_SPEC_DISABLE
+ENXIO   prctl control of the selected speculation misfeature is disabled
+
+The first supported controlable speculation misfeature is
+PR_SPEC_STORE_BYPASS. Add the define so this can be shared between
+architectures.
+
+Based on an initial patch from Tim Chen and mostly rewritten.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ Documentation/spec_ctrl.txt | 86 +++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/nospec.h      |  5 +++
+ include/uapi/linux/prctl.h  | 11 ++++++
+ kernel/sys.c                | 22 ++++++++++++
+ 4 files changed, 124 insertions(+)
+ create mode 100644 Documentation/spec_ctrl.txt
+
+diff --git a/Documentation/spec_ctrl.txt b/Documentation/spec_ctrl.txt
+new file mode 100644
+index 0000000..ddbebcd
+--- /dev/null
++++ b/Documentation/spec_ctrl.txt
+@@ -0,0 +1,86 @@
++===================
++Speculation Control
++===================
++
++Quite some CPUs have speculation related misfeatures which are in fact
++vulnerabilites causing data leaks in various forms even accross privilege
++domains.
++
++The kernel provides mitigation for such vulnerabilities in various
++forms. Some of these mitigations are compile time configurable and some on
++the kernel command line.
++
++There is also a class of mitigations which are very expensive, but they can
++be restricted to a certain set of processes or tasks in controlled
++environments. The mechanism to control these mitigations is via
++:manpage:`prctl(2)`.
++
++There are two prctl options which are related to this:
++
++ * PR_GET_SPECULATION_CTRL
++
++ * PR_SET_SPECULATION_CTRL
++
++PR_GET_SPECULATION_CTRL
++-----------------------
++
++PR_GET_SPECULATION_CTRL returns the state of the speculation misfeature
++which is selected with arg2 of prctl(2). The return value uses bits 0-2 with
++the following meaning:
++
++==== ================ ===================================================
++Bit  Define           Description
++==== ================ ===================================================
++0    PR_SPEC_PRCTL    Mitigation can be controlled per task by
++                      PR_SET_SPECULATION_CTRL
++1    PR_SPEC_ENABLE   The speculation feature is enabled, mitigation is
++                      disabled
++2    PR_SPEC_DISABLE  The speculation feature is disabled, mitigation is
++                      enabled
++==== ================ ===================================================
++
++If all bits are 0 the CPU is not affected by the speculation misfeature.
++
++If PR_SPEC_PRCTL is set, then the per task control of the mitigation is
++available. If not set, prctl(PR_SET_SPECULATION_CTRL) for the speculation
++misfeature will fail.
++
++PR_SET_SPECULATION_CTRL
++-----------------------
++PR_SET_SPECULATION_CTRL allows to control the speculation misfeature, which
++is selected by arg2 of :manpage:`prctl(2)` per task. arg3 is used to hand
++in the control value, i.e. either PR_SPEC_ENABLE or PR_SPEC_DISABLE.
++
++Common error codes
++------------------
++======= =================================================================
++Value   Meaning
++======= =================================================================
++EINVAL  The prctl is not implemented by the architecture or unused
++        prctl(2) arguments are not 0
++
++ENODEV  arg2 is selecting a not supported speculation misfeature
++======= =================================================================
++
++PR_SET_SPECULATION_CTRL error codes
++-----------------------------------
++======= =================================================================
++Value   Meaning
++======= =================================================================
++0       Success
++
++ERANGE  arg3 is incorrect, i.e. it's neither PR_SPEC_ENABLE nor
++        PR_SPEC_DISABLE
++
++ENXIO   Control of the selected speculation misfeature is not possible.
++        See PR_GET_SPECULATION_CTRL.
++======= =================================================================
++
++Speculation misfeature controls
++-------------------------------
++- PR_SPEC_STORE_BYPASS: Speculative Store Bypass
++
++  Invocations:
++   * prctl(PR_GET_SPECULATION_CTRL, PR_SPEC_STORE_BYPASS, 0, 0, 0);
++   * prctl(PR_SET_SPECULATION_CTRL, PR_SPEC_STORE_BYPASS, PR_SPEC_ENABLE, 0, 0);
++   * prctl(PR_SET_SPECULATION_CTRL, PR_SPEC_STORE_BYPASS, PR_SPEC_DISABLE, 0, 0);
+diff --git a/include/linux/nospec.h b/include/linux/nospec.h
+index e791ebc..700bb8a 100644
+--- a/include/linux/nospec.h
++++ b/include/linux/nospec.h
+@@ -55,4 +55,9 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
+ 									\
+ 	(typeof(_i)) (_i & _mask);					\
+ })
++
++/* Speculation control prctl */
++int arch_prctl_spec_ctrl_get(unsigned long which);
++int arch_prctl_spec_ctrl_set(unsigned long which, unsigned long ctrl);
++
+ #endif /* _LINUX_NOSPEC_H */
+diff --git a/include/uapi/linux/prctl.h b/include/uapi/linux/prctl.h
+index a8d0759..3b316be 100644
+--- a/include/uapi/linux/prctl.h
++++ b/include/uapi/linux/prctl.h
+@@ -197,4 +197,15 @@ struct prctl_mm_map {
+ # define PR_CAP_AMBIENT_LOWER		3
+ # define PR_CAP_AMBIENT_CLEAR_ALL	4
+ 
++/* Per task speculation control */
++#define PR_GET_SPECULATION_CTRL		52
++#define PR_SET_SPECULATION_CTRL		53
++/* Speculation control variants */
++# define PR_SPEC_STORE_BYPASS		0
++/* Return and control values for PR_SET/GET_SPECULATION_CTRL */
++# define PR_SPEC_NOT_AFFECTED		0
++# define PR_SPEC_PRCTL			(1UL << 0)
++# define PR_SPEC_ENABLE			(1UL << 1)
++# define PR_SPEC_DISABLE		(1UL << 2)
++
+ #endif /* _LINUX_PRCTL_H */
+diff --git a/kernel/sys.c b/kernel/sys.c
+index 78947de..8468f7f 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -53,6 +53,8 @@
+ #include <linux/uidgid.h>
+ #include <linux/cred.h>
+ 
++#include <linux/nospec.h>
++
+ #include <linux/kmsg_dump.h>
+ /* Move somewhere else to avoid recompiling? */
+ #include <generated/utsrelease.h>
+@@ -2072,6 +2074,16 @@ static int prctl_get_tid_address(struct task_struct *me, int __user **tid_addr)
+ }
+ #endif
+ 
++int __weak arch_prctl_spec_ctrl_get(unsigned long which)
++{
++	return -EINVAL;
++}
++
++int __weak arch_prctl_spec_ctrl_set(unsigned long which, unsigned long ctrl)
++{
++	return -EINVAL;
++}
++
+ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
+ 		unsigned long, arg4, unsigned long, arg5)
+ {
+@@ -2266,6 +2278,16 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
+ 	case PR_GET_FP_MODE:
+ 		error = GET_FP_MODE(me);
+ 		break;
++	case PR_GET_SPECULATION_CTRL:
++		if (arg3 || arg4 || arg5)
++			return -EINVAL;
++		error = arch_prctl_spec_ctrl_get(arg2);
++		break;
++	case PR_SET_SPECULATION_CTRL:
++		if (arg4 || arg5)
++			return -EINVAL;
++		error = arch_prctl_spec_ctrl_set(arg2, arg3);
++		break;
+ 	default:
+ 		error = -EINVAL;
+ 		break;
+-- 
+2.7.4
+
