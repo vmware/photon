@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.131
-Release:       3%{?dist}
+Version:       4.4.132
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6811784d7abf4cd84f99c188c397b893deb35551
+%define sha1 linux=6d04f62fe435ae7951e90eecc9eb5ccdc959b759
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -40,8 +40,6 @@ Patch26:       init-do_mounts-recreate-dev-root.patch
 # Fixes for CVE-2018-1000026
 Patch27:       0001-net-create-skb_gso_validate_mac_len.patch
 Patch28:       0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
-# Fix for CVE-2017-18255
-Patch29:       0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
 # Fix for CVE-2018-8043
 Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 # Fix for CVE-2017-18216
@@ -65,7 +63,136 @@ Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
-Patch68: 0170-x86-syscall-Clear-unused-extra-registers-on-32-bit-c.patch
+
+# Add more Spectre-v2 mitigations (IBPB/IBRS)
+Patch201: 0001-x86-cpufeature-Move-some-of-the-scattered-feature-bi.patch
+Patch202: 0002-x86-cpufeature-Cleanup-get_cpu_cap.patch
+Patch203: 0003-x86-Remove-unused-function-cpu_has_ht_siblings.patch
+Patch204: 0004-x86-cpufeature-Remove-unused-and-seldomly-used-cpu_h.patch
+Patch205: 0005-x86-cpu-Provide-a-config-option-to-disable-static_cp.patch
+Patch206: 0006-x86-fpu-Add-an-XSTATE_OP-macro.patch
+Patch207: 0007-x86-fpu-Get-rid-of-xstate_fault.patch
+Patch208: 0008-x86-headers-Don-t-include-asm-processor.h-in-asm-ato.patch
+Patch209: 0009-x86-cpufeature-Carve-out-X86_FEATURE_.patch
+Patch210: 0010-x86-cpufeature-Replace-the-old-static_cpu_has-with-s.patch
+Patch211: 0011-x86-cpufeature-Get-rid-of-the-non-asm-goto-variant.patch
+Patch212: 0012-x86-alternatives-Add-an-auxilary-section.patch
+Patch213: 0013-x86-alternatives-Discard-dynamic-check-after-init.patch
+Patch214: 0014-x86-vdso-Use-static_cpu_has.patch
+Patch215: 0015-x86-boot-Simplify-kernel-load-address-alignment-chec.patch
+Patch216: 0016-x86-cpufeature-Speed-up-cpu_feature_enabled.patch
+Patch217: 0017-x86-cpufeature-x86-mm-pkeys-Add-protection-keys-rela.patch
+Patch218: 0018-x86-mm-pkeys-Fix-mismerge-of-protection-keys-CPUID-b.patch
+Patch219: 0019-x86-cpu-Add-detection-of-AMD-RAS-Capabilities.patch
+Patch220: 0020-x86-cpufeature-x86-mm-pkeys-Fix-broken-compile-time-.patch
+Patch221: 0021-x86-cpufeature-Update-cpufeaure-macros.patch
+Patch222: 0022-x86-cpufeature-Make-sure-DISABLED-REQUIRED-macros-ar.patch
+Patch223: 0023-x86-cpufeature-Add-helper-macro-for-mask-check-macro.patch
+Patch224: 0024-x86-cpu-Probe-CPUID-leaf-6-even-when-cpuid_level-6.patch
+Patch225: 0025-x86-cpufeatures-Add-CPUID_7_EDX-CPUID-leaf.patch
+Patch226: 0026-x86-cpufeatures-Add-Intel-feature-bits-for-Speculati.patch
+Patch227: 0027-x86-cpufeatures-Add-AMD-feature-bits-for-Speculation.patch
+Patch228: 0028-x86-msr-Add-definitions-for-new-speculation-control-.patch
+Patch229: 0029-x86-pti-Do-not-enable-PTI-on-CPUs-which-are-not-vuln.patch
+Patch230: 0030-x86-cpufeature-Blacklist-SPEC_CTRL-PRED_CMD-on-early.patch
+Patch231: 0031-x86-speculation-Add-basic-IBPB-Indirect-Branch-Predi.patch
+Patch232: 0032-x86-cpufeatures-Clean-up-Spectre-v2-related-CPUID-fl.patch
+Patch233: 0033-x86-cpuid-Fix-up-virtual-IBRS-IBPB-STIBP-feature-bit.patch
+Patch234: 0034-x86-pti-Mark-constant-arrays-as-__initconst.patch
+Patch235: 0035-kvm-x86-nVMX-maintain-internal-copy-of-current-VMCS.patch
+Patch236: 0036-KVM-VMX-Add-VMCS-to-CPU-s-loaded-VMCSs-before-VMPTRL.patch
+Patch237: 0037-KVM-nVMX-fix-msr-bitmaps-to-prevent-L2-from-accessin.patch
+Patch238: 0038-kvm-x86-per-vcpu-apicv-deactivation-support.patch
+Patch239: 0039-kvm-vmx-check-apicv-is-active-before-using-VT-d-post.patch
+Patch240: 0040-KVM-VMX-Enable-MSR-BASED-TPR-shadow-even-if-APICv-is.patch
+Patch241: 0041-kvm-nVMX-VMCLEAR-an-active-shadow-VMCS-after-last-us.patch
+Patch242: 0042-KVM-nVMX-mark-vmcs12-pages-dirty-on-L2-exit.patch
+Patch243: 0043-KVM-nVMX-Eliminate-vmcs02-pool.patch
+Patch244: 0044-KVM-VMX-introduce-alloc_loaded_vmcs.patch
+Patch245: 0045-KVM-VMX-make-MSR-bitmaps-per-VCPU.patch
+Patch246: 0046-KVM-x86-remove-magic-number-with-enum-cpuid_leafs.patch
+Patch247: 0047-KVM-x86-Add-IBPB-support.patch
+Patch248: 0048-KVM-VMX-Emulate-MSR_IA32_ARCH_CAPABILITIES.patch
+Patch249: 0049-KVM-VMX-Allow-direct-access-to-MSR_IA32_SPEC_CTRL.patch
+Patch250: 0050-KVM-SVM-Allow-direct-access-to-MSR_IA32_SPEC_CTRL.patch
+Patch251: 0051-x86-asm-entry-32-Simplify-pushes-of-zeroed-pt_regs-R.patch
+Patch252: 0052-x86-entry-64-compat-Clear-registers-for-compat-sysca.patch
+Patch253: 0053-x86-speculation-Update-Speculation-Control-microcode.patch
+Patch254: 0054-x86-speculation-Correct-Speculation-Control-microcod.patch
+Patch255: 0055-X86-nVMX-Properly-set-spec_ctrl-and-pred_cmd-before-.patch
+Patch256: 0056-x86-speculation-Clean-up-various-Spectre-related-det.patch
+Patch257: 0057-x86-speculation-Fix-up-array_index_nospec_mask-asm-c.patch
+Patch258: 0058-x86-speculation-Add-asm-msr-index.h-dependency.patch
+Patch259: 0059-x86-xen-Zero-MSR_IA32_SPEC_CTRL-before-suspend.patch
+Patch260: 0060-KVM-x86-Remove-indirect-MSR-op-calls-from-SPEC_CTRL.patch
+Patch261: 0061-KVM-VMX-Optimize-vmx_vcpu_run-and-svm_vcpu_run-by-ma.patch
+Patch262: 0062-x86-mm-Factor-out-LDT-init-from-context-init.patch
+Patch263: 0063-x86-mm-Give-each-mm-TLB-flush-generation-a-unique-ID.patch
+Patch264: 0064-x86-speculation-Use-Indirect-Branch-Prediction-Barri.patch
+Patch265: 0065-x86-spectre_v2-Don-t-check-microcode-versions-when-r.patch
+Patch266: 0066-x86-speculation-Use-IBRS-if-available-before-calling.patch
+Patch267: 0067-x86-speculation-Move-firmware_restrict_branch_specul.patch
+Patch268: 0068-x86-speculation-Remove-Skylake-C2-from-Speculation-C.patch
+Patch269: 0069-selftest-seccomp-Fix-the-flag-name-SECCOMP_FILTER_FL.patch
+Patch270: 0070-selftest-seccomp-Fix-the-seccomp-2-signature.patch
+Patch271: 0071-xen-set-cpu-capabilities-from-xen_start_kernel.patch
+Patch272: 0072-x86-amd-don-t-set-X86_BUG_SYSRET_SS_ATTRS-when-runni.patch
+
+# Fix CVE-2018-3639 (Speculative Store Bypass)
+Patch273: 0073-x86-nospec-Simplify-alternative_msr_write.patch
+Patch274: 0074-x86-bugs-Concentrate-bug-detection-into-a-separate-f.patch
+Patch275: 0075-x86-bugs-Concentrate-bug-reporting-into-a-separate-f.patch
+Patch276: 0076-x86-bugs-Read-SPEC_CTRL-MSR-during-boot-and-re-use-r.patch
+Patch277: 0077-x86-bugs-KVM-Support-the-combination-of-guest-and-ho.patch
+Patch278: 0078-x86-cpu-Rename-Merrifield2-to-Moorefield.patch
+Patch279: 0079-x86-cpu-intel-Add-Knights-Mill-to-Intel-family.patch
+Patch280: 0080-x86-bugs-Expose-sys-.-spec_store_bypass.patch
+Patch281: 0081-x86-cpufeatures-Add-X86_FEATURE_RDS.patch
+Patch282: 0082-x86-bugs-Provide-boot-parameters-for-the-spec_store_.patch
+Patch283: 0083-x86-bugs-intel-Set-proper-CPU-features-and-setup-RDS.patch
+Patch284: 0084-x86-bugs-Whitelist-allowed-SPEC_CTRL-MSR-values.patch
+Patch285: 0085-x86-bugs-AMD-Add-support-to-disable-RDS-on-Fam-15-16.patch
+Patch286: 0086-x86-KVM-VMX-Expose-SPEC_CTRL-Bit-2-to-the-guest.patch
+Patch287: 0087-x86-speculation-Create-spec-ctrl.h-to-avoid-include-.patch
+Patch288: 0088-prctl-Add-speculation-control-prctls.patch
+Patch289: 0089-x86-process-Optimize-TIF-checks-in-__switch_to_xtra.patch
+Patch290: 0090-x86-process-Correct-and-optimize-TIF_BLOCKSTEP-switc.patch
+Patch291: 0091-x86-process-Optimize-TIF_NOTSC-switch.patch
+Patch292: 0092-x86-process-Allow-runtime-control-of-Speculative-Sto.patch
+Patch293: 0093-x86-speculation-Add-prctl-for-Speculative-Store-Bypa.patch
+Patch294: 0094-nospec-Allow-getting-setting-on-non-current-task.patch
+Patch295: 0095-proc-Provide-details-on-speculation-flaw-mitigations.patch
+Patch296: 0096-seccomp-Enable-speculation-flaw-mitigations.patch
+Patch297: 0097-prctl-Add-force-disable-speculation.patch
+Patch298: 0098-seccomp-Use-PR_SPEC_FORCE_DISABLE.patch
+Patch299: 0099-seccomp-Add-filter-flag-to-opt-out-of-SSB-mitigation.patch
+Patch300: 0100-seccomp-Move-speculation-migitation-control-to-arch-.patch
+Patch301: 0101-x86-speculation-Make-seccomp-the-default-mode-for-Sp.patch
+Patch302: 0102-x86-bugs-Rename-_RDS-to-_SSBD.patch
+Patch303: 0103-proc-Use-underscores-for-SSBD-in-status.patch
+Patch304: 0104-Documentation-spec_ctrl-Do-some-minor-cleanups.patch
+Patch305: 0105-x86-bugs-Fix-__ssb_select_mitigation-return-type.patch
+Patch306: 0106-x86-bugs-Make-cpu_show_common-static.patch
+Patch307: 0107-x86-bugs-Fix-the-parameters-alignment-and-missing-vo.patch
+Patch308: 0108-x86-cpu-Make-alternative_msr_write-work-for-32-bit-c.patch
+Patch309: 0109-KVM-SVM-Move-spec-control-call-after-restore-of-GS.patch
+Patch310: 0110-x86-speculation-Use-synthetic-bits-for-IBRS-IBPB-STI.patch
+Patch311: 0111-x86-cpufeatures-Disentangle-MSR_SPEC_CTRL-enumeratio.patch
+Patch312: 0112-x86-cpufeatures-Disentangle-SSBD-enumeration.patch
+Patch313: 0113-x86-cpu-AMD-Fix-erratum-1076-CPB-bit.patch
+Patch314: 0114-x86-cpufeatures-Add-FEATURE_ZEN.patch
+Patch315: 0115-x86-speculation-Handle-HT-correctly-on-AMD.patch
+Patch316: 0116-x86-bugs-KVM-Extend-speculation-control-for-VIRT_SPE.patch
+Patch317: 0117-x86-speculation-Add-virtualized-speculative-store-by.patch
+Patch318: 0118-x86-speculation-Rework-speculative_store_bypass_upda.patch
+Patch319: 0119-x86-bugs-Unify-x86_spec_ctrl_-set_guest-restore_host.patch
+Patch320: 0120-x86-bugs-Expose-x86_spec_ctrl_base-directly.patch
+Patch321: 0121-x86-bugs-Remove-x86_spec_ctrl_set.patch
+Patch322: 0122-x86-bugs-Rework-spec_ctrl-base-and-mask-logic.patch
+Patch323: 0123-x86-speculation-KVM-Implement-support-for-VIRT_SPEC_.patch
+Patch324: 0124-KVM-SVM-Implement-VIRT_SPEC_CTRL-support-for-SSBD.patch
+Patch325: 0125-x86-bugs-Rename-SSBD_NO-to-SSB_NO.patch
+
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -130,7 +257,6 @@ The Linux package contains the Linux kernel doc files
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
-%patch29 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -149,7 +275,133 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
-%patch68 -p1
+
+%patch201 -p1
+%patch202 -p1
+%patch203 -p1
+%patch204 -p1
+%patch205 -p1
+%patch206 -p1
+%patch207 -p1
+%patch208 -p1
+%patch209 -p1
+%patch210 -p1
+%patch211 -p1
+%patch212 -p1
+%patch213 -p1
+%patch214 -p1
+%patch215 -p1
+%patch216 -p1
+%patch217 -p1
+%patch218 -p1
+%patch219 -p1
+%patch220 -p1
+%patch221 -p1
+%patch222 -p1
+%patch223 -p1
+%patch224 -p1
+%patch225 -p1
+%patch226 -p1
+%patch227 -p1
+%patch228 -p1
+%patch229 -p1
+%patch230 -p1
+%patch231 -p1
+%patch232 -p1
+%patch233 -p1
+%patch234 -p1
+%patch235 -p1
+%patch236 -p1
+%patch237 -p1
+%patch238 -p1
+%patch239 -p1
+%patch240 -p1
+%patch241 -p1
+%patch242 -p1
+%patch243 -p1
+%patch244 -p1
+%patch245 -p1
+%patch246 -p1
+%patch247 -p1
+%patch248 -p1
+%patch249 -p1
+%patch250 -p1
+%patch251 -p1
+%patch252 -p1
+%patch253 -p1
+%patch254 -p1
+%patch255 -p1
+%patch256 -p1
+%patch257 -p1
+%patch258 -p1
+%patch259 -p1
+%patch260 -p1
+%patch261 -p1
+%patch262 -p1
+%patch263 -p1
+%patch264 -p1
+%patch265 -p1
+%patch266 -p1
+%patch267 -p1
+%patch268 -p1
+%patch269 -p1
+%patch270 -p1
+%patch271 -p1
+%patch272 -p1
+%patch273 -p1
+%patch274 -p1
+%patch275 -p1
+%patch276 -p1
+%patch277 -p1
+%patch278 -p1
+%patch279 -p1
+%patch280 -p1
+%patch281 -p1
+%patch282 -p1
+%patch283 -p1
+%patch284 -p1
+%patch285 -p1
+%patch286 -p1
+%patch287 -p1
+%patch288 -p1
+%patch289 -p1
+%patch290 -p1
+%patch291 -p1
+%patch292 -p1
+%patch293 -p1
+%patch294 -p1
+%patch295 -p1
+%patch296 -p1
+%patch297 -p1
+%patch298 -p1
+%patch299 -p1
+%patch300 -p1
+%patch301 -p1
+%patch302 -p1
+%patch303 -p1
+%patch304 -p1
+%patch305 -p1
+%patch306 -p1
+%patch307 -p1
+%patch308 -p1
+%patch309 -p1
+%patch310 -p1
+%patch311 -p1
+%patch312 -p1
+%patch313 -p1
+%patch314 -p1
+%patch315 -p1
+%patch316 -p1
+%patch317 -p1
+%patch318 -p1
+%patch319 -p1
+%patch320 -p1
+%patch321 -p1
+%patch322 -p1
+%patch323 -p1
+%patch324 -p1
+%patch325 -p1
+
 
 %build
 # patch vmw_balloon driver
@@ -238,6 +490,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.132-1
+-   Update to version 4.4.132 and add IBPB/IBRS and SSBD fixes.
 *   Fri May 18 2018 Bo Gan <ganb@vmware.com> 4.4.131-3
 -   rebase fXxattrat syscall number to avoid conflict with new syscalls
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-2

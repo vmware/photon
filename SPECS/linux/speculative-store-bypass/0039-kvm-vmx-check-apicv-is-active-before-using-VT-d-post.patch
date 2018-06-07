@@ -1,0 +1,77 @@
+From 654cbc0eac5d903417fb129adec12324a291915c Mon Sep 17 00:00:00 2001
+From: Yang Zhang <yang.zhang.wz@gmail.com>
+Date: Mon, 13 Jun 2016 09:56:56 +0800
+Subject: [PATCH 039/125] kvm: vmx: check apicv is active before using VT-d
+ posted interrupt
+
+VT-d posted interrupt is relying on the CPU side's posted interrupt.
+Need to check whether VCPU's APICv is active before enabing VT-d
+posted interrupt.
+
+Fixes: d62caabb41f33d96333f9ef15e09cd26e1c12760
+Cc: stable@vger.kernel.org
+Signed-off-by: Yang Zhang <yang.zhang.wz@gmail.com>
+Signed-off-by: Shengge Ding <shengge.dsg@alibaba-inc.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kvm/vmx.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 3c3db6e..6af53b0 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -2024,7 +2024,8 @@ static void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
+ 	unsigned int dest;
+ 
+ 	if (!kvm_arch_has_assigned_device(vcpu->kvm) ||
+-		!irq_remapping_cap(IRQ_POSTING_CAP))
++		!irq_remapping_cap(IRQ_POSTING_CAP)  ||
++		!kvm_vcpu_apicv_active(vcpu))
+ 		return;
+ 
+ 	do {
+@@ -2134,7 +2135,8 @@ static void vmx_vcpu_pi_put(struct kvm_vcpu *vcpu)
+ 	struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+ 
+ 	if (!kvm_arch_has_assigned_device(vcpu->kvm) ||
+-		!irq_remapping_cap(IRQ_POSTING_CAP))
++		!irq_remapping_cap(IRQ_POSTING_CAP)  ||
++		!kvm_vcpu_apicv_active(vcpu))
+ 		return;
+ 
+ 	/* Set SN when the vCPU is preempted */
+@@ -10685,7 +10687,8 @@ static int vmx_pre_block(struct kvm_vcpu *vcpu)
+ 	struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
+ 
+ 	if (!kvm_arch_has_assigned_device(vcpu->kvm) ||
+-		!irq_remapping_cap(IRQ_POSTING_CAP))
++		!irq_remapping_cap(IRQ_POSTING_CAP)  ||
++		!kvm_vcpu_apicv_active(vcpu))
+ 		return 0;
+ 
+ 	vcpu->pre_pcpu = vcpu->cpu;
+@@ -10751,7 +10754,8 @@ static void vmx_post_block(struct kvm_vcpu *vcpu)
+ 	unsigned long flags;
+ 
+ 	if (!kvm_arch_has_assigned_device(vcpu->kvm) ||
+-		!irq_remapping_cap(IRQ_POSTING_CAP))
++		!irq_remapping_cap(IRQ_POSTING_CAP)  ||
++		!kvm_vcpu_apicv_active(vcpu))
+ 		return;
+ 
+ 	do {
+@@ -10804,7 +10808,8 @@ static int vmx_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+ 	int idx, ret = 0;
+ 
+ 	if (!kvm_arch_has_assigned_device(kvm) ||
+-		!irq_remapping_cap(IRQ_POSTING_CAP))
++		!irq_remapping_cap(IRQ_POSTING_CAP) ||
++		!kvm_vcpu_apicv_active(kvm->vcpus[0]))
+ 		return 0;
+ 
+ 	idx = srcu_read_lock(&kvm->irq_srcu);
+-- 
+2.7.4
+
