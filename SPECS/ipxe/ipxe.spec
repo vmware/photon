@@ -1,23 +1,19 @@
-# FIXME: noarch or generate debuginfo
-%define debug_package %{nil}
-
 %global security_hardening none
-%global commit          ed0d7c4f6f8db7bda1e74567693a0c525b9cf159
-%global shortcommit	%(c=%{commit}; echo ${c:0:7})
+%global commit          553f4857346faa8c5f6ddf9eced4180924890bfc.tar.bz2
+%define debug_package %{nil}
 
 Summary:        iPXE open source boot firmware
 Name:           ipxe
-Version:        ed0d7c4
-Release:        2%{?dist}
+Version:        553f485
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
-#Download URL:  https://git.ipxe.org/ipxe.git/snapshot/ed0d7c4f6f8db7bda1e74567693a0c525b9cf159.tar.gz
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 ipxe=16db273987f525176d9ca6d97c40eb2076a1b47f
-
+#Download URL:  https://git.ipxe.org/ipxe.git/snapshot/%{commit}.tar.bz2
+Source0:        %{name}-%{version}.tar.bz2
+%define sha1 ipxe=723e1e46b00a7de870065b74f053941f46748062
 BuildRequires:  binutils
 BuildRequires:  binutils-devel
 BuildRequires:  cdrkit
@@ -25,8 +21,6 @@ BuildRequires:  gcc
 BuildRequires:  libgcc
 BuildRequires:  libgcc-devel
 BuildRequires:  make
-BuildRequires:  linux
-BuildRequires:  linux-dev
 BuildRequires:  perl
 BuildRequires:  xz
 BuildRequires:  xz-devel
@@ -38,7 +32,7 @@ iPXE is the leading open source network boot firmware. It provides a full
 PXE implementation enhanced with additional features.
 
 %prep
-%setup -q -n %{name}-%{shortcommit}
+%setup -q -n %{name}-%{version}
 
 %build
 cd src
@@ -71,7 +65,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> ed0d7c4-2
--	GA - Bump release of all rpms
-*       Thu Nov 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> ed0d7c4-1
--       Initial build. First version
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 553f485-1
+-   Update to 553f485 after upgraded perl to 5.24.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> ed0d7c4-2
+-   GA - Bump release of all rpms
+*   Thu Nov 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> ed0d7c4-1
+-   Initial build. First version

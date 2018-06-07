@@ -4,7 +4,7 @@
 Summary:        Minimal try/catch with proper preservation of $@ 
 Name:           perl-Try-Tiny
 Version:        0.28
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://search.cpan.org/~ether/Try-Tiny-0.28/
 License:        The MIT (X11) License
 Group:          Development/Libraries
@@ -41,5 +41,7 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 0.28-2
+-   Bump release after upgraded perl to 5.24.1
 *   Wed Apr 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.28-1
 -   Initial version.
