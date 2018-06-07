@@ -1,0 +1,203 @@
+From 934209f8f98ad2891c1f36ae9b07281a47b5a833 Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Sun, 20 May 2018 20:52:05 +0100
+Subject: [PATCH 085/125] x86/bugs/AMD: Add support to disable RDS on
+ Fam[15,16,17]h if requested
+
+commit 764f3c21588a059cd783c6ba0734d4db2d72822d upstream
+
+AMD does not need the Speculative Store Bypass mitigation to be enabled.
+
+The parameters for this are already available and can be done via MSR
+C001_1020. Each family uses a different bit in that MSR for this.
+
+[ tglx: Expose the bit mask via a variable and move the actual MSR fiddling
+  	into the bugs code as that's the right thing to do and also required
+	to prepare for dynamic enable/disable ]
+
+[ Srivatsa: Removed __ro_after_init for 4.4.y ]
+
+Suggested-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeatures.h   |  1 +
+ arch/x86/include/asm/nospec-branch.h |  4 ++++
+ arch/x86/kernel/cpu/amd.c            | 26 ++++++++++++++++++++++++++
+ arch/x86/kernel/cpu/bugs.c           | 27 ++++++++++++++++++++++++++-
+ arch/x86/kernel/cpu/common.c         |  4 ++++
+ 5 files changed, 61 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 7cc4937..b2855ae 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -204,6 +204,7 @@
+ #define X86_FEATURE_USE_IBPB	( 7*32+21) /* "" Indirect Branch Prediction Barrier enabled*/
+ #define X86_FEATURE_USE_IBRS_FW	( 7*32+22) /* "" Use IBRS during runtime firmware calls */
+ #define X86_FEATURE_SPEC_STORE_BYPASS_DISABLE	( 7*32+23) /* "" Disable Speculative Store Bypass. */
++#define X86_FEATURE_AMD_RDS	(7*32+24)  /* "" AMD RDS implementation */
+ 
+ /* Virtualization flags: Linux defined, word 8 */
+ #define X86_FEATURE_TPR_SHADOW  ( 8*32+ 0) /* Intel TPR Shadow */
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index c786d01..ac2fdc96 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -199,6 +199,10 @@ enum ssb_mitigation {
+ 	SPEC_STORE_BYPASS_DISABLE,
+ };
+ 
++/* AMD specific Speculative Store Bypass MSR data */
++extern u64 x86_amd_ls_cfg_base;
++extern u64 x86_amd_ls_cfg_rds_mask;
++
+ extern char __indirect_thunk_start[];
+ extern char __indirect_thunk_end[];
+ 
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index 9b29414..4452f38 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -9,6 +9,7 @@
+ #include <asm/processor.h>
+ #include <asm/apic.h>
+ #include <asm/cpu.h>
++#include <asm/nospec-branch.h>
+ #include <asm/smp.h>
+ #include <asm/pci-direct.h>
+ #include <asm/delay.h>
+@@ -519,6 +520,26 @@ static void bsp_init_amd(struct cpuinfo_x86 *c)
+ 
+ 	if (cpu_has(c, X86_FEATURE_MWAITX))
+ 		use_mwaitx_delay();
++
++	if (c->x86 >= 0x15 && c->x86 <= 0x17) {
++		unsigned int bit;
++
++		switch (c->x86) {
++		case 0x15: bit = 54; break;
++		case 0x16: bit = 33; break;
++		case 0x17: bit = 10; break;
++		default: return;
++		}
++		/*
++		 * Try to cache the base value so further operations can
++		 * avoid RMW. If that faults, do not enable RDS.
++		 */
++		if (!rdmsrl_safe(MSR_AMD64_LS_CFG, &x86_amd_ls_cfg_base)) {
++			setup_force_cpu_cap(X86_FEATURE_RDS);
++			setup_force_cpu_cap(X86_FEATURE_AMD_RDS);
++			x86_amd_ls_cfg_rds_mask = 1ULL << bit;
++		}
++	}
+ }
+ 
+ static void early_init_amd(struct cpuinfo_x86 *c)
+@@ -794,6 +815,11 @@ static void init_amd(struct cpuinfo_x86 *c)
+ 	/* AMD CPUs don't reset SS attributes on SYSRET, Xen does. */
+ 	if (!cpu_has(c, X86_FEATURE_XENPV))
+ 		set_cpu_bug(c, X86_BUG_SYSRET_SS_ATTRS);
++
++	if (boot_cpu_has(X86_FEATURE_AMD_RDS)) {
++		set_cpu_cap(c, X86_FEATURE_RDS);
++		set_cpu_cap(c, X86_FEATURE_AMD_RDS);
++	}
+ }
+ 
+ #ifdef CONFIG_X86_32
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index c37e211..b8911af 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -40,6 +40,13 @@ static u64 x86_spec_ctrl_base;
+  */
+ static u64 x86_spec_ctrl_mask = ~SPEC_CTRL_IBRS;
+ 
++/*
++ * AMD specific MSR info for Speculative Store Bypass control.
++ * x86_amd_ls_cfg_rds_mask is initialized in identify_boot_cpu().
++ */
++u64 x86_amd_ls_cfg_base;
++u64 x86_amd_ls_cfg_rds_mask;
++
+ void __init check_bugs(void)
+ {
+ 	identify_boot_cpu();
+@@ -51,7 +58,8 @@ void __init check_bugs(void)
+ 
+ 	/*
+ 	 * Read the SPEC_CTRL MSR to account for reserved bits which may
+-	 * have unknown values.
++	 * have unknown values. AMD64_LS_CFG MSR is cached in the early AMD
++	 * init code as it is not enumerated and depends on the family.
+ 	 */
+ 	if (boot_cpu_has(X86_FEATURE_IBRS))
+ 		rdmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
+@@ -153,6 +161,14 @@ void x86_spec_ctrl_restore_host(u64 guest_spec_ctrl)
+ }
+ EXPORT_SYMBOL_GPL(x86_spec_ctrl_restore_host);
+ 
++static void x86_amd_rds_enable(void)
++{
++	u64 msrval = x86_amd_ls_cfg_base | x86_amd_ls_cfg_rds_mask;
++
++	if (boot_cpu_has(X86_FEATURE_AMD_RDS))
++		wrmsrl(MSR_AMD64_LS_CFG, msrval);
++}
++
+ #ifdef RETPOLINE
+ static bool spectre_v2_bad_module;
+ 
+@@ -442,6 +458,11 @@ static enum ssb_mitigation_cmd __init __ssb_select_mitigation(void)
+ 
+ 	switch (cmd) {
+ 	case SPEC_STORE_BYPASS_CMD_AUTO:
++		/*
++		 * AMD platforms by default don't need SSB mitigation.
++		 */
++		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD)
++			break;
+ 	case SPEC_STORE_BYPASS_CMD_ON:
+ 		mode = SPEC_STORE_BYPASS_DISABLE;
+ 		break;
+@@ -468,6 +489,7 @@ static enum ssb_mitigation_cmd __init __ssb_select_mitigation(void)
+ 			x86_spec_ctrl_set(SPEC_CTRL_RDS);
+ 			break;
+ 		case X86_VENDOR_AMD:
++			x86_amd_rds_enable();
+ 			break;
+ 		}
+ 	}
+@@ -489,6 +511,9 @@ void x86_spec_ctrl_setup_ap(void)
+ {
+ 	if (boot_cpu_has(X86_FEATURE_IBRS))
+ 		x86_spec_ctrl_set(x86_spec_ctrl_base & ~x86_spec_ctrl_mask);
++
++	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
++		x86_amd_rds_enable();
+ }
+ 
+ #ifdef CONFIG_SYSFS
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 2f1d403..7405c86 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -851,6 +851,10 @@ static const __initconst struct x86_cpu_id cpu_no_spec_store_bypass[] = {
+ 	{ X86_VENDOR_CENTAUR,	5,					},
+ 	{ X86_VENDOR_INTEL,	5,					},
+ 	{ X86_VENDOR_NSC,	5,					},
++	{ X86_VENDOR_AMD,	0x12,					},
++	{ X86_VENDOR_AMD,	0x11,					},
++	{ X86_VENDOR_AMD,	0x10,					},
++	{ X86_VENDOR_AMD,	0xf,					},
+ 	{ X86_VENDOR_ANY,	4,					},
+ 	{}
+ };
+-- 
+2.7.4
+

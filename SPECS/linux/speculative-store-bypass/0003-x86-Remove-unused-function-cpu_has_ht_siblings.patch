@@ -1,0 +1,38 @@
+From 09e896828b7b03ce923545c95ece1fd95f172e00 Mon Sep 17 00:00:00 2001
+From: Juergen Gross <jgross@suse.com>
+Date: Tue, 17 Nov 2015 13:05:43 +0100
+Subject: [PATCH 003/125] x86: Remove unused function cpu_has_ht_siblings()
+
+It is used nowhere.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Link: http://lkml.kernel.org/r/1447761943-770-1-git-send-email-jgross@suse.com
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/smp.h | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/arch/x86/include/asm/smp.h b/arch/x86/include/asm/smp.h
+index 222a6a3..a438c55 100644
+--- a/arch/x86/include/asm/smp.h
++++ b/arch/x86/include/asm/smp.h
+@@ -21,15 +21,6 @@
+ extern int smp_num_siblings;
+ extern unsigned int num_processors;
+ 
+-static inline bool cpu_has_ht_siblings(void)
+-{
+-	bool has_siblings = false;
+-#ifdef CONFIG_SMP
+-	has_siblings = cpu_has_ht && smp_num_siblings > 1;
+-#endif
+-	return has_siblings;
+-}
+-
+ DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_sibling_map);
+ DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_core_map);
+ /* cpus sharing the last level cache: */
+-- 
+2.7.4
+
