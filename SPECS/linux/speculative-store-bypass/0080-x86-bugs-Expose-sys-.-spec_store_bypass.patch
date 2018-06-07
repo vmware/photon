@@ -1,0 +1,149 @@
+From 44b723b06db645bcb02820a243fcf85031b86fe1 Mon Sep 17 00:00:00 2001
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Date: Wed, 25 Apr 2018 22:04:20 -0400
+Subject: [PATCH 080/125] x86/bugs: Expose /sys/../spec_store_bypass
+
+commit c456442cd3a59eeb1d60293c26cbe2ff2c4e42cf upstream
+
+Add the sysfs file for the new vulerability. It does not do much except
+show the words 'Vulnerable' for recent x86 cores.
+
+Intel cores prior to family 6 are known not to be vulnerable, and so are
+some Atoms and some Xeon Phi.
+
+It assumes that older Cyrix, Centaur, etc. cores are immune.
+
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ Documentation/ABI/testing/sysfs-devices-system-cpu |  1 +
+ arch/x86/include/asm/cpufeatures.h                 |  1 +
+ arch/x86/kernel/cpu/bugs.c                         |  5 +++++
+ arch/x86/kernel/cpu/common.c                       | 23 ++++++++++++++++++++++
+ drivers/base/cpu.c                                 |  8 ++++++++
+ include/linux/cpu.h                                |  2 ++
+ 6 files changed, 40 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
+index ea6a043..50f9568 100644
+--- a/Documentation/ABI/testing/sysfs-devices-system-cpu
++++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+@@ -276,6 +276,7 @@ What:		/sys/devices/system/cpu/vulnerabilities
+ 		/sys/devices/system/cpu/vulnerabilities/meltdown
+ 		/sys/devices/system/cpu/vulnerabilities/spectre_v1
+ 		/sys/devices/system/cpu/vulnerabilities/spectre_v2
++		/sys/devices/system/cpu/vulnerabilities/spec_store_bypass
+ Date:		January 2018
+ Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
+ Description:	Information about CPU vulnerabilities
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index a123acd..bfbf778 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -315,5 +315,6 @@
+ #define X86_BUG_CPU_MELTDOWN	X86_BUG(14) /* CPU is affected by meltdown attack and needs kernel page table isolation */
+ #define X86_BUG_SPECTRE_V1	X86_BUG(15) /* CPU is affected by Spectre variant 1 attack with conditional branches */
+ #define X86_BUG_SPECTRE_V2	X86_BUG(16) /* CPU is affected by Spectre variant 2 attack with indirect branches */
++#define X86_BUG_SPEC_STORE_BYPASS X86_BUG(17) /* CPU is affected by speculative store bypass attack */
+ 
+ #endif /* _ASM_X86_CPUFEATURES_H */
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index e71e281..0ad13b1 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -403,4 +403,9 @@ ssize_t cpu_show_spectre_v2(struct device *dev, struct device_attribute *attr, c
+ {
+ 	return cpu_show_common(dev, attr, buf, X86_BUG_SPECTRE_V2);
+ }
++
++ssize_t cpu_show_spec_store_bypass(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	return cpu_show_common(dev, attr, buf, X86_BUG_SPEC_STORE_BYPASS);
++}
+ #endif
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 97558d1..eb78ddf 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -835,10 +835,33 @@ static const __initconst struct x86_cpu_id cpu_no_meltdown[] = {
+ 	{}
+ };
+ 
++static const __initconst struct x86_cpu_id cpu_no_spec_store_bypass[] = {
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_PINEVIEW	},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_LINCROFT	},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_PENWELL		},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_CLOVERVIEW	},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_CEDARVIEW	},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_SILVERMONT1	},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_AIRMONT		},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_SILVERMONT2	},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_ATOM_MERRIFIELD	},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_CORE_YONAH		},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_XEON_PHI_KNL		},
++	{ X86_VENDOR_INTEL,	6,	INTEL_FAM6_XEON_PHI_KNM		},
++	{ X86_VENDOR_CENTAUR,	5,					},
++	{ X86_VENDOR_INTEL,	5,					},
++	{ X86_VENDOR_NSC,	5,					},
++	{ X86_VENDOR_ANY,	4,					},
++	{}
++};
++
+ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+ {
+ 	u64 ia32_cap = 0;
+ 
++	if (!x86_match_cpu(cpu_no_spec_store_bypass))
++		setup_force_cpu_bug(X86_BUG_SPEC_STORE_BYPASS);
++
+ 	if (x86_match_cpu(cpu_no_speculation))
+ 		return;
+ 
+diff --git a/drivers/base/cpu.c b/drivers/base/cpu.c
+index 3db71af..143edea 100644
+--- a/drivers/base/cpu.c
++++ b/drivers/base/cpu.c
+@@ -518,14 +518,22 @@ ssize_t __weak cpu_show_spectre_v2(struct device *dev,
+ 	return sprintf(buf, "Not affected\n");
+ }
+ 
++ssize_t __weak cpu_show_spec_store_bypass(struct device *dev,
++					  struct device_attribute *attr, char *buf)
++{
++	return sprintf(buf, "Not affected\n");
++}
++
+ static DEVICE_ATTR(meltdown, 0444, cpu_show_meltdown, NULL);
+ static DEVICE_ATTR(spectre_v1, 0444, cpu_show_spectre_v1, NULL);
+ static DEVICE_ATTR(spectre_v2, 0444, cpu_show_spectre_v2, NULL);
++static DEVICE_ATTR(spec_store_bypass, 0444, cpu_show_spec_store_bypass, NULL);
+ 
+ static struct attribute *cpu_root_vulnerabilities_attrs[] = {
+ 	&dev_attr_meltdown.attr,
+ 	&dev_attr_spectre_v1.attr,
+ 	&dev_attr_spectre_v2.attr,
++	&dev_attr_spec_store_bypass.attr,
+ 	NULL
+ };
+ 
+diff --git a/include/linux/cpu.h b/include/linux/cpu.h
+index 7e04bcd..2f9d120 100644
+--- a/include/linux/cpu.h
++++ b/include/linux/cpu.h
+@@ -46,6 +46,8 @@ extern ssize_t cpu_show_spectre_v1(struct device *dev,
+ 				   struct device_attribute *attr, char *buf);
+ extern ssize_t cpu_show_spectre_v2(struct device *dev,
+ 				   struct device_attribute *attr, char *buf);
++extern ssize_t cpu_show_spec_store_bypass(struct device *dev,
++					  struct device_attribute *attr, char *buf);
+ 
+ extern __printf(4, 5)
+ struct device *cpu_device_create(struct device *parent, void *drvdata,
+-- 
+2.7.4
+

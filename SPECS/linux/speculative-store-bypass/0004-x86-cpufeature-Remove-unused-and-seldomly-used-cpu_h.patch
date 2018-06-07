@@ -1,0 +1,525 @@
+From b9a3564f2e3e1855023fae5e2a5737a6349b4198 Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Mon, 7 Dec 2015 10:39:41 +0100
+Subject: [PATCH 004/125] x86/cpufeature: Remove unused and seldomly used
+ cpu_has_xx macros
+
+Those are stupid and code should use static_cpu_has_safe() or
+boot_cpu_has() instead. Kill the least used and unused ones.
+
+The remaining ones need more careful inspection before a conversion can
+happen. On the TODO.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: http://lkml.kernel.org/r/1449481182-27541-4-git-send-email-bp@alien8.de
+Cc: David Sterba <dsterba@suse.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Cc: Matt Mackall <mpm@selenic.com>
+Cc: Chris Mason <clm@fb.com>
+Cc: Josef Bacik <jbacik@fb.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/crypto/chacha20_glue.c             |  2 +-
+ arch/x86/crypto/crc32c-intel_glue.c         |  2 +-
+ arch/x86/include/asm/cmpxchg_32.h           |  2 +-
+ arch/x86/include/asm/cmpxchg_64.h           |  2 +-
+ arch/x86/include/asm/cpufeature.h           | 37 ++++-------------------------
+ arch/x86/include/asm/xor_32.h               |  2 +-
+ arch/x86/kernel/cpu/amd.c                   |  4 ++--
+ arch/x86/kernel/cpu/common.c                |  4 +++-
+ arch/x86/kernel/cpu/intel.c                 |  3 ++-
+ arch/x86/kernel/cpu/intel_cacheinfo.c       |  6 ++---
+ arch/x86/kernel/cpu/mtrr/generic.c          |  2 +-
+ arch/x86/kernel/cpu/mtrr/main.c             |  2 +-
+ arch/x86/kernel/cpu/perf_event_amd.c        |  4 ++--
+ arch/x86/kernel/cpu/perf_event_amd_uncore.c | 11 +++++----
+ arch/x86/kernel/fpu/init.c                  |  4 ++--
+ arch/x86/kernel/hw_breakpoint.c             |  6 +++--
+ arch/x86/kernel/smpboot.c                   |  2 +-
+ arch/x86/kernel/vm86_32.c                   |  4 +++-
+ arch/x86/mm/setup_nx.c                      |  4 ++--
+ drivers/char/hw_random/via-rng.c            |  5 ++--
+ drivers/crypto/padlock-aes.c                |  2 +-
+ drivers/crypto/padlock-sha.c                |  2 +-
+ drivers/iommu/intel_irq_remapping.c         |  2 +-
+ fs/btrfs/disk-io.c                          |  2 +-
+ 24 files changed, 48 insertions(+), 68 deletions(-)
+
+diff --git a/arch/x86/crypto/chacha20_glue.c b/arch/x86/crypto/chacha20_glue.c
+index 722bace..8baaff5 100644
+--- a/arch/x86/crypto/chacha20_glue.c
++++ b/arch/x86/crypto/chacha20_glue.c
+@@ -125,7 +125,7 @@ static struct crypto_alg alg = {
+ 
+ static int __init chacha20_simd_mod_init(void)
+ {
+-	if (!cpu_has_ssse3)
++	if (!boot_cpu_has(X86_FEATURE_SSSE3))
+ 		return -ENODEV;
+ 
+ #ifdef CONFIG_AS_AVX2
+diff --git a/arch/x86/crypto/crc32c-intel_glue.c b/arch/x86/crypto/crc32c-intel_glue.c
+index 81a595d..0e98716 100644
+--- a/arch/x86/crypto/crc32c-intel_glue.c
++++ b/arch/x86/crypto/crc32c-intel_glue.c
+@@ -257,7 +257,7 @@ static int __init crc32c_intel_mod_init(void)
+ 	if (!x86_match_cpu(crc32c_cpu_id))
+ 		return -ENODEV;
+ #ifdef CONFIG_X86_64
+-	if (cpu_has_pclmulqdq) {
++	if (boot_cpu_has(X86_FEATURE_PCLMULQDQ)) {
+ 		alg.update = crc32c_pcl_intel_update;
+ 		alg.finup = crc32c_pcl_intel_finup;
+ 		alg.digest = crc32c_pcl_intel_digest;
+diff --git a/arch/x86/include/asm/cmpxchg_32.h b/arch/x86/include/asm/cmpxchg_32.h
+index f7e1429..e4959d0 100644
+--- a/arch/x86/include/asm/cmpxchg_32.h
++++ b/arch/x86/include/asm/cmpxchg_32.h
+@@ -109,6 +109,6 @@ static inline u64 __cmpxchg64_local(volatile u64 *ptr, u64 old, u64 new)
+ 
+ #endif
+ 
+-#define system_has_cmpxchg_double() cpu_has_cx8
++#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX8)
+ 
+ #endif /* _ASM_X86_CMPXCHG_32_H */
+diff --git a/arch/x86/include/asm/cmpxchg_64.h b/arch/x86/include/asm/cmpxchg_64.h
+index 1af9469..caa23a3 100644
+--- a/arch/x86/include/asm/cmpxchg_64.h
++++ b/arch/x86/include/asm/cmpxchg_64.h
+@@ -18,6 +18,6 @@ static inline void set_64bit(volatile u64 *ptr, u64 val)
+ 	cmpxchg_local((ptr), (o), (n));					\
+ })
+ 
+-#define system_has_cmpxchg_double() cpu_has_cx16
++#define system_has_cmpxchg_double() boot_cpu_has(X86_FEATURE_CX16)
+ 
+ #endif /* _ASM_X86_CMPXCHG_64_H */
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index 17e6c25..1b1c0ef 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -398,58 +398,29 @@ extern const char * const x86_bug_flags[NBUGINTS*32];
+ #define setup_force_cpu_bug(bit) setup_force_cpu_cap(bit)
+ 
+ #define cpu_has_fpu		boot_cpu_has(X86_FEATURE_FPU)
+-#define cpu_has_de		boot_cpu_has(X86_FEATURE_DE)
+ #define cpu_has_pse		boot_cpu_has(X86_FEATURE_PSE)
+ #define cpu_has_tsc		boot_cpu_has(X86_FEATURE_TSC)
+ #define cpu_has_pge		boot_cpu_has(X86_FEATURE_PGE)
+ #define cpu_has_apic		boot_cpu_has(X86_FEATURE_APIC)
+-#define cpu_has_sep		boot_cpu_has(X86_FEATURE_SEP)
+-#define cpu_has_mtrr		boot_cpu_has(X86_FEATURE_MTRR)
+-#define cpu_has_mmx		boot_cpu_has(X86_FEATURE_MMX)
+ #define cpu_has_fxsr		boot_cpu_has(X86_FEATURE_FXSR)
+ #define cpu_has_xmm		boot_cpu_has(X86_FEATURE_XMM)
+ #define cpu_has_xmm2		boot_cpu_has(X86_FEATURE_XMM2)
+-#define cpu_has_xmm3		boot_cpu_has(X86_FEATURE_XMM3)
+-#define cpu_has_ssse3		boot_cpu_has(X86_FEATURE_SSSE3)
+ #define cpu_has_aes		boot_cpu_has(X86_FEATURE_AES)
+ #define cpu_has_avx		boot_cpu_has(X86_FEATURE_AVX)
+ #define cpu_has_avx2		boot_cpu_has(X86_FEATURE_AVX2)
+-#define cpu_has_ht		boot_cpu_has(X86_FEATURE_HT)
+-#define cpu_has_nx		boot_cpu_has(X86_FEATURE_NX)
+-#define cpu_has_xstore		boot_cpu_has(X86_FEATURE_XSTORE)
+-#define cpu_has_xstore_enabled	boot_cpu_has(X86_FEATURE_XSTORE_EN)
+-#define cpu_has_xcrypt		boot_cpu_has(X86_FEATURE_XCRYPT)
+-#define cpu_has_xcrypt_enabled	boot_cpu_has(X86_FEATURE_XCRYPT_EN)
+-#define cpu_has_ace2		boot_cpu_has(X86_FEATURE_ACE2)
+-#define cpu_has_ace2_enabled	boot_cpu_has(X86_FEATURE_ACE2_EN)
+-#define cpu_has_phe		boot_cpu_has(X86_FEATURE_PHE)
+-#define cpu_has_phe_enabled	boot_cpu_has(X86_FEATURE_PHE_EN)
+-#define cpu_has_pmm		boot_cpu_has(X86_FEATURE_PMM)
+-#define cpu_has_pmm_enabled	boot_cpu_has(X86_FEATURE_PMM_EN)
+-#define cpu_has_ds		boot_cpu_has(X86_FEATURE_DS)
+-#define cpu_has_pebs		boot_cpu_has(X86_FEATURE_PEBS)
+ #define cpu_has_clflush		boot_cpu_has(X86_FEATURE_CLFLUSH)
+-#define cpu_has_bts		boot_cpu_has(X86_FEATURE_BTS)
+ #define cpu_has_gbpages		boot_cpu_has(X86_FEATURE_GBPAGES)
+ #define cpu_has_arch_perfmon	boot_cpu_has(X86_FEATURE_ARCH_PERFMON)
+ #define cpu_has_pat		boot_cpu_has(X86_FEATURE_PAT)
+-#define cpu_has_xmm4_1		boot_cpu_has(X86_FEATURE_XMM4_1)
+-#define cpu_has_xmm4_2		boot_cpu_has(X86_FEATURE_XMM4_2)
+ #define cpu_has_x2apic		boot_cpu_has(X86_FEATURE_X2APIC)
+ #define cpu_has_xsave		boot_cpu_has(X86_FEATURE_XSAVE)
+-#define cpu_has_xsaveopt	boot_cpu_has(X86_FEATURE_XSAVEOPT)
+ #define cpu_has_xsaves		boot_cpu_has(X86_FEATURE_XSAVES)
+ #define cpu_has_osxsave		boot_cpu_has(X86_FEATURE_OSXSAVE)
+ #define cpu_has_hypervisor	boot_cpu_has(X86_FEATURE_HYPERVISOR)
+-#define cpu_has_pclmulqdq	boot_cpu_has(X86_FEATURE_PCLMULQDQ)
+-#define cpu_has_perfctr_core	boot_cpu_has(X86_FEATURE_PERFCTR_CORE)
+-#define cpu_has_perfctr_nb	boot_cpu_has(X86_FEATURE_PERFCTR_NB)
+-#define cpu_has_perfctr_l2	boot_cpu_has(X86_FEATURE_PERFCTR_L2)
+-#define cpu_has_cx8		boot_cpu_has(X86_FEATURE_CX8)
+-#define cpu_has_cx16		boot_cpu_has(X86_FEATURE_CX16)
+-#define cpu_has_eager_fpu	boot_cpu_has(X86_FEATURE_EAGER_FPU)
+-#define cpu_has_topoext		boot_cpu_has(X86_FEATURE_TOPOEXT)
+-#define cpu_has_bpext		boot_cpu_has(X86_FEATURE_BPEXT)
++/*
++ * Do not add any more of those clumsy macros - use static_cpu_has_safe() for
++ * fast paths and boot_cpu_has() otherwise!
++ */
+ 
+ #if __GNUC__ >= 4
+ extern void warn_pre_alternatives(void);
+diff --git a/arch/x86/include/asm/xor_32.h b/arch/x86/include/asm/xor_32.h
+index 5a08bc8..c54beb4 100644
+--- a/arch/x86/include/asm/xor_32.h
++++ b/arch/x86/include/asm/xor_32.h
+@@ -553,7 +553,7 @@ do {							\
+ 	if (cpu_has_xmm) {				\
+ 		xor_speed(&xor_block_pIII_sse);		\
+ 		xor_speed(&xor_block_sse_pf64);		\
+-	} else if (cpu_has_mmx) {			\
++	} else if (boot_cpu_has(X86_FEATURE_MMX)) {	\
+ 		xor_speed(&xor_block_pII_mmx);		\
+ 		xor_speed(&xor_block_p5_mmx);		\
+ 	} else {					\
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index 4bf9e77..f4fb8f5 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -304,7 +304,7 @@ static void amd_get_topology(struct cpuinfo_x86 *c)
+ 	int cpu = smp_processor_id();
+ 
+ 	/* get information required for multi-node processors */
+-	if (cpu_has_topoext) {
++	if (boot_cpu_has(X86_FEATURE_TOPOEXT)) {
+ 		u32 eax, ebx, ecx, edx;
+ 
+ 		cpuid(0x8000001e, &eax, &ebx, &ecx, &edx);
+@@ -954,7 +954,7 @@ static bool cpu_has_amd_erratum(struct cpuinfo_x86 *cpu, const int *erratum)
+ 
+ void set_dr_addr_mask(unsigned long mask, int dr)
+ {
+-	if (!cpu_has_bpext)
++	if (!boot_cpu_has(X86_FEATURE_BPEXT))
+ 		return;
+ 
+ 	switch (dr) {
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 9004dfc..5b6e43b 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1541,7 +1541,9 @@ void cpu_init(void)
+ 
+ 	printk(KERN_INFO "Initializing CPU#%d\n", cpu);
+ 
+-	if (cpu_feature_enabled(X86_FEATURE_VME) || cpu_has_tsc || cpu_has_de)
++	if (cpu_feature_enabled(X86_FEATURE_VME) ||
++	    cpu_has_tsc ||
++	    boot_cpu_has(X86_FEATURE_DE))
+ 		cr4_clear_bits(X86_CR4_VME|X86_CR4_PVI|X86_CR4_TSD|X86_CR4_DE);
+ 
+ 	load_current_idt();
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index 209ac1e..565648b 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -445,7 +445,8 @@ static void init_intel(struct cpuinfo_x86 *c)
+ 
+ 	if (cpu_has_xmm2)
+ 		set_cpu_cap(c, X86_FEATURE_LFENCE_RDTSC);
+-	if (cpu_has_ds) {
++
++	if (boot_cpu_has(X86_FEATURE_DS)) {
+ 		unsigned int l1;
+ 		rdmsr(MSR_IA32_MISC_ENABLE, l1, l2);
+ 		if (!(l1 & (1<<11)))
+diff --git a/arch/x86/kernel/cpu/intel_cacheinfo.c b/arch/x86/kernel/cpu/intel_cacheinfo.c
+index b4ca91c..3fa7231 100644
+--- a/arch/x86/kernel/cpu/intel_cacheinfo.c
++++ b/arch/x86/kernel/cpu/intel_cacheinfo.c
+@@ -591,7 +591,7 @@ cpuid4_cache_lookup_regs(int index, struct _cpuid4_info_regs *this_leaf)
+ 	unsigned		edx;
+ 
+ 	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD) {
+-		if (cpu_has_topoext)
++		if (boot_cpu_has(X86_FEATURE_TOPOEXT))
+ 			cpuid_count(0x8000001d, index, &eax.full,
+ 				    &ebx.full, &ecx.full, &edx);
+ 		else
+@@ -637,7 +637,7 @@ static int find_num_cache_leaves(struct cpuinfo_x86 *c)
+ void init_amd_cacheinfo(struct cpuinfo_x86 *c)
+ {
+ 
+-	if (cpu_has_topoext) {
++	if (boot_cpu_has(X86_FEATURE_TOPOEXT)) {
+ 		num_cache_leaves = find_num_cache_leaves(c);
+ 	} else if (c->extended_cpuid_level >= 0x80000006) {
+ 		if (cpuid_edx(0x80000006) & 0xf000)
+@@ -809,7 +809,7 @@ static int __cache_amd_cpumap_setup(unsigned int cpu, int index,
+ 	struct cacheinfo *this_leaf;
+ 	int i, sibling;
+ 
+-	if (cpu_has_topoext) {
++	if (boot_cpu_has(X86_FEATURE_TOPOEXT)) {
+ 		unsigned int apicid, nshared, first, last;
+ 
+ 		this_leaf = this_cpu_ci->info_list + index;
+diff --git a/arch/x86/kernel/cpu/mtrr/generic.c b/arch/x86/kernel/cpu/mtrr/generic.c
+index b5624fa..136ae86 100644
+--- a/arch/x86/kernel/cpu/mtrr/generic.c
++++ b/arch/x86/kernel/cpu/mtrr/generic.c
+@@ -349,7 +349,7 @@ static void get_fixed_ranges(mtrr_type *frs)
+ 
+ void mtrr_save_fixed_ranges(void *info)
+ {
+-	if (cpu_has_mtrr)
++	if (boot_cpu_has(X86_FEATURE_MTRR))
+ 		get_fixed_ranges(mtrr_state.fixed_ranges);
+ }
+ 
+diff --git a/arch/x86/kernel/cpu/mtrr/main.c b/arch/x86/kernel/cpu/mtrr/main.c
+index fa77ac8..f924f41 100644
+--- a/arch/x86/kernel/cpu/mtrr/main.c
++++ b/arch/x86/kernel/cpu/mtrr/main.c
+@@ -682,7 +682,7 @@ void __init mtrr_bp_init(void)
+ 
+ 	phys_addr = 32;
+ 
+-	if (cpu_has_mtrr) {
++	if (boot_cpu_has(X86_FEATURE_MTRR)) {
+ 		mtrr_if = &generic_mtrr_ops;
+ 		size_or_mask = SIZE_OR_MASK_BITS(36);
+ 		size_and_mask = 0x00f00000;
+diff --git a/arch/x86/kernel/cpu/perf_event_amd.c b/arch/x86/kernel/cpu/perf_event_amd.c
+index 1cee5d2..3ea177c 100644
+--- a/arch/x86/kernel/cpu/perf_event_amd.c
++++ b/arch/x86/kernel/cpu/perf_event_amd.c
+@@ -160,7 +160,7 @@ static inline int amd_pmu_addr_offset(int index, bool eventsel)
+ 	if (offset)
+ 		return offset;
+ 
+-	if (!cpu_has_perfctr_core)
++	if (!boot_cpu_has(X86_FEATURE_PERFCTR_CORE))
+ 		offset = index;
+ 	else
+ 		offset = index << 1;
+@@ -652,7 +652,7 @@ static __initconst const struct x86_pmu amd_pmu = {
+ 
+ static int __init amd_core_pmu_init(void)
+ {
+-	if (!cpu_has_perfctr_core)
++	if (!boot_cpu_has(X86_FEATURE_PERFCTR_CORE))
+ 		return 0;
+ 
+ 	switch (boot_cpu_data.x86) {
+diff --git a/arch/x86/kernel/cpu/perf_event_amd_uncore.c b/arch/x86/kernel/cpu/perf_event_amd_uncore.c
+index cc6cedb..4974274 100644
+--- a/arch/x86/kernel/cpu/perf_event_amd_uncore.c
++++ b/arch/x86/kernel/cpu/perf_event_amd_uncore.c
+@@ -523,10 +523,10 @@ static int __init amd_uncore_init(void)
+ 	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD)
+ 		goto fail_nodev;
+ 
+-	if (!cpu_has_topoext)
++	if (!boot_cpu_has(X86_FEATURE_TOPOEXT))
+ 		goto fail_nodev;
+ 
+-	if (cpu_has_perfctr_nb) {
++	if (boot_cpu_has(X86_FEATURE_PERFCTR_NB)) {
+ 		amd_uncore_nb = alloc_percpu(struct amd_uncore *);
+ 		if (!amd_uncore_nb) {
+ 			ret = -ENOMEM;
+@@ -540,7 +540,7 @@ static int __init amd_uncore_init(void)
+ 		ret = 0;
+ 	}
+ 
+-	if (cpu_has_perfctr_l2) {
++	if (boot_cpu_has(X86_FEATURE_PERFCTR_L2)) {
+ 		amd_uncore_l2 = alloc_percpu(struct amd_uncore *);
+ 		if (!amd_uncore_l2) {
+ 			ret = -ENOMEM;
+@@ -583,10 +583,11 @@ fail_online:
+ 
+ 	/* amd_uncore_nb/l2 should have been freed by cleanup_cpu_online */
+ 	amd_uncore_nb = amd_uncore_l2 = NULL;
+-	if (cpu_has_perfctr_l2)
++
++	if (boot_cpu_has(X86_FEATURE_PERFCTR_L2))
+ 		perf_pmu_unregister(&amd_l2_pmu);
+ fail_l2:
+-	if (cpu_has_perfctr_nb)
++	if (boot_cpu_has(X86_FEATURE_PERFCTR_NB))
+ 		perf_pmu_unregister(&amd_nb_pmu);
+ 	if (amd_uncore_l2)
+ 		free_percpu(amd_uncore_l2);
+diff --git a/arch/x86/kernel/fpu/init.c b/arch/x86/kernel/fpu/init.c
+index 1011c05b..42a0b87 100644
+--- a/arch/x86/kernel/fpu/init.c
++++ b/arch/x86/kernel/fpu/init.c
+@@ -12,7 +12,7 @@
+  */
+ static void fpu__init_cpu_ctx_switch(void)
+ {
+-	if (!cpu_has_eager_fpu)
++	if (!boot_cpu_has(X86_FEATURE_EAGER_FPU))
+ 		stts();
+ 	else
+ 		clts();
+@@ -288,7 +288,7 @@ static void __init fpu__init_system_ctx_switch(void)
+ 	current_thread_info()->status = 0;
+ 
+ 	/* Auto enable eagerfpu for xsaveopt */
+-	if (cpu_has_xsaveopt && eagerfpu != DISABLE)
++	if (boot_cpu_has(X86_FEATURE_XSAVEOPT) && eagerfpu != DISABLE)
+ 		eagerfpu = ENABLE;
+ 
+ 	if (xfeatures_mask & XFEATURE_MASK_EAGER) {
+diff --git a/arch/x86/kernel/hw_breakpoint.c b/arch/x86/kernel/hw_breakpoint.c
+index 50a3fad..2bcfb5f 100644
+--- a/arch/x86/kernel/hw_breakpoint.c
++++ b/arch/x86/kernel/hw_breakpoint.c
+@@ -300,6 +300,10 @@ static int arch_build_bp_info(struct perf_event *bp)
+ 			return -EINVAL;
+ 		if (bp->attr.bp_addr & (bp->attr.bp_len - 1))
+ 			return -EINVAL;
++
++		if (!boot_cpu_has(X86_FEATURE_BPEXT))
++			return -EOPNOTSUPP;
++
+ 		/*
+ 		 * It's impossible to use a range breakpoint to fake out
+ 		 * user vs kernel detection because bp_len - 1 can't
+@@ -307,8 +311,6 @@ static int arch_build_bp_info(struct perf_event *bp)
+ 		 * breakpoints, then we'll have to check for kprobe-blacklisted
+ 		 * addresses anywhere in the range.
+ 		 */
+-		if (!cpu_has_bpext)
+-			return -EOPNOTSUPP;
+ 		info->mask = bp->attr.bp_len - 1;
+ 		info->len = X86_BREAKPOINT_LEN_1;
+ 	}
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index 00c7878..a47a265 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -295,7 +295,7 @@ do {									\
+ 
+ static bool match_smt(struct cpuinfo_x86 *c, struct cpuinfo_x86 *o)
+ {
+-	if (cpu_has_topoext) {
++	if (boot_cpu_has(X86_FEATURE_TOPOEXT)) {
+ 		int cpu1 = c->cpu_index, cpu2 = o->cpu_index;
+ 
+ 		if (c->phys_proc_id == o->phys_proc_id &&
+diff --git a/arch/x86/kernel/vm86_32.c b/arch/x86/kernel/vm86_32.c
+index af57736..d6d64a5 100644
+--- a/arch/x86/kernel/vm86_32.c
++++ b/arch/x86/kernel/vm86_32.c
+@@ -357,8 +357,10 @@ static long do_sys_vm86(struct vm86plus_struct __user *user_vm86, bool plus)
+ 	tss = &per_cpu(cpu_tss, get_cpu());
+ 	/* make room for real-mode segments */
+ 	tsk->thread.sp0 += 16;
+-	if (cpu_has_sep)
++
++	if (static_cpu_has_safe(X86_FEATURE_SEP))
+ 		tsk->thread.sysenter_cs = 0;
++
+ 	load_sp0(tss, &tsk->thread);
+ 	put_cpu();
+ 
+diff --git a/arch/x86/mm/setup_nx.c b/arch/x86/mm/setup_nx.c
+index 90555bf..92e2eac 100644
+--- a/arch/x86/mm/setup_nx.c
++++ b/arch/x86/mm/setup_nx.c
+@@ -31,7 +31,7 @@ early_param("noexec", noexec_setup);
+ 
+ void x86_configure_nx(void)
+ {
+-	if (cpu_has_nx && !disable_nx)
++	if (boot_cpu_has(X86_FEATURE_NX) && !disable_nx)
+ 		__supported_pte_mask |= _PAGE_NX;
+ 	else
+ 		__supported_pte_mask &= ~_PAGE_NX;
+@@ -39,7 +39,7 @@ void x86_configure_nx(void)
+ 
+ void __init x86_report_nx(void)
+ {
+-	if (!cpu_has_nx) {
++	if (!boot_cpu_has(X86_FEATURE_NX)) {
+ 		printk(KERN_NOTICE "Notice: NX (Execute Disable) protection "
+ 		       "missing in CPU!\n");
+ 	} else {
+diff --git a/drivers/char/hw_random/via-rng.c b/drivers/char/hw_random/via-rng.c
+index 0c98a9d..44ce806 100644
+--- a/drivers/char/hw_random/via-rng.c
++++ b/drivers/char/hw_random/via-rng.c
+@@ -140,7 +140,7 @@ static int via_rng_init(struct hwrng *rng)
+ 	 * RNG configuration like it used to be the case in this
+ 	 * register */
+ 	if ((c->x86 == 6) && (c->x86_model >= 0x0f)) {
+-		if (!cpu_has_xstore_enabled) {
++		if (!boot_cpu_has(X86_FEATURE_XSTORE_EN)) {
+ 			pr_err(PFX "can't enable hardware RNG "
+ 				"if XSTORE is not enabled\n");
+ 			return -ENODEV;
+@@ -200,8 +200,9 @@ static int __init mod_init(void)
+ {
+ 	int err;
+ 
+-	if (!cpu_has_xstore)
++	if (!boot_cpu_has(X86_FEATURE_XSTORE))
+ 		return -ENODEV;
++
+ 	pr_info("VIA RNG detected\n");
+ 	err = hwrng_register(&via_rng);
+ 	if (err) {
+diff --git a/drivers/crypto/padlock-aes.c b/drivers/crypto/padlock-aes.c
+index da2d677..97a3646 100644
+--- a/drivers/crypto/padlock-aes.c
++++ b/drivers/crypto/padlock-aes.c
+@@ -515,7 +515,7 @@ static int __init padlock_init(void)
+ 	if (!x86_match_cpu(padlock_cpu_id))
+ 		return -ENODEV;
+ 
+-	if (!cpu_has_xcrypt_enabled) {
++	if (!boot_cpu_has(X86_FEATURE_XCRYPT_EN)) {
+ 		printk(KERN_NOTICE PFX "VIA PadLock detected, but not enabled. Hmm, strange...\n");
+ 		return -ENODEV;
+ 	}
+diff --git a/drivers/crypto/padlock-sha.c b/drivers/crypto/padlock-sha.c
+index 4e154c9..8c5f906 100644
+--- a/drivers/crypto/padlock-sha.c
++++ b/drivers/crypto/padlock-sha.c
+@@ -540,7 +540,7 @@ static int __init padlock_init(void)
+ 	struct shash_alg *sha1;
+ 	struct shash_alg *sha256;
+ 
+-	if (!x86_match_cpu(padlock_sha_ids) || !cpu_has_phe_enabled)
++	if (!x86_match_cpu(padlock_sha_ids) || !boot_cpu_has(X86_FEATURE_PHE_EN))
+ 		return -ENODEV;
+ 
+ 	/* Register the newly added algorithm module if on *
+diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
+index e9b241b..ac59692 100644
+--- a/drivers/iommu/intel_irq_remapping.c
++++ b/drivers/iommu/intel_irq_remapping.c
+@@ -753,7 +753,7 @@ static inline void set_irq_posting_cap(void)
+ 		 * should have X86_FEATURE_CX16 support, this has been confirmed
+ 		 * with Intel hardware guys.
+ 		 */
+-		if ( cpu_has_cx16 )
++		if (boot_cpu_has(X86_FEATURE_CX16))
+ 			intel_irq_remap_ops.capability |= 1 << IRQ_POSTING_CAP;
+ 
+ 		for_each_iommu(iommu, drhd)
+diff --git a/fs/btrfs/disk-io.c b/fs/btrfs/disk-io.c
+index 85b207d..87fb86c 100644
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -923,7 +923,7 @@ static int check_async_write(struct inode *inode, unsigned long bio_flags)
+ 	if (bio_flags & EXTENT_BIO_TREE_LOG)
+ 		return 0;
+ #ifdef CONFIG_X86
+-	if (cpu_has_xmm4_2)
++	if (static_cpu_has_safe(X86_FEATURE_XMM4_2))
+ 		return 0;
+ #endif
+ 	return 1;
+-- 
+2.7.4
+

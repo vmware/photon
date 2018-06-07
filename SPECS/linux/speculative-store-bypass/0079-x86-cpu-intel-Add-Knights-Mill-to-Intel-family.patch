@@ -1,0 +1,39 @@
+From f683cb5705cf6c1849bc1a5a10bc7d0b7d0eb5c2 Mon Sep 17 00:00:00 2001
+From: Piotr Luc <piotr.luc@intel.com>
+Date: Wed, 12 Oct 2016 20:05:20 +0200
+Subject: [PATCH 079/125] x86/cpu/intel: Add Knights Mill to Intel family
+
+Add CPUID of Knights Mill (KNM) processor to Intel family list.
+
+Signed-off-by: Piotr Luc <piotr.luc@intel.com>
+Reviewed-by: Dave Hansen <dave.hansen@intel.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/20161012180520.30976-1-piotr.luc@intel.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/intel-family.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
+index 0b27c1e..e13ff5a 100644
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -67,5 +67,6 @@
+ /* Xeon Phi */
+ 
+ #define INTEL_FAM6_XEON_PHI_KNL		0x57 /* Knights Landing */
++#define INTEL_FAM6_XEON_PHI_KNM		0x85 /* Knights Mill */
+ 
+ #endif /* _ASM_X86_INTEL_FAMILY_H */
+-- 
+2.7.4
+
