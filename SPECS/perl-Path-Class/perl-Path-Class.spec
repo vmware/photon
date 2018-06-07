@@ -4,7 +4,7 @@
 Summary:        Cross-platform path specification manipulation for Perl
 Name:           perl-Path-Class
 Version:        0.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://search.cpan.org/~kwilliams/Path-Class-0.37/
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
@@ -41,5 +41,7 @@ make test
 %{_mandir}/man?/*
 
 %changelog
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 0.37-2
+-   Bump release after upgraded perl to 5.24.1
 *   Wed Apr 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.37-1
 -   Initial version.

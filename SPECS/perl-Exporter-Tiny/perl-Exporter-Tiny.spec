@@ -1,18 +1,18 @@
 # Got the intial spec from Fedora and modified it
-Summary:	An exporter with the features of Sub::Exporter but only core dependencies
-Name:		perl-Exporter-Tiny
-Version:	0.042
-Release:	2%{?dist}
-License:	(GPL+ or Artistic) and Public Domain and (GPL+ or Artistic or CC-BY-SA)
-Group:		Development/Libraries
-URL:		http://search.cpan.org/dist/Exporter-Tiny/
-Source0:	http://search.cpan.org/CPAN/authors/id/T/TO/TOBYINK/Exporter-Tiny-%{version}.tar.gz
-%define sha1 Exporter-Tiny=3a3ac1affabcfce1d1bf8cffee2e7a8c78780e54
-Vendor:		VMware, Inc.
-Distribution:	Photon
-BuildArch:	noarch
-BuildRequires:	perl
-Requires:	perl
+Summary:        An exporter with the features of Sub::Exporter but only core dependencies
+Name:           perl-Exporter-Tiny
+Version:        0.042
+Release:        3%{?dist}
+License:        (GPL+ or Artistic) and Public Domain and (GPL+ or Artistic or CC-BY-SA)
+Group:          Development/Libraries
+URL:            http://search.cpan.org/dist/Exporter-Tiny/
+Source0:        http://search.cpan.org/CPAN/authors/id/T/TO/TOBYINK/Exporter-Tiny-%{version}.tar.gz
+%define sha1    Exporter-Tiny=3a3ac1affabcfce1d1bf8cffee2e7a8c78780e54
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildArch:      noarch
+BuildRequires:  perl
+Requires:       perl
 
 %description
 Exporter::Tiny supports many of Sub::Exporter's external-facing features
@@ -54,7 +54,9 @@ rm -rf %{buildroot}
 %{_mandir}/man3/Exporter::Shiny.3*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.042-2
--	GA - Bump release of all rpms
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.042-1
--	Initial version.
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 0.042-3
+-   Bump release after upgraded perl to 5.24.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.042-2
+-   GA - Bump release of all rpms
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 0.042-1
+-   Initial version.

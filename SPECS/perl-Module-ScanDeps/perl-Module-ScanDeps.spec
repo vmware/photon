@@ -2,17 +2,17 @@
 Summary:        Recursively scan Perl code for dependencies
 Name:           perl-Module-ScanDeps
 Version:        1.18
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL+ or Artistic
 Group:          Development/Libraries
 Source0:        http://search.cpan.org/CPAN/authors/id/R/RS/RSCHUPP/Module-ScanDeps-%{version}.tar.gz 
-%define sha1 Module-ScanDeps=f12767be803f28e685be29e6bc9430361179de09
+%define sha1    Module-ScanDeps=f12767be803f28e685be29e6bc9430361179de09
 URL:            http://search.cpan.org/dist/Module-ScanDeps/
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
 BuildRequires:  perl
-Requires:	perl
+Requires:       perl
 
 %description
 This module scans potential modules used by perl programs and returns a
@@ -41,7 +41,9 @@ make test
 %{_mandir}/man3/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.18-2
--	GA - Bump release of all rpms
-*	Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.18-1
--	Initial version.
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 1.18-3
+-   Bump release after upgraded perl to 5.24.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.18-2
+-   GA - Bump release of all rpms
+*   Fri Apr 3 2015 Divya Thaluru <dthaluru@vmware.com> 1.18-1
+-   Initial version.
