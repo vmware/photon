@@ -1,0 +1,78 @@
+From 406b6d517cb8dca8d4ce0d454c03eb4eb6097e92 Mon Sep 17 00:00:00 2001
+From: Jim Mattson <jmattson@google.com>
+Date: Fri, 29 Jul 2016 18:56:53 -0700
+Subject: [PATCH 036/125] KVM: VMX: Add VMCS to CPU's loaded VMCSs before
+ VMPTRLD
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Kexec needs to know the addresses of all VMCSs that are active on
+each CPU, so that it can flush them from the VMCS caches. It is
+safe to record superfluous addresses that are not associated with
+an active VMCS, but it is not safe to omit an address associated
+with an active VMCS.
+
+After a call to vmcs_load, the VMCS that was loaded is active on
+the CPU. The VMCS should be added to the CPU's list of active
+VMCSs before it is loaded.
+
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Signed-off-by: Radim Krčmář <rkrcmar@redhat.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kvm/vmx.c | 26 +++++++++++++++-----------
+ 1 file changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 069e2b8..dc0449a 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -2071,22 +2071,14 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 	u64 phys_addr = __pa(per_cpu(vmxarea, cpu));
++	bool already_loaded = vmx->loaded_vmcs->cpu == cpu;
+ 
+ 	if (!vmm_exclusive)
+ 		kvm_cpu_vmxon(phys_addr);
+-	else if (vmx->loaded_vmcs->cpu != cpu)
++	else if (!already_loaded)
+ 		loaded_vmcs_clear(vmx->loaded_vmcs);
+ 
+-	if (per_cpu(current_vmcs, cpu) != vmx->loaded_vmcs->vmcs) {
+-		per_cpu(current_vmcs, cpu) = vmx->loaded_vmcs->vmcs;
+-		vmcs_load(vmx->loaded_vmcs->vmcs);
+-	}
+-
+-	if (vmx->loaded_vmcs->cpu != cpu) {
+-		struct desc_ptr *gdt = this_cpu_ptr(&host_gdt);
+-		unsigned long sysenter_esp;
+-
+-		kvm_make_request(KVM_REQ_TLB_FLUSH, vcpu);
++	if (!already_loaded) {
+ 		local_irq_disable();
+ 		crash_disable_local_vmclear(cpu);
+ 
+@@ -2101,6 +2093,18 @@ static void vmx_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+ 			 &per_cpu(loaded_vmcss_on_cpu, cpu));
+ 		crash_enable_local_vmclear(cpu);
+ 		local_irq_enable();
++	}
++
++	if (per_cpu(current_vmcs, cpu) != vmx->loaded_vmcs->vmcs) {
++		per_cpu(current_vmcs, cpu) = vmx->loaded_vmcs->vmcs;
++		vmcs_load(vmx->loaded_vmcs->vmcs);
++	}
++
++	if (!already_loaded) {
++		struct desc_ptr *gdt = this_cpu_ptr(&host_gdt);
++		unsigned long sysenter_esp;
++
++		kvm_make_request(KVM_REQ_TLB_FLUSH, vcpu);
+ 
+ 		/*
+ 		 * Linux uses per-cpu TSS and GDT, so set these when switching
+-- 
+2.7.4
+
