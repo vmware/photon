@@ -8,18 +8,22 @@
 
 Summary:        Practical Extraction and Report Language
 Name:           perl
-Version:        5.22.1
-Release:        5%{?dist}
+Version:        5.24.1
+Release:        1%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.bz2
-%define sha1 perl=29f9b320b0299577a3e1d02e9e8ef8f26f160332
-Patch0:         perl-CVE-2016-1238.patch
+%define sha1    perl=d43ac3d39686462f86eed35b3c298ace74f1ffa0
+Patch0:         CVE-2017-12883.patch
+#https://perl5.git.perl.org/perl.git/patch/96c83ed78aeea1a0496dd2b2d935869a822dc8a5
 Patch1:         CVE-2017-12837.patch
-Patch2:         CVE-2017-12883.patch
+Patch2:         perl-CVE-2018-6797.patch
+Patch3:         perl-CVE-2018-6798-1.patch
+Patch4:         perl-CVE-2018-6798-2.patch
+Patch5:         perl-CVE-2018-6913.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
@@ -36,6 +40,9 @@ Report Language.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 sed -i 's/-fstack-protector/&-all/' Configure
 
@@ -68,6 +75,8 @@ unset BUILD_ZLIB BUILD_BZIP2
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Mon May 21 2018 Xiaolin <xiaolinl@vmware.com> 5.24.1-1
+-   Fix CVE-2018-6797, CVE-2018-6798, CVE-2018-6913
 *   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.22.1-5
 -   Fix for CVE-2017-12837 and CVE-2017-12883
 *   Thu Oct 20 2016 Xiaolin Li <xiaolinl@vmware.com> 5.22.1-4

@@ -4,7 +4,7 @@
 Summary:        SSL sockets with IO::Socket interface
 Name:           perl-IO-Socket-SSL
 Version:        2.024
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~sullr/IO-Socket-SSL-2.024/lib/IO/Socket/SSL.pod
@@ -40,8 +40,10 @@ make test
 %{_mandir}/man?/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.024-2
--	GA - Bump release of all rpms
-*    Mon Mar 28 2016 Mahmoud Bassiouny <mbassiounu@vmware.com> 2.024-1
--    Initial version.
+*   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 2.024-3
+-   Bump release after upgraded perl to 5.24.1
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.024-2
+-   GA - Bump release of all rpms
+*   Mon Mar 28 2016 Mahmoud Bassiouny <mbassiounu@vmware.com> 2.024-1
+-   Initial version.
 
