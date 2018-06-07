@@ -1,0 +1,52 @@
+From ac37da9398c56d7f1648ec914bcacb4dbc0285c5 Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Thu, 25 Jan 2018 16:14:10 +0000
+Subject: [PATCH 026/121] x86/cpufeatures: Add Intel feature bits for
+ Speculation Control
+
+(cherry picked from commit fc67dd70adb711a45d2ef34e12d1a8be75edde61)
+
+Add three feature bits exposed by new microcode on Intel CPUs for
+speculation control.
+
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Cc: gnomes@lxorguk.ukuu.org.uk
+Cc: ak@linux.intel.com
+Cc: ashok.raj@intel.com
+Cc: dave.hansen@intel.com
+Cc: karahmed@amazon.de
+Cc: arjan@linux.intel.com
+Cc: torvalds@linux-foundation.org
+Cc: peterz@infradead.org
+Cc: bp@alien8.de
+Cc: pbonzini@redhat.com
+Cc: tim.c.chen@linux.intel.com
+Cc: gregkh@linux-foundation.org
+Link: https://lkml.kernel.org/r/1516896855-7642-3-git-send-email-dwmw@amazon.co.uk
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeatures.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index f5a8374..b32e004 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -288,6 +288,9 @@
+ /* Intel-defined CPU features, CPUID level 0x00000007:0 (EDX), word 18 */
+ #define X86_FEATURE_AVX512_4VNNIW	(18*32+ 2) /* AVX-512 Neural Network Instructions */
+ #define X86_FEATURE_AVX512_4FMAPS	(18*32+ 3) /* AVX-512 Multiply Accumulation Single precision */
++#define X86_FEATURE_SPEC_CTRL		(18*32+26) /* Speculation Control (IBRS + IBPB) */
++#define X86_FEATURE_STIBP		(18*32+27) /* Single Thread Indirect Branch Predictors */
++#define X86_FEATURE_ARCH_CAPABILITIES	(18*32+29) /* IA32_ARCH_CAPABILITIES MSR (Intel) */
+ 
+ /*
+  * BUG word(s)
+-- 
+2.7.4
+
