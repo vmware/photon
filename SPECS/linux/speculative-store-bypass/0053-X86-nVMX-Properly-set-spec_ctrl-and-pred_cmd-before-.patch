@@ -1,0 +1,65 @@
+From a173c9b97ea5c800512901ead7ea70892dce1076 Mon Sep 17 00:00:00 2001
+From: KarimAllah Ahmed <karahmed@amazon.de>
+Date: Sat, 10 Feb 2018 23:39:25 +0000
+Subject: [PATCH 053/121] X86/nVMX: Properly set spec_ctrl and pred_cmd before
+ merging MSRs
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit 206587a9fb764d71f035dc7f6d3b6488f5d5b304 upstream.
+
+These two variables should check whether SPEC_CTRL and PRED_CMD are
+supposed to be passed through to L2 guests or not. While
+msr_write_intercepted_l01 would return 'true' if it is not passed through.
+
+So just invert the result of msr_write_intercepted_l01 to implement the
+correct semantics.
+
+Signed-off-by: KarimAllah Ahmed <karahmed@amazon.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Reviewed-by: Jim Mattson <jmattson@google.com>
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Arjan van de Ven <arjan@linux.intel.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Radim Krčmář <rkrcmar@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: arjan.van.de.ven@intel.com
+Cc: dave.hansen@intel.com
+Cc: kvm@vger.kernel.org
+Cc: sironi@amazon.de
+Fixes: 086e7d4118cc ("KVM: VMX: Allow direct access to MSR_IA32_SPEC_CTRL")
+Link: http://lkml.kernel.org/r/1518305967-31356-5-git-send-email-dwmw@amazon.co.uk
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kvm/vmx.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 585ce72..e3b166b 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -9376,8 +9376,8 @@ static inline bool nested_vmx_merge_msr_bitmap(struct kvm_vcpu *vcpu,
+ 	 *    updated to reflect this when L1 (or its L2s) actually write to
+ 	 *    the MSR.
+ 	 */
+-	bool pred_cmd = msr_write_intercepted_l01(vcpu, MSR_IA32_PRED_CMD);
+-	bool spec_ctrl = msr_write_intercepted_l01(vcpu, MSR_IA32_SPEC_CTRL);
++	bool pred_cmd = !msr_write_intercepted_l01(vcpu, MSR_IA32_PRED_CMD);
++	bool spec_ctrl = !msr_write_intercepted_l01(vcpu, MSR_IA32_SPEC_CTRL);
+ 
+ 	if (!nested_cpu_has_virt_x2apic_mode(vmcs12) &&
+ 	    !pred_cmd && !spec_ctrl)
+-- 
+2.7.4
+
