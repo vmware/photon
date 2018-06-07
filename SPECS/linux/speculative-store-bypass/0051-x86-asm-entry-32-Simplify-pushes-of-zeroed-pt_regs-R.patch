@@ -1,0 +1,139 @@
+From ac87de1e527ef65305ce21cc280acc222792d21e Mon Sep 17 00:00:00 2001
+From: Denys Vlasenko <dvlasenk@redhat.com>
+Date: Mon, 2 May 2016 16:56:50 +0200
+Subject: [PATCH 051/125] x86/asm/entry/32: Simplify pushes of zeroed
+ pt_regs->REGs
+
+Use of a temporary R8 register here seems to be unnecessary.
+
+"push %r8" is a two-byte insn (it needs REX prefix to specify R8),
+"push $0" is two-byte too. It seems just using the latter would be
+no worse.
+
+Thus, code had an unnecessary "xorq %r8,%r8" insn.
+It probably costs nothing in execution time here since we are probably
+limited by store bandwidth at this point, but still.
+
+Run-tested under QEMU: 32-bit calls still work:
+
+ / # ./test_syscall_vdso32
+ [RUN]	Executing 6-argument 32-bit syscall via VDSO
+ [OK]	Arguments are preserved across syscall
+ [NOTE]	R11 has changed:0000000000200ed7 - assuming clobbered by SYSRET insn
+ [OK]	R8..R15 did not leak kernel data
+ [RUN]	Executing 6-argument 32-bit syscall via INT 80
+ [OK]	Arguments are preserved across syscall
+ [OK]	R8..R15 did not leak kernel data
+ [RUN]	Running tests under ptrace
+ [RUN]	Executing 6-argument 32-bit syscall via VDSO
+ [OK]	Arguments are preserved across syscall
+ [NOTE]	R11 has changed:0000000000200ed7 - assuming clobbered by SYSRET insn
+ [OK]	R8..R15 did not leak kernel data
+ [RUN]	Executing 6-argument 32-bit syscall via INT 80
+ [OK]	Arguments are preserved across syscall
+ [OK]	R8..R15 did not leak kernel data
+
+Signed-off-by: Denys Vlasenko <dvlasenk@redhat.com>
+Acked-by: Andy Lutomirski <luto@kernel.org>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Frederic Weisbecker <fweisbec@gmail.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Will Drewry <wad@chromium.org>
+Cc: linux-kernel@vger.kernel.org
+Link: http://lkml.kernel.org/r/1462201010-16846-1-git-send-email-dvlasenk@redhat.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/entry/entry_64_compat.S | 45 +++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 24 deletions(-)
+
+diff --git a/arch/x86/entry/entry_64_compat.S b/arch/x86/entry/entry_64_compat.S
+index d03bf0e..e479ff8 100644
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -79,24 +79,23 @@ ENTRY(entry_SYSENTER_compat)
+ 	ASM_CLAC			/* Clear AC after saving FLAGS */
+ 
+ 	pushq	$__USER32_CS		/* pt_regs->cs */
+-	xorq    %r8,%r8
+-	pushq	%r8			/* pt_regs->ip = 0 (placeholder) */
++	pushq	$0			/* pt_regs->ip = 0 (placeholder) */
+ 	pushq	%rax			/* pt_regs->orig_ax */
+ 	pushq	%rdi			/* pt_regs->di */
+ 	pushq	%rsi			/* pt_regs->si */
+ 	pushq	%rdx			/* pt_regs->dx */
+ 	pushq	%rcx			/* pt_regs->cx */
+ 	pushq	$-ENOSYS		/* pt_regs->ax */
+-	pushq   %r8                     /* pt_regs->r8  = 0 */
+-	pushq   %r8                     /* pt_regs->r9  = 0 */
+-	pushq   %r8                     /* pt_regs->r10 = 0 */
+-	pushq   %r8                     /* pt_regs->r11 = 0 */
++	pushq   $0			/* pt_regs->r8  = 0 */
++	pushq   $0			/* pt_regs->r9  = 0 */
++	pushq   $0			/* pt_regs->r10 = 0 */
++	pushq   $0			/* pt_regs->r11 = 0 */
+ 	pushq   %rbx                    /* pt_regs->rbx */
+ 	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
+-	pushq   %r8                     /* pt_regs->r12 = 0 */
+-	pushq   %r8                     /* pt_regs->r13 = 0 */
+-	pushq   %r8                     /* pt_regs->r14 = 0 */
+-	pushq   %r8                     /* pt_regs->r15 = 0 */
++	pushq   $0			/* pt_regs->r12 = 0 */
++	pushq   $0			/* pt_regs->r13 = 0 */
++	pushq   $0			/* pt_regs->r14 = 0 */
++	pushq   $0			/* pt_regs->r15 = 0 */
+ 	cld
+ 
+ 	/*
+@@ -185,17 +184,16 @@ ENTRY(entry_SYSCALL_compat)
+ 	pushq	%rdx			/* pt_regs->dx */
+ 	pushq	%rbp			/* pt_regs->cx (stashed in bp) */
+ 	pushq	$-ENOSYS		/* pt_regs->ax */
+-	xorq    %r8,%r8
+-	pushq   %r8                     /* pt_regs->r8  = 0 */
+-	pushq   %r8                     /* pt_regs->r9  = 0 */
+-	pushq   %r8                     /* pt_regs->r10 = 0 */
+-	pushq   %r8                     /* pt_regs->r11 = 0 */
++	pushq   $0			/* pt_regs->r8  = 0 */
++	pushq   $0			/* pt_regs->r9  = 0 */
++	pushq   $0			/* pt_regs->r10 = 0 */
++	pushq   $0			/* pt_regs->r11 = 0 */
+ 	pushq   %rbx                    /* pt_regs->rbx */
+ 	pushq   %rbp                    /* pt_regs->rbp (will be overwritten) */
+-	pushq   %r8                     /* pt_regs->r12 = 0 */
+-	pushq   %r8                     /* pt_regs->r13 = 0 */
+-	pushq   %r8                     /* pt_regs->r14 = 0 */
+-	pushq   %r8                     /* pt_regs->r15 = 0 */
++	pushq   $0			/* pt_regs->r12 = 0 */
++	pushq   $0			/* pt_regs->r13 = 0 */
++	pushq   $0			/* pt_regs->r14 = 0 */
++	pushq   $0			/* pt_regs->r15 = 0 */
+ 
+ 	/*
+ 	 * User mode is traced as though IRQs are on, and SYSENTER
+@@ -292,11 +290,10 @@ ENTRY(entry_INT80_compat)
+ 	pushq	%rdx			/* pt_regs->dx */
+ 	pushq	%rcx			/* pt_regs->cx */
+ 	pushq	$-ENOSYS		/* pt_regs->ax */
+-	xorq    %r8,%r8
+-	pushq   %r8                     /* pt_regs->r8  = 0 */
+-	pushq   %r8                     /* pt_regs->r9  = 0 */
+-	pushq   %r8                     /* pt_regs->r10 = 0 */
+-	pushq   %r8                     /* pt_regs->r11 = 0 */
++	pushq   $0			/* pt_regs->r8  = 0 */
++	pushq   $0			/* pt_regs->r9  = 0 */
++	pushq   $0			/* pt_regs->r10 = 0 */
++	pushq   $0			/* pt_regs->r11 = 0 */
+ 	pushq   %rbx                    /* pt_regs->rbx */
+ 	pushq   %rbp                    /* pt_regs->rbp */
+ 	pushq   %r12                    /* pt_regs->r12 */
+-- 
+2.7.4
+
