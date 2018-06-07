@@ -1,0 +1,198 @@
+From c4ddf66ec95e1de86bb8ad643b07c3a3ce1637cc Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Mon, 7 Dec 2015 10:39:40 +0100
+Subject: [PATCH 002/120] x86/cpufeature: Cleanup get_cpu_cap()
+
+Add an enum for the ->x86_capability array indices and cleanup
+get_cpu_cap() by killing some redundant local vars.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: http://lkml.kernel.org/r/1449481182-27541-3-git-send-email-bp@alien8.de
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeature.h | 20 +++++++++++++++++
+ arch/x86/kernel/cpu/centaur.c     |  2 +-
+ arch/x86/kernel/cpu/common.c      | 47 ++++++++++++++++++---------------------
+ arch/x86/kernel/cpu/transmeta.c   |  4 ++--
+ 4 files changed, 45 insertions(+), 28 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index 878788f..17e6c25 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -299,6 +299,26 @@
+ #include <asm/asm.h>
+ #include <linux/bitops.h>
+ 
++enum cpuid_leafs
++{
++	CPUID_1_EDX		= 0,
++	CPUID_8000_0001_EDX,
++	CPUID_8086_0001_EDX,
++	CPUID_LNX_1,
++	CPUID_1_ECX,
++	CPUID_C000_0001_EDX,
++	CPUID_8000_0001_ECX,
++	CPUID_LNX_2,
++	CPUID_LNX_3,
++	CPUID_7_0_EBX,
++	CPUID_D_1_EAX,
++	CPUID_F_0_EDX,
++	CPUID_F_1_EDX,
++	CPUID_8000_0008_EBX,
++	CPUID_6_EAX,
++	CPUID_8000_000A_EDX,
++};
++
+ #ifdef CONFIG_X86_FEATURE_NAMES
+ extern const char * const x86_cap_flags[NCAPINTS*32];
+ extern const char * const x86_power_flags[32];
+diff --git a/arch/x86/kernel/cpu/centaur.c b/arch/x86/kernel/cpu/centaur.c
+index d8fba5c..ae20be6 100644
+--- a/arch/x86/kernel/cpu/centaur.c
++++ b/arch/x86/kernel/cpu/centaur.c
+@@ -43,7 +43,7 @@ static void init_c3(struct cpuinfo_x86 *c)
+ 		/* store Centaur Extended Feature Flags as
+ 		 * word 5 of the CPU capability bit array
+ 		 */
+-		c->x86_capability[5] = cpuid_edx(0xC0000001);
++		c->x86_capability[CPUID_C000_0001_EDX] = cpuid_edx(0xC0000001);
+ 	}
+ #ifdef CONFIG_X86_32
+ 	/* Cyrix III family needs CX8 & PGE explicitly enabled. */
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 5266e40..9004dfc 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -676,52 +676,47 @@ static void apply_forced_caps(struct cpuinfo_x86 *c)
+ 
+ void get_cpu_cap(struct cpuinfo_x86 *c)
+ {
+-	u32 tfms, xlvl;
+-	u32 ebx;
++	u32 eax, ebx, ecx, edx;
+ 
+ 	/* Intel-defined flags: level 0x00000001 */
+ 	if (c->cpuid_level >= 0x00000001) {
+-		u32 capability, excap;
++		cpuid(0x00000001, &eax, &ebx, &ecx, &edx);
+ 
+-		cpuid(0x00000001, &tfms, &ebx, &excap, &capability);
+-		c->x86_capability[0] = capability;
+-		c->x86_capability[4] = excap;
++		c->x86_capability[CPUID_1_ECX] = ecx;
++		c->x86_capability[CPUID_1_EDX] = edx;
+ 	}
+ 
+ 	/* Additional Intel-defined flags: level 0x00000007 */
+ 	if (c->cpuid_level >= 0x00000007) {
+-		u32 eax, ebx, ecx, edx;
+-
+ 		cpuid_count(0x00000007, 0, &eax, &ebx, &ecx, &edx);
+ 
+-		c->x86_capability[9] = ebx;
++		c->x86_capability[CPUID_7_0_EBX] = ebx;
+ 
+-		c->x86_capability[14] = cpuid_eax(0x00000006);
++		c->x86_capability[CPUID_6_EAX] = cpuid_eax(0x00000006);
+ 	}
+ 
+ 	/* Extended state features: level 0x0000000d */
+ 	if (c->cpuid_level >= 0x0000000d) {
+-		u32 eax, ebx, ecx, edx;
+-
+ 		cpuid_count(0x0000000d, 1, &eax, &ebx, &ecx, &edx);
+ 
+-		c->x86_capability[10] = eax;
++		c->x86_capability[CPUID_D_1_EAX] = eax;
+ 	}
+ 
+ 	/* Additional Intel-defined flags: level 0x0000000F */
+ 	if (c->cpuid_level >= 0x0000000F) {
+-		u32 eax, ebx, ecx, edx;
+ 
+ 		/* QoS sub-leaf, EAX=0Fh, ECX=0 */
+ 		cpuid_count(0x0000000F, 0, &eax, &ebx, &ecx, &edx);
+-		c->x86_capability[11] = edx;
++		c->x86_capability[CPUID_F_0_EDX] = edx;
++
+ 		if (cpu_has(c, X86_FEATURE_CQM_LLC)) {
+ 			/* will be overridden if occupancy monitoring exists */
+ 			c->x86_cache_max_rmid = ebx;
+ 
+ 			/* QoS sub-leaf, EAX=0Fh, ECX=1 */
+ 			cpuid_count(0x0000000F, 1, &eax, &ebx, &ecx, &edx);
+-			c->x86_capability[12] = edx;
++			c->x86_capability[CPUID_F_1_EDX] = edx;
++
+ 			if (cpu_has(c, X86_FEATURE_CQM_OCCUP_LLC)) {
+ 				c->x86_cache_max_rmid = ecx;
+ 				c->x86_cache_occ_scale = ebx;
+@@ -733,22 +728,24 @@ void get_cpu_cap(struct cpuinfo_x86 *c)
+ 	}
+ 
+ 	/* AMD-defined flags: level 0x80000001 */
+-	xlvl = cpuid_eax(0x80000000);
+-	c->extended_cpuid_level = xlvl;
++	eax = cpuid_eax(0x80000000);
++	c->extended_cpuid_level = eax;
++
++	if ((eax & 0xffff0000) == 0x80000000) {
++		if (eax >= 0x80000001) {
++			cpuid(0x80000001, &eax, &ebx, &ecx, &edx);
+ 
+-	if ((xlvl & 0xffff0000) == 0x80000000) {
+-		if (xlvl >= 0x80000001) {
+-			c->x86_capability[1] = cpuid_edx(0x80000001);
+-			c->x86_capability[6] = cpuid_ecx(0x80000001);
++			c->x86_capability[CPUID_8000_0001_ECX] = ecx;
++			c->x86_capability[CPUID_8000_0001_EDX] = edx;
+ 		}
+ 	}
+ 
+ 	if (c->extended_cpuid_level >= 0x80000008) {
+-		u32 eax = cpuid_eax(0x80000008);
++		cpuid(0x80000008, &eax, &ebx, &ecx, &edx);
+ 
+ 		c->x86_virt_bits = (eax >> 8) & 0xff;
+ 		c->x86_phys_bits = eax & 0xff;
+-		c->x86_capability[13] = cpuid_ebx(0x80000008);
++		c->x86_capability[CPUID_8000_0008_EBX] = ebx;
+ 	}
+ #ifdef CONFIG_X86_32
+ 	else if (cpu_has(c, X86_FEATURE_PAE) || cpu_has(c, X86_FEATURE_PSE36))
+@@ -759,7 +756,7 @@ void get_cpu_cap(struct cpuinfo_x86 *c)
+ 		c->x86_power = cpuid_edx(0x80000007);
+ 
+ 	if (c->extended_cpuid_level >= 0x8000000a)
+-		c->x86_capability[15] = cpuid_edx(0x8000000a);
++		c->x86_capability[CPUID_8000_000A_EDX] = cpuid_edx(0x8000000a);
+ 
+ 	init_scattered_cpuid_features(c);
+ }
+diff --git a/arch/x86/kernel/cpu/transmeta.c b/arch/x86/kernel/cpu/transmeta.c
+index 3fa0e5a..252da7a 100644
+--- a/arch/x86/kernel/cpu/transmeta.c
++++ b/arch/x86/kernel/cpu/transmeta.c
+@@ -12,7 +12,7 @@ static void early_init_transmeta(struct cpuinfo_x86 *c)
+ 	xlvl = cpuid_eax(0x80860000);
+ 	if ((xlvl & 0xffff0000) == 0x80860000) {
+ 		if (xlvl >= 0x80860001)
+-			c->x86_capability[2] = cpuid_edx(0x80860001);
++			c->x86_capability[CPUID_8086_0001_EDX] = cpuid_edx(0x80860001);
+ 	}
+ }
+ 
+@@ -82,7 +82,7 @@ static void init_transmeta(struct cpuinfo_x86 *c)
+ 	/* Unhide possibly hidden capability flags */
+ 	rdmsr(0x80860004, cap_mask, uk);
+ 	wrmsr(0x80860004, ~0, uk);
+-	c->x86_capability[0] = cpuid_edx(0x00000001);
++	c->x86_capability[CPUID_1_EDX] = cpuid_edx(0x00000001);
+ 	wrmsr(0x80860004, cap_mask, uk);
+ 
+ 	/* All Transmeta CPUs have a constant TSC */
+-- 
+2.7.4
+

@@ -1,0 +1,68 @@
+From c7b4c6adb8ab22395d39c6f7ce49e3a8f12d1d8d Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Thu, 25 Jan 2018 16:14:12 +0000
+Subject: [PATCH 027/120] x86/msr: Add definitions for new speculation control
+ MSRs
+
+(cherry picked from commit 1e340c60d0dd3ae07b5bedc16a0469c14b9f3410)
+
+Add MSR and bit definitions for SPEC_CTRL, PRED_CMD and ARCH_CAPABILITIES.
+
+See Intel's 336996-Speculative-Execution-Side-Channel-Mitigations.pdf
+
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: gnomes@lxorguk.ukuu.org.uk
+Cc: ak@linux.intel.com
+Cc: ashok.raj@intel.com
+Cc: dave.hansen@intel.com
+Cc: karahmed@amazon.de
+Cc: arjan@linux.intel.com
+Cc: torvalds@linux-foundation.org
+Cc: peterz@infradead.org
+Cc: bp@alien8.de
+Cc: pbonzini@redhat.com
+Cc: tim.c.chen@linux.intel.com
+Cc: gregkh@linux-foundation.org
+Link: https://lkml.kernel.org/r/1516896855-7642-5-git-send-email-dwmw@amazon.co.uk
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/msr-index.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
+index b8911ae..f4701f0 100644
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -32,6 +32,13 @@
+ #define EFER_FFXSR		(1<<_EFER_FFXSR)
+ 
+ /* Intel MSRs. Some also available on other CPUs */
++#define MSR_IA32_SPEC_CTRL		0x00000048 /* Speculation Control */
++#define SPEC_CTRL_IBRS			(1 << 0)   /* Indirect Branch Restricted Speculation */
++#define SPEC_CTRL_STIBP			(1 << 1)   /* Single Thread Indirect Branch Predictors */
++
++#define MSR_IA32_PRED_CMD		0x00000049 /* Prediction Command */
++#define PRED_CMD_IBPB			(1 << 0)   /* Indirect Branch Prediction Barrier */
++
+ #define MSR_IA32_PERFCTR0		0x000000c1
+ #define MSR_IA32_PERFCTR1		0x000000c2
+ #define MSR_FSB_FREQ			0x000000cd
+@@ -45,6 +52,11 @@
+ #define SNB_C3_AUTO_UNDEMOTE		(1UL << 28)
+ 
+ #define MSR_MTRRcap			0x000000fe
++
++#define MSR_IA32_ARCH_CAPABILITIES	0x0000010a
++#define ARCH_CAP_RDCL_NO		(1 << 0)   /* Not susceptible to Meltdown */
++#define ARCH_CAP_IBRS_ALL		(1 << 1)   /* Enhanced IBRS support */
++
+ #define MSR_IA32_BBL_CR_CTL		0x00000119
+ #define MSR_IA32_BBL_CR_CTL3		0x0000011e
+ 
+-- 
+2.7.4
+

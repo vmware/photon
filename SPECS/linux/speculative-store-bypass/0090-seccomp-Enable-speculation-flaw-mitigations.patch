@@ -1,0 +1,65 @@
+From eb29b8b930968f47b689cf2e8b6ecf669924c90e Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Tue, 1 May 2018 15:07:31 -0700
+Subject: [PATCH 090/120] seccomp: Enable speculation flaw mitigations
+
+commit 5c3070890d06ff82eecb808d02d2ca39169533ef upstream
+
+When speculation flaw mitigations are opt-in (via prctl), using seccomp
+will automatically opt-in to these protections, since using seccomp
+indicates at least some level of sandboxing is desired.
+
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ kernel/seccomp.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+index efd384f..bfb1ee8 100644
+--- a/kernel/seccomp.c
++++ b/kernel/seccomp.c
+@@ -16,6 +16,8 @@
+ #include <linux/atomic.h>
+ #include <linux/audit.h>
+ #include <linux/compat.h>
++#include <linux/nospec.h>
++#include <linux/prctl.h>
+ #include <linux/sched.h>
+ #include <linux/seccomp.h>
+ #include <linux/slab.h>
+@@ -214,6 +216,19 @@ static inline bool seccomp_may_assign_mode(unsigned long seccomp_mode)
+ 	return true;
+ }
+ 
++/*
++ * If a given speculation mitigation is opt-in (prctl()-controlled),
++ * select it, by disabling speculation (enabling mitigation).
++ */
++static inline void spec_mitigate(struct task_struct *task,
++				 unsigned long which)
++{
++	int state = arch_prctl_spec_ctrl_get(task, which);
++
++	if (state > 0 && (state & PR_SPEC_PRCTL))
++		arch_prctl_spec_ctrl_set(task, which, PR_SPEC_DISABLE);
++}
++
+ static inline void seccomp_assign_mode(struct task_struct *task,
+ 				       unsigned long seccomp_mode)
+ {
+@@ -225,6 +240,8 @@ static inline void seccomp_assign_mode(struct task_struct *task,
+ 	 * filter) is set.
+ 	 */
+ 	smp_mb__before_atomic();
++	/* Assume seccomp processes want speculation flaw mitigation. */
++	spec_mitigate(task, PR_SPEC_STORE_BYPASS);
+ 	set_tsk_thread_flag(task, TIF_SECCOMP);
+ }
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,81 @@
+From 33cf92ba27f6f0940fb6ccc90dda73a42c619aff Mon Sep 17 00:00:00 2001
+From: Juergen Gross <jgross@suse.com>
+Date: Mon, 26 Feb 2018 15:08:18 +0100
+Subject: [PATCH 056/120] x86/xen: Zero MSR_IA32_SPEC_CTRL before suspend
+
+commit 71c208dd54ab971036d83ff6d9837bae4976e623 upstream.
+
+Older Xen versions (4.5 and before) might have problems migrating pv
+guests with MSR_IA32_SPEC_CTRL having a non-zero value. So before
+suspending zero that MSR and restore it after being resumed.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Cc: stable@vger.kernel.org
+Cc: xen-devel@lists.xenproject.org
+Cc: boris.ostrovsky@oracle.com
+Link: https://lkml.kernel.org/r/20180226140818.4849-1-jgross@suse.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/xen/suspend.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index 7f664c4..4ecd0de 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -1,11 +1,14 @@
+ #include <linux/types.h>
+ #include <linux/tick.h>
++#include <linux/percpu-defs.h>
+ 
+ #include <xen/xen.h>
+ #include <xen/interface/xen.h>
+ #include <xen/grant_table.h>
+ #include <xen/events.h>
+ 
++#include <asm/cpufeatures.h>
++#include <asm/msr-index.h>
+ #include <asm/xen/hypercall.h>
+ #include <asm/xen/page.h>
+ #include <asm/fixmap.h>
+@@ -68,6 +71,8 @@ static void xen_pv_post_suspend(int suspend_cancelled)
+ 	xen_mm_unpin_all();
+ }
+ 
++static DEFINE_PER_CPU(u64, spec_ctrl);
++
+ void xen_arch_pre_suspend(void)
+ {
+ 	if (xen_pv_domain())
+@@ -84,6 +89,9 @@ void xen_arch_post_suspend(int cancelled)
+ 
+ static void xen_vcpu_notify_restore(void *data)
+ {
++	if (xen_pv_domain() && boot_cpu_has(X86_FEATURE_SPEC_CTRL))
++		wrmsrl(MSR_IA32_SPEC_CTRL, this_cpu_read(spec_ctrl));
++
+ 	/* Boot processor notified via generic timekeeping_resume() */
+ 	if (smp_processor_id() == 0)
+ 		return;
+@@ -93,7 +101,15 @@ static void xen_vcpu_notify_restore(void *data)
+ 
+ static void xen_vcpu_notify_suspend(void *data)
+ {
++	u64 tmp;
++
+ 	tick_suspend_local();
++
++	if (xen_pv_domain() && boot_cpu_has(X86_FEATURE_SPEC_CTRL)) {
++		rdmsrl(MSR_IA32_SPEC_CTRL, tmp);
++		this_cpu_write(spec_ctrl, tmp);
++		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
++	}
+ }
+ 
+ void xen_arch_resume(void)
+-- 
+2.7.4
+

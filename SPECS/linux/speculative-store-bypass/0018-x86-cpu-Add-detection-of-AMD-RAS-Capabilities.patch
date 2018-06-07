@@ -1,0 +1,103 @@
+From 4d115d4d1bbef06a000fd8f7238b8f5de472599d Mon Sep 17 00:00:00 2001
+From: Yazen Ghannam <Yazen.Ghannam@amd.com>
+Date: Wed, 11 May 2016 14:58:26 +0200
+Subject: [PATCH 018/120] x86/cpu: Add detection of AMD RAS Capabilities
+
+Add a new CPUID leaf to hold the contents of CPUID 0x80000007_EBX (RasCap).
+
+Define bits that are currently in use:
+
+ Bit 0: McaOverflowRecov
+ Bit 1: SUCCOR
+ Bit 3: ScalableMca
+
+Signed-off-by: Yazen Ghannam <Yazen.Ghannam@amd.com>
+[ Shorten comment. ]
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: linux-edac <linux-edac@vger.kernel.org>
+Link: http://lkml.kernel.org/r/1462971509-3856-5-git-send-email-bp@alien8.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeature.h  |  1 +
+ arch/x86/include/asm/cpufeatures.h |  7 ++++++-
+ arch/x86/kernel/cpu/common.c       | 10 +++++++---
+ 3 files changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index b953fb7..1d02ad6 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -27,6 +27,7 @@ enum cpuid_leafs
+ 	CPUID_6_EAX,
+ 	CPUID_8000_000A_EDX,
+ 	CPUID_7_ECX,
++	CPUID_8000_0007_EBX,
+ };
+ 
+ #ifdef CONFIG_X86_FEATURE_NAMES
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 98899fb..e133857 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -12,7 +12,7 @@
+ /*
+  * Defines x86 CPU feature bits
+  */
+-#define NCAPINTS	17	/* N 32-bit words worth of info */
++#define NCAPINTS	18	/* N 32-bit words worth of info */
+ #define NBUGINTS	1	/* N 32-bit bug flags */
+ 
+ /*
+@@ -280,6 +280,11 @@
+ #define X86_FEATURE_PKU		(16*32+ 3) /* Protection Keys for Userspace */
+ #define X86_FEATURE_OSPKE	(16*32+ 4) /* OS Protection Keys Enable */
+ 
++/* AMD-defined CPU features, CPUID level 0x80000007 (ebx), word 17 */
++#define X86_FEATURE_OVERFLOW_RECOV (17*32+0) /* MCA overflow recovery support */
++#define X86_FEATURE_SUCCOR	(17*32+1) /* Uncorrectable error containment and recovery */
++#define X86_FEATURE_SMCA	(17*32+3) /* Scalable MCA */
++
+ /*
+  * BUG word(s)
+  */
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index d6a7b6f2..814276d 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -741,6 +741,13 @@ void get_cpu_cap(struct cpuinfo_x86 *c)
+ 		}
+ 	}
+ 
++	if (c->extended_cpuid_level >= 0x80000007) {
++		cpuid(0x80000007, &eax, &ebx, &ecx, &edx);
++
++		c->x86_capability[CPUID_8000_0007_EBX] = ebx;
++		c->x86_power = edx;
++	}
++
+ 	if (c->extended_cpuid_level >= 0x80000008) {
+ 		cpuid(0x80000008, &eax, &ebx, &ecx, &edx);
+ 
+@@ -753,9 +760,6 @@ void get_cpu_cap(struct cpuinfo_x86 *c)
+ 		c->x86_phys_bits = 36;
+ #endif
+ 
+-	if (c->extended_cpuid_level >= 0x80000007)
+-		c->x86_power = cpuid_edx(0x80000007);
+-
+ 	if (c->extended_cpuid_level >= 0x8000000a)
+ 		c->x86_capability[CPUID_8000_000A_EDX] = cpuid_edx(0x8000000a);
+ 
+-- 
+2.7.4
+

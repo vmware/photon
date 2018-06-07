@@ -1,0 +1,106 @@
+From dc88448b6d869cc60236f6314ca21cfa6704ffce Mon Sep 17 00:00:00 2001
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Thu, 22 Feb 2018 16:43:17 +0100
+Subject: [PATCH 057/120] KVM/x86: Remove indirect MSR op calls from SPEC_CTRL
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit ecb586bd29c99fb4de599dec388658e74388daad upstream.
+
+Having a paravirt indirect call in the IBRS restore path is not a
+good idea, since we are trying to protect from speculative execution
+of bogus indirect branch targets.  It is also slower, so use
+native_wrmsrl() on the vmentry path too.
+
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Reviewed-by: Jim Mattson <jmattson@google.com>
+Cc: David Woodhouse <dwmw@amazon.co.uk>
+Cc: KarimAllah Ahmed <karahmed@amazon.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Radim Krčmář <rkrcmar@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: kvm@vger.kernel.org
+Cc: stable@vger.kernel.org
+Fixes: d28b387fb74da95d69d2615732f50cceb38e9a4d
+Link: http://lkml.kernel.org/r/20180222154318.20361-2-pbonzini@redhat.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kvm/svm.c | 7 ++++---
+ arch/x86/kvm/vmx.c | 7 ++++---
+ 2 files changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/kvm/svm.c b/arch/x86/kvm/svm.c
+index c2bfd65..e13d7e9 100644
+--- a/arch/x86/kvm/svm.c
++++ b/arch/x86/kvm/svm.c
+@@ -37,6 +37,7 @@
+ #include <asm/desc.h>
+ #include <asm/debugreg.h>
+ #include <asm/kvm_para.h>
++#include <asm/microcode.h>
+ #include <asm/nospec-branch.h>
+ 
+ #include <asm/virtext.h>
+@@ -3905,7 +3906,7 @@ static void svm_vcpu_run(struct kvm_vcpu *vcpu)
+ 	 * being speculatively taken.
+ 	 */
+ 	if (svm->spec_ctrl)
+-		wrmsrl(MSR_IA32_SPEC_CTRL, svm->spec_ctrl);
++		native_wrmsrl(MSR_IA32_SPEC_CTRL, svm->spec_ctrl);
+ 
+ 	asm volatile (
+ 		"push %%" _ASM_BP "; \n\t"
+@@ -4015,10 +4016,10 @@ static void svm_vcpu_run(struct kvm_vcpu *vcpu)
+ 	 * save it.
+ 	 */
+ 	if (!msr_write_intercepted(vcpu, MSR_IA32_SPEC_CTRL))
+-		rdmsrl(MSR_IA32_SPEC_CTRL, svm->spec_ctrl);
++		svm->spec_ctrl = native_read_msr(MSR_IA32_SPEC_CTRL);
+ 
+ 	if (svm->spec_ctrl)
+-		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
++		native_wrmsrl(MSR_IA32_SPEC_CTRL, 0);
+ 
+ 	/* Eliminate branch target predictions from guest mode */
+ 	vmexit_fill_RSB();
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index e3b166b..6a780c3 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -48,6 +48,7 @@
+ #include <asm/kexec.h>
+ #include <asm/apic.h>
+ #include <asm/irq_remapping.h>
++#include <asm/microcode.h>
+ #include <asm/nospec-branch.h>
+ 
+ #include "trace.h"
+@@ -8685,7 +8686,7 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
+ 	 * being speculatively taken.
+ 	 */
+ 	if (vmx->spec_ctrl)
+-		wrmsrl(MSR_IA32_SPEC_CTRL, vmx->spec_ctrl);
++		native_wrmsrl(MSR_IA32_SPEC_CTRL, vmx->spec_ctrl);
+ 
+ 	vmx->__launched = vmx->loaded_vmcs->launched;
+ 	asm(
+@@ -8821,10 +8822,10 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
+ 	 * save it.
+ 	 */
+ 	if (!msr_write_intercepted(vcpu, MSR_IA32_SPEC_CTRL))
+-		rdmsrl(MSR_IA32_SPEC_CTRL, vmx->spec_ctrl);
++		vmx->spec_ctrl = native_read_msr(MSR_IA32_SPEC_CTRL);
+ 
+ 	if (vmx->spec_ctrl)
+-		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
++		native_wrmsrl(MSR_IA32_SPEC_CTRL, 0);
+ 
+ 	/* Eliminate branch target predictions from guest mode */
+ 	vmexit_fill_RSB();
+-- 
+2.7.4
+

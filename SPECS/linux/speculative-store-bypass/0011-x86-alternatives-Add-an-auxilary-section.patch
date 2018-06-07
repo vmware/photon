@@ -1,0 +1,50 @@
+From 74e294974dea6311073f2752ae9a0cf90495da11 Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Tue, 26 Jan 2016 22:12:07 +0100
+Subject: [PATCH 011/120] x86/alternatives: Add an auxilary section
+
+Add .altinstr_aux for additional instructions which will be used
+before and/or during patching. All stuff which needs more
+sophisticated patching should go there. See next patch.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/1453842730-28463-8-git-send-email-bp@alien8.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/vmlinux.lds.S | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/x86/kernel/vmlinux.lds.S b/arch/x86/kernel/vmlinux.lds.S
+index e065065..a703842 100644
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -202,6 +202,17 @@ SECTIONS
+ 	:init
+ #endif
+ 
++	/*
++	 * Section for code used exclusively before alternatives are run. All
++	 * references to such code must be patched out by alternatives, normally
++	 * by using X86_FEATURE_ALWAYS CPU feature bit.
++	 *
++	 * See static_cpu_has() for an example.
++	 */
++	.altinstr_aux : AT(ADDR(.altinstr_aux) - LOAD_OFFSET) {
++		*(.altinstr_aux)
++	}
++
+ 	INIT_DATA_SECTION(16)
+ 
+ 	.x86_cpu_dev.init : AT(ADDR(.x86_cpu_dev.init) - LOAD_OFFSET) {
+-- 
+2.7.4
+

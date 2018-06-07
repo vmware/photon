@@ -1,0 +1,164 @@
+From c054d116d97da3f0f6653a4ce8d9f8b7cb150531 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 9 May 2018 23:01:01 +0200
+Subject: [PATCH 111/120] x86/bugs, KVM: Extend speculation control for
+ VIRT_SPEC_CTRL
+
+commit ccbcd2674472a978b48c91c1fbfb66c0ff959f24 upstream
+
+AMD is proposing a VIRT_SPEC_CTRL MSR to handle the Speculative Store
+Bypass Disable via MSR_AMD64_LS_CFG so that guests do not have to care
+about the bit position of the SSBD bit and thus facilitate migration.
+Also, the sibling coordination on Family 17H CPUs can only be done on
+the host.
+
+Extend x86_spec_ctrl_set_guest() and x86_spec_ctrl_restore_host() with an
+extra argument for the VIRT_SPEC_CTRL MSR.
+
+Hand in 0 from VMX and in SVM add a new virt_spec_ctrl member to the CPU
+data structure which is going to be used in later patches for the actual
+implementation.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/spec-ctrl.h |  9 ++++++---
+ arch/x86/kernel/cpu/bugs.c       | 20 ++++++++++++++++++--
+ arch/x86/kvm/svm.c               | 11 +++++++++--
+ arch/x86/kvm/vmx.c               |  5 +++--
+ 4 files changed, 36 insertions(+), 9 deletions(-)
+
+diff --git a/arch/x86/include/asm/spec-ctrl.h b/arch/x86/include/asm/spec-ctrl.h
+index 0cb49c4..6e28740 100644
+--- a/arch/x86/include/asm/spec-ctrl.h
++++ b/arch/x86/include/asm/spec-ctrl.h
+@@ -10,10 +10,13 @@
+  * the guest has, while on VMEXIT we restore the host view. This
+  * would be easier if SPEC_CTRL were architecturally maskable or
+  * shadowable for guests but this is not (currently) the case.
+- * Takes the guest view of SPEC_CTRL MSR as a parameter.
++ * Takes the guest view of SPEC_CTRL MSR as a parameter and also
++ * the guest's version of VIRT_SPEC_CTRL, if emulated.
+  */
+-extern void x86_spec_ctrl_set_guest(u64);
+-extern void x86_spec_ctrl_restore_host(u64);
++extern void x86_spec_ctrl_set_guest(u64 guest_spec_ctrl,
++				    u64 guest_virt_spec_ctrl);
++extern void x86_spec_ctrl_restore_host(u64 guest_spec_ctrl,
++				       u64 guest_virt_spec_ctrl);
+ 
+ /* AMD specific Speculative Store Bypass MSR data */
+ extern u64 x86_amd_ls_cfg_base;
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 15a6c58..d00e246 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -150,7 +150,15 @@ u64 x86_spec_ctrl_get_default(void)
+ }
+ EXPORT_SYMBOL_GPL(x86_spec_ctrl_get_default);
+ 
+-void x86_spec_ctrl_set_guest(u64 guest_spec_ctrl)
++/**
++ * x86_spec_ctrl_set_guest - Set speculation control registers for the guest
++ * @guest_spec_ctrl:		The guest content of MSR_SPEC_CTRL
++ * @guest_virt_spec_ctrl:	The guest controlled bits of MSR_VIRT_SPEC_CTRL
++ *				(may get translated to MSR_AMD64_LS_CFG bits)
++ *
++ * Avoids writing to the MSR if the content/bits are the same
++ */
++void x86_spec_ctrl_set_guest(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl)
+ {
+ 	u64 host = x86_spec_ctrl_base;
+ 
+@@ -167,7 +175,15 @@ void x86_spec_ctrl_set_guest(u64 guest_spec_ctrl)
+ }
+ EXPORT_SYMBOL_GPL(x86_spec_ctrl_set_guest);
+ 
+-void x86_spec_ctrl_restore_host(u64 guest_spec_ctrl)
++/**
++ * x86_spec_ctrl_restore_host - Restore host speculation control registers
++ * @guest_spec_ctrl:		The guest content of MSR_SPEC_CTRL
++ * @guest_virt_spec_ctrl:	The guest controlled bits of MSR_VIRT_SPEC_CTRL
++ *				(may get translated to MSR_AMD64_LS_CFG bits)
++ *
++ * Avoids writing to the MSR if the content/bits are the same
++ */
++void x86_spec_ctrl_restore_host(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl)
+ {
+ 	u64 host = x86_spec_ctrl_base;
+ 
+diff --git a/arch/x86/kvm/svm.c b/arch/x86/kvm/svm.c
+index 52d2432..2d898ba 100644
+--- a/arch/x86/kvm/svm.c
++++ b/arch/x86/kvm/svm.c
+@@ -149,6 +149,12 @@ struct vcpu_svm {
+ 	} host;
+ 
+ 	u64 spec_ctrl;
++	/*
++	 * Contains guest-controlled bits of VIRT_SPEC_CTRL, which will be
++	 * translated into the appropriate L2_CFG bits on the host to
++	 * perform speculative control.
++	 */
++	u64 virt_spec_ctrl;
+ 
+ 	u32 *msrpm;
+ 
+@@ -1146,6 +1152,7 @@ static void svm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
+ 	u32 eax = 1;
+ 
+ 	svm->spec_ctrl = 0;
++	svm->virt_spec_ctrl = 0;
+ 
+ 	if (!init_event) {
+ 		svm->vcpu.arch.apic_base = APIC_DEFAULT_PHYS_BASE |
+@@ -3905,7 +3912,7 @@ static void svm_vcpu_run(struct kvm_vcpu *vcpu)
+ 	 * is no need to worry about the conditional branch over the wrmsr
+ 	 * being speculatively taken.
+ 	 */
+-	x86_spec_ctrl_set_guest(svm->spec_ctrl);
++	x86_spec_ctrl_set_guest(svm->spec_ctrl, svm->virt_spec_ctrl);
+ 
+ 	asm volatile (
+ 		"push %%" _ASM_BP "; \n\t"
+@@ -4029,7 +4036,7 @@ static void svm_vcpu_run(struct kvm_vcpu *vcpu)
+ 	if (unlikely(!msr_write_intercepted(vcpu, MSR_IA32_SPEC_CTRL)))
+ 		svm->spec_ctrl = native_read_msr(MSR_IA32_SPEC_CTRL);
+ 
+-	x86_spec_ctrl_restore_host(svm->spec_ctrl);
++	x86_spec_ctrl_restore_host(svm->spec_ctrl, svm->virt_spec_ctrl);
+ 
+ 	reload_tss(vcpu);
+ 
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 9313685..1b6ed8a 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -8685,9 +8685,10 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
+ 	 * is no need to worry about the conditional branch over the wrmsr
+ 	 * being speculatively taken.
+ 	 */
+-	x86_spec_ctrl_set_guest(vmx->spec_ctrl);
++	x86_spec_ctrl_set_guest(vmx->spec_ctrl, 0);
+ 
+ 	vmx->__launched = vmx->loaded_vmcs->launched;
++
+ 	asm(
+ 		/* Store host registers */
+ 		"push %%" _ASM_DX "; push %%" _ASM_BP ";"
+@@ -8823,7 +8824,7 @@ static void __noclone vmx_vcpu_run(struct kvm_vcpu *vcpu)
+ 	if (unlikely(!msr_write_intercepted(vcpu, MSR_IA32_SPEC_CTRL)))
+ 		vmx->spec_ctrl = native_read_msr(MSR_IA32_SPEC_CTRL);
+ 
+-	x86_spec_ctrl_restore_host(vmx->spec_ctrl);
++	x86_spec_ctrl_restore_host(vmx->spec_ctrl, 0);
+ 
+ 	/* Eliminate branch target predictions from guest mode */
+ 	vmexit_fill_RSB();
+-- 
+2.7.4
+

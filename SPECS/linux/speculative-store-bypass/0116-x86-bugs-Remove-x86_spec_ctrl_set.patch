@@ -1,0 +1,77 @@
+From 3e586060575b8cf73cb000b38dfea4e9b1036653 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 12 May 2018 20:53:14 +0200
+Subject: [PATCH 116/120] x86/bugs: Remove x86_spec_ctrl_set()
+
+commit 4b59bdb569453a60b752b274ca61f009e37f4dae upstream
+
+x86_spec_ctrl_set() is only used in bugs.c and the extra mask checks there
+provide no real value as both call sites can just write x86_spec_ctrl_base
+to MSR_SPEC_CTRL. x86_spec_ctrl_base is valid and does not need any extra
+masking or checking.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/nospec-branch.h |  2 --
+ arch/x86/kernel/cpu/bugs.c           | 13 ++-----------
+ 2 files changed, 2 insertions(+), 13 deletions(-)
+
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index e80fd1d..bd1fa64 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -172,8 +172,6 @@ enum spectre_v2_mitigation {
+ 	SPECTRE_V2_IBRS,
+ };
+ 
+-extern void x86_spec_ctrl_set(u64);
+-
+ /* The Speculative Store Bypass disable variants */
+ enum ssb_mitigation {
+ 	SPEC_STORE_BYPASS_NONE,
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 47b7f4f..82a99d0 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -132,15 +132,6 @@ static const char *spectre_v2_strings[] = {
+ static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
+ 	SPECTRE_V2_NONE;
+ 
+-void x86_spec_ctrl_set(u64 val)
+-{
+-	if (val & x86_spec_ctrl_mask)
+-		WARN_ONCE(1, "SPEC_CTRL MSR value 0x%16llx is unknown.\n", val);
+-	else
+-		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base | val);
+-}
+-EXPORT_SYMBOL_GPL(x86_spec_ctrl_set);
+-
+ void
+ x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
+ {
+@@ -502,7 +493,7 @@ static enum ssb_mitigation __init __ssb_select_mitigation(void)
+ 		case X86_VENDOR_INTEL:
+ 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
+ 			x86_spec_ctrl_mask &= ~SPEC_CTRL_SSBD;
+-			x86_spec_ctrl_set(SPEC_CTRL_SSBD);
++			wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
+ 			break;
+ 		case X86_VENDOR_AMD:
+ 			x86_amd_ssb_disable();
+@@ -614,7 +605,7 @@ int arch_prctl_spec_ctrl_get(struct task_struct *task, unsigned long which)
+ void x86_spec_ctrl_setup_ap(void)
+ {
+ 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
+-		x86_spec_ctrl_set(x86_spec_ctrl_base & ~x86_spec_ctrl_mask);
++		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
+ 
+ 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
+ 		x86_amd_ssb_disable();
+-- 
+2.7.4
+

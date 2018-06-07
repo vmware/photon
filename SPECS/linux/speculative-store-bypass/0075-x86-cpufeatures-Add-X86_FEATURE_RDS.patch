@@ -1,0 +1,37 @@
+From fde3fe1dffe8015e00201b7b0122362bda0daf2f Mon Sep 17 00:00:00 2001
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Date: Sat, 28 Apr 2018 22:34:17 +0200
+Subject: [PATCH 075/120] x86/cpufeatures: Add X86_FEATURE_RDS
+
+commit 0cc5fa00b0a88dad140b4e5c2cead9951ad36822 upstream
+
+Add the CPU feature bit CPUID.7.0.EDX[31] which indicates whether the CPU
+supports Reduced Data Speculation.
+
+[ tglx: Split it out from a later patch ]
+
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeatures.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index bfbf778..2f4791a 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -297,6 +297,7 @@
+ #define X86_FEATURE_SPEC_CTRL		(18*32+26) /* "" Speculation Control (IBRS + IBPB) */
+ #define X86_FEATURE_INTEL_STIBP		(18*32+27) /* "" Single Thread Indirect Branch Predictors */
+ #define X86_FEATURE_ARCH_CAPABILITIES	(18*32+29) /* IA32_ARCH_CAPABILITIES MSR (Intel) */
++#define X86_FEATURE_RDS			(18*32+31) /* Reduced Data Speculation */
+ 
+ /*
+  * BUG word(s)
+-- 
+2.7.4
+

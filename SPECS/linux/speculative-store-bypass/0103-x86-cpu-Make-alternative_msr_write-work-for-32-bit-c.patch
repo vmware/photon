@@ -1,0 +1,43 @@
+From f1d6cb64ec18b7c227e1e06d73179600d2502088 Mon Sep 17 00:00:00 2001
+From: Jim Mattson <jmattson@google.com>
+Date: Sun, 13 May 2018 17:33:57 -0400
+Subject: [PATCH 103/120] x86/cpu: Make alternative_msr_write work for 32-bit
+ code
+
+commit 5f2b745f5e1304f438f9b2cd03ebc8120b6e0d3b upstream
+
+Cast val and (val >> 32) to (u32), so that they fit in a
+general-purpose register in both 32-bit and 64-bit code.
+
+[ tglx: Made it u32 instead of uintptr_t ]
+
+Fixes: c65732e4f721 ("x86/cpu: Restore CPUID_8000_0008_EBX reload")
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/nospec-branch.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index be74636..7e32294 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -219,8 +219,8 @@ void alternative_msr_write(unsigned int msr, u64 val, unsigned int feature)
+ {
+ 	asm volatile(ALTERNATIVE("", "wrmsr", %c[feature])
+ 		: : "c" (msr),
+-		    "a" (val),
+-		    "d" (val >> 32),
++		    "a" ((u32)val),
++		    "d" ((u32)(val >> 32)),
+ 		    [feature] "i" (feature)
+ 		: "memory");
+ }
+-- 
+2.7.4
+

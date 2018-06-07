@@ -1,0 +1,95 @@
+From d77093063f2e937e3ad990bde3e49d8473702019 Mon Sep 17 00:00:00 2001
+From: Dave Hansen <dave.hansen@linux.intel.com>
+Date: Wed, 29 Jun 2016 13:01:08 -0700
+Subject: [PATCH 021/120] x86/cpufeature: Make sure DISABLED/REQUIRED macros
+ are updated
+
+x86 has two macros which allow us to evaluate some CPUID-based
+features at compile time:
+
+	REQUIRED_MASK_BIT_SET()
+	DISABLED_MASK_BIT_SET()
+
+They're both defined by having the compiler check the bit
+argument against some constant masks of features.
+
+But, when adding new CPUID leaves, we need to check new words
+for these macros.  So make sure that those macros and the
+REQUIRED_MASK* and DISABLED_MASK* get updated when necessary.
+
+This looks kinda silly to have an open-coded value ("18" in
+this case) open-coded in 5 places in the code.  But, we really do
+need 5 places updated when NCAPINTS gets bumped, so now we just
+force the issue.
+
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Dave Hansen <dave@sr71.net>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/20160629200108.92466F6F@viggo.jf.intel.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeature.h        | 8 ++++++--
+ arch/x86/include/asm/disabled-features.h | 1 +
+ arch/x86/include/asm/required-features.h | 1 +
+ 3 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpufeature.h b/arch/x86/include/asm/cpufeature.h
+index c7e38da..3d5a6b5 100644
+--- a/arch/x86/include/asm/cpufeature.h
++++ b/arch/x86/include/asm/cpufeature.h
+@@ -67,7 +67,9 @@ extern const char * const x86_bug_flags[NBUGINTS*32];
+ 	   (((bit)>>5)==14 && (1UL<<((bit)&31) & REQUIRED_MASK14)) ||	\
+ 	   (((bit)>>5)==15 && (1UL<<((bit)&31) & REQUIRED_MASK15)) ||	\
+ 	   (((bit)>>5)==16 && (1UL<<((bit)&31) & REQUIRED_MASK16)) ||	\
+-	   (((bit)>>5)==17 && (1UL<<((bit)&31) & REQUIRED_MASK17)))
++	   (((bit)>>5)==17 && (1UL<<((bit)&31) & REQUIRED_MASK17)) ||	\
++	   REQUIRED_MASK_CHECK					   ||	\
++	   BUILD_BUG_ON_ZERO(NCAPINTS != 18))
+ 
+ #define DISABLED_MASK_BIT_SET(bit)					\
+ 	 ( (((bit)>>5)==0  && (1UL<<((bit)&31) & DISABLED_MASK0 )) ||	\
+@@ -87,7 +89,9 @@ extern const char * const x86_bug_flags[NBUGINTS*32];
+ 	   (((bit)>>5)==14 && (1UL<<((bit)&31) & DISABLED_MASK14)) ||	\
+ 	   (((bit)>>5)==15 && (1UL<<((bit)&31) & DISABLED_MASK15)) ||	\
+ 	   (((bit)>>5)==16 && (1UL<<((bit)&31) & DISABLED_MASK16)) ||	\
+-	   (((bit)>>5)==17 && (1UL<<((bit)&31) & DISABLED_MASK17)))
++	   (((bit)>>5)==17 && (1UL<<((bit)&31) & DISABLED_MASK17)) ||	\
++	   DISABLED_MASK_CHECK					   ||	\
++	   BUILD_BUG_ON_ZERO(NCAPINTS != 18))
+ 
+ #define cpu_has(c, bit)							\
+ 	(__builtin_constant_p(bit) && REQUIRED_MASK_BIT_SET(bit) ? 1 :	\
+diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
+index ab6b05c..21c5ac1 100644
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -59,5 +59,6 @@
+ #define DISABLED_MASK15	0
+ #define DISABLED_MASK16	(DISABLE_PKU|DISABLE_OSPKE)
+ #define DISABLED_MASK17	0
++#define DISABLED_MASK_CHECK BUILD_BUG_ON_ZERO(NCAPINTS != 18)
+ 
+ #endif /* _ASM_X86_DISABLED_FEATURES_H */
+diff --git a/arch/x86/include/asm/required-features.h b/arch/x86/include/asm/required-features.h
+index fad4277..fac9a5c 100644
+--- a/arch/x86/include/asm/required-features.h
++++ b/arch/x86/include/asm/required-features.h
+@@ -100,5 +100,6 @@
+ #define REQUIRED_MASK15	0
+ #define REQUIRED_MASK16	0
+ #define REQUIRED_MASK17	0
++#define REQUIRED_MASK_CHECK BUILD_BUG_ON_ZERO(NCAPINTS != 18)
+ 
+ #endif /* _ASM_X86_REQUIRED_FEATURES_H */
+-- 
+2.7.4
+

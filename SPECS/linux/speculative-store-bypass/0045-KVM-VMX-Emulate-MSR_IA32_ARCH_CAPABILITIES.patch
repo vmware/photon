@@ -1,0 +1,158 @@
+From 362e510587af15628209d57005f1c7af66b82517 Mon Sep 17 00:00:00 2001
+From: KarimAllah Ahmed <karahmed@amazon.de>
+Date: Thu, 1 Feb 2018 22:59:44 +0100
+Subject: [PATCH 045/120] KVM/VMX: Emulate MSR_IA32_ARCH_CAPABILITIES
+
+(cherry picked from commit 28c1c9fabf48d6ad596273a11c46e0d0da3e14cd)
+
+Intel processors use MSR_IA32_ARCH_CAPABILITIES MSR to indicate RDCL_NO
+(bit 0) and IBRS_ALL (bit 1). This is a read-only MSR. By default the
+contents will come directly from the hardware, but user-space can still
+override it.
+
+[dwmw2: The bit in kvm_cpuid_7_0_edx_x86_features can be unconditional]
+
+Signed-off-by: KarimAllah Ahmed <karahmed@amazon.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
+Reviewed-by: Darren Kenny <darren.kenny@oracle.com>
+Reviewed-by: Jim Mattson <jmattson@google.com>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Andrea Arcangeli <aarcange@redhat.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Jun Nakajima <jun.nakajima@intel.com>
+Cc: kvm@vger.kernel.org
+Cc: Dave Hansen <dave.hansen@intel.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Asit Mallick <asit.k.mallick@intel.com>
+Cc: Arjan Van De Ven <arjan.van.de.ven@intel.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Tim Chen <tim.c.chen@linux.intel.com>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Link: https://lkml.kernel.org/r/1517522386-18410-4-git-send-email-karahmed@amazon.de
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kvm/cpuid.c | 11 +++++++++--
+ arch/x86/kvm/cpuid.h |  8 ++++++++
+ arch/x86/kvm/vmx.c   | 15 +++++++++++++++
+ arch/x86/kvm/x86.c   |  1 +
+ 4 files changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index 7f374f7..653225c 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -361,6 +361,10 @@ static inline int __do_cpuid_ent(struct kvm_cpuid_entry2 *entry, u32 function,
+ 		F(ADX) | F(SMAP) | F(AVX512F) | F(AVX512PF) | F(AVX512ER) |
+ 		F(AVX512CD) | F(CLFLUSHOPT) | F(CLWB) | F(PCOMMIT);
+ 
++	/* cpuid 7.0.edx*/
++	const u32 kvm_cpuid_7_0_edx_x86_features =
++		F(ARCH_CAPABILITIES);
++
+ 	/* cpuid 0xD.1.eax */
+ 	const u32 kvm_cpuid_D_1_eax_x86_features =
+ 		F(XSAVEOPT) | F(XSAVEC) | F(XGETBV1) | f_xsaves;
+@@ -442,11 +446,14 @@ static inline int __do_cpuid_ent(struct kvm_cpuid_entry2 *entry, u32 function,
+ 			cpuid_mask(&entry->ebx, CPUID_7_0_EBX);
+ 			// TSC_ADJUST is emulated
+ 			entry->ebx |= F(TSC_ADJUST);
+-		} else
++			entry->edx &= kvm_cpuid_7_0_edx_x86_features;
++			cpuid_mask(&entry->edx, CPUID_7_EDX);
++		} else {
+ 			entry->ebx = 0;
++			entry->edx = 0;
++		}
+ 		entry->eax = 0;
+ 		entry->ecx = 0;
+-		entry->edx = 0;
+ 		break;
+ 	}
+ 	case 9:
+diff --git a/arch/x86/kvm/cpuid.h b/arch/x86/kvm/cpuid.h
+index 2131023..67c3548 100644
+--- a/arch/x86/kvm/cpuid.h
++++ b/arch/x86/kvm/cpuid.h
+@@ -170,6 +170,14 @@ static inline bool guest_cpuid_has_ibpb(struct kvm_vcpu *vcpu)
+ 	return best && (best->edx & bit(X86_FEATURE_SPEC_CTRL));
+ }
+ 
++static inline bool guest_cpuid_has_arch_capabilities(struct kvm_vcpu *vcpu)
++{
++	struct kvm_cpuid_entry2 *best;
++
++	best = kvm_find_cpuid_entry(vcpu, 7, 0);
++	return best && (best->edx & bit(X86_FEATURE_ARCH_CAPABILITIES));
++}
++
+ 
+ /*
+  * NRIPS is provided through cpuidfn 0x8000000a.edx bit 3
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index be097d2..8db87d8 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -551,6 +551,8 @@ struct vcpu_vmx {
+ 	u64 		      msr_guest_kernel_gs_base;
+ #endif
+ 
++	u64 		      arch_capabilities;
++
+ 	u32 vm_entry_controls_shadow;
+ 	u32 vm_exit_controls_shadow;
+ 	/*
+@@ -2842,6 +2844,12 @@ static int vmx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 	case MSR_IA32_TSC:
+ 		msr_info->data = guest_read_tsc(vcpu);
+ 		break;
++	case MSR_IA32_ARCH_CAPABILITIES:
++		if (!msr_info->host_initiated &&
++		    !guest_cpuid_has_arch_capabilities(vcpu))
++			return 1;
++		msr_info->data = to_vmx(vcpu)->arch_capabilities;
++		break;
+ 	case MSR_IA32_SYSENTER_CS:
+ 		msr_info->data = vmcs_read32(GUEST_SYSENTER_CS);
+ 		break;
+@@ -2968,6 +2976,11 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		vmx_disable_intercept_for_msr(vmx->vmcs01.msr_bitmap, MSR_IA32_PRED_CMD,
+ 					      MSR_TYPE_W);
+ 		break;
++	case MSR_IA32_ARCH_CAPABILITIES:
++		if (!msr_info->host_initiated)
++			return 1;
++		vmx->arch_capabilities = data;
++		break;
+ 	case MSR_IA32_CR_PAT:
+ 		if (vmcs_config.vmentry_ctrl & VM_ENTRY_LOAD_IA32_PAT) {
+ 			if (!kvm_mtrr_valid(vcpu, MSR_IA32_CR_PAT, data))
+@@ -5016,6 +5029,8 @@ static int vmx_vcpu_setup(struct vcpu_vmx *vmx)
+ 		++vmx->nmsrs;
+ 	}
+ 
++	if (boot_cpu_has(X86_FEATURE_ARCH_CAPABILITIES))
++		rdmsrl(MSR_IA32_ARCH_CAPABILITIES, vmx->arch_capabilities);
+ 
+ 	vm_exit_controls_init(vmx, vmcs_config.vmexit_ctrl);
+ 
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index f37f0c7..fb5cbb3 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -961,6 +961,7 @@ static u32 msrs_to_save[] = {
+ #endif
+ 	MSR_IA32_TSC, MSR_IA32_CR_PAT, MSR_VM_HSAVE_PA,
+ 	MSR_IA32_FEATURE_CONTROL, MSR_IA32_BNDCFGS, MSR_TSC_AUX,
++	MSR_IA32_ARCH_CAPABILITIES
+ };
+ 
+ static unsigned num_msrs_to_save;
+-- 
+2.7.4
+

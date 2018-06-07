@@ -1,0 +1,39 @@
+From 534fb691f7203dac696bc5297f5750e0b2a087b9 Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Tue, 26 Jan 2016 22:12:09 +0100
+Subject: [PATCH 013/120] x86/vdso: Use static_cpu_has()
+
+... and simplify and speed up a tad.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/1453842730-28463-10-git-send-email-bp@alien8.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/entry/vdso/vma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/entry/vdso/vma.c b/arch/x86/entry/vdso/vma.c
+index 5471ac3..6b46648 100644
+--- a/arch/x86/entry/vdso/vma.c
++++ b/arch/x86/entry/vdso/vma.c
+@@ -255,7 +255,7 @@ static void vgetcpu_cpu_init(void *arg)
+ #ifdef CONFIG_NUMA
+ 	node = cpu_to_node(cpu);
+ #endif
+-	if (cpu_has(&cpu_data(cpu), X86_FEATURE_RDTSCP))
++	if (static_cpu_has(X86_FEATURE_RDTSCP))
+ 		write_rdtscp_aux((node << 12) | cpu);
+ 
+ 	/*
+-- 
+2.7.4
+
