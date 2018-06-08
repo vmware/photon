@@ -1,7 +1,7 @@
-From e6e701d8663ca3dbcf298ed4a10bf5b6120ce4d3 Mon Sep 17 00:00:00 2001
+From 40064b0cbc084faa76f8f2d29f1c3ed8ae693b02 Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
-Date: Sat, 2 Jun 2018 16:24:59 -0700
-Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (8ef8da7)
+Date: Fri, 8 Jun 2018 16:29:28 -0700
+Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (df346df)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
@@ -22,16 +22,17 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (8ef8da7)
  pkg/apis/core/validation/validation.go             |  25 +
  pkg/apis/extensions/types.go                       |   1 +
  pkg/cloudprovider/providers/BUILD                  |   2 +
- pkg/cloudprovider/providers/cascade/BUILD          |  44 ++
+ pkg/cloudprovider/providers/cascade/BUILD          |  56 +++
  pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
  pkg/cloudprovider/providers/cascade/apitypes.go    | 227 +++++++++
  pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++++
- pkg/cloudprovider/providers/cascade/cascade.go     | 216 ++++++++
+ pkg/cloudprovider/providers/cascade/cascade.go     | 218 +++++++++
  .../providers/cascade/cascade_disks.go             | 225 +++++++++
- .../providers/cascade/cascade_instances.go         |  90 ++++
+ .../providers/cascade/cascade_instances.go         |  91 ++++
+ .../providers/cascade/cascade_instances_test.go    |  43 ++
  .../providers/cascade/cascade_loadbalancer.go      | 284 +++++++++++
  pkg/cloudprovider/providers/cascade/client.go      | 394 +++++++++++++++
- pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++++++
+ pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 ++++++++++++
  pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++++++
  pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
  pkg/cloudprovider/providers/cascade/utils.go       |  25 +
@@ -40,16 +41,16 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (8ef8da7)
  pkg/security/podsecuritypolicy/util/util.go        |   3 +
  pkg/volume/cascade_disk/BUILD                      |  43 ++
  pkg/volume/cascade_disk/OWNERS                     |   2 +
- pkg/volume/cascade_disk/attacher.go                | 269 ++++++++++
+ pkg/volume/cascade_disk/attacher.go                | 269 +++++++++++
  pkg/volume/cascade_disk/cascade_disk.go            | 391 +++++++++++++++
  pkg/volume/cascade_disk/cascade_util.go            | 107 ++++
- .../admission/persistentvolume/label/admission.go  |  54 ++
+ .../admission/persistentvolume/label/admission.go  |  54 +++
  plugin/pkg/admission/vke/BUILD                     |  58 +++
- plugin/pkg/admission/vke/admission.go              | 374 ++++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 541 +++++++++++++++++++++
+ plugin/pkg/admission/vke/admission.go              | 349 +++++++++++++
+ plugin/pkg/admission/vke/admission_test.go         | 538 +++++++++++++++++++++
  staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 +++++++++++-
  staging/src/k8s.io/api/core/v1/types.go            |  26 +-
- 45 files changed, 4623 insertions(+), 29 deletions(-)
+ 46 files changed, 4653 insertions(+), 29 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -57,6 +58,7 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (8ef8da7)
  create mode 100644 pkg/cloudprovider/providers/cascade/cascade.go
  create mode 100644 pkg/cloudprovider/providers/cascade/cascade_disks.go
  create mode 100644 pkg/cloudprovider/providers/cascade/cascade_instances.go
+ create mode 100644 pkg/cloudprovider/providers/cascade/cascade_instances_test.go
  create mode 100644 pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
  create mode 100644 pkg/cloudprovider/providers/cascade/client.go
  create mode 100644 pkg/cloudprovider/providers/cascade/oidcclient.go
@@ -73,7 +75,7 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (8ef8da7)
  create mode 100644 plugin/pkg/admission/vke/admission_test.go
 
 diff --git a/api/swagger-spec/apps_v1alpha1.json b/api/swagger-spec/apps_v1alpha1.json
-index aa3fbdc..9dba11e 100644
+index aa3fbdc..0189f38 100644
 --- a/api/swagger-spec/apps_v1alpha1.json
 +++ b/api/swagger-spec/apps_v1alpha1.json
 @@ -1459,6 +1459,10 @@
@@ -81,9 +83,9 @@ index aa3fbdc..9dba11e 100644
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
 +     },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
       }
      }
     },
@@ -112,16 +114,16 @@ index aa3fbdc..9dba11e 100644
      "id": "v1.Container",
      "description": "A single application container that you want to run within a pod.",
 diff --git a/api/swagger-spec/apps_v1beta1.json b/api/swagger-spec/apps_v1beta1.json
-index e253317..6968ed0 100644
+index e253317..c1fa812 100644
 --- a/api/swagger-spec/apps_v1beta1.json
 +++ b/api/swagger-spec/apps_v1beta1.json
 @@ -4479,6 +4479,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
 +     },
       "projected": {
        "$ref": "v1.ProjectedVolumeSource",
@@ -151,16 +153,16 @@ index e253317..6968ed0 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/apps_v1beta2.json b/api/swagger-spec/apps_v1beta2.json
-index be42788..28d0247 100644
+index be42788..5abb9f5 100644
 --- a/api/swagger-spec/apps_v1beta2.json
 +++ b/api/swagger-spec/apps_v1beta2.json
 @@ -6845,6 +6845,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
 +     },
       "projected": {
        "$ref": "v1.ProjectedVolumeSource",
@@ -190,16 +192,16 @@ index be42788..28d0247 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/batch_v1.json b/api/swagger-spec/batch_v1.json
-index 28787d8..9adba42 100644
+index 28787d8..28fcb65 100644
 --- a/api/swagger-spec/batch_v1.json
 +++ b/api/swagger-spec/batch_v1.json
 @@ -1819,6 +1819,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
 +     },
       "projected": {
        "$ref": "v1.ProjectedVolumeSource",
@@ -229,16 +231,16 @@ index 28787d8..9adba42 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/batch_v1beta1.json b/api/swagger-spec/batch_v1beta1.json
-index bb9b870..8bab946 100644
+index bb9b870..f67a014 100644
 --- a/api/swagger-spec/batch_v1beta1.json
 +++ b/api/swagger-spec/batch_v1beta1.json
 @@ -1874,6 +1874,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
 +     },
       "projected": {
        "$ref": "v1.ProjectedVolumeSource",
@@ -268,7 +270,7 @@ index bb9b870..8bab946 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/batch_v2alpha1.json b/api/swagger-spec/batch_v2alpha1.json
-index cde6619..1e428a5 100644
+index cde6619..78888be 100644
 --- a/api/swagger-spec/batch_v2alpha1.json
 +++ b/api/swagger-spec/batch_v2alpha1.json
 @@ -1889,6 +1889,10 @@
@@ -276,9 +278,9 @@ index cde6619..1e428a5 100644
        "$ref": "v1.StorageOSVolumeSource",
        "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
 +     },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
       }
      }
     },
@@ -307,7 +309,7 @@ index cde6619..1e428a5 100644
      "id": "v1.Container",
      "description": "A single application container that you want to run within a pod.",
 diff --git a/api/swagger-spec/extensions_v1beta1.json b/api/swagger-spec/extensions_v1beta1.json
-index d8b20a3..ea271e1 100644
+index d8b20a3..73342a1 100644
 --- a/api/swagger-spec/extensions_v1beta1.json
 +++ b/api/swagger-spec/extensions_v1beta1.json
 @@ -7502,6 +7502,10 @@
@@ -315,9 +317,9 @@ index d8b20a3..ea271e1 100644
        "$ref": "v1.StorageOSVolumeSource",
        "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
 +     },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
       }
      }
     },
@@ -346,7 +348,7 @@ index d8b20a3..ea271e1 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/settings.k8s.io_v1alpha1.json b/api/swagger-spec/settings.k8s.io_v1alpha1.json
-index dc442a8..c1b2d1e 100644
+index dc442a8..8c1f100 100644
 --- a/api/swagger-spec/settings.k8s.io_v1alpha1.json
 +++ b/api/swagger-spec/settings.k8s.io_v1alpha1.json
 @@ -1676,6 +1676,10 @@
@@ -354,9 +356,9 @@ index dc442a8..c1b2d1e 100644
        "$ref": "v1.StorageOSVolumeSource",
        "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
 +     },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
       }
      }
     },
@@ -385,16 +387,16 @@ index dc442a8..c1b2d1e 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/v1.json b/api/swagger-spec/v1.json
-index 97be62b..e1cba2b 100644
+index 97be62b..df544c8 100644
 --- a/api/swagger-spec/v1.json
 +++ b/api/swagger-spec/v1.json
 @@ -20629,6 +20629,10 @@
        "$ref": "v1.PhotonPersistentDiskVolumeSource",
        "description": "PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine"
       },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
 +     },
       "portworxVolume": {
        "$ref": "v1.PortworxVolumeSource",
@@ -428,9 +430,9 @@ index 97be62b..e1cba2b 100644
        "$ref": "v1.StorageOSVolumeSource",
        "description": "StorageOS represents a StorageOS volume attached and mounted on Kubernetes nodes."
 +     },
-+     "cascadeDisk": {
++     "vkeDisk": {
 +      "$ref": "v1.CascadeDiskVolumeSource",
-+      "description": "CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
++      "description": "vkeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine"
       }
      }
     },
@@ -655,10 +657,10 @@ index aeccfa1..4313576 100644
          "//pkg/cloudprovider/providers/gce:all-srcs",
 diff --git a/pkg/cloudprovider/providers/cascade/BUILD b/pkg/cloudprovider/providers/cascade/BUILD
 new file mode 100644
-index 0000000..1ff2ad1
+index 0000000..4089166
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/BUILD
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,56 @@
 +package(default_visibility = ["//visibility:public"])
 +
 +load(
@@ -688,6 +690,18 @@ index 0000000..1ff2ad1
 +        "//vendor/gopkg.in/gcfg.v1:go_default_library",
 +        "//vendor/k8s.io/api/core/v1:go_default_library",
 +        "//vendor/k8s.io/apimachinery/pkg/types:go_default_library",
++    ],
++)
++
++go_test(
++    name = "go_default_test",
++    srcs = [
++        "cascade_instances_test.go",
++    ],
++    embed = [":go_default_library"],
++    deps = [
++        "//vendor/k8s.io/api/core/v1:go_default_library",
++        "//vendor/github.com/stretchr/testify/assert:go_default_library",
 +    ],
 +)
 +
@@ -1099,10 +1113,10 @@ index 0000000..fc92377
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/cascade.go b/pkg/cloudprovider/providers/cascade/cascade.go
 new file mode 100644
-index 0000000..e5e2baf
+index 0000000..db97234
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade.go
-@@ -0,0 +1,216 @@
+@@ -0,0 +1,218 @@
 +// The use of Cascade cloud provider requires the kubelet, kube-apiserver, and kube-controller-manager to be started
 +// with config flag: '--cloud-provider=cascade --cloud-config=[path_to_config_file]'.
 +package cascade
@@ -1110,18 +1124,18 @@ index 0000000..e5e2baf
 +import (
 +	"errors"
 +	"fmt"
-+	"io"
-+	"os"
 +	"github.com/golang/glog"
 +	"gopkg.in/gcfg.v1"
++	"io"
 +	k8stypes "k8s.io/apimachinery/pkg/types"
 +	"k8s.io/kubernetes/pkg/cloudprovider"
 +	"k8s.io/kubernetes/pkg/controller"
++	"os"
 +	"strings"
 +)
 +
 +const (
-+	ProviderName = "cascade"
++	ProviderName = "vke"
 +	DiskSpecKind = "persistent-disk"
 +	MasterPrefix = "master"
 +)
@@ -1158,6 +1172,8 @@ index 0000000..e5e2baf
 +		Region string `gcfg:"region"`
 +		// Availability zone in which the cluster is in
 +		Zone string `gcfg:"zone"`
++		// IP address of the node.
++		IPAddress string `gcfg:"ipAddress"`
 +	}
 +}
 +
@@ -1286,7 +1302,7 @@ index 0000000..e5e2baf
 +
 +func (cc *CascadeCloud) GetZone() (cloudprovider.Zone, error) {
 +	return cloudprovider.Zone{
-+		Region: cc.cfg.Global.Region,
++		Region:        cc.cfg.Global.Region,
 +		FailureDomain: cc.cfg.Global.Zone,
 +	}, nil
 +}
@@ -1319,7 +1335,6 @@ index 0000000..e5e2baf
 +func (cc *CascadeCloud) HasClusterID() bool {
 +	return true
 +}
-\ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_disks.go b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 new file mode 100644
 index 0000000..320e123
@@ -1553,10 +1568,10 @@ index 0000000..320e123
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances.go b/pkg/cloudprovider/providers/cascade/cascade_instances.go
 new file mode 100644
-index 0000000..f270a3d
+index 0000000..0172151
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_instances.go
-@@ -0,0 +1,90 @@
+@@ -0,0 +1,91 @@
 +package cascade
 +
 +import (
@@ -1569,9 +1584,10 @@ index 0000000..f270a3d
 +// NodeAddresses is an implementation of Instances.NodeAddresses. In the future, private IP address, external IP, etc.
 +// will be added based on need.
 +func (cc *CascadeCloud) NodeAddresses(nodeName k8stypes.NodeName) ([]v1.NodeAddress, error) {
-+	addresses := []v1.NodeAddress{}
-+	addresses = append(addresses, v1.NodeAddress{Type: v1.NodeInternalDNS, Address: cc.cfg.Global.DNSName})
-+	return addresses, nil
++	return []v1.NodeAddress{
++		{Type: v1.NodeInternalIP, Address: cc.cfg.Global.IPAddress},
++		{Type: v1.NodeInternalDNS, Address: cc.cfg.Global.DNSName},
++	}, nil
 +}
 +
 +// NodeAddressesByProviderID returns the node addresses of an instances with the specified unique providerID
@@ -1646,6 +1662,55 @@ index 0000000..f270a3d
 +
 +func (cc *CascadeCloud) InstanceType(nodeName k8stypes.NodeName) (string, error) {
 +	return "", nil
++}
+diff --git a/pkg/cloudprovider/providers/cascade/cascade_instances_test.go b/pkg/cloudprovider/providers/cascade/cascade_instances_test.go
+new file mode 100644
+index 0000000..bec5491
+--- /dev/null
++++ b/pkg/cloudprovider/providers/cascade/cascade_instances_test.go
+@@ -0,0 +1,43 @@
++package cascade
++
++import (
++	"strings"
++	"testing"
++
++	"github.com/stretchr/testify/assert"
++	"k8s.io/api/core/v1"
++)
++
++const configFile = `
++[Global]
++target = target
++tenantName = tenant
++clusterID = cluster-id
++authEndpoint = auth-endpoint
++domainName = domain.test
++dnsName = node.domain.test
++region = region
++zone = zone
++ipAddress = 1.1.1.1
++`
++
++func getCascadeInstance() (*CascadeCloud, error) {
++	cfg, err := readConfig(strings.NewReader(configFile))
++	return &CascadeCloud{
++		cfg:              cfg,
++		localHostname:    "hostname",
++		localK8sHostname: "",
++	}, err
++}
++
++func TestNodeAddresses(t *testing.T) {
++	cc, err := getCascadeInstance()
++	assert.Nil(t, err)
++	expectedNodeAddresses := []v1.NodeAddress{
++		{Type: v1.NodeInternalIP, Address: "1.1.1.1"},
++		{Type: v1.NodeInternalDNS, Address: "node.domain.test"},
++	}
++	actualNodeAddresses, err := cc.NodeAddresses("node")
++	assert.Nil(t, err)
++	assert.Equal(t, expectedNodeAddresses, actualNodeAddresses)
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 new file mode 100644
@@ -2965,7 +3030,7 @@ index 7de9ca9..6d8a1d2 100644
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
 diff --git a/pkg/printers/internalversion/describe.go b/pkg/printers/internalversion/describe.go
-index c33b1c6..11e6c8b 100644
+index c33b1c6..ef39b3b 100644
 --- a/pkg/printers/internalversion/describe.go
 +++ b/pkg/printers/internalversion/describe.go
 @@ -751,6 +751,8 @@ func describeVolumes(volumes []api.Volume, w PrefixWriter, space string) {
@@ -2982,7 +3047,7 @@ index c33b1c6..11e6c8b 100644
  }
  
 +func printCascadeDiskVolumeSource(cascade *api.CascadeDiskVolumeSource, w PrefixWriter) {
-+	w.Write(LEVEL_2, "Type:\tCascadeDisk (a Persistent Disk resource in Cascade)\n"+
++	w.Write(LEVEL_2, "Type:\tVKEDisk (a Persistent Disk resource in VKE)\n"+
 +		"    DiskID:\t%v\n"+
 +		"    FSType:\t%v\n",
 +		cascade.DiskID, cascade.FSType)
@@ -3355,7 +3420,7 @@ index 0000000..607fcb5
 +}
 diff --git a/pkg/volume/cascade_disk/cascade_disk.go b/pkg/volume/cascade_disk/cascade_disk.go
 new file mode 100644
-index 0000000..88945c3
+index 0000000..a25f224
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_disk.go
 @@ -0,0 +1,391 @@
@@ -3393,7 +3458,7 @@ index 0000000..88945c3
 +var _ volume.ProvisionableVolumePlugin = &cascadeDiskPlugin{}
 +
 +const (
-+	cascadeDiskPluginName = "kubernetes.io/cascade-disk"
++	cascadeDiskPluginName = "kubernetes.io/vke-disk"
 +)
 +
 +// Init initializes the Cascade volume plugin.
@@ -3716,7 +3781,7 @@ index 0000000..88945c3
 +			Name:   p.options.PVName,
 +			Labels: map[string]string{},
 +			Annotations: map[string]string{
-+				volumehelper.VolumeDynamicallyCreatedByKey: "cascade-volume-dynamic-provisioner",
++				volumehelper.VolumeDynamicallyCreatedByKey: "vke-volume-dynamic-provisioner",
 +			},
 +		},
 +		Spec: v1.PersistentVolumeSpec{
@@ -3865,7 +3930,7 @@ index 0000000..3dcef3d
 +	return cc, nil
 +}
 diff --git a/plugin/pkg/admission/persistentvolume/label/admission.go b/plugin/pkg/admission/persistentvolume/label/admission.go
-index 86e1921..b9b546f 100644
+index 86e1921..bf2912b 100644
 --- a/plugin/pkg/admission/persistentvolume/label/admission.go
 +++ b/plugin/pkg/admission/persistentvolume/label/admission.go
 @@ -27,6 +27,7 @@ import (
@@ -3934,7 +3999,7 @@ index 86e1921..b9b546f 100644
 +		if len(l.cloudConfig) > 0 {
 +			cloudConfigReader = bytes.NewReader(l.cloudConfig)
 +		}
-+		cloudProvider, err := cloudprovider.GetCloudProvider("cascade", cloudConfigReader)
++		cloudProvider, err := cloudprovider.GetCloudProvider("vke", cloudConfigReader)
 +		if err != nil || cloudProvider == nil {
 +			return nil, err
 +		}
@@ -4014,10 +4079,10 @@ index 0000000..b0a6026
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..4cfc8c5
+index 0000000..15cbb85
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,374 @@
+@@ -0,0 +1,349 @@
 +package vke
 +
 +import (
@@ -4047,9 +4112,7 @@ index 0000000..4cfc8c5
 +	privilegedServiceAccount = "system:serviceaccount:" + privilegedNamespace + ":"
 +	reservedPrefix           = "vke"
 +	kubeletGroup             = "system:nodes"
-+	kubeProxyGroup           = "cascade:kube-proxies"
-+	dashboardPod             = "vke-dashboard-0"
-+	kubeSystemNamespace      = "kube-system"
++	kubeProxyGroup           = "vke:kube-proxies"
 +)
 +
 +// Register registers a plugin.
@@ -4148,6 +4211,9 @@ index 0000000..4cfc8c5
 +			HostIPC:                  false,
 +			HostPID:                  false,
 +			AllowPrivilegeEscalation: false,
++			HostPorts: []extensions.HostPortRange{
++				{1, 65535},
++			},
 +			Volumes: []extensions.FSType{
 +				"emptyDir",
 +				"secret",
@@ -4284,18 +4350,11 @@ index 0000000..4cfc8c5
 +		return nil
 +	}
 +
-+	// If it is a Connect operation, allow it. We restrict access to connect to any pods in the vke-system namespace.
-+	// Also, DenyEscalatingExec admission controller denies access to connect to any privileged pod in general. So it is
-+	// OK to allow this.
-+	if a.GetOperation() == admission.Connect {
++	// If it is a Connect or Delete operation, allow it. We restrict access to connect to any pods in the vke-system
++	// namespace. Also, DenyEscalatingExec admission controller denies access to connect to any privileged pod in
++	// general. So it is OK to allow this.
++	if a.GetOperation() == admission.Connect && a.GetOperation() == admission.Delete {
 +		return nil
-+	}
-+
-+	// If it is a Delete operation and it is not a pod with a reserved prefix, allow it. We restrict access to delete
-+	// any pods in the vke-system namespace. So it is OK to allow this.
-+	// TODO: Make sure we do not have a need to delete the dashboard stateful set. If we do then it will fail.
-+	if a.GetOperation() == admission.Delete {
-+		return checkReservedPrefix(a.GetName(), a)
 +	}
 +
 +	// If we cannot get the pod object, fail.
@@ -4314,25 +4373,6 @@ index 0000000..4cfc8c5
 +
 +	errs := field.ErrorList{}
 +	originalPod := a.GetObject().(*api.Pod)
-+
-+	// If the pod is our dashboard pod, its namespace is kube-system and it is created by the controller-manager then
-+	// skip validation. This pod is in kube-system namespace which is not privileged. But we need to allow the dashboard
-+	// pod to be privileged because it has the OIDC proxy container which requires hostPath volume mount. Just to make
-+	// sure we allow only this one pod, we make sure that it is created by the controller manager and name matches the
-+	// dashboard pod and it is in kube-system.
-+	if a.GetUserInfo().GetName() == systemUnsecuredUser && a.GetNamespace() == kubeSystemNamespace &&
-+		(a.GetName() == dashboardPod || originalPod.Name == dashboardPod) {
-+		return nil
-+	}
-+
-+	// Check if the pod that needs to be created or updated has the reserved prefix. If it does, deny the request.
-+	podName := a.GetName()
-+	if podName == "" {
-+		podName = originalPod.Name
-+	}
-+	if err := checkReservedPrefix(podName, a); err != nil {
-+		return err
-+	}
 +
 +	// Generate a copy of the pod object because we are not allowed to mutate the pod object.
 +	pod := originalPod.DeepCopy()
@@ -4394,10 +4434,10 @@ index 0000000..4cfc8c5
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..81acbe1
+index 0000000..596b7d4
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
-@@ -0,0 +1,541 @@
+@@ -0,0 +1,538 @@
 +package vke
 +
 +import (
@@ -4476,6 +4516,12 @@ index 0000000..81acbe1
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
 +		},
++		"create pod with HostPort allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostPort().build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
 +		"create pod with HostVolume denied": {
 +			operation:          kadmission.Create,
 +			pod:                newTestPodBuilder().withHostVolume().build(),
@@ -4494,20 +4540,6 @@ index 0000000..81acbe1
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
 +		},
-+		"create pod with vke prefix denied": {
-+			operation:          kadmission.Create,
-+			pod:                newTestPodBuilder().build(),
-+			name:               "vke-dashboard",
-+			userInfo:           newTestUserBuilder().build(),
-+			shouldPassValidate: false,
-+		},
-+		"create dashboard pod with vke prefix by privileged user in kube-system allowed": {
-+			operation:          kadmission.Create,
-+			pod:                newTestPodBuilder().withNamespace(kubeSystemNamespace).build(),
-+			name:               "vke-dashboard-0",
-+			userInfo:           newTestUserBuilder().withName(systemUnsecuredUser).build(),
-+			shouldPassValidate: true,
-+		},
 +		"connect pod allowed": {
 +			operation:          kadmission.Connect,
 +			pod:                newTestPodBuilder().build(),
@@ -4519,13 +4551,6 @@ index 0000000..81acbe1
 +			pod:                newTestPodBuilder().build(),
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: true,
-+		},
-+		"delete pod with vke prefix denied": {
-+			operation:          kadmission.Delete,
-+			pod:                newTestPodBuilder().build(),
-+			name:               "vke-dashboard",
-+			userInfo:           newTestUserBuilder().build(),
-+			shouldPassValidate: false,
 +		},
 +	}
 +
@@ -4851,6 +4876,18 @@ index 0000000..81acbe1
 +
 +func (p *testPodBuilder) withHostPID(v bool) *testPodBuilder {
 +	p.pod.Spec.SecurityContext.HostPID = v
++	return p
++}
++
++func (p *testPodBuilder) withHostPort() *testPodBuilder {
++	containerPorts := []kapi.ContainerPort{
++		{
++			HostPort:      3000,
++			ContainerPort: 80,
++		},
++	}
++
++	p.pod.Spec.Containers[0].Ports = containerPorts
 +	return p
 +}
 +
@@ -5443,7 +5480,7 @@ index 5aeae2c..a7d5b12 100644
  			iNdEx = preIndex
  			skippy, err := skipGenerated(dAtA[iNdEx:])
 diff --git a/staging/src/k8s.io/api/core/v1/types.go b/staging/src/k8s.io/api/core/v1/types.go
-index 728cbd5..8c50888 100644
+index 728cbd5..87ba6a4 100644
 --- a/staging/src/k8s.io/api/core/v1/types.go
 +++ b/staging/src/k8s.io/api/core/v1/types.go
 @@ -333,9 +333,8 @@ type VolumeSource struct {
@@ -5454,7 +5491,7 @@ index 728cbd5..8c50888 100644
 -	// +optional
 -	AzureDisk *AzureDiskVolumeSource `json:"azureDisk,omitempty" protobuf:"bytes,22,opt,name=azureDisk"`
 +	// CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine
-+	CascadeDisk *CascadeDiskVolumeSource `json:"cascadeDisk,omitempty" protobuf:"bytes,22,opt,name=cascadeDisk"`
++	CascadeDisk *CascadeDiskVolumeSource `json:"vkeDisk,omitempty" protobuf:"bytes,22,opt,name=cascadeDisk"`
  	// PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
  	PhotonPersistentDisk *PhotonPersistentDiskVolumeSource `json:"photonPersistentDisk,omitempty" protobuf:"bytes,23,opt,name=photonPersistentDisk"`
  	// Items for all in one resources secrets, configmaps, and downward API
@@ -5476,7 +5513,7 @@ index 728cbd5..8c50888 100644
 -	// +optional
 -	AzureDisk *AzureDiskVolumeSource `json:"azureDisk,omitempty" protobuf:"bytes,16,opt,name=azureDisk"`
 +	// CascadeDisk represents a Cascade persistent disk attached and mounted on kubelets host machine
-+	CascadeDisk *CascadeDiskVolumeSource `json:"cascadeDisk,omitempty" protobuf:"bytes,16,opt,name=cascadeDisk"`
++	CascadeDisk *CascadeDiskVolumeSource `json:"vkeDisk,omitempty" protobuf:"bytes,16,opt,name=cascadeDisk"`
  	// PhotonPersistentDisk represents a PhotonController persistent disk attached and mounted on kubelets host machine
  	PhotonPersistentDisk *PhotonPersistentDiskVolumeSource `json:"photonPersistentDisk,omitempty" protobuf:"bytes,17,opt,name=photonPersistentDisk"`
  	// PortworxVolume represents a portworx volume attached and mounted on kubelets host machine
