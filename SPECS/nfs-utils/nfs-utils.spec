@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -115,8 +115,8 @@ fi
 /sbin/*
 %{_sbindir}/*
 %{_sharedstatedir}/*
-/etc/default/nfs-utils
-/etc/exports
+%config(noreplace) /etc/default/nfs-utils
+%config(noreplace) /etc/exports
 /lib/systemd/system/*
 %{_libdir}/libnfsidmap.so.*
 %{_libdir}/libnfsidmap/nsswitch.so
@@ -127,6 +127,8 @@ fi
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Thu Jun 07 2018 Anish Swaminathan <anishs@vmware.com> 2.3.1-2
+-   Add noreplace qualifier to config files
 *   Fri Jan 26 2018 Xiaolin Li <xiaolinl@vmware.com> 2.3.1-1
 -   Update to 2.3.1 and enable nfsv4
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 2.1.1-7
