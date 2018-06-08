@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        1.3.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -61,11 +61,13 @@ install -m644 systemd/proc-fs-nfsd.mount %{buildroot}/lib/systemd/system/
 /sbin/*
 %{_sbindir}/*
 %{_sharedstatedir}/*
-/etc/default/nfs-utils
-/etc/exports
+%config(noreplace) /etc/default/nfs-utils
+%config(noreplace) /etc/exports
 /lib/systemd/system/*
 
 %changelog
+*   Thu Jun 07 2018 Anish Swaminathan <anishs@vmware.com> 1.3.3-8
+-   Add noreplace qualifier to config files
 *   Tue Feb 27 2018 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-7
 -   Updated nfs-server.service and nfs-mountd.service.
 *   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.3.3-6
