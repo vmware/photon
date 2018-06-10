@@ -1,7 +1,7 @@
-From e4ee3045ca2827e20374b9f1da439eb400d3366c Mon Sep 17 00:00:00 2001
+From ba75f0a3934a48bfc8be1908c7eefdff3e9b9eaa Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
-Date: Fri, 8 Jun 2018 16:15:19 -0700
-Subject: [PATCH] Cascade Kubernetes patches for v1.10.2 (df346df)
+Date: Sun, 10 Jun 2018 02:13:51 -0700
+Subject: [PATCH] Cascade Kubernetes patches for v1.10.2 (d06c534)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
@@ -4104,7 +4104,7 @@ index 0000000..b0a6026
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..c1566ae
+index 0000000..e33d4e9
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
 @@ -0,0 +1,349 @@
@@ -4378,7 +4378,7 @@ index 0000000..c1566ae
 +	// If it is a Connect or Delete operation, allow it. We restrict access to connect to any pods in the vke-system
 +	// namespace. Also, DenyEscalatingExec admission controller denies access to connect to any privileged pod in
 +	// general. So it is OK to allow this.
-+	if a.GetOperation() == admission.Connect && a.GetOperation() == admission.Delete {
++	if a.GetOperation() == admission.Connect || a.GetOperation() == admission.Delete {
 +		return nil
 +	}
 +
