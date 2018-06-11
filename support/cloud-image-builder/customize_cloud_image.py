@@ -24,7 +24,8 @@ def create_ova_image(raw_image_name, tools_path, build_scripts_path, config):
     ovf_path = output_path + '/photon-ova.ovf'
     mf_path = output_path + '/photon-ova.mf'
     ovfinfo_path = build_scripts_path + '/ovfinfo.txt'
-    utils.runshellcommand("{} -convert {} -cap 16000 {}".format(vixdiskutil_path, raw_image_name, vmdk_path))
+    vmdk_capacity = (int(config['size']['root']) + int(config['size']['swap'])) * 1024
+    utils.runshellcommand("{} -convert {} -cap {} {}".format(vixdiskutil_path, raw_image_name, vmdk_capacity, vmdk_path))
     utils.runshellcommand("{} -wmeta toolsVersion 2147483647 {}".format(vixdiskutil_path, vmdk_path))
 
     utils.runshellcommand("ovftool {} {}".format(vmx_path, ovf_path))
