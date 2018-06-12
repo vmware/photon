@@ -30,6 +30,7 @@ It contains the libraries and header files to create applications
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 ./configure \
