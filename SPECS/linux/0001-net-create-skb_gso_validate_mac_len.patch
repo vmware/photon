@@ -105,7 +105,7 @@ index 7d344259..3c42478 100644
 +
  static struct sk_buff *skb_reorder_vlan_header(struct sk_buff *skb)
  {
- 	if (skb_cow(skb, skb_headroom(skb)) < 0) {
+ 	int mac_len;
 diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
 index c2fbde7..93d6a21 100644
 --- a/net/sched/sch_tbf.c
