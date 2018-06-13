@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.131
-Release:       3%{?dist}
+Version:       4.4.137
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6811784d7abf4cd84f99c188c397b893deb35551
+%define sha1 linux=05b18bc780fb6f534dbf47825945b4e6eca15143
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -23,7 +23,7 @@ Patch8:        04-quiet-boot.patch
 Patch9:        05-pv-ops.patch
 Patch10:       06-sunrpc.patch
 Patch11:       vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disabled.patch
-
+Patch12:       kprobes-x86-Do-not-modify-singlestep-buffer-while-re.patch
 Patch13:       REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch14:       e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
 
@@ -114,7 +114,7 @@ The Linux package contains the Linux kernel doc files
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
-
+%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 
@@ -238,6 +238,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 13 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.137-1
+-   Update to version 4.4.137. Fix panic in kprobe.
 *   Fri May 18 2018 Bo Gan <ganb@vmware.com> 4.4.131-3
 -   rebase fXxattrat syscall number to avoid conflict with new syscalls
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-2
