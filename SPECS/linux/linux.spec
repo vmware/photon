@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.131
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.137
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=6811784d7abf4cd84f99c188c397b893deb35551
+%define sha1 linux=05b18bc780fb6f534dbf47825945b4e6eca15143
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -26,7 +26,7 @@ Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disa
 Patch8:		perf-top-sigsegv-fix.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-
+Patch11:        kprobes-x86-Do-not-modify-singlestep-buffer-while-re.patch
 Patch12:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
 Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
@@ -39,14 +39,10 @@ Patch18:        0002-allow-also-ecb-cipher_null.patch
 # Fixes for CVE-2018-1000026
 Patch19:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch20:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
-# Fix for CVE-2017-18255
-Patch21:        0001-perf-core-Fix-the-perf_cpu_time_max_percent-check.patch
 # Fix for CVE-2018-8043
 Patch22:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 # Fix for CVE-2017-18216
 Patch23:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
-# Fix for CVE-2018-8087
-Patch24:        0001-mac80211_hwsim-fix-possible-memory-leak-in-hwsim_new.patch
 # Fix for CVE-2017-18241
 Patch25:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
@@ -151,7 +147,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-
+%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -161,10 +157,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
-%patch21 -p1
 %patch22 -p1
 %patch23 -p1
-%patch24 -p1
 %patch25 -p1
 %patch26 -p1
 
@@ -338,6 +332,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Jun 13 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.137-1
+-   Update to version 4.4.137. Fix panic in kprobe.
 *   Mon May 21 2018 Bo Gan <ganb@vmware.com> 4.4.131-3
 -   Implement the f*xattrat family of syscalls (Previously linux-esx only)
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-2
