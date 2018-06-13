@@ -1,14 +1,14 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.4.131
-Release:	2%{?dist}
+Version:	4.4.137
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6811784d7abf4cd84f99c188c397b893deb35551
+%define sha1 linux=05b18bc780fb6f534dbf47825945b4e6eca15143
 BuildArch:	noarch
 # From SPECS/linux and used by linux-esx only
 # It provides f*xattrat syscalls
@@ -29,6 +29,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Wed Jun 13 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.137-1
+-   Update to version 4.4.137
 *   Mon May 21 2018 Bo Gan <ganb@vmware.com> 4.4.131-2
 -   Sync with syscall number change for f*xattrat syscalls family
 *   Fri May 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.131-1
