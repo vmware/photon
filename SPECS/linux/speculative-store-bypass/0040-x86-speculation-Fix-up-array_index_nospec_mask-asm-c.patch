@@ -1,0 +1,40 @@
+From 2adecefe6e30d49794b22077755d3d1a91ca564c Mon Sep 17 00:00:00 2001
+From: Dan Williams <dan.j.williams@intel.com>
+Date: Thu, 14 Jun 2018 14:56:30 -0700
+Subject: [PATCH 040/103] x86/speculation: Fix up array_index_nospec_mask() asm
+ constraint
+
+commit be3233fbfcb8f5acb6e3bcd0895c3ef9e100d470 upstream.
+
+Allow the compiler to handle @size as an immediate value or memory
+directly rather than allocating a register.
+
+Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/151797010204.1289.1510000292250184993.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/barrier.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/barrier.h b/arch/x86/include/asm/barrier.h
+index 814ef83..c6975e3 100644
+--- a/arch/x86/include/asm/barrier.h
++++ b/arch/x86/include/asm/barrier.h
+@@ -40,7 +40,7 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
+ 
+ 	asm ("cmp %1,%2; sbb %0,%0;"
+ 			:"=r" (mask)
+-			:"r"(size),"r" (index)
++			:"g"(size),"r" (index)
+ 			:"cc");
+ 	return mask;
+ }
+-- 
+2.7.4
+

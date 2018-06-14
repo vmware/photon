@@ -1,0 +1,56 @@
+From d873abc7e84e0a48b254c1542fe34a3509fa8558 Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Thu, 14 Jun 2018 14:57:00 -0700
+Subject: [PATCH 092/103] x86/cpu/AMD: Fix erratum 1076 (CPB bit)
+
+commit f7f3dc00f61261cdc9ccd8b886f21bc4dffd6fd9 upstream
+
+CPUID Fn8000_0007_EDX[CPB] is wrongly 0 on models up to B1. But they do
+support CPB (AMD's Core Performance Boosting cpufreq CPU feature), so fix that.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sherry Hurwitz <sherry.hurwitz@amd.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/20170907170821.16021-1-bp@alien8.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/cpu/amd.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index a97fd67..87f4a0d 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -713,6 +713,16 @@ static void init_amd_bd(struct cpuinfo_x86 *c)
+ 	}
+ }
+ 
++static void init_amd_zn(struct cpuinfo_x86 *c)
++{
++	/*
++	 * Fix erratum 1076: CPB feature bit not being set in CPUID. It affects
++	 * all up to and including B1.
++	 */
++	if (c->x86_model <= 1 && c->x86_mask <= 1)
++		set_cpu_cap(c, X86_FEATURE_CPB);
++}
++
+ static void init_amd(struct cpuinfo_x86 *c)
+ {
+ 	u32 dummy;
+@@ -743,6 +753,7 @@ static void init_amd(struct cpuinfo_x86 *c)
+ 	case 0x10: init_amd_gh(c); break;
+ 	case 0x12: init_amd_ln(c); break;
+ 	case 0x15: init_amd_bd(c); break;
++	case 0x17: init_amd_zn(c); break;
+ 	}
+ 
+ 	/* Enable workaround for FXSAVE leak */
+-- 
+2.7.4
+

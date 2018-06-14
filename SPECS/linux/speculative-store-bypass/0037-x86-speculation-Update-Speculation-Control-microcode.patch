@@ -1,0 +1,70 @@
+From 59eb54678a9818fc2f14c1ec56bd63a00153860d Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Thu, 14 Jun 2018 14:56:27 -0700
+Subject: [PATCH 037/103] x86/speculation: Update Speculation Control microcode
+ blacklist
+
+commit 1751342095f0d2b36fa8114d8e12c5688c455ac4 upstream.
+
+Intel have retroactively blessed the 0xc2 microcode on Skylake mobile
+and desktop parts, and the Gemini Lake 0x22 microcode is apparently fine
+too. We blacklisted the latter purely because it was present with all
+the other problematic ones in the 2018-01-08 release, but now it's
+explicitly listed as OK.
+
+We still list 0x84 for the various Kaby Lake / Coffee Lake parts, as
+that appeared in one version of the blacklist and then reverted to
+0x80 again. We can change it if 0x84 is actually announced to be safe.
+
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Arjan van de Ven <arjan@linux.intel.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: arjan.van.de.ven@intel.com
+Cc: jmattson@google.com
+Cc: karahmed@amazon.de
+Cc: kvm@vger.kernel.org
+Cc: pbonzini@redhat.com
+Cc: rkrcmar@redhat.com
+Cc: sironi@amazon.de
+Link: http://lkml.kernel.org/r/1518305967-31356-2-git-send-email-dwmw@amazon.co.uk
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/cpu/intel.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/intel.c
+index 0f13189..71492d2 100644
+--- a/arch/x86/kernel/cpu/intel.c
++++ b/arch/x86/kernel/cpu/intel.c
+@@ -47,8 +47,6 @@ static const struct sku_microcode spectre_bad_microcodes[] = {
+ 	{ INTEL_FAM6_KABYLAKE_MOBILE,	0x09,	0x84 },
+ 	{ INTEL_FAM6_SKYLAKE_X,		0x03,	0x0100013e },
+ 	{ INTEL_FAM6_SKYLAKE_X,		0x04,	0x0200003c },
+-	{ INTEL_FAM6_SKYLAKE_MOBILE,	0x03,	0xc2 },
+-	{ INTEL_FAM6_SKYLAKE_DESKTOP,	0x03,	0xc2 },
+ 	{ INTEL_FAM6_BROADWELL_CORE,	0x04,	0x28 },
+ 	{ INTEL_FAM6_BROADWELL_GT3E,	0x01,	0x1b },
+ 	{ INTEL_FAM6_BROADWELL_XEON_D,	0x02,	0x14 },
+@@ -60,8 +58,6 @@ static const struct sku_microcode spectre_bad_microcodes[] = {
+ 	{ INTEL_FAM6_HASWELL_X,		0x02,	0x3b },
+ 	{ INTEL_FAM6_HASWELL_X,		0x04,	0x10 },
+ 	{ INTEL_FAM6_IVYBRIDGE_X,	0x04,	0x42a },
+-	/* Updated in the 20180108 release; blacklist until we know otherwise */
+-	{ INTEL_FAM6_ATOM_GEMINI_LAKE,	0x01,	0x22 },
+ 	/* Observed in the wild */
+ 	{ INTEL_FAM6_SANDYBRIDGE_X,	0x06,	0x61b },
+ 	{ INTEL_FAM6_SANDYBRIDGE_X,	0x07,	0x712 },
+-- 
+2.7.4
+

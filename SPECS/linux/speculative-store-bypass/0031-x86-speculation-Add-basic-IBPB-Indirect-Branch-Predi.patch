@@ -1,0 +1,104 @@
+From d32de180fc8343dec1653245d184e71d1f35092b Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Thu, 14 Jun 2018 14:56:16 -0700
+Subject: [PATCH 031/103] x86/speculation: Add basic IBPB (Indirect Branch
+ Prediction Barrier) support
+
+(cherry picked from commit 20ffa1caecca4db8f79fe665acdeaa5af815a24d)
+
+Expose indirect_branch_prediction_barrier() for use in subsequent patches.
+
+[ tglx: Add IBPB status to spectre_v2 sysfs file ]
+
+Co-developed-by: KarimAllah Ahmed <karahmed@amazon.de>
+Signed-off-by: KarimAllah Ahmed <karahmed@amazon.de>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Cc: gnomes@lxorguk.ukuu.org.uk
+Cc: ak@linux.intel.com
+Cc: ashok.raj@intel.com
+Cc: dave.hansen@intel.com
+Cc: arjan@linux.intel.com
+Cc: torvalds@linux-foundation.org
+Cc: peterz@infradead.org
+Cc: bp@alien8.de
+Cc: pbonzini@redhat.com
+Cc: tim.c.chen@linux.intel.com
+Cc: gregkh@linux-foundation.org
+Link: https://lkml.kernel.org/r/1516896855-7642-8-git-send-email-dwmw@amazon.co.uk
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeatures.h   |  2 ++
+ arch/x86/include/asm/nospec-branch.h | 13 +++++++++++++
+ arch/x86/kernel/cpu/bugs.c           | 10 +++++++++-
+ 3 files changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 4d061e4..1b9d5c5 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -201,6 +201,8 @@
+ /* Because the ALTERNATIVE scheme is for members of the X86_FEATURE club... */
+ #define X86_FEATURE_KAISER	( 7*32+31) /* CONFIG_PAGE_TABLE_ISOLATION w/o nokaiser */
+ 
++#define X86_FEATURE_IBPB		( 7*32+21) /* Indirect Branch Prediction Barrier enabled*/
++
+ /* Virtualization flags: Linux defined, word 8 */
+ #define X86_FEATURE_TPR_SHADOW  ( 8*32+ 0) /* Intel TPR Shadow */
+ #define X86_FEATURE_VNMI        ( 8*32+ 1) /* Intel Virtual NMI */
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index 8b91041..41851af 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -194,6 +194,19 @@ static inline void vmexit_fill_RSB(void)
+ #endif
+ }
+ 
++static inline void indirect_branch_prediction_barrier(void)
++{
++	asm volatile(ALTERNATIVE("",
++				 "movl %[msr], %%ecx\n\t"
++				 "movl %[val], %%eax\n\t"
++				 "movl $0, %%edx\n\t"
++				 "wrmsr",
++				 X86_FEATURE_IBPB)
++		     : : [msr] "i" (MSR_IA32_PRED_CMD),
++			 [val] "i" (PRED_CMD_IBPB)
++		     : "eax", "ecx", "edx", "memory");
++}
++
+ #endif /* __ASSEMBLY__ */
+ 
+ /*
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 2bbc74f..7def33a 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -296,6 +296,13 @@ retpoline_auto:
+ 		setup_force_cpu_cap(X86_FEATURE_RSB_CTXSW);
+ 		pr_info("Filling RSB on context switch\n");
+ 	}
++
++	/* Initialize Indirect Branch Prediction Barrier if supported */
++	if (boot_cpu_has(X86_FEATURE_SPEC_CTRL) ||
++	    boot_cpu_has(X86_FEATURE_AMD_PRED_CMD)) {
++		setup_force_cpu_cap(X86_FEATURE_IBPB);
++		pr_info("Enabling Indirect Branch Prediction Barrier\n");
++	}
+ }
+ 
+ #undef pr_fmt
+@@ -325,7 +332,8 @@ ssize_t cpu_show_spectre_v2(struct device *dev,
+ 	if (!boot_cpu_has_bug(X86_BUG_SPECTRE_V2))
+ 		return sprintf(buf, "Not affected\n");
+ 
+-	return sprintf(buf, "%s%s\n", spectre_v2_strings[spectre_v2_enabled],
++	return sprintf(buf, "%s%s%s\n", spectre_v2_strings[spectre_v2_enabled],
++		       boot_cpu_has(X86_FEATURE_IBPB) ? ", IBPB" : "",
+ 		       spectre_v2_module_string());
+ }
+ #endif
+-- 
+2.7.4
+

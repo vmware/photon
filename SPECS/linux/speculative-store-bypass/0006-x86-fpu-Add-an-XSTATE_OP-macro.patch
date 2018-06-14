@@ -1,0 +1,156 @@
+From 85b3b0157dc3032f659674e3de604d1a41497b68 Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Thu, 14 Jun 2018 14:56:02 -0700
+Subject: [PATCH 006/103] x86/fpu: Add an XSTATE_OP() macro
+
+commit b74a0cf1b3db30173eefa00c411775d2b1697700 upstream
+
+Add an XSTATE_OP() macro which contains the XSAVE* fault handling
+and replace all non-alternatives users of xstate_fault() with
+it.
+
+This fixes also the buglet in copy_xregs_to_user() and
+copy_user_to_xregs() where the inline asm didn't have @xstate as
+memory reference and thus potentially causing unwanted
+reordering of accesses to the extended state.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Brian Gerst <brgerst@gmail.com>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Quentin Casasnovas <quentin.casasnovas@oracle.com>
+Cc: Rik van Riel <riel@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/1447932326-4371-2-git-send-email-bp@alien8.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/fpu/internal.h | 68 +++++++++++++++++--------------------
+ 1 file changed, 31 insertions(+), 37 deletions(-)
+
+diff --git a/arch/x86/include/asm/fpu/internal.h b/arch/x86/include/asm/fpu/internal.h
+index 3c3550c..709a3df 100644
+--- a/arch/x86/include/asm/fpu/internal.h
++++ b/arch/x86/include/asm/fpu/internal.h
+@@ -237,6 +237,20 @@ static inline void copy_fxregs_to_kernel(struct fpu *fpu)
+ 	_ASM_EXTABLE(1b, 3b)		\
+ 	: [_err] "=r" (__err)
+ 
++#define XSTATE_OP(op, st, lmask, hmask, err)				\
++	asm volatile("1:" op "\n\t"					\
++		     "xor %[err], %[err]\n"				\
++		     "2:\n\t"						\
++		     ".pushsection .fixup,\"ax\"\n\t"			\
++		     "3: movl $-2,%[err]\n\t"				\
++		     "jmp 2b\n\t"					\
++		     ".popsection\n\t"					\
++		     _ASM_EXTABLE(1b, 3b)				\
++		     : [err] "=r" (err)					\
++		     : "D" (st), "m" (*st), "a" (lmask), "d" (hmask)	\
++		     : "memory")
++
++
+ /*
+  * This function is called only during boot time when x86 caps are not set
+  * up and alternative can not be used yet.
+@@ -246,22 +260,14 @@ static inline void copy_xregs_to_kernel_booting(struct xregs_state *xstate)
+ 	u64 mask = -1;
+ 	u32 lmask = mask;
+ 	u32 hmask = mask >> 32;
+-	int err = 0;
++	int err;
+ 
+ 	WARN_ON(system_state != SYSTEM_BOOTING);
+ 
+-	if (boot_cpu_has(X86_FEATURE_XSAVES))
+-		asm volatile("1:"XSAVES"\n\t"
+-			"2:\n\t"
+-			     xstate_fault(err)
+-			: "D" (xstate), "m" (*xstate), "a" (lmask), "d" (hmask), "0" (err)
+-			: "memory");
++	if (static_cpu_has_safe(X86_FEATURE_XSAVES))
++		XSTATE_OP(XSAVES, xstate, lmask, hmask, err);
+ 	else
+-		asm volatile("1:"XSAVE"\n\t"
+-			"2:\n\t"
+-			     xstate_fault(err)
+-			: "D" (xstate), "m" (*xstate), "a" (lmask), "d" (hmask), "0" (err)
+-			: "memory");
++		XSTATE_OP(XSAVE, xstate, lmask, hmask, err);
+ 
+ 	/* We should never fault when copying to a kernel buffer: */
+ 	WARN_ON_FPU(err);
+@@ -276,22 +282,14 @@ static inline void copy_kernel_to_xregs_booting(struct xregs_state *xstate)
+ 	u64 mask = -1;
+ 	u32 lmask = mask;
+ 	u32 hmask = mask >> 32;
+-	int err = 0;
++	int err;
+ 
+ 	WARN_ON(system_state != SYSTEM_BOOTING);
+ 
+-	if (boot_cpu_has(X86_FEATURE_XSAVES))
+-		asm volatile("1:"XRSTORS"\n\t"
+-			"2:\n\t"
+-			     xstate_fault(err)
+-			: "D" (xstate), "m" (*xstate), "a" (lmask), "d" (hmask), "0" (err)
+-			: "memory");
++	if (static_cpu_has_safe(X86_FEATURE_XSAVES))
++		XSTATE_OP(XRSTORS, xstate, lmask, hmask, err);
+ 	else
+-		asm volatile("1:"XRSTOR"\n\t"
+-			"2:\n\t"
+-			     xstate_fault(err)
+-			: "D" (xstate), "m" (*xstate), "a" (lmask), "d" (hmask), "0" (err)
+-			: "memory");
++		XSTATE_OP(XRSTOR, xstate, lmask, hmask, err);
+ 
+ 	/* We should never fault when copying from a kernel buffer: */
+ 	WARN_ON_FPU(err);
+@@ -388,12 +386,10 @@ static inline int copy_xregs_to_user(struct xregs_state __user *buf)
+ 	if (unlikely(err))
+ 		return -EFAULT;
+ 
+-	__asm__ __volatile__(ASM_STAC "\n"
+-			     "1:"XSAVE"\n"
+-			     "2: " ASM_CLAC "\n"
+-			     xstate_fault(err)
+-			     : "D" (buf), "a" (-1), "d" (-1), "0" (err)
+-			     : "memory");
++	stac();
++	XSTATE_OP(XSAVE, buf, -1, -1, err);
++	clac();
++
+ 	return err;
+ }
+ 
+@@ -405,14 +401,12 @@ static inline int copy_user_to_xregs(struct xregs_state __user *buf, u64 mask)
+ 	struct xregs_state *xstate = ((__force struct xregs_state *)buf);
+ 	u32 lmask = mask;
+ 	u32 hmask = mask >> 32;
+-	int err = 0;
++	int err;
++
++	stac();
++	XSTATE_OP(XRSTOR, xstate, lmask, hmask, err);
++	clac();
+ 
+-	__asm__ __volatile__(ASM_STAC "\n"
+-			     "1:"XRSTOR"\n"
+-			     "2: " ASM_CLAC "\n"
+-			     xstate_fault(err)
+-			     : "D" (xstate), "a" (lmask), "d" (hmask), "0" (err)
+-			     : "memory");	/* memory required? */
+ 	return err;
+ }
+ 
+-- 
+2.7.4
+
