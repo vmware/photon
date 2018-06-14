@@ -1,0 +1,72 @@
+From 76a3a7429a0da7e1634e1f80ca28f8571508b817 Mon Sep 17 00:00:00 2001
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Thu, 14 Jun 2018 14:56:38 -0700
+Subject: [PATCH 054/103] x86/nospec: Simplify alternative_msr_write()
+
+commit 1aa7a5735a41418d8e01fa7c9565eb2657e2ea3f upstream
+
+The macro is not type safe and I did look for why that "g" constraint for
+the asm doesn't work: it's because the asm is more fundamentally wrong.
+
+It does
+
+        movl %[val], %%eax
+
+but "val" isn't a 32-bit value, so then gcc will pass it in a register,
+and generate code like
+
+        movl %rsi, %eax
+
+and gas will complain about a nonsensical 'mov' instruction (it's moving a
+64-bit register to a 32-bit one).
+
+Passing it through memory will just hide the real bug - gcc still thinks
+the memory location is 64-bit, but the "movl" will only load the first 32
+bits and it all happens to work because x86 is little-endian.
+
+Convert it to a type safe inline function with a little trick which hands
+the feature into the ALTERNATIVE macro.
+
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/nospec-branch.h | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index b9dd1d9..6403016 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -195,15 +195,16 @@ static inline void vmexit_fill_RSB(void)
+ #endif
+ }
+ 
+-#define alternative_msr_write(_msr, _val, _feature)		\
+-	asm volatile(ALTERNATIVE("",				\
+-				 "movl %[msr], %%ecx\n\t"	\
+-				 "movl %[val], %%eax\n\t"	\
+-				 "movl $0, %%edx\n\t"		\
+-				 "wrmsr",			\
+-				 _feature)			\
+-		     : : [msr] "i" (_msr), [val] "i" (_val)	\
+-		     : "eax", "ecx", "edx", "memory")
++static __always_inline
++void alternative_msr_write(unsigned int msr, u64 val, unsigned int feature)
++{
++	asm volatile(ALTERNATIVE("", "wrmsr", %c[feature])
++		: : "c" (msr),
++		    "a" (val),
++		    "d" (val >> 32),
++		    [feature] "i" (feature)
++		: "memory");
++}
+ 
+ static inline void indirect_branch_prediction_barrier(void)
+ {
+-- 
+2.7.4
+
