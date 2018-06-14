@@ -1,7 +1,7 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
 Version:    1.0.2o
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
 Group:      System Environment/Security
@@ -13,6 +13,7 @@ Patch0:     c_rehash.patch
 Patch1:     openssl-1.0.2n-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
 Patch3:     openssl-drbg-default-read-system-fips.patch
+Patch4:     CVE-2018-0737.patch
 Requires:   bash glibc libgcc 
 
 %description
@@ -53,6 +54,7 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -112,6 +114,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Wed Jun 13 2018 Dweep Advani <dadvani@vmware.com> 1.0.2o-2
+-   Fix of CVE CVE-2018-0737
 *   Tue Apr 03 2018 Anish Swaminathan <anishs@vmware.com> 1.0.2o-1
 -   Upgrade to 1.0.2o - Fixes CVE-2017-3738, CVE-2018-0733, CVE-2018-0739
 *   Tue Jan 02 2018 Xiaolin Li <xiaolinl@vmware.com> 1.0.2n-1
