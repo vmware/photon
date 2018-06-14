@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	5.3.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -10,6 +10,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
 %define sha1 gcc=0612270b103941da08376df4d0ef4e5662a2e9eb
+Patch0:         gcc-CVE-2017-11671.patch
 Requires:	libstdc++-devel = %{version}-%{release}
 Requires:	libgcc-devel = %{version}-%{release}
 Requires:	libgomp-devel = %{version}-%{release}
@@ -71,6 +72,7 @@ This package contains development headers and static library for libgomp
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 
@@ -211,6 +213,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Thu Jun 14 2018 Keerthana K <keerthanak@vmware.com> 5.3.0-5
+-   Fix for CVE-2017-11671.
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 5.3.0-4
 -   Bump release to built with latest toolchain
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.0-3
