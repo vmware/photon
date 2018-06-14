@@ -3,7 +3,7 @@
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python-pyOpenSSL
 Version:        17.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -11,6 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pyOpenSSL/pyOpenSSL-%{version}.tar.gz
 %define sha1    pyOpenSSL=ab5454f2d297c642c7c3dffeeca359f914a11dd3
+Patch0:         X509StoreContext_mem_leak.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -72,6 +73,7 @@ Python 3 version.
 
 %prep
 %setup -q -n pyOpenSSL-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -113,6 +115,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 14 2018 Tapas Kundu <tkundu@vmware.com> 17.2.0-2
+-   Added the patch for memleak in class X509StoreContext.
 *   Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 17.2.0-1
 -   Updated to version 17.2.0 and fixed make check.
 *   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 16.2.0-5
