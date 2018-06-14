@@ -1,0 +1,67 @@
+From 4ae94fa3125c8f0f8a4318175274fa9505b2e0e3 Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw@amazon.co.uk>
+Date: Thu, 14 Jun 2018 14:56:38 -0700
+Subject: [PATCH 053/103] x86/amd: don't set X86_BUG_SYSRET_SS_ATTRS when
+ running under Xen
+
+commit def9331a12977770cc6132d79f8e6565871e8e38 upstream
+
+When running as Xen pv guest X86_BUG_SYSRET_SS_ATTRS must not be set
+on AMD cpus.
+
+This bug/feature bit is kind of special as it will be used very early
+when switching threads. Setting the bit and clearing it a little bit
+later leaves a critical window where things can go wrong. This time
+window has enlarged a little bit by using setup_clear_cpu_cap() instead
+of the hypervisor's set_cpu_features callback. It seems this larger
+window now makes it rather easy to hit the problem.
+
+The proper solution is to never set the bit in case of Xen.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Acked-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/cpu/amd.c | 5 +++--
+ arch/x86/xen/enlighten.c  | 4 +---
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index f4fb8f5..9b29414 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -791,8 +791,9 @@ static void init_amd(struct cpuinfo_x86 *c)
+ 		if (cpu_has(c, X86_FEATURE_3DNOW) || cpu_has(c, X86_FEATURE_LM))
+ 			set_cpu_cap(c, X86_FEATURE_3DNOWPREFETCH);
+ 
+-	/* AMD CPUs don't reset SS attributes on SYSRET */
+-	set_cpu_bug(c, X86_BUG_SYSRET_SS_ATTRS);
++	/* AMD CPUs don't reset SS attributes on SYSRET, Xen does. */
++	if (!cpu_has(c, X86_FEATURE_XENPV))
++		set_cpu_bug(c, X86_BUG_SYSRET_SS_ATTRS);
+ }
+ 
+ #ifdef CONFIG_X86_32
+diff --git a/arch/x86/xen/enlighten.c b/arch/x86/xen/enlighten.c
+index 2d7ab4e..82fd84d 100644
+--- a/arch/x86/xen/enlighten.c
++++ b/arch/x86/xen/enlighten.c
+@@ -462,10 +462,8 @@ static void __init xen_init_cpuid_mask(void)
+ 
+ static void __init xen_init_capabilities(void)
+ {
+-	if (xen_pv_domain()) {
+-		setup_clear_cpu_cap(X86_BUG_SYSRET_SS_ATTRS);
++	if (xen_pv_domain())
+ 		setup_force_cpu_cap(X86_FEATURE_XENPV);
+-	}
+ }
+ 
+ static void xen_set_debugreg(int reg, unsigned long val)
+-- 
+2.7.4
+

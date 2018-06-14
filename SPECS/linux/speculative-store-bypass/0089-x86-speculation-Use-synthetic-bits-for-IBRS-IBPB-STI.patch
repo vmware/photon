@@ -1,0 +1,107 @@
+From 0974741786be9930dfb9d667a15c0a59c2350983 Mon Sep 17 00:00:00 2001
+From: Borislav Petkov <bp@suse.de>
+Date: Thu, 14 Jun 2018 14:56:58 -0700
+Subject: [PATCH 089/103] x86/speculation: Use synthetic bits for
+ IBRS/IBPB/STIBP
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit e7c587da125291db39ddf1f49b18e5970adbac17 upstream
+
+Intel and AMD have different CPUID bits hence for those use synthetic bits
+which get set on the respective vendor's in init_speculation_control(). So
+that debacles like what the commit message of
+
+  c65732e4f721 ("x86/cpu: Restore CPUID_8000_0008_EBX reload")
+
+talks about don't happen anymore.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Tested-by: Jörg Otte <jrg.otte@gmail.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Link: https://lkml.kernel.org/r/20180504161815.GG9257@pd.tnic
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Srivatsa: Backported to 4.4.y, skipping the KVM changes in this patch. ]
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/include/asm/cpufeatures.h | 12 ++++++++----
+ arch/x86/kernel/cpu/common.c       | 14 ++++++++++----
+ 2 files changed, 18 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 54c25dd..899b089 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -204,7 +204,10 @@
+ #define X86_FEATURE_USE_IBPB	( 7*32+21) /* "" Indirect Branch Prediction Barrier enabled*/
+ #define X86_FEATURE_USE_IBRS_FW	( 7*32+22) /* "" Use IBRS during runtime firmware calls */
+ #define X86_FEATURE_SPEC_STORE_BYPASS_DISABLE	( 7*32+23) /* "" Disable Speculative Store Bypass. */
+-#define X86_FEATURE_AMD_SSBD	(7*32+24)  /* "" AMD SSBD implementation */
++#define X86_FEATURE_AMD_SSBD	( 7*32+24) /* "" AMD SSBD implementation */
++#define X86_FEATURE_IBRS	( 7*32+25) /* Indirect Branch Restricted Speculation */
++#define X86_FEATURE_IBPB	( 7*32+26) /* Indirect Branch Prediction Barrier */
++#define X86_FEATURE_STIBP	( 7*32+27) /* Single Thread Indirect Branch Predictors */
+ 
+ /* Virtualization flags: Linux defined, word 8 */
+ #define X86_FEATURE_TPR_SHADOW  ( 8*32+ 0) /* Intel TPR Shadow */
+@@ -256,9 +259,9 @@
+ 
+ /* AMD-defined CPU features, CPUID level 0x80000008 (ebx), word 13 */
+ #define X86_FEATURE_CLZERO	(13*32+0) /* CLZERO instruction */
+-#define X86_FEATURE_IBPB	(13*32+12) /* Indirect Branch Prediction Barrier */
+-#define X86_FEATURE_IBRS	(13*32+14) /* Indirect Branch Restricted Speculation */
+-#define X86_FEATURE_STIBP	(13*32+15) /* Single Thread Indirect Branch Predictors */
++#define X86_FEATURE_AMD_IBPB	(13*32+12) /* Indirect Branch Prediction Barrier */
++#define X86_FEATURE_AMD_IBRS	(13*32+14) /* Indirect Branch Restricted Speculation */
++#define X86_FEATURE_AMD_STIBP	(13*32+15) /* Single Thread Indirect Branch Predictors */
+ 
+ /* Thermal and Power Management Leaf, CPUID level 0x00000006 (eax), word 14 */
+ #define X86_FEATURE_DTHERM	(14*32+ 0) /* Digital Thermal Sensor */
+@@ -293,6 +296,7 @@
+ #define X86_FEATURE_SUCCOR	(17*32+1) /* Uncorrectable error containment and recovery */
+ #define X86_FEATURE_SMCA	(17*32+3) /* Scalable MCA */
+ 
++
+ /* Intel-defined CPU features, CPUID level 0x00000007:0 (EDX), word 18 */
+ #define X86_FEATURE_AVX512_4VNNIW	(18*32+ 2) /* AVX-512 Neural Network Instructions */
+ #define X86_FEATURE_AVX512_4FMAPS	(18*32+ 3) /* AVX-512 Multiply Accumulation Single precision */
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 6f3a5d7..f2b579f 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -683,17 +683,23 @@ static void init_speculation_control(struct cpuinfo_x86 *c)
+ 	 * and they also have a different bit for STIBP support. Also,
+ 	 * a hypervisor might have set the individual AMD bits even on
+ 	 * Intel CPUs, for finer-grained selection of what's available.
+-	 *
+-	 * We use the AMD bits in 0x8000_0008 EBX as the generic hardware
+-	 * features, which are visible in /proc/cpuinfo and used by the
+-	 * kernel. So set those accordingly from the Intel bits.
+ 	 */
+ 	if (cpu_has(c, X86_FEATURE_SPEC_CTRL)) {
+ 		set_cpu_cap(c, X86_FEATURE_IBRS);
+ 		set_cpu_cap(c, X86_FEATURE_IBPB);
+ 	}
++
+ 	if (cpu_has(c, X86_FEATURE_INTEL_STIBP))
+ 		set_cpu_cap(c, X86_FEATURE_STIBP);
++
++	if (cpu_has(c, X86_FEATURE_AMD_IBRS))
++		set_cpu_cap(c, X86_FEATURE_IBRS);
++
++	if (cpu_has(c, X86_FEATURE_AMD_IBPB))
++		set_cpu_cap(c, X86_FEATURE_IBPB);
++
++	if (cpu_has(c, X86_FEATURE_AMD_STIBP))
++		set_cpu_cap(c, X86_FEATURE_STIBP);
+ }
+ 
+ void get_cpu_cap(struct cpuinfo_x86 *c)
+-- 
+2.7.4
+

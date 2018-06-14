@@ -1,0 +1,223 @@
+From 34f2544cab4d92a7babfbd51e4278e740da1b544 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 14 Jun 2018 14:56:49 -0700
+Subject: [PATCH 073/103] x86/speculation: Add prctl for Speculative Store
+ Bypass mitigation
+
+commit a73ec77ee17ec556fe7f165d00314cb7c047b1ac upstream
+
+Add prctl based control for Speculative Store Bypass mitigation and make it
+the default mitigation for Intel and AMD.
+
+Andi Kleen provided the following rationale (slightly redacted):
+
+ There are multiple levels of impact of Speculative Store Bypass:
+
+ 1) JITed sandbox.
+    It cannot invoke system calls, but can do PRIME+PROBE and may have call
+    interfaces to other code
+
+ 2) Native code process.
+    No protection inside the process at this level.
+
+ 3) Kernel.
+
+ 4) Between processes.
+
+ The prctl tries to protect against case (1) doing attacks.
+
+ If the untrusted code can do random system calls then control is already
+ lost in a much worse way. So there needs to be system call protection in
+ some way (using a JIT not allowing them or seccomp). Or rather if the
+ process can subvert its environment somehow to do the prctl it can already
+ execute arbitrary code, which is much worse than SSB.
+
+ To put it differently, the point of the prctl is to not allow JITed code
+ to read data it shouldn't read from its JITed sandbox. If it already has
+ escaped its sandbox then it can already read everything it wants in its
+ address space, and do much worse.
+
+ The ability to control Speculative Store Bypass allows to enable the
+ protection selectively without affecting overall system performance.
+
+Based on an initial patch from Tim Chen. Completely rewritten.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ Documentation/kernel-parameters.txt  |  6 ++-
+ arch/x86/include/asm/nospec-branch.h |  1 +
+ arch/x86/kernel/cpu/bugs.c           | 83 +++++++++++++++++++++++++++++++-----
+ 3 files changed, 79 insertions(+), 11 deletions(-)
+
+diff --git a/Documentation/kernel-parameters.txt b/Documentation/kernel-parameters.txt
+index dc138b8..80202de 100644
+--- a/Documentation/kernel-parameters.txt
++++ b/Documentation/kernel-parameters.txt
+@@ -3651,7 +3651,11 @@ bytes respectively. Such letter suffixes can also be entirely omitted.
+ 			off    - Unconditionally enable Speculative Store Bypass
+ 			auto   - Kernel detects whether the CPU model contains an
+ 				 implementation of Speculative Store Bypass and
+-				 picks the most appropriate mitigation
++				 picks the most appropriate mitigation.
++			prctl  - Control Speculative Store Bypass per thread
++				 via prctl. Speculative Store Bypass is enabled
++				 for a process by default. The state of the control
++				 is inherited on fork.
+ 
+ 			Not specifying this option is equivalent to
+ 			spec_store_bypass_disable=auto.
+diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
+index 47c454c..155d955 100644
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -187,6 +187,7 @@ extern u64 x86_spec_ctrl_get_default(void);
+ enum ssb_mitigation {
+ 	SPEC_STORE_BYPASS_NONE,
+ 	SPEC_STORE_BYPASS_DISABLE,
++	SPEC_STORE_BYPASS_PRCTL,
+ };
+ 
+ extern char __indirect_thunk_start[];
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 0f8303e..bcfccd3 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -11,6 +11,8 @@
+ #include <linux/utsname.h>
+ #include <linux/cpu.h>
+ #include <linux/module.h>
++#include <linux/nospec.h>
++#include <linux/prctl.h>
+ 
+ #include <asm/spec-ctrl.h>
+ #include <asm/cmdline.h>
+@@ -411,20 +413,23 @@ enum ssb_mitigation_cmd {
+ 	SPEC_STORE_BYPASS_CMD_NONE,
+ 	SPEC_STORE_BYPASS_CMD_AUTO,
+ 	SPEC_STORE_BYPASS_CMD_ON,
++	SPEC_STORE_BYPASS_CMD_PRCTL,
+ };
+ 
+ static const char *ssb_strings[] = {
+ 	[SPEC_STORE_BYPASS_NONE]	= "Vulnerable",
+-	[SPEC_STORE_BYPASS_DISABLE]	= "Mitigation: Speculative Store Bypass disabled"
++	[SPEC_STORE_BYPASS_DISABLE]	= "Mitigation: Speculative Store Bypass disabled",
++	[SPEC_STORE_BYPASS_PRCTL]	= "Mitigation: Speculative Store Bypass disabled via prctl"
+ };
+ 
+ static const struct {
+ 	const char *option;
+ 	enum ssb_mitigation_cmd cmd;
+ } ssb_mitigation_options[] = {
+-	{ "auto",	SPEC_STORE_BYPASS_CMD_AUTO }, /* Platform decides */
+-	{ "on",		SPEC_STORE_BYPASS_CMD_ON },   /* Disable Speculative Store Bypass */
+-	{ "off",	SPEC_STORE_BYPASS_CMD_NONE }, /* Don't touch Speculative Store Bypass */
++	{ "auto",	SPEC_STORE_BYPASS_CMD_AUTO },  /* Platform decides */
++	{ "on",		SPEC_STORE_BYPASS_CMD_ON },    /* Disable Speculative Store Bypass */
++	{ "off",	SPEC_STORE_BYPASS_CMD_NONE },  /* Don't touch Speculative Store Bypass */
++	{ "prctl",	SPEC_STORE_BYPASS_CMD_PRCTL }, /* Disable Speculative Store Bypass via prctl */
+ };
+ 
+ static enum ssb_mitigation_cmd __init ssb_parse_cmdline(void)
+@@ -474,14 +479,15 @@ static enum ssb_mitigation_cmd __init __ssb_select_mitigation(void)
+ 
+ 	switch (cmd) {
+ 	case SPEC_STORE_BYPASS_CMD_AUTO:
+-		/*
+-		 * AMD platforms by default don't need SSB mitigation.
+-		 */
+-		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD)
+-			break;
++		/* Choose prctl as the default mode */
++		mode = SPEC_STORE_BYPASS_PRCTL;
++		break;
+ 	case SPEC_STORE_BYPASS_CMD_ON:
+ 		mode = SPEC_STORE_BYPASS_DISABLE;
+ 		break;
++	case SPEC_STORE_BYPASS_CMD_PRCTL:
++		mode = SPEC_STORE_BYPASS_PRCTL;
++		break;
+ 	case SPEC_STORE_BYPASS_CMD_NONE:
+ 		break;
+ 	}
+@@ -492,7 +498,7 @@ static enum ssb_mitigation_cmd __init __ssb_select_mitigation(void)
+ 	 *  - X86_FEATURE_RDS - CPU is able to turn off speculative store bypass
+ 	 *  - X86_FEATURE_SPEC_STORE_BYPASS_DISABLE - engage the mitigation
+ 	 */
+-	if (mode != SPEC_STORE_BYPASS_NONE) {
++	if (mode == SPEC_STORE_BYPASS_DISABLE) {
+ 		setup_force_cpu_cap(X86_FEATURE_SPEC_STORE_BYPASS_DISABLE);
+ 		/*
+ 		 * Intel uses the SPEC CTRL MSR Bit(2) for this, while AMD uses
+@@ -523,6 +529,63 @@ static void ssb_select_mitigation()
+ 
+ #undef pr_fmt
+ 
++static int ssb_prctl_set(unsigned long ctrl)
++{
++	bool rds = !!test_tsk_thread_flag(current, TIF_RDS);
++
++	if (ssb_mode != SPEC_STORE_BYPASS_PRCTL)
++		return -ENXIO;
++
++	if (ctrl == PR_SPEC_ENABLE)
++		clear_tsk_thread_flag(current, TIF_RDS);
++	else
++		set_tsk_thread_flag(current, TIF_RDS);
++
++	if (rds != !!test_tsk_thread_flag(current, TIF_RDS))
++		speculative_store_bypass_update();
++
++	return 0;
++}
++
++static int ssb_prctl_get(void)
++{
++	switch (ssb_mode) {
++	case SPEC_STORE_BYPASS_DISABLE:
++		return PR_SPEC_DISABLE;
++	case SPEC_STORE_BYPASS_PRCTL:
++		if (test_tsk_thread_flag(current, TIF_RDS))
++			return PR_SPEC_PRCTL | PR_SPEC_DISABLE;
++		return PR_SPEC_PRCTL | PR_SPEC_ENABLE;
++	default:
++		if (boot_cpu_has_bug(X86_BUG_SPEC_STORE_BYPASS))
++			return PR_SPEC_ENABLE;
++		return PR_SPEC_NOT_AFFECTED;
++	}
++}
++
++int arch_prctl_spec_ctrl_set(unsigned long which, unsigned long ctrl)
++{
++	if (ctrl != PR_SPEC_ENABLE && ctrl != PR_SPEC_DISABLE)
++		return -ERANGE;
++
++	switch (which) {
++	case PR_SPEC_STORE_BYPASS:
++		return ssb_prctl_set(ctrl);
++	default:
++		return -ENODEV;
++	}
++}
++
++int arch_prctl_spec_ctrl_get(unsigned long which)
++{
++	switch (which) {
++	case PR_SPEC_STORE_BYPASS:
++		return ssb_prctl_get();
++	default:
++		return -ENODEV;
++	}
++}
++
+ void x86_spec_ctrl_setup_ap(void)
+ {
+ 	if (boot_cpu_has(X86_FEATURE_IBRS))
+-- 
+2.7.4
+

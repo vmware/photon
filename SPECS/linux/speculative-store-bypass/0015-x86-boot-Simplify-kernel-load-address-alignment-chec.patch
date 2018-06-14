@@ -1,0 +1,51 @@
+From 48085c7ec07d24f322fbf56dfda77264b31e53b2 Mon Sep 17 00:00:00 2001
+From: Alexander Kuleshov <kuleshovmail@gmail.com>
+Date: Thu, 14 Jun 2018 14:56:07 -0700
+Subject: [PATCH 015/103] x86/boot: Simplify kernel load address alignment
+ check
+
+commit a4733143085d6c782ac1e6c85778655b6bac1d4e upstream
+
+We are using %rax as temporary register to check the kernel
+address alignment. We don't really have to since the TEST
+instruction does not clobber the destination operand.
+
+Suggested-by: Brian Gerst <brgerst@gmail.com>
+Signed-off-by: Alexander Kuleshov <kuleshovmail@gmail.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: Alexander Popov <alpopov@ptsecurity.com>
+Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Denys Vlasenko <dvlasenk@redhat.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: http://lkml.kernel.org/r/1453531828-19291-1-git-send-email-kuleshovmail@gmail.com
+Link: http://lkml.kernel.org/r/1453842730-28463-11-git-send-email-bp@alien8.de
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ arch/x86/kernel/head_64.S | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 4034e90..734ba1d 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -76,9 +76,7 @@ startup_64:
+ 	subq	$_text - __START_KERNEL_map, %rbp
+ 
+ 	/* Is the address not 2M aligned? */
+-	movq	%rbp, %rax
+-	andl	$~PMD_PAGE_MASK, %eax
+-	testl	%eax, %eax
++	testl	$~PMD_PAGE_MASK, %ebp
+ 	jnz	bad_address
+ 
+ 	/*
+-- 
+2.7.4
+
