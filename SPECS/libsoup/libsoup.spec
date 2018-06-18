@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.53.90
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -9,6 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.50/%{name}-%{version}.tar.xz
 %define sha1 libsoup=d8511f0a8a07e4f5125c9354be7d43d62ea55eb3
+Patch0:          CVE-2017-2885.patch
 BuildRequires:   glib
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
@@ -50,6 +51,7 @@ These are the additional language files of libsoup.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -84,6 +86,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %defattr(-,root,root)
 
 %changelog
+*   Mon Jun 18 2018 Tapas Kundu <tkundu@vmware.com> 2.53.90-3
+-   CVE-2017-2885
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.53.90-2
 -	GA - Bump release of all rpms
 *   Fri Feb 26 2016 Kumar Kaushik <kaushikk@vmware.com> 2.53.90-1
