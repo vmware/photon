@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.57.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -9,6 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/libsoup/2.57/%{name}-%{version}.tar.xz
 %define sha1 libsoup=a855a98c1d002a4e2bfb7562135265a8df4dad65
+Patch0:          CVE-2017-2885.patch
 BuildRequires:   glib
 BuildRequires:   glib-devel
 BuildRequires:   gobject-introspection
@@ -54,6 +55,7 @@ These are the additional language files of libsoup.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -91,6 +93,8 @@ make  check
 %defattr(-,root,root)
 
 %changelog
+*   Mon Jun 18 2018 Tapas Kundu <tkundu@vmware.com> 2.57.1-3
+-   CVE-2017-2885
 *   Fri Aug 11 2017 Chang Lee <changlee@vmware.com> 2.57.1-2
 -   Added krb5-devel to BuildRequires for %check
 *   Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.57.1-1
