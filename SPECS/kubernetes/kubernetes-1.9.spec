@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.9.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
@@ -185,6 +185,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Tue Jun 19 2018 Bo Gan <ganb@vmware.com> 1.9.6-6
+-   Update vke patch (da5bd0d)
 *   Sat Jun 09 2018 Bo Gan <ganb@vmware.com> 1.9.6-5
 -   Update vke patch (d06c534)
 *   Fri Jun 08 2018 Bo Gan <ganb@vmware.com> 1.9.6-4
