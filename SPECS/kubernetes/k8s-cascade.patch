@@ -1,7 +1,7 @@
-From 6b4efdbb56d5d4a0521fd0612e770b17f1e8aae2 Mon Sep 17 00:00:00 2001
+From 5db4faec519b8f4c471e59f1083a8b6581d77bd3 Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
 Date: Sun, 10 Jun 2018 02:16:47 -0700
-Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (d06c534)
+Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (da5bd0d)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
@@ -22,18 +22,18 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (d06c534)
  pkg/apis/core/validation/validation.go             |  25 +
  pkg/apis/extensions/types.go                       |   1 +
  pkg/cloudprovider/providers/BUILD                  |   2 +
- pkg/cloudprovider/providers/cascade/BUILD          |  56 +++
+ pkg/cloudprovider/providers/cascade/BUILD          |  56 ++
  pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
- pkg/cloudprovider/providers/cascade/apitypes.go    | 227 +++++++++
- pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++++
- pkg/cloudprovider/providers/cascade/cascade.go     | 218 +++++++++
- .../providers/cascade/cascade_disks.go             | 225 +++++++++
- .../providers/cascade/cascade_instances.go         |  91 ++++
+ pkg/cloudprovider/providers/cascade/apitypes.go    | 227 ++++++
+ pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
+ pkg/cloudprovider/providers/cascade/cascade.go     | 218 ++++++
+ .../providers/cascade/cascade_disks.go             | 225 ++++++
+ .../providers/cascade/cascade_instances.go         |  91 +++
  .../providers/cascade/cascade_instances_test.go    |  43 ++
- .../providers/cascade/cascade_loadbalancer.go      | 284 +++++++++++
- pkg/cloudprovider/providers/cascade/client.go      | 394 +++++++++++++++
- pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 ++++++++++++
- pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++++++
+ .../providers/cascade/cascade_loadbalancer.go      | 284 ++++++++
+ pkg/cloudprovider/providers/cascade/client.go      | 394 ++++++++++
+ pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 ++++++++
+ pkg/cloudprovider/providers/cascade/restclient.go  | 262 +++++++
  pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
  pkg/cloudprovider/providers/cascade/utils.go       |  25 +
  pkg/cloudprovider/providers/providers.go           |   1 +
@@ -41,16 +41,16 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (d06c534)
  pkg/security/podsecuritypolicy/util/util.go        |   3 +
  pkg/volume/cascade_disk/BUILD                      |  43 ++
  pkg/volume/cascade_disk/OWNERS                     |   2 +
- pkg/volume/cascade_disk/attacher.go                | 269 +++++++++++
- pkg/volume/cascade_disk/cascade_disk.go            | 391 +++++++++++++++
- pkg/volume/cascade_disk/cascade_util.go            | 107 ++++
- .../admission/persistentvolume/label/admission.go  |  54 +++
- plugin/pkg/admission/vke/BUILD                     |  58 +++
- plugin/pkg/admission/vke/admission.go              | 349 +++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 538 +++++++++++++++++++++
- staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 +++++++++++-
+ pkg/volume/cascade_disk/attacher.go                | 265 +++++++
+ pkg/volume/cascade_disk/cascade_disk.go            | 391 ++++++++++
+ pkg/volume/cascade_disk/cascade_util.go            | 152 ++++
+ .../admission/persistentvolume/label/admission.go  |  54 ++
+ plugin/pkg/admission/vke/BUILD                     |  60 ++
+ plugin/pkg/admission/vke/admission.go              | 499 +++++++++++++
+ plugin/pkg/admission/vke/admission_test.go         | 809 +++++++++++++++++++++
+ staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 +++++++-
  staging/src/k8s.io/api/core/v1/types.go            |  26 +-
- 46 files changed, 4653 insertions(+), 29 deletions(-)
+ 46 files changed, 5117 insertions(+), 29 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -3145,10 +3145,10 @@ index 0000000..c3a4ed7
 +- ashokc
 diff --git a/pkg/volume/cascade_disk/attacher.go b/pkg/volume/cascade_disk/attacher.go
 new file mode 100644
-index 0000000..607fcb5
+index 0000000..66b5836
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/attacher.go
-@@ -0,0 +1,269 @@
+@@ -0,0 +1,265 @@
 +package cascade_disk
 +
 +import (
@@ -3165,7 +3165,6 @@ index 0000000..607fcb5
 +	"k8s.io/kubernetes/pkg/volume"
 +	volumeutil "k8s.io/kubernetes/pkg/volume/util"
 +	"k8s.io/kubernetes/pkg/volume/util/volumehelper"
-+	"strings"
 +)
 +
 +type cascadeDiskAttacher struct {
@@ -3207,10 +3206,6 @@ index 0000000..607fcb5
 +		glog.Errorf("Error attaching volume %q to node %q: %+v", volumeSource.DiskID, nodeName, err)
 +		return "", err
 +	}
-+
-+	// Cacsade uses device names of the format /dev/sdX, but newer Linux Kernels mount them under /dev/xvdX
-+	// (source: AWS console). So we have to rename the first occurrence of sd to xvd.
-+	devicePath = strings.Replace(devicePath, "sd", "xvd", 1)
 +	return devicePath, nil
 +}
 +
@@ -3273,15 +3268,16 @@ index 0000000..607fcb5
 +		select {
 +		case <-ticker.C:
 +			glog.V(4).Infof("Checking disk %s is attached", volumeSource.DiskID)
++			devicePath := getDiskByIdPath(devicePath)
 +			checkPath, err := verifyDevicePath(devicePath)
 +			if err != nil {
 +				// Log error, if any, and continue checking periodically. See issue #11321
-+				glog.Warningf("Cascade attacher: WaitForAttach with devicePath %s Checking PD %s Error verify "+
++				glog.Warningf("VKE attacher: WaitForAttach with devicePath %s Checking PD %s Error verify "+
 +					"path", devicePath, volumeSource.DiskID)
 +			} else if checkPath != "" {
 +				// A device path has successfully been created for the disk
 +				glog.V(4).Infof("Successfully found attached disk %s.", volumeSource.DiskID)
-+				return devicePath, nil
++				return checkPath, nil
 +			}
 +		case <-timer.C:
 +			return "", fmt.Errorf("Could not find attached disk %s. Timeout waiting for mount paths to be "+
@@ -3818,14 +3814,16 @@ index 0000000..a25f224
 \ No newline at end of file
 diff --git a/pkg/volume/cascade_disk/cascade_util.go b/pkg/volume/cascade_disk/cascade_util.go
 new file mode 100644
-index 0000000..3dcef3d
+index 0000000..cbcc115
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_util.go
-@@ -0,0 +1,107 @@
+@@ -0,0 +1,152 @@
 +package cascade_disk
 +
 +import (
 +	"fmt"
++	"os"
++	"path/filepath"
 +	"strings"
 +	"time"
 +
@@ -3852,6 +3850,18 @@ index 0000000..3dcef3d
 +
 +	glog.V(4).Infof("verifyDevicePath: path does not exist yet")
 +	return "", nil
++}
++
++// Returns path for given VKE disk mount
++func getDiskByIdPath(devicePath string) string {
++	nvmePath, err := findNvmeVolume(devicePath)
++	if err != nil {
++		glog.Warningf("error looking for nvme volume %q: %v", devicePath, err)
++	} else if nvmePath != "" {
++		devicePath = nvmePath
++	}
++
++	return devicePath
 +}
 +
 +// CreateVolume creates a Cascade persistent disk.
@@ -3928,6 +3938,37 @@ index 0000000..3dcef3d
 +		return nil, fmt.Errorf("Invalid cloud provider: expected Cascade")
 +	}
 +	return cc, nil
++}
++
++// findNvmeVolume looks for the nvme volume with the specified name
++// It follows the symlink (if it exists) and returns the absolute path to the device
++func findNvmeVolume(findName string) (device string, err error) {
++	stat, err := os.Lstat(findName)
++	if err != nil {
++		if os.IsNotExist(err) {
++			glog.V(6).Infof("nvme path not found %q", findName)
++			return "", nil
++		}
++		return "", fmt.Errorf("error getting stat of %q: %v", findName, err)
++	}
++
++	if stat.Mode()&os.ModeSymlink != os.ModeSymlink {
++		glog.Warningf("nvme file %q found, but was not a symlink", findName)
++		return "", nil
++	}
++
++	// Find the target, resolving to an absolute path
++	// For example, /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol0fab1d5e3f72a5e23 -> ../../nvme2n1
++	resolved, err := filepath.EvalSymlinks(findName)
++	if err != nil {
++		return "", fmt.Errorf("error reading target of symlink %q: %v", findName, err)
++	}
++
++	if !strings.HasPrefix(resolved, "/dev") {
++		return "", fmt.Errorf("resolved symlink for %q was unexpected: %q", findName, resolved)
++	}
++
++	return resolved, nil
 +}
 diff --git a/plugin/pkg/admission/persistentvolume/label/admission.go b/plugin/pkg/admission/persistentvolume/label/admission.go
 index 86e1921..bf2912b 100644
@@ -4014,10 +4055,10 @@ index 86e1921..bf2912b 100644
 +}
 diff --git a/plugin/pkg/admission/vke/BUILD b/plugin/pkg/admission/vke/BUILD
 new file mode 100644
-index 0000000..b0a6026
+index 0000000..d0bb7c7
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/BUILD
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,60 @@
 +package(default_visibility = ["//visibility:public"])
 +
 +load(
@@ -4032,10 +4073,12 @@ index 0000000..b0a6026
 +    deps = [
 +        "//pkg/apis/core:go_default_library",
 +        "//pkg/apis/extensions:go_default_library",
++        "//pkg/apis/extensions/v1beta1:go_default_library",
 +        "//pkg/apis/rbac:go_default_library",
 +        "//pkg/registry/rbac:go_default_library",
 +        "//pkg/security/podsecuritypolicy:go_default_library",
 +        "//vendor/github.com/golang/glog:go_default_library",
++        "//vendor/k8s.io/api/extensions/v1beta1:go_default_library"
 +        "//vendor/k8s.io/apimachinery/pkg/api/equality:go_default_library",
 +        "//vendor/k8s.io/apimachinery/pkg/util/yaml:go_default_library",
 +        "//vendor/k8s.io/apimachinery/pkg/util/validation/field:go_default_library",
@@ -4079,18 +4122,20 @@ index 0000000..b0a6026
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..6325ca0
+index 0000000..c73fc1b
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,349 @@
+@@ -0,0 +1,499 @@
 +package vke
 +
 +import (
 +	"fmt"
 +	"io"
++	"os"
 +	"strings"
 +
 +	"github.com/golang/glog"
++	"k8s.io/api/extensions/v1beta1"
 +	apiequality "k8s.io/apimachinery/pkg/api/equality"
 +	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 +	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -4098,6 +4143,7 @@ index 0000000..6325ca0
 +	"k8s.io/apiserver/pkg/admission"
 +	api "k8s.io/kubernetes/pkg/apis/core"
 +	"k8s.io/kubernetes/pkg/apis/extensions"
++	policybeta "k8s.io/kubernetes/pkg/apis/extensions/v1beta1"
 +	"k8s.io/kubernetes/pkg/apis/rbac"
 +	rbacregistry "k8s.io/kubernetes/pkg/registry/rbac"
 +	"k8s.io/kubernetes/pkg/security/podsecuritypolicy"
@@ -4113,6 +4159,10 @@ index 0000000..6325ca0
 +	reservedPrefix           = "vke"
 +	kubeletGroup             = "system:nodes"
 +	kubeProxyGroup           = "vke:kube-proxies"
++	reservedTolerationKey    = "Dedicated"
++	reservedTolerationValue  = "Master"
++	masterNodePrefix         = "master"
++	etcSslCerts              = "/etc/ssl/certs"
 +)
 +
 +// Register registers a plugin.
@@ -4132,7 +4182,8 @@ index 0000000..6325ca0
 +
 +// vmwareAdmissionControllerConfig holds config data for VMwareAdmissionController.
 +type vmwareAdmissionControllerConfig struct {
-+	PrivilegedGroup string `yaml:"privilegedGroup"`
++	PrivilegedGroup       string `yaml:"privilegedGroup"`
++	PodSecurityPolicyFile string `yaml:"podSecurityPolicyFile"`
 +}
 +
 +// AdmissionConfig holds config data for admission controllers.
@@ -4161,7 +4212,7 @@ index 0000000..6325ca0
 +	case api.Resource("pods"):
 +		err = validatePods(vac, a)
 +	case api.Resource("nodes"):
-+		err = admission.NewForbidden(a, fmt.Errorf("%s validation failed: cannot modify nodes", PluginName))
++		err = validateNodes(a)
 +	case rbac.Resource("clusterroles"):
 +		err = validateClusterRoles(a)
 +	case rbac.Resource("clusterrolebindings"):
@@ -4192,8 +4243,14 @@ index 0000000..6325ca0
 +		return nil, err
 +	}
 +
++	// Load PSP from file. If it fails, use default.
++	psp := getPSPFromFile(config.VMwareAdmissionController.PodSecurityPolicyFile)
++	if psp == nil {
++		psp = getDefaultPSP()
++	}
++
 +	return &vmwareAdmissionController{
-+		psp:             getDefaultPSP(),
++		psp:             psp,
 +		strategyFactory: podsecuritypolicy.NewSimpleStrategyFactory(),
 +		privilegedGroup: config.VMwareAdmissionController.PrivilegedGroup,
 +	}, nil
@@ -4221,6 +4278,14 @@ index 0000000..6325ca0
 +				"configMap",
 +				"persistentVolumeClaim",
 +				"projected",
++				"hostPath",
++			},
++			// We allow /etc/ssl/certs to be mounted in read only mode as a hack to allow Wavefront pods to be deployed.
++			// TODO(ashokc): Once we have support for users to create pods using privileged mode and host path, remove this.
++			AllowedHostPaths: []extensions.AllowedHostPath{
++				{
++					etcSslCerts,
++				},
 +			},
 +			FSGroup: extensions.FSGroupStrategyOptions{
 +				Rule: extensions.FSGroupStrategyRunAsAny,
@@ -4236,6 +4301,39 @@ index 0000000..6325ca0
 +			},
 +		},
 +	}
++}
++
++func getPSPFromFile(pspFile string) *extensions.PodSecurityPolicy {
++	pspBeta := v1beta1.PodSecurityPolicy{}
++	pspExtensions := extensions.PodSecurityPolicy{}
++
++	if pspFile == "" {
++		glog.V(2).Infof("%s: PSP file not specified, using default PSP", PluginName)
++		return nil
++	}
++
++	pspConfig, err := os.Open(pspFile)
++	if err != nil {
++		glog.V(2).Infof("%s: cannot open PSP file, using default PSP: %v", PluginName, err)
++		return nil
++	}
++
++	// We load the PSP that we read from file into pspBeta because this is the struct to which we can decode yaml to.
++	d := yaml.NewYAMLOrJSONDecoder(pspConfig, 4096)
++	err = d.Decode(&pspBeta)
++	if err != nil {
++		glog.V(2).Infof("%s: cannot decode PSP file, using default PSP: %v", PluginName, err)
++		return nil
++	}
++
++	// We convert pspBeta object into pspExtensions object because this is the one that pod validation uses.
++	err = policybeta.Convert_v1beta1_PodSecurityPolicy_To_extensions_PodSecurityPolicy(&pspBeta, &pspExtensions, nil)
++	if err != nil {
++		glog.V(2).Infof("%s: cannot convert v1beta1.PSP to extensions.PSP, using default PSP: %v", PluginName, err)
++		return nil
++	}
++
++	return &pspExtensions
 +}
 +
 +func isPrivilegedUser(vac *vmwareAdmissionController, a admission.Attributes) bool {
@@ -4303,6 +4401,22 @@ index 0000000..6325ca0
 +	}
 +
 +	return false
++}
++
++func validateNodes(a admission.Attributes) error {
++	// If the operation is Delete, fail. Deleting a node is not something that is useful to the user. Also, by deleting
++	// a node, they can potentially make their cluster useless.
++	if a.GetOperation() == admission.Delete {
++		return admission.NewForbidden(a, fmt.Errorf("%s validation failed: cannot delete nodes", PluginName))
++	}
++
++	// If the operation is on a master node, fail. We do not want to allow the users to modify labels and taints on the
++	// master node because it can compromise the security of the cluster.
++	if strings.HasPrefix(a.GetName(), masterNodePrefix) {
++		return admission.NewForbidden(a, fmt.Errorf("%s validation failed: cannot modify master nodes", PluginName))
++	}
++
++	return nil
 +}
 +
 +func validateClusterRoles(a admission.Attributes) error {
@@ -4393,6 +4507,12 @@ index 0000000..6325ca0
 +	// Validate the pod.
 +	errs = append(errs, provider.ValidatePodSecurityContext(pod, field.NewPath("spec", "securityContext"))...)
 +
++	// Validate the pod's tolerations.
++	fieldErr := validatePodToleration(pod)
++	if fieldErr != nil {
++		errs = append(errs, fieldErr)
++	}
++
 +	// Validate the initContainers that are part of the pod.
 +	for i := range pod.Spec.InitContainers {
 +		pod.Spec.InitContainers[i].SecurityContext, _, err = provider.CreateContainerSecurityContext(pod, &pod.Spec.InitContainers[i])
@@ -4417,11 +4537,84 @@ index 0000000..6325ca0
 +			field.NewPath("spec", "containers").Index(i).Child("securityContext"))...)
 +	}
 +
++	// Validate that /etc/ssl/certs if mounted using hostPath volume mount is readOnly.
++	fieldErr = validateEtcSslCertsHostPath(pod)
++	if fieldErr != nil {
++		errs = append(errs, fieldErr)
++	}
++
 +	if len(errs) > 0 {
 +		return admission.NewForbidden(a,
 +			fmt.Errorf("%s validation failed: %v", PluginName, errs))
 +	}
 +
++	return nil
++}
++
++func validatePodToleration(pod *api.Pod) *field.Error {
++	// Master nodes are tainted with "Dedicated=Master:NoSchedule". Only vke-system pods are allowed to tolerate
++	// this taint and to run on master nodes. A user's pod will be rejected if its spec has toleration for this taint.
++	for _, t := range pod.Spec.Tolerations {
++		reject := false
++
++		if t.Key == reservedTolerationKey && t.Value == reservedTolerationValue {
++			// Reject pod that has the reserved toleration "Dedicated=Master"
++			reject = true
++		} else if t.Operator == api.TolerationOpExists && (t.Key == reservedTolerationKey || t.Key == "") {
++			// Reject pod that has wildcard toleration matching the reserved toleration
++			reject = true
++		}
++
++		if reject {
++			return field.Invalid(field.NewPath("spec", "toleration"), fmt.Sprintf("%+v", t),
++				fmt.Sprintf("%s validation failed: should not tolerate master node taint", PluginName))
++		}
++	}
++	return nil
++}
++
++// Validate that /etc/ssl/certs if mounted using hostPath volume mount is readOnly. If not, fail.
++// This is a hack that is needed to get Wavefront pods to work.
++// TODO(ashokc): Once we have support for users to create pods using privileged mode and host path, remove this.
++func validateEtcSslCertsHostPath(pod *api.Pod) *field.Error {
++	// Get volumes which mount /etc/ssl/certs and put them in a map.
++	volumes := map[string]struct{}{}
++	for _, vol := range pod.Spec.Volumes {
++		if vol.HostPath != nil && strings.HasPrefix(vol.HostPath.Path, etcSslCerts) {
++			volumes[vol.Name] = struct{}{}
++		}
++	}
++
++	// For every initContainer, get all volumeMounts and verify if it matches any of the volumes in the volumes map.
++	// If yes, then check if they are read only. If not, return an error.
++	err := checkVolumeReadOnly(pod.Spec.InitContainers, volumes, "initContainers")
++	if err != nil {
++		return err
++	}
++
++	// For every container, get all volumeMounts and verify if it matches any of the volumes in the volumes map.
++	// If yes, then check if they are read only. If not, return an error.
++	err = checkVolumeReadOnly(pod.Spec.Containers, volumes, "containers")
++	if err != nil {
++		return err
++	}
++
++	return nil
++}
++
++// Checks if the container has a volumeMount belonging to the volumes map. If yes, it has to be read only. If not,
++// return error.
++func checkVolumeReadOnly(containers []api.Container, volumes map[string]struct{}, containerType string) *field.Error {
++	for i, container := range containers {
++		for _, vol := range container.VolumeMounts {
++			if _, ok := volumes[vol.Name]; ok {
++				if !vol.ReadOnly {
++					return field.Invalid(field.NewPath("spec", containerType).Index(i).Child("volumeMounts"),
++						fmt.Sprintf("%+v", vol), fmt.Sprintf("%s has to be mount as readOnly", etcSslCerts))
++				}
++			}
++		}
++	}
 +	return nil
 +}
 +
@@ -4434,14 +4627,15 @@ index 0000000..6325ca0
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..596b7d4
+index 0000000..52c88cc
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
-@@ -0,0 +1,538 @@
+@@ -0,0 +1,809 @@
 +package vke
 +
 +import (
 +	"fmt"
++	"os"
 +	"strings"
 +	"testing"
 +
@@ -4457,6 +4651,38 @@ index 0000000..596b7d4
 +	defaultConfigFileFormat  = `
 +vmwareAdmissionController:
 +  privilegedGroup: %s
++  podSecurityPolicyFile: %s
++`
++	pspFileName   = "/tmp/psp.yaml"
++	pspConfigFile = `
++apiVersion: extensions/v1beta1
++kind: PodSecurityPolicy
++metadata:
++  name: vmware-pod-security-policy-restricted
++spec:
++  privileged: true
++  fsGroup:
++    rule: RunAsAny
++  runAsUser:
++    rule: RunAsAny
++  seLinux:
++    rule: RunAsAny
++  supplementalGroups:
++    rule: RunAsAny
++  volumes:
++  - 'emptyDir'
++  - 'secret'
++  - 'downwardAPI'
++  - 'configMap'
++  - 'persistentVolumeClaim'
++  - 'projected'
++  - 'hostPath'
++  hostPID: false
++  hostIPC: false
++  hostNetwork: true
++  hostPorts:
++  - min: 1
++    max: 65536
 +`
 +)
 +
@@ -4524,7 +4750,19 @@ index 0000000..596b7d4
 +		},
 +		"create pod with HostVolume denied": {
 +			operation:          kadmission.Create,
-+			pod:                newTestPodBuilder().withHostVolume().build(),
++			pod:                newTestPodBuilder().withHostVolume("/", false).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"create pod with HostVolume /etc/ssl/certs in read-only mode allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostVolume("/etc/ssl/certs", true).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with HostVolume /etc/ssl/certs in read-write mode denied": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostVolume("/etc/ssl/certs", false).build(),
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
 +		},
@@ -4536,7 +4774,7 @@ index 0000000..596b7d4
 +		},
 +		"create pod with HostVolume and CascadeDisk denied": {
 +			operation:          kadmission.Create,
-+			pod:                newTestPodBuilder().withHostVolume().withCascadeDisk().build(),
++			pod:                newTestPodBuilder().withHostVolume("/", false).withCascadeDisk().build(),
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
 +		},
@@ -4548,7 +4786,7 @@ index 0000000..596b7d4
 +		},
 +		"delete pod allowed": {
 +			operation:          kadmission.Delete,
-+			pod:                newTestPodBuilder().build(),
++			pod:                nil,
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: true,
 +		},
@@ -4556,6 +4794,135 @@ index 0000000..596b7d4
 +
 +	for k, v := range tests {
 +		testPodValidation(k, v.operation, v.pod, v.name, v.userInfo, v.shouldPassValidate, t)
++	}
++}
++
++func TestAdmitPrivilegedWithCustomPSP(t *testing.T) {
++	tests := map[string]struct {
++		operation          kadmission.Operation
++		pod                *kapi.Pod
++		name               string
++		userInfo           user.Info
++		shouldPassValidate bool
++	}{
++		"create pod with Privileged=nil allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with Privileged=false allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withPrivileged(false).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with Privileged=true allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withPrivileged(true).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with multiple containers, one has Privileged=true allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withPrivileged(true).withInitContainer().withContainer().build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"update pod with Privileged=true allowed": {
++			operation:          kadmission.Update,
++			pod:                newTestPodBuilder().withPrivileged(true).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with HostNetwork=true allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostNetwork(true).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with HostIPC=true denied": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostIPC(true).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"create pod with HostPID=true denied": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostPID(true).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"create pod with HostPort allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostPort().build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with HostVolume allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostVolume("/", false).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with HostVolume /etc/ssl/certs in read-only mode allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostVolume("/etc/ssl/certs", true).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with HostVolume /etc/ssl/certs in read-write mode denied": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostVolume("/etc/ssl/certs", false).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"create pod with CascadeDisk allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withCascadeDisk().build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"create pod with HostVolume and CascadeDisk allowed": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withHostVolume("/", false).withCascadeDisk().build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"connect pod allowed": {
++			operation:          kadmission.Connect,
++			pod:                newTestPodBuilder().build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"delete pod allowed": {
++			operation:          kadmission.Delete,
++			pod:                nil,
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++	}
++
++	// Setup custom PSP file.
++	file, err := os.Create(pspFileName)
++	if err != nil {
++		t.Errorf("TestAdmitPrivilegedWithCustomPSP: failed to open custom PSP file %v", err)
++		return
++	}
++	_, err = file.WriteString(pspConfigFile)
++	if err != nil {
++		t.Errorf("TestAdmitPrivilegedWithCustomPSP: failed to write to custom PSP file %v", err)
++		return
++	}
++
++	for k, v := range tests {
++		testPodValidation(k, v.operation, v.pod, v.name, v.userInfo, v.shouldPassValidate, t)
++	}
++
++	// Delete custom PSP file.
++	err = os.Remove(pspFileName)
++	if err != nil {
++		t.Errorf("TestAdmitPrivilegedWithCustomPSP: failed to delete custom PSP file %v", err)
 +	}
 +}
 +
@@ -4634,6 +5001,63 @@ index 0000000..596b7d4
 +			shouldPassValidate: true,
 +		},
 +	}
++	for k, v := range tests {
++		testPodValidation(k, v.operation, v.pod, v.name, v.userInfo, v.shouldPassValidate, t)
++	}
++}
++
++func TestToleration(t *testing.T) {
++	tests := map[string]struct {
++		operation          kadmission.Operation
++		pod                *kapi.Pod
++		name               string
++		userInfo           user.Info
++		shouldPassValidate bool
++	}{
++		"allowed: create pod with no toleration": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"allowed: create pod with normal toleration key": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withToleration("mykey", reservedTolerationValue, kapi.TolerationOpEqual, kapi.TaintEffectNoSchedule).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"allowed: create pod with normal toleration value": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withToleration(reservedTolerationKey, "myval", kapi.TolerationOpEqual, kapi.TaintEffectNoSchedule).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"denied: create pod with reserved toleration": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withToleration(reservedTolerationKey, reservedTolerationValue, kapi.TolerationOpEqual, kapi.TaintEffectNoSchedule).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"denied: create pod with wildcard toleration": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withToleration("", "", kapi.TolerationOpExists, "").build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"denied: create pod with value wildcard toleration": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withToleration(reservedTolerationKey, "", kapi.TolerationOpExists, kapi.TaintEffectNoSchedule).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"allowed: create pod with value wildcard and normal key": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withToleration("mykey", "", kapi.TolerationOpExists, kapi.TaintEffectNoSchedule).build(),
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++	}
++
 +	for k, v := range tests {
 +		testPodValidation(k, v.operation, v.pod, v.name, v.userInfo, v.shouldPassValidate, t)
 +	}
@@ -4747,9 +5171,34 @@ index 0000000..596b7d4
 +			userInfo:           newTestUserBuilder().withName(systemUnsecuredUser).build(),
 +			shouldPassValidate: true,
 +		},
-+		"denied: regular lightwave user update nodes": {
++		"allowed: regular lightwave user update worker nodes": {
 +			operation:          kadmission.Update,
 +			resource:           "nodes",
++			name:               "worker-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"denied: regular lightwave user update master nodes": {
++			operation:          kadmission.Update,
++			resource:           "nodes",
++			name:               "master-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"denied: regular lightwave user delete master nodes": {
++			operation:          kadmission.Delete,
++			resource:           "nodes",
++			name:               "master-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"denied: regular lightwave user delete worker nodes": {
++			operation:          kadmission.Delete,
++			resource:           "nodes",
++			name:               "worker-guid",
 +			namespace:          "",
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
@@ -4770,15 +5219,20 @@ index 0000000..596b7d4
 +func testPodValidation(testCaseName string, op kadmission.Operation, pod *kapi.Pod, name string, userInfo user.Info,
 +	shouldPassValidate bool, t *testing.T) {
 +
-+	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup)
++	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup, pspFileName)
 +	configFile := strings.NewReader(defaultConfigFile)
 +	plugin, err := NewVMwareAdmissionController(configFile)
 +	if err != nil {
 +		t.Errorf("%s: failed to create admission controller %v", testCaseName, err)
 +	}
 +
++	namespace := "default"
++	if pod != nil {
++		namespace = pod.Namespace
++	}
++
 +	attrs := kadmission.NewAttributesRecord(pod, nil, kapi.Kind("Pod").WithVersion("version"),
-+		pod.Namespace, name, kapi.Resource("pods").WithVersion("version"), "", op, userInfo)
++		namespace, name, kapi.Resource("pods").WithVersion("version"), "", op, userInfo)
 +
 +	err = plugin.Validate(attrs)
 +	if shouldPassValidate && err != nil {
@@ -4791,7 +5245,7 @@ index 0000000..596b7d4
 +func testResourceValidation(testCaseName string, op kadmission.Operation, resource string, name string,
 +	namespace string, userInfo user.Info, shouldPassValidate bool, t *testing.T) {
 +
-+	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup)
++	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup, pspFileName)
 +	configFile := strings.NewReader(defaultConfigFile)
 +	plugin, err := NewVMwareAdmissionController(configFile)
 +	if err != nil {
@@ -4891,19 +5345,19 @@ index 0000000..596b7d4
 +	return p
 +}
 +
-+func (p *testPodBuilder) withHostVolume() *testPodBuilder {
++func (p *testPodBuilder) withHostVolume(hostPath string, readOnly bool) *testPodBuilder {
 +	volume := kapi.Volume{
 +		Name: "host",
 +		VolumeSource: kapi.VolumeSource{
 +			HostPath: &kapi.HostPathVolumeSource{
-+				Path: "/",
++				Path: hostPath,
 +			},
 +		},
 +	}
-+	device := kapi.VolumeDevice{Name: "host", DevicePath: "/host"}
++	volumeMount := kapi.VolumeMount{Name: "host", MountPath: "/data", ReadOnly: readOnly}
 +
 +	p.pod.Spec.Volumes = append(p.pod.Spec.Volumes, volume)
-+	p.pod.Spec.Containers[0].VolumeDevices = append(p.pod.Spec.Containers[0].VolumeDevices, device)
++	p.pod.Spec.Containers[0].VolumeMounts = append(p.pod.Spec.Containers[0].VolumeMounts, volumeMount)
 +	return p
 +}
 +
@@ -4941,6 +5395,16 @@ index 0000000..596b7d4
 +	}
 +
 +	p.pod.Spec.Containers = append(p.pod.Spec.Containers, container)
++	return p
++}
++
++func (p *testPodBuilder) withToleration(key, value string, operator kapi.TolerationOperator, effect kapi.TaintEffect) *testPodBuilder {
++	p.pod.Spec.Tolerations = append(p.pod.Spec.Tolerations, kapi.Toleration{
++		Key:      key,
++		Value:    value,
++		Operator: operator,
++		Effect:   effect,
++	})
 +	return p
 +}
 +
