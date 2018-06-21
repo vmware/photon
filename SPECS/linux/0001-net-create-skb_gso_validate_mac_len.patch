@@ -55,10 +55,10 @@ index 1b3a2f9..5d34da2 100644
   * Compute outer checksum based on the assumption that the
   * inner checksum will be offloaded later.
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fb422df..40f966e 100644
+index 9f697b0..5945bf4 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
-@@ -4441,37 +4441,74 @@ unsigned int skb_gso_transport_seglen(const struct sk_buff *skb)
+@@ -4442,37 +4442,74 @@ unsigned int skb_gso_transport_seglen(const struct sk_buff *skb)
  EXPORT_SYMBOL_GPL(skb_gso_transport_seglen);
  
  /**
@@ -145,7 +145,7 @@ index fb422df..40f966e 100644
 +
  static struct sk_buff *skb_reorder_vlan_header(struct sk_buff *skb)
  {
- 	if (skb_cow(skb, skb_headroom(skb)) < 0) {
+ 	int mac_len;
 diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
 index 303355c..ad60a45 100644
 --- a/net/sched/sch_tbf.c
