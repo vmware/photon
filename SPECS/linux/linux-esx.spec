@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.101
-Release:        2%{?dist}
+Version:        4.9.109
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=12b399649df63355823d482fd91711b1be3e7f1b
+%define sha1 linux=9d3af34a31661b2c7f6bea5682deb131c406f3d6
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -51,8 +51,6 @@ Patch35:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 Patch37:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
-# Fix for CVE-2018-8087
-Patch39:        0001-mac80211_hwsim-fix-possible-memory-leak-in-hwsim_new.patch
 # Fix for CVE-2017-18241
 Patch40:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 # Fix for CVE-2017-18224
@@ -74,60 +72,6 @@ Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 
-# Fix CVE-2018-3639 (Speculative Store Bypass)
-Patch201: 0001-x86-amd-don-t-set-X86_BUG_SYSRET_SS_ATTRS-when-runni.patch
-Patch202: 0002-x86-nospec-Simplify-alternative_msr_write.patch
-Patch203: 0003-x86-bugs-Concentrate-bug-detection-into-a-separate-f.patch
-Patch204: 0004-x86-bugs-Concentrate-bug-reporting-into-a-separate-f.patch
-Patch205: 0005-x86-bugs-Read-SPEC_CTRL-MSR-during-boot-and-re-use-r.patch
-Patch206: 0006-x86-bugs-KVM-Support-the-combination-of-guest-and-ho.patch
-Patch207: 0007-x86-bugs-Expose-sys-.-spec_store_bypass.patch
-Patch208: 0008-x86-cpufeatures-Add-X86_FEATURE_RDS.patch
-Patch209: 0009-x86-bugs-Provide-boot-parameters-for-the-spec_store_.patch
-Patch210: 0010-x86-bugs-intel-Set-proper-CPU-features-and-setup-RDS.patch
-Patch211: 0011-x86-bugs-Whitelist-allowed-SPEC_CTRL-MSR-values.patch
-Patch212: 0012-x86-bugs-AMD-Add-support-to-disable-RDS-on-Fam-15-16.patch
-Patch213: 0013-x86-KVM-VMX-Expose-SPEC_CTRL-Bit-2-to-the-guest.patch
-Patch214: 0014-x86-speculation-Create-spec-ctrl.h-to-avoid-include-.patch
-Patch215: 0015-prctl-Add-speculation-control-prctls.patch
-Patch216: 0016-x86-process-Optimize-TIF-checks-in-__switch_to_xtra.patch
-Patch217: 0017-x86-process-Correct-and-optimize-TIF_BLOCKSTEP-switc.patch
-Patch218: 0018-x86-process-Optimize-TIF_NOTSC-switch.patch
-Patch219: 0019-x86-process-Allow-runtime-control-of-Speculative-Sto.patch
-Patch220: 0020-x86-speculation-Add-prctl-for-Speculative-Store-Bypa.patch
-Patch221: 0021-nospec-Allow-getting-setting-on-non-current-task.patch
-Patch222: 0022-proc-Provide-details-on-speculation-flaw-mitigations.patch
-Patch223: 0023-seccomp-Enable-speculation-flaw-mitigations.patch
-Patch224: 0024-x86-bugs-Make-boot-modes-__ro_after_init.patch
-Patch225: 0025-prctl-Add-force-disable-speculation.patch
-Patch226: 0026-seccomp-Use-PR_SPEC_FORCE_DISABLE.patch
-Patch227: 0027-seccomp-Add-filter-flag-to-opt-out-of-SSB-mitigation.patch
-Patch228: 0028-seccomp-Move-speculation-migitation-control-to-arch-.patch
-Patch229: 0029-x86-speculation-Make-seccomp-the-default-mode-for-Sp.patch
-Patch230: 0030-x86-bugs-Rename-_RDS-to-_SSBD.patch
-Patch231: 0031-proc-Use-underscores-for-SSBD-in-status.patch
-Patch232: 0032-Documentation-spec_ctrl-Do-some-minor-cleanups.patch
-Patch233: 0033-x86-bugs-Fix-__ssb_select_mitigation-return-type.patch
-Patch234: 0034-x86-bugs-Make-cpu_show_common-static.patch
-Patch235: 0035-x86-bugs-Fix-the-parameters-alignment-and-missing-vo.patch
-Patch236: 0036-x86-cpu-Make-alternative_msr_write-work-for-32-bit-c.patch
-Patch237: 0037-KVM-SVM-Move-spec-control-call-after-restore-of-GS.patch
-Patch238: 0038-x86-speculation-Use-synthetic-bits-for-IBRS-IBPB-STI.patch
-Patch239: 0039-x86-cpufeatures-Disentangle-MSR_SPEC_CTRL-enumeratio.patch
-Patch240: 0040-x86-cpufeatures-Disentangle-SSBD-enumeration.patch
-Patch241: 0041-x86-cpu-AMD-Fix-erratum-1076-CPB-bit.patch
-Patch242: 0042-x86-cpufeatures-Add-FEATURE_ZEN.patch
-Patch243: 0043-x86-speculation-Handle-HT-correctly-on-AMD.patch
-Patch244: 0044-x86-bugs-KVM-Extend-speculation-control-for-VIRT_SPE.patch
-Patch245: 0045-x86-speculation-Add-virtualized-speculative-store-by.patch
-Patch246: 0046-x86-speculation-Rework-speculative_store_bypass_upda.patch
-Patch247: 0047-x86-bugs-Unify-x86_spec_ctrl_-set_guest-restore_host.patch
-Patch248: 0048-x86-bugs-Expose-x86_spec_ctrl_base-directly.patch
-Patch249: 0049-x86-bugs-Remove-x86_spec_ctrl_set.patch
-Patch250: 0050-x86-bugs-Rework-spec_ctrl-base-and-mask-logic.patch
-Patch251: 0051-x86-speculation-KVM-Implement-support-for-VIRT_SPEC_.patch
-Patch252: 0052-KVM-SVM-Implement-VIRT_SPEC_CTRL-support-for-SSBD.patch
-Patch253: 0053-x86-bugs-Rename-SSBD_NO-to-SSB_NO.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -198,7 +142,6 @@ The Linux package contains the Linux kernel doc files
 %patch35 -p1
 %patch37 -p1
 %patch38 -p1
-%patch39 -p1
 %patch40 -p1
 %patch41 -p1
 
@@ -217,59 +160,6 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 
-%patch201 -p1
-%patch202 -p1
-%patch203 -p1
-%patch204 -p1
-%patch205 -p1
-%patch206 -p1
-%patch207 -p1
-%patch208 -p1
-%patch209 -p1
-%patch210 -p1
-%patch211 -p1
-%patch212 -p1
-%patch213 -p1
-%patch214 -p1
-%patch215 -p1
-%patch216 -p1
-%patch217 -p1
-%patch218 -p1
-%patch219 -p1
-%patch220 -p1
-%patch221 -p1
-%patch222 -p1
-%patch223 -p1
-%patch224 -p1
-%patch225 -p1
-%patch226 -p1
-%patch227 -p1
-%patch228 -p1
-%patch229 -p1
-%patch230 -p1
-%patch231 -p1
-%patch232 -p1
-%patch233 -p1
-%patch234 -p1
-%patch235 -p1
-%patch236 -p1
-%patch237 -p1
-%patch238 -p1
-%patch239 -p1
-%patch240 -p1
-%patch241 -p1
-%patch242 -p1
-%patch243 -p1
-%patch244 -p1
-%patch245 -p1
-%patch246 -p1
-%patch247 -p1
-%patch248 -p1
-%patch249 -p1
-%patch250 -p1
-%patch251 -p1
-%patch252 -p1
-%patch253 -p1
 
 %build
 # patch vmw_balloon driver
@@ -366,6 +256,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 21 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-1
+-   Update to version 4.9.109
 *   Mon May 21 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.101-2
 -   Add the f*xattrat family of syscalls.
 *   Mon May 21 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.101-1
