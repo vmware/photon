@@ -1,0 +1,27 @@
+--- a/path/strip.go	2018-06-22 19:05:03.601645000 +0530
++++ b/path/strip.go	2018-06-22 19:06:09.649641691 +0530
+@@ -24,6 +24,9 @@
+ 		if path == searchPath {
+ 			return nil
+ 		}
++		if err != nil {
++			return nil
++		}
+ 
+ 		name := info.Name()
+ 		if name == "vendor" {
+--- a/godep/strip/strip.go	2018-06-22 00:26:17.729007516 +0530
++++ b/godep/strip/strip.go	2018-06-22 00:30:39.664994395 +0530
+@@ -58,7 +58,11 @@
+ 	if path == vPath {
+ 		return nil
+ 	}
+-
++	// As of Go 1.10, it seems `info` will be `nil` when an error is present.
++	// We can skip further execution in this case.
++	if err != nil {
++		return nil
++	}
+ 	name := info.Name()
+ 	p := filepath.Dir(path)
+ 	pn := filepath.Base(p)

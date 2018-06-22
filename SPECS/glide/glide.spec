@@ -1,11 +1,12 @@
 Summary:        Vendor Package Management for Goland
 Name:           glide
 Version:        0.12.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/Masterminds/glide
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 glide=259cfe5a4d598434865c9bb95ed5a98bfd2d8e77
+Patch0:         strip_vendor_fix.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,7 +19,7 @@ Glide is a tool for managing the vendor directory within a Go package.
 
 %prep
 %setup
-
+%patch0 -p1
 %build
 mkdir -p ${GOPATH}/src/github.com/Masterminds/glide
 cp -r * ${GOPATH}/src/github.com/Masterminds/glide/.
@@ -36,5 +37,7 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
 %{_bindir}/glide
 
 %changelog
+*   Thu Jun 21 2018 Tapas Kundu <tkundu@vmware.com> 0.12.3-2
+-   Handle error in strip vendor WalkFunc.
 *   Mon Aug 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.12.3-1
 -   glide for PhotonOS.
