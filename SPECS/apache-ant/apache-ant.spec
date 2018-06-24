@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -14,6 +14,7 @@ Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
+Patch0:        apache-ant-zip-slip-vulnerability.patch
 Requires:      openjre8
 BuildRequires: openjre8
 BuildRequires: openjdk8
@@ -39,6 +40,7 @@ Ant.
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
 tar xf %{SOURCE2} --no-same-owner
+%patch0 -p1
 
 %clean
 rm -rf %{buildroot}
@@ -106,6 +108,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_bindir}/runant.pl
 
 %changelog
+*   Fri Jun 22 2018 Keerthana K <keerthanak@vmware.com> 1.10.1-6
+-   Fix for Zip slip vulnerability.
 *   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.10.1-5
 -   Base package does not require python2.
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.10.1-4
