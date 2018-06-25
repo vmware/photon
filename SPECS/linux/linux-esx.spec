@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.109
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -256,6 +256,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-2
+-   Enable USB_SERIAL support in the config.
 *   Thu Jun 21 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-1
 -   Update to version 4.9.109
 *   Mon May 21 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.101-2
