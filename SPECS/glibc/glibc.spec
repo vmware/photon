@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.26
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -25,6 +25,7 @@ Patch7:         glibc-fix-CVE-2017-16997.patch
 Patch8:         glibc-fix-CVE-2018-1000001.patch
 Patch9:         glibc-fix-CVE-2018-6485.patch
 Patch10:        glibc-fix-CVE-2017-15671.patch
+Patch11:        glibc-fix-CVE-2017-18269.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -89,6 +90,8 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
+
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -292,6 +295,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.26-12
+-   Fix for CVE-2017-18269.
 *   Tue Jun 19 2018 Dweep Advani <dadvani@vmware.com> 2.26-11
 -   Fix CVE-2017-15671
 *   Tue Jan 20 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-10
