@@ -219,16 +219,10 @@ index f62e872..b60598c 100644
  
  #define MAX_CPU_FEATURES		(NCAPINTS * 32)
 diff --git a/arch/x86/include/asm/fpu/internal.h b/arch/x86/include/asm/fpu/internal.h
-index f9c14ab..36e2d47 100644
+index 94e7570..ec2aedb 100644
 --- a/arch/x86/include/asm/fpu/internal.h
 +++ b/arch/x86/include/asm/fpu/internal.h
-@@ -58,22 +58,22 @@ extern void fpu__resume_cpu(void);
-  */
- static __always_inline __pure bool use_eager_fpu(void)
- {
--	return static_cpu_has_safe(X86_FEATURE_EAGER_FPU);
-+	return static_cpu_has(X86_FEATURE_EAGER_FPU);
- }
+@@ -64,17 +64,17 @@ static __always_inline __pure bool use_eager_fpu(void)
  
  static __always_inline __pure bool use_xsaveopt(void)
  {
@@ -249,7 +243,7 @@ index f9c14ab..36e2d47 100644
  }
  
  /*
-@@ -300,7 +300,7 @@ static inline void copy_xregs_to_kernel_booting(struct xregs_state *xstate)
+@@ -301,7 +301,7 @@ static inline void copy_xregs_to_kernel_booting(struct xregs_state *xstate)
  
  	WARN_ON(system_state != SYSTEM_BOOTING);
  
@@ -258,7 +252,7 @@ index f9c14ab..36e2d47 100644
  		XSTATE_OP(XSAVES, xstate, lmask, hmask, err);
  	else
  		XSTATE_OP(XSAVE, xstate, lmask, hmask, err);
-@@ -322,7 +322,7 @@ static inline void copy_kernel_to_xregs_booting(struct xregs_state *xstate)
+@@ -323,7 +323,7 @@ static inline void copy_kernel_to_xregs_booting(struct xregs_state *xstate)
  
  	WARN_ON(system_state != SYSTEM_BOOTING);
  
@@ -267,7 +261,7 @@ index f9c14ab..36e2d47 100644
  		XSTATE_OP(XRSTORS, xstate, lmask, hmask, err);
  	else
  		XSTATE_OP(XRSTOR, xstate, lmask, hmask, err);
-@@ -460,7 +460,7 @@ static inline void copy_kernel_to_fpregs(union fpregs_state *fpstate)
+@@ -461,7 +461,7 @@ static inline void copy_kernel_to_fpregs(union fpregs_state *fpstate)
  	 * pending. Clear the x87 state here by setting it to fixed values.
  	 * "m" is a random variable that should be in L1.
  	 */
