@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.30
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -13,6 +13,14 @@ Patch0:         binutils-2.30-CVE-2018-6543.patch
 Patch1:         binutils-2.30-CVE-2018-7643.patch
 Patch2:         binutils-2.30-CVE-2018-7208.patch
 Patch3:         binutils-2.30-CVE-2018-10373.patch
+Patch4:         binutils-2.30-CVE-2018-6759.patch
+Patch5:         binutils-2.30-CVE-2018-6872.patch
+Patch6:         binutils-2.30-CVE-2018-7568.patch
+Patch7:         binutils-2.30-CVE-2018-7569.patch
+Patch8:         binutils-2.30-CVE-2018-7642.patch
+Patch9:        binutils-2.30-CVE-2018-8945.patch
+Patch10:        binutils-2.30-CVE-2018-10372.patch
+Patch11:        binutils-2.30-CVE-2018-10535.patch
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -28,6 +36,14 @@ for handling compiled objects.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -118,6 +134,9 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.30-6
+-   Fixes for CVE-2018-6759, CVE-2018-6872, CVE-2018-7568, CVE-2018-7569,
+-   CVE-2018-7642, CVE-2018-8945, CVE-2018-10372, CVE-2018-10535.
 *   Thu Jun 12 2018 Keerthana K <keerthanak@vmware.com> 2.30-5
 -   Fix CVE-2018-10373
 *   Tue Apr 17 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-4
