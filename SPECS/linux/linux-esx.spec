@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.137
-Release:       2%{?dist}
+Version:       4.4.138
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=05b18bc780fb6f534dbf47825945b4e6eca15143
+%define sha1 linux=f1d6778e011fb07d7d4df12262f790f053e78e27
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -65,8 +65,6 @@ Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 # Add more Spectre-v2 mitigations (IBPB/IBRS)
 Patch201: 0001-x86-cpufeature-Move-some-of-the-scattered-feature-bi.patch
 Patch202: 0002-x86-cpufeature-Cleanup-get_cpu_cap.patch
-Patch203: 0003-x86-Remove-unused-function-cpu_has_ht_siblings.patch
-Patch204: 0004-x86-cpufeature-Remove-unused-and-seldomly-used-cpu_h.patch
 Patch205: 0005-x86-cpu-Provide-a-config-option-to-disable-static_cp.patch
 Patch206: 0006-x86-fpu-Add-an-XSTATE_OP-macro.patch
 Patch207: 0007-x86-fpu-Get-rid-of-xstate_fault.patch
@@ -253,8 +251,6 @@ The Linux package contains the Linux kernel doc files
 
 %patch201 -p1
 %patch202 -p1
-%patch203 -p1
-%patch204 -p1
 %patch205 -p1
 %patch206 -p1
 %patch207 -p1
@@ -443,6 +439,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.138-1
+-   Update to version 4.4.138
 *   Thu Jun 14 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.137-2
 -   Add more spectre mitigations (IBPB/IBRS) and support for SSBD.
 *   Wed Jun 13 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.137-1
