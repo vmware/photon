@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.137
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.138
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=05b18bc780fb6f534dbf47825945b4e6eca15143
+%define sha1 linux=f1d6778e011fb07d7d4df12262f790f053e78e27
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -65,8 +65,6 @@ Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 # Add more Spectre-v2 mitigations (IBPB/IBRS)
 Patch201: 0001-x86-cpufeature-Move-some-of-the-scattered-feature-bi.patch
 Patch202: 0002-x86-cpufeature-Cleanup-get_cpu_cap.patch
-Patch203: 0003-x86-Remove-unused-function-cpu_has_ht_siblings.patch
-Patch204: 0004-x86-cpufeature-Remove-unused-and-seldomly-used-cpu_h.patch
 Patch205: 0005-x86-cpu-Provide-a-config-option-to-disable-static_cp.patch
 Patch206: 0006-x86-fpu-Add-an-XSTATE_OP-macro.patch
 Patch207: 0007-x86-fpu-Get-rid-of-xstate_fault.patch
@@ -285,8 +283,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 
 %patch201 -p1
 %patch202 -p1
-%patch203 -p1
-%patch204 -p1
 %patch205 -p1
 %patch206 -p1
 %patch207 -p1
@@ -543,6 +539,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Jun 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.138-1
+-   Update to version 4.4.138
 *   Thu Jun 14 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.137-2
 -   Add more spectre mitigations (IBPB/IBRS) and support for SSBD.
 *   Wed Jun 13 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.137-1
