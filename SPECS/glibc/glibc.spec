@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        20%{?dist}
+Release:        21%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -49,6 +49,7 @@ Patch21:        glibc-fix-CVE-2017-16997.patch
 Patch22:        glibc-fix-CVE-2018-1000001.patch
 Patch23:        glibc-fix-CVE-2018-6485.patch
 Patch24:        glibc-fix-CVE-2017-18269.patch
+Patch25:        glibc-fix-CVE-2018-11236.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -99,6 +100,8 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
+%patch25 -p1
+
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -225,6 +228,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Tue Jun 26 2018 Keerthana K <keerthnanak@vmware.com> 2.22-21
+-   Fix for CVE-2018-11236.
 *   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.22-20
 -   Fix for CVE-2017-18269.
 *   Tue Jan 20 2018 Xiaolin Li <xiaolinl@vmware.com> 2.22-19
