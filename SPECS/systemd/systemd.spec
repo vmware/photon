@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          45%{?dist}
+Release:          46%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -12,6 +12,7 @@ Source0:          %{name}-%{version}.tar.gz
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          filesystem.conf
+Source4:          10-rdrand-rng.conf
 #patch for ostree
 Patch0:           systemd-228-mount.patch
 Patch1:           01-enoX-uses-instance-number-for-vmware-hv.patch
@@ -170,6 +171,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 install -m 0644 %{SOURCE3} %{buildroot}/usr/lib/tmpfiles.d/
+install -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/modules-load.d
 rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -vdm 755 %{buildroot}/%{_sysconfdir}/systemd/network
@@ -221,6 +223,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/systemd/bootchart.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
+%config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
 %dir %{_sysconfdir}/systemd/network
 %config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 %dir %{_sysconfdir}/udev
@@ -246,7 +249,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
-%changelog
+*    Thu Jun 28 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 228-46
+-    Automatically load rdrand-rng kernel module on every boot.
 *    Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com>  228-45
 -    Fix CVE-2017-18078.
 *    Wed Nov 29 2017 Anish Swaminathan <anishs@vmware.com> 228-44
