@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.109
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -64,6 +64,7 @@ Patch40:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch42:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 # Fix for CVE-2017-18224
 Patch43:        0001-ocfs2-ip_alloc_sem-should-be-taken-in-ocfs2_get_bloc.patch
+Patch44:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -197,6 +198,7 @@ EOF
 %patch40 -p1
 %patch42 -p1
 %patch43 -p1
+%patch44 -p1
 
 # spectre
 %patch52 -p1
@@ -344,6 +346,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-2
+-   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Thu Jun 21 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-1
 -   Update to version 4.9.109
 *   Mon May 21 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.101-2

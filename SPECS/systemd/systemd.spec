@@ -1,7 +1,7 @@
 Summary:          Systemd-233
 Name:             systemd
 Version:          233
-Release:          13%{?dist}
+Release:          14%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -13,6 +13,7 @@ Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
 Source4:          99-dhcp-en.network
+Source5:          10-rdrand-rng.conf
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
@@ -151,6 +152,7 @@ rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -dm 0755 %{buildroot}/%{_sysconfdir}/systemd/network
 install -m 0644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/systemd/network
+install -m 0644 %{SOURCE5} %{buildroot}/%{_sysconfdir}/modules-load.d
 %find_lang %{name}
 
 %post
@@ -196,6 +198,7 @@ rm -rf %{buildroot}/*
 %dir %{_sysconfdir}/udev/hwdb.d
 %{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
 %config(noreplace) %{_sysconfdir}/udev/udev.conf
+%config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
 %config(noreplace) /boot/systemd.cfg
 %{_sysconfdir}/systemd/system/*
 /lib/udev/*
@@ -247,6 +250,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Jun 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu>  233-14
+-    Automatically load rdrand-rng kernel module on every boot.
 *    Wed Apr 11 2018 Xiaolin Li <xiaolinl@vmware.com>  233-13
 -    Build systemd with util-linux 2.32.
 *    Wed Mar 14 2018 Xiaolin Li <xiaolinl@vmware.com>  233-12
