@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.109
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -55,6 +55,7 @@ Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch40:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 # Fix for CVE-2017-18224
 Patch41:        0001-ocfs2-ip_alloc_sem-should-be-taken-in-ocfs2_get_bloc.patch
+Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -144,6 +145,7 @@ The Linux package contains the Linux kernel doc files
 %patch38 -p1
 %patch40 -p1
 %patch41 -p1
+%patch42 -p1
 
 %patch52 -p1
 %patch53 -p1
@@ -256,6 +258,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-3
+-   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Mon Jun 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-2
 -   Enable USB_SERIAL support in the config.
 *   Thu Jun 21 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-1
