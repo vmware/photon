@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.138
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -46,6 +46,7 @@ Patch23:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 # Fix for CVE-2017-18241
 Patch25:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
+Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -266,6 +267,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch23 -p1
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -539,6 +541,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Jun 28 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.138-2
+-   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Mon Jun 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.138-1
 -   Update to version 4.4.138
 *   Thu Jun 14 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.137-2

@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.138
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -46,6 +46,8 @@ Patch30:       0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 Patch31:       0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 # Fix for CVE-2017-18241
 Patch33:       0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
+Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -234,6 +236,7 @@ The Linux package contains the Linux kernel doc files
 %patch30 -p1
 %patch31 -p1
 %patch33 -p1
+%patch34 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -439,6 +442,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 28 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.138-2
+-   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Mon Jun 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.138-1
 -   Update to version 4.4.138
 *   Thu Jun 14 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.137-2
