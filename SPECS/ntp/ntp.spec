@@ -1,27 +1,26 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p10
-Release:        4%{?dist}
+Version:        4.2.8p11
+Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    ntp=503d68cfd3e6a9354e0e28dd38b39d850b1228b2
+%define sha1    ntp=b20352bb76963a0ef5ec07ba99c2bb97ec6b6aeb
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
 %define sha1 ntpstat=729cf2c9f10da43554f26875e91e1973d4498761
 Source2: ntp.sysconfig
-Patch0:  ntpq-remove-list-digest-call.patch
 BuildRequires:  which
 BuildRequires:  libcap-devel
 BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 Requires:       systemd
-Requires:       shadow
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
 %description
@@ -29,6 +28,16 @@ The ntp package contains a client and server to keep the time
 synchronized between various computers over a network. This 
 package is the official reference implementation of the 
 NTP protocol.
+
+%package        perl
+Summary:        Perl scripts for ntp
+Group:          Utilities
+Requires:       ntp = %{version}-%{release}, perl >= 5
+Requires:       perl-Net-SSLeay
+Requires:       perl-IO-Socket-SSL
+%description    perl
+Perl scripts for ntp.
+
 
 %package -n ntpstat
 Summary:    Utilities
@@ -39,7 +48,6 @@ state of the NTP daemon running on the local machine.
 
 %prep
 %setup -q -a 1
-%patch0 -p1
 
 %build
 ./configure \
@@ -84,7 +92,7 @@ mkdir -p %{buildroot}/lib/systemd/system
 cat << EOF >> %{buildroot}/lib/systemd/system/ntpd.service
 [Unit]
 Description=Network Time Service
-After=network.target
+After=syslog.target network.target
 Documentation=man:ntpd
 Conflicts=systemd-timesyncd.service
 
@@ -97,8 +105,10 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 EOF
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %pre
 if ! getent group ntp >/dev/null; then
     groupadd -g 87 ntp
@@ -123,16 +133,35 @@ rm -rf %{buildroot}/*
 %attr(0750, root, root) %config(noreplace) /etc/ntp.conf
 %attr(0750, root, root) %config(noreplace) /etc/sysconfig/ntp
 /lib/systemd/system/ntpd.service
-%exclude %{_bindir}/ntpstat
-%exclude %{_mandir}/man8/ntpstat.8*
-%{_bindir}/*
+%{_bindir}/ntpd
+%{_bindir}/ntpdate
+%{_bindir}/ntpdc
+%{_bindir}/ntp-keygen
+%{_bindir}/ntpq
+%{_bindir}/ntptime
+%{_bindir}/sntp
+%{_bindir}/tickadj
 %{_datadir}/doc/%{name}-%{version}/*
 %{_datadir}/doc/ntp/*
 %{_datadir}/doc/sntp/*
 %{_datadir}/licenses/ntp/LICENSE
-%{_mandir}/man1/*
+%{_mandir}/man1/ntpd.1.gz
+%{_mandir}/man1/ntpdc.1.gz
+%{_mandir}/man1/ntp-keygen.1.gz
+%{_mandir}/man1/ntpq.1.gz
+%{_mandir}/man1/sntp.1.gz
 %{_mandir}/man5/*
+
+%files perl
+%{_bindir}/calc_tickadj
+%{_bindir}/ntptrace
+%{_bindir}/ntp-wait
+%{_bindir}/update-leap
 %{_datadir}/ntp/lib/NTP/Util.pm
+%{_mandir}/man1/calc_tickadj.1.gz
+%{_mandir}/man1/ntptrace.1.gz
+%{_mandir}/man1/ntp-wait.1.gz
+%{_mandir}/man1/update-leap.1.gz
 
 %files -n ntpstat
 %defattr(-,root,root)
@@ -140,6 +169,10 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Thu Jun 28 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p11-1
+-   Upgrade version to 4.2.8p11 and move perl scripts to perl subpackage(Backport form photon-2).
+-   Remove shadow from requires and use explicit tools for post actions (Backport from photn-2).
+-   add noquery to conf (Backport from photon-2).
 *   Wed Sep 27 2017 Anish Swaminathan <anishs@vmware.com> 4.2.8p10-4
 -   Add patch to remove call to OpenSSL's list digest method in ntpq
 *   Thu Jul 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.2.8p10-3
