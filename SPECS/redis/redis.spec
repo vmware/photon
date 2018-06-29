@@ -1,6 +1,6 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	4.0.6
+Version:	4.0.10
 Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
@@ -8,7 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=9097893771863d56a69dbf233c6c97a78aaddedf
+%define sha1 redis=d2738d9b93a3220eecc83e89a7c28593b58e4909
 Patch0:         redis-conf.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
@@ -78,5 +78,7 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Fri Jun 29 2018 Ajay Kaher <akaher@vmware.com> 4.0.10-1
+- Upgrading to 4.0.10
 * Thu Jan 11 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.0.6-1
 - Initial build for photon
