@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.109
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -258,6 +258,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sun Jul 01 2018 Ron Jaegers <ron.jaegers@gmail.com> 4.9.109-4
+-   Enable USB_ACM support in the config.
 *   Wed Jun 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-3
 -   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Mon Jun 25 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-2
