@@ -1,0 +1,68 @@
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/CustomizationUtils.sh	2016-04-30 04:11:27.000000000 +0530
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/CustomizationUtils.sh	2018-06-23 03:25:28.026417053 +0530
+@@ -633,6 +633,39 @@
+   Info "RunCustomScript has completed"
+ }
+ 
++# Runs post-customization script.
++#
++# Args:
++#   scriptPath: string: relative path to the script
++# Results:
++#   None
++# Throws:
++#   Dies in case execution returns non-zero exit code.
++RunPostCustomScript()
++{
++  local scriptPath=$1
++  
++  Info "RunPostCustomScript invoked"
++  
++  if [[ -e $scriptPath ]]; then
++    # Strip any CR characters from the decoded script
++    Exec "${CAT} $scriptPath | ${TR} -d '\r' > $scriptPath.tmp" '' ''
++    Exec "${CHMOD} u+x $scriptPath.tmp" '' ''
++    
++    Info "Executing post-customization script..."
++    
++    ${SH} -c "$scriptPath.tmp postcustomization"
++    local exitCode=$?
++    if [[ $exitCode -ne 0 ]]; then
++      Die "Execution of post-customization failed!"
++    fi
++  else
++   Warn "Customization script '$scriptPath' does not exist"
++  fi
++  
++  Info "RunPostCustomScript has completed" 
++}
++
+ # Installs post-customization script.
+ #
+ # Args:
+diff -ru gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh gosc-scripts-modify/imc-shell/imgcust-scripts/PhotonCustomization.sh
+--- gosc-scripts/imc-shell/imgcust-scripts/PhotonCustomization.sh	2016-04-30 02:40:39.000000000 +0530
++++ gosc-scripts-modify/imc-shell/imgcust-scripts/PhotonCustomization.sh	2018-06-23 03:57:15.482366055 +0530
+@@ -20,7 +20,6 @@
+     scriptName=`${DIRNAME} $configPath`"/$scriptName"
+     Info "Handling customization script [$scriptName]"
+     RunCustomScript $scriptName
+-    InstallCustomScript $scriptName
+   else
+     Info "No customization script to run"
+   fi
+@@ -78,6 +77,13 @@
+   # Mount NFS if specified in config
+   MountNFSDevice
+ 
++  # Run Post customization script
++  if [[ -n "$scriptName" ]]; then
++    RunPostCustomScript $scriptName
++  else
++    Info "No post customization script to run"
++  fi
++  
+   machineId=$(GetBiosUuid "")
+ 
+ }
