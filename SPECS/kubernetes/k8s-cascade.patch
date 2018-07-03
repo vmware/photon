@@ -1,7 +1,7 @@
-From 5db4faec519b8f4c471e59f1083a8b6581d77bd3 Mon Sep 17 00:00:00 2001
+From 0f361d3f8a3f313f790e0a819aad8006f5393444 Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
 Date: Sun, 10 Jun 2018 02:16:47 -0700
-Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (da5bd0d)
+Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (3a784cd)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
@@ -24,33 +24,33 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (da5bd0d)
  pkg/cloudprovider/providers/BUILD                  |   2 +
  pkg/cloudprovider/providers/cascade/BUILD          |  56 ++
  pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
- pkg/cloudprovider/providers/cascade/apitypes.go    | 227 ++++++
+ pkg/cloudprovider/providers/cascade/apitypes.go    | 229 ++++++
  pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
  pkg/cloudprovider/providers/cascade/cascade.go     | 218 ++++++
  .../providers/cascade/cascade_disks.go             | 225 ++++++
  .../providers/cascade/cascade_instances.go         |  91 +++
- .../providers/cascade/cascade_instances_test.go    |  43 ++
- .../providers/cascade/cascade_loadbalancer.go      | 284 ++++++++
+ .../providers/cascade/cascade_instances_test.go    |  43 +
+ .../providers/cascade/cascade_loadbalancer.go      | 284 +++++++
  pkg/cloudprovider/providers/cascade/client.go      | 394 ++++++++++
- pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 ++++++++
+ pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++
  pkg/cloudprovider/providers/cascade/restclient.go  | 262 +++++++
  pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
  pkg/cloudprovider/providers/cascade/utils.go       |  25 +
  pkg/cloudprovider/providers/providers.go           |   1 +
  pkg/printers/internalversion/describe.go           |  11 +
  pkg/security/podsecuritypolicy/util/util.go        |   3 +
- pkg/volume/cascade_disk/BUILD                      |  43 ++
+ pkg/volume/cascade_disk/BUILD                      |  43 +
  pkg/volume/cascade_disk/OWNERS                     |   2 +
  pkg/volume/cascade_disk/attacher.go                | 265 +++++++
  pkg/volume/cascade_disk/cascade_disk.go            | 391 ++++++++++
  pkg/volume/cascade_disk/cascade_util.go            | 152 ++++
  .../admission/persistentvolume/label/admission.go  |  54 ++
  plugin/pkg/admission/vke/BUILD                     |  60 ++
- plugin/pkg/admission/vke/admission.go              | 499 +++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 809 +++++++++++++++++++++
+ plugin/pkg/admission/vke/admission.go              | 506 ++++++++++++
+ plugin/pkg/admission/vke/admission_test.go         | 865 +++++++++++++++++++++
  staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 +++++++-
  staging/src/k8s.io/api/core/v1/types.go            |  26 +-
- 46 files changed, 5117 insertions(+), 29 deletions(-)
+ 46 files changed, 5182 insertions(+), 29 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -728,10 +728,10 @@ index 0000000..70efc9d
 +- ysheng
 diff --git a/pkg/cloudprovider/providers/cascade/apitypes.go b/pkg/cloudprovider/providers/cascade/apitypes.go
 new file mode 100644
-index 0000000..4a94068
+index 0000000..fba1b3b
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/apitypes.go
-@@ -0,0 +1,227 @@
+@@ -0,0 +1,229 @@
 +package cascade
 +
 +import "fmt"
@@ -741,6 +741,8 @@ index 0000000..4a94068
 +	VMNotFoundError   = 2006
 +	DiskNotFoundError = 3011
 +	DiskInUseError    = 3012
++
++	DiskStateAttached = "ATTACHED"
 +)
 +
 +// Represents APIError returned by the API in case of an error.
@@ -1337,7 +1339,7 @@ index 0000000..db97234
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_disks.go b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 new file mode 100644
-index 0000000..320e123
+index 0000000..07f2245
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 @@ -0,0 +1,225 @@
@@ -1452,7 +1454,7 @@ index 0000000..320e123
 +		return false, err
 +	}
 +
-+	if disk.VM == vmID {
++	if disk.VM == vmID && StringVal(disk.State) == DiskStateAttached {
 +		return true, nil
 +	}
 +
@@ -1478,7 +1480,7 @@ index 0000000..320e123
 +			glog.Warningf("Cascade Cloud Provider: failed to get VMs for persistent disk %s, err [%v]",
 +				diskID, err)
 +		} else {
-+			if disk.VM == vmID {
++			if disk.VM == vmID && StringVal(disk.State) == DiskStateAttached {
 +				attached[diskID] = true
 +			}
 +		}
@@ -4122,10 +4124,10 @@ index 0000000..d0bb7c7
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..c73fc1b
+index 0000000..6bd7592
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,499 @@
+@@ -0,0 +1,506 @@
 +package vke
 +
 +import (
@@ -4404,6 +4406,14 @@ index 0000000..c73fc1b
 +}
 +
 +func validateNodes(a admission.Attributes) error {
++	// If it is a connect operation on the sub resource, allow it. Block update, delete and create operations on the sub
++	// resources. Sub resources of nodes are nodes/nodename/proxy and nodes/nodename/status. Prometheus needs read
++	// access to nodes/nodename/proxy/metrics. To support that and other pods which might need read access to node
++	// metrics, we need to allow this.
++	if a.GetOperation() == admission.Connect && len(a.GetSubresource()) != 0 {
++		return nil
++	}
++
 +	// If the operation is Delete, fail. Deleting a node is not something that is useful to the user. Also, by deleting
 +	// a node, they can potentially make their cluster useless.
 +	if a.GetOperation() == admission.Delete {
@@ -4465,8 +4475,7 @@ index 0000000..c73fc1b
 +	}
 +
 +	// If it is a Connect or Delete operation, allow it. We restrict access to connect to any pods in the vke-system
-+	// namespace. Also, DenyEscalatingExec admission controller denies access to connect to any privileged pod in
-+	// general. So it is OK to allow this.
++	// namespace. So it is OK to allow this.
 +	if a.GetOperation() == admission.Connect || a.GetOperation() == admission.Delete {
 +		return nil
 +	}
@@ -4627,10 +4636,10 @@ index 0000000..c73fc1b
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..52c88cc
+index 0000000..7f8ec60
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
-@@ -0,0 +1,809 @@
+@@ -0,0 +1,865 @@
 +package vke
 +
 +import (
@@ -5067,6 +5076,7 @@ index 0000000..52c88cc
 +	tests := map[string]struct {
 +		operation          kadmission.Operation
 +		resource           string
++		subresource        string
 +		name               string
 +		namespace          string
 +		userInfo           user.Info
@@ -5179,6 +5189,60 @@ index 0000000..52c88cc
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: true,
 +		},
++		"allowed: regular lightwave user get worker nodes proxy subresource": {
++			operation:          kadmission.Connect,
++			resource:           "nodes",
++			subresource:        "proxy",
++			name:               "worker-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"allowed: regular lightwave user patch worker nodes proxy subresource": {
++			operation:          kadmission.Update,
++			resource:           "nodes",
++			subresource:        "proxy",
++			name:               "worker-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"allowed: regular lightwave user create worker nodes proxy subresource": {
++			operation:          kadmission.Create,
++			resource:           "nodes",
++			subresource:        "proxy",
++			name:               "worker-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"allowed: regular lightwave user get master nodes proxy subresource": {
++			operation:          kadmission.Connect,
++			resource:           "nodes",
++			subresource:        "proxy",
++			name:               "master-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: true,
++		},
++		"denied: regular lightwave user patch master nodes proxy subresource": {
++			operation:          kadmission.Update,
++			resource:           "nodes",
++			subresource:        "proxy",
++			name:               "master-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
++		"denied: regular lightwave user create master nodes proxy subresource": {
++			operation:          kadmission.Create,
++			resource:           "nodes",
++			subresource:        "proxy",
++			name:               "master-guid",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().build(),
++			shouldPassValidate: false,
++		},
 +		"denied: regular lightwave user update master nodes": {
 +			operation:          kadmission.Update,
 +			resource:           "nodes",
@@ -5212,7 +5276,8 @@ index 0000000..52c88cc
 +		},
 +	}
 +	for k, v := range tests {
-+		testResourceValidation(k, v.operation, v.resource, v.name, v.namespace, v.userInfo, v.shouldPassValidate, t)
++		testResourceValidation(k, v.operation, v.resource, v.subresource, v.name, v.namespace, v.userInfo,
++			v.shouldPassValidate, t)
 +	}
 +}
 +
@@ -5242,8 +5307,8 @@ index 0000000..52c88cc
 +	}
 +}
 +
-+func testResourceValidation(testCaseName string, op kadmission.Operation, resource string, name string,
-+	namespace string, userInfo user.Info, shouldPassValidate bool, t *testing.T) {
++func testResourceValidation(testCaseName string, op kadmission.Operation, resource, subresource, name, namespace string,
++	userInfo user.Info, shouldPassValidate bool, t *testing.T) {
 +
 +	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup, pspFileName)
 +	configFile := strings.NewReader(defaultConfigFile)
@@ -5258,7 +5323,7 @@ index 0000000..52c88cc
 +	}
 +
 +	attrs := kadmission.NewAttributesRecord(nil, nil, kapi.Kind("kind").WithVersion("version"),
-+		namespace, name, groupResource, "", op, userInfo)
++		namespace, name, groupResource, subresource, op, userInfo)
 +
 +	err = plugin.Validate(attrs)
 +	if shouldPassValidate && err != nil {
