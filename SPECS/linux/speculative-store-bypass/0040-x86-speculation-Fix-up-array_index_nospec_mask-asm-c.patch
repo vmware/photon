@@ -23,12 +23,12 @@ Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/include/asm/barrier.h b/arch/x86/include/asm/barrier.h
-index 814ef83..c6975e3 100644
+index e3a6f66..7f5dcb6 100644
 --- a/arch/x86/include/asm/barrier.h
 +++ b/arch/x86/include/asm/barrier.h
 @@ -40,7 +40,7 @@ static inline unsigned long array_index_mask_nospec(unsigned long index,
  
- 	asm ("cmp %1,%2; sbb %0,%0;"
+ 	asm volatile ("cmp %1,%2; sbb %0,%0;"
  			:"=r" (mask)
 -			:"r"(size),"r" (index)
 +			:"g"(size),"r" (index)
