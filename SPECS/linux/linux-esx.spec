@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.109
-Release:        4%{?dist}
+Version:        4.9.111
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=9d3af34a31661b2c7f6bea5682deb131c406f3d6
+%define sha1 linux=4130f2b7979e04c94bef21755d413560961311a3
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -258,6 +258,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sat Jul 07 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.111-1
+-   Update to version 4.9.111.
+-   .config: use =y for vmxnet3 instead of =m, use lz4 for bzImage.
 *   Sun Jul 01 2018 Ron Jaegers <ron.jaegers@gmail.com> 4.9.109-4
 -   Enable USB_ACM support in the config.
 *   Wed Jun 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-3

@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.109
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.111
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=9d3af34a31661b2c7f6bea5682deb131c406f3d6
+%define sha1 linux=4130f2b7979e04c94bef21755d413560961311a3
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -373,6 +373,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Sat Jul 07 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.111-1
+-   Update to version 4.9.111
 *   Sun Jul 01 2018 Ron Jaegers <ron.jaegers@gmail.com> 4.9.109-3
 -   Enable USB_ACM support in the config.
 *   Wed Jun 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.109-2
