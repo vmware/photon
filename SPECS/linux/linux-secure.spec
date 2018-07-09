@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.14.8
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.14.54
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=45f140e0eab08428d78d81d4169d531a3e65a297
+%define sha1 linux=434080e874f7b78c3234f22784427d4a189fb54d
 Source1:        config-secure
 Source2:        initramfs.trigger
 # common
@@ -222,6 +222,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
+-   Update to version 4.14.54
 *   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2
 -   Extra hardening: slab_nomerge and some .config changes
 *   Fri Feb 16 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1

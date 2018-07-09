@@ -9,7 +9,7 @@ In case of panic kmsg will be dumped to vmware.log file
  1 file changed, 142 insertions(+), 3 deletions(-)
 
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 40ed2685..50ed5769 100644
+index 8e005329648b..eb8515b5cad7 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -30,19 +30,24 @@
@@ -63,10 +63,10 @@ index 40ed2685..50ed5769 100644
  }
  
  /*
-@@ -212,3 +226,128 @@ const __refconst struct hypervisor_x86 x86_hyper_vmware = {
- 	.x2apic_available	= vmware_legacy_x2apic_available,
+@@ -212,3 +226,128 @@ const __initconst struct hypervisor_x86 x86_hyper_vmware = {
+ 	.init.init_platform	= vmware_platform_setup,
+ 	.init.x2apic_available	= vmware_legacy_x2apic_available,
  };
- EXPORT_SYMBOL(x86_hyper_vmware);
 +
 +#define MESSAGE_STATUS_SUCCESS  (0x01 << 16)
 +#define MESSAGE_STATUS_CPT      (0x10 << 16)
@@ -192,6 +192,3 @@ index 40ed2685..50ed5769 100644
 +			break;
 +	}
 +}
--- 
-2.11.0
-

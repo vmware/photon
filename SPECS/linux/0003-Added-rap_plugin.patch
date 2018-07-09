@@ -161,11 +161,12 @@ Functions signature fixing is probably still required.
  create mode 100644 scripts/gcc-plugins/rap_plugin/rap_plugin.c
  create mode 100644 scripts/gcc-plugins/rap_plugin/sip.c
 
+
 diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
-index 16627fe..b941202 100644
+index 12e8484..dea170b 100644
 --- a/arch/x86/crypto/aesni-intel_asm.S
 +++ b/arch/x86/crypto/aesni-intel_asm.S
-@@ -1396,7 +1396,7 @@ _esb_loop_\@:
+@@ -1332,7 +1332,7 @@ _esb_loop_\@:
  * poly = x^128 + x^127 + x^126 + x^121 + 1
  *
  *****************************************************************************/
@@ -174,7 +175,7 @@ index 16627fe..b941202 100644
  	push	%r12
  	push	%r13
  	push	%r14
-@@ -1673,7 +1673,7 @@ ENDPROC(aesni_gcm_dec)
+@@ -1595,7 +1595,7 @@ ENDPROC(aesni_gcm_dec)
  *
  * poly = x^128 + x^127 + x^126 + x^121 + 1
  ***************************************************************************/
@@ -183,7 +184,7 @@ index 16627fe..b941202 100644
  	push	%r12
  	push	%r13
  	push	%r14
-@@ -2064,7 +2064,7 @@ ENDPROC(aesni_set_key)
+@@ -1980,7 +1980,7 @@ ENDPROC(aesni_set_key)
  /*
   * void aesni_enc(struct crypto_aes_ctx *ctx, u8 *dst, const u8 *src)
   */
@@ -192,7 +193,7 @@ index 16627fe..b941202 100644
  	FRAME_BEGIN
  #ifndef __x86_64__
  	pushl KEYP
-@@ -2255,7 +2255,7 @@ ENDPROC(_aesni_enc4)
+@@ -2171,7 +2171,7 @@ ENDPROC(_aesni_enc4)
  /*
   * void aesni_dec (struct crypto_aes_ctx *ctx, u8 *dst, const u8 *src)
   */
@@ -201,7 +202,7 @@ index 16627fe..b941202 100644
  	FRAME_BEGIN
  #ifndef __x86_64__
  	pushl KEYP
-@@ -2764,7 +2764,7 @@ ENDPROC(_aesni_inc)
+@@ -2680,7 +2680,7 @@ ENDPROC(_aesni_inc)
   * void aesni_ctr_enc(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
   *		      size_t len, u8 *iv)
   */
@@ -211,10 +212,10 @@ index 16627fe..b941202 100644
  	cmp $16, LEN
  	jb .Lctr_enc_just_ret
 diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
-index 5c15d6b..51d6a65 100644
+index c690ddc..ca0084c 100644
 --- a/arch/x86/crypto/aesni-intel_glue.c
 +++ b/arch/x86/crypto/aesni-intel_glue.c
-@@ -73,9 +73,9 @@ struct aesni_xts_ctx {
+@@ -74,9 +74,9 @@ struct aesni_xts_ctx {
  
  asmlinkage int aesni_set_key(struct crypto_aes_ctx *ctx, const u8 *in_key,
  			     unsigned int key_len);
@@ -227,7 +228,7 @@ index 5c15d6b..51d6a65 100644
  asmlinkage void aesni_ecb_enc(struct crypto_aes_ctx *ctx, u8 *out,
  			      const u8 *in, unsigned int len);
 diff --git a/arch/x86/crypto/blowfish-x86_64-asm_64.S b/arch/x86/crypto/blowfish-x86_64-asm_64.S
-index 8c1fcb6..9c229bd 100644
+index 8c1fcb6..9c229bdd8 100644
 --- a/arch/x86/crypto/blowfish-x86_64-asm_64.S
 +++ b/arch/x86/crypto/blowfish-x86_64-asm_64.S
 @@ -156,7 +156,7 @@ ENTRY(__blowfish_enc_blk)
@@ -249,10 +250,10 @@ index 8c1fcb6..9c229bd 100644
  	 *	%rdi: ctx
  	 *	%rsi: dst
 diff --git a/arch/x86/crypto/camellia-aesni-avx-asm_64.S b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
-index f7c495e..bc8523d 100644
+index a14af6e..f24f291 100644
 --- a/arch/x86/crypto/camellia-aesni-avx-asm_64.S
 +++ b/arch/x86/crypto/camellia-aesni-avx-asm_64.S
-@@ -892,7 +892,7 @@ __camellia_dec_blk16:
+@@ -893,7 +893,7 @@ __camellia_dec_blk16:
  	jmp .Ldec_max24;
  ENDPROC(__camellia_dec_blk16)
  
@@ -261,7 +262,7 @@ index f7c495e..bc8523d 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -917,7 +917,7 @@ ENTRY(camellia_ecb_enc_16way)
+@@ -918,7 +918,7 @@ ENTRY(camellia_ecb_enc_16way)
  	ret;
  ENDPROC(camellia_ecb_enc_16way)
  
@@ -270,7 +271,7 @@ index f7c495e..bc8523d 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -947,7 +947,7 @@ ENTRY(camellia_ecb_dec_16way)
+@@ -948,7 +948,7 @@ ENTRY(camellia_ecb_dec_16way)
  	ret;
  ENDPROC(camellia_ecb_dec_16way)
  
@@ -279,7 +280,7 @@ index f7c495e..bc8523d 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -1004,7 +1004,7 @@ ENDPROC(camellia_cbc_dec_16way)
+@@ -1005,7 +1005,7 @@ ENDPROC(camellia_cbc_dec_16way)
  	vpslldq $8, tmp, tmp; \
  	vpsubq tmp, x, x;
  
@@ -288,7 +289,7 @@ index f7c495e..bc8523d 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -1255,7 +1255,7 @@ camellia_xts_crypt_16way:
+@@ -1256,7 +1256,7 @@ camellia_xts_crypt_16way:
  	ret;
  ENDPROC(camellia_xts_crypt_16way)
  
@@ -297,7 +298,7 @@ index f7c495e..bc8523d 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
-@@ -1269,7 +1269,7 @@ ENTRY(camellia_xts_enc_16way)
+@@ -1270,7 +1270,7 @@ ENTRY(camellia_xts_enc_16way)
  	jmp camellia_xts_crypt_16way;
  ENDPROC(camellia_xts_enc_16way)
  
@@ -307,10 +308,10 @@ index f7c495e..bc8523d 100644
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (16 blocks)
 diff --git a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
-index eee5b39..4aa502c 100644
+index b66bbfa..10093da 100644
 --- a/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
 +++ b/arch/x86/crypto/camellia-aesni-avx2-asm_64.S
-@@ -935,7 +935,7 @@ __camellia_dec_blk32:
+@@ -936,7 +936,7 @@ __camellia_dec_blk32:
  	jmp .Ldec_max24;
  ENDPROC(__camellia_dec_blk32)
  
@@ -319,7 +320,7 @@ index eee5b39..4aa502c 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -964,7 +964,7 @@ ENTRY(camellia_ecb_enc_32way)
+@@ -965,7 +965,7 @@ ENTRY(camellia_ecb_enc_32way)
  	ret;
  ENDPROC(camellia_ecb_enc_32way)
  
@@ -328,7 +329,7 @@ index eee5b39..4aa502c 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -998,7 +998,7 @@ ENTRY(camellia_ecb_dec_32way)
+@@ -999,7 +999,7 @@ ENTRY(camellia_ecb_dec_32way)
  	ret;
  ENDPROC(camellia_ecb_dec_32way)
  
@@ -337,7 +338,7 @@ index eee5b39..4aa502c 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -1080,7 +1080,7 @@ ENDPROC(camellia_cbc_dec_32way)
+@@ -1081,7 +1081,7 @@ ENDPROC(camellia_cbc_dec_32way)
  	vpslldq $8, tmp1, tmp1; \
  	vpsubq tmp1, x, x;
  
@@ -346,7 +347,7 @@ index eee5b39..4aa502c 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -1373,7 +1373,7 @@ camellia_xts_crypt_32way:
+@@ -1374,7 +1374,7 @@ camellia_xts_crypt_32way:
  	ret;
  ENDPROC(camellia_xts_crypt_32way)
  
@@ -355,7 +356,7 @@ index eee5b39..4aa502c 100644
  	/* input:
  	 *	%rdi: ctx, CTX
  	 *	%rsi: dst (32 blocks)
-@@ -1388,7 +1388,7 @@ ENTRY(camellia_xts_enc_32way)
+@@ -1389,7 +1389,7 @@ ENTRY(camellia_xts_enc_32way)
  	jmp camellia_xts_crypt_32way;
  ENDPROC(camellia_xts_enc_32way)
  
@@ -858,7 +859,7 @@ index fb58f58..cf67f33 100644
  	shl		$6, NUM_BLKS		/*  convert to bytes */
  	jz		.Ldone_hash
 diff --git a/arch/x86/crypto/sha256_ssse3_glue.c b/arch/x86/crypto/sha256_ssse3_glue.c
-index 9e79baf..c5186c7 100644
+index 9e79baf..c5186c74 100644
 --- a/arch/x86/crypto/sha256_ssse3_glue.c
 +++ b/arch/x86/crypto/sha256_ssse3_glue.c
 @@ -40,9 +40,9 @@
@@ -1084,10 +1085,10 @@ index 694ea45..f2c1418 100644
  	push    %ebx
  	push    %esi
 diff --git a/arch/x86/crypto/twofish-x86_64-asm_64-3way.S b/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
-index 1c3b7ce..edf12ec 100644
+index e7273a6..dd44bac 100644
 --- a/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
 +++ b/arch/x86/crypto/twofish-x86_64-asm_64-3way.S
-@@ -272,7 +272,7 @@ ENTRY(__twofish_enc_blk_3way)
+@@ -284,7 +284,7 @@ ENTRY(__twofish_enc_blk_3way)
  	ret;
  ENDPROC(__twofish_enc_blk_3way)
  
@@ -1129,40 +1130,41 @@ index 06fc70c..03f4755 100644
 +CFLAGS_REMOVE_syscall_32.o = $(RAP_PLUGIN_ABS_CFLAGS)
 +CFLAGS_REMOVE_syscall_64.o = $(RAP_PLUGIN_ABS_CFLAGS)
 diff --git a/arch/x86/entry/common.c b/arch/x86/entry/common.c
-index 03505ff..0caf70b 100644
+index 60e21cc..0d2d08f 100644
 --- a/arch/x86/entry/common.c
 +++ b/arch/x86/entry/common.c
-@@ -284,9 +284,29 @@ __visible void do_syscall_64(struct pt_regs *regs)
+@@ -285,10 +285,30 @@ __visible void do_syscall_64(struct pt_regs *regs)
  	 * regs->orig_ax, which changes the behavior of some syscalls.
  	 */
  	if (likely((nr & __SYSCALL_MASK) < NR_syscalls)) {
 +#ifdef CONFIG_PAX_RAP
 +		asm volatile("movq %[param1],%%rdi\n\t"
-+			     "movq %[param2],%%rsi\n\t"
-+			     "movq %[param3],%%rdx\n\t"
-+			     "movq %[param4],%%rcx\n\t"
-+			     "movq %[param5],%%r8\n\t"
-+			     "movq %[param6],%%r9\n\t"
-+			     "call *%P[syscall]\n\t"
-+			     "mov %%rax,%[result]\n\t"
++			"movq %[param2],%%rsi\n\t"
++			"movq %[param3],%%rdx\n\t"
++			"movq %[param4],%%rcx\n\t"
++			"movq %[param5],%%r8\n\t"
++			"movq %[param6],%%r9\n\t"
++			"call *%P[syscall]\n\t"
++			"mov %%rax,%[result]\n\t"
 +			: [result] "=m" (regs->ax)
 +			: [syscall] "m" (sys_call_table[nr & __SYSCALL_MASK]),
-+			  [param1] "m" (regs->di),
-+			  [param2] "m" (regs->si),
-+			  [param3] "m" (regs->dx),
-+			  [param4] "m" (regs->r10),
-+			  [param5] "m" (regs->r8),
-+			  [param6] "m" (regs->r9)
++			[param1] "m" (regs->di),
++			[param2] "m" (regs->si),
++			[param3] "m" (regs->dx),
++			[param4] "m" (regs->r10),
++			[param5] "m" (regs->r8),
++			[param6] "m" (regs->r9)
 +			: "ax", "di", "si", "dx", "cx", "r8", "r9", "r10", "r11", "memory");
 +#else
- 		regs->ax = sys_call_table[nr & __SYSCALL_MASK](
+ 		nr = array_index_nospec(nr & __SYSCALL_MASK, NR_syscalls);
+ 		regs->ax = sys_call_table[nr](
  			regs->di, regs->si, regs->dx,
  			regs->r10, regs->r8, regs->r9);
 +#endif
  	}
  
  	syscall_return_slowpath(regs);
-@@ -326,10 +346,51 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs)
+@@ -329,10 +349,51 @@ static __always_inline void do_syscall_32_irqs_on(struct pt_regs *regs)
  		 * the high bits are zero.  Make sure we zero-extend all
  		 * of the args.
  		 */
@@ -1240,10 +1242,10 @@ index 62be73b..4133797 100644
  extern void e820__range_add   (u64 start, u64 size, enum e820_type type);
  extern u64  e820__range_update(u64 start, u64 size, enum e820_type old_type, enum e820_type new_type);
 diff --git a/arch/x86/include/asm/fixmap.h b/arch/x86/include/asm/fixmap.h
-index dcd9fb5..59f1e2a 100644
+index e203169..0ef405e 100644
 --- a/arch/x86/include/asm/fixmap.h
 +++ b/arch/x86/include/asm/fixmap.h
-@@ -146,7 +146,7 @@ extern pte_t *kmap_pte;
+@@ -149,7 +149,7 @@ extern pte_t *kmap_pte;
  extern pte_t *pkmap_page_table;
  
  void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
@@ -1253,7 +1255,7 @@ index dcd9fb5..59f1e2a 100644
  
  #ifndef CONFIG_PARAVIRT
 diff --git a/arch/x86/include/asm/module.h b/arch/x86/include/asm/module.h
-index 8546faf..157cf48 100644
+index 7948a17..bc2b010 100644
 --- a/arch/x86/include/asm/module.h
 +++ b/arch/x86/include/asm/module.h
 @@ -15,6 +15,7 @@ struct mod_arch_specific {
@@ -1280,7 +1282,7 @@ index 8546faf..157cf48 100644
 +
  #endif /* _ASM_X86_MODULE_H */
 diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index fa6ea7d..5fa4efe 100644
+index e05babd..da8005e 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
 @@ -262,11 +262,17 @@ static __init int activate_jump_labels(void)
@@ -1316,7 +1318,7 @@ index 71c11ad..35d8c4d 100644
  	return __e820__mapped_all(start, end, type);
  }
 diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-index c832291..77d90bc 100644
+index 7cb8ba0..fd9df42 100644
 --- a/arch/x86/kernel/ftrace_64.S
 +++ b/arch/x86/kernel/ftrace_64.S
 @@ -182,7 +182,7 @@ GLOBAL(ftrace_graph_call)
@@ -1329,10 +1331,10 @@ index c832291..77d90bc 100644
  END(ftrace_caller)
  
 diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index 5a6b8f8..f1e53dd 100644
+index a66428dc..bed821f 100644
 --- a/arch/x86/kernel/traps.c
 +++ b/arch/x86/kernel/traps.c
-@@ -211,6 +211,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
+@@ -210,6 +210,10 @@ do_trap_no_signal(struct task_struct *tsk, int trapnr, char *str,
  
  		tsk->thread.error_code = error_code;
  		tsk->thread.trap_nr = trapnr;
@@ -1344,10 +1346,10 @@ index 5a6b8f8..f1e53dd 100644
  	}
  
 diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index 17ebc5a..c9c5b2d 100644
+index 004abf9..9db5ce3 100644
 --- a/arch/x86/mm/pgtable.c
 +++ b/arch/x86/mm/pgtable.c
-@@ -579,7 +579,7 @@ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte)
+@@ -580,7 +580,7 @@ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte)
  	fixmaps_set++;
  }
  
@@ -1357,7 +1359,7 @@ index 17ebc5a..c9c5b2d 100644
  {
  	__native_set_fixmap(idx, pfn_pte(phys >> PAGE_SHIFT, flags));
 diff --git a/arch/x86/oprofile/nmi_int.c b/arch/x86/oprofile/nmi_int.c
-index ffdbc48..174c597 100644
+index abff76b..a7a7677 100644
 --- a/arch/x86/oprofile/nmi_int.c
 +++ b/arch/x86/oprofile/nmi_int.c
 @@ -592,7 +592,7 @@ enum __force_cpu_type {
@@ -1498,7 +1500,7 @@ index 9f2e3be..676c910 100644
  	int rv = param_set_int(val, kp);
  	if (rv)
 diff --git a/drivers/char/ipmi/ipmi_si_intf.c b/drivers/char/ipmi/ipmi_si_intf.c
-index e1cbb78..cd98978 100644
+index c04aa11..9abc067 100644
 --- a/drivers/char/ipmi/ipmi_si_intf.c
 +++ b/drivers/char/ipmi/ipmi_si_intf.c
 @@ -1345,7 +1345,7 @@ static unsigned int num_slave_addrs;
@@ -1523,7 +1525,7 @@ diff --git a/drivers/char/tpm/tpm-chip.c b/drivers/char/tpm/tpm-chip.c
 index 0eca20c..32a2682 100644
 --- a/drivers/char/tpm/tpm-chip.c
 +++ b/drivers/char/tpm/tpm-chip.c
-@@ -267,6 +267,11 @@ out:
+@@ -267,6 +267,11 @@ struct tpm_chip *tpm_chip_alloc(struct device *pdev,
  }
  EXPORT_SYMBOL_GPL(tpm_chip_alloc);
  
@@ -1681,7 +1683,7 @@ index d127ace..6ee866f 100644
  	int i, j = 1;
  
 diff --git a/drivers/md/md.c b/drivers/md/md.c
-index 98ea863..3b810cc 100644
+index e058c20..7671b14 100644
 --- a/drivers/md/md.c
 +++ b/drivers/md/md.c
 @@ -5357,7 +5357,7 @@ static struct kobject *md_probe(dev_t dev, int *part, void *data)
@@ -1693,7 +1695,7 @@ index 98ea863..3b810cc 100644
  {
  	/*
  	 * val must be "md_*" or "mdNNN".
-@@ -9274,11 +9274,11 @@ static __exit void md_exit(void)
+@@ -9278,11 +9278,11 @@ static __exit void md_exit(void)
  subsys_initcall(md_init);
  module_exit(md_exit)
  
@@ -2699,10 +2701,10 @@ index 6e13c93..839dd12 100644
  	/*
  	 * Init NAPI, so that state is set to NAPI_STATE_SCHED,
 diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-index cae54f8..5155386 100644
+index 633e55c..b9ad02a 100644
 --- a/drivers/pci/pcie/aspm.c
 +++ b/drivers/pci/pcie/aspm.c
-@@ -1061,7 +1061,7 @@ void pci_disable_link_state(struct pci_dev *pdev, int state)
+@@ -1065,7 +1065,7 @@ void pci_disable_link_state(struct pci_dev *pdev, int state)
  }
  EXPORT_SYMBOL(pci_disable_link_state);
  
@@ -2711,7 +2713,7 @@ index cae54f8..5155386 100644
  {
  	int i;
  	struct pcie_link_state *link;
-@@ -1088,7 +1088,7 @@ static int pcie_aspm_set_policy(const char *val, struct kernel_param *kp)
+@@ -1092,7 +1092,7 @@ static int pcie_aspm_set_policy(const char *val, struct kernel_param *kp)
  	return 0;
  }
  
@@ -2747,7 +2749,7 @@ index 3f38907..95540ea 100644
  			    const u32 len)
  {
 diff --git a/drivers/scsi/aacraid/aachba.c b/drivers/scsi/aacraid/aachba.c
-index af3e4d3..c028cdc 100644
+index 7173ae5..039ba66 100644
 --- a/drivers/scsi/aacraid/aachba.c
 +++ b/drivers/scsi/aacraid/aachba.c
 @@ -812,6 +812,11 @@ static int aac_probe_container_callback1(struct scsi_cmnd * scsicmd)
@@ -3522,7 +3524,7 @@ index 5caf5f3..fcff931 100644
  	struct bfad_s *bfad = pci_get_drvdata(pdev);
  	unsigned long	flags;
 diff --git a/drivers/scsi/bfa/bfad_bsg.c b/drivers/scsi/bfa/bfad_bsg.c
-index b2e8c0d..e1bd5ea 100644
+index 1aa46d0..5e4fa77 100644
 --- a/drivers/scsi/bfa/bfad_bsg.c
 +++ b/drivers/scsi/bfa/bfad_bsg.c
 @@ -2145,7 +2145,7 @@ bfad_iocmd_fcport_get_stats(struct bfad_s *bfad, void *cmd)
@@ -4127,7 +4129,7 @@ index 375c536..618843b 100644
  {
  	int rc = -ENODEV;
  	struct net_device *netdev = NULL;
-@@ -930,7 +930,7 @@ out_nodev:
+@@ -930,7 +930,7 @@ static int fcoe_transport_create(const char *buffer, struct kernel_param *kp)
   *
   * Returns: 0 for success
   */
@@ -4136,7 +4138,7 @@ index 375c536..618843b 100644
  {
  	int rc = -ENODEV;
  	struct net_device *netdev = NULL;
-@@ -974,7 +974,7 @@ out_nodev:
+@@ -974,7 +974,7 @@ static int fcoe_transport_destroy(const char *buffer, struct kernel_param *kp)
   *
   * Returns: 0 for success
   */
@@ -4145,7 +4147,7 @@ index 375c536..618843b 100644
  {
  	int rc = -ENODEV;
  	struct net_device *netdev = NULL;
-@@ -1008,7 +1008,7 @@ out_nodev:
+@@ -1008,7 +1008,7 @@ static int fcoe_transport_disable(const char *buffer, struct kernel_param *kp)
   *
   * Returns: 0 for success
   */
@@ -4279,7 +4281,7 @@ index 8799990..3d36dee 100644
  	int ret = param_set_int(val, kp);
  	struct MPT3SAS_ADAPTER *ioc;
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 22998cb..07719da 100644
+index 33ff691..483fe89 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 @@ -281,7 +281,7 @@ struct _scsi_io_transfer {
@@ -4408,7 +4410,7 @@ index a260cde..1b99d3b 100644
  	int len = strlen(kmessage);
  
 diff --git a/drivers/video/console/dummycon.c b/drivers/video/console/dummycon.c
-index 9269d56..219a68b 100644
+index b90ef96..48c94ba 100644
 --- a/drivers/video/console/dummycon.c
 +++ b/drivers/video/console/dummycon.c
 @@ -41,12 +41,61 @@ static void dummycon_init(struct vc_data *vc, int init)
@@ -4475,7 +4477,7 @@ index 9269d56..219a68b 100644
  
  /*
   *  The console `switch' structure for the dummy console
-@@ -58,17 +107,17 @@ const struct consw dummy_con = {
+@@ -58,16 +107,16 @@ const struct consw dummy_con = {
      .owner =		THIS_MODULE,
      .con_startup =	dummycon_startup,
      .con_init =		dummycon_init,
@@ -4488,7 +4490,6 @@ index 9269d56..219a68b 100644
 -    .con_switch =	DUMMY,
 -    .con_blank =	DUMMY,
 -    .con_font_set =	DUMMY,
--    .con_font_get =	DUMMY,
 -    .con_font_default =	DUMMY,
 -    .con_font_copy =	DUMMY,
 +    .con_deinit =	dummycon_deinit,
@@ -4500,7 +4501,6 @@ index 9269d56..219a68b 100644
 +    .con_switch =	dummycon_switch,
 +    .con_blank =	dummycon_blank,
 +    .con_font_set =	dummycon_font_set,
-+    .con_font_get =	dummycon_font_get,
 +    .con_font_default =	dummycon_font_default,
 +    .con_font_copy =	dummycon_font_copy,
  };
@@ -4558,7 +4558,7 @@ diff --git a/fs/exofs/inode.c b/fs/exofs/inode.c
 index 0ac6281..cec5adf 100644
 --- a/fs/exofs/inode.c
 +++ b/fs/exofs/inode.c
-@@ -470,6 +470,11 @@ fail:
+@@ -470,6 +470,11 @@ static int readpage_strip(void *data, struct page *page)
  	return ret;
  }
  
@@ -4618,10 +4618,10 @@ index 94a745a..a79e320 100644
  	int rv;
  
 diff --git a/fs/lockd/svc.c b/fs/lockd/svc.c
-index 45e9654..076d7bb 100644
+index 809cbcc..6525c05 100644
 --- a/fs/lockd/svc.c
 +++ b/fs/lockd/svc.c
-@@ -602,7 +602,7 @@ static struct ctl_table nlm_sysctl_root[] = {
+@@ -614,7 +614,7 @@ static struct ctl_table nlm_sysctl_root[] = {
   */
  
  #define param_set_min_max(name, type, which_strtol, min, max)		\
@@ -4634,7 +4634,7 @@ diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
 index bf2c436..d04d41b 100644
 --- a/fs/nfs/dir.c
 +++ b/fs/nfs/dir.c
-@@ -671,8 +671,9 @@ out:
+@@ -671,8 +671,9 @@ int nfs_readdir_xdr_to_array(nfs_readdir_descriptor_t *desc, struct page *page,
   * We only need to convert from xdr once so future lookups are much simpler
   */
  static
@@ -4858,7 +4858,7 @@ index 2c61c6b..43a01c7 100644
  	DECODE_HEAD;
  
  	READ_BUF(4);
-@@ -896,8 +913,9 @@ xdr_error:
+@@ -896,8 +913,9 @@ static __be32 nfsd4_decode_opaque(struct nfsd4_compoundargs *argp, struct xdr_ne
  }
  
  static __be32
@@ -5109,7 +5109,7 @@ index 2c61c6b..43a01c7 100644
  	int i;
  	__be32 *p, status;
  	struct nfsd4_test_stateid_id *stateid;
-@@ -1554,8 +1593,9 @@ xdr_error:
+@@ -1554,8 +1593,9 @@ nfsd4_decode_test_stateid(struct nfsd4_compoundargs *argp, struct nfsd4_test_sta
  	goto out;
  }
  
@@ -5459,7 +5459,7 @@ index 2c61c6b..43a01c7 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	struct svc_fh *fhp = *fhpp;
  	unsigned int len;
-@@ -3250,8 +3307,10 @@ again:
+@@ -3250,8 +3307,10 @@ nfsd4_encode_lock_denied(struct xdr_stream *xdr, struct nfsd4_lock_denied *ld)
  }
  
  static __be32
@@ -5572,7 +5572,7 @@ index 2c61c6b..43a01c7 100644
  	int maxcount;
  	int bytes_left;
  	loff_t offset;
-@@ -3707,8 +3776,9 @@ err_no_verf:
+@@ -3707,8 +3776,9 @@ nfsd4_encode_readdir(struct nfsd4_compoundres *resp, __be32 nfserr, struct nfsd4
  }
  
  static __be32
@@ -5716,7 +5716,7 @@ index 2c61c6b..43a01c7 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	const struct nfsd4_layout_ops *ops;
  	u32 starting_len = xdr->buf->len, needed_len;
-@@ -4118,9 +4199,9 @@ toosmall:
+@@ -4118,9 +4199,9 @@ nfsd4_encode_getdeviceinfo(struct nfsd4_compoundres *resp, __be32 nfserr,
  }
  
  static __be32
@@ -5938,10 +5938,10 @@ index 2c61c6b..43a01c7 100644
  
  /*
 diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index 2027104..4a9913a 100644
+index e8c9cd1..247e6d0 100644
 --- a/include/linux/compiler.h
 +++ b/include/linux/compiler.h
-@@ -257,27 +257,18 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
+@@ -158,27 +158,18 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
  
  #include <uapi/linux/types.h>
  
@@ -5979,7 +5979,7 @@ index 2027104..4a9913a 100644
  /*
   * This function is not 'inline' because __no_sanitize_address confilcts
   * with inlining. Attempt to inline it may cause a build failure.
-@@ -287,29 +278,20 @@ void __read_once_size(const volatile void *p, void *res, int size)
+@@ -188,29 +179,20 @@ void __read_once_size(const volatile void *p, void *res, int size)
  static __no_sanitize_address __maybe_unused
  void __read_once_size_nocheck(const volatile void *p, void *res, int size)
  {
@@ -6017,9 +6017,9 @@ index 2027104..4a9913a 100644
  
  /*
   * Prevent the compiler from merging or refetching reads or writes. The
-@@ -334,29 +316,15 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
-  * required ordering.
+@@ -236,30 +218,15 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
   */
+ #include <asm/barrier.h>
  
 -#define __READ_ONCE(x, check)						\
 -({									\
@@ -6028,10 +6028,11 @@ index 2027104..4a9913a 100644
 -		__read_once_size(&(x), __u.__c, sizeof(x));		\
 -	else								\
 -		__read_once_size_nocheck(&(x), __u.__c, sizeof(x));	\
+-	smp_read_barrier_depends(); /* Enforce dependency ordering from x */ \
 -	__u.__val;							\
-+#define READ_ONCE(x) ({					\
-+	typeof(x) __val = *(volatile typeof(x) *)&(x);	\
-+	__val;						\
++#define READ_ONCE(x) ({                                        \
++	typeof(x) __val = *(volatile typeof(x) *)&(x);  	\
++	__val;							\
  })
 -#define READ_ONCE(x) __READ_ONCE(x, 1)
  
@@ -6047,14 +6048,18 @@ index 2027104..4a9913a 100644
 -		{ .__val = (__force typeof(x)) (val) }; \
 -	__write_once_size(&(x), __u.__c, sizeof(x));	\
 -	__u.__val;					\
-+#define WRITE_ONCE(x, val) ({				\
-+	typeof(x) __val = (val);			\
-+	(x) = *(volatile typeof(x) *)&__val;		\
-+	__val;						\
++#define WRITE_ONCE(x, val) ({                          \
++	typeof(x) __val = (val);                        \
++	(x) = *(volatile typeof(x) *)&__val;            \
++	__val;                                          \
  })
  
  #endif /* __KERNEL__ */
-@@ -519,6 +487,8 @@ static __always_inline void __write_once_size(volatile void *p, void *res, int s
+diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
+index 6b79a9b..5ddfac5 100644
+--- a/include/linux/compiler_types.h
++++ b/include/linux/compiler_types.h
+@@ -266,6 +266,8 @@ struct ftrace_likely_data {
  # define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
  #endif
  
@@ -6064,7 +6069,7 @@ index 2027104..4a9913a 100644
  #ifndef __native_word
  # define __native_word(t) (sizeof(t) == sizeof(char) || sizeof(t) == sizeof(short) || sizeof(t) == sizeof(int) || sizeof(t) == sizeof(long))
 diff --git a/include/linux/linkage.h b/include/linux/linkage.h
-index 2e6f90b..1f221eb 100644
+index f68db9e..30ed811 100644
 --- a/include/linux/linkage.h
 +++ b/include/linux/linkage.h
 @@ -6,6 +6,7 @@
@@ -6237,7 +6242,7 @@ index a78186d..ef7fd29 100644
  
  /*
 diff --git a/include/linux/timer.h b/include/linux/timer.h
-index ac66f29..fb350b0 100644
+index e0ea1fe..f5d5636 100644
 --- a/include/linux/timer.h
 +++ b/include/linux/timer.h
 @@ -173,7 +173,7 @@ static inline void init_timer_on_stack_key(struct timer_list *timer,
@@ -6263,10 +6268,10 @@ index 792c3f6..f5223bf 100644
  
  extern struct hlist_nulls_head *nf_conntrack_hash;
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 7b62df8..3e261db 100644
+index d203a5d6..6d32f69 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -489,6 +489,8 @@ int bpf_get_kallsym(unsigned int symnum, unsigned long *value, char *type,
+@@ -485,6 +485,8 @@ int bpf_get_kallsym(unsigned int symnum, unsigned long *value, char *type,
  	return ret;
  }
  
@@ -6275,7 +6280,7 @@ index 7b62df8..3e261db 100644
  struct bpf_binary_header *
  bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  		     unsigned int alignment,
-@@ -512,11 +514,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
+@@ -508,11 +510,24 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
  	hdr->pages = size / PAGE_SIZE;
  	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
  		     PAGE_SIZE - sizeof(*hdr));
@@ -6301,7 +6306,7 @@ index 7b62df8..3e261db 100644
  }
  
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 4f1d4bf..cf63e11 100644
+index f42f7c7..444b7b9 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
 @@ -1046,8 +1046,9 @@ static void __perf_mux_hrtimer_init(struct perf_cpu_context *cpuctx, int cpu)
@@ -6315,7 +6320,7 @@ index 4f1d4bf..cf63e11 100644
  	struct hrtimer *timer = &cpuctx->hrtimer;
  	struct pmu *pmu = cpuctx->ctx.pmu;
  	unsigned long flags;
-@@ -9035,8 +9036,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
+@@ -9039,8 +9040,7 @@ perf_event_mux_interval_ms_store(struct device *dev,
  		cpuctx = per_cpu_ptr(pmu->pmu_cpu_context, cpu);
  		cpuctx->hrtimer_interval = ns_to_ktime(NSEC_PER_MSEC * timer);
  
@@ -6326,10 +6331,10 @@ index 4f1d4bf..cf63e11 100644
  	cpus_read_unlock();
  	mutex_unlock(&mux_interval_mutex);
 diff --git a/kernel/module.c b/kernel/module.c
-index de66ec8..9812431 100644
+index 690c065..550cb81 100644
 --- a/kernel/module.c
 +++ b/kernel/module.c
-@@ -2998,8 +2998,15 @@ static struct module *setup_load_info(struct load_info *info, int flags)
+@@ -3007,8 +3007,15 @@ static struct module *setup_load_info(struct load_info *info, int flags)
  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  {
  	const char *modmagic = get_modinfo(info, "vermagic");
@@ -6345,7 +6350,7 @@ index de66ec8..9812431 100644
  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
  		modmagic = NULL;
  
-@@ -3032,7 +3039,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+@@ -3043,7 +3050,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
  		return err;
  
  	/* Set up license info based on the info section */
@@ -6355,7 +6360,7 @@ index de66ec8..9812431 100644
  	return 0;
  }
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 8fa7b6f..b2b63c2 100644
+index 5506246..91811a7 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -2684,7 +2684,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
@@ -6392,7 +6397,7 @@ index 4ae5c1e..04c05f8 100644
  static void push_dl_tasks(struct rq *);
  static void pull_dl_task(struct rq *);
 diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 7464c5c..02a938d 100644
+index 298f62b..6f2e85f 100644
 --- a/kernel/sched/rt.c
 +++ b/kernel/sched/rt.c
 @@ -353,8 +353,8 @@ static inline int has_pushable_tasks(struct rq *rq)
@@ -6407,10 +6412,10 @@ index 7464c5c..02a938d 100644
  static void push_rt_tasks(struct rq *);
  static void pull_rt_task(struct rq *);
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index b732e77..fbd3c0c 100644
+index 307c35d..555b429 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -738,7 +738,10 @@ struct rq {
+@@ -740,7 +740,10 @@ struct rq {
  	unsigned long cpu_capacity;
  	unsigned long cpu_capacity_orig;
  
@@ -6422,7 +6427,7 @@ index b732e77..fbd3c0c 100644
  
  	unsigned char idle_balance;
  	/* For active balancing */
-@@ -993,7 +996,7 @@ extern int migrate_swap(struct task_struct *, struct task_struct *);
+@@ -995,7 +998,7 @@ extern int migrate_swap(struct task_struct *, struct task_struct *);
  
  static inline void
  queue_balance_callback(struct rq *rq,
@@ -6431,7 +6436,7 @@ index b732e77..fbd3c0c 100644
  		       void (*func)(struct rq *rq))
  {
  	lockdep_assert_held(&rq->lock);
-@@ -1001,7 +1004,7 @@ queue_balance_callback(struct rq *rq,
+@@ -1003,7 +1006,7 @@ queue_balance_callback(struct rq *rq,
  	if (unlikely(head->next))
  		return;
  
@@ -6453,7 +6458,7 @@ index 594d73f..fc9d65f 100644
  				void *data,
  				gfp_t gfp)
  {
-@@ -2773,7 +2773,7 @@ out:
+@@ -2773,7 +2773,7 @@ static struct page *do_read_cache_page(struct address_space *mapping,
   */
  struct page *read_cache_page(struct address_space *mapping,
  				pgoff_t index,
@@ -6571,7 +6576,7 @@ index aa04666..e5e4e18 100644
  {
  	int *ip = (int *)kp->arg;
  	struct svc_pool_map *m = &svc_pool_map;
-@@ -80,7 +80,7 @@ out:
+@@ -80,7 +80,7 @@ param_set_pool_mode(const char *val, struct kernel_param *kp)
  }
  
  static int
@@ -7926,7 +7931,7 @@ index 0000000..65bc1cd
 +	U64TO8_LE(out, b);
 +}
 diff --git a/security/Kconfig b/security/Kconfig
-index edb7fcd..7a98e4c 100644
+index 08d4882..bbb8aad 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -81,6 +81,24 @@ config PAX_MPROTECT
@@ -8010,6 +8015,3 @@ index 1346ee5..17893fd 100644
  {
  	int i;
  
--- 
-2.8.1
-
