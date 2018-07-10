@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.139
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -47,6 +47,10 @@ Patch31:       0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 # Fix for CVE-2017-18241
 Patch33:       0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Fix for CVE-2017-18232
+Patch35:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
+# Fix for CVE-2018-10323
+Patch36:       0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 
 
 # For Spectre
@@ -237,6 +241,8 @@ The Linux package contains the Linux kernel doc files
 %patch31 -p1
 %patch33 -p1
 %patch34 -p1
+%patch35 -p1
+%patch36 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -442,6 +448,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-2
+-   Fix CVE-2017-18232 and CVE-2018-10323.
 *   Tue Jul 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-1
 -   Update to version 4.4.139
 *   Thu Jun 28 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.138-2
