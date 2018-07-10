@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.139
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -47,6 +47,10 @@ Patch23:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 Patch25:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+# Fix for CVE-2017-18232
+Patch28:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
+# Fix for CVE-2018-10323
+Patch29:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -268,6 +272,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch25 -p1
 %patch26 -p1
 %patch27 -p1
+%patch28 -p1
+%patch29 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -541,6 +547,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Jul 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-2
+-   Fix CVE-2017-18232 and CVE-2018-10323.
 *   Tue Jul 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-1
 -   Update to version 4.4.139
 *   Thu Jun 28 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.138-2
