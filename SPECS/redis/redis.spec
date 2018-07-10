@@ -1,14 +1,14 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	3.2.8
-Release:	4%{?dist}
+Version:	4.0.10
+Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=6780d1abb66f33a97aad0edbe020403d0a15b67f
+%define sha1 redis=d2738d9b93a3220eecc83e89a7c28593b58e4909
 Patch0:         redis-conf.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
@@ -78,6 +78,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Mon Jul 09 2018 Ajay Kaher <akaher@vmware.com> 4.0.10-1
+- Upgrade redis to 4.0.10 to include CVE-2018-11218, and CVE-2018-11219.
 * Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.2.8-4
 - Remove shadow from requires and use explicit tools for post actions
 * Wed May 31 2017 Siju Maliakkal <smaliakkal@vmware.com> 3.2.8-3
