@@ -1,7 +1,7 @@
 Summary:        Consul is a tool for service discovery and configuration.
 Name:           consul
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
@@ -101,5 +101,7 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
-*       Thu Jun 28 2018 Ankit Jain <ankitja@vmware.com> 1.1.0-1
--       Initial build.  First version
+*  Mon Jul 09 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
+-  Modify command line parameters in .service file.
+*  Thu Jun 28 2018 Ankit Jain <ankitja@vmware.com> 1.1.0-1
+-  Initial build.  First version
