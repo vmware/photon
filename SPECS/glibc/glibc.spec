@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        21%{?dist}
+Release:        22%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -61,16 +61,23 @@ and so on.
 %package devel
 Summary: Header files for glibc
 Group: Applications/System
-Requires: glibc >= 2.22
+Requires: %{name} = %{version}-%{release}
 %description devel
 These are the header files of glibc.
 
 %package lang
 Summary: Additional language files for glibc
 Group: Applications/System
-Requires: glibc >= 2.22
+Requires: %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of glibc.
+
+%package i18n
+Summary: Additional internationalization files for glibc
+Group: Applications/System
+Requires: %{name} = %{version}-%{release}
+%description i18n
+These are the additional internationalization files of glibc.
 
 %prep
 %setup -q
@@ -208,10 +215,19 @@ popd
 %{_bindir}/*
 %{_libexecdir}/*
 %{_sbindir}/*
-%{_datadir}/i18n/charmaps/*.gz
-%{_datadir}/i18n/locales/*
+%{_datadir}/i18n/charmaps/UTF-8.gz
+%{_datadir}/i18n/charmaps/ISO-8859-1.gz
+%{_datadir}/i18n/locales/en_US
 %{_localstatedir}/lib/nss_db/Makefile
 %exclude /usr/bin/mtrace
+
+%files i18n
+%defattr(-,root,root)
+%{_datadir}/i18n/charmaps/*.gz
+%{_datadir}/i18n/locales/*
+%exclude %{_datadir}/i18n/charmaps/UTF-8.gz
+%exclude %{_datadir}/i18n/charmaps/ISO-8859-1.gz
+%exclude %{_datadir}/i18n/locales/en_US
 
 %files devel
 %defattr(-,root,root)
@@ -228,6 +244,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Tue Jul 10 2018 Ajay Kaher <akaher@vmware.com> 2.22-22
+-   Added i18n subpackage
 *   Tue Jun 26 2018 Keerthana K <keerthnanak@vmware.com> 2.22-21
 -   Fix for CVE-2018-11236.
 *   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.22-20
