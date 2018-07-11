@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.2.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -18,6 +18,7 @@ Patch1:         hostnameReCustomizationFix.patch
 Patch2:         PureIPv6-hosts.patch
 Patch3:         GOSC-libDeploy.patch
 Patch4:         timezoneCust.patch
+Patch5:         gosc-post-custom.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -54,6 +55,7 @@ It contains the libraries and header files to create applications.
 %patch2 -p0
 %patch3 -p2
 %patch4 -p0
+%patch5 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -113,6 +115,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Tue Jul 10 2018 Keerthana K <keerthanak@vmware.com> 10.2.0-4
+-   Fix for post custom script failure.
 *   Mon Apr 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-3
 -   Revert regex changes to gosc scripts.
 *   Wed Mar 21 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-2
