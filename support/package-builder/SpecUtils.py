@@ -92,35 +92,52 @@ class Specutils(object):
 
     def getRequiresAllPackages(self):
         dependentPackages = []
+        specParseObjDependentPackages=[]
         for pkg in self.spec.packages.values():
             for dpkg in pkg.requires:
                 dependentPackages.append(dpkg.package)
+                specParseObjDependentPackages.append(dpkg)
         dependentPackages = list(set(dependentPackages))
+        specParseObjDependentPackages = list(set(specParseObjDependentPackages))
+        specParseObjDependentPackagesTemp = specParseObjDependentPackages[:]
         packageNames = self.getPackageNames()
         for pkgName in packageNames:
             if pkgName in dependentPackages:
                 dependentPackages.remove(pkgName)
-        return dependentPackages
+            for objName in specParseObjDependentPackagesTemp:
+                if objName.package == pkgName:
+                        specParseObjDependentPackages.remove(objName)
+        return dependentPackages,specParseObjDependentPackages
 
     def getBuildRequiresAllPackages(self):
         dependentPackages = []
+        specParseObjDependentPackages=[]
         for pkg in self.spec.packages.values():
             for dpkg in pkg.buildrequires:
                 dependentPackages.append(dpkg.package)
+                specParseObjDependentPackages.append(dpkg)
         dependentPackages = list(set(dependentPackages))
+        specParseObjDependentPackages = list(set(specParseObjDependentPackages))
+        specParseObjDependentPackagesTemp = specParseObjDependentPackages[:]
         packageNames = self.getPackageNames()
         for pkgName in packageNames:
             if pkgName in dependentPackages:
                 dependentPackages.remove(pkgName)
-        return dependentPackages
+            for objName in specParseObjDependentPackagesTemp:
+                if objName.package == pkgName:
+                        specParseObjDependentPackages.remove(objName)
+        return dependentPackages,specParseObjDependentPackages
 
     def getCheckBuildRequiresAllPackages(self):
         dependentPackages = []
+        specParseObjDependentPackages=[]
         for pkg in self.spec.packages.values():
             for dpkg in pkg.checkbuildrequires:
                 dependentPackages.append(dpkg.package)
+                specParseObjDependentPackages.append(dpkg)
         dependentPackages = list(set(dependentPackages))
-        return dependentPackages
+        specParseObjDependentPackages = list(set(specParseObjDependentPackages))
+        return dependentPackages,specParseObjDependentPackages
 
     def getRequires(self, pkgName):
         dependentPackages = []

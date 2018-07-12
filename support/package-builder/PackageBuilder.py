@@ -8,6 +8,7 @@ from CommandUtils import CommandUtils
 from constants import constants
 from SpecData import SPECS
 import docker
+from distutils.version import LooseVersion
 
 class PackageBuilderBase(object):
     def __init__(self, mapPackageToCycles, pkgBuildType):
@@ -76,7 +77,7 @@ class PackageBuilderBase(object):
         packageIsAlreadyBuilt = True
         pkgUtils = PackageUtils(self.logName, self.logPath)
         for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg, index) is None:
+            if pkgUtils.findRPMFileForGivenPackage(pkg,"*", index) is None:
                 packageIsAlreadyBuilt = False
                 break
         return packageIsAlreadyBuilt
@@ -90,7 +91,40 @@ class PackageBuilderBase(object):
     def _findBuildTimeCheckRequiredPackages(self, index=0):
         return SPECS.getData().getCheckBuildRequiresForPackage(self.package, index)
 
-    def _installPackage(self, pkgUtils, package, instanceID, destLogPath,
+    def _findRunTimeRequiredRPMPackagesParseObj(self,rpmPackage):
+        listRequiredPackages=SPECS.getData().getRequiresParseObjForPackage(rpmPackage)
+        return listRequiredPackages
+
+    def _findBuildTimeRequiredPackagesParseObj(self, index):
+        listRequiredPackages=SPECS.getData().getBuildRequiresParseObjForPackage(self.package, index)
+        return listRequiredPackages
+
+    def _findBuildTimeCheckRequiredPackagesParseObj(self, index):
+        listRequiredPackages=SPECS.getData().getCheckBuildRequiresParseObjForPackage(self.package, index)
+        return listRequiredPackages
+
+    def _getProperVersion(self,package,parseSpecObj):
+        listOfVersionObjs=self.getSpecObj(package)
+        for num in listOfVersionObjs:
+                if parseSpecObj.compare == 'gte':
+                       if LooseVersion(num.version) >= LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'lte':
+                        if LooseVersion(num.version) <= LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'eq':
+                        if LooseVersion(num.version) == LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'lt':
+                        if LooseVersion(num.version) < LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'gt':
+                        if LooseVersion(num.version) > LooseVersion(parseSpecObj.version):
+                                return num.version
+        return "*"
+
+
+    def _installPackage(self, pkgUtils, package,packageVersion, instanceID, destLogPath,
                         listInstalledPackages, listInstalledRPMs):
         latestRPM = os.path.basename(
             pkgUtils.findRPMFileForGivenPackage(package)).replace(".rpm", "")
@@ -107,13 +141,14 @@ class PackageBuilderBase(object):
                 package in constants.noDepsPackageList):
             noDeps = True
         if self.pkgBuildType == "chroot":
-            pkgUtils.installRPM(package, instanceID, noDeps, destLogPath)
+            pkgUtils.installRPM(package, packageVersion,instanceID, noDeps, destLogPath)
         elif self.pkgBuildType == "container":
-            pkgUtils.prepRPMforInstallInContainer(package, instanceID, noDeps, destLogPath)
+            pkgUtils.prepRPMforInstallInContainer(package,packageVersion, instanceID, noDeps, destLogPath)
 
     def _installDependentRunTimePackages(self, pkgUtils, package, instanceID, destLogPath,
                                          listInstalledPackages, listInstalledRPMs):
         listRunTimeDependentPackages = self._findRunTimeRequiredRPMPackages(package)
+        listRunTimeDependentPackagesParseObj=self._findRunTimeRequiredRPMPackagesParseObj(package)
         if listRunTimeDependentPackages:
             for pkg in listRunTimeDependentPackages:
                 if pkg in self.mapPackageToCycles:
@@ -122,25 +157,39 @@ class PackageBuilderBase(object):
                     pkgUtils.findRPMFileForGivenPackage(pkg)).replace(".rpm", "")
                 if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
                     continue
-                self._installPackage(pkgUtils, pkg, instanceID, destLogPath,
-                                     listInstalledPackages, listInstalledRPMs)
+                flag = False
+                for objName in listRunTimeDependentPackagesParseObj:
+                    if objName.package == pkg:
+                        properVersion=self._getProperVersion(pkg,objName)
+                        self._installPackage(pkgUtils, pkg,properVersion, instanceID, destLogPath,listInstalledPackages, listInstalledRPMs)
+                        flag = True
+                        break;
+                if flag == False:
+                        self._installPackage(pkgUtils, pkg,"*", instanceID, destLogPath,listInstalledPackages, listInstalledRPMs)
 
     def _findDependentPackagesAndInstalledRPM(self, instanceID, index=0):
         listInstalledPackages, listInstalledRPMs = self._findInstalledPackages(instanceID)
         self.logger.info(listInstalledPackages)
         listDependentPackages = self._findBuildTimeRequiredPackages(index)
+        listDependentPackagesParseObj=self._findBuildTimeRequiredPackagesParseObj(index)
         if constants.rpmCheck and self.package in constants.testForceRPMS:
             listDependentPackages.extend(self._findBuildTimeCheckRequiredPackages(index))
+            listDependentPackagesParseObj.extend(self._findBuildTimeCheckRequiredPackagesParseObj(index))
             testPackages = (set(constants.listMakeCheckRPMPkgtoInstall) -
                             set(listInstalledPackages) -
                             set([self.package]))
             listDependentPackages.extend(testPackages)
             listDependentPackages = list(set(listDependentPackages))
-        return listDependentPackages, listInstalledPackages, listInstalledRPMs
+            listDependentPackagesParseObj=list(set(listDependentPackagesParseObj))
+        return listDependentPackages, listDependentPackagesParseObj,listInstalledPackages, listInstalledRPMs
 
     @staticmethod
     def getNumOfVersions(package):
         return SPECS.getData().getNumberOfVersions(package)
+
+    @staticmethod
+    def getSpecObj(package):
+        return SPECS.getData().getSpecObj(package)
 
 class PackageBuilderContainer(PackageBuilderBase):
     def __init__(self, mapPackageToCycles, pkgBuildType):
@@ -249,7 +298,7 @@ class PackageBuilderContainer(PackageBuilderBase):
                     constants.perPackageToolChain[self.package],
                     self.package)
 
-            listDependentPackages, listInstalledPackages, listInstalledRPMs = (
+            listDependentPackages,listDependentPackagesParseObj, listInstalledPackages, listInstalledRPMs = (
                 self._findDependentPackagesAndInstalledRPM(containerID, index))
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
@@ -258,8 +307,15 @@ class PackageBuilderContainer(PackageBuilderBase):
                                  "Installing dependent packages..")
                 self.logger.info(listDependentPackages)
                 for pkg in listDependentPackages:
-                    self._installPackage(pkgUtils, pkg, containerID, destLogPath,
-                                         listInstalledPackages, listInstalledRPMs)
+                    flag = False
+                    for objName in listDependentPackagesParseObj:
+                        if objName.package == pkg:
+                                properVersion=self._getProperVersion(pkg,objName)
+                                self._installPackage(pkgUtils, pkg,properVersion, containerID, destLogPath,listInstalledPackages, listInstalledRPMs)
+                                flag = True
+                                break;
+                    if flag == False:
+                        self._installPackage(pkgUtils, pkg,"*", containerID, destLogPath,listInstalledPackages, listInstalledRPMs)
                 pkgUtils.installRPMSInAOneShotInContainer(containerID, destLogPath)
                 self.logger.info("Finished installing the build time dependent packages....")
 
@@ -329,7 +385,7 @@ class PackageBuilderChroot(PackageBuilderBase):
         chrootID = None
         try:
             chrootID = self._prepareBuildRoot()
-            listDependentPackages, listInstalledPackages, listInstalledRPMs = (
+            listDependentPackages,listDependentPackagesParseObj, listInstalledPackages, listInstalledRPMs = (
                 self._findDependentPackagesAndInstalledRPM(chrootID, index))
 
             pkgUtils = PackageUtils(self.logName, self.logPath)
@@ -337,8 +393,15 @@ class PackageBuilderChroot(PackageBuilderBase):
             if listDependentPackages:
                 self.logger.info("Installing the build time dependent packages......")
                 for pkg in listDependentPackages:
-                    self._installPackage(pkgUtils, pkg, chrootID, self.logPath,
-                                         listInstalledPackages, listInstalledRPMs)
+                    flag = False
+                    for objName in listDependentPackagesParseObj:
+                        if objName.package == pkg:
+                                properVersion=self._getProperVersion(pkg,objName)
+                                self._installPackage(pkgUtils, pkg,properVersion, chrootID, self.logPath,listInstalledPackages, listInstalledRPMs)
+                                flag = True
+                                break;
+                    if flag == False:
+                        self._installPackage(pkgUtils, pkg,"*", chrootID, self.logPath,listInstalledPackages, listInstalledRPMs)
                 pkgUtils.installRPMSInAOneShot(chrootID, self.logPath)
                 self.logger.info("Finished installing the build time dependent packages....")
 
