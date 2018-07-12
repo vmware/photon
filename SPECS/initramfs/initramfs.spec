@@ -4,7 +4,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
-Release:	8%{?kernelsubrelease}%{?dist}
+Release:	9%{?kernelsubrelease}%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 Source:		photon-release-1.0.2.tar.gz
@@ -16,6 +16,8 @@ BuildRequires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:       dracut
 BuildRequires:       ostree
 BuildRequires:       e2fsprogs
+BuildRequires:       lvm2-libs
+BuildRequires:       lvm2
 Requires:	     linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %description
@@ -25,10 +27,10 @@ Photon release files such as yum configs and other /etc/ release related files
 %setup -q -n photon-release-1.0.2
 echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_ballon hv_utils hv_vmbus hv_storvsc hv_netvsc cn"' >> /etc/dracut.conf
 
-echo 'add_dracutmodules+=" ostree systemd "' > /etc/dracut.conf.d/ostree.conf
+echo 'add_dracutmodules+="ostree systemd"' > /etc/dracut.conf.d/ostree.conf
 
 %build
-dracut --force --kver %{KERNEL_VERSION}-%{KERNEL_RELEASE} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+dracut --force --kver %{KERNEL_VERSION}-%{KERNEL_RELEASE} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" -a lvm initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/boot
@@ -45,6 +47,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %changelog
+*   Wed Jul 11 2018 Dweep Advani <dadvani@vmware.com>  1.0-9
+-   Add LVM driver for root on LVM
 *   Wed Jul 12 2017 Anish Swaminathan <anishs@vmware.com>  1.0-8
 -   Add missing hyperv driver
 *   Wed Nov 30 2016 Alexey Makhalov <amakhalov@vmware.com> 1.0-7
