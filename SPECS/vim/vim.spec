@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,6 +12,7 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    vim=6169cece15cb139db3ceff9c9ba2bf74013b1e02
 BuildRequires:  ncurses-devel
+Patch0:         CVE-2017-17087.patch
 
 %description
 The Vim package contains a powerful text editor.
@@ -26,6 +27,8 @@ The vim extra package contains a extra files for powerful text editor.
 
 %prep
 %setup -q
+%patch0 -p1
+
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
 ./configure \
@@ -56,7 +59,12 @@ nmap <F10> :q!<CR>
 nmap <Esc><Esc> :q<CR>
 " Use 4 space characters instead of tab for python files
 au BufEnter,BufNew *.py set tabstop=4 shiftwidth=4 expandtab
-
+" Move the swap file location to protect against CVE-2017-1000382
+" More information at http://security.cucumberlinux.com/security/details.php?id=120
+if ! isdirectory("~/.vim/swap/")
+        call system('install -d -m 700 ~/.vim/swap')
+endif
+set directory=~/.vim/swap//
 " End /etc/vimrc
 EOF
 
@@ -165,6 +173,8 @@ make test
 %{_bindir}/vimdiff
 
 %changelog
+*   Tue Jul 10 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-4
+-   Fix for CVE-2017-17087 and CVE-2017-1000382.
 *   Mon Aug 14 2017 Chang Lee <changlee@vmware.com>  8.0.0533-3
 -   Disabled Test_recover_root_dir in %check
 *   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com>  8.0.0533-2
