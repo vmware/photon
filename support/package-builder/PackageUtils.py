@@ -41,11 +41,11 @@ class PackageUtils(object):
         self.rpmFilesToReInstallInAOneShot = ""
         self.noDepsRPMFilesToReInstallInAOneShot = ""
 
-    def installRPM(self, package, chrootID, noDeps=False, destLogPath=None):
+    def installRPM(self, package,version, chrootID, noDeps=False, destLogPath=None):
 #        self.logger.info("Installing rpm for package:"+package)
 #        self.logger.debug("No deps:"+str(noDeps))
 
-        rpmfile = self.findRPMFileForGivenPackage(package)
+        rpmfile = self.findRPMFileForGivenPackage(package,version)
         if rpmfile is None:
             self.logger.error("No rpm file found for package:" + package)
             raise Exception("Missing rpm file: " + package)
@@ -143,10 +143,12 @@ class PackageUtils(object):
         for srpmFile in listSRPMFiles:
             srpmDestFile = self._copyRPM(chrootID + "/" + srpmFile, constants.sourceRpmPath)
 
-    def findRPMFileForGivenPackage(self, package, index=0):
+    def findRPMFileForGivenPackage(self, package,version="*", index=0):
         cmdUtils = CommandUtils()
-        version = SPECS.getData().getVersion(package, index)
-        release = SPECS.getData().getRelease(package, index)
+        release = "*"
+        if version == "*":
+                version = SPECS.getData().getVersion(package, index)
+                release = SPECS.getData().getRelease(package, index)
         listFoundRPMFiles = sum([cmdUtils.findFile(package + "-" + version + "-" + release + "." +
                                                    platform.machine()+".rpm",
                                                    constants.rpmPath),
@@ -220,8 +222,8 @@ class PackageUtils(object):
         self.logger.error("Failed while adjusting gcc specs")
         raise Exception("Failed while adjusting gcc specs")
 
-    def prepRPMforInstallInContainer(self, package, containerID, noDeps=False, destLogPath=None):
-        rpmfile = self.findRPMFileForGivenPackage(package)
+    def prepRPMforInstallInContainer(self, package,version, containerID, noDeps=False, destLogPath=None):
+        rpmfile = self.findRPMFileForGivenPackage(package,version)
         if rpmfile is None:
             self.logger.error("No rpm file found for package: " + package)
             raise Exception("Missing rpm file")
