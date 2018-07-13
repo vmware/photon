@@ -3,7 +3,7 @@
 Summary:        Interface for Python to call C code
 Name:           python-cffi
 Version:        1.9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -12,6 +12,7 @@ Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/c/cffi/cffi-%{version}.tar.gz
 %define sha1    cffi=16265a4b305d433fb9089b19278502e904b0cb43
 
+Patch0:	python-cffi-fix-mem-leak.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -42,6 +43,7 @@ Python 3 version.
 
 %prep
 %setup -q -n cffi-%{version}
+%patch0 -p1
 
 %build
 python setup.py build
@@ -60,6 +62,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jul 13 2018 Srinidhi Rao <srinidhir@vmware.com> 1.9.1-3
+-   Fix memory leak in python-cffi libobj module
 *   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.9.1-2
 -   Release bump to use python 3.5.4.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.1-1

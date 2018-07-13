@@ -1,0 +1,18 @@
+Based on the discussion at
+https://bitbucket.org/cffi/cffi/issues/366/fix-known-small-but-needless-leak
+
+--- cffi-1.10.0/c/lib_obj.c	2017-03-21 16:11:29.000000000 +0530
++++ cffi-1.10.0-new/c/lib_obj.c	2018-07-02 16:27:45.120352980 +0530
+@@ -328,6 +328,12 @@ static PyObject *lib_build_and_cache_att
+         }
+         x = convert_to_object(data, ct);
+         Py_DECREF(ct);
++
++        if (!(ct->ct_flags & CT_PRIMITIVE_ANY)) {
++            if (ct->ct_flags & (CT_POINTER|CT_FUNCTIONPTR)) {
++                PyMem_Free(data);
++            }
++        }
+         break;
+     }
+ 
