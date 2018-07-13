@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -59,7 +59,12 @@ nmap <F10> :q!<CR>
 nmap <Esc><Esc> :q<CR>
 " Use 4 space characters instead of tab for python files
 au BufEnter,BufNew *.py set tabstop=4 shiftwidth=4 expandtab
-
+" Move the swap file location to protect against CVE-2017-1000382
+" More information at http://security.cucumberlinux.com/security/details.php?id=120
+if ! isdirectory("~/.vim/swap/")
+        call system('install -d -m 700 ~/.vim/swap')
+endif
+set directory=~/.vim/swap//
 " End /etc/vimrc
 EOF
 
@@ -168,6 +173,8 @@ make test
 %{_bindir}/vimdiff
 
 %changelog
+*   Thu Jul 12 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-5
+-   Fix for CVE-2017-1000382
 *   Tue Jul 10 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-4
 -   Fix for CVE-2017-17087.patch.
 *   Mon Aug 14 2017 Chang Lee <changlee@vmware.com>  8.0.0533-3
