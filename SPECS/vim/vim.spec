@@ -3,7 +3,7 @@
 Summary:    Text editor
 Name:       vim
 Version:    7.4
-Release:    9%{?dist}
+Release:    10%{?dist}
 License:    Charityware
 URL:        http://www.vim.org
 Group:      Applications/Editors
@@ -56,7 +56,12 @@ color desert
 if (&term == "iterm") || (&term == "putty")
   set background=dark
 endif
-
+" Move the swap file location to protect against CVE-2017-1000382
+" More information at http://security.cucumberlinux.com/security/details.php?id=120
+if ! isdirectory("~/.vim/swap/")
+        call system('install -d -m 700 ~/.vim/swap')
+endif
+set directory=~/.vim/swap//
 " End /etc/vimrc
 EOF
 
@@ -151,6 +156,8 @@ EOF
 %{_bindir}/vimdiff
 
 %changelog
+*   Thu Jul 12 2018 Tapas Kundu <tkundu@vmware.com> 7.4-10
+-   Fix for CVE-2017-1000382
 *   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 7.4-9
 -   Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
