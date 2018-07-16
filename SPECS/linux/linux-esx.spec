@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.139
-Release:       2%{?dist}
+Version:       4.4.140
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ce4028904ab97c1942cc1c1b917520065529dc34
+%define sha1 linux=55dc1299e981cb4ef8ef0c92a4df52c2f4df4835
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -51,7 +51,11 @@ Patch34:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch35:       0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2018-10323
 Patch36:       0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
-
+# Fix for CVE-2017-18249 (following 4 patches)
+Patch37:       0001-f2fs-cover-more-area-with-nat_tree_lock.patch
+Patch38:       0002-Revert-f2fs-check-the-node-block-address-of-newly-al.patch
+Patch39:       0003-f2fs-remove-an-obsolete-variable.patch
+Patch40:       0004-f2fs-fix-race-condition-in-between-free-nid-allocato.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -243,6 +247,10 @@ The Linux package contains the Linux kernel doc files
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%patch40 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -448,6 +456,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jul 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.140-1
+-   Update to version 4.4.140 and fix CVE-2017-18249
 *   Tue Jul 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-2
 -   Fix CVE-2017-18232 and CVE-2018-10323.
 *   Tue Jul 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-1
