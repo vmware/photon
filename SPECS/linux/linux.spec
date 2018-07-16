@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.139
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.140
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=ce4028904ab97c1942cc1c1b917520065529dc34
+%define sha1 linux=55dc1299e981cb4ef8ef0c92a4df52c2f4df4835
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -26,7 +26,6 @@ Patch7:	        vmxnet3-1.4.6.0-avoid-calling-pskb_may_pull-with-interrupts-disa
 Patch8:		perf-top-sigsegv-fix.patch
 Patch9:         REVERT-sched-fair-Beef-up-wake_wide.patch
 Patch10:        e1000e-prevent-div-by-zero-if-TIMINCA-is-zero.patch
-Patch11:        kprobes-x86-Do-not-modify-singlestep-buffer-while-re.patch
 Patch12:        vmxnet3-1.4.6.0-fix-lock-imbalance-in-vmxnet3_tq_xmit.patch
 Patch13:        vmxnet3-1.4.7.0-set-CHECKSUM_UNNECESSARY-for-IPv6-packets.patch
 Patch14:        vmxnet3-1.4.8.0-segCnt-can-be-1-for-LRO-packets.patch
@@ -51,6 +50,11 @@ Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 Patch28:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2018-10323
 Patch29:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
+# Fix for CVE-2017-18249 (following 4 patches)
+Patch30:        0001-f2fs-cover-more-area-with-nat_tree_lock.patch
+Patch31:        0002-Revert-f2fs-check-the-node-block-address-of-newly-al.patch
+Patch32:        0003-f2fs-remove-an-obsolete-variable.patch
+Patch33:        0004-f2fs-fix-race-condition-in-between-free-nid-allocato.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -257,7 +261,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
@@ -274,6 +277,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch27 -p1
 %patch28 -p1
 %patch29 -p1
+%patch30 -p1
+%patch31 -p1
+%patch32 -p1
+%patch33 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -547,6 +554,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Jul 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.140-1
+-   Update to version 4.4.140 and fix CVE-2017-18249
 *   Wed Jul 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-3
 -   Use AppArmor security module by default.
 *   Tue Jul 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-2
