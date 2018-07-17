@@ -24,6 +24,7 @@ class PackageUtils(object):
                                    " " + constants.rpmPath)
         self.rpmBinary = "rpm"
         self.installRPMPackageOptions = "-Uvh"
+        self.uninstallRPMPackageOptions = "-e"
         self.nodepsRPMPackageOptions = "--nodeps"
 
         self.rpmbuildBinary = "rpmbuild"
@@ -58,6 +59,21 @@ class PackageUtils(object):
         else:
             self.rpmFilesToInstallInAOneShot += " " + rpmFile
             self.packagesToInstallInAOneShot += " " + package
+
+    def uninstallRPM(self, package, chrootID, nodeps):
+        chrootCmd = self.runInChrootCommand + " " + chrootID
+        rpmInstallcmd = self.rpmBinary + " " + self.uninstallRPMPackageOptions
+        cmdUtils = CommandUtils()
+        self.logger.info("Uninstalling rpm: " + package)
+        if nodeps:
+                cmd = rpmInstallcmd+" "+self.nodepsRPMPackageOptions + " " +package
+        else:
+                cmd = rpmInstallcmd+" " +package
+        returnVal = cmdUtils.runCommandInShell(cmd, None, chrootCmd)
+        if not returnVal:
+                iself.logger.debug("Command Executed:" + cmd)
+                self.logger.error("Unable to uninstall rpms")
+                raise Exception("RPM uninstallation failed")
 
     def installRPMSInAOneShot(self, chrootID, destLogPath):
         chrootCmd = self.runInChrootCommand + " " + chrootID
@@ -239,6 +255,27 @@ class PackageUtils(object):
             self.packagesToInstallInAOneShot += " " + package
             if package in constants.listReInstallPackages:
                 self.rmpFilesToReInstallInAOneShot += " " + rpmDestFile
+
+    def uninstallRPMInContainer(self, package, containerID, nodeps):
+        rpmInstallcmd = (self.rpmBinary + " " + self.uninstallRPMPackageOptions + " " +self.forceRpmPackageOptions)
+        self.logger.info("Uninstalling rpm: " + package)
+        if nodeps:
+                cmd = (rpmInstallcmd + " " + self.nodepsRPMPackageOptions + " " +package)
+                cmd = "/bin/bash -l -c '" + cmd + "'"
+                #self.logger.debug("VDBG-PU-installRPMSInAOneShotInContainer: " +
+                #                  "Install nodeps cmd: " + cmd)
+                #TODO: Error code from exec_run
+                installLog = containerID.exec_run(cmd)
+        else:
+                cmd = rpmInstallcmd + " " + package
+                cmd = "/bin/bash -l -c '" + cmd + "'"
+                #self.logger.debug("VDBG-PU-uninstallRPMSInAOneShotInContainer: UnInstall cmd: " + cmd)
+                #TODO: Error code from exec_run
+                installLog = containerID.exec_run(cmd)
+        if not installLog:
+                iself.logger.debug("Command Executed:" + cmd)
+                self.logger.error("Unable to uninstall rpms")
+                raise Exception("RPM uninstallation failed")
 
     def installRPMSInAOneShotInContainer(self, containerID, destLogPath):
         rpmInstallcmd = (self.rpmBinary + " " + self.installRPMPackageOptions + " " +
