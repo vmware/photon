@@ -1,0 +1,437 @@
+From b42db0860e13067fcc7cbfba3966c9e652668bbc Mon Sep 17 00:00:00 2001
+From: Eric Sandeen <sandeen@sandeen.net> Date: Mon, 16 Apr 2018 23:06:53 -0700
+Subject: [PATCH] xfs: enhance dinode verifier
+
+Add several more validations to xfs_dinode_verify:
+
+- For LOCAL data fork formats, di_nextents must be 0.
+- For LOCAL attr fork formats, di_anextents must be 0.
+- For inodes with no attr fork offset,
+  - format must be XFS_DINODE_FMT_EXTENTS if set at all
+  - di_anextents must be 0.
+
+Thanks to dchinner for pointing out a couple related checks I had
+forgotten to add.
+
+Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=199377
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+
+[ Srinidhi Rao : Backported this fix to 4.9 ]
+Backport Includes following fixes :-
+xfs: move inode fork verifiers to xfs_dinode_verify
+xfs: verify dinode header first
+xfs: refactor verifier callers to print address of failing check
+xfs: More robust inode extent count validation
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ fs/xfs/libxfs/xfs_format.h     |   3 +
+ fs/xfs/libxfs/xfs_inode_buf.c  | 166 +++++++++++++++++++++++++++++++++++------
+ fs/xfs/libxfs/xfs_inode_fork.c |  87 ---------------------
+ fs/xfs/libxfs/xfs_types.h      |   7 ++
+ fs/xfs/xfs_linux.h             |   7 ++
+ 5 files changed, 160 insertions(+), 110 deletions(-)
+
+diff --git a/fs/xfs/libxfs/xfs_format.h b/fs/xfs/libxfs/xfs_format.h
+index 6b7579e..9967d30 100644
+--- a/fs/xfs/libxfs/xfs_format.h
++++ b/fs/xfs/libxfs/xfs_format.h
+@@ -979,6 +979,9 @@ typedef enum xfs_dinode_fmt {
+ 		XFS_DFORK_DSIZE(dip, mp) : \
+ 		XFS_DFORK_ASIZE(dip, mp))
+ 
++#define XFS_DFORK_MAXEXT(dip, mp, w) \
++	(XFS_DFORK_SIZE(dip, mp, w) / sizeof(struct xfs_bmbt_rec))
++
+ /*
+  * Return pointers to the data or attribute forks.
+  */
+diff --git a/fs/xfs/libxfs/xfs_inode_buf.c b/fs/xfs/libxfs/xfs_inode_buf.c
+index 37ee7f0..c63500d 100644
+--- a/fs/xfs/libxfs/xfs_inode_buf.c
++++ b/fs/xfs/libxfs/xfs_inode_buf.c
+@@ -381,62 +381,180 @@ xfs_log_dinode_to_disk(
+ 	}
+ }
+ 
+-static bool
++static xfs_failaddr_t
++xfs_dinode_verify_fork(
++	struct xfs_dinode       *dip,
++	struct xfs_mount        *mp,
++	int                     whichfork)
++{
++	uint32_t                di_nextents = XFS_DFORK_NEXTENTS(dip, whichfork);
++
++	switch (XFS_DFORK_FORMAT(dip, whichfork)) {
++	case XFS_DINODE_FMT_LOCAL:
++		/*
++		 * no local regular files yet
++		 */
++		if (whichfork == XFS_DATA_FORK) {
++			if (S_ISREG(be16_to_cpu(dip->di_mode)))
++				return __this_address;
++			if (be64_to_cpu(dip->di_size) >
++					XFS_DFORK_SIZE(dip, mp, whichfork))
++				return __this_address;
++		}
++		if (di_nextents)
++			return __this_address;
++		break;
++
++	case XFS_DINODE_FMT_EXTENTS:
++		if (di_nextents > XFS_DFORK_MAXEXT(dip, mp, whichfork))
++			return __this_address;
++		break;
++
++	case XFS_DINODE_FMT_BTREE:
++		if (whichfork == XFS_ATTR_FORK) {
++			if (di_nextents > MAXAEXTNUM)
++				return __this_address;
++			} else if (di_nextents > MAXEXTNUM) {
++				return __this_address;
++		}
++		break;
++
++	default:
++		return __this_address;
++	}
++	return NULL;
++}
++
++
++xfs_failaddr_t
+ xfs_dinode_verify(
+ 	struct xfs_mount	*mp,
+ 	struct xfs_inode	*ip,
+ 	struct xfs_dinode	*dip)
+ {
++	xfs_failaddr_t          fa;
+ 	uint16_t		mode;
+ 	uint16_t		flags;
+ 	uint64_t		flags2;
++	uint64_t                di_size;
+ 
+ 	if (dip->di_magic != cpu_to_be16(XFS_DINODE_MAGIC))
+-		return false;
++		return __this_address;
++
++
++	/* Verify v3 integrity information first */
++	if (dip->di_version >= 3) {
++		if (!xfs_sb_version_hascrc(&mp->m_sb))
++			return __this_address;
++		if (!xfs_verify_cksum((char *)dip, mp->m_sb.sb_inodesize,
++						XFS_DINODE_CRC_OFF))
++			return __this_address;
++		if (be64_to_cpu(dip->di_ino) != ip->i_ino)
++			return __this_address;
++		if (!uuid_equal(&dip->di_uuid, &mp->m_sb.sb_meta_uuid))
++			return __this_address;
++	}
+ 
+ 	/* don't allow invalid i_size */
+-	if (be64_to_cpu(dip->di_size) & (1ULL << 63))
+-		return false;
++	di_size = be64_to_cpu(dip->di_size);
++	if (di_size & (1ULL << 63))
++		return __this_address;
+ 
+ 	mode = be16_to_cpu(dip->di_mode);
+ 	if (mode && xfs_mode_to_ftype(mode) == XFS_DIR3_FT_UNKNOWN)
+-		return false;
++		return __this_address;
+ 
+ 	/* No zero-length symlinks/dirs. */
+ 	if ((S_ISLNK(mode) || S_ISDIR(mode)) && dip->di_size == 0)
+-		return false;
++		return __this_address;
++
++	/* Fork checks carried over from xfs_iformat_fork */
++	if (mode &&
++		be32_to_cpu(dip->di_nextents) + be16_to_cpu(dip->di_anextents) >
++			be64_to_cpu(dip->di_nblocks))
++		return __this_address;
++
++	if (mode && XFS_DFORK_BOFF(dip) > mp->m_sb.sb_inodesize)
++		return __this_address;
++
++	flags = be16_to_cpu(dip->di_flags);
++
++	if (mode && (flags & XFS_DIFLAG_REALTIME) && !mp->m_rtdev_targp)
++		return __this_address;
++
++	/* Do we have appropriate data fork formats for the mode? */
++	switch (mode & S_IFMT) {
++	case S_IFIFO:
++	case S_IFCHR:
++	case S_IFBLK:
++	case S_IFSOCK:
++		if (dip->di_format != XFS_DINODE_FMT_DEV)
++			return __this_address;
++
++		break;
++
++	case S_IFREG:
++	case S_IFLNK:
++	case S_IFDIR:
++		fa = xfs_dinode_verify_fork(dip, mp, XFS_DATA_FORK);
++		if (fa)
++			return fa;
++		break;
++
++	case 0:
++		/* Uninitialized inode ok. */
++		break;
++
++	default:
++		return __this_address;
++	}
++
++	if (XFS_DFORK_Q(dip)) {
++		fa = xfs_dinode_verify_fork(dip, mp, XFS_ATTR_FORK);
++		if (fa)
++			return fa;
++	} else {
++		/*
++		 * If there is no fork offset, this may be a freshly-made inode
++		 * in a new disk cluster, in which case di_aformat is zeroed.
++		 * Otherwise, such an inode must be in EXTENTS format; this goes
++		 * for freed inodes as well.
++		 */
++		switch (dip->di_aformat) {
++		case 0:
++		case XFS_DINODE_FMT_EXTENTS:
++			break;
++		default:
++			return __this_address;
++		}
++		if (dip->di_anextents)
++			return __this_address;
++	}
+ 
+ 	/* only version 3 or greater inodes are extensively verified here */
+ 	if (dip->di_version < 3)
+-		return true;
+-
+-	if (!xfs_sb_version_hascrc(&mp->m_sb))
+-		return false;
+-	if (!xfs_verify_cksum((char *)dip, mp->m_sb.sb_inodesize,
+-			      XFS_DINODE_CRC_OFF))
+-		return false;
+-	if (be64_to_cpu(dip->di_ino) != ip->i_ino)
+-		return false;
+-	if (!uuid_equal(&dip->di_uuid, &mp->m_sb.sb_meta_uuid))
+-		return false;
++		return NULL;
+ 
+-	flags = be16_to_cpu(dip->di_flags);
+ 	flags2 = be64_to_cpu(dip->di_flags2);
+ 
+ 	/* don't allow reflink/cowextsize if we don't have reflink */
+ 	if ((flags2 & (XFS_DIFLAG2_REFLINK | XFS_DIFLAG2_COWEXTSIZE)) &&
+             !xfs_sb_version_hasreflink(&mp->m_sb))
+-		return false;
++		return __this_address;
++
++	/* only regular files get reflink */
++	if ((flags2 & XFS_DIFLAG2_REFLINK) && (mode & S_IFMT) != S_IFREG)
++		return __this_address;
+ 
+ 	/* don't let reflink and realtime mix */
+ 	if ((flags2 & XFS_DIFLAG2_REFLINK) && (flags & XFS_DIFLAG_REALTIME))
+-		return false;
++		return __this_address;
+ 
+ 	/* don't let reflink and dax mix */
+ 	if ((flags2 & XFS_DIFLAG2_REFLINK) && (flags2 & XFS_DIFLAG2_DAX))
+-		return false;
++		return __this_address;
+ 
+-	return true;
++	return NULL;
+ }
+ 
+ void
+@@ -476,6 +594,7 @@ xfs_iread(
+ {
+ 	xfs_buf_t	*bp;
+ 	xfs_dinode_t	*dip;
++	xfs_failaddr_t  fa;
+ 	int		error;
+ 
+ 	/*
+@@ -507,7 +626,8 @@ xfs_iread(
+ 		return error;
+ 
+ 	/* even unallocated inodes are verified */
+-	if (!xfs_dinode_verify(mp, ip, dip)) {
++	fa = xfs_dinode_verify(mp, ip, dip);
++	if (fa) {
+ 		xfs_alert(mp, "%s: validation failed for inode %lld failed",
+ 				__func__, ip->i_ino);
+ 
+diff --git a/fs/xfs/libxfs/xfs_inode_fork.c b/fs/xfs/libxfs/xfs_inode_fork.c
+index 4e30448..8dd7658 100644
+--- a/fs/xfs/libxfs/xfs_inode_fork.c
++++ b/fs/xfs/libxfs/xfs_inode_fork.c
+@@ -90,70 +90,11 @@ xfs_iformat_fork(
+ 	int			error = 0;
+ 	xfs_fsize_t             di_size;
+ 
+-	if (unlikely(be32_to_cpu(dip->di_nextents) +
+-		     be16_to_cpu(dip->di_anextents) >
+-		     be64_to_cpu(dip->di_nblocks))) {
+-		xfs_warn(ip->i_mount,
+-			"corrupt dinode %Lu, extent total = %d, nblocks = %Lu.",
+-			(unsigned long long)ip->i_ino,
+-			(int)(be32_to_cpu(dip->di_nextents) +
+-			      be16_to_cpu(dip->di_anextents)),
+-			(unsigned long long)
+-				be64_to_cpu(dip->di_nblocks));
+-		XFS_CORRUPTION_ERROR("xfs_iformat(1)", XFS_ERRLEVEL_LOW,
+-				     ip->i_mount, dip);
+-		return -EFSCORRUPTED;
+-	}
+-
+-	if (unlikely(dip->di_forkoff > ip->i_mount->m_sb.sb_inodesize)) {
+-		xfs_warn(ip->i_mount, "corrupt dinode %Lu, forkoff = 0x%x.",
+-			(unsigned long long)ip->i_ino,
+-			dip->di_forkoff);
+-		XFS_CORRUPTION_ERROR("xfs_iformat(2)", XFS_ERRLEVEL_LOW,
+-				     ip->i_mount, dip);
+-		return -EFSCORRUPTED;
+-	}
+-
+-	if (unlikely((ip->i_d.di_flags & XFS_DIFLAG_REALTIME) &&
+-		     !ip->i_mount->m_rtdev_targp)) {
+-		xfs_warn(ip->i_mount,
+-			"corrupt dinode %Lu, has realtime flag set.",
+-			ip->i_ino);
+-		XFS_CORRUPTION_ERROR("xfs_iformat(realtime)",
+-				     XFS_ERRLEVEL_LOW, ip->i_mount, dip);
+-		return -EFSCORRUPTED;
+-	}
+-
+-	if (unlikely(xfs_is_reflink_inode(ip) &&
+-	    (VFS_I(ip)->i_mode & S_IFMT) != S_IFREG)) {
+-		xfs_warn(ip->i_mount,
+-			"corrupt dinode %llu, wrong file type for reflink.",
+-			ip->i_ino);
+-		XFS_CORRUPTION_ERROR("xfs_iformat(reflink)",
+-				     XFS_ERRLEVEL_LOW, ip->i_mount, dip);
+-		return -EFSCORRUPTED;
+-	}
+-
+-	if (unlikely(xfs_is_reflink_inode(ip) &&
+-	    (ip->i_d.di_flags & XFS_DIFLAG_REALTIME))) {
+-		xfs_warn(ip->i_mount,
+-			"corrupt dinode %llu, has reflink+realtime flag set.",
+-			ip->i_ino);
+-		XFS_CORRUPTION_ERROR("xfs_iformat(reflink)",
+-				     XFS_ERRLEVEL_LOW, ip->i_mount, dip);
+-		return -EFSCORRUPTED;
+-	}
+-
+ 	switch (VFS_I(ip)->i_mode & S_IFMT) {
+ 	case S_IFIFO:
+ 	case S_IFCHR:
+ 	case S_IFBLK:
+ 	case S_IFSOCK:
+-		if (unlikely(dip->di_format != XFS_DINODE_FMT_DEV)) {
+-			XFS_CORRUPTION_ERROR("xfs_iformat(3)", XFS_ERRLEVEL_LOW,
+-					      ip->i_mount, dip);
+-			return -EFSCORRUPTED;
+-		}
+ 		ip->i_d.di_size = 0;
+ 		ip->i_df.if_u2.if_rdev = xfs_dinode_get_rdev(dip);
+ 		break;
+@@ -163,32 +104,7 @@ xfs_iformat_fork(
+ 	case S_IFDIR:
+ 		switch (dip->di_format) {
+ 		case XFS_DINODE_FMT_LOCAL:
+-			/*
+-			 * no local regular files yet
+-			 */
+-			if (unlikely(S_ISREG(be16_to_cpu(dip->di_mode)))) {
+-				xfs_warn(ip->i_mount,
+-			"corrupt inode %Lu (local format for regular file).",
+-					(unsigned long long) ip->i_ino);
+-				XFS_CORRUPTION_ERROR("xfs_iformat(4)",
+-						     XFS_ERRLEVEL_LOW,
+-						     ip->i_mount, dip);
+-				return -EFSCORRUPTED;
+-			}
+-
+ 			di_size = be64_to_cpu(dip->di_size);
+-			if (unlikely(di_size < 0 ||
+-				     di_size > XFS_DFORK_DSIZE(dip, ip->i_mount))) {
+-				xfs_warn(ip->i_mount,
+-			"corrupt inode %Lu (bad size %Ld for local inode).",
+-					(unsigned long long) ip->i_ino,
+-					(long long) di_size);
+-				XFS_CORRUPTION_ERROR("xfs_iformat(5)",
+-						     XFS_ERRLEVEL_LOW,
+-						     ip->i_mount, dip);
+-				return -EFSCORRUPTED;
+-			}
+-
+ 			size = (int)di_size;
+ 			error = xfs_iformat_local(ip, dip, XFS_DATA_FORK, size);
+ 			break;
+@@ -199,14 +115,11 @@ xfs_iformat_fork(
+ 			error = xfs_iformat_btree(ip, dip, XFS_DATA_FORK);
+ 			break;
+ 		default:
+-			XFS_ERROR_REPORT("xfs_iformat(6)", XFS_ERRLEVEL_LOW,
+-					 ip->i_mount);
+ 			return -EFSCORRUPTED;
+ 		}
+ 		break;
+ 
+ 	default:
+-		XFS_ERROR_REPORT("xfs_iformat(7)", XFS_ERRLEVEL_LOW, ip->i_mount);
+ 		return -EFSCORRUPTED;
+ 	}
+ 	if (error)
+diff --git a/fs/xfs/libxfs/xfs_types.h b/fs/xfs/libxfs/xfs_types.h
+index cf044c0..9bf064d 100644
+--- a/fs/xfs/libxfs/xfs_types.h
++++ b/fs/xfs/libxfs/xfs_types.h
+@@ -47,6 +47,13 @@ typedef __uint64_t	xfs_filblks_t;	/* number of blocks in a file */
+ typedef	__int64_t	xfs_srtblock_t;	/* signed version of xfs_rtblock_t */
+ typedef __int64_t	xfs_sfiloff_t;	/* signed block number in a file */
+ 
++
++/*
++ * New verifiers will return the instruction address of the failing check.
++ * NULL means everything is ok.
++ */
++typedef void *          xfs_failaddr_t;
++
+ /*
+  * Null values for the types.
+  */
+diff --git a/fs/xfs/xfs_linux.h b/fs/xfs/xfs_linux.h
+index 3ebed16..72cbaf1 100644
+--- a/fs/xfs/xfs_linux.h
++++ b/fs/xfs/xfs_linux.h
+@@ -149,6 +149,13 @@ typedef __u32			xfs_nlink_t;
+ #define SYNCHRONIZE()	barrier()
+ #define __return_address __builtin_return_address(0)
+ 
++/*
++ * Return the address of a label.  Use barrier() so that the optimizer
++ * won't reorder code to refactor the error jumpouts into a single
++ * return, which throws off the reported address.
++ */
++#define __this_address  ({ __label__ __here; __here: barrier(); &&__here; })
++
+ #define XFS_PROJID_DEFAULT	0
+ #define MAXPATHLEN	1024
+ 
+-- 
+2.7.4
+

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.111
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -69,6 +69,8 @@ Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
 Patch44:        0001-f2fs-fix-race-condition-in-between-free-nid-allocator-initializer.patch
 # Fix for CVE-2018-10323
 Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
+# Fix for CVE-2018-10322
+Patch46:        0001-xfs-enhance-dinode-verifier.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -199,6 +201,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch46 -p1
 
 %patch52 -p1
 %patch53 -p1
@@ -382,6 +385,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-4
+-   Fix CVE-2018-10322
 *   Thu Jul 12 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-3
 -   Fix CVE-2017-18232, CVE-2017-18249 and CVE-2018-10323
 *   Wed Jul 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.111-2
