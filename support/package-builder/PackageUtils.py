@@ -24,6 +24,7 @@ class PackageUtils(object):
                                    " " + constants.rpmPath)
         self.rpmBinary = "rpm"
         self.installRPMPackageOptions = "-Uvh"
+        self.uninstallRPMPackageOptions = "-e"
         self.nodepsRPMPackageOptions = "--nodeps"
 
         self.rpmbuildBinary = "rpmbuild"
@@ -58,6 +59,21 @@ class PackageUtils(object):
         else:
             self.rpmFilesToInstallInAOneShot += " " + rpmFile
             self.packagesToInstallInAOneShot += " " + package
+
+    def uninstallRPM(self, package, chrootID, nodeps):
+        chrootCmd = self.runInChrootCommand + " " + chrootID
+        rpmInstallcmd = self.rpmBinary + " " + self.uninstallRPMPackageOptions
+        cmdUtils = CommandUtils()
+        self.logger.info("Uninstalling rpm: " + package)
+        if nodeps:
+                cmd = rpmInstallcmd+" "+self.nodepsRPMPackageOptions + " " +package
+        else:
+                cmd = rpmInstallcmd+" " +package
+        returnVal = cmdUtils.runCommandInShell(cmd, None, chrootCmd)
+        if not returnVal:
+                iself.logger.debug("Command Executed:" + cmd)
+                self.logger.error("Unable to uninstall rpms")
+                raise Exception("RPM uninstallation failed")
 
     def installRPMSInAOneShot(self, chrootID, destLogPath):
         chrootCmd = self.runInChrootCommand + " " + chrootID
