@@ -1,7 +1,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.0
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
@@ -11,6 +11,7 @@ Distribution:   Photon
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-20171125.tgz
 %define sha1    ncurses=179d79d707ac5040499294e3206fd558d52b604a
 Requires:       ncurses-libs = %{version}-%{release}
+Patch0:         CVE-2018-10754.patch
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
@@ -47,6 +48,7 @@ It contains all terminfo files
 
 %prep
 %setup -q -n %{name}-%{version}-%{ncursessubversion}
+%patch0 -p1
 
 %build
 mkdir v6
@@ -183,6 +185,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Tue Jul 17 2018 Tapas Kundu <tkundu@vmware.com> 6.0-14
+-   Fix for CVE-2018-10754
 *   Wed Dec 06 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-13
 -   version bump to 20171125, fix CVE-2017-16879
 *   Tue Oct 10 2017 Bo Gan <ganb@vmware.com> 6.0-12
