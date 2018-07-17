@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.111
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -71,6 +71,10 @@ Patch45:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
 Patch46:        0001-f2fs-fix-race-condition-in-between-free-nid-allocator-initializer.patch
 # Fix for CVE-2018-10323
 Patch47:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
+# Fix for CVE-2018-10322
+Patch48:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
+Patch49:        0002-xfs-verify-dinode-header-first.patch
+Patch50:        0003-xfs-enhance-dinode-verifier.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -208,6 +212,9 @@ EOF
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
+%patch48 -p1
+%patch49 -p1
+%patch50 -p1
 
 # spectre
 %patch52 -p1
@@ -355,6 +362,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-3
+-   Fix CVE-2018-10322
 *   Thu Jul 12 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-2
 -   Fix CVE-2017-18232, CVE-2017-18249 and CVE-2018-10323
 *   Sat Jul 07 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.111-1

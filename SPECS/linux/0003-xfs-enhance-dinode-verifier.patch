@@ -1,0 +1,78 @@
+commit b42db0860e13067fcc7cbfba3966c9e652668bbc
+Author: Eric Sandeen <sandeen@sandeen.net>
+Date:   Mon Apr 16 23:06:53 2018 -0700
+
+    xfs: enhance dinode verifier
+
+    Add several more validations to xfs_dinode_verify:
+
+    - For LOCAL data fork formats, di_nextents must be 0.
+    - For LOCAL attr fork formats, di_anextents must be 0.
+    - For inodes with no attr fork offset,
+      - format must be XFS_DINODE_FMT_EXTENTS if set at all
+      - di_anextents must be 0.
+
+    Thanks to dchinner for pointing out a couple related checks I had
+    forgotten to add.
+
+    Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+    Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=199377
+    Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+    Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+
+[ Srinidhi Rao : Backported this fix to 4.9 ]
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ fs/xfs/libxfs/xfs_inode_buf.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/fs/xfs/libxfs/xfs_inode_buf.c b/fs/xfs/libxfs/xfs_inode_buf.c
+index 5872cd9..429ee58 100644
+--- a/fs/xfs/libxfs/xfs_inode_buf.c
++++ b/fs/xfs/libxfs/xfs_inode_buf.c
+@@ -456,6 +456,8 @@ xfs_dinode_verify(
+                                 return false;
+                         if (di_size > XFS_DFORK_DSIZE(dip, mp))
+                                 return false;
++			if (dip->di_nextents)
++				return false;
+                 /* fall through */
+                 case XFS_DINODE_FMT_EXTENTS:
+                 case XFS_DINODE_FMT_BTREE:
+@@ -474,13 +476,32 @@ xfs_dinode_verify(
+         if (XFS_DFORK_Q(dip)) {
+                 switch (dip->di_aformat) {
+                 case XFS_DINODE_FMT_LOCAL:
++			if (dip->di_anextents)
++				return false;
++		/* fall through */
+                 case XFS_DINODE_FMT_EXTENTS:
+                 case XFS_DINODE_FMT_BTREE:
+                         break;
+                 default:
+                         return false;
+                 }
+-        }
++        } else {
++		/*
++		 * If there is no fork offset, this may be a freshly-made inode
++		 * in a new disk cluster, in which case di_aformat is zeroed.
++		 * Otherwise, such an inode must be in EXTENTS format; this goes
++		 * for freed inodes as well.
++		 */
++		switch (dip->di_aformat) {
++		case 0:
++		case XFS_DINODE_FMT_EXTENTS:
++			break;
++		default:
++			return false;
++		}
++		if (dip->di_anextents)
++			return false;
++	}
+ 
+ 
+ 	/* only version 3 or greater inodes are extensively verified here */
+-- 
+2.7.4
+
