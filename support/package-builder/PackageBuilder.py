@@ -126,10 +126,23 @@ class PackageBuilderBase(object):
 
     def _installPackage(self, pkgUtils, package,packageVersion, instanceID, destLogPath,
                         listInstalledPackages, listInstalledRPMs):
-        latestRPM = os.path.basename(
-            pkgUtils.findRPMFileForGivenPackage(package)).replace(".rpm", "")
+        specificRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(package,packageVersion)).replace(".rpm", "")
+        latestRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(package,"*")).replace(".rpm", "")
         if package in listInstalledPackages and latestRPM in listInstalledRPMs:
-            return
+            if specificRPM != latestRPM:
+                listInstalledPackages.remove(package)
+                listInstalledRPMs.remove(latestRPM)
+                noDeps = False
+                if (package in self.mapPackageToCycles or
+                    package in self.listNodepsPackages or
+                    package in constants.noDepsPackageList):
+                        noDeps = True
+                if self.pkgBuildType == "chroot":
+                        pkgUtils.uninstallRPM(package,instanceID,noDeps)
+                elif self.pkgBuildType == "container":
+                        pkgUtils.uninstallRPMInContainer(package,instanceID,noDeps)
+            else:
+                return
         # mark it as installed -  to avoid cyclic recursion
         listInstalledPackages.append(package)
         listInstalledRPMs.append(latestRPM)
