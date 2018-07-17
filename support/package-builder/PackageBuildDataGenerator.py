@@ -41,7 +41,7 @@ class PackageBuildDataGenerator(object):
         return list(self.__buildDependencyGraph.keys())
 
     def _createSortListForPkg(self, pkg):
-        runTimeDepPkgList = self.__runTimeDependencyGraph[pkg]
+        runTimeDepPkgList = list(set(self.__runTimeDependencyGraph[pkg]))
         runTimeDepPkgList.append(pkg)
         sortListForPkg = []
 
@@ -135,7 +135,7 @@ class PackageBuildDataGenerator(object):
             dependentRpmPackages = SPECS.getData().getBuildRequiresForPackage(basePackage)
             dependentPackages = set()
             for rpmPkg in dependentRpmPackages:
-                basePkg = SPECS.getData().getSpecName(rpmPkg)
+                basePkg = SPECS.getData().getSpecName(rpmPkg.package)
                 dependentPackages.add(basePkg)
             self.__buildDependencyGraph[basePackage] = dependentPackages
             nextPackagesToConstructGraph.update(dependentPackages)
@@ -143,10 +143,13 @@ class PackageBuildDataGenerator(object):
         if addRunTimeGraph:
             rpmPackages = SPECS.getData().getPackages(basePackage)
             dependentPackages = set()
+            dependentRpmPackagesNames= set()
             for rpmPkg in rpmPackages:
                 dependentRpmPackages = SPECS.getData().getRequiresAllForPackage(rpmPkg)
-                self.__runTimeDependencyGraph[rpmPkg] = copy.copy(dependentRpmPackages)
-                for pkg in dependentRpmPackages:
+                for pkgName in dependentRpmPackages:
+                    dependentRpmPackagesNames.add(pkgName.package)
+                self.__runTimeDependencyGraph[rpmPkg] = copy.copy(dependentRpmPackagesNames)
+                for pkg in dependentRpmPackagesNames:
                     dependentPackages.add(SPECS.getData().getSpecName(pkg))
             nextPackagesToConstructGraph.update(dependentPackages)
 

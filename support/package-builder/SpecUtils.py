@@ -92,52 +92,39 @@ class Specutils(object):
 
     def getRequiresAllPackages(self):
         dependentPackages = []
-        specParseObjDependentPackages=[]
         for pkg in self.spec.packages.values():
             for dpkg in pkg.requires:
-                dependentPackages.append(dpkg.package)
-                specParseObjDependentPackages.append(dpkg)
-        dependentPackages = list(set(dependentPackages))
-        specParseObjDependentPackages = list(set(specParseObjDependentPackages))
-        specParseObjDependentPackagesTemp = specParseObjDependentPackages[:]
+                dependentPackages.append(dpkg)
+        listDependentPackages = list(set(dependentPackages))
         packageNames = self.getPackageNames()
         for pkgName in packageNames:
-            if pkgName in dependentPackages:
-                dependentPackages.remove(pkgName)
-            for objName in specParseObjDependentPackagesTemp:
+            for objName in listDependentPackages:
                 if objName.package == pkgName:
-                        specParseObjDependentPackages.remove(objName)
-        return dependentPackages,specParseObjDependentPackages
+                        dependentPackages.remove(objName)
+        dependentPackages = list(set(dependentPackages))
+        return dependentPackages
 
     def getBuildRequiresAllPackages(self):
         dependentPackages = []
-        specParseObjDependentPackages=[]
         for pkg in self.spec.packages.values():
             for dpkg in pkg.buildrequires:
-                dependentPackages.append(dpkg.package)
-                specParseObjDependentPackages.append(dpkg)
-        dependentPackages = list(set(dependentPackages))
-        specParseObjDependentPackages = list(set(specParseObjDependentPackages))
-        specParseObjDependentPackagesTemp = specParseObjDependentPackages[:]
+                dependentPackages.append(dpkg)
+        listDependentPackages = list(set(dependentPackages))
         packageNames = self.getPackageNames()
         for pkgName in packageNames:
-            if pkgName in dependentPackages:
-                dependentPackages.remove(pkgName)
-            for objName in specParseObjDependentPackagesTemp:
+            for objName in listDependentPackages:
                 if objName.package == pkgName:
-                        specParseObjDependentPackages.remove(objName)
-        return dependentPackages,specParseObjDependentPackages
+                        dependentPackages.remove(objName)
+        dependentPackages = list(set(dependentPackages))
+        return dependentPackages
 
     def getCheckBuildRequiresAllPackages(self):
         dependentPackages = []
-        specParseObjDependentPackages=[]
         for pkg in self.spec.packages.values():
             for dpkg in pkg.checkbuildrequires:
-                dependentPackages.append(dpkg.package)
-                specParseObjDependentPackages.append(dpkg)
+                dependentPackages.append(dpkg)
         dependentPackages = list(set(dependentPackages))
-        specParseObjDependentPackages = list(set(specParseObjDependentPackages))
-        return dependentPackages,specParseObjDependentPackages
+        return dependentPackages
 
     def getRequires(self, pkgName):
         dependentPackages = []
@@ -196,8 +183,8 @@ def main():
     print("requires {}".format(spec.getRequires('libtool')))
 
     print("provides {}".format(spec.getProvides('libtool')))
-    print("all-requires {}".format(spec.getRequiresAllPackages()))
-    print("all-build-requires {}".format(spec.getBuildRequiresAllPackages()))
+    print("all-requires {}".format(spec.getPkgNamesFromObj(spec.getRequiresAllPackages())))
+    print("all-build-requires {}".format(spec.getPkgNamesFromObj(spec.getBuildRequiresAllPackages())))
 
 if __name__ == '__main__':
     main()
