@@ -7,6 +7,7 @@ from ChrootUtils import ChrootUtils
 from Logger import Logger
 from PackageUtils import PackageUtils
 from constants import constants
+from SpecData import SPECS
 
 class ToolChainUtils(object):
 
@@ -112,7 +113,14 @@ class ToolChainUtils(object):
             raise e
         return pkgCount
 
-    def installToolChainRPMS(self, chrootID, packageName, logPath=None):
+    def getListDependentPackageLineContent(self, index):
+        listBuildRequiresPkgLineContent=SPECS.getData().getBuildRequiresForPackage(self.package, index)
+        listBuildRequiresPkgLineContent.extend(SPECS.getData().getCheckBuildRequiresForPackage(self.package, index))
+        listBuildRequiresPkgLineContent=list(set(listBuildRequiresPkgLineContent))
+        listRequiresPkgLineContent = SPECS.getData().getRequiresAllForPackage(self.package,index)
+        return listBuildRequiresPkgLineContent, listRequiresPkgLineContent
+
+    def installToolChainRPMS(self, chrootID, packageName, logPath=None,index=0):
         if logPath is None:
             logPath = self.logPath
         cmdUtils = CommandUtils()
@@ -120,16 +128,26 @@ class ToolChainUtils(object):
         self.logger.info("Installing Tool Chain RPMS.......")
         rpmFiles = ""
         packages = ""
+        self.package=packageName
+        listBuildRequiresPackageLineContent,listRequiresPackageLineContent = self.getListDependentPackageLineContent(index)
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils = PackageUtils(self.logName, self.logPath)
             rpmFile = None
+            version = "*"
+            for depPkg in listBuildRequiresPackageLineContent:
+                if depPkg.package == package:
+                        version=pkgUtils._getProperVersion(package,depPkg)
+            if version == "*":
+                for depPkg in listRequiresPackageLineContent:
+                        if depPkg.package == package:
+                                version=pkgUtils._getProperVersion(package,depPkg)
             if constants.rpmCheck:
-                rpmFile = pkgUtils.findRPMFileForGivenPackage(package)
+                rpmFile = pkgUtils.findRPMFileForGivenPackage(package, version)
             else:
                 if (packageName not in constants.listToolChainRPMsToInstall or
                         constants.listToolChainRPMsToInstall.index(packageName) >
                         constants.listToolChainRPMsToInstall.index(package)):
-                    rpmFile = pkgUtils.findRPMFileForGivenPackage(package)
+                    rpmFile = pkgUtils.findRPMFileForGivenPackage(package, version)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
                 if (package == "sqlite") and (platform.machine() == "x86_64"):
