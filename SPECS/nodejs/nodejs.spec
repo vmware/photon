@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        8.3.0
+Version:        8.11.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v8.3.0/node-v%{version}.tar.xz
-%define         sha1 node=62969b076013b20370fd42b7441b3c7ab7ac924f
+%define         sha1 node=00737d01b16f02556690f8959bb8251e51dbbf49
 BuildArch:      x86_64
 
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
@@ -72,6 +72,8 @@ make  %{?_smp_mflags} test
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Jul 16 2018 Keerthana K <keerthanak@vmware.com> 8.11.0-1
+-   Updated to version 8.11.0
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 8.3.0-1
 -   Updated to version 8.3.0
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 7.7.4-1
