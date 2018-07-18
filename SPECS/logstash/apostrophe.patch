@@ -1,0 +1,13 @@
+diff --git a/rakelib/artifacts.rake b/rakelib/artifacts.rake
+index cc948ea..0e7d432 100644
+--- a/rakelib/artifacts.rake
++++ b/rakelib/artifacts.rake
+@@ -178,7 +178,7 @@ namespace "artifact" do
+     BUILD_METADATA_FILE = Tempfile.new('build.rb')
+     build_info = {
+       "build_date" => Time.now.iso8601,
+-      "build_sha" => `git rev-parse HEAD`.chomp,
++      "build_sha" => 'git rev-parse HEAD'.chomp,
+       "build_snapshot" => SNAPSHOT_BUILD
+     }
+     metadata = [ "# encoding: utf-8", "BUILD_INFO = #{build_info}" ]
