@@ -84,7 +84,6 @@
         "openssl-devel",
         "util-linux-lang",
         "util-linux-devel",
-        "db-docs",
         "linux-dev",
         "linux-docs",
         "mpc",
