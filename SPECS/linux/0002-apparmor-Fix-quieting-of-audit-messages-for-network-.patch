@@ -1,0 +1,42 @@
+From 43d2482f8472a21571feadade4d945d3048aec00 Mon Sep 17 00:00:00 2001
+From: John Johansen <john.johansen@canonical.com>
+Date: Fri, 29 Jun 2012 17:34:00 -0700
+Subject: [PATCH 2/3] apparmor: Fix quieting of audit messages for network
+ mediation
+
+[ This is an out-of-tree patch distributed with the AppArmor source
+  code (v2.13) ]
+
+If a profile specified a quieting of network denials for a given rule by
+either the quiet or deny rule qualifiers, the resultant quiet mask for
+denied requests was applied incorrectly, resulting in two potential bugs.
+1. The misapplied quiet mask would prevent denials from being correctly
+   tested against the kill mask/mode. Thus network access requests that
+   should have resulted in the application being killed did not.
+
+2. The actual quieting of the denied network request was not being applied.
+   This would result in network rejections always being logged even when
+   they had been specifically marked as quieted.
+
+Signed-off-by: John Johansen <john.johansen@canonical.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ security/apparmor/net.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/security/apparmor/net.c b/security/apparmor/net.c
+index 003dd18..6e6e5c9 100644
+--- a/security/apparmor/net.c
++++ b/security/apparmor/net.c
+@@ -88,7 +88,7 @@ static int audit_net(struct aa_profile *profile, int op, u16 family, int type,
+ 	} else {
+ 		u16 quiet_mask = profile->net.quiet[sa.u.net->family];
+ 		u16 kill_mask = 0;
+-		u16 denied = (1 << sa.aad->net.type) & ~quiet_mask;
++		u16 denied = (1 << sa.aad->net.type);
+ 
+ 		if (denied & kill_mask)
+ 			audit_type = AUDIT_APPARMOR_KILL;
+-- 
+2.7.4
+

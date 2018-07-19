@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.111
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -85,6 +85,12 @@ Patch62: 0151-ipv6-prevent-speculative-execution.patch
 Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
+
+# Out-of-tree patches from AppArmor:
+Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
+Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
+Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
+
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 Patch102: 0009-bump-the-default-TTL-to-255.patch
@@ -262,6 +268,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
+
+%patch71 -p1
+%patch72 -p1
+%patch73 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -467,6 +477,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jul 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.111-5
+-   Apply out-of-tree patches needed for AppArmor.
 *   Thu Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-4
 -   Fix CVE-2018-10322
 *   Thu Jul 12 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-3

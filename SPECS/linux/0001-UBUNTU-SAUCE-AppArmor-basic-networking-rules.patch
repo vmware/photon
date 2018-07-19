@@ -1,0 +1,607 @@
+From 20f953a08580786932c6b2c214c7dc2e2f99cf75 Mon Sep 17 00:00:00 2001
+From: John Johansen <john.johansen@canonical.com>
+Date: Mon, 4 Oct 2010 15:03:36 -0700
+Subject: [PATCH 1/3] UBUNTU: SAUCE: AppArmor: basic networking rules
+
+[ This is an out-of-tree patch distributed with the AppArmor source
+  code (v2.13) ]
+
+Base support for network mediation.
+
+Signed-off-by: John Johansen <john.johansen@canonical.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ security/apparmor/.gitignore       |   1 +
+ security/apparmor/Makefile         |  42 +++++++++-
+ security/apparmor/apparmorfs.c     |   1 +
+ security/apparmor/include/audit.h  |   4 +
+ security/apparmor/include/net.h    |  44 ++++++++++
+ security/apparmor/include/policy.h |   3 +
+ security/apparmor/lsm.c            | 112 +++++++++++++++++++++++++
+ security/apparmor/net.c            | 162 +++++++++++++++++++++++++++++++++++++
+ security/apparmor/policy.c         |   1 +
+ security/apparmor/policy_unpack.c  |  46 +++++++++++
+ 10 files changed, 414 insertions(+), 2 deletions(-)
+ create mode 100644 security/apparmor/include/net.h
+ create mode 100644 security/apparmor/net.c
+
+diff --git a/security/apparmor/.gitignore b/security/apparmor/.gitignore
+index 9cdec70..d5b291e 100644
+--- a/security/apparmor/.gitignore
++++ b/security/apparmor/.gitignore
+@@ -1,5 +1,6 @@
+ #
+ # Generated include files
+ #
++net_names.h
+ capability_names.h
+ rlim_names.h
+diff --git a/security/apparmor/Makefile b/security/apparmor/Makefile
+index d693df8..5dbb72f 100644
+--- a/security/apparmor/Makefile
++++ b/security/apparmor/Makefile
+@@ -4,10 +4,10 @@ obj-$(CONFIG_SECURITY_APPARMOR) += apparmor.o
+ 
+ apparmor-y := apparmorfs.o audit.o capability.o context.o ipc.o lib.o match.o \
+               path.o domain.o policy.o policy_unpack.o procattr.o lsm.o \
+-              resource.o sid.o file.o
++              resource.o sid.o file.o net.o
+ apparmor-$(CONFIG_SECURITY_APPARMOR_HASH) += crypto.o
+ 
+-clean-files := capability_names.h rlim_names.h
++clean-files := capability_names.h rlim_names.h net_names.h
+ 
+ 
+ # Build a lower case string table of capability names
+@@ -25,6 +25,38 @@ cmd_make-caps = echo "static const char *const capability_names[] = {" > $@ ;\
+ 	    -e 's/^\#define[ \t]+CAP_([A-Z0-9_]+)[ \t]+([0-9]+)/\L\1/p' | \
+ 	     tr '\n' ' ' | sed -e 's/ $$/"\n/' >> $@
+ 
++# Build a lower case string table of address family names
++# Transform lines from
++#    define AF_LOCAL	1	/* POSIX name for AF_UNIX	*/
++#    #define AF_INET		2	/* Internet IP Protocol 	*/
++# to
++#    [1] = "local",
++#    [2] = "inet",
++#
++# and build the securityfs entries for the mapping.
++# Transforms lines from
++#    #define AF_INET		2	/* Internet IP Protocol 	*/
++# to
++#    #define AA_FS_AF_MASK "local inet"
++quiet_cmd_make-af = GEN     $@
++cmd_make-af = echo "static const char *address_family_names[] = {" > $@ ;\
++	sed $< >>$@ -r -n -e "/AF_MAX/d" -e "/AF_LOCAL/d" -e \
++	 's/^\#define[ \t]+AF_([A-Z0-9_]+)[ \t]+([0-9]+)(.*)/[\2] = "\L\1",/p';\
++	echo "};" >> $@ ;\
++	echo -n '\#define AA_FS_AF_MASK "' >> $@ ;\
++	sed -r -n 's/^\#define[ \t]+AF_([A-Z0-9_]+)[ \t]+([0-9]+)(.*)/\L\1/p'\
++	 $< | tr '\n' ' ' | sed -e 's/ $$/"\n/' >> $@
++
++# Build a lower case string table of sock type names
++# Transform lines from
++#    SOCK_STREAM	= 1,
++# to
++#    [1] = "stream",
++quiet_cmd_make-sock = GEN     $@
++cmd_make-sock = echo "static const char *sock_type_names[] = {" >> $@ ;\
++	sed $^ >>$@ -r -n \
++	-e 's/^\tSOCK_([A-Z0-9_]+)[\t]+=[ \t]+([0-9]+)(.*)/[\2] = "\L\1",/p';\
++	echo "};" >> $@
+ 
+ # Build a lower case string table of rlimit names.
+ # Transforms lines from
+@@ -61,6 +93,7 @@ cmd_make-rlim = echo "static const char *const rlim_names[RLIM_NLIMITS] = {" \
+ 	    tr '\n' ' ' | sed -e 's/ $$/"\n/' >> $@
+ 
+ $(obj)/capability.o : $(obj)/capability_names.h
++$(obj)/net.o : $(obj)/net_names.h
+ $(obj)/resource.o : $(obj)/rlim_names.h
+ $(obj)/capability_names.h : $(srctree)/include/uapi/linux/capability.h \
+ 			    $(src)/Makefile
+@@ -68,3 +101,8 @@ $(obj)/capability_names.h : $(srctree)/include/uapi/linux/capability.h \
+ $(obj)/rlim_names.h : $(srctree)/include/uapi/asm-generic/resource.h \
+ 		      $(src)/Makefile
+ 	$(call cmd,make-rlim)
++$(obj)/net_names.h : $(srctree)/include/linux/socket.h \
++		     $(srctree)/include/linux/net.h \
++		     $(src)/Makefile
++	$(call cmd,make-af)
++	$(call cmd,make-sock)
+diff --git a/security/apparmor/apparmorfs.c b/security/apparmor/apparmorfs.c
+index 5923d56..bd558db 100644
+--- a/security/apparmor/apparmorfs.c
++++ b/security/apparmor/apparmorfs.c
+@@ -807,6 +807,7 @@ static struct aa_fs_entry aa_fs_entry_features[] = {
+ 	AA_FS_DIR("policy",			aa_fs_entry_policy),
+ 	AA_FS_DIR("domain",			aa_fs_entry_domain),
+ 	AA_FS_DIR("file",			aa_fs_entry_file),
++	AA_FS_DIR("network",                    aa_fs_entry_network),
+ 	AA_FS_FILE_U64("capability",		VFS_CAP_FLAGS_MASK),
+ 	AA_FS_DIR("rlimit",			aa_fs_entry_rlimit),
+ 	AA_FS_DIR("caps",			aa_fs_entry_caps),
+diff --git a/security/apparmor/include/audit.h b/security/apparmor/include/audit.h
+index ba3dfd1..5d3c419 100644
+--- a/security/apparmor/include/audit.h
++++ b/security/apparmor/include/audit.h
+@@ -125,6 +125,10 @@ struct apparmor_audit_data {
+ 			u32 denied;
+ 			kuid_t ouid;
+ 		} fs;
++		struct {
++			int type, protocol;
++			struct sock *sk;
++		} net;
+ 	};
+ };
+ 
+diff --git a/security/apparmor/include/net.h b/security/apparmor/include/net.h
+new file mode 100644
+index 0000000..cb8a121
+--- /dev/null
++++ b/security/apparmor/include/net.h
+@@ -0,0 +1,44 @@
++/*
++ * AppArmor security module
++ *
++ * This file contains AppArmor network mediation definitions.
++ *
++ * Copyright (C) 1998-2008 Novell/SUSE
++ * Copyright 2009-2012 Canonical Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, version 2 of the
++ * License.
++ */
++
++#ifndef __AA_NET_H
++#define __AA_NET_H
++
++#include <net/sock.h>
++
++#include "apparmorfs.h"
++
++/* struct aa_net - network confinement data
++ * @allowed: basic network families permissions
++ * @audit_network: which network permissions to force audit
++ * @quiet_network: which network permissions to quiet rejects
++ */
++struct aa_net {
++	u16 allow[AF_MAX];
++	u16 audit[AF_MAX];
++	u16 quiet[AF_MAX];
++};
++
++extern struct aa_fs_entry aa_fs_entry_network[];
++
++extern int aa_net_perm(int op, struct aa_profile *profile, u16 family,
++		       int type, int protocol, struct sock *sk);
++extern int aa_revalidate_sk(int op, struct sock *sk);
++
++static inline void aa_free_net_rules(struct aa_net *new)
++{
++	/* NOP */
++}
++
++#endif /* __AA_NET_H */
+diff --git a/security/apparmor/include/policy.h b/security/apparmor/include/policy.h
+index 52275f0..4fc4dac 100644
+--- a/security/apparmor/include/policy.h
++++ b/security/apparmor/include/policy.h
+@@ -27,6 +27,7 @@
+ #include "capability.h"
+ #include "domain.h"
+ #include "file.h"
++#include "net.h"
+ #include "resource.h"
+ 
+ extern const char *const aa_profile_mode_names[];
+@@ -176,6 +177,7 @@ struct aa_replacedby {
+  * @policy: general match rules governing policy
+  * @file: The set of rules governing basic file access and domain transitions
+  * @caps: capabilities for the profile
++ * @net: network controls for the profile
+  * @rlimits: rlimits for the profile
+  *
+  * @dents: dentries for the profiles file entries in apparmorfs
+@@ -217,6 +219,7 @@ struct aa_profile {
+ 	struct aa_policydb policy;
+ 	struct aa_file_rules file;
+ 	struct aa_caps caps;
++	struct aa_net net;
+ 	struct aa_rlimit rlimits;
+ 
+ 	unsigned char *hash;
+diff --git a/security/apparmor/lsm.c b/security/apparmor/lsm.c
+index 02cc952..de3b68a 100644
+--- a/security/apparmor/lsm.c
++++ b/security/apparmor/lsm.c
+@@ -32,6 +32,7 @@
+ #include "include/context.h"
+ #include "include/file.h"
+ #include "include/ipc.h"
++#include "include/net.h"
+ #include "include/path.h"
+ #include "include/policy.h"
+ #include "include/procattr.h"
+@@ -584,6 +585,104 @@ static int apparmor_task_setrlimit(struct task_struct *task,
+ 	return error;
+ }
+ 
++static int apparmor_socket_create(int family, int type, int protocol, int kern)
++{
++	struct aa_profile *profile;
++	int error = 0;
++
++	if (kern)
++		return 0;
++
++	profile = __aa_current_profile();
++	if (!unconfined(profile))
++		error = aa_net_perm(OP_CREATE, profile, family, type, protocol,
++				    NULL);
++	return error;
++}
++
++static int apparmor_socket_bind(struct socket *sock,
++				struct sockaddr *address, int addrlen)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_BIND, sk);
++}
++
++static int apparmor_socket_connect(struct socket *sock,
++				   struct sockaddr *address, int addrlen)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_CONNECT, sk);
++}
++
++static int apparmor_socket_listen(struct socket *sock, int backlog)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_LISTEN, sk);
++}
++
++static int apparmor_socket_accept(struct socket *sock, struct socket *newsock)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_ACCEPT, sk);
++}
++
++static int apparmor_socket_sendmsg(struct socket *sock,
++				   struct msghdr *msg, int size)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_SENDMSG, sk);
++}
++
++static int apparmor_socket_recvmsg(struct socket *sock,
++				   struct msghdr *msg, int size, int flags)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_RECVMSG, sk);
++}
++
++static int apparmor_socket_getsockname(struct socket *sock)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_GETSOCKNAME, sk);
++}
++
++static int apparmor_socket_getpeername(struct socket *sock)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_GETPEERNAME, sk);
++}
++
++static int apparmor_socket_getsockopt(struct socket *sock, int level,
++				      int optname)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_GETSOCKOPT, sk);
++}
++
++static int apparmor_socket_setsockopt(struct socket *sock, int level,
++				      int optname)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_SETSOCKOPT, sk);
++}
++
++static int apparmor_socket_shutdown(struct socket *sock, int how)
++{
++	struct sock *sk = sock->sk;
++
++	return aa_revalidate_sk(OP_SOCK_SHUTDOWN, sk);
++}
++
+ static struct security_hook_list apparmor_hooks[] = {
+ 	LSM_HOOK_INIT(ptrace_access_check, apparmor_ptrace_access_check),
+ 	LSM_HOOK_INIT(ptrace_traceme, apparmor_ptrace_traceme),
+@@ -613,6 +712,19 @@ static struct security_hook_list apparmor_hooks[] = {
+ 	LSM_HOOK_INIT(getprocattr, apparmor_getprocattr),
+ 	LSM_HOOK_INIT(setprocattr, apparmor_setprocattr),
+ 
++	LSM_HOOK_INIT(socket_create, apparmor_socket_create),
++	LSM_HOOK_INIT(socket_bind, apparmor_socket_bind),
++	LSM_HOOK_INIT(socket_connect, apparmor_socket_connect),
++	LSM_HOOK_INIT(socket_listen, apparmor_socket_listen),
++	LSM_HOOK_INIT(socket_accept, apparmor_socket_accept),
++	LSM_HOOK_INIT(socket_sendmsg, apparmor_socket_sendmsg),
++	LSM_HOOK_INIT(socket_recvmsg, apparmor_socket_recvmsg),
++	LSM_HOOK_INIT(socket_getsockname, apparmor_socket_getsockname),
++	LSM_HOOK_INIT(socket_getpeername, apparmor_socket_getpeername),
++	LSM_HOOK_INIT(socket_getsockopt, apparmor_socket_getsockopt),
++	LSM_HOOK_INIT(socket_setsockopt, apparmor_socket_setsockopt),
++	LSM_HOOK_INIT(socket_shutdown, apparmor_socket_shutdown),
++
+ 	LSM_HOOK_INIT(cred_alloc_blank, apparmor_cred_alloc_blank),
+ 	LSM_HOOK_INIT(cred_free, apparmor_cred_free),
+ 	LSM_HOOK_INIT(cred_prepare, apparmor_cred_prepare),
+diff --git a/security/apparmor/net.c b/security/apparmor/net.c
+new file mode 100644
+index 0000000..003dd18
+--- /dev/null
++++ b/security/apparmor/net.c
+@@ -0,0 +1,162 @@
++/*
++ * AppArmor security module
++ *
++ * This file contains AppArmor network mediation
++ *
++ * Copyright (C) 1998-2008 Novell/SUSE
++ * Copyright 2009-2012 Canonical Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation, version 2 of the
++ * License.
++ */
++
++#include "include/apparmor.h"
++#include "include/audit.h"
++#include "include/context.h"
++#include "include/net.h"
++#include "include/policy.h"
++
++#include "net_names.h"
++
++struct aa_fs_entry aa_fs_entry_network[] = {
++	AA_FS_FILE_STRING("af_mask", AA_FS_AF_MASK),
++	{ }
++};
++
++/* audit callback for net specific fields */
++static void audit_cb(struct audit_buffer *ab, void *va)
++{
++	struct common_audit_data *sa = va;
++
++	audit_log_format(ab, " family=");
++	if (address_family_names[sa->u.net->family]) {
++		audit_log_string(ab, address_family_names[sa->u.net->family]);
++	} else {
++		audit_log_format(ab, "\"unknown(%d)\"", sa->u.net->family);
++	}
++	audit_log_format(ab, " sock_type=");
++	if (sock_type_names[sa->aad->net.type]) {
++		audit_log_string(ab, sock_type_names[sa->aad->net.type]);
++	} else {
++		audit_log_format(ab, "\"unknown(%d)\"", sa->aad->net.type);
++	}
++	audit_log_format(ab, " protocol=%d", sa->aad->net.protocol);
++}
++
++/**
++ * audit_net - audit network access
++ * @profile: profile being enforced  (NOT NULL)
++ * @op: operation being checked
++ * @family: network family
++ * @type:   network type
++ * @protocol: network protocol
++ * @sk: socket auditing is being applied to
++ * @error: error code for failure else 0
++ *
++ * Returns: %0 or sa->error else other errorcode on failure
++ */
++static int audit_net(struct aa_profile *profile, int op, u16 family, int type,
++		     int protocol, struct sock *sk, int error)
++{
++	int audit_type = AUDIT_APPARMOR_AUTO;
++	struct common_audit_data sa;
++	struct apparmor_audit_data aad = { };
++	struct lsm_network_audit net = { };
++	if (sk) {
++		sa.type = LSM_AUDIT_DATA_NET;
++	} else {
++		sa.type = LSM_AUDIT_DATA_NONE;
++	}
++	/* todo fill in socket addr info */
++	sa.aad = &aad;
++	sa.u.net = &net;
++	sa.aad->op = op,
++	sa.u.net->family = family;
++	sa.u.net->sk = sk;
++	sa.aad->net.type = type;
++	sa.aad->net.protocol = protocol;
++	sa.aad->error = error;
++
++	if (likely(!sa.aad->error)) {
++		u16 audit_mask = profile->net.audit[sa.u.net->family];
++		if (likely((AUDIT_MODE(profile) != AUDIT_ALL) &&
++			   !(1 << sa.aad->net.type & audit_mask)))
++			return 0;
++		audit_type = AUDIT_APPARMOR_AUDIT;
++	} else {
++		u16 quiet_mask = profile->net.quiet[sa.u.net->family];
++		u16 kill_mask = 0;
++		u16 denied = (1 << sa.aad->net.type) & ~quiet_mask;
++
++		if (denied & kill_mask)
++			audit_type = AUDIT_APPARMOR_KILL;
++
++		if ((denied & quiet_mask) &&
++		    AUDIT_MODE(profile) != AUDIT_NOQUIET &&
++		    AUDIT_MODE(profile) != AUDIT_ALL)
++			return COMPLAIN_MODE(profile) ? 0 : sa.aad->error;
++	}
++
++	return aa_audit(audit_type, profile, GFP_KERNEL, &sa, audit_cb);
++}
++
++/**
++ * aa_net_perm - very course network access check
++ * @op: operation being checked
++ * @profile: profile being enforced  (NOT NULL)
++ * @family: network family
++ * @type:   network type
++ * @protocol: network protocol
++ *
++ * Returns: %0 else error if permission denied
++ */
++int aa_net_perm(int op, struct aa_profile *profile, u16 family, int type,
++		int protocol, struct sock *sk)
++{
++	u16 family_mask;
++	int error;
++
++	if ((family < 0) || (family >= AF_MAX))
++		return -EINVAL;
++
++	if ((type < 0) || (type >= SOCK_MAX))
++		return -EINVAL;
++
++	/* unix domain and netlink sockets are handled by ipc */
++	if (family == AF_UNIX || family == AF_NETLINK)
++		return 0;
++
++	family_mask = profile->net.allow[family];
++
++	error = (family_mask & (1 << type)) ? 0 : -EACCES;
++
++	return audit_net(profile, op, family, type, protocol, sk, error);
++}
++
++/**
++ * aa_revalidate_sk - Revalidate access to a sock
++ * @op: operation being checked
++ * @sk: sock being revalidated  (NOT NULL)
++ *
++ * Returns: %0 else error if permission denied
++ */
++int aa_revalidate_sk(int op, struct sock *sk)
++{
++	struct aa_profile *profile;
++	int error = 0;
++
++	/* aa_revalidate_sk should not be called from interrupt context
++	 * don't mediate these calls as they are not task related
++	 */
++	if (in_interrupt())
++		return 0;
++
++	profile = __aa_current_profile();
++	if (!unconfined(profile))
++		error = aa_net_perm(op, profile, sk->sk_family, sk->sk_type,
++				    sk->sk_protocol, sk);
++
++	return error;
++}
+diff --git a/security/apparmor/policy.c b/security/apparmor/policy.c
+index 179e68d..f1a8541 100644
+--- a/security/apparmor/policy.c
++++ b/security/apparmor/policy.c
+@@ -603,6 +603,7 @@ void aa_free_profile(struct aa_profile *profile)
+ 
+ 	aa_free_file_rules(&profile->file);
+ 	aa_free_cap_rules(&profile->caps);
++	aa_free_net_rules(&profile->net);
+ 	aa_free_rlimit_rules(&profile->rlimits);
+ 
+ 	kzfree(profile->dirname);
+diff --git a/security/apparmor/policy_unpack.c b/security/apparmor/policy_unpack.c
+index 1381206..7dc15ff 100644
+--- a/security/apparmor/policy_unpack.c
++++ b/security/apparmor/policy_unpack.c
+@@ -193,6 +193,19 @@ static bool unpack_nameX(struct aa_ext *e, enum aa_code code, const char *name)
+ 	return 0;
+ }
+ 
++static bool unpack_u16(struct aa_ext *e, u16 *data, const char *name)
++{
++	if (unpack_nameX(e, AA_U16, name)) {
++		if (!inbounds(e, sizeof(u16)))
++			return 0;
++		if (data)
++			*data = le16_to_cpu(get_unaligned((u16 *) e->pos));
++		e->pos += sizeof(u16);
++		return 1;
++	}
++	return 0;
++}
++
+ static bool unpack_u32(struct aa_ext *e, u32 *data, const char *name)
+ {
+ 	if (unpack_nameX(e, AA_U32, name)) {
+@@ -476,6 +489,7 @@ static struct aa_profile *unpack_profile(struct aa_ext *e)
+ {
+ 	struct aa_profile *profile = NULL;
+ 	const char *name = NULL;
++	size_t size = 0;
+ 	int i, error = -EPROTO;
+ 	kernel_cap_t tmpcap;
+ 	u32 tmp;
+@@ -576,6 +590,38 @@ static struct aa_profile *unpack_profile(struct aa_ext *e)
+ 	if (!unpack_rlimits(e, profile))
+ 		goto fail;
+ 
++	size = unpack_array(e, "net_allowed_af");
++	if (size) {
++
++		for (i = 0; i < size; i++) {
++			/* discard extraneous rules that this kernel will
++			 * never request
++			 */
++			if (i >= AF_MAX) {
++				u16 tmp;
++				if (!unpack_u16(e, &tmp, NULL) ||
++				    !unpack_u16(e, &tmp, NULL) ||
++				    !unpack_u16(e, &tmp, NULL))
++					goto fail;
++				continue;
++			}
++			if (!unpack_u16(e, &profile->net.allow[i], NULL))
++				goto fail;
++			if (!unpack_u16(e, &profile->net.audit[i], NULL))
++				goto fail;
++			if (!unpack_u16(e, &profile->net.quiet[i], NULL))
++				goto fail;
++		}
++		if (!unpack_nameX(e, AA_ARRAYEND, NULL))
++			goto fail;
++	}
++	/*
++	 * allow unix domain and netlink sockets they are handled
++	 * by IPC
++	 */
++	profile->net.allow[AF_UNIX] = 0xffff;
++	profile->net.allow[AF_NETLINK] = 0xffff;
++
+ 	if (unpack_nameX(e, AA_STRUCT, "policydb")) {
+ 		/* generic policy dfa - optional and may be NULL */
+ 		profile->policy.dfa = unpack_dfa(e);
+-- 
+2.7.4
+
