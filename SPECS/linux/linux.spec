@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.111
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -91,6 +91,10 @@ Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 
+# Out-of-tree patches from AppArmor:
+Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
+Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
+Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -223,6 +227,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch65 -p1
 %patch66 -p1
 
+%patch71 -p1
+%patch72 -p1
+%patch73 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -390,6 +397,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jul 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.111-5
+-   Apply out-of-tree patches needed for AppArmor.
 *   Thu Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-4
 -   Fix CVE-2018-10322
 *   Thu Jul 12 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-3

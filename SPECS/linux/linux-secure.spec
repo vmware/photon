@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.111
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -92,6 +92,10 @@ Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 
+# Out-of-tree patches from AppArmor:
+Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
+Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
+Patch73: 0003-UBUNTU-SAUCE-apparmor-Add-the-ability-to-mediate-mou.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -232,6 +236,10 @@ EOF
 %patch65 -p1
 %patch66 -p1
 
+%patch71 -p1
+%patch72 -p1
+%patch73 -p1
+
 # secure
 %patch13 -p1
 %patch14 -p1
@@ -362,6 +370,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.111-4
+-   Apply out-of-tree patches needed for AppArmor.
 *   Thu Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-3
 -   Fix CVE-2018-10322
 *   Thu Jul 12 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-2
