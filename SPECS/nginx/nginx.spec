@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.13.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -58,6 +58,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %dir %{_var}/log/nginx
 
 %changelog
+*   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-3
+-   Restarting nginx service on failure.
 *   Fri Jun 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.13.8-2
 -   adding module njs.
 *   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.13.8-1
