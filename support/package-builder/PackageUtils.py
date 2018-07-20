@@ -10,6 +10,7 @@ import PullSources
 import json
 import collections
 from SpecData import SPECS
+from distutils.version import LooseVersion
 
 class PackageUtils(object):
 
@@ -51,6 +52,26 @@ class PackageUtils(object):
             arch="noarch"
         return arch
 
+    def getProperVersion(self,package,parseSpecObj):
+        listOfVersionObjs=SPECS.getData().getSpecObj(package)
+        for num in listOfVersionObjs:
+                if parseSpecObj.compare == 'gte':
+                        if LooseVersion(num.version) >= LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'lte':
+                        if LooseVersion(num.version) <= LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'eq':
+                        if LooseVersion(num.version) == LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'lt':
+                        if LooseVersion(num.version) < LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'gt':
+                        if LooseVersion(num.version) > LooseVersion(parseSpecObj.version):
+                                return num.version
+        return "*"
+
     def getRPMDestDir(self,rpmName,rpmDir):
         arch = self.getRPMArch(rpmName)
         rpmDestDir=rpmDir+"/"+arch
@@ -67,11 +88,11 @@ class PackageUtils(object):
             shutil.copyfile(rpmFile,  rpmDestPath)
         return rpmDestPath
 
-    def installRPM(self,package,chrootID,noDeps=False,destLogPath=None):
+    def installRPM(self,package,version,chrootID,noDeps=False,destLogPath=None):
 #        self.logger.info("Installing rpm for package:"+package)
 #        self.logger.debug("No deps:"+str(noDeps))
 
-        rpmfile=self.findRPMFileForGivenPackage(package)
+        rpmfile=self.findRPMFileForGivenPackage(package,version)
         if rpmfile is None:
             self.logger.error("No rpm file found for package:"+package)
             raise Exception("Missing rpm file: "+package)
@@ -309,7 +330,7 @@ class PackageUtils(object):
         if len(listFoundRPMFiles) == 0 :
             return None
         if len(listFoundRPMFiles) > 1 :
-            self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package)
+            self.logger.error("Found multiple rpm files for given package in rpm directory.Unable to determine the rpm file for package:"+package+ " list:"+str(listFoundRPMFiles))
             raise Exception("Multiple rpm files found")
 
     def findPackageNameFromRPMFile(self,rpmfile):
@@ -418,8 +439,8 @@ class PackageUtils(object):
         rpmPath += rpmName
         return rpmPath
 
-    def prepRPMforInstallInContainer(self, package, containerID, noDeps=False, destLogPath=None):
-        rpmfile = self.findRPMFileForGivenPackage(package)
+    def prepRPMforInstallInContainer(self, package, version, containerID, noDeps=False, destLogPath=None):
+        rpmfile = self.findRPMFileForGivenPackage(package, version)
         if rpmfile is None:
             self.logger.error("No rpm file found for package: " + package)
             raise Exception("Missing rpm file")

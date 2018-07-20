@@ -249,7 +249,7 @@ class PackageManager(object):
             if not returnVal:
                 raise Exception("Unable to prepare tool-chain chroot")
             tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
-            tcUtils.installToolChainRPMS(chrootID, "dummy")
+            tcUtils.installToolChainRPMS(chrootID, "dummy",self.listBuildOptionPackages,self.pkgBuildOptionFile)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)
