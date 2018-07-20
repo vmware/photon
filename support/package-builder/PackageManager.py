@@ -107,7 +107,7 @@ class PackageManager(object):
                 listDependentRpmPackages = SPECS.getData().getRequiresAllForPackage(pkg)
                 needToRebuild = False
                 for dependentPkg in listDependentRpmPackages:
-                    if dependentPkg not in self.listOfPackagesAlreadyBuilt:
+                    if dependentPkg.package not in self.listOfPackagesAlreadyBuilt:
                         needToRebuild = True
                         updateBuiltRPMSList = False
                 if needToRebuild:
@@ -249,7 +249,7 @@ class PackageManager(object):
             if not returnVal:
                 raise Exception("Unable to prepare tool-chain chroot")
             tcUtils = ToolChainUtils("toolchain-chroot", self.logPath)
-            tcUtils.installToolChainRPMS(chrootID, "dummy")
+            tcUtils.installToolChainRPMS(chrootID, "dummy",self.listBuildOptionPackages,self.pkgBuildOptionFile)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)

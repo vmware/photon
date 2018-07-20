@@ -7,7 +7,7 @@ from Queue import PriorityQueue
 from SpecData import SPECS
 
 class Scheduler(object):
-    
+
     lock=threading.Lock()
     listOfAlreadyBuiltPackages=[]
     listOfPackagesToBuild=[]
@@ -23,24 +23,23 @@ class Scheduler(object):
     logger=None
     event=None
     stopScheduling=False
-    
+
     @staticmethod
     def setEvent(event):
         Scheduler.event=event
-    
+
     @staticmethod
     def setLog(logName,logPath):
-        Scheduler.logger = Logger.getLogger(logName, logPath)    
+        Scheduler.logger = Logger.getLogger(logName, logPath)
 
     @staticmethod
     def getBuildRequiredPackages(package):
         listRequiredRPMPackages = []
         listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
-
         listRequiredPackages = []
 
         for pkg in listRequiredRPMPackages:
-            basePkg = SPECS.getData().getSpecName(pkg)
+            basePkg = SPECS.getData().getSpecName(pkg.package)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
 
@@ -145,22 +144,20 @@ class Scheduler(object):
         Scheduler.listOfPackagesNextToBuild=[]
         Scheduler.listOfFailedPackages=[]
         Scheduler.setPriorities()
-        
+
     @staticmethod
     def getRequiredPackages(package):
         listRequiredRPMPackages=[]
         listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
         listRequiredRPMPackages.extend(SPECS.getData().getRequiresAllForPackage(package))
-        
         listRequiredPackages=[]
 
         for pkg in listRequiredRPMPackages:
-            basePkg=SPECS.getData().getSpecName(pkg)
+            basePkg=SPECS.getData().getSpecName(pkg.package)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
-        
         return listRequiredPackages
-    
+
     @staticmethod
     def __getListNextPackagesReadyToBuild():
         listOfPackagesNextToBuild=PriorityQueue()
@@ -230,28 +227,28 @@ class Scheduler(object):
         Scheduler.listOfPackagesCurrentlyBuilding.append(package)
         Scheduler.listOfPackagesToBuild.remove(package)
         return package
-    
+
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildCompleted(package):
         if package in Scheduler.listOfPackagesCurrentlyBuilding:
             Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
             Scheduler.listOfAlreadyBuiltPackages.append(package)
-    
-        
+
+
     #can be synchronized TODO
     @staticmethod
     def notifyPackageBuildFailed(package):
         if package in Scheduler.listOfPackagesCurrentlyBuilding:
             Scheduler.listOfPackagesCurrentlyBuilding.remove(package)
             Scheduler.listOfFailedPackages.append(package)
-                
+
     @staticmethod
     def isAllPackagesBuilt():
         if len(Scheduler.listOfPackagesToBuild) == 0 :
             return True
         return False
-    
+
     @staticmethod
     def isAnyPackagesFailedToBuild():
         if len(Scheduler.listOfFailedPackages) != 0:

@@ -177,6 +177,18 @@ class SpecObjectsUtils(object):
         specName=self.getSpecName(package)
         return len(self.mapSpecObjects[specName])
 
+    def getSpecObj(self, package):
+        specName=self.getSpecName(package)
+        return self.mapSpecObjects[specName]
+
+    def getPkgNamesFromObj(self, objlist):
+        listPkgName=[]
+        listPkgNames=list(set(objlist))
+        for name in listPkgNames:
+                listPkgName.append(name.package)
+        listPkgName=list(set(listPkgName))
+        return listPkgName
+
     def printAllObjects(self):
         listSpecs=self.mapSpecObjects.keys()
         for spec in listSpecs:
@@ -198,11 +210,11 @@ class SpecObjectsUtils(object):
             self.logger.info(" ")
             self.logger.info(" ")
             self.logger.info("Build require packages")
-            self.logger.info(specObj.buildRequirePackages)
+            self.logger.info(self.getPkgNamesFromObj(specObj.buildRequirePackages))
             self.logger.info(" ")
             self.logger.info(" ")
             self.logger.info("install require packages")
-            self.logger.info(specObj.installRequiresAllPackages)
+            self.logger.info(self.getPkgNamesFromObj(specObj.installRequiresAllPackages))
             self.logger.info(" ")
             self.logger.info(specObj.installRequiresPackages)
             self.logger.info("security_hardening: " + specObj.securityHardening)
@@ -364,11 +376,11 @@ class SerializedSpecObjects(object):
                     whoNeedsList.append(specPkg)
                 elif (inputType == "who-needs-build"):
                     for bdrq in specObj.buildRequirePackages:
-                        if (whoBuildDeps.has_key(bdrq)):
-                            whoBuildDeps[bdrq].add(specPkg)
+                        if (whoBuildDeps.has_key(bdrq.package)):
+                            whoBuildDeps[bdrq.package].add(specPkg)
                         else:
-                            whoBuildDeps[bdrq] = set()
-                            whoBuildDeps[bdrq].add(specPkg)
+                            whoBuildDeps[bdrq.package] = set()
+                            whoBuildDeps[bdrq.package].add(specPkg)
                     if(inputValue == specPkg):
                         packageFound = True
                         for depPkg in specObj.listPackages:
@@ -516,5 +528,5 @@ class SerializedSpecObjects(object):
         return self.mapSpecObjects[specName].securityHardening
 
     def getSpecDetails(self, name):
-        print self.mapSpecObjects[name].installRequiresAllPackages
+        print self.getPkgNamesFromObj(self.mapSpecObjects[name].installRequiresAllPackages)
 
