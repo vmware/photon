@@ -14,7 +14,7 @@ from SpecData import SPECS
 class BuildContainer(PackageBuilderBase):
 
     def __init__(self, mapPackageToCycles, listAvailableCyclicPackages, listBuildOptionPackages, pkgBuildOptionFile, logName=None, logPath=None):
-        PackageBuilderBase.__init__(self, mapPackageToCycles, "continer")
+        PackageBuilderBase.__init__(self, mapPackageToCycles, "container")
         if logName is None:
             logName = "BuildContainer"
         if logPath is None:
@@ -146,10 +146,11 @@ class BuildContainer(PackageBuilderBase):
             listInstalledPackages, listInstalledRPMs = self.findInstalledPackages(containerID)
             self.logger.info(listInstalledPackages)
             listDependentPackages = self.findBuildTimeRequiredPackages(index)
+            listTestPackages=[]
             if constants.rpmCheck and package in constants.testForceRPMS:
                 listDependentPackages.extend(self.findBuildTimeCheckRequiredPackages(index))
                 testPackages=set(constants.listMakeCheckRPMPkgtoInstall)-set(listInstalledPackages)-set([package])
-                listDependentPackages.extend(testPackages)
+                listTestPackages = list(set(testPackages))
                 listDependentPackages=list(set(listDependentPackages))
 
             pkgUtils = PackageUtils(self.logName,self.logPath)
@@ -157,15 +158,36 @@ class BuildContainer(PackageBuilderBase):
                 self.logger.info("BuildContainer-buildPackage: Installing dependent packages..")
                 self.logger.info(listDependentPackages)
                 for pkg in listDependentPackages:
-                    self.installPackage(pkgUtils, pkg, containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
+                    properVersion=pkgUtils.getProperVersion(pkg.package,pkg)
+                    self.installPackage(pkgUtils, pkg.package, properVersion, containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
+                for pkg in listTestPackages:
+                    flag = False
+                    for lineContent in listDependentPackages:
+                        if lineContent.package == pkg:
+                                properVersion=pkgUtils.getProperVersion(pkg,lineContent)
+                                self.installPackage(pkgUtils, pkg, properVersion, containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
+                                flag = True
+                                break;
+                    if flag == False:
+                        self.installPackage(pkgUtils, pkg,"*", containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
                 # Special case sqlite due to package renamed from sqlite-autoconf to sqlite
                 if "sqlite" in listInstalledPackages or "sqlite-devel" in listInstalledPackages or "sqlite-libs" in listInstalledPackages:
+                    properVersion = "*"
                     if "sqlite" not in listInstalledPackages:
-                        self.installPackage(pkgUtils, "sqlite", containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
+                        for lineContent in listDependentPackages:
+                                if lineContent.package == "sqlite":
+                                        properVersion=pkgUtils.getProperVersion(lineContent.package,lineContent)
+                        self.installPackage(pkgUtils, "sqlite",properVersion, containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
                     if "sqlite-devel" not in listInstalledPackages:
-                        self.installPackage(pkgUtils, "sqlite-devel", containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
+                        for lineContent in listDependentPackages:
+                                if lineContent.package == "sqlite":
+                                        properVersion=pkgUtils.getProperVersion(lineContent.package,lineContent)
+                        self.installPackage(pkgUtils, "sqlite-devel",properVersion, containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
                     if "sqlite-libs" not in listInstalledPackages:
-                        self.installPackage(pkgUtils, "sqlite-libs", containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
+                        for lineContent in listDependentPackages:
+                                if lineContent.package == "sqlite":
+                                        properVersion=pkgUtils.getProperVersion(lineContent.package,lineContent)
+                        self.installPackage(pkgUtils, "sqlite-libs", properVersion,containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
                 pkgUtils.installRPMSInAOneShotInContainer(containerID, destLogPath)
 
             pkgUtils.adjustGCCSpecsInContainer(package, containerID, destLogPath, index)
@@ -195,9 +217,8 @@ class BuildContainer(PackageBuilderBase):
             chrUtils = ChrootUtils(self.logName,self.logPath)
             chrUtils.destroyChroot(chrootID)
 
-    def installPackage(self, pkgUtils, package, containerID, destLogPath, listInstalledPackages, listInstalledRPMs):
-        latestRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(package)).replace(".rpm", "")
-        if package in listInstalledPackages and latestRPM in listInstalledRPMs:
+    def installPackage(self, pkgUtils, package,packageVersion, containerID, destLogPath, listInstalledPackages, listInstalledRPMs):
+        if package in listInstalledPackages:
             return
         self.installDependentRunTimePackages(pkgUtils, package, containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
         noDeps = False
@@ -207,12 +228,14 @@ class BuildContainer(PackageBuilderBase):
             noDeps = True
         if package in constants.noDepsPackageList:
             noDeps = True
-        pkgUtils.prepRPMforInstallInContainer(package, containerID, noDeps, destLogPath)
+        pkgUtils.prepRPMforInstallInContainer(package,packageVersion, containerID, noDeps, destLogPath)
         listInstalledPackages.append(package)
-        listInstalledRPMs.append(latestRPM)
+        specificRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(package,packageVersion)).replace(".rpm", "")
+        listInstalledRPMs.append(specificRPM)
 
     def installDependentRunTimePackages(self, pkgUtils, package, containerID, destLogPath, listInstalledPackages, listInstalledRPMs):
         listRunTimeDependentPackages = self.findRunTimeRequiredRPMPackages(package)
+        listRunTimeDependentPackagesLineContent=self.findRunTimeRequiredRPMPackagesLineContent(package)
         if len(listRunTimeDependentPackages) != 0:
             for pkg in listRunTimeDependentPackages:
                 if self.mapPackageToCycles.has_key(pkg) and pkg not in self.listAvailableCyclicPackages:
@@ -220,4 +243,12 @@ class BuildContainer(PackageBuilderBase):
                 latestPkgRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(pkg)).replace(".rpm", "")
                 if pkg in listInstalledPackages and latestPkgRPM in listInstalledRPMs:
                     continue
-                self.installPackage(pkgUtils, pkg, containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
+                flag = False
+                for lineContent in listRunTimeDependentPackagesLineContent:
+                    if lineContent.package == pkg:
+                        properVersion=pkgUtils.getProperVersion(pkg,lineContent)
+                        self.installPackage(pkgUtils, pkg,properVersion, containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
+                        flag = True
+                        break;
+                if flag == False:
+                    self.installPackage(pkgUtils, pkg, "*",containerID, destLogPath, listInstalledPackages, listInstalledRPMs)
