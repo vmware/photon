@@ -57,6 +57,18 @@ class PackageBuilderBase(object):
         listRequiredPackages=SPECS.getData().getCheckBuildRequiresForPackage(self.package, index)
         return listRequiredPackages
 
+    def findRunTimeRequiredRPMPackagesLineContent(self,rpmPackage):
+        listRequiredPackages=SPECS.getData().getRequiresLineContentForPackage(rpmPackage)
+        return listRequiredPackages
+
+    def findBuildTimeRequiredPackagesLineContent(self, index):
+        listRequiredPackages=SPECS.getData().getBuildRequiresLineContentForPackage(self.package, index)
+        return listRequiredPackages
+
+    def findBuildTimeCheckRequiredPackagesLineContent(self, index):
+        listRequiredPackages=SPECS.getData().getCheckBuildRequiresLineContentForPackage(self.package, index)
+        return listRequiredPackages
+
     @staticmethod
     def getNumOfVersions(package):
         return SPECS.getData().getNumberOfVersions(package)
@@ -71,7 +83,7 @@ class PackageBuilder(PackageBuilderBase):
         self.listBuildOptionPackages=listBuildOptionPackages
         self.pkgBuildOptionFile=pkgBuildOptionFile
 
-    def prepareBuildRoot(self):
+    def prepareBuildRoot(self,index):
         chrootID=None
         chrootName="build-"+self.package
         try:
@@ -81,7 +93,7 @@ class PackageBuilder(PackageBuilderBase):
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
-            tUtils.installToolChainRPMS(chrootID, self.package, self.listBuildOptionPackages, self.pkgBuildOptionFile, self.logPath)
+            tUtils.installToolChainRPMS(chrootID, self.package, self.listBuildOptionPackages, self.pkgBuildOptionFile, self.logPath,index)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)
@@ -135,20 +147,31 @@ class PackageBuilder(PackageBuilderBase):
         chrUtils = ChrootUtils(self.logName,self.logPath)
         chrootID=None
         try:
-            chrootID = self.prepareBuildRoot()
+            chrootID = self.prepareBuildRoot(index)
             listInstalledPackages=self.findInstalledPackages(chrootID)
             listDependentPackages=self.findBuildTimeRequiredPackages(index)
+            listDependentPackagesLineContent=self.findBuildTimeRequiredPackagesLineContent(index)
             if constants.rpmCheck and self.package in constants.testForceRPMS:
                 listDependentPackages.extend(self.findBuildTimeCheckRequiredPackages(index))
+                listDependentPackagesLineContent.extend(self.findBuildTimeCheckRequiredPackagesLineContent(index))
                 testPackages=set(constants.listMakeCheckRPMPkgtoInstall)-set(listInstalledPackages)-set([self.package])
                 listDependentPackages.extend(testPackages)
                 listDependentPackages=list(set(listDependentPackages))
+                listDependentPackagesLineContent=list(set(listDependentPackagesLineContent))
 
             pkgUtils = PackageUtils(self.logName,self.logPath)
             if len(listDependentPackages) != 0:
                 self.logger.info("Installing the build time dependent packages......")
                 for pkg in listDependentPackages:
-                    self.installPackage(pkgUtils, pkg,chrootID,self.logPath,listInstalledPackages)
+                    flag = False
+                    for lineContent in listDependentPackagesLineContent:
+                        if lineContent.package == pkg:
+                                properVersion=pkgUtils.getProperVersion(pkg,lineContent)
+                                self.installPackage(pkgUtils,pkg,properVersion,chrootID,self.logPath,listInstalledPackages)
+                                flag = True
+                                break;
+                    if flag == False:
+                        self.installPackage(pkgUtils,pkg,"*",chrootID,self.logPath,listInstalledPackages)
                 pkgUtils.installRPMSInAOneShot(chrootID,self.logPath)
                 self.logger.info("Finished installing the build time dependent packages......")
 
@@ -165,7 +188,7 @@ class PackageBuilder(PackageBuilderBase):
         if chrootID is not None:
             chrUtils.destroyChroot(chrootID)
 
-    def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
+    def installPackage(self,pkgUtils,package,packageVersion,chrootID,destLogPath,listInstalledPackages):
         if package in listInstalledPackages:
             return
         # mark it as installed -  to avoid cyclic recursion
@@ -178,16 +201,25 @@ class PackageBuilder(PackageBuilderBase):
             noDeps=True
         if package in constants.noDepsPackageList:
             noDeps=True
-        pkgUtils.installRPM(package,chrootID,noDeps,destLogPath)
+        pkgUtils.installRPM(package,packageVersion,chrootID,noDeps,destLogPath)
 
     def installDependentRunTimePackages(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
         listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
+        listRunTimeDependentPackagesLineContent=self.findRunTimeRequiredRPMPackagesLineContent(package)
         if len(listRunTimeDependentPackages) != 0:
             for pkg in listRunTimeDependentPackages:
                 if self.mapPackageToCycles.has_key(pkg) and pkg not in self.listAvailableCyclicPackages:
                     continue
                 if pkg in listInstalledPackages:
                     continue
-                self.installPackage(pkgUtils,pkg,chrootID,destLogPath,listInstalledPackages)
+                flag = False
+                for lineContent in listRunTimeDependentPackagesLineContent:
+                    if lineContent.package == pkg:
+                        properVersion=pkgUtils.getProperVersion(pkg,lineContent)
+                        self.installPackage(pkgUtils,pkg,properVersion,chrootID,destLogPath,listInstalledPackages)
+                        flag = True
+                        break;
+                if flag == False:
+                    self.installPackage(pkgUtils,pkg,"*",chrootID,destLogPath,listInstalledPackages)
 
 

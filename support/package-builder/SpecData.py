@@ -18,6 +18,9 @@ class SpecObject(object):
         self.buildRequirePackages=[]
         self.checkBuildRequirePackages=[]
         self.installRequiresAllPackages=[]
+        self.specLineContentBuildRequirePackages = []
+        self.specLineContentInstallRequiresPackages=[]
+        self.specLineContentCheckBuildRequirePackages=[]
         self.installRequiresPackages={}
         self.specFile=""
         self.listSources=[]
@@ -45,8 +48,11 @@ class SpecObjectsUtils(object):
             specObj = SpecObject()
             specObj.name=specName
             specObj.buildRequirePackages=spec.getBuildRequiresAllPackages()
+            specObj.specLineContentBuildRequirePackages=spec.getBuildRequiresAllPackagesObj()
             specObj.installRequiresAllPackages=spec.getRequiresAllPackages()
+            specObj.specLineContentInstallRequiresPackages=spec.getRequiresAllPackagesObj()
             specObj.checkBuildRequirePackages=spec.getCheckBuildRequiresAllPackages()
+            specObj.specLineContentCheckBuildRequirePackages=spec.getCheckBuildRequiresAllPackagesObj()
             specObj.listPackages=spec.getPackageNames()
             specObj.specFile=specFile
             specObj.version=spec.getVersion()
@@ -85,6 +91,10 @@ class SpecObjectsUtils(object):
         specName=self.getSpecName(package)
         return self.mapSpecObjects[specName][index].buildRequirePackages
 
+    def getBuildRequiresLineContentForPackage(self, package, index=0):
+        specName=self.getSpecName(package)
+        return self.mapSpecObjects[specName][index].specLineContentBuildRequirePackages
+
     def getRequiresAllForPackage(self, package, index=0):
         specName=self.getSpecName(package)
         return self.mapSpecObjects[specName][index].installRequiresAllPackages
@@ -95,9 +105,17 @@ class SpecObjectsUtils(object):
             return self.mapSpecObjects[specName][index].installRequiresPackages[package]
         return None
 
+    def getRequiresLineContentForPackage(self, package, index=0):
+        specName=self.getSpecName(package)
+        return self.mapSpecObjects[specName][index].specLineContentInstallRequiresPackages
+
     def getCheckBuildRequiresForPackage(self, package, index=0):
         specName=self.getSpecName(package)
         return self.mapSpecObjects[specName][index].checkBuildRequirePackages
+
+    def getCheckBuildRequiresLineContentForPackage(self, package, index=0):
+        specName=self.getSpecName(package)
+        return self.mapSpecObjects[specName][index].specLineContentCheckBuildRequirePackages
 
     def getRelease(self, package, index=0):
         specName=self.getSpecName(package)
@@ -176,6 +194,10 @@ class SpecObjectsUtils(object):
     def getNumberOfVersions(self, package):
         specName=self.getSpecName(package)
         return len(self.mapSpecObjects[specName])
+
+    def getSpecObj(self, package):
+        specName=self.getSpecName(package)
+        return self.mapSpecObjects[specName]
 
     def printAllObjects(self):
         listSpecs=self.mapSpecObjects.keys()
@@ -343,7 +365,9 @@ class SerializedSpecObjects(object):
             specObj=SpecObject()
             specObj.name=specName
             specObj.buildRequirePackages=spec.getBuildRequiresAllPackages()
+            specObj.specLineContentBuildRequirePackages=spec.getBuildRequiresAllPackagesObj()
             specObj.installRequiresAllPackages=spec.getRequiresAllPackages()
+            specObj.specLineContentInstallRequiresPackages=spec.getRequiresAllPackagesObj()
             specObj.listPackages=spec.getPackageNames()
             specObj.specFile=specFile
             specObj.version=spec.getVersion()
