@@ -71,7 +71,7 @@ class PackageBuilder(PackageBuilderBase):
         self.listBuildOptionPackages=listBuildOptionPackages
         self.pkgBuildOptionFile=pkgBuildOptionFile
 
-    def prepareBuildRoot(self):
+    def prepareBuildRoot(self,index):
         chrootID=None
         chrootName="build-"+self.package
         try:
@@ -81,7 +81,7 @@ class PackageBuilder(PackageBuilderBase):
             if not returnVal:
                 raise Exception("Unable to prepare build root")
             tUtils=ToolChainUtils(self.logName,self.logPath)
-            tUtils.installToolChainRPMS(chrootID, self.package, self.listBuildOptionPackages, self.pkgBuildOptionFile, self.logPath)
+            tUtils.installToolChainRPMS(chrootID, self.package, self.listBuildOptionPackages, self.pkgBuildOptionFile, self.logPath,index)
         except Exception as e:
             if chrootID is not None:
                 self.logger.debug("Deleting chroot: " + chrootID)
@@ -135,20 +135,31 @@ class PackageBuilder(PackageBuilderBase):
         chrUtils = ChrootUtils(self.logName,self.logPath)
         chrootID=None
         try:
-            chrootID = self.prepareBuildRoot()
+            chrootID = self.prepareBuildRoot(index)
             listInstalledPackages=self.findInstalledPackages(chrootID)
             listDependentPackages=self.findBuildTimeRequiredPackages(index)
+            listTestPackages=[]
             if constants.rpmCheck and self.package in constants.testForceRPMS:
                 listDependentPackages.extend(self.findBuildTimeCheckRequiredPackages(index))
                 testPackages=set(constants.listMakeCheckRPMPkgtoInstall)-set(listInstalledPackages)-set([self.package])
-                listDependentPackages.extend(testPackages)
+                listTestPackages = list(set(testPackages))
                 listDependentPackages=list(set(listDependentPackages))
-
             pkgUtils = PackageUtils(self.logName,self.logPath)
             if len(listDependentPackages) != 0:
                 self.logger.info("Installing the build time dependent packages......")
                 for pkg in listDependentPackages:
-                    self.installPackage(pkgUtils, pkg,chrootID,self.logPath,listInstalledPackages)
+                    properVersion=pkgUtils.getProperVersion(pkg.package,pkg)
+                    self.installPackage(pkgUtils,pkg.package,properVersion,chrootID,self.logPath,listInstalledPackages)
+                for pkg in listTestPackages:
+                    flag=False
+                    for lineContent in listDependentPackages:
+                        if lineContent.package == pkg:
+                                properVersion=pkgUtils.getProperVersion(pkg,lineContent)
+                                self.installPackage(pkgUtils,pkg,properVersion,chrootID,self.logPath,listInstalledPackages)
+                                flag = True
+                                break;
+                    if flag == False:
+                        self.installPackage(pkgUtils,pkg,"*",chrootID,self.logPath,listInstalledPackages)
                 pkgUtils.installRPMSInAOneShot(chrootID,self.logPath)
                 self.logger.info("Finished installing the build time dependent packages......")
 
@@ -165,7 +176,7 @@ class PackageBuilder(PackageBuilderBase):
         if chrootID is not None:
             chrUtils.destroyChroot(chrootID)
 
-    def installPackage(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
+    def installPackage(self,pkgUtils,package,packageVersion,chrootID,destLogPath,listInstalledPackages):
         if package in listInstalledPackages:
             return
         # mark it as installed -  to avoid cyclic recursion
@@ -178,7 +189,8 @@ class PackageBuilder(PackageBuilderBase):
             noDeps=True
         if package in constants.noDepsPackageList:
             noDeps=True
-        pkgUtils.installRPM(package,chrootID,noDeps,destLogPath)
+
+        pkgUtils.installRPM(package,packageVersion,chrootID,noDeps,destLogPath)
 
     def installDependentRunTimePackages(self,pkgUtils,package,chrootID,destLogPath,listInstalledPackages):
         listRunTimeDependentPackages=self.findRunTimeRequiredRPMPackages(package)
@@ -188,6 +200,6 @@ class PackageBuilder(PackageBuilderBase):
                     continue
                 if pkg in listInstalledPackages:
                     continue
-                self.installPackage(pkgUtils,pkg,chrootID,destLogPath,listInstalledPackages)
+                self.installPackage(pkgUtils,pkg,"*",chrootID,destLogPath,listInstalledPackages)
 
 

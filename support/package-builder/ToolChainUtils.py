@@ -10,6 +10,7 @@ import traceback
 import shutil
 import json
 import collections
+from SpecData import SPECS
 
 class ToolChainUtils(object):
 
@@ -117,8 +118,14 @@ class ToolChainUtils(object):
             traceback.print_exc()
             raise e
         return pkgCount
-                
-    def installToolChainRPMS(self,chrootID, packageName, listBuildOptionPackages, pkgBuildOptionFile, logPath=None):
+
+    def getListDependentPackageLineContent(self, index):
+        listBuildRequiresPkgLineContent=SPECS.getData().getBuildRequiresForPackage(self.package, index)
+        listBuildRequiresPkgLineContent.extend(SPECS.getData().getCheckBuildRequiresForPackage(self.package, index))
+        listBuildRequiresPkgLineContent=list(set(listBuildRequiresPkgLineContent))
+        return listBuildRequiresPkgLineContent
+
+    def installToolChainRPMS(self,chrootID, packageName, listBuildOptionPackages, pkgBuildOptionFile, logPath=None, index=0):
         if logPath is None:
             logPath=self.logPath
         cmdUtils = CommandUtils()
@@ -126,6 +133,9 @@ class ToolChainUtils(object):
         self.logger.info("Installing Tool Chain RPMS.......")
         rpmFiles = ""
         packages = ""
+        self.package=packageName
+        listBuildRequiresPackageLineContent = self.getListDependentPackageLineContent(index)
+
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             rpmFile = None
@@ -144,7 +154,10 @@ class ToolChainUtils(object):
                         for override in overridelist:
                             if package == str(override["package"].encode('utf-8')):
                                 version = str(override["version"].encode('utf-8'))
-
+            if version == "*":
+                for depPkg in listBuildRequiresPackageLineContent:
+                        if depPkg.package == package:
+                                version=pkgUtils.getProperVersion(package,depPkg)
             if constants.rpmCheck:
                 rpmFile=pkgUtils.findRPMFileForGivenPackage(package, version)
             else:
@@ -178,7 +191,7 @@ class ToolChainUtils(object):
         if packageName in constants.perPackageToolChain:
             print constants.perPackageToolChain[packageName]
             self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName], packageName);
-   
+
     def installCustomToolChainRPMS(self, chrootID, listOfToolChainPkgs, packageName):
         self.logger.info("Installing package specific tool chain RPMs for " + packageName + ".......")
         rpmFiles = ""
