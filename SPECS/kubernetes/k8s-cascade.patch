@@ -1,7 +1,7 @@
-From 0f361d3f8a3f313f790e0a819aad8006f5393444 Mon Sep 17 00:00:00 2001
+From 328d693b17ae4910e8af5ef63a3a7c2414434f7a Mon Sep 17 00:00:00 2001
 From: Bo Gan <ganb@vmware.com>
 Date: Sun, 10 Jun 2018 02:16:47 -0700
-Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (3a784cd)
+Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (1f4aedb)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
@@ -26,14 +26,14 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (3a784cd)
  pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
  pkg/cloudprovider/providers/cascade/apitypes.go    | 229 ++++++
  pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
- pkg/cloudprovider/providers/cascade/cascade.go     | 218 ++++++
+ pkg/cloudprovider/providers/cascade/cascade.go     | 218 +++++
  .../providers/cascade/cascade_disks.go             | 225 ++++++
  .../providers/cascade/cascade_instances.go         |  91 +++
  .../providers/cascade/cascade_instances_test.go    |  43 +
  .../providers/cascade/cascade_loadbalancer.go      | 284 +++++++
- pkg/cloudprovider/providers/cascade/client.go      | 394 ++++++++++
+ pkg/cloudprovider/providers/cascade/client.go      | 399 ++++++++++
  pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++
- pkg/cloudprovider/providers/cascade/restclient.go  | 262 +++++++
+ pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++
  pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
  pkg/cloudprovider/providers/cascade/utils.go       |  25 +
  pkg/cloudprovider/providers/providers.go           |   1 +
@@ -42,15 +42,15 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (3a784cd)
  pkg/volume/cascade_disk/BUILD                      |  43 +
  pkg/volume/cascade_disk/OWNERS                     |   2 +
  pkg/volume/cascade_disk/attacher.go                | 265 +++++++
- pkg/volume/cascade_disk/cascade_disk.go            | 391 ++++++++++
+ pkg/volume/cascade_disk/cascade_disk.go            | 391 +++++++++
  pkg/volume/cascade_disk/cascade_util.go            | 152 ++++
  .../admission/persistentvolume/label/admission.go  |  54 ++
  plugin/pkg/admission/vke/BUILD                     |  60 ++
- plugin/pkg/admission/vke/admission.go              | 506 ++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 865 +++++++++++++++++++++
+ plugin/pkg/admission/vke/admission.go              | 555 +++++++++++++
+ plugin/pkg/admission/vke/admission_test.go         | 882 +++++++++++++++++++++
  staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 +++++++-
  staging/src/k8s.io/api/core/v1/types.go            |  26 +-
- 46 files changed, 5182 insertions(+), 29 deletions(-)
+ 46 files changed, 5253 insertions(+), 29 deletions(-)
  create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
  create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
  create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
@@ -1716,7 +1716,7 @@ index 0000000..bec5491
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 new file mode 100644
-index 0000000..e28282f
+index 0000000..fac37e5
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
 @@ -0,0 +1,284 @@
@@ -1880,7 +1880,7 @@ index 0000000..e28282f
 +	loadBalancerName := cloudprovider.GetLoadBalancerName(k8sService)
 +	logger.Infof("Load balancer name: %s", loadBalancerName)
 +
-+	task, err := cc.apiClient.DeleteLoadBalancer(StringPtr(loadBalancerName))
++	task, err := cc.apiClient.DeleteLoadBalancer(StringPtr(loadBalancerName), k8sService.Name)
 +	if err != nil {
 +		logger.Errorf("Failed to delete load balancer. Error: [%v]", err)
 +		// If we get a NotFound error, we assume that the load balancer is already deleted. So we don't return an error
@@ -2007,10 +2007,10 @@ index 0000000..e28282f
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/client.go b/pkg/cloudprovider/providers/cascade/client.go
 new file mode 100644
-index 0000000..72049e0
+index 0000000..e4494e4
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/client.go
-@@ -0,0 +1,394 @@
+@@ -0,0 +1,399 @@
 +package cascade
 +
 +import (
@@ -2329,9 +2329,14 @@ index 0000000..72049e0
 +}
 +
 +// DeleteLoadBalancer deletes a load balancer by name
-+func (api *Client) DeleteLoadBalancer(loadBalancerName *string) (*Task, error) {
++func (api *Client) DeleteLoadBalancer(loadBalancerName *string, subDomain string) (*Task, error) {
 +	uri := fmt.Sprintf("%s/v1/tenants/%s/clusters/%s/loadbalancers/%s", api.cfg.endpoint, api.cfg.tenantName,
 +		api.cfg.clusterID, StringVal(loadBalancerName))
++
++	if len(subDomain) > 0 {
++		uri = fmt.Sprintf(uri + "?sub-domain=%s", subDomain)
++	}
++
 +	res, err := api.restClient.Delete(uri, api.options.TokenOptions)
 +	if err != nil {
 +		return nil, err
@@ -4124,10 +4129,10 @@ index 0000000..d0bb7c7
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..6bd7592
+index 0000000..c2714cb
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,506 @@
+@@ -0,0 +1,555 @@
 +package vke
 +
 +import (
@@ -4156,11 +4161,13 @@ index 0000000..6bd7592
 +	PluginName = "VMwareAdmissionController"
 +
 +	systemUnsecuredUser      = "system:unsecured"
++	systemNodesGroup         = "system:nodes"
++	systemMasterGroup        = "system:master"
++	systemNodePrefix         = "system:node:"
++	systemClusterPrefix      = "system:clusterID:"
 +	privilegedNamespace      = "vke-system"
 +	privilegedServiceAccount = "system:serviceaccount:" + privilegedNamespace + ":"
 +	reservedPrefix           = "vke"
-+	kubeletGroup             = "system:nodes"
-+	kubeProxyGroup           = "vke:kube-proxies"
 +	reservedTolerationKey    = "Dedicated"
 +	reservedTolerationValue  = "Master"
 +	masterNodePrefix         = "master"
@@ -4180,10 +4187,12 @@ index 0000000..6bd7592
 +	psp             *extensions.PodSecurityPolicy
 +	strategyFactory podsecuritypolicy.StrategyFactory
 +	privilegedGroup string
++	clusterID       string
 +}
 +
 +// vmwareAdmissionControllerConfig holds config data for VMwareAdmissionController.
 +type vmwareAdmissionControllerConfig struct {
++	ClusterID             string `yaml:"clusterID"`
 +	PrivilegedGroup       string `yaml:"privilegedGroup"`
 +	PodSecurityPolicyFile string `yaml:"podSecurityPolicyFile"`
 +}
@@ -4203,6 +4212,10 @@ index 0000000..6bd7592
 +
 +	if isSystemUnsecuredUser(a) {
 +		return validateSystemUnsecuredUser(vac, a)
++	}
++
++	if isCertificateFromNode(a) {
++		return validateNodeCertificate(vac, a)
 +	}
 +
 +	if isPrivilegedNamespace(a) {
@@ -4255,6 +4268,7 @@ index 0000000..6bd7592
 +		psp:             psp,
 +		strategyFactory: podsecuritypolicy.NewSimpleStrategyFactory(),
 +		privilegedGroup: config.VMwareAdmissionController.PrivilegedGroup,
++		clusterID:       config.VMwareAdmissionController.ClusterID,
 +	}, nil
 +}
 +
@@ -4348,12 +4362,9 @@ index 0000000..6bd7592
 +
 +	// If the request comes from a user belonging to a privileged group, then we allow it. Only calls from Cascade
 +	// controller will belong to this privileged group.
-+	// If the request comes from kubelet or kube-proxy, we allow those too. We don't want to prevent kubelet from being
-+	// able to create a privileged pod or update nodes. The same way we don't want to prevent kube-proxy from creating
-+	// events.
 +	groups := a.GetUserInfo().GetGroups()
 +	for _, group := range groups {
-+		if group == vac.privilegedGroup || group == kubeletGroup || group == kubeProxyGroup {
++		if group == vac.privilegedGroup {
 +			return true
 +		}
 +	}
@@ -4382,6 +4393,49 @@ index 0000000..6bd7592
 +	}
 +
 +	// For all other resources, allow.
++	return nil
++}
++
++func isCertificateFromNode(a admission.Attributes) bool {
++	// If the request came from a user with group = systemNodesGroup, then we assume that the request comes from a node
++	// which uses a certificate for authentication.
++	groups := a.GetUserInfo().GetGroups()
++	for _, group := range groups {
++		if group == systemNodesGroup {
++			return true
++		}
++	}
++	return false
++}
++
++func validateNodeCertificate(vac *vmwareAdmissionController, a admission.Attributes) (err error) {
++	// If the groups have system:cluster:cluster-id as one of the groups, then validate that the cluster ID belongs to
++	// this cluster. If not fail. This prevents cross cluster access using certificates.
++	invalidClusterID := false
++	masterNode := false
++	groups := a.GetUserInfo().GetGroups()
++	for _, group := range groups {
++		if strings.HasPrefix(group, systemClusterPrefix) {
++			groupParts := strings.Split(group, ":")
++			if vac.clusterID != "" && groupParts[len(groupParts)-1] != vac.clusterID {
++				invalidClusterID = true
++			}
++		}
++		if group == systemMasterGroup {
++			masterNode = true
++		}
++	}
++	if invalidClusterID {
++		return admission.NewForbidden(a, fmt.Errorf("%s validation failed: request is not from this cluster", PluginName))
++	}
++
++	// If a worker node name does not have the node prefix, then fail. This is needed for the request to go through node
++	// restriction admission controller. If it is not set, then a user can bypass node restriction admission controller
++	// and modify the master node.
++	name := a.GetUserInfo().GetName()
++	if !strings.HasPrefix(name, systemNodePrefix) && !masterNode {
++		return admission.NewForbidden(a, fmt.Errorf("%s validation failed: username is invalid", PluginName))
++	}
 +	return nil
 +}
 +
@@ -4636,10 +4690,10 @@ index 0000000..6bd7592
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..7f8ec60
+index 0000000..4ce4a1f
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
-@@ -0,0 +1,865 @@
+@@ -0,0 +1,882 @@
 +package vke
 +
 +import (
@@ -4657,10 +4711,12 @@ index 0000000..7f8ec60
 +
 +const (
 +	testServiceAccountsGroup = "system.test\\cascade-controller-service-accounts"
++	clusterID                = "cluster-id"
 +	defaultConfigFileFormat  = `
 +vmwareAdmissionController:
 +  privilegedGroup: %s
 +  podSecurityPolicyFile: %s
++  clusterID: %s
 +`
 +	pspFileName   = "/tmp/psp.yaml"
 +	pspConfigFile = `
@@ -4988,13 +5044,7 @@ index 0000000..7f8ec60
 +		"allowed: kubelet group creates pod in vke-system namespace": {
 +			operation:          kadmission.Create,
 +			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
-+			userInfo:           newTestUserBuilder().withGroup(kubeletGroup).build(),
-+			shouldPassValidate: true,
-+		},
-+		"allowed: kubeProxy group creates pod in vke-system namespace": {
-+			operation:          kadmission.Create,
-+			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
-+			userInfo:           newTestUserBuilder().withGroup(kubeProxyGroup).build(),
++			userInfo:           newTestUserBuilder().withGroup(systemNodesGroup).withName("system:node:worker").build(),
 +			shouldPassValidate: true,
 +		},
 +		"denied: regular lightwave group does not grant privileged access": {
@@ -5007,6 +5057,27 @@ index 0000000..7f8ec60
 +			operation:          kadmission.Create,
 +			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
 +			userInfo:           newTestUserBuilder().withGroup("test1\\group1").withGroup(testServiceAccountsGroup).build(),
++			shouldPassValidate: true,
++		},
++		"denied: cross cluster acccess": {
++			operation: kadmission.Create,
++			pod:       newTestPodBuilder().build(),
++			userInfo: newTestUserBuilder().withName("system:node:worker").withGroup("system:clusterID:some-cluster-id").
++				withGroup("system:nodes").withGroup("system:worker").build(),
++			shouldPassValidate: false,
++		},
++		"denied: node restriction admission controller bypass": {
++			operation: kadmission.Create,
++			pod:       newTestPodBuilder().build(),
++			userInfo: newTestUserBuilder().withGroup("system:clusterID:cluster-id").withGroup("system:nodes").
++				withGroup("system:worker").build(),
++			shouldPassValidate: false,
++		},
++		"allowed: master node to bypass node restriction admission controller": {
++			operation: kadmission.Create,
++			pod:       newTestPodBuilder().build(),
++			userInfo: newTestUserBuilder().withName("kubernetes-master").withGroup("system:clusterID:cluster-id").
++				withGroup("system:nodes").withGroup("system:master").build(),
 +			shouldPassValidate: true,
 +		},
 +	}
@@ -5284,7 +5355,7 @@ index 0000000..7f8ec60
 +func testPodValidation(testCaseName string, op kadmission.Operation, pod *kapi.Pod, name string, userInfo user.Info,
 +	shouldPassValidate bool, t *testing.T) {
 +
-+	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup, pspFileName)
++	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup, pspFileName, clusterID)
 +	configFile := strings.NewReader(defaultConfigFile)
 +	plugin, err := NewVMwareAdmissionController(configFile)
 +	if err != nil {
@@ -5310,7 +5381,7 @@ index 0000000..7f8ec60
 +func testResourceValidation(testCaseName string, op kadmission.Operation, resource, subresource, name, namespace string,
 +	userInfo user.Info, shouldPassValidate bool, t *testing.T) {
 +
-+	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup, pspFileName)
++	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup, pspFileName, clusterID)
 +	configFile := strings.NewReader(defaultConfigFile)
 +	plugin, err := NewVMwareAdmissionController(configFile)
 +	if err != nil {
