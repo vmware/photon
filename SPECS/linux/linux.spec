@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.111
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Release:        6%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -239,6 +239,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 make mrproper
 cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
+# add extra config options
+echo "CONFIG_HYPERV_SOCK=m" >> .config
+echo "CONFIG_HW_RANDOM_RDRAND=m" >> .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 make -C tools perf
@@ -397,9 +400,11 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Jul 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.9.111-6
+-   .config: usb_serial_pl2303=m,wlan=y,can=m,gpio=y,pinctrl=y,iio=m
 *   Thu Jul 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.111-5
 -   Apply out-of-tree patches needed for AppArmor.
-*   Thu Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-4
+*   Tue Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-4
 -   Fix CVE-2018-10322
 *   Thu Jul 12 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-3
 -   Fix CVE-2017-18232, CVE-2017-18249 and CVE-2018-10323
