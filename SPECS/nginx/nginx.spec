@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.13.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -70,6 +70,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %dir %{_var}/log/nginx
 
 %changelog
+*   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-4
+-   Restarting nginx service on failure.
 *   Fri Jun 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.13.8-3
 -   mark config files as non replaceable on upgrade.
 *   Fri Jun 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.13.8-2
