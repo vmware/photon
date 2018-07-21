@@ -20,6 +20,8 @@ class constants(object):
     rpmCheck=False
     sourceRpmPath=""
     noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","go"]
+    publishBuildDependencies=False
+    packageWeightsPath=None
     listToolChainPackages=[
         "linux-api-headers",
         "glibc",
@@ -110,6 +112,17 @@ class constants(object):
         "openjdk",
         "openjre",
         "icu",
+        "cups",
+        "cups-devel",
+        "freetype2",
+        "freetype2-devel",
+        "xorg-proto-devel",
+        "libXtst",
+        "libXtst-devel",
+        "libXfixes",
+        "libXfixes-devel",
+        "libXi",
+        "libXi-devel",
         "harfbuzz",
         "harfbuzz-devel",
         "alsa-lib",

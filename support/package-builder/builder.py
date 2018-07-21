@@ -41,6 +41,8 @@ def main():
     parser.add_option("-j",  "--pkg-yaml-dir-path",  dest="pkgYamlDirPath",  default="../../stage/")
     parser.add_option("-f",  "--pkg-blacklist-file",  dest="pkgBlacklistFile",  default=None)
     parser.add_option("-F",  "--kat-build", dest="katBuild",  default=None)
+    parser.add_option("--bd", "--publish-build-dependencies", dest="publishBuildDependencies", default=False)
+    parser.add_option("--pw", "--package-weights-path", dest="packageWeightsPath", default=None)
 
     (options,  args) = parser.parse_args()
     cmdUtils=CommandUtils()
@@ -79,7 +81,9 @@ def main():
     if options.inputRPMSPath is not None and not os.path.isdir(options.inputRPMSPath):
         logger.error("Given input RPMS Path is not a directory:"+options.inputRPMSPath)
         errorFlag = True
-
+    if options.packageWeightsPath is not None and not os.path.isfile(options.packageWeightsPath):
+        logger.error("Given input Weights file is not a file:"+options.packageWeightsPath)
+        errorFlag = True
     if options.generatePkgYamlFiles:
         if options.pkgBlacklistFile is not None and options.pkgBlacklistFile != "" and not os.path.isfile(options.pkgBlacklistFile):
             logger.error("Given package blacklist file is not valid:"+options.pkgBlacklistFile)
