@@ -20,6 +20,8 @@ class constants(object):
     rpmCheck=False
     sourceRpmPath=""
     noDepsPackageList=["texinfo","bzip2","gettext","nspr","xz","bison","go"]
+    publishBuildDependencies=False
+    packageWeightsPath=None
     listToolChainPackages=[
         "linux-api-headers",
         "glibc",
@@ -110,6 +112,17 @@ class constants(object):
         "openjdk",
         "openjre",
         "icu",
+        "cups",
+        "cups-devel",
+        "freetype2",
+        "freetype2-devel",
+        "xorg-proto-devel",
+        "libXtst",
+        "libXtst-devel",
+        "libXfixes",
+        "libXfixes-devel",
+        "libXi",
+        "libXi-devel",
         "harfbuzz",
         "harfbuzz-devel",
         "alsa-lib",
@@ -320,6 +333,8 @@ class constants(object):
         constants.pullsourcesConfig = options.pullsourcesConfig
         constants.inputRPMSPath=options.inputRPMSPath
         constants.rpmCheck = options.rpmCheck
+        constants.packageWeightsPath=options.packageWeightsPath
+        constants.publishBuildDependencies=options.publishBuildDependencies
         constants.specData = SerializableSpecObjectsUtils(constants.logPath)
         constants.updateRPMMacros(options)
         # Perform full parsing now
