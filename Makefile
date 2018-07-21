@@ -58,6 +58,18 @@ ifdef KAT_BUILD
 PHOTON_KAT_BUILD_FLAGS := -F $(KAT_BUILD)
 endif
 
+ifeq ($(BUILDDEPS),true)
+PUBLISH_BUILD_DEPENDENCIES := -D True
+else
+PUBLISH_BUILD_DEPENDENCIES :=
+endif
+
+ifdef WEIGHTS
+PACKAGE_WEIGHTS_PATH = -W $(WEIGHTS)
+else
+PACKAGE_WEIGHTS_PATH =
+endif
+
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
 VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
@@ -106,6 +118,8 @@ packages-micro: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) g
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_OPTION) \
+                $(PUBLISH_BUILD_DEPENDENCIES) \
+                $(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
 
 minimal: minimal-iso
@@ -175,6 +189,8 @@ packages-minimal: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES)
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 $(PHOTON_RPMCHECK_OPTION) \
+                $(PUBLISH_BUILD_DEPENDENCIES) \
+                $(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
 
 iso: check $(PHOTON_STAGE) $(PHOTON_PACKAGES) ostree-repo
@@ -259,7 +275,10 @@ packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
 		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_OPTION) \
+                $(PUBLISH_BUILD_DEPENDENCIES) \
+                $(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
+
 
 updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
 	@echo "Building only updated RPMS..."
@@ -279,6 +298,8 @@ updated-packages: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH
                 -k $(PHOTON_INPUT_RPMS_DIR) \
 		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_OPTION) \
+                $(PUBLISH_BUILD_DEPENDENCIES) \
+                $(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
 
 tool-chain-stage1: check $(PHOTON_STAGE) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
