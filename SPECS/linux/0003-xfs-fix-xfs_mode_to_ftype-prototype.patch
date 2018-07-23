@@ -1,0 +1,55 @@
+From e38c5e1d6d7d2bd5716f64dcd49eb98d194fb96d Mon Sep 17 00:00:00 2001
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Thu, 2 Feb 2017 08:56:05 +0100
+Subject: [PATCH 3/9] xfs: fix xfs_mode_to_ftype() prototype
+
+commit fd29f7af75b7adf250beccffa63746c6a88e2b74 upstream.
+
+A harmless warning just got introduced:
+
+fs/xfs/libxfs/xfs_dir2.h:40:8: error: type qualifiers ignored on function return type [-Werror=ignored-qualifiers]
+
+Removing the 'const' modifier avoids the warning and has no
+other effect.
+
+Fixes: 1fc4d33fed12 ("xfs: replace xfs_mode_to_ftype table with switch statement")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ fs/xfs/libxfs/xfs_dir2.c | 2 +-
+ fs/xfs/libxfs/xfs_dir2.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/xfs/libxfs/xfs_dir2.c b/fs/xfs/libxfs/xfs_dir2.c
+index 5d4c175..504582f 100644
+--- a/fs/xfs/libxfs/xfs_dir2.c
++++ b/fs/xfs/libxfs/xfs_dir2.c
+@@ -37,7 +37,7 @@ struct xfs_name xfs_name_dotdot = { (unsigned char *)"..", 2, XFS_DIR3_FT_DIR };
+ /*
+  * Convert inode mode to directory entry filetype
+  */
+-const unsigned char xfs_mode_to_ftype(int mode)
++unsigned char xfs_mode_to_ftype(int mode)
+ {
+ 	switch (mode & S_IFMT) {
+ 	case S_IFREG:
+diff --git a/fs/xfs/libxfs/xfs_dir2.h b/fs/xfs/libxfs/xfs_dir2.h
+index e1d0974..df3ad63 100644
+--- a/fs/xfs/libxfs/xfs_dir2.h
++++ b/fs/xfs/libxfs/xfs_dir2.h
+@@ -37,7 +37,7 @@ extern struct xfs_name	xfs_name_dotdot;
+ /*
+  * Convert inode mode to directory entry filetype
+  */
+-extern const unsigned char xfs_mode_to_ftype(int mode);
++extern unsigned char xfs_mode_to_ftype(int mode);
+ 
+ /*
+  * directory operations vector for encode/decode routines
+-- 
+2.7.4
+
