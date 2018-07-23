@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2o
+Version:        1.1.0h
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,12 +8,12 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=a47faaca57b47a0d9d5fb085545857cc92062691
+%define sha1    openssl=0fc39f6aa91b6e7f4d05018f7c5e991e1d2491fd
 Source1:        rehash_ca_certificates.sh
 Patch0:         c_rehash.patch
-Patch1:         openssl-1.0.2n-ipv6apps.patch
-Patch2:         openssl-init-conslidate.patch
-Patch3:         openssl-drbg-default-read-system-fips.patch
+Patch1:         openssl-init-conslidate.patch
+Patch2:         openssl-drbg-default-read-system-fips.patch
+Patch3:         CVE-2018-0737.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -73,9 +73,48 @@ make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
-install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
-ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
-ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
+install -vdm 755 %{buildroot}%{_bindir}
+install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}
+cp -r %{_bindir}/openssl %{buildroot}%{_bindir}
+cp -r %{_bindir}/c_rehash %{buildroot}%{_bindir}
+
+install -vdm 755 %{buildroot}%{_libdir}
+install -vdm 755 %{buildroot}%{_libdir}/engines
+install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
+cp -r %{_libdir}/*.so.* %{buildroot}%{_libdir}
+cp -r %{_libdir}/*.a %{buildroot}%{_libdir}
+cp -r %{_libdir}/*.so %{buildroot}%{_libdir}
+cp -r %{_libdir}/engines/* %{buildroot}%{_libdir}/engines
+cp -r %{_libdir}/pkgconfig/*.pc %{buildroot}%{_libdir}/pkgconfig
+ln -sf %{_libdir}/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
+ln -sf %{_libdir}/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
+
+install -vdm 755 %{buildroot}%{_includedir}
+cp -r %{_includedir}/* %{buildroot}%{_includedir}
+
+install -vdm 755 %{buildroot}%{_sysconfdir}
+install -vdm 755 %{buildroot}%{_sysconfdir}/ssl
+install -vdm 755 %{buildroot}%{_sysconfdir}/ssl/misc
+cp -r %{_sysconfdir}/ssl/certs %{buildroot}%{_sysconfdir}/ssl
+cp -r %{_sysconfdir}/ssl/openssl.cnf %{buildroot}%{_sysconfdir}/ssl
+cp -r %{_sysconfdir}/ssl/private %{buildroot}%{_sysconfdir}/ssl
+cp -r %{_sysconfdir}/ssl/misc/CA.sh %{buildroot}%{_sysconfdir}/ssl/misc
+cp -r %{_sysconfdir}/ssl/misc/CA.pl %{buildroot}%{_sysconfdir}/ssl/misc
+cp -r %{_sysconfdir}/ssl/misc/c_hash %{buildroot}%{_sysconfdir}/ssl/misc
+cp -r %{_sysconfdir}/ssl/misc/c_info %{buildroot}%{_sysconfdir}/ssl/misc
+cp -r %{_sysconfdir}/ssl/misc/c_issuer %{buildroot}%{_sysconfdir}/ssl/misc
+cp -r %{_sysconfdir}/ssl/misc/c_name %{buildroot}%{_sysconfdir}/ssl/misc
+cp -r %{_sysconfdir}/ssl/misc/tsget %{buildroot}%{_sysconfdir}/ssl/misc
+
+install -vdm 755 %{buildroot}%{_mandir}
+install -vdm 755 %{buildroot}%{_mandir}/man1
+install -vdm 755 %{buildroot}%{_mandir}/man3
+install -vdm 755 %{buildroot}%{_mandir}/man5
+install -vdm 755 %{buildroot}%{_mandir}/man7
+cp -r %{_mandir}/man1/* %{buildroot}%{_mandir}/man1
+cp -r %{_mandir}/man3/* %{buildroot}%{_mandir}/man3
+cp -r %{_mandir}/man5/* %{buildroot}%{_mandir}/man5
+cp -r %{_mandir}/man7/* %{buildroot}%{_mandir}/man7
 
 %check
 make tests
@@ -118,6 +157,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Mon Jul 23 2018 Ankit Jain <ankitja@vmware.com> 1.1.0h-1
+-   Upgrade to 1.1.0h . Added Fix of CVE-2018-0737
 *   Tue Apr 03 2018 Anish Swaminathan <anishs@vmware.com> 1.0.2o-1
 -   Upgrade to 1.0.2o- Fixes CVE-2017-3738, CVE-2018-0733, CVE-2018-0739
 *   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.0.2n-2
