@@ -1,0 +1,76 @@
+From 9518decc8dc0a0b8a4f4339e2ddd6f3ba211219f Mon Sep 17 00:00:00 2001
+From: Eric Sandeen <sandeen@sandeen.net>
+Date: Sun, 22 Jul 2018 22:41:32 -0700
+Subject: [PATCH 8/9] xfs: enhance dinode verifier
+
+commit b42db0860e13067fcc7cbfba3966c9e652668bbc upstream.
+
+Add several more validations to xfs_dinode_verify:
+
+- For LOCAL data fork formats, di_nextents must be 0.
+- For LOCAL attr fork formats, di_anextents must be 0.
+- For inodes with no attr fork offset,
+  - format must be XFS_DINODE_FMT_EXTENTS if set at all
+  - di_anextents must be 0.
+
+Thanks to dchinner for pointing out a couple related checks I had
+forgotten to add.
+
+Signed-off-by: Eric Sandeen <sandeen@redhat.com>
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=199377
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+[ Srivatsa: Backported to 4.4 ]
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ fs/xfs/libxfs/xfs_inode_buf.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/fs/xfs/libxfs/xfs_inode_buf.c b/fs/xfs/libxfs/xfs_inode_buf.c
+index 38a7026..9c3899b 100644
+--- a/fs/xfs/libxfs/xfs_inode_buf.c
++++ b/fs/xfs/libxfs/xfs_inode_buf.c
+@@ -365,6 +365,8 @@ xfs_dinode_verify(
+ 				return false;
+ 			if (di_size > XFS_DFORK_DSIZE(dip, mp))
+ 				return false;
++			if (dip->di_nextents)
++				return false;
+ 			/* fall through */
+ 		case XFS_DINODE_FMT_EXTENTS:
+ 		case XFS_DINODE_FMT_BTREE:
+@@ -383,12 +385,31 @@ xfs_dinode_verify(
+ 	if (XFS_DFORK_Q(dip)) {
+ 		switch (dip->di_aformat) {
+ 		case XFS_DINODE_FMT_LOCAL:
++			if (dip->di_anextents)
++				return false;
++		/* fall through */
+ 		case XFS_DINODE_FMT_EXTENTS:
+ 		case XFS_DINODE_FMT_BTREE:
+ 			break;
+ 		default:
+ 			return false;
+ 		}
++	} else {
++		/*
++		 * If there is no fork offset, this may be a freshly-made inode
++		 * in a new disk cluster, in which case di_aformat is zeroed.
++		 * Otherwise, such an inode must be in EXTENTS format; this goes
++		 * for freed inodes as well.
++		 */
++		switch (dip->di_aformat) {
++		case 0:
++		case XFS_DINODE_FMT_EXTENTS:
++			break;
++		default:
++			return false;
++		}
++		if (dip->di_anextents)
++			return false;
+ 	}
+ 
+ 	/* only version 3 or greater inodes are extensively verified here */
+-- 
+2.7.4
+
