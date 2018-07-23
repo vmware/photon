@@ -1,0 +1,44 @@
+From 964f9ba943ca33249213de318b0b43373b03bf93 Mon Sep 17 00:00:00 2001
+From: Amir Goldstein <amir73il@gmail.com>
+Date: Sun, 22 Jul 2018 22:41:30 -0700
+Subject: [PATCH 5/9] xfs: sanity check inode di_mode
+
+commit a324cbf10a3c67aaa10c9f47f7b5801562925bc2 upstream.
+
+Check for invalid file type in xfs_dinode_verify()
+and fail to load the inode structure from disk.
+
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ fs/xfs/libxfs/xfs_inode_buf.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/fs/xfs/libxfs/xfs_inode_buf.c b/fs/xfs/libxfs/xfs_inode_buf.c
+index 0c3433a..9ef21a9 100644
+--- a/fs/xfs/libxfs/xfs_inode_buf.c
++++ b/fs/xfs/libxfs/xfs_inode_buf.c
+@@ -28,6 +28,7 @@
+ #include "xfs_icache.h"
+ #include "xfs_trans.h"
+ #include "xfs_ialloc.h"
++#include "xfs_dir2.h"
+ 
+ /*
+  * Check that none of the inode's in the buffer have a next
+@@ -306,6 +307,8 @@ xfs_dinode_verify(
+ 		return false;
+ 
+ 	mode = be16_to_cpu(dip->di_mode);
++	if (mode && xfs_mode_to_ftype(mode) == XFS_DIR3_FT_UNKNOWN)
++		return false;
+ 
+ 	/* No zero-length symlinks/dirs. */
+ 	if ((S_ISLNK(mode) || S_ISDIR(mode)) && dip->di_size == 0)
+-- 
+2.7.4
+
