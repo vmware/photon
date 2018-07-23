@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.140
+Version:       4.4.143
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=55dc1299e981cb4ef8ef0c92a4df52c2f4df4835
+%define sha1 linux=273d778911d5a37a74a334ee7ad5b8e8e542e6ef
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -55,6 +55,15 @@ Patch37:       0001-f2fs-cover-more-area-with-nat_tree_lock.patch
 Patch38:       0002-Revert-f2fs-check-the-node-block-address-of-newly-al.patch
 Patch39:       0003-f2fs-remove-an-obsolete-variable.patch
 Patch40:       0004-f2fs-fix-race-condition-in-between-free-nid-allocato.patch
+# Fix for CVE-2018-10322 (following 8 patches)
+Patch41:        0001-xfs-add-missing-include-dependencies-to-xfs_dir2.h.patch
+Patch42:        0002-xfs-replace-xfs_mode_to_ftype-table-with-switch-stat.patch
+Patch43:        0003-xfs-fix-xfs_mode_to_ftype-prototype.patch
+Patch44:        0004-xfs-sanity-check-directory-inode-di_size.patch
+Patch45:        0005-xfs-sanity-check-inode-di_mode.patch
+Patch46:        0006-xfs-verify-dinode-header-first.patch
+Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
+Patch48:        0008-xfs-enhance-dinode-verifier.patch
 
 # For Spectre
 Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
@@ -72,28 +81,6 @@ Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
 # Add more Spectre-v2 mitigations (IBPB/IBRS)
-Patch201: 0001-x86-cpufeature-Move-some-of-the-scattered-feature-bi.patch
-Patch202: 0002-x86-cpufeature-Cleanup-get_cpu_cap.patch
-Patch205: 0005-x86-cpu-Provide-a-config-option-to-disable-static_cp.patch
-Patch206: 0006-x86-fpu-Add-an-XSTATE_OP-macro.patch
-Patch207: 0007-x86-fpu-Get-rid-of-xstate_fault.patch
-Patch208: 0008-x86-headers-Don-t-include-asm-processor.h-in-asm-ato.patch
-Patch209: 0009-x86-cpufeature-Carve-out-X86_FEATURE_.patch
-Patch210: 0010-x86-cpufeature-Replace-the-old-static_cpu_has-with-s.patch
-Patch211: 0011-x86-cpufeature-Get-rid-of-the-non-asm-goto-variant.patch
-Patch212: 0012-x86-alternatives-Add-an-auxilary-section.patch
-Patch213: 0013-x86-alternatives-Discard-dynamic-check-after-init.patch
-Patch214: 0014-x86-vdso-Use-static_cpu_has.patch
-Patch215: 0015-x86-boot-Simplify-kernel-load-address-alignment-chec.patch
-Patch216: 0016-x86-cpufeature-Speed-up-cpu_feature_enabled.patch
-Patch217: 0017-x86-cpufeature-x86-mm-pkeys-Add-protection-keys-rela.patch
-Patch218: 0018-x86-mm-pkeys-Fix-mismerge-of-protection-keys-CPUID-b.patch
-Patch219: 0019-x86-cpu-Add-detection-of-AMD-RAS-Capabilities.patch
-Patch220: 0020-x86-cpufeature-x86-mm-pkeys-Fix-broken-compile-time-.patch
-Patch221: 0021-x86-cpufeature-Update-cpufeaure-macros.patch
-Patch222: 0022-x86-cpufeature-Make-sure-DISABLED-REQUIRED-macros-ar.patch
-Patch223: 0023-x86-cpufeature-Add-helper-macro-for-mask-check-macro.patch
-Patch224: 0024-x86-cpu-Probe-CPUID-leaf-6-even-when-cpuid_level-6.patch
 Patch225: 0025-x86-cpufeatures-Add-CPUID_7_EDX-CPUID-leaf.patch
 Patch226: 0026-x86-cpufeatures-Add-Intel-feature-bits-for-Speculati.patch
 Patch227: 0027-x86-cpufeatures-Add-AMD-feature-bits-for-Speculation.patch
@@ -249,6 +236,14 @@ The Linux package contains the Linux kernel doc files
 %patch38 -p1
 %patch39 -p1
 %patch40 -p1
+%patch41 -p1
+%patch42 -p1
+%patch43 -p1
+%patch44 -p1
+%patch45 -p1
+%patch46 -p1
+%patch47 -p1
+%patch48 -p1
 
 %patch52 -p1
 %patch55 -p1
@@ -264,28 +259,6 @@ The Linux package contains the Linux kernel doc files
 %patch66 -p1
 %patch67 -p1
 
-%patch201 -p1
-%patch202 -p1
-%patch205 -p1
-%patch206 -p1
-%patch207 -p1
-%patch208 -p1
-%patch209 -p1
-%patch210 -p1
-%patch211 -p1
-%patch212 -p1
-%patch213 -p1
-%patch214 -p1
-%patch215 -p1
-%patch216 -p1
-%patch217 -p1
-%patch218 -p1
-%patch219 -p1
-%patch220 -p1
-%patch221 -p1
-%patch222 -p1
-%patch223 -p1
-%patch224 -p1
 %patch225 -p1
 %patch226 -p1
 %patch227 -p1
@@ -454,6 +427,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sun Jul 22 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.143-1
+-   Update to version 4.4.143 and fix CVE-2018-10322
 *   Mon Jul 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.140-1
 -   Update to version 4.4.140 and fix CVE-2017-18249
 *   Tue Jul 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.139-2
