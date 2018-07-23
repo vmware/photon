@@ -10,6 +10,7 @@ import traceback
 import shutil
 import json
 import collections
+import re
 
 class ToolChainUtils(object):
 
@@ -187,7 +188,7 @@ class ToolChainUtils(object):
         for package in listOfToolChainPkgs:
             pkgUtils=PackageUtils(self.logName,self.logPath)
             print "DEBUG:" + package
-            if "openjre8" in packageName or "openjdk8" in packageName:
+            if re.match("openjdk*", packageName) is not None or re.match("openjdk*", packageName) is not None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             else:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
@@ -250,7 +251,7 @@ class ToolChainUtils(object):
         rpmFiles = ""
         packages = ""
         for package in listOfToolChainPkgs:
-            if "openjre8" in packageName or "openjdk8" in packageName:
+            if re.match("openjdk*", packageName) is not None or re.match("openjdk*", packageName) is not None:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishXRPMRepo)
             else:
                 rpmFile=self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
