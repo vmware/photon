@@ -1,64 +1,30 @@
---- openssl-1.0.2d-orig/tools/c_rehash	2015-07-09 05:03:10.000000000 -0700
-+++ openssl-1.0.2d/tools/c_rehash	2015-12-02 16:09:42.984877370 -0800
-@@ -165,14 +165,14 @@
+diff --git a/tools/c_rehash.in b/tools/c_rehash.in
+index e658222..370efd9 100644
+--- a/tools/c_rehash.in
++++ b/tools/c_rehash.in
+@@ -179,10 +179,10 @@ sub link_hash_cert {
+ 		}
  		$hash .= ".$suffix";
  		if ($symlink_exists) {
- 			symlink $fname, $hash;
 -			print "link $fname -> $hash\n" if $verbose;
-+			print "link $fname => $hash\n";
++			print "link $fname -> $hash\n";
+ 			symlink $fname, $hash || warn "Can't symlink, $!";
  		} else {
- 			open IN,"<$fname" or die "can't open $fname for read";
- 			open OUT,">$hash" or die "can't open $hash for write";
- 			print OUT <IN>;	# does the job for small text files
- 			close OUT;
- 			close IN;
 -			print "copy $fname -> $hash\n" if $verbose;
-+			print "copy $fname => $hash\n";
++			print "copy $fname -> $hash\n";
+                         if (open($in, "<", $fname)) {
+                             if (open($out,">", $hash)) {
+                                 print $out $_ while (<$in>);
+@@ -220,10 +220,10 @@ sub link_hash_crl {
  		}
- 		$hashlist{$hash} = $fprint;
- }
-@@ -200,10 +200,10 @@
  		$hash .= ".r$suffix";
  		if ($symlink_exists) {
- 			symlink $fname, $hash;
 -			print "link $fname -> $hash\n" if $verbose;
-+			print "link $fname => $hash\n";
++			print "link $fname -> $hash\n";
+ 			symlink $fname, $hash || warn "Can't symlink, $!";
  		} else {
- 			system ("cp", $fname, $hash);
 -			print "cp $fname -> $hash\n" if $verbose;
-+			print "cp $fname => $hash\n";
- 		}
- 		$hashlist{$hash} = $fprint;
- }
---- openssl-1.0.2d-orig/tools/c_rehash.in	2015-07-09 04:57:15.000000000 -0700
-+++ openssl-1.0.2d/tools/c_rehash.in	2015-12-02 16:10:33.404878794 -0800
-@@ -165,14 +165,14 @@
- 		$hash .= ".$suffix";
- 		if ($symlink_exists) {
- 			symlink $fname, $hash;
--			print "link $fname -> $hash\n" if $verbose;
-+			print "link $fname => $hash\n";
- 		} else {
- 			open IN,"<$fname" or die "can't open $fname for read";
- 			open OUT,">$hash" or die "can't open $hash for write";
- 			print OUT <IN>;	# does the job for small text files
- 			close OUT;
- 			close IN;
--			print "copy $fname -> $hash\n" if $verbose;
-+			print "copy $fname => $hash\n";
- 		}
- 		$hashlist{$hash} = $fprint;
- }
-@@ -200,10 +200,10 @@
- 		$hash .= ".r$suffix";
- 		if ($symlink_exists) {
- 			symlink $fname, $hash;
--			print "link $fname -> $hash\n" if $verbose;
-+			print "link $fname => $hash\n";
- 		} else {
++			print "cp $fname -> $hash\n";
  			system ("cp", $fname, $hash);
--			print "cp $fname -> $hash\n" if $verbose;
-+			print "cp $fname => $hash\n";
+                         warn "Can't copy, $!" if ($? >> 8) != 0;
  		}
- 		$hashlist{$hash} = $fprint;
- }
