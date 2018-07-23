@@ -212,12 +212,23 @@ class constants(object):
         "cpio",
         "go"]
 
-    perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
+    perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8", "openjdk9", "openjdk9-doc", "openjdk9-src", "openjdk9-sample", "openjre9", "openjdk10", "openjdk10-doc", "openjdk10-src", "openjdk10-sample", "openjre10" ], [
         "glib-devel",
         "icu-devel",
         "openjdk",
         "openjre",
         "icu",
+        "cups",
+        "cups-devel",
+        "freetype2",
+        "freetype2-devel",
+        "xorg-proto-devel",
+        "libXtst",
+        "libXtst-devel",
+        "libXfixes",
+        "libXfixes-devel",
+        "libXi",
+        "libXi-devel",
         "harfbuzz",
         "harfbuzz-devel",
         "freetype2",
@@ -380,6 +391,8 @@ class constants(object):
             "irqbalance.spec",
             # no X rpms to build openjdk, skip all java packages
             "openjdk8.spec",
+            "openjdk9.spec",
+            "openjdk10.spec",
             "ant-contrib.spec",
             "apache-ant.spec",
             "apache-maven.spec",
