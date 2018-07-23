@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          46%{?dist}
+Release:          47%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -45,6 +45,7 @@ Patch27:          systemd-228-resolved-null-deferencing-fix.patch
 Patch28:          systemd-228-link-disabled-nullptr-fix.patch
 Patch29:          systemd-228-CVE-2017-15908-dns-pkt-loop-fix.patch
 Patch30:          systemd-228-CVE-2017-18078.patch
+Patch31:          systemd-228-CVE-2018-1049.patch
 Requires:         Linux-PAM
 Requires:         libcap
 Requires:         xz
@@ -109,6 +110,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
+%patch31 -p1
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
@@ -249,6 +251,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Mon Jul 23 2018 Ankit Jain <ankitja@vmware.com>  228-47
+-    Fix CVE-2018-1049.
 *    Thu Jun 28 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 228-46
 -    Automatically load rdrand-rng kernel module on every boot.
 *    Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com>  228-45
