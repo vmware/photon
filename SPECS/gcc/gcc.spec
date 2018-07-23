@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -237,9 +237,11 @@ make %{?_smp_mflags} check-gcc
 %ifarch x86_64
 %{_lib64dir}/libstdc++.so
 %{_lib64dir}/libstdc++.la
+%{_lib64dir}/libstdc++.a
 %else
 %{_libdir}/libstdc++.so
 %{_libdir}/libstdc++.la
+%{_libdir}/libstdc++.a
 %endif
 
 %{_includedir}/c++/*
@@ -267,6 +269,8 @@ make %{?_smp_mflags} check-gcc
 %endif
 
 %changelog
+*   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 6.3.0-7
+-   Packaging .a files (libstdc++-static files).
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-6
 -   Added smp_mflags for parallel build
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-5
