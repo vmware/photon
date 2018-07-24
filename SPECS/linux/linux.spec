@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.111
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.114
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4130f2b7979e04c94bef21755d413560961311a3
+%define sha1 linux=e6fd3e5317a88f945e26c85471d0152e062f2d99
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.1.3
@@ -54,14 +54,11 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 # Fixes for CVE-2018-1000026
 Patch34:        0001-net-create-skb_gso_validate_mac_len.patch
 Patch35:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
-# Fix for CVE-2017-18216
-Patch37:        0001-ocfs2-subsystem.su_mutex-is-required-while-accessing.patch
 # Fix for CVE-2018-8043
 Patch38:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 # Fix for CVE-2017-18241
 Patch40:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
-# Fix for CVE-2017-18224
-Patch41:        0001-ocfs2-ip_alloc_sem-should-be-taken-in-ocfs2_get_bloc.patch
+
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
@@ -200,10 +197,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
-%patch37 -p1
 %patch38 -p1
 %patch40 -p1
-%patch41 -p1
 %patch42 -p1
 %patch43 -p1
 %patch44 -p1
@@ -397,6 +392,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Jul 23 2018 srinidhira0 <srinidhir@vmware.com> 4.9.114-1
+-   Update to version 4.9.114
 *   Thu Jul 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.111-5
 -   Apply out-of-tree patches needed for AppArmor.
 *   Thu Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-4
