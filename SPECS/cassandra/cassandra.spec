@@ -2,15 +2,15 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.11.1
-Release:        3%{?dist}
+Version:        3.11.2
+Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha1 apache-cassandra=f5e76a5007b947970e18142e6ba6e0b9d7cdaa29
+Source0:        https://github.com/apache/cassandra/archive/%{name}-%{version}.tar.gz
+%define sha1    %{name}-%{version}.tar.gz=e4eb73614b0cc103bb6030ff0008982990abd205
 Source1:        cassandra.service
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
@@ -22,7 +22,7 @@ Requires:       gawk
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store. Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
 %prep
-%setup -qn apache-%{name}-%{version}-src
+%setup -qn %{name}-%{name}-%{version}
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
 rm lib/logback-*
@@ -126,6 +126,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Wed Jul 25 2018 Tapas Kundu <tkundu@vmware.com> 3.11.2-1
+-   Upgraded cassandra to 3.11.2.
 *   Wed Apr 25 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.11.1-3
 -   Remove patch to build on openjdk-1.8.0.162, updated openjdk to 1.8.0.172
 *   Sat Jan 20 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.11.1-2
