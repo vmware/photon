@@ -1,7 +1,7 @@
 Summary:        This library implements rpcsec_gss
 Name:           librpcsecgss
 Version:        0.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://www.citi.umich.edu/projects/nfsv4/linux/
 Group:          System Environment/Libraries
@@ -23,7 +23,7 @@ It contains the libraries and header files to create applications.
 %prep
 %setup -q
 %build
-./configure --prefix=/usr --disable-static
+%configure --prefix=/usr --disable-static
 
 make %{?_smp_mflags}
 
@@ -44,5 +44,7 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Jul 26 2018 Ajay Kaher <akaher@vmware.com> 0.19-2
+-   Resolved compilation error for aarch64
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 0.19-1
 -   Initial build. First version
