@@ -12,6 +12,7 @@ URL:            https://rubygems.org/gems/activesupport/thread_safe/%{version}
 Source0:        https://rubygems.org/downloads/thread_safe-%{version}.gem
 %define sha1    thread_safe=5a60162d065d0f479d61ba0a11734b44f5f7ef19
 BuildRequires:  ruby
+Provides: rubygem-thread_safe = %{version}
 
 %description
 A collection of data structures and utilities to make thread-safe programming in Ruby easier

@@ -12,6 +12,7 @@ URL:            https://rubygems.org/gems/tzinfo/versions/%{version}
 Source0:        https://rubygems.org/downloads/tzinfo-%{version}.gem
 %define sha1    tzinfo=28d2bfb90e74b9128b18764ae0b815592e01a972
 BuildRequires:  ruby
+Provides: rubygem-tzinfo = %{version}
 
 %description
 TZInfo provides daylight savings aware transformations between times in different time zones.
