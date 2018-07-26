@@ -1,27 +1,26 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
-Version:        4.2.8p10
-Release:        4%{?dist}
+Version:        4.2.8p11
+Release:        1%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-4.2/%{name}-%{version}.tar.gz
-%define sha1    ntp=503d68cfd3e6a9354e0e28dd38b39d850b1228b2
+%define sha1    ntp=b20352bb76963a0ef5ec07ba99c2bb97ec6b6aeb
 
 #https://github.com/darkhelmet/ntpstat
 Source1: ntpstat-master.zip
 %define sha1 ntpstat=729cf2c9f10da43554f26875e91e1973d4498761
 Source2: ntp.sysconfig
-Patch0:  ntpq-remove-list-digest-call.patch
 BuildRequires:  which
 BuildRequires:  libcap-devel
 BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 Requires:       systemd
-Requires:       shadow
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
 %description
@@ -39,7 +38,6 @@ state of the NTP daemon running on the local machine.
 
 %prep
 %setup -q -a 1
-%patch0 -p1
 
 %build
 ./configure \
@@ -140,6 +138,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Thu Jun 28 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p11-1
+-   Upgrade version to 4.2.8p11.
+-   Remove shadow from requires and use explicit tools for post actions.
 *   Wed Sep 27 2017 Anish Swaminathan <anishs@vmware.com> 4.2.8p10-4
 -   Add patch to remove call to OpenSSL's list digest method in ntpq
 *   Thu Jul 27 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.2.8p10-3
