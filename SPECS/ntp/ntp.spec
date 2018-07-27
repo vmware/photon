@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -23,6 +23,7 @@ Requires:       systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
+Requires:       perl >= 5.24
 %description
 The ntp package contains a client and server to keep the time 
 synchronized between various computers over a network. This 
@@ -138,6 +139,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Thu Jul 27 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p11-2
+-   Adding the dependency on perl version
 *   Thu Jun 28 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p11-1
 -   Upgrade version to 4.2.8p11.
 -   Remove shadow from requires and use explicit tools for post actions.
