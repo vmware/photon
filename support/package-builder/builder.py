@@ -213,7 +213,7 @@ def get_packages_with_build_options(pkg_build_options_file):
     if os.path.exists(pkg_build_options_file):
         with open(pkg_build_options_file) as jsonData:
             pkg_build_option_json = json.load(jsonData, object_pairs_hook=collections.OrderedDict)
-            constants.setBuidOptions(pkg_build_option_json)
+            constants.setBuildOptions(pkg_build_option_json)
 
 def get_all_package_names(build_install_option):
     base_path = os.path.dirname(build_install_option)

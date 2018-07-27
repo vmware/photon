@@ -141,6 +141,7 @@ class constants(object):
         "mpc",
         "libgcc",
         "libgcc-devel",
+        "libgcc-atomic",
         "libstdc++",
         "libstdc++-devel",
         "libgomp",
@@ -555,5 +556,5 @@ class constants(object):
         constants.userDefinedMacros[macroName] = macroValue
 
     @staticmethod
-    def setBuidOptions(options):
+    def setBuildOptions(options):
         constants.buildOptions = options

@@ -77,7 +77,7 @@ class PackageBuilderBase(object):
         packageIsAlreadyBuilt = True
         pkgUtils = PackageUtils(self.logName, self.logPath)
         for pkg in listRPMPackages:
-            if pkgUtils.findRPMFileForGivenPackage(pkg,"*", index) is None:
+            if pkgUtils.findRPMFileForGivenPackage(pkg, "*", index) is None:
                 packageIsAlreadyBuilt = False
                 break
         return packageIsAlreadyBuilt
