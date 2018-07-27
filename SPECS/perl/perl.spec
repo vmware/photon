@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.24.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -27,6 +27,8 @@ Patch5:         perl-CVE-2018-6913.patch
 Provides:       perl >= 0:5.003000
 Provides:       perl(getopts.pl)
 Provides:       /bin/perl
+Provides:       perl(HTTP::Tiny) = 0.056
+Provides:       perl-HTTP-Tiny = 0.056
 BuildRequires:  zlib-devel, bzip2-devel
 Requires:       zlib 
 Requires:       gdbm
@@ -75,6 +77,8 @@ unset BUILD_ZLIB BUILD_BZIP2
 %{_libdir}/perl5/%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Fri Jul 27 2018 Srinidhi Rao <srinidhir@vmware.com> 5.24.1-2
+-   Updated the provides tag
 *   Mon May 21 2018 Xiaolin <xiaolinl@vmware.com> 5.24.1-1
 -   Fix CVE-2018-6797, CVE-2018-6798, CVE-2018-6913
 *   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 5.22.1-5
