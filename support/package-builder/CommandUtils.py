@@ -5,10 +5,19 @@ import os
 class CommandUtils(object):
     def __init__(self):
         self.findBinary = "find"
+        self.sortBinary = "sort"
 
     def findFile(self, filename, sourcePath):
-        process = subprocess.Popen([self.findBinary, "-L", sourcePath, "-name", filename,
-                                    "-not", "-type", "d"], stdout=subprocess.PIPE)
+        # Perform an alphabetical sort of the output from find, to get
+        # consistent ordering.
+        processFind = subprocess.Popen([self.findBinary,  "-L", sourcePath,  "-name",
+                                        filename, "-not", "-type", "d"], stdout=subprocess.PIPE)
+        processSort = subprocess.Popen([self.sortBinary,  "-d"], stdin=processFind.stdout,
+                                        stdout=subprocess.PIPE)
+
+        # Allow processFind to receive a SIGPIPE if processSort exits.
+        processFind.stdout.close()
+
         # We don't check the return val here because find could return 1 but still be
         # able to find
         # the result. We shouldn't blindly return None without even checking the result.
@@ -20,7 +29,7 @@ class CommandUtils(object):
 
         #if returnVal != 0:
         #    return None
-        result = process.communicate()[0]
+        result = processSort.communicate()[0]
         if result is None:
             return None
         return result.decode().split()

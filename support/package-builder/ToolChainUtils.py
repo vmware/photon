@@ -7,6 +7,8 @@ from ChrootUtils import ChrootUtils
 from Logger import Logger
 from PackageUtils import PackageUtils
 from constants import constants
+import json
+import collections
 
 class ToolChainUtils(object):
 
@@ -56,9 +58,9 @@ class ToolChainUtils(object):
 
         self.logger.info("Successfully prepared chroot:" + chrootID)
 
-    def findRPMFileInGivenLocation(self, package, rpmdirPath):
+    def findRPMFileInGivenLocation(self, package, rpmdirPath, version = "*"):
         cmdUtils = CommandUtils()
-        listFoundRPMFiles = cmdUtils.findFile(package + "-*.rpm", rpmdirPath)
+        listFoundRPMFiles = cmdUtils.findFile(package + "-" + version + "-*.rpm", rpmdirPath)
         listFilterRPMFiles = []
         for f in listFoundRPMFiles:
             rpmFileName = os.path.basename(f)
@@ -71,9 +73,14 @@ class ToolChainUtils(object):
         if len(listFilterRPMFiles) == 0:
             return None
         if len(listFilterRPMFiles) > 1:
-            self.logger.error("Found multiple rpm files for given package in rpm directory." +
-                              "Unable to determine the rpm file for package:" + package)
-            return None
+            # We use findRPMFileInGivenLocation() only when bootstrapping;
+            # so it is okay to use any version for the core toolchain packages.
+            if package in constants.listToolChainRPMsToInstall:
+                return listFilterRPMFiles[0]
+            else:
+                self.logger.error("Found multiple rpm files for given package in rpm directory." +
+                                  "Unable to determine the rpm file for package:" + package)
+                return None
 
     def buildCoreToolChainPackages(self):
         self.logger.info("Building core toolchain packages.....")
@@ -123,24 +130,34 @@ class ToolChainUtils(object):
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils = PackageUtils(self.logName, self.logPath)
             rpmFile = None
+
+            # Default to any version.
+            version = "*"
+            if packageName in constants.buildOptions.keys():
+                pkg = constants.buildOptions[packageName]
+                overridelist = pkg["override_toolchain"]
+                for override in overridelist:
+                    if package == str(override["package"].encode('utf-8')):
+                        version = str(override["version"].encode('utf-8'))
+
             if constants.rpmCheck:
-                rpmFile = pkgUtils.findRPMFileForGivenPackage(package)
+                rpmFile = pkgUtils.findRPMFileForGivenPackage(package, version)
             else:
                 if (packageName not in constants.listToolChainRPMsToInstall or
                         constants.listToolChainRPMsToInstall.index(packageName) >
                         constants.listToolChainRPMsToInstall.index(package)):
-                    rpmFile = pkgUtils.findRPMFileForGivenPackage(package)
+                    rpmFile = pkgUtils.findRPMFileForGivenPackage(package, version)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
                 if (package == "sqlite") and (platform.machine() == "x86_64"):
                     package = "sqlite-autoconf"
-                rpmFile = self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo)
+                rpmFile = self.findRPMFileInGivenLocation(package, constants.prevPublishRPMRepo, version)
                 if rpmFile is None:
                     if package in constants.listOfRPMsProvidedAfterBuild:
                         self.logger.info("No old version of " + package +
                                          " exists, skip until the new version is built")
                         continue
-                    self.logger.error("Unable to find rpm " + package +
+                    self.logger.error("Unable to find rpm " + package + "-" + version +
                                       " in current and previous versions")
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
