@@ -1,26 +1,15 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
-Version:        2.30
-Release:        5%{?dist}
+Version:        2.31
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha1    binutils=574d3b5650413d6ee65195a4f5ecbddc3a38f718
-Patch0:         binutils-2.30-CVE-2018-6543.patch
-Patch1:         binutils-2.30-CVE-2018-7643.patch
-Patch2:         binutils-2.30-CVE-2018-7208.patch
-Patch3:         binutils-2.30-CVE-2018-10373.patch
-Patch4:         binutils-2.30-CVE-2018-6759.patch
-Patch5:         binutils-2.30-CVE-2018-6872.patch
-Patch6:         binutils-2.30-CVE-2018-7568.patch
-Patch7:         binutils-2.30-CVE-2018-7569.patch
-Patch8:         binutils-2.30-CVE-2018-7642.patch
-Patch9:         binutils-2.30-CVE-2018-8945.patch
-Patch10:        binutils-2.30-CVE-2018-10372.patch
-Patch11:        binutils-2.30-CVE-2018-10535.patch
+%define sha1    binutils=e1a564cd356d2126d2e9a59e8587757634e731aa
+
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -34,18 +23,6 @@ for handling compiled objects.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -103,7 +80,6 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/windmc.1.gz
 %{_mandir}/man1/ranlib.1.gz
 %{_mandir}/man1/gprof.1.gz
-%{_mandir}/man1/nlmconv.1.gz
 %{_mandir}/man1/strip.1.gz
 %{_mandir}/man1/c++filt.1.gz
 %{_mandir}/man1/as.1.gz
@@ -128,12 +104,15 @@ make %{?_smp_mflags} check
 %{_includedir}/ansidecl.h
 %{_includedir}/bfdlink.h
 %{_includedir}/dis-asm.h
+%{_includedir}/diagnostics.h
 %{_libdir}/libbfd.a
 %{_libdir}/libopcodes.a
 %{_libdir}/libbfd.so
 %{_libdir}/libopcodes.so
 
 %changelog
+*   Fri Jul 27 2018 Keerthana K <keerthanak@vmware.com> 2.31-1
+-   Update to Version 2.31.
 *   Mon Jun 25 2018 Keerthana K <keerthanak@vmware.com> 2.30-5
 -   Fixes for CVE-2018-6759, CVE-2018-6872, CVE-2018-7568, CVE-2018-7569,
 -   CVE-2018-7642, CVE-2018-8945, CVE-2018-10372, CVE-2018-10535.
