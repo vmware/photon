@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.144
+Version:    	4.4.145
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=604bb959a569c7c94d18aa405dce3a6549c54179
+%define sha1 linux=453ad80ed24996f0b7700d84bf48d38eb0e53cc1
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -77,6 +77,8 @@ Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+
+Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
 
 %if 0%{?kat_build:1}
@@ -205,6 +207,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch66 -p1
 %patch67 -p1
 
+%patch70 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -361,6 +364,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.145-1
+-   Update to version 4.4.145 and clear stack on fork.
 *   Thu Jul 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.144-1
 -   Update to version 4.4.144 and fix CVE-2018-10322
 *   Mon Jul 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.140-1
