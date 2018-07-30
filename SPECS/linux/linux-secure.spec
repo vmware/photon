@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.114
+Version:        4.9.116
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e6fd3e5317a88f945e26c85471d0152e062f2d99
+%define sha1 linux=ebd02e892297444ea927a45184f10f58fc77dea1
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -87,6 +87,8 @@ Patch62: 0151-ipv6-prevent-speculative-execution.patch
 Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
+
+Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -230,6 +232,8 @@ EOF
 %patch65 -p1
 %patch66 -p1
 
+%patch70 -p1
+
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -364,6 +368,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.116-1
+-   Update to version 4.9.116 and clear stack on fork.
 *   Mon Jul 23 2018 srinidhira0 <srinidhir@vmware.com> 4.9.114-1
 -   Update to version 4.9.114
 *   Thu Jul 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.111-4
