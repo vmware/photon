@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.114
+Version:        4.9.116
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e6fd3e5317a88f945e26c85471d0152e062f2d99
+%define sha1 linux=ebd02e892297444ea927a45184f10f58fc77dea1
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -78,6 +78,8 @@ Patch62: 0151-ipv6-prevent-speculative-execution.patch
 Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
+
+Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
 
 BuildRequires: bc
@@ -173,6 +175,7 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 
+%patch70 -p1
 
 %build
 # patch vmw_balloon driver
@@ -269,6 +272,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.116-1
+-   Update to version 4.9.116 and clear stack on fork.
 *   Mon Jul 23 2018 srinidhira0 <srinidhir@vmware.com> 4.9.114-1
 -   Update to version 4.9.114
 *   Thu Jul 17 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.111-3
