@@ -216,6 +216,7 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
         yamlFile.write("  repository: BaseOS\n")
         yamlFile.write("  name: '" + ossname + "'\n")
         yamlFile.write("  version: '" + ossversion + "-" + ossrelease + "'\n")
+        yamlFile.write("  url: 'http://www.vmware.com'\n")
         yamlFile.write("  baseos-style: rpm\n")
         yamlFile.write("  baseos-source: '" + str(srpmName) + "'\n")
         yamlFile.write("  baseos-osname: 'photon'\n")
