@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.144
+Version:       4.4.145
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=604bb959a569c7c94d18aa405dce3a6549c54179
+%define sha1 linux=453ad80ed24996f0b7700d84bf48d38eb0e53cc1
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -77,6 +77,8 @@ Patch64: 0153-net-mpls-prevent-speculative-execution.patch
 Patch65: 0154-udf-prevent-speculative-execution.patch
 Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
+
+Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
 
 BuildRequires: bc
@@ -173,6 +175,7 @@ The Linux package contains the Linux kernel doc files
 %patch66 -p1
 %patch67 -p1
 
+%patch70 -p1
 
 %build
 # patch vmw_balloon driver
@@ -261,6 +264,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.145-1
+-   Update to version 4.4.145 and clear stack on fork.
 *   Thu Jul 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.144-1
 -   Update to version 4.4.144 and fix CVE-2018-10322
 *   Mon Jul 16 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.140-1
