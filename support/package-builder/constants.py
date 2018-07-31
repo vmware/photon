@@ -233,7 +233,8 @@ class constants(object):
          "openjdk10-doc",
          "openjdk10-src",
          "openjre10"],
-        [
+          {
+          "x86_64":[
             "icu-devel",
             "cups",
             "cups-devel",
@@ -273,7 +274,41 @@ class constants(object):
             "libXt-devel",
             "libXmu-devel",
             "libXrender",
-            "libXrender-devel"])
+            "libXrender-devel"],
+         "aarch64":[
+            "icu-devel",
+            "openjdk",
+            "openjre",
+            "icu",
+            "alsa-lib",
+            "alsa-lib-devel",
+            "xcb-proto",
+            "libXdmcp-devel",
+            "libXau-devel",
+            "util-macros",
+            "xtrans",
+            "libxcb-devel",
+            "proto",
+            "libXdmcp",
+            "libxcb",
+            "libXau",
+            "xtrans-devel",
+            "libX11",
+            "libX11-devel",
+            "libXext",
+            "libXext-devel",
+            "libICE-devel",
+            "libSM",
+            "libICE",
+            "libSM-devel",
+            "libXt",
+            "libXmu",
+            "libXt-devel",
+            "libXmu-devel",
+            "libXrender",
+            "libXrender-devel"]
+          })
+
     perPackageToolChain["apache-maven"] = ["apache-maven"]
     # List of RPMs which are not published. They will be created during the
     # build process
