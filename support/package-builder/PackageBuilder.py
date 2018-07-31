@@ -295,7 +295,7 @@ class PackageBuilderContainer(PackageBuilderBase):
                 self.logger.debug(constants.perPackageToolChain[self.package])
                 tcUtils.installCustomToolChainRPMSinContainer(
                     containerID,
-                    constants.perPackageToolChain[self.package],
+                    constants.perPackageToolChain[self.package].get(platform.machine(), []),
                     self.package)
 
             listDependentPackages,listDependentPackagesParseObj, listInstalledPackages, listInstalledRPMs = (

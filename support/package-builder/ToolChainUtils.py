@@ -159,7 +159,8 @@ class ToolChainUtils(object):
         print(constants.perPackageToolChain)
         if packageName in constants.perPackageToolChain:
             print(constants.perPackageToolChain[packageName])
-            self.installCustomToolChainRPMS(chrootID, constants.perPackageToolChain[packageName],
+            self.installCustomToolChainRPMS(chrootID,
+                                            constants.perPackageToolChain[packageName].get(platform.machine(), []),
                                             packageName)
 
     def installCustomToolChainRPMS(self, chrootID, listOfToolChainPkgs, packageName):
