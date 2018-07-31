@@ -1,7 +1,7 @@
 Summary:	XML-Parser perl module
 Name:		XML-Parser
 Version:	2.44
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPL+
 URL:		http://search.cpan.org/~toddr/%{name}-%{version}/
 Source0:		http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/%{name}-%{version}.tar.gz
@@ -22,10 +22,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 %define __perl_version 5.24.1
-if [ -e %{_libdir}/perl5/%{__perl_version}/x86_64-linux-thread-multi/perllocal.pod ]; then
-cat %{buildroot}/%{_libdir}/perl5/%{__perl_version}/x86_64-linux-thread-multi/perllocal.pod >> %{_libdir}/perl5/%{__perl_version}/x86_64-linux-thread-multi/perllocal.pod
-fi
-rm %{buildroot}/%{_libdir}/perl5/%{__perl_version}/x86_64-linux-thread-multi/perllocal.pod
+rm %{buildroot}/%{_libdir}/perl5/%{__perl_version}/*/perllocal.pod
 
 %check
 make %{?_smp_mflags} test
@@ -35,15 +32,17 @@ make %{?_smp_mflags} test
 %{_libdir}/perl5/*
 %{_mandir}/man3/*
 %changelog
+*   Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 2.44-4
+-   Excluded perllocal.pod for aarch64
 *   Tue Apr 4 2017 Robert Qi <qij@vmware.com> 2.44-3
 -   Update to version 2.44-3 since perl version updated.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.44-2
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.44-2
+-   GA - Bump release of all rpms
 *   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.44-1
 -   Upgraded to version 2.44
-*	Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 2.41-3
--	Fix for multithreaded perl
-*	Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.41-2
--	Fix for new perl
-*	Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.41-1
--	Initial build. First version
+*   Mon Feb 01 2016 Anish Swaminathan <anishs@vmware.com> 2.41-3
+-   Fix for multithreaded perl
+*   Wed Jan 13 2016 Anish Swaminathan <anishs@vmware.com> 2.41-2
+-   Fix for new perl
+*   Thu Oct 23 2014 Divya Thaluru <dthaluru@vmware.com> 2.41-1
+-   Initial build. First version
