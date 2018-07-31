@@ -3,7 +3,7 @@
 Summary:	OpenJDK
 Name:		openjdk9
 Version:	1.9.0.181
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -22,10 +22,6 @@ BuildRequires:  elfutils-libelf-devel
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
 Requires:       openjre9 = %{version}-%{release}
 Requires:       chkconfig
-Obsoletes:      openjdk <= %{version}
-Obsoletes:      openjdk-sample <= %{version}
-Obsoletes:      openjdk-src <= %{version}
-Obsoletes:      openjdk-doc <= %{version}
 AutoReqProv: 	no
 %define bootstrapjdkversion 1.8.0.112
 %define jdk_major_version 1.9.0
@@ -35,7 +31,6 @@ The OpenJDK package installs java class library and javac java compiler.
 %package	-n openjre9
 Summary:	Java runtime environment
 AutoReqProv: 	no
-Obsoletes:      openjre <= %{version}
 Requires:       chkconfig
 Requires:	libstdc++
 %description	-n openjre9
@@ -44,7 +39,6 @@ It contains the libraries files for Java runtime environment
 %package		doc
 Summary:		Documentation and demo applications for openjdk
 Group:          Development/Languages/Java
-Obsoletes:      openjdk-doc <= %{version}
 Requires:       %{name} = %{version}-%{release}
 %description	doc
 It contains the documentation and demo applications for openjdk
@@ -52,7 +46,6 @@ It contains the documentation and demo applications for openjdk
 %package 		src
 Summary:        OpenJDK Java classes for developers
 Group:          Development/Languages/Java
-Obsoletes:      openjdk-src <= %{version}
 Requires:       %{name} = %{version}-%{release}
 %description	src
 This package provides the runtime library class sources.
@@ -228,5 +221,7 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{version}/lib/src.zip
 
 %changelog
+*   Wed Aug 1 2018 Tapas Kundu <tkundu@vmware.com> 1.9.0.181-2
+-   Removed the obsolete for openjdk.
 *   Fri Jul 20 2018 Tapas Kundu <tkundu@vmware.com> 1.9.0.181-1
 -   Initial build. First version
