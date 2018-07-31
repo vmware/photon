@@ -1,7 +1,7 @@
 Summary:	Programs for handling passwords in a secure way
 Name:		shadow
 Version:	4.2.1
-Release:	12%{?dist}
+Release:	13%{?dist}
 URL:		http://pkg-shadow.alioth.debian.org/
 License:	BSD
 Group:		Applications/System
@@ -23,6 +23,7 @@ Source11:       system-session
 Patch0: chkname-allowcase.patch
 Patch1: shadow-4.2.1-CVE-2016-6252-fix.patch
 Patch2: shadow-4.2.1-CVE-2017-12424.patch
+Patch3: shadow-4.2.1-CVE-2018-7169.patch
 BuildRequires: 	cracklib
 BuildRequires: 	cracklib-devel
 Requires:   	cracklib
@@ -38,6 +39,7 @@ in a secure way.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -122,6 +124,8 @@ done
 %{_mandir}/*/*
 %config(noreplace) %{_sysconfdir}/pam.d/*
 %changelog
+*   Mon Jul 30 2018 Tapas Kundu <tkundu@vmware.com> 4.2.1-13
+-   Added fix for CVE-2018-7169.
 *   Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-12
 -   Move pam.d config file to here for better tracking.
 -   Add pam_loginuid module as optional in a session.
