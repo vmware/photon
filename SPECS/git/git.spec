@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -86,12 +86,14 @@ rm -rf %{buildroot}/*
 %exclude %{_mandir}/man3/*:SVN:*
 %exclude %{perl_sitelib}/Git/SVN
 %exclude %{perl_sitelib}/Git/SVN.pm
-%exclude /usr/lib/perl5/5.24.1/x86_64-linux-thread-multi/perllocal.pod
+%exclude /usr/lib/perl5/5.24.1/*/perllocal.pod
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+*   Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 2.14.2-2
+-   Excluded the perllocal.pod for aarch64.
 *   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
 -   Updated to version 2.14.2, fix CVE-2017-14867
 *   Mon Aug 21 2017 Rui Gu <ruig@vmware.com> 2.9.3-4
