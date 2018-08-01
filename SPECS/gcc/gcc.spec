@@ -1,15 +1,16 @@
+%global security_hardening none
 %define _use_internal_dependency_generator 0
 Summary:        Contains the GNU compiler collection
 Name:           gcc
-Version:        6.3.0
-Release:        7%{?dist}
+Version:        7.3.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha1 gcc=928ab552666ee08eed645ff20ceb49d139205dea
+Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
+%define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
 Patch0:         PLUGIN_TYPE_CAST.patch
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
@@ -85,9 +86,6 @@ This package contains development headers and static library for libgomp
 %setup -q
 %patch0 -p1
 
-# disable FORTIFY_SOURCE=2 from hardening
-sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
-sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 # disable no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
@@ -233,6 +231,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Wed Aug 01 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.3.0-1
+-   Update to version 7.3.0 to get retpoline support.
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-7
 -   Aarch64 support
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-6
