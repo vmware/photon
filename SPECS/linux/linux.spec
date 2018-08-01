@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.54
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Release:        6%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -366,6 +366,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-6
+-   Add full retpoline support by building with retpoline-enabled gcc.
 *   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-5
 -   Apply out-of-tree patches needed for AppArmor.
 *   Wed Aug 22 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.54-4
