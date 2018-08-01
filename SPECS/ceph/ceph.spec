@@ -12,17 +12,20 @@
 # common
 #################################################################################
 Name:       ceph
-Version:    11.2.0
-Release:    11%{?dist}
+Version:    11.2.1
+Release:    1%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
 Group:      System/Filesystems
 URL:        http://ceph.com/
 Source0:    http://ceph.com/download/%{name}-%{version}.tar.gz
-%define sha1 ceph=8bb87494c9b47b2ef02bfe51bb981a8cd94fa9fb
+%define sha1 ceph=7b273e0edf7901e838238a88cdb70976c908ecff
 Vendor:     VMware, Inc.
 Distribution:   Photon
+
+Patch0:         fix-build-warnings-errors-gcc-7.3.patch
+
 #################################################################################
 # dependencies that apply across all distro families
 #################################################################################
@@ -443,6 +446,7 @@ python-rbd, python-rgw or python-cephfs instead.
 #################################################################################
 %prep
 %setup -n ceph-%{version}
+%patch0 -p1
 
 %build
 %if %{with lowmem_builder}
@@ -1000,6 +1004,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 11.2.1-1
+-   Update to version 11.2.1 and fix build issues with gcc 7.3
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  11.2.0-11
 -   Fixed the log file directory structure
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 11.2.0-10

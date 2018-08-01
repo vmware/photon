@@ -1,7 +1,7 @@
 Summary: Intel LLDP Agent
 Name:    lldpad
 Version: 1.0.1
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: GPLv2
 URL: http://open-lldp.org/
 Source: %{name}-%{version}.tar.gz
@@ -24,7 +24,7 @@ The lldpad package comes with utilities to manage an LLDP interface with support
 
 %prep
 %setup -q -n open-lldp-036e314
-sed -i "s/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2 -std=gnu89/" Makefile.am
+sed -i "s/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2 -std=gnu89 -Wno-implicit-fallthrough -Wno-format-truncation/" Makefile.am
 sed -i "s/u8 arglen;/u8 arglen = 0;/g" lldp_util.c
 
 %build
@@ -67,6 +67,8 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 
 
 %changelog
+*   Mon Aug 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.0.1-6
+-   Suppress build warnings with gcc 7.3
 *   Wed May 25 2016 Anish Swaminathan <anishs@vmware.com> 1.0.1-5
 -   Add required folder for service to start
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-4

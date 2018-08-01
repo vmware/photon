@@ -1,14 +1,15 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
-Version: 	6.2.11.4
-Release:        4%{?dist}
+Version: 	6.2.11.12
+Release:        1%{?dist}
 Group: 		Development/Libraries
 Vendor:         VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 likewise-open=6aa4cf11de6747d5f8940666c21adc3e1f7b6a4b
+%define sha1 likewise-open=417412eca6734896886bbb2ebac17f668bd80cdf
 Patch0:         likewise-open-aarch64.patch
+Patch1:         0001-likewise-open-Fix-build-warnings-errors-with-gcc-7.3.patch
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -47,6 +48,7 @@ This package provides files for developing against the Likewise APIs
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
@@ -290,6 +292,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Mon Aug 13 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.2.11.12-1
+-   Update to version 6.2.11.12 and fix build issues with gcc 7.3
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-4
 -   Aarch64 support
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3
