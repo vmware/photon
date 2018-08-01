@@ -1,16 +1,14 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
-Version:        2.30
-Release:        4%{?dist}
+Version:        2.31
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha1 binutils=574d3b5650413d6ee65195a4f5ecbddc3a38f718
-Patch0:         binutils-2.30-CVE-2018-6543.patch
-Patch1:         binutils-2.30-CVE-2018-10373.patch
+%define sha1 binutils=e1a564cd356d2126d2e9a59e8587757634e731aa
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -22,8 +20,6 @@ It contains the libraries and header files to create applications
 for handling compiled objects.
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 %build
 install -vdm 755 ../binutils-build
 cd ../binutils-build
@@ -80,7 +76,6 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/windmc.1.gz
 %{_mandir}/man1/ranlib.1.gz
 %{_mandir}/man1/gprof.1.gz
-%{_mandir}/man1/nlmconv.1.gz
 %{_mandir}/man1/strip.1.gz
 %{_mandir}/man1/c++filt.1.gz
 %{_mandir}/man1/as.1.gz
@@ -106,6 +101,7 @@ make %{?_smp_mflags} check
 %{_includedir}/bfdlink.h
 %{_includedir}/dis-asm.h
 %{_includedir}/libiberty/*
+%{_includedir}/diagnostics.h
 %{_libdir}/libbfd.a
 %{_libdir}/libopcodes.a
 %{_libdir}/libbfd.so
@@ -113,6 +109,8 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 2.31-1
+-   Update to version 2.31.
 *   Thu Jun 7 2018 Keerthana K <keerthanak@vmware.com> 2.30-4
 -   Fix CVE-2018-10373
 *   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 2.30-3
