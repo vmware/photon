@@ -1,16 +1,16 @@
-diff -Naur gcc-5.3.0.orig/gcc/c/c-typeck.c gcc-5.3.0/gcc/c/c-typeck.c
---- gcc-5.3.0.orig/gcc/c/c-typeck.c	2015-10-05 05:35:20.000000000 -0700
-+++ gcc-5.3.0/gcc/c/c-typeck.c	2017-02-22 01:11:51.672617711 -0800
-@@ -69,6 +69,8 @@
+diff -Naurp gcc-7.3.0-orig/gcc/c/c-typeck.c gcc-7.3.0/gcc/c/c-typeck.c
+--- gcc-7.3.0-orig/gcc/c/c-typeck.c	2017-06-08 12:12:38.381833000 -0700
++++ gcc-7.3.0/gcc/c/c-typeck.c	2018-04-24 14:44:50.222592671 -0700
+@@ -48,6 +48,8 @@ along with GCC; see the file COPYING3.
  #include "c-family/c-ubsan.h"
  #include "cilk.h"
  #include "gomp-constants.h"
 +#include "plugin-api.h"
 +#include "plugin.h"
- #include "spellcheck.h"
+ #include "spellcheck-tree.h"
  #include "gcc-rich-location.h"
  
-@@ -5277,6 +5279,12 @@
+@@ -5452,6 +5454,12 @@ build_c_cast (location_t loc, tree type,
  	return error_mark_node;
      }
  
@@ -18,15 +18,15 @@ diff -Naur gcc-5.3.0.orig/gcc/c/c-typeck.c gcc-5.3.0/gcc/c/c-typeck.c
 +    tree cast_info[] {type, TREE_TYPE(value)};
 +    invoke_plugin_callbacks (PLUGIN_TYPE_CAST, cast_info);
 +  }
-+   
++
 +
    if (type == TYPE_MAIN_VARIANT (TREE_TYPE (value)))
      {
        if (RECORD_OR_UNION_TYPE_P (type))
-diff -Naur gcc-5.3.0.orig/gcc/plugin.c gcc-5.3.0/gcc/plugin.c
---- gcc-5.3.0.orig/gcc/plugin.c	2015-01-30 08:15:00.000000000 -0800
-+++ gcc-5.3.0/gcc/plugin.c	2017-02-22 01:04:55.642416671 -0800
-@@ -462,6 +462,7 @@
+diff -Naurp gcc-7.3.0-orig/gcc/plugin.c gcc-7.3.0/gcc/plugin.c
+--- gcc-7.3.0-orig/gcc/plugin.c	2017-03-21 04:50:18.693898000 -0700
++++ gcc-7.3.0/gcc/plugin.c	2018-04-24 14:46:13.956372418 -0700
+@@ -471,6 +471,7 @@ register_callback (const char *plugin_na
        case PLUGIN_EARLY_GIMPLE_PASSES_END:
        case PLUGIN_NEW_PASS:
        case PLUGIN_INCLUDE_FILE:
@@ -34,7 +34,7 @@ diff -Naur gcc-5.3.0.orig/gcc/plugin.c gcc-5.3.0/gcc/plugin.c
          {
            struct callback_info *new_callback;
            if (!callback)
-@@ -540,6 +541,7 @@
+@@ -551,6 +552,7 @@ invoke_plugin_callbacks_full (int event,
        case PLUGIN_EARLY_GIMPLE_PASSES_END:
        case PLUGIN_NEW_PASS:
        case PLUGIN_INCLUDE_FILE:
@@ -42,10 +42,10 @@ diff -Naur gcc-5.3.0.orig/gcc/plugin.c gcc-5.3.0/gcc/plugin.c
          {
            /* Iterate over every callback registered with this event and
               call it.  */
-diff -Naur gcc-5.3.0.orig/gcc/plugin.def gcc-5.3.0/gcc/plugin.def
---- gcc-5.3.0.orig/gcc/plugin.def	2015-01-05 04:33:28.000000000 -0800
-+++ gcc-5.3.0/gcc/plugin.def	2017-02-22 00:35:02.986905569 -0800
-@@ -94,6 +94,9 @@
+diff -Naurp gcc-7.3.0-orig/gcc/plugin.def gcc-7.3.0/gcc/plugin.def
+--- gcc-7.3.0-orig/gcc/plugin.def	2017-01-01 04:07:43.905435000 -0800
++++ gcc-7.3.0/gcc/plugin.def	2018-04-24 14:47:02.209408557 -0700
+@@ -99,6 +99,9 @@ DEFEVENT (PLUGIN_NEW_PASS)
     as a const char* pointer.  */
  DEFEVENT (PLUGIN_INCLUDE_FILE)
  

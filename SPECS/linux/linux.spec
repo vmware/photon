@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.54
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -341,6 +341,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
+-   Add full retpoline support by building with retpoline-enabled gcc.
 *   Thu Jul 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.54-2
 -   .config: usb_serial_pl2303=m,wlan=y,can=m,gpio=y,pinctrl=y,iio=m
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1

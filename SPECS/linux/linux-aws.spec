@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.14.54
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -305,6 +305,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
+-   Add full retpoline support by building with retpoline-enabled gcc.
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
 -   Update to version 4.14.54
 *   Thu Feb 22 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.8-1
