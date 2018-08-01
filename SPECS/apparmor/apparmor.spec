@@ -1,11 +1,12 @@
 Name:           apparmor
 Version:        2.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
 Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{version}.tar.gz
 %define sha1    apparmor=54202cafce24911c45141d66e2d1e037e8aa5746
+Patch0:         apparmor-set-profiles-complain-mode.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
@@ -75,6 +76,7 @@ Summary:    AppArmor profiles that are loaded into the apparmor kernel module
 License:    GNU LGPL v2.1
 Group:      Productivity/Security
 Requires:   apparmor-parser = %{version}-%{release}
+Requires:   apparmor-abstractions = %{version}-%{release}
 
 %description profiles
 This package contains the basic AppArmor profiles.
@@ -120,6 +122,7 @@ License:    GNU LGPL v2.1
 Group:      Productivity/Security
 Requires:   libapparmor = %{version}-%{release}
 Requires:   audit
+Requires:   apparmor-abstractions = %{version}-%{release}
 
 %description utils
 This package contains programs to help create and manage AppArmor
@@ -158,6 +161,7 @@ applications interfacing with AppArmor.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
 
 %build
 export PYTHONPATH=/usr/lib/python3.6/site-packages
@@ -231,7 +235,6 @@ cd ../pam_apparmor
 make DESTDIR=%{buildroot} install
 cd ../../profiles
 make DESTDIR=%{buildroot} install
-
 
 %files -n libapparmor
 %defattr(-,root,root)
@@ -359,5 +362,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/ruby/site_ruby/2.4.0/x86_64-linux/LibAppArmor.so
 
 %changelog
+*   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
+-   Added apparmor-abstractions a dependency for apparmor-profiles and apparmor-utils.
+-   Add apparmor-default-profiles to complain mode after boot.
 *   Thu Jul 19 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
 -   Initial Apparmor package for Photon.
