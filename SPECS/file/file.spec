@@ -1,7 +1,7 @@
 Summary:	Contains a utility for determining file types
 Name:		file
 Version:	5.24
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		http://www.darwinsys.com/file
 Group:		Applications/File
@@ -9,11 +9,13 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %define sha1 file=152daac79ccb4560dc65d5aaf754196ec1536f1d
+Patch0:         0001-Avoid-reading-past-the-end-of-buffer-Rui-Reis.patch
 %description
 The package contains a utility for determining the type of a
 given file or files
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -35,6 +37,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/*/*
 %{_datarootdir}/misc/magic.mgc
 %changelog
+*	Wed Aug 01 2018 Ankit Jain <ankitja@vmware.com> 5.24-3
+-	Fix for CVE-2018-10360
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.24-2
 -	GA - Bump release of all rpms
 * 	Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 5.24-1
