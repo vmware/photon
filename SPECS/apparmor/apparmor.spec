@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        2.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -75,6 +75,7 @@ Summary:    AppArmor profiles that are loaded into the apparmor kernel module
 License:    GNU LGPL v2.1
 Group:      Productivity/Security
 Requires:   apparmor-parser = %{version}-%{release}
+Requires:   apparmor-abstractions = %{version}-%{release}
 
 %description profiles
 This package contains the basic AppArmor profiles.
@@ -120,6 +121,7 @@ License:    GNU LGPL v2.1
 Group:      Productivity/Security
 Requires:   libapparmor = %{version}-%{release}
 Requires:   audit
+Requires:   apparmor-abstractions = %{version}-%{release}
 
 %description utils
 This package contains programs to help create and manage AppArmor
@@ -232,6 +234,10 @@ make DESTDIR=%{buildroot} install
 cd ../../profiles
 make DESTDIR=%{buildroot} install
 
+find %{buildroot}%{_sysconfdir}/apparmor.d/ -type f -exec sed -i 's/flags=.*{$/{/' {} +
+find %{buildroot}%{_sysconfdir}/apparmor.d/ -type f -exec sed -i 's/{$/flags=(complain) {/' {} +
+find %{buildroot}%{_datadir}/apparmor/extra-profiles/ -type f -exec sed -i 's/flags=.*{$/{/' {} +
+find %{buildroot}%{_datadir}/apparmor/extra-profiles/ -type f -exec sed -i 's/{$/flags=(complain) {/' {} +
 
 %files -n libapparmor
 %defattr(-,root,root)
@@ -263,8 +269,12 @@ make DESTDIR=%{buildroot} install
 
 %files profiles
 %defattr(-,root,root,755)
-%dir %{_sysconfdir}/apparmor.d/apache2.d
 %{_sysconfdir}/apparmor.d/apache2.d/phpsysinfo
+%{_sysconfdir}/apparmor.d/usr.sbin.apache2
+%{_sysconfdir}/apparmor.d/usr.lib.apache2.mpm-prefork.apache2
+%{_sysconfdir}/apparmor.d/usr.sbin.dnsmasq*
+%{_sysconfdir}/apparmor.d/local/usr.lib.apache2.mpm-prefork.apache2
+%{_sysconfdir}/apparmor.d/local/usr.sbin.apache2
 %{_sysconfdir}/apparmor.d/bin.*
 %{_sysconfdir}/apparmor.d/sbin.*
 %{_sysconfdir}/apparmor.d/usr.*
@@ -359,5 +369,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/ruby/site_ruby/2.4.0/x86_64-linux/LibAppArmor.so
 
 %changelog
+*   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
+-   Added apparmor-abstractions a dependency for apparmor-profiles and apparmor-utils.
+-   Add apparmor-default-profiles to complain mode after boot.
 *   Thu Jul 19 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
 -   Initial Apparmor package for Photon.
