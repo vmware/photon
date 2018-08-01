@@ -1,11 +1,11 @@
 Summary:	SELinux binary policy manipulation library 
 Name:		libsepol
-Version:	2.6
+Version:	2.8
 Release:	1%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20161014/%{name}-%{version}.tar.gz
-%define sha1 libsepol=029a43e131bd1fd55d39bfc8d11da016454029b6
+%define sha1 libsepol=1014c828f5eff3a0aec727749c3de44e0e69aa88
 Source1:        https://sourceforge.net/projects/cunit/files/CUnit-2.1-2-src.tar.bz2
 %define sha1 CUnit=6c2d0627eb64c09c7140726d6bf814cf531a3ce0
 URL:		http://www.selinuxproject.org
@@ -55,7 +55,7 @@ mkdir -p %{buildroot}%{_includedir}
 mkdir -p %{buildroot}%{_bindir} 
 mkdir -p %{buildroot}%{_mandir}/man3
 mkdir -p %{buildroot}%{_mandir}/man8
-make DESTDIR="%{buildroot}" LIBDIR="%{buildroot}%{_libdir}" SHLIBDIR="%{buildroot}/%{_lib}" install
+make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" install
 rm -f %{buildroot}%{_bindir}/genpolbools
 rm -f %{buildroot}%{_bindir}/genpolusers
 rm -f %{buildroot}%{_bindir}/chkcon
@@ -95,6 +95,8 @@ exit 0
 %{_lib}/libsepol.so.1
 
 %changelog
+*       Fri Aug 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.8-1
+-       Update to version 2.8 to get it to build with gcc 7.3
 *       Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.6-1
 -       Updating version to 2.6
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2

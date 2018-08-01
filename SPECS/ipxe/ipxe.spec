@@ -4,8 +4,8 @@
 
 Summary:        iPXE open source boot firmware
 Name:           ipxe
-Version:        553f485
-Release:        2%{?dist}
+Version:        d2063b7
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -13,7 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 #Download URL:  https://git.ipxe.org/ipxe.git/snapshot/%{commit}.tar.bz2
 Source0:        %{name}-%{version}.tar.bz2
-%define sha1 ipxe=723e1e46b00a7de870065b74f053941f46748062
+%define sha1 ipxe=1fe9e076528b0d39b828cec94c565fa9d58c8550
 BuildRequires:  binutils
 BuildRequires:  binutils-devel
 BuildRequires:  cdrkit
@@ -62,6 +62,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> d2063b7-1
+-   Update version to get it to build with gcc 7.3
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  553f485-2
 -   disable debuginfo gen
 *   Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 553f485-1
