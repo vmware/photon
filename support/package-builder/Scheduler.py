@@ -105,7 +105,7 @@ class Scheduler(object):
         listRequiredPackages = []
 
         for pkg in listRequiredRPMPackages:
-            basePkg = SPECS.getData().getSpecName(pkg)
+            basePkg = SPECS.getData().getSpecName(pkg.package)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
 
@@ -205,7 +205,7 @@ class Scheduler(object):
         listRequiredPackages = []
 
         for pkg in listRequiredRPMPackages:
-            basePkg = SPECS.getData().getSpecName(pkg)
+            basePkg = SPECS.getData().getSpecName(pkg.package)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
 
