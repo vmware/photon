@@ -1,0 +1,40 @@
+From 78606056596047caa657895bfcaa7d718a8856ed Mon Sep 17 00:00:00 2001
+From: Tiejun Chen <tiejunc@vmware.com>
+Date: Sun, 5 Aug 2018 13:45:57 -0700
+Subject: [PATCH 1/1] Don't enable clocksource_vmware at the beginning of
+ running preempt-rt
+
+TSC could be unstable due to cpufreq or due to unsynced TSCs so this
+can make preempt-rt work very well at the very beginning.
+
+Signed-off-by: Tiejun Chen <tiejunc@vmware.com>
+---
+ arch/x86/kernel/cpu/vmware.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 38b46f1..06cb975 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -174,12 +174,18 @@ static struct clocksource clocksource_vmware = {
+ 	.archdata = { .vclock_mode = VCLOCK_TSC },
+ };
+ 
++/*
++ * FIXME: TSC could be unstable due to cpufreq or due to unsynced TSCs so this
++ * can make preempt-rt work very well at the very beginning.
++ */
++#ifndef CONFIG_PREEMPT_RT_FULL
+ /* We want to use clocksource_vmware from the beginning to avoid drifting in
+    monotonic clock */
+ struct clocksource * __init clocksource_default_clock(void)
+ {
+ 	return &clocksource_vmware;
+ }
++#endif
+ 
+ /* Function to read the exact time the system has been started. It will be
+    used as zero time for monotonic clock */
+-- 
+2.7.4
+
