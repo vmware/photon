@@ -19,13 +19,31 @@ MongoDB (from "humongous") is a scalable, high-performance, open source, documen
 %setup -qn mongo-r%{version}
 
 %build
+%ifarch x86_64
 scons %{?_smp_mflags} MONGO_VERSION=%{version} \
     --disable-warnings-as-errors
+%endif
+
+%ifarch aarch64
+scons %{?_smp_mflags} MONGO_VERSION=%{version} CCFLAGS="-march=armv8-a+crc" \
+    --disable-warnings-as-errors
+%endif
+
+
 
 %install
+%ifarch x86_64
 scons %{?_smp_mflags} MONGO_VERSION=%{version} install \
     --prefix=%{buildroot}%{_prefix} \
     --disable-warnings-as-errors
+%endif
+
+%ifarch aarch64
+scons %{?_smp_mflags} MONGO_VERSION=%{version} CCFLAGS="-march=armv8-a+crc" install \
+    --prefix=%{buildroot}%{_prefix} \
+    --disable-warnings-as-errors
+%endif
+
 install -d %{buildroot}/var/log/%{name}
 install -d %{buildroot}/var/lib/mongo
 install -d -m 755 %{buildroot}%{_unitdir}
