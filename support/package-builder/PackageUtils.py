@@ -9,6 +9,7 @@ from Logger import Logger
 from constants import constants
 import PullSources
 from SpecData import SPECS
+from distutils.version import LooseVersion
 
 class PackageUtils(object):
 
@@ -430,6 +431,26 @@ class PackageUtils(object):
         arch = self._getRPMArch(rpmName)
         rpmDestDir = rpmDir + "/" + arch
         return rpmDestDir
+
+    def _getProperVersion(self,package,parseSpecObj):
+        listOfVersionObjs=SPECS.getData().getSpecObj(package)
+        for num in listOfVersionObjs:
+                if parseSpecObj.compare == 'gte':
+                       if LooseVersion(num.version) >= LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'lte':
+                        if LooseVersion(num.version) <= LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'eq':
+                        if LooseVersion(num.version) == LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'lt':
+                        if LooseVersion(num.version) < LooseVersion(parseSpecObj.version):
+                                return num.version
+                elif parseSpecObj.compare == 'gt':
+                        if LooseVersion(num.version) > LooseVersion(parseSpecObj.version):
+                                return num.version
+        return "*"
 
     def _copyRPM(self, rpmFile, destDir):
         cmdUtils = CommandUtils()
