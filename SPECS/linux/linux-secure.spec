@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.114
+Version:        4.9.117
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e6fd3e5317a88f945e26c85471d0152e062f2d99
+%define sha1 linux=ff27b24bd7e63d51b0f1437b1b5f9b9a7ee885ef
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -60,7 +60,6 @@ Patch37:        0002-bnx2x-disable-GSO-where-gso_size-is-too-big-for-hard.patch
 Patch40:        0001-net-phy-mdio-bcm-unimac-fix-potential-NULL-dereferen.patch
 # Fix for CVE-2017-18241
 Patch42:        0001-f2fs-fix-a-panic-caused-by-NULL-flush_cmd_control.patch
-Patch44:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch45:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
 # Fix for CVE-2017-18249
@@ -71,22 +70,6 @@ Patch47:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch48:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch49:        0002-xfs-verify-dinode-header-first.patch
 Patch50:        0003-xfs-enhance-dinode-verifier.patch
-
-# For Spectre
-Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
-Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
-Patch54: 0143-x86-bpf-jit-prevent-speculative-execution-when-JIT-i.patch
-Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
-Patch56: 0145-carl9170-prevent-speculative-execution.patch
-Patch57: 0146-p54-prevent-speculative-execution.patch
-Patch58: 0147-qla2xxx-prevent-speculative-execution.patch
-Patch59: 0148-cw1200-prevent-speculative-execution.patch
-Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
-Patch61: 0150-ipv4-prevent-speculative-execution.patch
-Patch62: 0151-ipv6-prevent-speculative-execution.patch
-Patch64: 0153-net-mpls-prevent-speculative-execution.patch
-Patch65: 0154-udf-prevent-speculative-execution.patch
-Patch66: 0155-userns-prevent-speculative-execution.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -206,29 +189,12 @@ EOF
 %patch37 -p1
 %patch40 -p1
 %patch42 -p1
-%patch44 -p1
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
-
-# spectre
-%patch52 -p1
-%patch53 -p1
-%patch54 -p1
-%patch55 -p1
-%patch56 -p1
-%patch57 -p1
-%patch58 -p1
-%patch59 -p1
-%patch60 -p1
-%patch61 -p1
-%patch62 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
 
 %patch71 -p1
 %patch72 -p1
@@ -364,6 +330,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Aug 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.117-1
+-   Update to version 4.9.117 and remove rdrand-rng driver.
 *   Mon Jul 23 2018 srinidhira0 <srinidhir@vmware.com> 4.9.114-1
 -   Update to version 4.9.114
 *   Thu Jul 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.111-4
