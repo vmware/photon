@@ -10,7 +10,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
-BuildRequires:  go >= 1.7
+BuildRequires:  go == 1.9.4
 BuildRequires:  perl
 
 %description
