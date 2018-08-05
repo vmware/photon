@@ -10,7 +10,7 @@ Source0:       %{name}-%{version}.tar.gz
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: glide
-BuildRequires: go >= 1.7
+BuildRequires: go == 1.9.4
 %define sha1 calico-libnetwork=bed540d714a7b2e0d0138556894541109dc7b792
 %define debug_package %{nil}
 

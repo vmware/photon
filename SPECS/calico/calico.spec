@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
 BuildRequires:  glide
-BuildRequires:  go >= 1.7
+BuildRequires:  go == 1.9.4
 BuildRequires:  make
 
 %description

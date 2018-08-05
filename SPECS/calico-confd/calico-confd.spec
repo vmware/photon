@@ -9,7 +9,7 @@ URL:           https://github.com/kelseyhightower/confd/releases
 Source0:       %{name}-%{version}.tar.gz
 Distribution:  Photon
 BuildRequires: glide
-BuildRequires: go >= 1.7
+BuildRequires: go == 1.9.4
 %define sha1 calico-confd=1ee7b4f992737f28a970dfeeb35faa35d1601a92
 
 %description

@@ -12,7 +12,7 @@ Source1:       golang-dep-0.3.0.tar.gz
 %define sha1 golang-dep-0.3.0=e5e9952227930fe1e8632edc03d690bffc3e1132
 Distribution:  Photon
 BuildRequires: git
-BuildRequires: go >= 1.7
+BuildRequires: go == 1.9.4
 %define debug_package %{nil}
 
 %description
