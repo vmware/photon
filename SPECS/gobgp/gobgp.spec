@@ -1,7 +1,7 @@
 Summary:       BGP implementation in Go
 Name:          gobgp
 Version:       1.23
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -12,7 +12,7 @@ Source1:       golang-dep-0.3.0.tar.gz
 %define sha1 golang-dep-0.3.0=e5e9952227930fe1e8632edc03d690bffc3e1132
 Distribution:  Photon
 BuildRequires: git
-BuildRequires: go >= 1.7
+BuildRequires: go == 1.9.4
 %define debug_package %{nil}
 
 %description
@@ -48,5 +48,7 @@ install ${GOPATH}/src/github.com/osrg/gobgp/dist/gobgpd %{buildroot}%{_bindir}/
 %doc LICENSE README.md
 
 %changelog
+*    Tue Aug 07 2018 Tapas Kundu <tkundu@vmware.com> 1.23-2
+-    Build using go 1.9.4.
 *    Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.23-1
 -    Go BGP daemon for PhotonOS.
