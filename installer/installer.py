@@ -453,6 +453,21 @@ class Installer(object):
                 except ValueError:
                     pass
                 selected_packages.append('linux-esx')
+            elif self.install_config['install_linux_esx_rt']:
+                selected_packages = self.install_config['packages']
+                try:
+                    selected_packages.remove('linux')
+                except ValueError:
+                    pass
+                try:
+                    selected_packages.remove('linux-esx')
+                except ValueError:
+                    pass
+                try:
+                    selected_packages.remove('initramfs')
+                except ValueError:
+                    pass
+                selected_packages.append('linux-rt')
         except KeyError:
             pass
 

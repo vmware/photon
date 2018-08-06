@@ -23,6 +23,7 @@ class LinuxSelector(object):
         self.menu_items = []
         self.menu_items.append(("1. VMware hypervisor optimized", self.set_linux_esx_installation, True))
         self.menu_items.append(("2. Generic", self.set_linux_esx_installation, False))
+        self.menu_items.append(("3. Preempt-RT enabled", self.set_linux_esx_rt_installation, True))
 
         self.host_menu = Menu(self.menu_starty, self.maxx, self.menu_items,
                               default_selected=0, tab_enable=False)
@@ -34,6 +35,11 @@ class LinuxSelector(object):
 
     def set_linux_esx_installation(self, is_linux_esx):
         self.install_config['install_linux_esx'] = is_linux_esx
+        return ActionResult(True, None)
+
+    def set_linux_esx_rt_installation(self, is_linux_esx_rt):
+        self.install_config['install_linux_esx'] = False
+        self.install_config['install_linux_esx_rt'] = is_linux_esx_rt
         return ActionResult(True, None)
 
     def display(self, params):

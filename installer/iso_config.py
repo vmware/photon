@@ -129,8 +129,10 @@ class IsoConfig(object):
         del options_file
         install_config = ks_config
         install_config['iso_system'] = False
-        if self.is_vmware_virtualization() and 'install_linux_esx' not in install_config:
-            install_config['install_linux_esx'] = True
+        if self.is_vmware_virtualization():
+            if 'install_linux_esx' not in install_config and 'install_linux_esx_rt' not in install_config:
+                install_config['install_linux_esx'] = True
+                install_config['install_linux_esx_rt'] = False
 
         json_wrapper_option_list = JsonWrapper("build_install_options_all.json")
         option_list_json = json_wrapper_option_list.read()
