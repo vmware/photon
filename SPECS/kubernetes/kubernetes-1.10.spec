@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.10.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -12,7 +12,7 @@ Patch0:         k8s-vke.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go
+BuildRequires:  go = 1.9.4
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -207,6 +207,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Mon Aug 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.2-11
+-   Build using go version 1.9.4
 *   Thu Aug 02 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.2-10
 -   Update vke patch
 *   Fri Jul 20 2018 Bo Gan <ganb@vmware.com> 1.10.2-9

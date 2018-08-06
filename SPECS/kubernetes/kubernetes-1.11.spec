@@ -1,18 +1,18 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.9.6
-Release:        9%{?dist}
+Version:        1.11.1
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
-Source0:        kubernetes-v%{version}.tar.gz
-%define sha1    kubernetes-v%{version}.tar.gz=6996c0690a38cda1ae5479a4dde7ebfeb590e5fb
+Source0:        kubernetes-%{version}.tar.gz
+%define sha1    kubernetes-%{version}.tar.gz=a036caaa7da8aeaa7351804a58847fb0f4de9ea9
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
-Patch0:         k8s-cascade.patch
+Patch0:         k8s-1.11-vke.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go = 1.9.4
+BuildRequires:  go >= 1.10
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -36,6 +36,12 @@ Requires:       %{name} = %{version}
 %description    kubeadm
 kubeadm is a tool that enables quick and easy deployment of a kubernetes cluster.
 
+%package	kubectl-extras
+Summary:	kubectl binaries for extra platforms
+Group:		Development/Tools
+%description	kubectl-extras
+Contains kubectl binaries for additional platforms.
+
 %package        pause
 Summary:        pause binary
 Group:          Development/Tools
@@ -57,10 +63,15 @@ mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-amd64 pause.c
 strip bin/pause-amd64
 popd
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/amd64
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/linux/amd64
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/amd64
 
 binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
@@ -68,6 +79,11 @@ for bin in "${binaries[@]}"; do
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/${bin}
 done
 install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-amd64
+
+# kubectl-extras
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/amd64/ _output/local/bin/darwin/amd64/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/amd64/ _output/local/bin/linux/amd64/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/amd64/ _output/local/bin/windows/amd64/kubectl.exe
 
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
@@ -184,75 +200,12 @@ fi
 %defattr(-,root,root)
 %{_bindir}/pause-amd64
 
+%files kubectl-extras
+%defattr(-,root,root)
+/opt/vmware/kubernetes/darwin/amd64/kubectl
+/opt/vmware/kubernetes/linux/amd64/kubectl
+/opt/vmware/kubernetes/windows/amd64/kubectl.exe
+
 %changelog
-*   Mon Aug 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-9
--   Build using go version 1.9.4
-*   Fri Jul 20 2018 Bo Gan <ganb@vmware.com> 1.9.6-8
--   Update vke patch (1f4aedb)
-*   Tue Jul 03 2018 Bo Gan <ganb@vmware.com> 1.9.6-7
--   Update vke patch (3a784cd)
-*   Tue Jun 19 2018 Bo Gan <ganb@vmware.com> 1.9.6-6
--   Update vke patch (da5bd0d)
-*   Sat Jun 09 2018 Bo Gan <ganb@vmware.com> 1.9.6-5
--   Update vke patch (d06c534)
-*   Fri Jun 08 2018 Bo Gan <ganb@vmware.com> 1.9.6-4
--   Update vke patch (df346df)
-*   Sat Jun 02 2018 Bo Gan <ganb@vmware.com> 1.9.6-3
--   Update vke patch (8ef8da7)
-*   Tue May 01 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-2
--   Enable TLS certificate validation in Cascade CLoud Provider
-*   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-1
--   k8s v1.9.6 and Cascade Cloud Provider patch
-*   Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-5
--   Fix issue in Cascade cloud provider.
-*   Tue Jan 23 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-4
--   Add Cascade cloud provider.
-*   Fri Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
--   Specify --kubeconfig to pass in config file.
-*   Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-2
--   Specify API server via kubeconfig file.
-*   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
--   k8s v1.8.1.
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.7.5-2
--   Requires util-linux or toybox
--   Remove shadow from requires and use explicit tools for post actions
-*   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-1
--   k8s v1.7.5.
-*   Thu Aug 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-3
--   PhotonOS based k8s pause container.
-*   Sat Jul 22 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
--   Split kubeadm into its own pkg.
-*   Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-1
--   Upgrade kubernetes to v1.7.0.
-*   Tue May 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-3
--   Fix kubernetes dependencies.
-*   Thu May 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-2
--   Include cloud-controller-manager, kube-aggregator binaries.
-*   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-1
--   Build kubernetes 1.6.0 from source.
-*   Mon Feb 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.5.2-3
--   Added kubeadm, kubefed, dns, discovery to package.
-*   Fri Jan 27 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
--   Added /lib/tmpfiles.d/kubernetes.conf.
-*   Thu Jan 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-1
--   Upgraded to version 1.5.2
-*   Fri Oct 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.4-1
--   Upgraded to version 1.4.4
-*   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.0-1
--   Upgraded to version 1.4.0
-*   Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.4-1
--   Upgraded to version 1.2.4
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-4
--   GA - Bump release of all rpms
-*   Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-3
--   Fix if syntax
-*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.8-2
--   Adding support to pre/post/un scripts for package upgrade.
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
--   Upgraded to version 1.1.8
-*   Mon Aug 3 2015 Tom Scanlan <tscanlan@vmware.com> 1.0.2-1
--   bump up to latest release
-*   Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
--   Upgrade to kubernetes v1.0.1
-*   Tue Mar 10 2015 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
--   Initial build. First version
+*   Fri Aug 03 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.11.1-1
+-   Add k8s version 1.11.1 and vke patch
