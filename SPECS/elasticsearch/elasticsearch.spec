@@ -1,7 +1,9 @@
+%define debug_package %{nil}
+
 Summary:        Elastic Serch
 Name:           elasticsearch
 Version:        6.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 URL:            https://artifacts.elastic.co/downloads/elasticsearch/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -30,18 +32,16 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 %description
 Elasticsearch is a highly distributed RESTful search engine built for the cloud.
 
-%define debug_package %{nil}
-
 %prep
 %setup -qn %{name}-%{version}
 
 %build
 export LANG="en_US.UTF-8"
 export JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
-export JAVA_HOME=/usr/lib/jvm/OpenJDK-1.10.0.23
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION_10}
 export PATH=$JAVA_HOME/bin:$PATH
 export _JAVA_OPTIONS="-Xmx10g"
-cp %{SOURCE1} /usr/lib/jvm/OpenJDK-1.10.0.23/lib/security/
+cp %{SOURCE1} /usr/lib/jvm/OpenJDK-%{JAVA_VERSION_10}/lib/security/
 ./gradlew assemble
 
 %install
@@ -56,7 +56,7 @@ mkdir -p %{buildroot}/etc/sysconfig/elasticsearch
 mkdir -p %{buildroot}/var/lib/elasticsearch
 mkdir -p %{buildroot}/var/log/elasticsearch
 mkdir -p %{buildroot}/var/run/elasticsearch
-
+mkdir -p %{buildroot}%{_datadir}/%{name}/data
 
 tar -xvf distribution/archives/oss-tar/build/distributions/elasticsearch-oss-6.3.0-SNAPSHOT.tar.gz
 cp elasticsearch-6.3.0-SNAPSHOT/LICENSE.txt %{buildroot}%{_datadir}/%{name}/
@@ -72,6 +72,9 @@ cp elasticsearch-6.3.0-SNAPSHOT/config/jvm.options %{buildroot}/etc/%{name}/
 chmod 755 %{buildroot}%{_datadir}/%{name}/
 chmod 755 %{buildroot}/etc/%{name}/
 chmod 755 %{buildroot}/var/log/%{name}/
+chmod 755 %{buildroot}/var/lib/%{name}/
+chmod 755 %{buildroot}/var/run/%{name}/
+chmod 755 %{buildroot}%{_datadir}/%{name}/data
 
 %pre
 
@@ -103,6 +106,9 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %attr(755,elasticsearch,elasticsearch) /var/log/elasticsearch
+%attr(755,elasticsearch,elasticsearch) /usr/share/elasticsearch/data
+%attr(755,elasticsearch,elasticsearch) /var/lib/elasticsearch
+%attr(755,elasticsearch,elasticsearch) /var/run/elasticsearch
 %attr(755,elasticsearch,elasticsearch) /usr/share/elasticsearch
 %attr(755,elasticsearch,elasticsearch) /usr/share/elasticsearch/logs
 %dir %{_datadir}/%{name}
@@ -113,5 +119,7 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*    Mon Aug 06 2018 Tapas Kundu <tkundu@vmware.com> 6.3.0-2
+-    Added permissions for elasticsearch service and removed hardcoded value for JDK10.
 *    Mon Jul 09 2018 Tapas Kundu <tkundu@vmware.com> 6.3.0-1
 -    Initial build added for Photon.

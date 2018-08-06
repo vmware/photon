@@ -357,12 +357,21 @@ class constants(object):
         #adding check rpm macro
         constants.specData.addMacro("with_check","0")
 
-	    #adding openjre version rpm macro
+	#adding openjre version rpm macro
         spec = Specutils(constants.specPath + "/openjdk/openjdk.spec")
         javaversion = spec.getVersion()
         constants.specData.addMacro("JAVA_VERSION",javaversion)
 
+	#adding openjre 9 version rpm macro
+        spec = Specutils(constants.specPath + "/openjdk9/openjdk9.spec")
+        javaversion9 = spec.getVersion()
+        constants.specData.addMacro("JAVA_VERSION_9",javaversion9)
 
+	#adding openjre 10 version rpm macro
+        spec = Specutils(constants.specPath + "/openjdk10/openjdk10.spec")
+        javaversion10 = spec.getVersion()
+        constants.specData.addMacro("JAVA_VERSION_10",javaversion10)
+        
         #adding kernelversion rpm macro
         spec = Specutils(constants.specPath + "/linux/linux.spec")
         kernelversion = spec.getVersion()
