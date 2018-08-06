@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,10 +9,14 @@ Distribution:   Photon
 URL:		https://github.com/elastic/logstash/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}.tar.gz=4140da67b1609b8664122e331cb8820ae786b3a6
+Source1:        %{name}.service
+Source2:        %{name}.conf
 BuildRequires:	openjdk
 BuildRequires:	ruby
 Requires:	openjdk
 Requires:	ruby
+Requires:       systemd
+Requires:       elasticsearch
 
 %description
 Logstash is a tool to collect, process, and forward events and log messages. Collection is accomplished via configurable input plugins including raw socket/packet communication, file tailing, and several message bus clients. Once an input plugin has collected data it can be processed by any number of filters which modify and annotate the event data. Finally logstash routes events to output plugins which can forward the events to a variety of external programs including Elasticsearch, local files and several message bus implementations.
@@ -38,6 +42,7 @@ install -vdm 755 %{buildroot}/var/log/%{name}
 install -vdm 750 %{buildroot}%{_datadir}/%{name}/bin
 install -vdm 775 %{buildroot}%{_datadir}/%{name}/data
 install -vdm 750 %{buildroot}%{_datadir}/%{name}/lib
+install -vdm 750 %{buildroot}%{_datadir}/%{name}/config
 install -vdm 750 %{buildroot}%{_datadir}/%{name}/logstash-core
 install -vdm 750 %{buildroot}%{_datadir}/%{name}/logstash-core-plugin-api
 install -vdm 750 %{buildroot}%{_datadir}/%{name}/modules
@@ -45,7 +50,12 @@ install -vdm 750 %{buildroot}%{_datadir}/%{name}/tools
 install -vdm 755 %{buildroot}%{_datadir}/%{name}/tools/ingest-converter
 install -vdm 750 %{buildroot}%{_datadir}/%{name}/vendor
 
-cp -r config/* %{buildroot}%{_sysconfdir}/%{name}/conf.d
+install -vdm 755 %{buildroot}/usr/lib/systemd/system
+install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/
+
+cp -r config/* %{buildroot}%{_sysconfdir}/%{name}
+cp -r config/* %{buildroot}%{_datadir}/%{name}/config
+install -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{name}/
 
 cp -r bin/* %{buildroot}%{_datadir}/%{name}/bin
 rm -rf %{buildroot}%{_datadir}/%{name}/bin/bundle
@@ -73,14 +83,47 @@ install -p -m 0640 Gemfile.lock %{buildroot}%{_datadir}/%{name}
 install -p -m 0664 LICENSE.txt %{buildroot}%{_datadir}/%{name}
 install -p -m 0640 NOTICE.TXT %{buildroot}%{_datadir}/%{name}
 
+%pre
+if ! getent group %{name} >/dev/null; then
+    groupadd %{name}
+fi
+if ! getent passwd %{name} >/dev/null; then
+    useradd -c "Logstash" -d /var/lib/%{name} -g %{name} -s /bin/false %{name}
+fi
+exit 0
+
+%post
+/sbin/ldconfig
+%systemd_post %{name}.service
+
+%postun
+if [ $1 -eq 0 ]; then
+  # this is delete operation
+  if getent passwd %{name} >/dev/null; then
+      userdel %{name}
+  fi
+  if getent group %{name} >/dev/null; then
+      groupdel %{name}
+  fi
+fi
+/sbin/ldconfig
+%systemd_postun_with_restart %{name}.service
+
+%preun
+/sbin/ldconfig
+%systemd_preun %{name}.service
+
 %files
 %defattr(-,root,root)
 %dir %{_datadir}/%{name}
-%{_datadir}/%{name}
+%attr(-,logstash,logstash) %{_datadir}/%{name}
 %{_sysconfdir}/%{name}
-/var/lib/%{name}
-/var/log/%{name}
+/usr/lib/systemd/system/%{name}.service
+%attr(-,logstash,logstash) /var/lib/%{name}
+%attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Mon Aug 06 2018 Ankit Jain <ankitja@vmware.com> 6.3.0-2
+-   Added logstash.service and logstash.conf
 *   Thu Jul 19 2018 Ankit Jain <ankitja@vmware.com> 6.3.0-1
 -   Initial Version.
