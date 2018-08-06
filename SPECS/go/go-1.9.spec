@@ -7,7 +7,7 @@
 %define _use_internal_dependency_generator 0
 %define __find_requires %{nil}
 
-Summary:        Go 
+Summary:        Go
 Name:           go
 Version:        1.9.4
 Release:        2%{?dist}
@@ -23,7 +23,7 @@ Patch1:         CVE-2018-7187.patch
 Requires:       glibc
 
 %description
-Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.  
+Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
 %prep
 %setup -qn %{name}
@@ -38,7 +38,7 @@ export GOROOT_BOOTSTRAP=%{goroot}
 export GOROOT="`pwd`"
 export GOPATH=%{gopath}
 export GOROOT_FINAL=%{_bindir}/go
-rm -f  %{gopath}/src/runtime/*.c 
+rm -f  %{gopath}/src/runtime/*.c
 pushd src
 ./make.bash --no-clean
 popd
