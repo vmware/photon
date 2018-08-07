@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.116
+Version:        4.9.118
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ebd02e892297444ea927a45184f10f58fc77dea1
+%define sha1 linux=1f441c2113d0b7bba57dd8f6e5f5db07d222d47b
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -62,22 +62,6 @@ Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
-
-# For Spectre
-Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
-Patch53: 0142-bpf-prevent-speculative-execution-in-eBPF-interprete.patch
-Patch54: 0143-x86-bpf-jit-prevent-speculative-execution-when-JIT-i.patch
-Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
-Patch56: 0145-carl9170-prevent-speculative-execution.patch
-Patch57: 0146-p54-prevent-speculative-execution.patch
-Patch58: 0147-qla2xxx-prevent-speculative-execution.patch
-Patch59: 0148-cw1200-prevent-speculative-execution.patch
-Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
-Patch61: 0150-ipv4-prevent-speculative-execution.patch
-Patch62: 0151-ipv6-prevent-speculative-execution.patch
-Patch64: 0153-net-mpls-prevent-speculative-execution.patch
-Patch65: 0154-udf-prevent-speculative-execution.patch
-Patch66: 0155-userns-prevent-speculative-execution.patch
 
 Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
@@ -159,21 +143,6 @@ The Linux package contains the Linux kernel doc files
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
-
-%patch52 -p1
-%patch53 -p1
-%patch54 -p1
-%patch55 -p1
-%patch56 -p1
-%patch57 -p1
-%patch58 -p1
-%patch59 -p1
-%patch60 -p1
-%patch61 -p1
-%patch62 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
 
 %patch70 -p1
 
@@ -272,6 +241,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.118-1
+-   Update to version 4.9.118
 *   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.116-1
 -   Update to version 4.9.116 and clear stack on fork.
 *   Mon Jul 23 2018 srinidhira0 <srinidhir@vmware.com> 4.9.114-1
