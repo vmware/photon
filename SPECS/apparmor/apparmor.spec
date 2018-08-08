@@ -1,12 +1,13 @@
 Name:           apparmor
 Version:        2.13
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
 Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{version}.tar.gz
 %define sha1    apparmor=54202cafce24911c45141d66e2d1e037e8aa5746
 Patch0:         apparmor-set-profiles-complain-mode.patch
+Patch1:         apparmor-service-start-fix.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
@@ -86,6 +87,7 @@ Summary:    AppArmor userlevel parser utility
 License:    GNU LGPL v2.1
 Group:      Productivity/Security
 Requires:   libapparmor = %{version}-%{release}
+Requires:   systemd
 
 %description parser
 The AppArmor Parser is a userlevel program that is used to load in
@@ -162,6 +164,7 @@ applications interfacing with AppArmor.
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 export PYTHONPATH=/usr/lib/python3.6/site-packages
@@ -240,6 +243,12 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_libdir}/libapparmor.so.*
 
+%post -n libapparmor
+/sbin/ldconfig
+
+%postun -n libapparmor
+/sbin/ldconfig
+
 %files -n libapparmor-devel
 %defattr(-,root,root)
 %{_libdir}/libapparmor.a
@@ -267,11 +276,11 @@ make DESTDIR=%{buildroot} install
 %files profiles
 %defattr(-,root,root,755)
 %dir %{_sysconfdir}/apparmor.d/apache2.d
-%{_sysconfdir}/apparmor.d/apache2.d/phpsysinfo
-%{_sysconfdir}/apparmor.d/bin.*
-%{_sysconfdir}/apparmor.d/sbin.*
-%{_sysconfdir}/apparmor.d/usr.*
-%{_sysconfdir}/apparmor.d/local/*
+%config(noreplace) %{_sysconfdir}/apparmor.d/apache2.d/phpsysinfo
+%config(noreplace) %{_sysconfdir}/apparmor.d/bin.*
+%config(noreplace) %{_sysconfdir}/apparmor.d/sbin.*
+%config(noreplace) %{_sysconfdir}/apparmor.d/usr.*
+%config(noreplace) %{_sysconfdir}/apparmor.d/local/*
 %dir %{_datadir}/apparmor
 %{_datadir}/apparmor/extra-profiles/*
 
@@ -283,10 +292,11 @@ make DESTDIR=%{buildroot} install
 /lib/apparmor/apparmor.systemd
 %{_bindir}/aa-exec
 %{_bindir}/aa-enabled
-%{_prefix}%{_unitdir}/apparmor.service
+%attr(644,root,root) %{_prefix}%{_unitdir}/apparmor.service
 %dir %{_sysconfdir}/apparmor
-%{_sysconfdir}/apparmor/parser.conf
-%{_sysconfdir}/apparmor/subdomain.conf
+%dir %{_sysconfdir}/apparmor.d
+%config(noreplace) %{_sysconfdir}/apparmor/parser.conf
+%config(noreplace) %{_sysconfdir}/apparmor/subdomain.conf
 %{_localstatedir}/lib/apparmor
 %doc %{_mandir}/man5/apparmor.d.5.gz
 %doc %{_mandir}/man5/apparmor.vim.5.gz
@@ -297,30 +307,31 @@ make DESTDIR=%{buildroot} install
 %doc %{_mandir}/man1/aa-exec.1.gz
 %doc %{_mandir}/man2/aa_stack_profile.2.gz
 
-%post parser
-/sbin/ldconfig
-
 %preun parser
-/sbin/ldconfig
+%systemd_preun apparmor.service
+
+%post parser
+%systemd_post apparmor.service
+
+%postun parser
+%systemd_postun_with_restart apparmor.service
 
 %files abstractions
 %defattr(644,root,root,755)
-%dir %{_sysconfdir}/apparmor.d/
 %dir %{_sysconfdir}/apparmor.d/abstractions
-%{_sysconfdir}/apparmor.d/abstractions/*
+%config(noreplace) %{_sysconfdir}/apparmor.d/abstractions/*
 %dir %{_sysconfdir}/apparmor.d/disable
 %dir %{_sysconfdir}/apparmor.d/local
 %dir %{_sysconfdir}/apparmor.d/tunables
-%{_sysconfdir}/apparmor.d/tunables/*
+%config(noreplace) %{_sysconfdir}/apparmor.d/tunables/*
 %exclude %{_datadir}/locale
 
 %files utils
 %defattr(-,root,root)
-%dir %{_sysconfdir}/apparmor
-%{_sysconfdir}/apparmor/easyprof.conf
-%{_sysconfdir}/apparmor/logprof.conf
-%{_sysconfdir}/apparmor/notify.conf
-%{_sysconfdir}/apparmor/severity.db
+%config(noreplace) %{_sysconfdir}/apparmor/easyprof.conf
+%config(noreplace) %{_sysconfdir}/apparmor/logprof.conf
+%config(noreplace) %{_sysconfdir}/apparmor/notify.conf
+%config(noreplace) %{_sysconfdir}/apparmor/severity.db
 /sbin/aa-teardown
 %{_sbindir}/aa-*
 %{_sbindir}/apparmor_status
@@ -362,6 +373,9 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/ruby/site_ruby/2.4.0/x86_64-linux/LibAppArmor.so
 
 %changelog
+*   Wed Aug 8 2018 Keerthana K <keerthanak@vmware.com> 2.13-3
+-   Updating apparmor.service to start instead of reload during command start.
+-   Enabling apparmor service post installation of parser.
 *   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
 -   Added apparmor-abstractions a dependency for apparmor-profiles and apparmor-utils.
 -   Add apparmor-default-profiles to complain mode after boot.
