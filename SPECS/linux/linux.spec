@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.145
+Version:    	4.4.146
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=453ad80ed24996f0b7700d84bf48d38eb0e53cc1
+%define sha1 linux=e1f85bb95eb77f49ec9e0fe680ee287732c0ab3b
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -64,18 +64,6 @@ Patch40:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch41:        0008-xfs-enhance-dinode-verifier.patch
 
 # For Spectre
-Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
-Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
-Patch56: 0145-carl9170-prevent-speculative-execution.patch
-Patch57: 0146-p54-prevent-speculative-execution.patch
-Patch58: 0147-qla2xxx-prevent-speculative-execution.patch
-Patch59: 0148-cw1200-prevent-speculative-execution.patch
-Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
-Patch61: 0150-ipv4-prevent-speculative-execution.patch
-Patch62: 0151-ipv6-prevent-speculative-execution.patch
-Patch64: 0153-net-mpls-prevent-speculative-execution.patch
-Patch65: 0154-udf-prevent-speculative-execution.patch
-Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
 Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
@@ -193,18 +181,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch40 -p1
 %patch41 -p1
 
-%patch52 -p1
-%patch55 -p1
-%patch56 -p1
-%patch57 -p1
-%patch58 -p1
-%patch59 -p1
-%patch60 -p1
-%patch61 -p1
-%patch62 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
 %patch67 -p1
 
 %patch70 -p1
@@ -364,6 +340,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Aug 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.146-1
+-   Update to version 4.4.146
 *   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.145-1
 -   Update to version 4.4.145 and clear stack on fork.
 *   Thu Jul 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.144-1
