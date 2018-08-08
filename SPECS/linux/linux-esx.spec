@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.145
+Version:       4.4.146
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:         System Environment/Kernel
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=453ad80ed24996f0b7700d84bf48d38eb0e53cc1
+%define sha1 linux=e1f85bb95eb77f49ec9e0fe680ee287732c0ab3b
 Source1:       config-esx
 Patch0:        double-tcp_mem-limits.patch
 Patch1:        linux-4.4-sysctl-sched_weighted_cpuload_uses_rla.patch
@@ -64,18 +64,6 @@ Patch47:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch48:        0008-xfs-enhance-dinode-verifier.patch
 
 # For Spectre
-Patch52: 0141-locking-barriers-introduce-new-observable-speculatio.patch
-Patch55: 0144-uvcvideo-prevent-speculative-execution.patch
-Patch56: 0145-carl9170-prevent-speculative-execution.patch
-Patch57: 0146-p54-prevent-speculative-execution.patch
-Patch58: 0147-qla2xxx-prevent-speculative-execution.patch
-Patch59: 0148-cw1200-prevent-speculative-execution.patch
-Patch60: 0149-Thermal-int340x-prevent-speculative-execution.patch
-Patch61: 0150-ipv4-prevent-speculative-execution.patch
-Patch62: 0151-ipv6-prevent-speculative-execution.patch
-Patch64: 0153-net-mpls-prevent-speculative-execution.patch
-Patch65: 0154-udf-prevent-speculative-execution.patch
-Patch66: 0155-userns-prevent-speculative-execution.patch
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
 
 Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
@@ -161,18 +149,6 @@ The Linux package contains the Linux kernel doc files
 %patch47 -p1
 %patch48 -p1
 
-%patch52 -p1
-%patch55 -p1
-%patch56 -p1
-%patch57 -p1
-%patch58 -p1
-%patch59 -p1
-%patch60 -p1
-%patch61 -p1
-%patch62 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
 %patch67 -p1
 
 %patch70 -p1
@@ -264,6 +240,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.146-1
+-   Update to version 4.4.146
 *   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.145-1
 -   Update to version 4.4.145 and clear stack on fork.
 *   Thu Jul 26 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.144-1
