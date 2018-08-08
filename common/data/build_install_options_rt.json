@@ -1,0 +1,15 @@
+{
+    "minimal" : {
+        "title" : "Photon Minimal",
+        "file" : "packages_minimal.json",
+        "visible" : true,
+        "include" : []
+    },
+    "ami" : {
+        "title" : "Photon RT packages",
+        "file" : "packages_rt.json",
+        "visible" : false,
+        "include" : ["minimal"],
+        "remove" : ["linux"]
+    }
+}
