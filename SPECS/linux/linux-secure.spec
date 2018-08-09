@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.118
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -71,6 +71,8 @@ Patch47:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch48:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch49:        0002-xfs-verify-dinode-header-first.patch
 Patch50:        0003-xfs-enhance-dinode-verifier.patch
+# Fix for CVE-2018-12233
+Patch51:        0001-jfs-Fix-inconsistency-between-memory-allocation-and-ea_buf_maxsize.patch
 
 Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
@@ -199,6 +201,7 @@ EOF
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
+%patch51 -p1
 
 %patch70 -p1
 
@@ -336,6 +339,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Aug 09 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.118-2
+-   Fix CVE-2018-12233
 *   Tue Aug 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.118-1
 -   Update to version 4.9.118
 *   Mon Jul 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.116-1
