@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.54
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -341,6 +341,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Aug 17 2018 Ajay Kaher <akaher@vmware.com> 4.14.54-3
+-   Enabled USB PCI in config_aarch64
+-   Build hang (at make oldconfig) fix in config_aarch64
 *   Thu Jul 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.54-2
 -   .config: usb_serial_pl2303=m,wlan=y,can=m,gpio=y,pinctrl=y,iio=m
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
