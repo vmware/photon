@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -25,6 +25,7 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
 Requires:       (util-linux or toybox)
+Requires:       cri-tools
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -207,5 +208,7 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 1.11.1-2
+-   Added cri-tools as Requires. Kubeadm needs crictl provided by cri-tools.
 *   Fri Aug 03 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.11.1-1
 -   Add k8s version 1.11.1 and vke patch
