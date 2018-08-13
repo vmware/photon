@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.16/%{name}-%{version}.tar.gz
 %define sha1    krb5=e1bd68d9121c337faf5dbd478d0a2b6998114fc7
 Patch0:         krb5-1.15-never-unload-mechanisms.patch
+Patch1:         krb5-CVE-2018-5730.patch
 Requires:       openssl
 Requires:       e2fsprogs-libs
 BuildRequires:  openssl-devel
@@ -37,6 +38,7 @@ These are the additional language files of krb5.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
 
 cd src &&
@@ -118,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Mon Aug 13 2018 Dweep Advani <dadvani@vmware.com> 1.16-2
+-   Fix for CVE-2018-5729 and CVE-2018-5730
 *   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16-1
 -   Update to version 1.16 to address CVE-2017-15088
 *   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
