@@ -4,7 +4,7 @@
 
 Name: rubygem-fluentd
 Version:        1.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 License:        Apache 2
@@ -32,6 +32,7 @@ Requires: rubygem-serverengine < 3.0.0
 Requires: rubygem-tzinfo >= 1.0.0
 Requires: rubygem-tzinfo-data > 1.0.0
 Requires: rubygem-yajl-ruby >= 1.0
+Requires: rubygem-bundler >= 1.14.0
 BuildArch: noarch
 Provides: rubygem(%{gem_name}) = %{version}
 
@@ -52,5 +53,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Aug 16 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-2
+-   Added dependency on rubygem-bundler
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-1
 -   Initial build
