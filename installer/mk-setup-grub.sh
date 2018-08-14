@@ -32,7 +32,12 @@ grub_efi_install()
     mount -t vfat $BOOT_PARTITION $BUILDROOT/boot/efi
     cp boot/unifont.pf2 /usr/share/grub/
     mkdir -p $BUILDROOT/boot/efi/EFI/Boot/
-    cp EFI/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
+    if [ $(uname -m) == "aarch64" ]
+    then
+        cp EFI/BOOT/bootaa64.efi $BUILDROOT/boot/efi/EFI/Boot/
+    else
+        cp EFI/BOOT/* $BUILDROOT/boot/efi/EFI/Boot/
+    fi
     mkdir -p $BUILDROOT/boot/efi/boot/grub2
     cat > $BUILDROOT/boot/efi/boot/grub2/grub.cfg << EOF
 search -n -u ${BOOT_UUID} -s
