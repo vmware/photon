@@ -16,6 +16,7 @@ BuildRequires:  ruby
 Requires: rubygem-fluentd >= 0.14.11
 Requires: rubygem-fluentd < 2.0.0
 Requires: systemd
+Requires: rubygem-systemd-journal > 1.3.2
 %description
 This is a fluentd input plugin. It reads logs from the systemd journal.
 
