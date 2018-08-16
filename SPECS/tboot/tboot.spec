@@ -1,7 +1,7 @@
 Summary:    Trusted pre-kernel module and tools.
 Name:       tboot
 Version:    1.9.7
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/tboot/
 Group:      System Environment/Security
@@ -29,11 +29,15 @@ make debug=y DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
-/boot/*
-/usr/*
+/boot/%{name}.gz
+/boot/%{name}-syms
+%{_prefix}/sbin
+%{_mandir}
 %exclude %{_sysconfdir}
 
 %changelog
+*   Fri Dec 14 2018 Ankit Jain <ankitja@vmware.com> 1.9.7-3
+-   Resolved conflict while installing the package
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.9.7-2
 -   Adding BuildArch
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 1.9.7-1
