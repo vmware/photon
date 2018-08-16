@@ -1,7 +1,7 @@
 Summary:    Trusted pre-kernel module and tools.
 Name:       tboot
 Version:    1.9.5
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/tboot/
 Group:      System Environment/Security
@@ -28,11 +28,20 @@ make debug=y DESTDIR=%{buildroot} install
 
 %files
 %defattr(-,root,root)
-/boot/*
-/usr/*
+/boot/%{name}.gz
+/boot/%{name}-syms
+%{_prefix}/sbin
+%{_mandir}
 %exclude %{_sysconfdir}
 
+%files debuginfo
+%defattr(-,root,root)
+%{_libdir}/debug/usr/sbin/*
+%{_prefix}/src/debug
+
 %changelog
+*   Thu Aug 16 2018 Ankit Jain <ankitja@vmware.com> 1.9.5-3
+-   Resolved conflict while installing the package
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.9.5-2
 -   Ensure non empty debuginfo
 *   Thu Mar 2 2017 Alexey Makhalov <amakhalov@vmware.com> 1.9.5-1
