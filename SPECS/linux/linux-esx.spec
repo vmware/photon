@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.118
-Release:        2%{?dist}
+Version:        4.9.120
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=1f441c2113d0b7bba57dd8f6e5f5db07d222d47b
+%define sha1 linux=66f5b1a840e64ecf7fbc676abce9c9c40c21aec7
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
@@ -62,10 +62,6 @@ Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
-# Fix for CVE-2018-12233
-Patch49:        0001-jfs-Fix-inconsistency-between-memory-allocation-and-ea_buf_maxsize.patch
-
-Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
 
 BuildRequires: bc
@@ -145,9 +141,7 @@ The Linux package contains the Linux kernel doc files
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
-%patch49 -p1
 
-%patch70 -p1
 
 %build
 # patch vmw_balloon driver
@@ -244,6 +238,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Aug 17 2018 Bo Gan <ganb@vmware.com> 4.9.120-1
+-   Update to version 4.9.120 (l1tf fixes)
 *   Thu Aug 09 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.118-2
 -   Fix CVE-2018-12233
 *   Tue Aug 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.118-1
