@@ -1,11 +1,11 @@
 Name:           kapacitor
-Version:        1.5.0
+Version:        1.5.1
 Release:        1%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
 Source0:        https://github.com/influxdata/kapacitor/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=58d61f447aedd4173a4e8582788fd25aad2a3300
+%define sha1    %{name}=6de9a2c63936db23788396278a9faba7a4693274
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          System/Monitoring
@@ -88,5 +88,7 @@ fi
 %config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
 
 %changelog
+*   Fri Aug 17 2018 Keerthana K <keerthanak@vmware.com> 1.5.1-1
+-   Upgraded to version 1.5.1
 *   Fri Aug 03 2018 Keerthana K <keerthanak@vmware.com> 1.5.0-1
 -   Initial kapacitor package for Photon.
