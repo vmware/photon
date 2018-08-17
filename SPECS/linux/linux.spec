@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.54
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -25,6 +25,7 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         x86-vmware-STA-support.patch
+Patch9:         1-2-rsi-fix-nommu_map_sg-overflow-kernel-panic.patch
 # rpi3 dts
 Patch10:	arm-dts-add-vchiq-entry.patch
 #HyperV patches
@@ -128,6 +129,7 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch9 -p1
 %patch10 -p1
 %patch13 -p1
 %patch24 -p1
@@ -341,6 +343,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Aug 17 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.54-3
+-   Fix overflow kernel panic in rsi driver.
 *   Thu Jul 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.54-2
 -   .config: usb_serial_pl2303=m,wlan=y,can=m,gpio=y,pinctrl=y,iio=m
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
