@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.54
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -13,9 +13,11 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.5.0
-Source3:       https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
+Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
 %define sha1 ena_linux=cbbbe8a3bbab6d01a4e38417cb0ead2f7cb8b2ee
 Source4:	config_aarch64
+Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
+%define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -25,8 +27,11 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         x86-vmware-STA-support.patch
+Patch9:         1-2-rsi-fix-nommu_map_sg-overflow-kernel-panic.patch
 # rpi3 dts
 Patch10:	arm-dts-add-vchiq-entry.patch
+# ttyXRUSB support
+Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
@@ -121,6 +126,7 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %setup -q -n linux-%{version}
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
+%setup -D -b 5 -n linux-%{version}
 %endif
 %patch0 -p1
 %patch1 -p1
@@ -128,7 +134,9 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch9 -p1
 %patch10 -p1
+%patch11 -p1
 %patch13 -p1
 %patch24 -p1
 %patch26 -p1
@@ -162,6 +170,11 @@ bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
 popd
+# build XR module
+bldroot=`pwd`
+pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
+make KERNELDIR=$bldroot %{?_smp_mflags} all
+popd
 %endif
 
 %define __modules_install_post \
@@ -194,6 +207,12 @@ make INSTALL_MOD_PATH=%{buildroot} modules_install
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+popd
+
+# install XR module
+bldroot=`pwd`
+pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
+make KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
 # Verify for build-id match
@@ -341,6 +360,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Aug 22 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.54-4
+-   Fix overflow kernel panic in rsi driver.
+-   .config: enable BT stack, enable GPIO sysfs.
+-   Add Exar USB serial driver.
 *   Fri Aug 17 2018 Ajay Kaher <akaher@vmware.com> 4.14.54-3
 -   Enabled USB PCI in config_aarch64
 -   Build hang (at make oldconfig) fix in config_aarch64
