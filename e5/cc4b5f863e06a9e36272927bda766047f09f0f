@@ -1,0 +1,9 @@
+Verified+1: gerrit-photon <photon-checkins@vmware.com>
+Code-Review+1: Srinidhi Rao <srinidhir@vmware.com>
+Code-Review+1: Tapas Kundu <tkundu@vmware.com>
+Code-Review+2: Alexey Makhalov <amakhalov@vmware.com>
+Submitted-by: Alexey Makhalov <amakhalov@vmware.com>
+Submitted-at: Fri, 17 Aug 2018 11:31:21 -0700
+Reviewed-on: http://photon-jenkins.eng.vmware.com:8082/5471
+Project: photon
+Branch: refs/heads/1.0
