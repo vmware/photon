@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.6
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -54,6 +54,7 @@ mkdir -p %{buildroot}%{_sbindir}
 mkdir -p %{buildroot}%{_mandir}/man5
 mkdir -p %{buildroot}%{_mandir}/man8
 mkdir -p %{buildroot}/usr/lib/systemd/system
+mkdir -p %{buildroot}/etc/wpa_supplicant
 cd wpa_supplicant
 install -v -m755 wpa_{cli,passphrase,supplicant} %{buildroot}%{_sbindir}/
 install -v -m644 doc/docbook/wpa_supplicant.conf.5 %{buildroot}%{_mandir}/man5/
@@ -61,15 +62,29 @@ install -v -m644 doc/docbook/wpa_{cli,passphrase,supplicant}.8 %{buildroot}%{_ma
 
 cat > %{buildroot}/usr/lib/systemd/system/wpa_supplicant@.service << "EOF"
 [Unit]
-Description=WPA supplicant
-Before=network.target
+Description=WPA supplicant (%I)
+BindsTo=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device
 
 [Service]
-ExecStart=/usr/sbin/wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant-%I.conf -i %I
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/ip link set dev %I up
+ExecStart=/usr/sbin/wpa_supplicant -c /etc/wpa_supplicant/wpa_supplicant-%I.conf -B -i %I
+ExecStop=/usr/sbin/ip link set dev %I down
 
 [Install]
 WantedBy=multi-user.target
 EOF
+
+cat > %{buildroot}/etc/wpa_supplicant/wpa_supplicant-wlan0.conf << "EOF"
+ctrl_interface=/run/wpa_supplicant
+update_config=1
+
+# Add network= entry below
+EOF
+
+
 
 %files
 %defattr(-,root,root)
@@ -78,7 +93,11 @@ EOF
 %{_sbindir}/wpa_supplicant
 %{_mandir}/*
 %{_libdir}/systemd/system/wpa_supplicant@.service
+%{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Fri Aug 17 2018 Alexey Makhalov <amakhalov@vmware.com> 2.6-2
+-   Improve .service file: wait wlanX to appear, run daemon in background.
+-   Added skeleton for wlan0 conf file.
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.6-1
 -   Initial build.    First version
