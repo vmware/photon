@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.147
+Version:    	4.4.148
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=0d15c05764b90855d0ce5521dd378cb90ea28745
+%define sha1 linux=bf904804cb2a24b709e4de424cb7e08f2f79dd1b
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -65,8 +65,6 @@ Patch41:        0008-xfs-enhance-dinode-verifier.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
-
-Patch70: 0001-fork-unconditionally-clear-stack-on-fork.patch
 
 
 %if 0%{?kat_build:1}
@@ -182,8 +180,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch41 -p1
 
 %patch67 -p1
-
-%patch70 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -340,6 +336,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Aug 17 2018 Bo Gan <ganb@vmware.com> 4.4.148-1
+-   Update to version 4.4.148 (l1tf fixes)
 *   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.147-1
 -   Update to version 4.4.147 to fix CVE-2018-12233.
 *   Tue Aug 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.146-1
