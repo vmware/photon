@@ -1,22 +1,17 @@
 Summary:        A high-level scripting language
 Name:           python2
-Version:        2.7.13
-Release:        12%{?dist}
+Version:        2.7.15
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=18a8f30a0356c751b8d0ea6f76e764cab13ee046
+%define sha1    Python=f99348a095ec4a6411c84c0d15343d11920c9724
 Patch0:         cgi.patch
-Patch1:         added-compiler-flags-for-curses-module.patch
-Patch2:         added-pyopenssl-ipaddress-certificate-validation.patch
-Patch3:         python2-support-photon-platform.patch
-Patch4:         back-port-random-dot-c.patch
-Patch5:         python2-CVE-2017-1000158.patch
-Patch6:         python2-CVE-2018-1000030-1.patch
-Patch7:         python2-CVE-2018-1000030-2.patch
+Patch1:         added-pyopenssl-ipaddress-certificate-validation.patch
+Patch2:         python2-support-photon-platform.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -117,11 +112,6 @@ The test package contains all regression tests for Python as well as the modules
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -243,6 +233,8 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Mon Aug 20 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-1
+-   Update to version 2.7.15
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-12
 -   Fix CVE-2017-1000030
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-11

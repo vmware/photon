@@ -1,6 +1,6 @@
---- a/Lib/ssl.py	2016-12-17 12:05:06.000000000 -0800
-+++ b/Lib/ssl.py	2017-03-22 17:24:55.165374501 -0700
-@@ -146,6 +146,11 @@
+--- a/Lib/ssl.py	2018-04-30 04:17:33.000000000 +0530
++++ b/Lib/ssl.py	2018-08-17 05:48:06.389881269 +0530
+@@ -146,6 +146,11 @@ from socket import SOL_SOCKET, SO_TYPE
  import base64        # for DER-to-PEM translation
  import errno
  import warnings
@@ -12,7 +12,7 @@
  
  if _ssl.HAS_TLS_UNIQUE:
      CHANNEL_BINDING_TYPES = ['tls-unique']
-@@ -245,7 +250,15 @@
+@@ -251,7 +250,15 @@ def _dnsname_match(dn, hostname, max_wil
      pat = re.compile(r'\A' + r'\.'.join(pats) + r'\Z', re.IGNORECASE)
      return pat.match(hostname)
  
@@ -28,7 +28,7 @@
  def match_hostname(cert, hostname):
      """Verify that *cert* (in decoded format as returned by
      SSLSocket.getpeercert()) matches the *hostname*.  RFC 2818 and RFC 6125
-@@ -258,6 +271,13 @@
+@@ -264,6 +271,13 @@ def match_hostname(cert, hostname):
          raise ValueError("empty or no certificate, match_hostname needs a "
                           "SSL socket or SSL context with either "
                           "CERT_OPTIONAL or CERT_REQUIRED")
@@ -42,7 +42,7 @@
      dnsnames = []
      san = cert.get('subjectAltName', ())
      for key, value in san:
-@@ -265,6 +285,10 @@
+@@ -271,6 +285,10 @@ def match_hostname(cert, hostname):
              if _dnsname_match(value, hostname):
                  return
              dnsnames.append(value)
