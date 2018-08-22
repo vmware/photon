@@ -1,18 +1,18 @@
-From 328d693b17ae4910e8af5ef63a3a7c2414434f7a Mon Sep 17 00:00:00 2001
-From: Bo Gan <ganb@vmware.com>
-Date: Sun, 10 Jun 2018 02:16:47 -0700
-Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (1f4aedb)
+From 6de826b35ced3b7cadc809d7ea778ce6a50aff43 Mon Sep 17 00:00:00 2001
+From: DheerajSShetty <dheerajs@vmware.com>
+Date: Wed, 22 Aug 2018 16:30:37 -0700
+Subject: [PATCH] VKE patch for k8s version 1.9 (fbdcc5c)
 
 ---
- api/swagger-spec/apps_v1alpha1.json                |  21 +
- api/swagger-spec/apps_v1beta1.json                 |  21 +
- api/swagger-spec/apps_v1beta2.json                 |  21 +
- api/swagger-spec/batch_v1.json                     |  21 +
- api/swagger-spec/batch_v1beta1.json                |  21 +
- api/swagger-spec/batch_v2alpha1.json               |  21 +
- api/swagger-spec/extensions_v1beta1.json           |  21 +
- api/swagger-spec/settings.k8s.io_v1alpha1.json     |  21 +
- api/swagger-spec/v1.json                           |  25 +
+ api/swagger-spec/apps_v1alpha1.json                | Bin 135734 -> 136495 bytes
+ api/swagger-spec/apps_v1beta1.json                 | Bin 311661 -> 312422 bytes
+ api/swagger-spec/apps_v1beta2.json                 | Bin 425385 -> 426146 bytes
+ api/swagger-spec/batch_v1.json                     | Bin 182308 -> 183069 bytes
+ api/swagger-spec/batch_v1beta1.json                | Bin 185598 -> 186359 bytes
+ api/swagger-spec/batch_v2alpha1.json               | Bin 185625 -> 186386 bytes
+ api/swagger-spec/extensions_v1beta1.json           | Bin 473155 -> 473916 bytes
+ api/swagger-spec/settings.k8s.io_v1alpha1.json     | Bin 128260 -> 129021 bytes
+ api/swagger-spec/v1.json                           | Bin 988673 -> 989618 bytes
  cmd/kube-apiserver/app/options/plugins.go          |   2 +
  cmd/kube-controller-manager/app/BUILD              |   1 +
  cmd/kube-controller-manager/app/plugins.go         |   4 +
@@ -24,55 +24,40 @@ Subject: [PATCH] Cascade Kubernetes patches for v1.9.6 (1f4aedb)
  pkg/cloudprovider/providers/BUILD                  |   2 +
  pkg/cloudprovider/providers/cascade/BUILD          |  56 ++
  pkg/cloudprovider/providers/cascade/OWNERS         |   3 +
- pkg/cloudprovider/providers/cascade/apitypes.go    | 229 ++++++
+ pkg/cloudprovider/providers/cascade/apitypes.go    | 230 +++++
  pkg/cloudprovider/providers/cascade/auth.go        | 145 ++++
- pkg/cloudprovider/providers/cascade/cascade.go     | 218 +++++
- .../providers/cascade/cascade_disks.go             | 225 ++++++
- .../providers/cascade/cascade_instances.go         |  91 +++
+ pkg/cloudprovider/providers/cascade/cascade.go     | 219 +++++
+ .../providers/cascade/cascade_disks.go             | 226 +++++
+ .../providers/cascade/cascade_instances.go         |  91 ++
  .../providers/cascade/cascade_instances_test.go    |  43 +
  .../providers/cascade/cascade_loadbalancer.go      | 284 +++++++
- pkg/cloudprovider/providers/cascade/client.go      | 399 ++++++++++
+ pkg/cloudprovider/providers/cascade/client.go      | 399 +++++++++
  pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++
  pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++
  pkg/cloudprovider/providers/cascade/tests_owed     |   5 +
- pkg/cloudprovider/providers/cascade/utils.go       |  25 +
+ pkg/cloudprovider/providers/cascade/utils.go       |  29 +
  pkg/cloudprovider/providers/providers.go           |   1 +
+ pkg/kubeapiserver/authorizer/config.go             |   8 +-
+ pkg/kubeapiserver/authorizer/modes/modes.go        |   3 +-
  pkg/printers/internalversion/describe.go           |  11 +
  pkg/security/podsecuritypolicy/util/util.go        |   3 +
  pkg/volume/cascade_disk/BUILD                      |  43 +
  pkg/volume/cascade_disk/OWNERS                     |   2 +
- pkg/volume/cascade_disk/attacher.go                | 265 +++++++
+ pkg/volume/cascade_disk/attacher.go                | 265 ++++++
+ pkg/volume/cascade_disk/azure_disk_util.go         | 136 +++
  pkg/volume/cascade_disk/cascade_disk.go            | 391 +++++++++
- pkg/volume/cascade_disk/cascade_util.go            | 152 ++++
+ pkg/volume/cascade_disk/cascade_util.go            | 201 +++++
  .../admission/persistentvolume/label/admission.go  |  54 ++
- plugin/pkg/admission/vke/BUILD                     |  60 ++
- plugin/pkg/admission/vke/admission.go              | 555 +++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 882 +++++++++++++++++++++
- staging/src/k8s.io/api/core/v1/generated.pb.go     | 310 +++++++-
+ plugin/pkg/admission/vke/BUILD                     |  61 ++
+ plugin/pkg/admission/vke/admission.go              | 587 +++++++++++++
+ plugin/pkg/admission/vke/admission_test.go         | 941 +++++++++++++++++++++
+ plugin/pkg/auth/authorizer/vke/BUILD               |  40 +
+ plugin/pkg/auth/authorizer/vke/OWNERS              |   3 +
+ plugin/pkg/auth/authorizer/vke/vke_authorizer.go   | 123 +++
+ .../pkg/auth/authorizer/vke/vke_authorizer_test.go | 230 +++++
+ staging/src/k8s.io/api/core/v1/generated.pb.go     | Bin 1241955 -> 1248240 bytes
  staging/src/k8s.io/api/core/v1/types.go            |  26 +-
- 46 files changed, 5253 insertions(+), 29 deletions(-)
- create mode 100644 pkg/cloudprovider/providers/cascade/BUILD
- create mode 100644 pkg/cloudprovider/providers/cascade/OWNERS
- create mode 100644 pkg/cloudprovider/providers/cascade/apitypes.go
- create mode 100644 pkg/cloudprovider/providers/cascade/auth.go
- create mode 100644 pkg/cloudprovider/providers/cascade/cascade.go
- create mode 100644 pkg/cloudprovider/providers/cascade/cascade_disks.go
- create mode 100644 pkg/cloudprovider/providers/cascade/cascade_instances.go
- create mode 100644 pkg/cloudprovider/providers/cascade/cascade_instances_test.go
- create mode 100644 pkg/cloudprovider/providers/cascade/cascade_loadbalancer.go
- create mode 100644 pkg/cloudprovider/providers/cascade/client.go
- create mode 100644 pkg/cloudprovider/providers/cascade/oidcclient.go
- create mode 100644 pkg/cloudprovider/providers/cascade/restclient.go
- create mode 100644 pkg/cloudprovider/providers/cascade/tests_owed
- create mode 100644 pkg/cloudprovider/providers/cascade/utils.go
- create mode 100644 pkg/volume/cascade_disk/BUILD
- create mode 100644 pkg/volume/cascade_disk/OWNERS
- create mode 100644 pkg/volume/cascade_disk/attacher.go
- create mode 100644 pkg/volume/cascade_disk/cascade_disk.go
- create mode 100644 pkg/volume/cascade_disk/cascade_util.go
- create mode 100644 plugin/pkg/admission/vke/BUILD
- create mode 100644 plugin/pkg/admission/vke/admission.go
- create mode 100644 plugin/pkg/admission/vke/admission_test.go
+ 53 files changed, 5462 insertions(+), 8 deletions(-)
 
 diff --git a/api/swagger-spec/apps_v1alpha1.json b/api/swagger-spec/apps_v1alpha1.json
 index aa3fbdc..0189f38 100644
@@ -728,10 +713,10 @@ index 0000000..70efc9d
 +- ysheng
 diff --git a/pkg/cloudprovider/providers/cascade/apitypes.go b/pkg/cloudprovider/providers/cascade/apitypes.go
 new file mode 100644
-index 0000000..fba1b3b
+index 0000000..d437394
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/apitypes.go
-@@ -0,0 +1,229 @@
+@@ -0,0 +1,230 @@
 +package cascade
 +
 +import "fmt"
@@ -912,6 +897,7 @@ index 0000000..fba1b3b
 +	Name       *string         `json:"name"`
 +	Tags       []string        `json:"tags"`
 +	Zone       *string         `json:"zone"`
++	Encrypted  *bool           `json:"encrypted"`
 +}
 +
 +// Represents the spec for specifying affinity for a disk with another entity.
@@ -1115,10 +1101,10 @@ index 0000000..fc92377
 \ No newline at end of file
 diff --git a/pkg/cloudprovider/providers/cascade/cascade.go b/pkg/cloudprovider/providers/cascade/cascade.go
 new file mode 100644
-index 0000000..db97234
+index 0000000..ba42576
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade.go
-@@ -0,0 +1,218 @@
+@@ -0,0 +1,219 @@
 +// The use of Cascade cloud provider requires the kubelet, kube-apiserver, and kube-controller-manager to be started
 +// with config flag: '--cloud-provider=cascade --cloud-config=[path_to_config_file]'.
 +package cascade
@@ -1212,6 +1198,7 @@ index 0000000..db97234
 +	Tags       map[string]string
 +	Name       string
 +	Flavor     string
++	Encrypted  bool
 +}
 +
 +func readConfig(config io.Reader) (*CascadeConfig, error) {
@@ -1339,10 +1326,10 @@ index 0000000..db97234
 +}
 diff --git a/pkg/cloudprovider/providers/cascade/cascade_disks.go b/pkg/cloudprovider/providers/cascade/cascade_disks.go
 new file mode 100644
-index 0000000..07f2245
+index 0000000..4df1ab9
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/cascade_disks.go
-@@ -0,0 +1,225 @@
+@@ -0,0 +1,226 @@
 +package cascade
 +
 +import (
@@ -1511,6 +1498,7 @@ index 0000000..07f2245
 +	diskSpec.CapacityGB = Int32Ptr(int32(volumeOptions.CapacityGB))
 +	diskSpec.Kind = StringPtr(DiskSpecKind)
 +	diskSpec.Zone = StringPtr(zone)
++	diskSpec.Encrypted = BoolPtr(volumeOptions.Encrypted)
 +
 +	task, err := cc.apiClient.CreateDisk(&diskSpec)
 +	if err != nil {
@@ -2994,10 +2982,10 @@ index 0000000..dff5ab1
 +
 diff --git a/pkg/cloudprovider/providers/cascade/utils.go b/pkg/cloudprovider/providers/cascade/utils.go
 new file mode 100644
-index 0000000..4e9e44c
+index 0000000..866f853
 --- /dev/null
 +++ b/pkg/cloudprovider/providers/cascade/utils.go
-@@ -0,0 +1,25 @@
+@@ -0,0 +1,29 @@
 +package cascade
 +
 +func StringPtr(s string) *string {
@@ -3023,7 +3011,10 @@ index 0000000..4e9e44c
 +func Int32Ptr(s int32) *int32 {
 +	return &s
 +}
-\ No newline at end of file
++
++func BoolPtr(s bool) *bool {
++	return &s
++}
 diff --git a/pkg/cloudprovider/providers/providers.go b/pkg/cloudprovider/providers/providers.go
 index 7de9ca9..6d8a1d2 100644
 --- a/pkg/cloudprovider/providers/providers.go
@@ -3036,6 +3027,48 @@ index 7de9ca9..6d8a1d2 100644
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/cloudstack"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/gce"
  	_ "k8s.io/kubernetes/pkg/cloudprovider/providers/openstack"
+diff --git a/pkg/kubeapiserver/authorizer/config.go b/pkg/kubeapiserver/authorizer/config.go
+index 659f2ae..ed1f5f1 100644
+--- a/pkg/kubeapiserver/authorizer/config.go
++++ b/pkg/kubeapiserver/authorizer/config.go
+@@ -32,6 +32,7 @@ import (
+ 	"k8s.io/kubernetes/plugin/pkg/auth/authorizer/node"
+ 	"k8s.io/kubernetes/plugin/pkg/auth/authorizer/rbac"
+ 	"k8s.io/kubernetes/plugin/pkg/auth/authorizer/rbac/bootstrappolicy"
++	"k8s.io/kubernetes/plugin/pkg/auth/authorizer/vke"
+ )
+ 
+ type AuthorizationConfig struct {
+@@ -82,7 +83,12 @@ func (config AuthorizationConfig) New() (authorizer.Authorizer, authorizer.RuleR
+ 			)
+ 			nodeAuthorizer := node.NewAuthorizer(graph, nodeidentifier.NewDefaultNodeIdentifier(), bootstrappolicy.NodeRules())
+ 			authorizers = append(authorizers, nodeAuthorizer)
+-
++		case modes.ModeVKE:
++			vkeAuthorizer, err := vke.NewAuthorizer()
++			if err != nil {
++				return nil, nil, err
++			}
++			authorizers = append(authorizers, vkeAuthorizer)
+ 		case modes.ModeAlwaysAllow:
+ 			alwaysAllowAuthorizer := authorizerfactory.NewAlwaysAllowAuthorizer()
+ 			authorizers = append(authorizers, alwaysAllowAuthorizer)
+diff --git a/pkg/kubeapiserver/authorizer/modes/modes.go b/pkg/kubeapiserver/authorizer/modes/modes.go
+index 56a708a..6eb920f 100644
+--- a/pkg/kubeapiserver/authorizer/modes/modes.go
++++ b/pkg/kubeapiserver/authorizer/modes/modes.go
+@@ -23,9 +23,10 @@ const (
+ 	ModeWebhook     string = "Webhook"
+ 	ModeRBAC        string = "RBAC"
+ 	ModeNode        string = "Node"
++	ModeVKE         string = "VKE"
+ )
+ 
+-var AuthorizationModeChoices = []string{ModeAlwaysAllow, ModeAlwaysDeny, ModeABAC, ModeWebhook, ModeRBAC, ModeNode}
++var AuthorizationModeChoices = []string{ModeAlwaysAllow, ModeAlwaysDeny, ModeABAC, ModeWebhook, ModeRBAC, ModeNode, ModeVKE}
+ 
+ // IsValidAuthorizationMode returns true if the given authorization mode is a valid one for the apiserver
+ func IsValidAuthorizationMode(authzMode string) bool {
 diff --git a/pkg/printers/internalversion/describe.go b/pkg/printers/internalversion/describe.go
 index c33b1c6..ef39b3b 100644
 --- a/pkg/printers/internalversion/describe.go
@@ -3420,6 +3453,148 @@ index 0000000..66b5836
 +// UnmountDevice unmounts the disk specified by the device mount path.
 +func (detacher *cascadeDiskDetacher) UnmountDevice(deviceMountPath string) error {
 +	return volumeutil.UnmountPath(deviceMountPath, detacher.mounter)
++}
+diff --git a/pkg/volume/cascade_disk/azure_disk_util.go b/pkg/volume/cascade_disk/azure_disk_util.go
+new file mode 100644
+index 0000000..036b420
+--- /dev/null
++++ b/pkg/volume/cascade_disk/azure_disk_util.go
+@@ -0,0 +1,136 @@
++package cascade_disk
++
++import (
++	"io/ioutil"
++	"os"
++	"path"
++	"strconv"
++	"strings"
++
++	"github.com/golang/glog"
++)
++
++const (
++	environmentFilePath = "/etc/kubernetes/environment"
++	diskPath            = "/dev/disk/cloud/"
++	sysPath             = "/sys/bus/scsi/devices"
++	lunIndex            = 3
++	maxOsScsiHostNo     = 3
++	vendor              = "vendor"
++	msftVendor          = "MSFT"
++	model               = "model"
++	vhdModel            = "VIRTUAL DISK"
++	block               = "block"
++)
++
++
++func findAzureVolume(lun int) (device string, err error) {
++	azureDisks := listAzureDiskPath()
++	return findDiskByLunWithConstraint(lun, azureDisks)
++}
++
++// List all the devices that are used by azure.
++// All these devices are the symbolic link under /dev/disk/cloud/
++// eg. azure_resource -> ../../sdb
++func listAzureDiskPath() []string {
++	var azureDiskList []string
++	if dirs, err := ioutil.ReadDir(diskPath); err == nil {
++		for _, f := range dirs {
++			name := f.Name()
++			diskPath := diskPath + name
++			if link, linkErr := os.Readlink(diskPath); linkErr == nil {
++				sd := link[(strings.LastIndex(link, "/") + 1):]
++				azureDiskList = append(azureDiskList, sd)
++			}
++		}
++	}
++	glog.V(12).Infof("Azure sys disks paths: %v", azureDiskList)
++	return azureDiskList
++}
++
++// Azure attach/detach APIs return the disk model that does not have disk
++// device path name (eg. /dev/sde) instead it gives the lun number of the disk
++// getting attached/detached.
++// This function maps that lun number to device path name of the
++// device mounted to "current" node.
++// Refrence : https://github.com/kubernetes/kubernetes/blob/master/pkg/volume/azure_dd/azure_common_linux.go#L69
++//            https://docs.microsoft.com/en-us/azure/virtual-machines/linux/troubleshoot-device-names-problems
++func findDiskByLunWithConstraint(lun int, azureDisks []string) (string, error) {
++	var err error
++	if dirs, err := ioutil.ReadDir(sysPath); err == nil {
++		for _, f := range dirs {
++			name := f.Name()
++			// look for path like /sys/bus/scsi/devices/3:0:0:1
++			arr := strings.Split(name, ":")
++			if len(arr) < 4 {
++				continue
++			}
++			if len(azureDisks) == 0 {
++				glog.V(4).Infof("/dev/disk/cloud is not populated, now try to parse %v directly", name)
++				target, err := strconv.Atoi(arr[0])
++				if err != nil {
++					glog.Errorf("failed to parse target from %v (%v), err %v", arr[0], name, err)
++					continue
++				}
++				// as observed, targets 0-3 are used by OS disks. Skip them
++				if target <= maxOsScsiHostNo {
++					continue
++				}
++			}
++
++			// extract LUN from the path.
++			// LUN is the last index of the array, i.e. 1 in /sys/bus/scsi/devices/3:0:0:1
++			l, err := strconv.Atoi(arr[lunIndex])
++			if err != nil {
++				// unknown path format, continue to read the next one
++				glog.V(4).Infof("azure disk - failed to parse lun from %v (%v), err %v", arr[lunIndex], name, err)
++				continue
++			}
++			if lun == l {
++				// find the matching LUN
++				// read vendor and model to ensure it is a VHD disk
++				vendorPath := path.Join(sysPath, name, vendor)
++				vendorBytes, err := ioutil.ReadFile(vendorPath)
++				if err != nil {
++					glog.Errorf("failed to read device vendor, err: %v", err)
++					continue
++				}
++				vendor := strings.TrimSpace(string(vendorBytes))
++				if strings.ToUpper(vendor) != msftVendor {
++					glog.V(4).Infof("vendor doesn't match VHD, got %s", vendor)
++					continue
++				}
++
++				modelPath := path.Join(sysPath, name, model)
++				modelBytes, err := ioutil.ReadFile(modelPath)
++				if err != nil {
++					glog.Errorf("failed to read device model, err: %v", err)
++					continue
++				}
++				model := strings.TrimSpace(string(modelBytes))
++				if strings.ToUpper(model) != vhdModel {
++					glog.V(4).Infof("model doesn't match VHD, got %s", model)
++					continue
++				}
++
++				// find a disk, validate name
++				dir := path.Join(sysPath, name, block)
++				if dev, err := ioutil.ReadDir(dir); err == nil {
++					found := false
++					devName := dev[0].Name()
++					for _, diskName := range azureDisks {
++						glog.V(12).Infof("azureDisk - validating disk %q with sys disk %q", devName, diskName)
++						if devName == diskName {
++							found = true
++							break
++						}
++					}
++					if !found {
++						return "/dev/" + devName, nil
++					}
++				}
++			}
++		}
++	}
++	return "", err
 +}
 diff --git a/pkg/volume/cascade_disk/cascade_disk.go b/pkg/volume/cascade_disk/cascade_disk.go
 new file mode 100644
@@ -3821,16 +3996,18 @@ index 0000000..a25f224
 \ No newline at end of file
 diff --git a/pkg/volume/cascade_disk/cascade_util.go b/pkg/volume/cascade_disk/cascade_util.go
 new file mode 100644
-index 0000000..cbcc115
+index 0000000..2604b89
 --- /dev/null
 +++ b/pkg/volume/cascade_disk/cascade_util.go
-@@ -0,0 +1,152 @@
+@@ -0,0 +1,201 @@
 +package cascade_disk
 +
 +import (
++	"bufio"
 +	"fmt"
 +	"os"
 +	"path/filepath"
++	"strconv"
 +	"strings"
 +	"time"
 +
@@ -3843,7 +4020,7 @@ index 0000000..cbcc115
 +)
 +
 +const (
-+	checkSleepDuration = time.Second
++	checkSleepDuration  = time.Second
 +)
 +
 +type CascadeDiskUtil struct{}
@@ -3861,13 +4038,33 @@ index 0000000..cbcc115
 +
 +// Returns path for given VKE disk mount
 +func getDiskByIdPath(devicePath string) string {
-+	nvmePath, err := findNvmeVolume(devicePath)
++	provider, err := getProvider()
 +	if err != nil {
-+		glog.Warningf("error looking for nvme volume %q: %v", devicePath, err)
-+	} else if nvmePath != "" {
-+		devicePath = nvmePath
++		glog.Warningf("error getting provider name from %s: %v", environmentFilePath, err)
++		return devicePath
 +	}
 +
++	switch provider {
++	case "azure":
++		// devicePath is an integer then it is lun returned from azure attach disk.
++		if diskLun, err := strconv.Atoi(devicePath); err == nil {
++			azDevicePath, err := findAzureVolume(diskLun)
++			if err != nil {
++				glog.Warningf("error looking for azure volume %q: %v", devicePath, err)
++			} else if azDevicePath != "" {
++				devicePath = azDevicePath
++			}
++		} else {
++			glog.Warningf("The device path for azure expected to be an integer but it is %s. Error : %v", devicePath, err)
++		}
++	default:
++		nvmePath, err := findNvmeVolume(devicePath)
++		if err != nil {
++			glog.Warningf("error looking for nvme volume %q: %v", devicePath, err)
++		} else if nvmePath != "" {
++			devicePath = nvmePath
++		}
++	}
 +	return devicePath
 +}
 +
@@ -3891,10 +4088,19 @@ index 0000000..cbcc115
 +		Name:       name,
 +	}
 +
++	// enabling encryption by default if not provided from within storage class
++	volumeOptions.Encrypted = true
 +	for parameter, value := range p.options.Parameters {
 +		switch strings.ToLower(parameter) {
 +		case "flavor":
 +			volumeOptions.Flavor = value
++		case "encrypted":
++			volumeOptions.Encrypted, err = strconv.ParseBool(value)
++			if err != nil {
++				glog.Errorf("Cascade Util: invalid value %q for encryption of volume plugin %s.", value,
++					p.plugin.GetPluginName())
++				return "", 0, "", fmt.Errorf("invalid encrypted boolean value %q, must be true or false: %v", value, err)
++			}
 +		case volume.VolumeParameterFSType:
 +			fstype = value
 +			glog.V(4).Infof("Cascade Util: Setting fstype to %s", fstype)
@@ -3976,6 +4182,24 @@ index 0000000..cbcc115
 +	}
 +
 +	return resolved, nil
++}
++
++func getProvider() (provider string, err error) {
++	file, err := os.Open(environmentFilePath)
++	if err != nil {
++		return "", err
++	}
++	defer file.Close()
++
++	scanner := bufio.NewScanner(file)
++
++	for scanner.Scan() {
++		lineContent := scanner.Text()
++		if strings.Contains(lineContent, "PROVIDER=") {
++			return strings.SplitAfter(lineContent, "=")[1], err
++		}
++	}
++	return "", err
 +}
 diff --git a/plugin/pkg/admission/persistentvolume/label/admission.go b/plugin/pkg/admission/persistentvolume/label/admission.go
 index 86e1921..bf2912b 100644
@@ -4062,10 +4286,10 @@ index 86e1921..bf2912b 100644
 +}
 diff --git a/plugin/pkg/admission/vke/BUILD b/plugin/pkg/admission/vke/BUILD
 new file mode 100644
-index 0000000..d0bb7c7
+index 0000000..7d66036
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/BUILD
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,61 @@
 +package(default_visibility = ["//visibility:public"])
 +
 +load(
@@ -4107,6 +4331,7 @@ index 0000000..d0bb7c7
 +        "//vendor/github.com/golang/glog:go_default_library",
 +        "//vendor/github.com/stretchr/testify/assert:go_default_library",
 +        "//vendor/k8s.io/apimachinery/pkg/api/equality:go_default_library",
++        "//vendor/k8s.io/apimachinery/pkg/runtime:go_default_library",
 +        "//vendor/k8s.io/apimachinery/pkg/util/yaml:go_default_library",
 +        "//vendor/k8s.io/apimachinery/pkg/util/validation/field:go_default_library",
 +        "//vendor/k8s.io/apimachinery/pkg/apis/meta/v1:go_default_library",
@@ -4129,10 +4354,10 @@ index 0000000..d0bb7c7
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..c2714cb
+index 0000000..192f384
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
-@@ -0,0 +1,555 @@
+@@ -0,0 +1,587 @@
 +package vke
 +
 +import (
@@ -4162,9 +4387,6 @@ index 0000000..c2714cb
 +
 +	systemUnsecuredUser      = "system:unsecured"
 +	systemNodesGroup         = "system:nodes"
-+	systemMasterGroup        = "system:master"
-+	systemNodePrefix         = "system:node:"
-+	systemClusterPrefix      = "system:clusterID:"
 +	privilegedNamespace      = "vke-system"
 +	privilegedServiceAccount = "system:serviceaccount:" + privilegedNamespace + ":"
 +	reservedPrefix           = "vke"
@@ -4202,10 +4424,16 @@ index 0000000..c2714cb
 +	VMwareAdmissionController vmwareAdmissionControllerConfig `yaml:"vmwareAdmissionController"`
 +}
 +
-+var _ admission.ValidationInterface = &vmwareAdmissionController{}
++var _ admission.MutationInterface = &vmwareAdmissionController{}
 +
-+// Validate makes an admission decision based on the request attributes.  It is NOT allowed to mutate.
-+func (vac *vmwareAdmissionController) Validate(a admission.Attributes) (err error) {
++// Admit makes an admission decision based on the request attributes.
++// Note: We implement the mutation interface for this admission controller, which means we have the ability to modify
++// the resources. But we do not modify them because we just need to validate the requests to either let them through or
++// block them. We have implemented this as a mutation interface because we need access to oldObjects during update
++// operations to find out what values are being modified. For node update operation, the old and new objects are always
++// identical in the validation phase (possibly due to some initializer modifying it). So, we are performing our
++// validation during the mutation phase.
++func (vac *vmwareAdmissionController) Admit(a admission.Attributes) (err error) {
 +	if isPrivilegedUser(vac, a) {
 +		return nil
 +	}
@@ -4215,7 +4443,11 @@ index 0000000..c2714cb
 +	}
 +
 +	if isCertificateFromNode(a) {
-+		return validateNodeCertificate(vac, a)
++		return validateCertificateFromNode(a)
++	}
++
++	if isPrivilegedServiceAccount(a) {
++		return validatePrivilegedServiceAccount(a)
 +	}
 +
 +	if isPrivilegedNamespace(a) {
@@ -4353,13 +4585,6 @@ index 0000000..c2714cb
 +}
 +
 +func isPrivilegedUser(vac *vmwareAdmissionController, a admission.Attributes) bool {
-+	// We need to allow the service accounts inside the privileged namespace to be able to access pods and nodes.
-+	// Node-monitor agent, Photon OS update controller and Cluster autoscaler depend on this.
-+	user := a.GetUserInfo().GetName()
-+	if strings.HasPrefix(user, privilegedServiceAccount) {
-+		return true
-+	}
-+
 +	// If the request comes from a user belonging to a privileged group, then we allow it. Only calls from Cascade
 +	// controller will belong to this privileged group.
 +	groups := a.GetUserInfo().GetGroups()
@@ -4408,33 +4633,13 @@ index 0000000..c2714cb
 +	return false
 +}
 +
-+func validateNodeCertificate(vac *vmwareAdmissionController, a admission.Attributes) (err error) {
-+	// If the groups have system:cluster:cluster-id as one of the groups, then validate that the cluster ID belongs to
-+	// this cluster. If not fail. This prevents cross cluster access using certificates.
-+	invalidClusterID := false
-+	masterNode := false
-+	groups := a.GetUserInfo().GetGroups()
-+	for _, group := range groups {
-+		if strings.HasPrefix(group, systemClusterPrefix) {
-+			groupParts := strings.Split(group, ":")
-+			if vac.clusterID != "" && groupParts[len(groupParts)-1] != vac.clusterID {
-+				invalidClusterID = true
-+			}
-+		}
-+		if group == systemMasterGroup {
-+			masterNode = true
-+		}
-+	}
-+	if invalidClusterID {
-+		return admission.NewForbidden(a, fmt.Errorf("%s validation failed: request is not from this cluster", PluginName))
-+	}
-+
-+	// If a worker node name does not have the node prefix, then fail. This is needed for the request to go through node
-+	// restriction admission controller. If it is not set, then a user can bypass node restriction admission controller
-+	// and modify the master node.
-+	name := a.GetUserInfo().GetName()
-+	if !strings.HasPrefix(name, systemNodePrefix) && !masterNode {
-+		return admission.NewForbidden(a, fmt.Errorf("%s validation failed: username is invalid", PluginName))
++func validateCertificateFromNode(a admission.Attributes) error {
++	// Block exec operations into pods for nodes. This is needed to block someone from using Kubelet's certificate to
++	// exec into privileged pods running on the master. Other operations with the node certificate like modifying master
++	// node, creating pods on master node, etc. are blocked by the node restriction admission controller.
++	if a.GetResource().GroupResource() == api.Resource("pods") && a.GetOperation() == admission.Connect {
++		return admission.NewForbidden(a,
++			fmt.Errorf("%s validation failed: cannot modify pods in namespace %s", PluginName, a.GetNamespace()))
 +	}
 +	return nil
 +}
@@ -4459,11 +4664,63 @@ index 0000000..c2714cb
 +	return false
 +}
 +
++func isPrivilegedServiceAccount(a admission.Attributes) bool {
++	user := a.GetUserInfo().GetName()
++	return strings.HasPrefix(user, privilegedServiceAccount)
++}
++
++func validatePrivilegedServiceAccount(a admission.Attributes) error {
++	// If the privileged service account performs any operation on the pods resource like create, update or connect,
++	// we block it. This is needed so that we can block exec access into privileged pods running on the master. Also,
++	// privileged service account does not need to perform these operations. So, just to be extra cautious we also block
++	// off create and update pods.
++	if a.GetResource().GroupResource() == api.Resource("pods") {
++		// Allow Delete operation on pods
++		if a.GetOperation() == admission.Delete {
++			return nil
++		}
++		// Allow subresources other than exec on pods
++		if len(a.GetSubresource()) != 0 && a.GetSubresource() != "exec" {
++			return nil
++		}
++		// Block all other operations
++		if a.GetOperation() == admission.Create || a.GetOperation() == admission.Update || a.GetOperation() == admission.Connect {
++			return admission.NewForbidden(a,
++				fmt.Errorf("%s validation failed: cannot modify pods in namespace %s", PluginName, a.GetNamespace()))
++		}
++	}
++
++	// If the privileged service account tries to update taints on a node, we block. We need to do this so that a user
++	// cannot use a privileged service account to untaint the node and run pods on a master.
++	if a.GetResource().GroupResource() == api.Resource("nodes") {
++		if a.GetOperation() == admission.Update {
++			node, ok := a.GetObject().(*api.Node)
++			if !ok {
++				return admission.NewForbidden(a,
++					fmt.Errorf("%s validation failed: unexpected type %T", PluginName, a.GetObject()))
++			}
++			oldNode, ok := a.GetOldObject().(*api.Node)
++			if !ok {
++				return admission.NewForbidden(a,
++					fmt.Errorf("%s validation failed: unexpected type %T", PluginName, a.GetOldObject()))
++			}
++
++			if !apiequality.Semantic.DeepEqual(node.Spec.Taints, oldNode.Spec.Taints) {
++				return admission.NewForbidden(a,
++					fmt.Errorf("%s validation failed: cannot modify taints on a node", PluginName))
++			}
++		}
++	}
++
++	return nil
++}
++
 +func validateNodes(a admission.Attributes) error {
-+	// If it is a connect operation on the sub resource, allow it. Block update, delete and create operations on the sub
-+	// resources. Sub resources of nodes are nodes/nodename/proxy and nodes/nodename/status. Prometheus needs read
-+	// access to nodes/nodename/proxy/metrics. To support that and other pods which might need read access to node
-+	// metrics, we need to allow this.
++	// If it is a connect operation on the sub resource, allow it. Sub resources of nodes are nodes/nodename/proxy and
++	// nodes/nodename/status. Prometheus needs read access to nodes/nodename/proxy/metrics. To support that and other
++	// pods which might need read access to node metrics, we need to allow this. But the VKE authorizer blocks off any
++	// access to perform exec, attach or run on the proxy resource on a master which will prevent the users from getting
++	// access to the privileged pods on master.
 +	if a.GetOperation() == admission.Connect && len(a.GetSubresource()) != 0 {
 +		return nil
 +	}
@@ -4690,10 +4947,10 @@ index 0000000..c2714cb
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..4ce4a1f
+index 0000000..3fb4674
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
-@@ -0,0 +1,882 @@
+@@ -0,0 +1,941 @@
 +package vke
 +
 +import (
@@ -4703,6 +4960,7 @@ index 0000000..4ce4a1f
 +	"testing"
 +
 +	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
++	"k8s.io/apimachinery/pkg/runtime"
 +	kadmission "k8s.io/apiserver/pkg/admission"
 +	kapi "k8s.io/kubernetes/pkg/apis/core"
 +	"k8s.io/kubernetes/pkg/apis/rbac"
@@ -5007,7 +5265,7 @@ index 0000000..4ce4a1f
 +		},
 +		"denied: regular lightwave user cannot escalate privilege using service account": {
 +			operation:          kadmission.Create,
-+			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).withServiceAccount("system:serviceaccount:" + privilegedNamespace + ":default").build(),
++			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).withServiceAccount(privilegedServiceAccount + "default").build(),
 +			userInfo:           newTestUserBuilder().build(),
 +			shouldPassValidate: false,
 +		},
@@ -5015,6 +5273,30 @@ index 0000000..4ce4a1f
 +			operation:          kadmission.Create,
 +			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
 +			userInfo:           newTestUserBuilder().withName("system:serviceaccount:kube-system:default").build(),
++			shouldPassValidate: false,
++		},
++		"allowed: privileged service account deletes a pod in privileged namespace": {
++			operation:          kadmission.Delete,
++			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
++			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
++			shouldPassValidate: true,
++		},
++		"denied: privileged service account creates a pod in privileged namespace": {
++			operation:          kadmission.Create,
++			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
++			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
++			shouldPassValidate: false,
++		},
++		"denied: privileged service account execs into a pod in privileged namespace": {
++			operation:          kadmission.Connect,
++			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
++			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
++			shouldPassValidate: false,
++		},
++		"denied: privileged service account updates a pod in privileged namespace": {
++			operation:          kadmission.Update,
++			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
++			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
 +			shouldPassValidate: false,
 +		},
 +		"allowed: regular user creates pod in other namespace": {
@@ -5035,12 +5317,6 @@ index 0000000..4ce4a1f
 +			userInfo:           newTestUserBuilder().withName(systemUnsecuredUser).build(),
 +			shouldPassValidate: true,
 +		},
-+		"allowed: vke-system service account creates pod in vke-system namespace": {
-+			operation:          kadmission.Create,
-+			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
-+			userInfo:           newTestUserBuilder().withName("system:serviceaccount:" + privilegedNamespace + ":default").build(),
-+			shouldPassValidate: true,
-+		},
 +		"allowed: kubelet group creates pod in vke-system namespace": {
 +			operation:          kadmission.Create,
 +			pod:                newTestPodBuilder().withNamespace(privilegedNamespace).build(),
@@ -5059,26 +5335,11 @@ index 0000000..4ce4a1f
 +			userInfo:           newTestUserBuilder().withGroup("test1\\group1").withGroup(testServiceAccountsGroup).build(),
 +			shouldPassValidate: true,
 +		},
-+		"denied: cross cluster acccess": {
-+			operation: kadmission.Create,
-+			pod:       newTestPodBuilder().build(),
-+			userInfo: newTestUserBuilder().withName("system:node:worker").withGroup("system:clusterID:some-cluster-id").
-+				withGroup("system:nodes").withGroup("system:worker").build(),
++		"denied: kubelet exec into pod": {
++			operation:          kadmission.Connect,
++			pod:                newTestPodBuilder().build(),
++			userInfo:           newTestUserBuilder().withGroup("system:nodes").build(),
 +			shouldPassValidate: false,
-+		},
-+		"denied: node restriction admission controller bypass": {
-+			operation: kadmission.Create,
-+			pod:       newTestPodBuilder().build(),
-+			userInfo: newTestUserBuilder().withGroup("system:clusterID:cluster-id").withGroup("system:nodes").
-+				withGroup("system:worker").build(),
-+			shouldPassValidate: false,
-+		},
-+		"allowed: master node to bypass node restriction admission controller": {
-+			operation: kadmission.Create,
-+			pod:       newTestPodBuilder().build(),
-+			userInfo: newTestUserBuilder().withName("kubernetes-master").withGroup("system:clusterID:cluster-id").
-+				withGroup("system:nodes").withGroup("system:master").build(),
-+			shouldPassValidate: true,
 +		},
 +	}
 +	for k, v := range tests {
@@ -5151,6 +5412,8 @@ index 0000000..4ce4a1f
 +		name               string
 +		namespace          string
 +		userInfo           user.Info
++		object             runtime.Object
++		oldObject          runtime.Object
 +		shouldPassValidate bool
 +	}{
 +		"denied: regular lightwave user update configmaps in vke-system namespace": {
@@ -5345,10 +5608,26 @@ index 0000000..4ce4a1f
 +			userInfo:           newTestUserBuilder().withName(systemUnsecuredUser).build(),
 +			shouldPassValidate: true,
 +		},
++		"allowed: kubelet update node": {
++			operation:          kadmission.Update,
++			resource:           "nodes",
++			namespace:          "",
++			userInfo:           newTestUserBuilder().withGroup(systemNodesGroup).build(),
++			shouldPassValidate: true,
++		},
++		"denied: privileged service account update node taint": {
++			operation:          kadmission.Update,
++			resource:           "nodes",
++			namespace:          "",
++			oldObject:          newTestNodeBuilder().build(),
++			object:             newTestNodeBuilder().withTaint(nil).build(),
++			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
++			shouldPassValidate: false,
++		},
 +	}
 +	for k, v := range tests {
-+		testResourceValidation(k, v.operation, v.resource, v.subresource, v.name, v.namespace, v.userInfo,
-+			v.shouldPassValidate, t)
++		testResourceValidation(k, v.operation, v.resource, v.subresource, v.name, v.namespace, v.userInfo, v.object,
++			v.oldObject, v.shouldPassValidate, t)
 +	}
 +}
 +
@@ -5370,7 +5649,7 @@ index 0000000..4ce4a1f
 +	attrs := kadmission.NewAttributesRecord(pod, nil, kapi.Kind("Pod").WithVersion("version"),
 +		namespace, name, kapi.Resource("pods").WithVersion("version"), "", op, userInfo)
 +
-+	err = plugin.Validate(attrs)
++	err = plugin.Admit(attrs)
 +	if shouldPassValidate && err != nil {
 +		t.Errorf("%s: expected no errors on Validate but received %v", testCaseName, err)
 +	} else if !shouldPassValidate && err == nil {
@@ -5379,7 +5658,7 @@ index 0000000..4ce4a1f
 +}
 +
 +func testResourceValidation(testCaseName string, op kadmission.Operation, resource, subresource, name, namespace string,
-+	userInfo user.Info, shouldPassValidate bool, t *testing.T) {
++	userInfo user.Info, object runtime.Object, oldObject runtime.Object, shouldPassValidate bool, t *testing.T) {
 +
 +	defaultConfigFile := fmt.Sprintf(defaultConfigFileFormat, testServiceAccountsGroup, pspFileName, clusterID)
 +	configFile := strings.NewReader(defaultConfigFile)
@@ -5393,10 +5672,10 @@ index 0000000..4ce4a1f
 +		groupResource = rbac.Resource(resource).WithVersion("version")
 +	}
 +
-+	attrs := kadmission.NewAttributesRecord(nil, nil, kapi.Kind("kind").WithVersion("version"),
++	attrs := kadmission.NewAttributesRecord(object, oldObject, kapi.Kind("kind").WithVersion("version"),
 +		namespace, name, groupResource, subresource, op, userInfo)
 +
-+	err = plugin.Validate(attrs)
++	err = plugin.Admit(attrs)
 +	if shouldPassValidate && err != nil {
 +		t.Errorf("%s: expected no errors on Validate but received %v", testCaseName, err)
 +	} else if !shouldPassValidate && err == nil {
@@ -5575,6 +5854,464 @@ index 0000000..4ce4a1f
 +func (p *testUserBuilder) withGroup(group string) *testUserBuilder {
 +	p.user.Groups = append(p.user.Groups, group)
 +	return p
++}
++
++// testNodeBuilder
++type testNodeBuilder struct {
++	node kapi.Node
++}
++
++func newTestNodeBuilder() *testNodeBuilder {
++	builder := new(testNodeBuilder)
++	return builder.init()
++}
++
++func (n *testNodeBuilder) init() *testNodeBuilder {
++	n.node = kapi.Node{
++		ObjectMeta: metav1.ObjectMeta{
++			Name:        "node",
++			Namespace:   "",
++			Annotations: nil,
++		},
++		Spec: kapi.NodeSpec{
++			Taints: []kapi.Taint{
++				{
++					"Dedicated", "Master", "NoSchedule", nil,
++				},
++			},
++		},
++	}
++	return n
++}
++
++func (n *testNodeBuilder) build() *kapi.Node {
++	return &n.node
++}
++
++func (n *testNodeBuilder) withTaint(taints []kapi.Taint) *testNodeBuilder {
++	n.node.Spec.Taints = taints
++	return n
++}
+diff --git a/plugin/pkg/auth/authorizer/vke/BUILD b/plugin/pkg/auth/authorizer/vke/BUILD
+new file mode 100644
+index 0000000..4b984f1
+--- /dev/null
++++ b/plugin/pkg/auth/authorizer/vke/BUILD
+@@ -0,0 +1,40 @@
++package(default_visibility = ["//visibility:public"])
++
++load(
++    "@io_bazel_rules_go//go:def.bzl",
++    "go_library",
++)
++
++go_test(
++    name = "go_default_test",
++    srcs = ["vke_authorizer_test.go"],
++    embed = [":go_default_library"],
++    deps = [
++        "//vendor/k8s.io/apiserver/pkg/authentication/user:go_default_library",
++        "//vendor/k8s.io/apiserver/pkg/authorization/authorizer:go_default_library",
++    ],
++)
++
++go_library(
++    name = "go_default_library",
++    srcs = [
++        "vke_authorizer.go",
++    ],
++    importpath = "k8s.io/kubernetes/plugin/pkg/auth/authorizer/vke",
++    deps = [
++        "//vendor/k8s.io/apiserver/pkg/authorization/authorizer:go_default_library",
++    ],
++)
++
++filegroup(
++    name = "package-srcs",
++    srcs = glob(["**"]),
++    tags = ["automanaged"],
++    visibility = ["//visibility:private"],
++)
++
++filegroup(
++    name = "all-srcs",
++    srcs = [":package-srcs"],
++    tags = ["automanaged"],
++)
+diff --git a/plugin/pkg/auth/authorizer/vke/OWNERS b/plugin/pkg/auth/authorizer/vke/OWNERS
+new file mode 100644
+index 0000000..48f5944
+--- /dev/null
++++ b/plugin/pkg/auth/authorizer/vke/OWNERS
+@@ -0,0 +1,3 @@
++maintainers:
++- ashokc
++- vivekgoyal
+\ No newline at end of file
+diff --git a/plugin/pkg/auth/authorizer/vke/vke_authorizer.go b/plugin/pkg/auth/authorizer/vke/vke_authorizer.go
+new file mode 100644
+index 0000000..5f3103b
+--- /dev/null
++++ b/plugin/pkg/auth/authorizer/vke/vke_authorizer.go
+@@ -0,0 +1,123 @@
++package vke
++
++import (
++	"bufio"
++	"fmt"
++	"os"
++	"strings"
++
++	"github.com/golang/glog"
++	"k8s.io/apiserver/pkg/authorization/authorizer"
++)
++
++const (
++	systemClusterPrefix = "system:clusterID:"
++	systemNodePrefix    = "system:node:"
++	systemWorkerGroup   = "system:worker"
++	masterPrefix        = "master-"
++)
++
++// VKEAuthorizer authorizes requests which comes from nodes using certificates.
++// If a request is from a node which is not a part of the cluster, reject.
++type VKEAuthorizer struct {
++	clusterID string
++}
++
++// NewAuthorizer returns a new node authorizer
++func NewAuthorizer() (authorizer.Authorizer, error) {
++	file, err := os.Open("/etc/kubernetes/cc_cloud.config")
++	if err != nil {
++		return nil, err
++	}
++	defer file.Close()
++
++	scanner := bufio.NewScanner(file)
++
++	for scanner.Scan() {
++		lineContent := scanner.Text()
++		if strings.Contains(lineContent, "clusterID = ") {
++			clusterID := strings.SplitAfter(lineContent, "= ")[1]
++			return &VKEAuthorizer{clusterID: clusterID}, nil
++		}
++	}
++
++	return nil, fmt.Errorf("Cluster ID cannot be parsed from config file successfully")
++}
++
++// Authorize authorizes requests based on the VKE authorizer.
++func (v *VKEAuthorizer) Authorize(attrs authorizer.Attributes) (authorizer.Decision, string, error) {
++	// If the request comes from a non cluster node, then deny.
++	if isNonClusterNode(attrs, v.clusterID) {
++		glog.V(2).Infof("VKE authorizer: DENY the request because it is from a different cluster")
++		return authorizer.DecisionDeny, "", nil
++	}
++
++	// If a worker node name does not have the node prefix, then deny. This is needed for the request to go through node
++	// authorizer and node restriction admission controller. If it is not set, then a user can bypass node authorizer
++	// and the node restriction admission controller and modify the master node.
++	if isWorkerWithoutNodeNameRestriction(attrs) {
++		glog.V(2).Infof("VKE authorizer: DENY the request because the node name restriction is not met")
++		return authorizer.DecisionDeny, "", nil
++	}
++
++	// If it is a proxy request to the master node to exec, run or attach to a container, then deny.
++	if isProxyRequestToMasterNode(attrs) {
++		glog.V(2).Infof("VKE authorizer: DENY the request because it tried to execute commands on master pods")
++		return authorizer.DecisionDeny, "", nil
++	}
++
++	return authorizer.DecisionNoOpinion, "", nil
++}
++
++// isNonClusterNode verifies that the request is not from a node which does not belong to this cluster. This is needed
++// to prevent cross cluster attacks where a user can use the kubelet certificate of one cluster to access the resources
++// in another cluster. The reason we have this check is because, when a certificate is presented for authentication,
++// Kubernetes just verifies that the certificate is signed by the CA that the cluster trusts. Since, in our case, the CA
++// is same for all clusters, authentication with certificate is not enough. So, we make sure that the request is not
++// from another cluster. Lightwave will make sure that any certificates generated on a worker will always have the
++// "system:clusterID:<id>" group. This way, we can just check the cluster ID in the group and reject if it is not the
++// same as this cluster's ID.
++func isNonClusterNode(attrs authorizer.Attributes, clusterID string) bool {
++	groups := attrs.GetUser().GetGroups()
++	for _, group := range groups {
++		if strings.HasPrefix(group, systemClusterPrefix) {
++			groupParts := strings.Split(group, ":")
++			if clusterID != "" && groupParts[len(groupParts)-1] != clusterID {
++				return true
++			}
++		}
++	}
++
++	return false
++}
++
++// isWorkerWithoutNodeNameRestriction verifies that the certificate presented by the worker nodes also have the
++// appropriate name "system:node:<hostname>". We need to validate this because it is possible for a user to generate
++// certificates with CN other than "system:node:<hostname>". This is because lightwave does group validation and that
++// the CNs can be one of system:node:<hostname>, kubernetes-master and etcd. When that happens, that certificate will be
++// able to bypass the NodeRestriction admission controller which will allow access to modify master node and create pods
++// on master. To prevent that from happening, we need to verify that if a request comes from a worker node, then it has
++// to have the expected name so that NodeRestriction admission controller is enforced.
++func isWorkerWithoutNodeNameRestriction(attrs authorizer.Attributes) bool {
++	groups := attrs.GetUser().GetGroups()
++	name := attrs.GetUser().GetName()
++	for _, group := range groups {
++		if group == systemWorkerGroup && !strings.HasPrefix(name, systemNodePrefix) {
++			return true
++		}
++	}
++	return false
++}
++
++// isProxyRequestToMasterNode checks if the request is made to exec, run or attach to a container on the master node. We
++// need this check because we do not want to allow a user to exec into a privileged pod on the master node.
++func isProxyRequestToMasterNode(attrs authorizer.Attributes) bool {
++	if attrs.GetResource() == "nodes" && strings.HasPrefix(attrs.GetName(), masterPrefix) {
++		if strings.Contains(attrs.GetPath(), "proxy/run") ||
++			strings.Contains(attrs.GetPath(), "proxy/exec") ||
++			strings.Contains(attrs.GetPath(), "proxy/attach") {
++			return true
++		}
++	}
++	return false
++}
+diff --git a/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go b/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
+new file mode 100644
+index 0000000..6aba9ec
+--- /dev/null
++++ b/plugin/pkg/auth/authorizer/vke/vke_authorizer_test.go
+@@ -0,0 +1,230 @@
++package vke
++
++import (
++	"testing"
++
++	"k8s.io/apiserver/pkg/authentication/user"
++	"k8s.io/apiserver/pkg/authorization/authorizer"
++)
++
++const (
++	masterProxyAttachPath = "/api/v1/nodes/master-0/proxy/attach/vke-system/pod-name/container-name"
++	masterProxyExecPath   = "/api/v1/nodes/master-0/proxy/exec/vke-system/pod-name/container-name"
++	masterProxyRunPath    = "/api/v1/nodes/master-0/proxy/run/vke-system/pod-name/container-name"
++	workerProxyAttachPath = "/api/v1/nodes/worker-0/proxy/attach/vke-system/pod-name/container-name"
++	workerProxyExecPath   = "/api/v1/nodes/worker-0/proxy/exec/vke-system/pod-name/container-name"
++	workerProxyRunPath    = "/api/v1/nodes/worker-0/proxy/run/vke-system/pod-name/container-name"
++)
++
++func TestAuthorizer(t *testing.T) {
++	authz := &VKEAuthorizer{clusterID: "cluster-id"}
++
++	clusterNode := &user.DefaultInfo{Name: "system:node:worker-0", Groups: []string{"system:nodes", "system:clusterID:cluster-id", "system:worker"}}
++	crossClusterNode := &user.DefaultInfo{Name: "system:node:worker-0", Groups: []string{"system:nodes", "system:clusterID:invalid", "system:worker"}}
++	invalidWorker := &user.DefaultInfo{Name: "worker-0", Groups: []string{"system:nodes", "system:clusterID:cluster-id", "system:worker"}}
++
++	tests := []struct {
++		name   string
++		attrs  authorizer.AttributesRecord
++		expect authorizer.Decision
++	}{
++		// Do not deny requests from a normal cluster node user.
++		{
++			name:   "allowed: cluster node get pod",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "get", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node list pod",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "list", Resource: "pods", Namespace: "ns"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node create pod",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node update pod",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "update", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node delete pod",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "delete", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node get node",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "get", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node list nodes",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "list", Resource: "nodes"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node create nodes",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node update nodes",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "update", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: cluster node delete nodes",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "delete", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionNoOpinion,
++		},
++
++		// Deny requests from another cluster node.
++		{
++			name:   "denied: cross cluster node get pod",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "get", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node list pod",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "list", Resource: "pods", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node create pod",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "create", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node update pod",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "update", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node delete pod",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "delete", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node get node",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "get", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node list nodes",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "list", Resource: "nodes"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node create nodes",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node update nodes",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "update", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: cross cluster node delete nodes",
++			attrs:  authorizer.AttributesRecord{User: crossClusterNode, ResourceRequest: true, Verb: "delete", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionDeny,
++		},
++
++		// Deny requests from invalid node.
++		{
++			name:   "denied: invalid worker get pod",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "get", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker list pod",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "list", Resource: "pods", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker create pod",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "create", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker update pod",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "update", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker delete pod",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "delete", Resource: "pods", Name: "pod", Namespace: "ns"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker get node",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "get", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker list nodes",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "list", Resource: "nodes"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker create nodes",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker update nodes",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "update", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: invalid worker delete nodes",
++			attrs:  authorizer.AttributesRecord{User: invalidWorker, ResourceRequest: true, Verb: "delete", Resource: "nodes", Name: "node"},
++			expect: authorizer.DecisionDeny,
++		},
++
++		// Deny exec, run and attach operation on master nodes using proxy resource.
++		{
++			name:   "denied: attach using proxy resource on master",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "master-0", Path: masterProxyAttachPath},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: exec using proxy resource on master",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "master-0", Path: masterProxyExecPath},
++			expect: authorizer.DecisionDeny,
++		},
++		{
++			name:   "denied: run using proxy resource on master",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "master-0", Path: masterProxyRunPath},
++			expect: authorizer.DecisionDeny,
++		},
++
++		// Do not deny exec, run and attach operation on worker nodes using proxy resource.
++		{
++			name:   "allowed: attach using proxy resource on worker",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "worker-0", Path: workerProxyAttachPath},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: exec using proxy resource on worker",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "worker-0", Path: workerProxyExecPath},
++			expect: authorizer.DecisionNoOpinion,
++		},
++		{
++			name:   "allowed: run using proxy resource on worker",
++			attrs:  authorizer.AttributesRecord{User: clusterNode, ResourceRequest: true, Verb: "create", Resource: "nodes", Name: "worker-0", Path: workerProxyRunPath},
++			expect: authorizer.DecisionNoOpinion,
++		},
++	}
++
++	for _, tc := range tests {
++		t.Run(tc.name, func(t *testing.T) {
++			decision, _, _ := authz.Authorize(tc.attrs)
++			if decision != tc.expect {
++				t.Errorf("expected %v, got %v", tc.expect, decision)
++			}
++		})
++	}
 +}
 diff --git a/staging/src/k8s.io/api/core/v1/generated.pb.go b/staging/src/k8s.io/api/core/v1/generated.pb.go
 index 5aeae2c..a7d5b12 100644
