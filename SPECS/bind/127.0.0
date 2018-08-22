@@ -1,0 +1,9 @@
+$TTL 3D
+@      IN      SOA     ns.local.domain. hostmaster.local.domain. (
+                        1       ; Serial
+                        8H      ; Refresh
+                        2H      ; Retry
+                        4W      ; Expire
+                        1D)     ; Minimum TTL
+                NS      ns.local.domain.
+1               PTR     localhost.
