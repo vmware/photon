@@ -1,14 +1,14 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.9.6
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-v%{version}.tar.gz
 %define sha1    kubernetes-v%{version}.tar.gz=6996c0690a38cda1ae5479a4dde7ebfeb590e5fb
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
-Patch0:         k8s-cascade.patch
+Patch0:         k8s-1.9-vke.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -185,6 +185,8 @@ fi
 %{_bindir}/pause-amd64
 
 %changelog
+*   Mon Aug 22 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-10
+-   Update vke patch (fbdcc5c)
 *   Mon Aug 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.6-9
 -   Build using go version 1.9.4
 *   Fri Jul 20 2018 Bo Gan <ganb@vmware.com> 1.9.6-8

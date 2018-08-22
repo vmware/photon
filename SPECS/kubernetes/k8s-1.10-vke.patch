@@ -1,7 +1,7 @@
-From 38b06a5089575c6ff6602b8cb46843a319a48a55 Mon Sep 17 00:00:00 2001
+From 756dd774d15d16fd1aa09c016d5a222529e6bc96 Mon Sep 17 00:00:00 2001
 From: DheerajSShetty <dheerajs@vmware.com>
-Date: Wed, 22 Aug 2018 15:30:41 -0700
-Subject: [PATCH]  VKE patch on K8s 1.10 (fbdcc5c)
+Date: Wed, 22 Aug 2018 16:37:55 -0700
+Subject: [PATCH] VKE patch for k8s 1.10 (fbdcc5c)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
