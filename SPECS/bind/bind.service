@@ -1,0 +1,14 @@
+[Unit]
+Description=BIND Domain Name Server
+Documentation=man:named(8)
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/default/bind9
+ExecStart=/usr/sbin/named -c /srv/named/etc/named.conf
+ExecReload=/usr/sbin/named reload
+ExecStop=/usr/sbin/named stop
+
+[Install]
+WantedBy=multi-user.target
+
