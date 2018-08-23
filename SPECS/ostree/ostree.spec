@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2015.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1    ostree=baa502aa46363cd4828d257fb87f5e18a7ed000a
 Source1:        91-ostree.preset
@@ -62,7 +62,7 @@ The %{name}-devel package includes the header files for the %{name} library
 
 %prep
 %autosetup -Sgit -n %{name}-%{version}
-(git clone git://git.gnome.org/libglnx libglnx  && cd libglnx && git checkout 900b25f)
+(git clone git://github.com/GNOME/libglnx libglnx  && cd libglnx && git checkout 900b25f)
 (git clone https://github.com/mendsley/bsdiff bsdiff && cd bsdiff && git checkout 1edf9f6)
 
 %build
@@ -126,6 +126,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Thu Aug 23 2018 Tapas Kundu <tkundu@vmware.com> 2015.7-7
+-   Corrected the git clone path for libglnx.
 *   Wed Feb 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2015.7-6
 -   libglnx: checkout commit 900b25f.
 -   bsdiff:  checkout commit 1edf9f6.
