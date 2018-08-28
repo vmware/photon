@@ -85,7 +85,6 @@
         GCE](#running-a-photon-os-machine-on-gce)
 -   [Docker Containers](#docker-containers)
 -   [Kubernetes](#kubernetes)
--   [RPM-OSTree](#rpm-ostree)
 -   [Installing Sendmail](#installing-sendmail)
     -   [Fixing Sendmail If Installed Before an FQDN Was
         Set](#fixing-sendmail-if-installed-before-an-fqdn-was-set)
@@ -115,7 +114,7 @@ This guide describes the fundamentals of administering Photon OS, the open-sourc
 
 The guide covers the basics of managing packages, controlling services with systemd, setting up networking, initializing Photon OS with cloud-init, running Docker containers, and working with other technologies, such as Kubernetes. The guide also includes a section to get you started using Photon OS quickly and easily. 
 
-Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf. Photon OS optionally works with RPM-OSTree for image-based system versioning.
+Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf.
 
 When used with development tools and environments such as VMware Fusion, VMware Workstation, HashiCorp (Vagrant and Atlas), and production runtime environments (vSphere, vCloud Air), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud  applications.  
 
@@ -802,7 +801,7 @@ Second, set the service to auto-start when the system boots:
 
 If your application or appliance includes its own HTTP server, you should turn off and disable the HTTP server that comes with Photon OS so that it does not conflict with your own HTTP server. 
 
-To support the option to run RPM-OSTree, the full version of Photon OS runs the <code>httpd.service</code> by default. To stop it and disable it, run the following commands as root: 
+To stop it and disable it, run the following commands as root: 
 
 	systemctl stop httpd.service
 	systemctl disable httpd.service
@@ -1579,18 +1578,6 @@ Photon OS also enables you to run a docker container that, in turn, runs Photon 
 
 The full version of Photon OS includes Kubernetes so you can manage clusters of containers. For more information, see [Running Kubernetes on Photon OS](https://github.com/vmware/photon/blob/master/docs/kubernetes.md).
 
-## RPM-OSTree
-
-RPM-OSTree is a package-aware file tree replication system that can keep Linux machines synchronized with the latest bits in a predictable and reliable way. To maintain consistency across file systems, RPM-OSTree uses a git-like repository that records the changes to any file and replicates them to any subscriber.
-
-RPM-OSTree lets you compose packages and other configuration options into a file tree on a server. The hosts download the file tree from the server and incrementally upgrade when the file tree changes. In this way, RPM-OSTree delivers identical, predicatable installed systems to solve the problems that commonly plague system administrators as they struggle to maintain a farm of computers with different packages, files, and configurations installed in different order. 
-
-When you install Photon OS from its ISO, it offers two installation options to take advantage of OSTree, a server and a host. The OSTree Host installation option creates a Photon OS instance that obtains its packages from an RPM-OSTree server. The host instance's packages and library are then centrally managed by the server.
-
-The OSTree Server installation option creates an instance of a server that manages the file system tree of the OSTree hosts. Creating a Photon OSTree Server establishes a new repository and management node for the Photon OS OSTree hosts. The Photon OS OSTree Server then manages the hosts as versioned, atomic entities to simply lifecycle management and security on an enterprise scale.   
-
-For more information, see the extensive sections on RPM-OSTree in the [Photon OS wiki](https://github.com/vmware/photon/wiki).
-
 ## Installing Sendmail
 
 Before you install Sendmail, you should set the fully qualified domain name (FQDN) of your Photon OS machine.
@@ -1983,4 +1970,3 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * Install and Configure Marathon for Mesos Cluster on Photon OS
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
-* RPM OSTree Documentation
