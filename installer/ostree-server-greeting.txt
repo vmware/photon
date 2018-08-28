@@ -1,7 +1,0 @@
-[1;32mWelcome to Photon 2.0 RPM-OSTree Server[0m
-
-\r \s \v
-
-Follow Photon RPM-OSTree guide to compose an OSTree repo.
-RPM-OSTree hosts will point to 'http://<this server's IP address>' to install and upgrade.
-
