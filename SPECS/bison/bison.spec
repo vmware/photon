@@ -1,7 +1,7 @@
 Summary:	Contains a parser generator
 Name:		bison
 Version:	3.0.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
 Group:		System Environment/Base
@@ -17,6 +17,10 @@ This package contains a parser generator
 %prep
 %setup -q
 %build
+#make some fixes required by glibc-2.28:
+sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
+echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
+
 ./configure \
 	--prefix=%{_prefix} \
 	--disable-silent-rules
@@ -38,15 +42,17 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 %{_docdir}/bison/*
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.4-3
--	GA - Bump release of all rpms
-*   Thu Apr 28 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.4-2
--   Removed requires for flex
-*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.4-1
--   Updated to version 3.0.4
-*	Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 3.0.2-3
--	Handled locale files with macro find_lang
-*	Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 3.0.2-2
--	Adding m4, flex package to build and run time required package 
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.0.2-1
--	Initial build. First version.
+* Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 3.0.4-4
+- Fix compilation issue against glibc-2.28
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.4-3
+- GA - Bump release of all rpms
+* Thu Apr 28 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.4-2
+- Removed requires for flex
+* Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.4-1
+- Updated to version 3.0.4
+* Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 3.0.2-3
+- Handled locale files with macro find_lang
+* Fri Jun 5 2015 Divya Thaluru <dthaluru@vmware.com> 3.0.2-2
+- Adding m4, flex package to build and run time required package 
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.0.2-1
+- Initial build. First version.
