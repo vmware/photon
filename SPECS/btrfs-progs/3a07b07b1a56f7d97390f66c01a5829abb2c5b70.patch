@@ -1,0 +1,22 @@
+From 3a07b07b1a56f7d97390f66c01a5829abb2c5b70 Mon Sep 17 00:00:00 2001
+From: Alexander Kovtunenko <akovtunenko@slice.com>
+Date: Sun, 11 Mar 2018 19:07:05 +0200
+Subject: [PATCH] Fixed https://bugzilla.kernel.org/show_bug.cgi?id=199071
+
+---
+ convert/source-ext2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/convert/source-ext2.c b/convert/source-ext2.c
+index b1492c786..3ab913aef 100644
+--- a/convert/source-ext2.c
++++ b/convert/source-ext2.c
+@@ -422,7 +422,7 @@ static int ext2_xattr_check_entry(struct ext2_ext_attr_entry *entry,
+ {
+ 	size_t value_size = entry->e_value_size;
+ 
+-	if (entry->e_value_block != 0 || value_size > size ||
++	if (entry->e_value_inum != 0 || value_size > size ||
+ 	    entry->e_value_offs + value_size > size)
+ 		return -EIO;
+ 	return 0;

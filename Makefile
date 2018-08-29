@@ -619,7 +619,8 @@ check: packages
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_FLAGS) \
 				$(PHOTON_KAT_BUILD_FLAGS) \
-                              -l $(PHOTON_LOGS_DIR)
+                              -l $(PHOTON_LOGS_DIR) \
+			      -t ${THREADS}
 
 generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Generating yaml files for packages ..."
