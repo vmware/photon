@@ -1,7 +1,7 @@
-From 65059959f5f5ff965897e123fff1a581970d6437 Mon Sep 17 00:00:00 2001
+From 4704e38dbe8a72d2a961eda98e5cc8d6b57923c3 Mon Sep 17 00:00:00 2001
 From: DheerajSShetty <dheerajs@vmware.com>
-Date: Tue, 11 Sep 2018 11:43:21 -0700
-Subject: [PATCH] VKE patch for k8s 1.10 (8033c471)
+Date: Tue, 11 Sep 2018 17:34:27 -0700
+Subject: [PATCH] VKE patch for k8s 1.10.7
 
 ---
  api/swagger-spec/apps_v1alpha1.json                |  21 +
@@ -371,7 +371,7 @@ index d4427ba..6ad2a97 100644
      "id": "v1.ProjectedVolumeSource",
      "description": "Represents a projected volume source",
 diff --git a/api/swagger-spec/v1.json b/api/swagger-spec/v1.json
-index 3f1198e..dbd57f0 100644
+index f44db14..998678f 100644
 --- a/api/swagger-spec/v1.json
 +++ b/api/swagger-spec/v1.json
 @@ -19310,6 +19310,10 @@
@@ -501,7 +501,7 @@ index ef41bb8..c9806f7 100644
  		allPlugins = append(allPlugins, csi.ProbeVolumePlugins()...)
  	}
 diff --git a/pkg/apis/core/types.go b/pkg/apis/core/types.go
-index 8b183de..cfe4c85 100644
+index f9a3e27..0b2f9e7 100644
 --- a/pkg/apis/core/types.go
 +++ b/pkg/apis/core/types.go
 @@ -316,6 +316,8 @@ type VolumeSource struct {
@@ -540,7 +540,7 @@ index 8b183de..cfe4c85 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index b66fd6f..7f0e6bd 100644
+index 8d12dad..2391b6b 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -664,6 +664,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
@@ -558,7 +558,7 @@ index b66fd6f..7f0e6bd 100644
  
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(fldPath, "must specify a volume type"))
-@@ -1494,6 +1502,14 @@ func validateCSIPersistentVolumeSource(csi *core.CSIPersistentVolumeSource, fldP
+@@ -1491,6 +1499,14 @@ func validateCSIPersistentVolumeSource(csi *core.CSIPersistentVolumeSource, fldP
  	return allErrs
  }
  
@@ -573,7 +573,7 @@ index b66fd6f..7f0e6bd 100644
  // ValidatePersistentVolumeName checks that a name is appropriate for a
  // PersistentVolumeName object.
  var ValidatePersistentVolumeName = NameIsDNSSubdomain
-@@ -1737,6 +1753,15 @@ func ValidatePersistentVolume(pv *core.PersistentVolume) field.ErrorList {
+@@ -1734,6 +1750,15 @@ func ValidatePersistentVolume(pv *core.PersistentVolume) field.ErrorList {
  		}
  	}
  
@@ -589,7 +589,7 @@ index b66fd6f..7f0e6bd 100644
  	if numVolumes == 0 {
  		allErrs = append(allErrs, field.Required(specPath, "must specify a volume type"))
  	}
-@@ -4370,7 +4395,7 @@ func ValidateSecret(secret *core.Secret) field.ErrorList {
+@@ -4367,7 +4392,7 @@ func ValidateSecret(secret *core.Secret) field.ErrorList {
  			allErrs = append(allErrs, field.Required(field.NewPath("metadata", "annotations").Key(core.ServiceAccountNameKey), ""))
  		}
  	case core.SecretTypeOpaque, "":
@@ -598,7 +598,7 @@ index b66fd6f..7f0e6bd 100644
  	case core.SecretTypeDockercfg:
  		dockercfgBytes, exists := secret.Data[core.DockerConfigKey]
  		if !exists {
-@@ -4416,7 +4441,7 @@ func ValidateSecret(secret *core.Secret) field.ErrorList {
+@@ -4413,7 +4438,7 @@ func ValidateSecret(secret *core.Secret) field.ErrorList {
  		if _, exists := secret.Data[core.TLSPrivateKeyKey]; !exists {
  			allErrs = append(allErrs, field.Required(dataPath.Key(core.TLSPrivateKeyKey), ""))
  		}
@@ -6670,7 +6670,7 @@ index 85c7b63..b97b2f1 100644
  			iNdEx = preIndex
  			skippy, err := skipGenerated(dAtA[iNdEx:])
 diff --git a/staging/src/k8s.io/api/core/v1/types.go b/staging/src/k8s.io/api/core/v1/types.go
-index 08ef419..6fb4d80 100644
+index f1c5310..146461d 100644
 --- a/staging/src/k8s.io/api/core/v1/types.go
 +++ b/staging/src/k8s.io/api/core/v1/types.go
 @@ -333,9 +333,9 @@ type VolumeSource struct {
