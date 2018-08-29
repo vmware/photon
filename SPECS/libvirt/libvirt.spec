@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        4.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -23,6 +23,7 @@ BuildRequires:  parted
 BuildRequires:  python2-devel
 BuildRequires:  readline-devel
 BuildRequires:  libxslt
+BuildRequires:  libtirpc-devel
 Requires:       cyrus-sasl
 Requires:       device-mapper
 Requires:       gnutls
@@ -36,6 +37,7 @@ Requires:       systemd
 Requires:       parted
 Requires:       python2
 Requires:       readline
+Requires:       libtirpc
 
 %description
 Libvirt is collection of software that provides a convenient way to manage virtual machines and other virtualization functionality, such as storage and network interface management. These software pieces include an API library, a daemon (libvirtd), and a command line utility (virsh).  An primary goal of libvirt is to provide a single way to manage multiple different virtualization providers/hypervisors. For example, the command 'virsh list --all' can be used to list the existing virtual machines for any supported hypervisor (KVM, Xen, VMWare ESX, etc.) No need to learn the hypervisor specific tools!
@@ -50,6 +52,7 @@ The contains libvirt package doc files.
 Summary:        libvirt devel
 Group:          Development/Tools
 Requires:       %{name} = %{version}-%{release}
+Requires:       libtirpc-devel
 %description devel
 This contains development tools and libraries for libvirt.
 
@@ -114,6 +117,8 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 4.7.0-2
+-   Use libtirpc
 *   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 4.7.0-1
 -   Update to version 4.7.0
 *   Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-4

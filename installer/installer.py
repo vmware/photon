@@ -136,12 +136,16 @@ class Installer(object):
         selected_packages = self.install_config['packages']
 
         for pkg in selected_packages:
-            if pkg in pkg_to_rpm_map:
-                if pkg_to_rpm_map[pkg]['rpm'] is not None:
-                    name = pkg_to_rpm_map[pkg]['rpm']
+            versionindex = pkg.rfind("-")
+            if versionindex == -1:
+                raise Exception("Invalid pkg name: " + pkg)
+            package = pkg[:versionindex]
+            if package in pkg_to_rpm_map:
+                if pkg_to_rpm_map[package]['rpm'] is not None:
+                    name = pkg_to_rpm_map[package]['rpm']
                     basename = os.path.basename(name)
                     self.rpms_tobeinstalled.append({'filename': basename, 'path': name,
-                                                    'package' : pkg})
+                                                    'package' : package})
 
         # Copy the rpms
         for rpm in self.rpms_tobeinstalled:
