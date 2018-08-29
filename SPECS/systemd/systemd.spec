@@ -1,14 +1,14 @@
-Summary:          Systemd-236
+Summary:          Systemd-239
 Name:             systemd
-Version:          236
-Release:          3%{?dist}
+Version:          239
+Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      systemd=eab372a3441997dfba1dfa41183918764c31a7df
+%define sha1      systemd=8803baa484cbe36680463c8c5e6febeff074b8e7
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -18,10 +18,7 @@ Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
 Patch2:           systemd-236-default-dns-from-env.patch
 Patch3:           systemd-macros.patch
-Patch4:           systemd-236-util-linux-build-failure.patch
-
-#TODO: Verify this patch is necessary or not
-#Patch4:           systemd-233-query-duid.patch
+Patch4:           systemd-239-query-duid.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -81,7 +78,7 @@ EOF
 %patch3 -p1
 %patch4 -p1
 
-sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
+sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
 %build
 export LANG=en_US.UTF-8
@@ -166,6 +163,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.resolve1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.network1.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.portable1.conf
+%config(noreplace) %{_sysconfdir}/dbus-1/system.d/org.freedesktop.timesync1.conf
 %config(noreplace) %{_sysconfdir}/systemd/system.conf
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
 %config(noreplace) %{_sysconfdir}/systemd/logind.conf
@@ -190,7 +189,12 @@ rm -rf %{buildroot}/*
 /lib/systemd/network/80-container*
 /lib/systemd/*.so
 /lib/systemd/resolv.conf
+/lib/systemd/portablectl
 %config(noreplace) /lib/systemd/network/99-default.link
+%config(noreplace) /lib/systemd/portable/profile/default/service.conf
+%config(noreplace) /lib/systemd/portable/profile/nonetwork/service.conf
+%config(noreplace) /lib/systemd/portable/profile/strict/service.conf
+%config(noreplace) /lib/systemd/portable/profile/trusted/service.conf
 %{_libdir}/environment.d/99-environment.conf
 %exclude %{_libdir}/debug
 %exclude %{_datadir}/locale
@@ -233,6 +237,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Aug 28 2018 Anish Swaminathan <anishs@vmware.com>  239-1
+-    Update systemd to 239
 *    Wed Apr 11 2018 Xiaolin Li <xiaolinl@vmware.com>  236-3
 -    Build systemd with util-linux 2.32.
 *    Wed Jan 17 2018 Divya Thaluru <dthaluru@vmware.com>  236-2
@@ -249,7 +255,7 @@ rm -rf %{buildroot}/*
 -    Move network file to systemd package
 *    Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 233-7
 -    Fix compilation issue for glibc-2.26
-*    Fri Jul 20 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
+*    Fri Jul 21 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-6
 -    Fix for CVE-2017-1000082.
 *    Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-5
 -    Fix default-dns-from-env patch.
