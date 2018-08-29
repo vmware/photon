@@ -414,7 +414,8 @@ class constants(object):
     skipSpecsForArch = {
         "x86_64":[
             "u-boot-rpi3.spec",
-            "openjdk8_aarch64.spec"
+            "openjdk8_aarch64.spec",
+            "librpcsecgss.spec"
             ],
         "aarch64":[
             # fakeroot-ng does not support aarch64
@@ -483,8 +484,8 @@ class constants(object):
             # does not recognize aarch64
             "thunderbird.spec",
             #
-            "open-vm-tools-vivace.spec"
-
+            "open-vm-tools-vivace.spec",
+            "librpcsecgss.spec"
         ]
     }
 
