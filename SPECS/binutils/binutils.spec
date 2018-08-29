@@ -1,45 +1,42 @@
-Summary:	Contains a linker, an assembler, and other tools
-Name:		binutils
-Version:	2.29.1
-Release:	2%{?dist}
-License:	GPLv2+
-URL:		http://www.gnu.org/software/binutils
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha1 binutils=172244a349d07ec205c39c0321cbc354c125e78e
-Patch0:         binutils-2.29.1-CVE-2017-14729.patch
-Patch1:         binutils-2.29.1-CVE-2017-15020.patch
+Summary:        Contains a linker, an assembler, and other tools
+Name:           binutils
+Version:        2.31
+Release:        1%{?dist}
+License:        GPLv2+
+URL:            http://www.gnu.org/software/binutils
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
+%define sha1 binutils=e1a564cd356d2126d2e9a59e8587757634e731aa
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
-%package	devel
-Summary:	Header and development files for binutils
-Requires:	%{name} = %{version}
-%description	devel
-It contains the libraries and header files to create applications 
+%package    devel
+Summary:    Header and development files for binutils
+Requires:   %{name} = %{version}
+%description    devel
+It contains the libraries and header files to create applications
 for handling compiled objects.
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 %build
 install -vdm 755 ../binutils-build
 cd ../binutils-build
 ../%{name}-%{version}/configure \
-	     --prefix=%{_prefix} \
-             --enable-gold       \
-             --enable-ld=default \
-             --enable-plugins    \
-             --enable-shared     \
-             --disable-werror    \
-             --with-system-zlib  \
-             --disable-silent-rules
+            --prefix=%{_prefix} \
+            --enable-gold       \
+            --enable-ld=default \
+            --enable-plugins    \
+            --enable-shared     \
+            --disable-werror    \
+            --with-system-zlib  \
+	    --enable-install-libiberty \
+            --disable-silent-rules
 make %{?_smp_mflags} tooldir=%{_prefix}
 %install
 pushd ../binutils-build
-make DESTDIR=%{buildroot} tooldir=%{_prefix} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} tooldir=%{_prefix} install
 find %{buildroot} -name '*.la' -delete
 # Don't remove libiberity.a
 rm -rf %{buildroot}/%{_infodir}
@@ -52,8 +49,8 @@ sed -i 's/testsuite/ /g' gold/Makefile
 make %{?_smp_mflags} check
 
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 %files -f %{name}.lang
 %defattr(-,root,root)
 %{_bindir}/dwp
@@ -74,94 +71,11 @@ make %{?_smp_mflags} check
 %{_bindir}/ranlib
 %{_bindir}/readelf
 %{_bindir}/strip
-%{_libdir}/ldscripts/elf32_x86_64.xu
-%{_libdir}/ldscripts/elf32_x86_64.xr
-%{_libdir}/ldscripts/i386linux.xr
-%{_libdir}/ldscripts/elf_l1om.xw
-%{_libdir}/ldscripts/elf_l1om.xdc
-%{_libdir}/ldscripts/elf_x86_64.xdw
-%{_libdir}/ldscripts/elf_k1om.xn
-%{_libdir}/ldscripts/elf_x86_64.xr
-%{_libdir}/ldscripts/i386linux.x
-%{_libdir}/ldscripts/elf_l1om.xd
-%{_libdir}/ldscripts/elf_k1om.xw
-%{_libdir}/ldscripts/elf_l1om.xs
-%{_libdir}/ldscripts/elf_i386.xc
-%{_libdir}/ldscripts/elf_i386.xdc
-%{_libdir}/ldscripts/elf_k1om.xd
-%{_libdir}/ldscripts/elf_i386.xw
-%{_libdir}/ldscripts/elf32_x86_64.x
-%{_libdir}/ldscripts/elf_i386.xsc
-%{_libdir}/ldscripts/elf_x86_64.xw
-%{_libdir}/ldscripts/i386linux.xn
-%{_libdir}/ldscripts/elf_k1om.xdw
-%{_libdir}/ldscripts/elf_k1om.x
-%{_libdir}/ldscripts/elf_i386.xr
-%{_libdir}/ldscripts/elf32_x86_64.xc
-%{_libdir}/ldscripts/elf_x86_64.xsw
-%{_libdir}/ldscripts/elf_x86_64.xd
-%{_libdir}/ldscripts/elf_i386.x
-%{_libdir}/ldscripts/elf_i386.xu
-%{_libdir}/ldscripts/elf_k1om.xdc
-%{_libdir}/ldscripts/elf32_x86_64.xn
-%{_libdir}/ldscripts/elf32_x86_64.xs
-%{_libdir}/ldscripts/elf_x86_64.x
-%{_libdir}/ldscripts/elf32_x86_64.xdc
-%{_libdir}/ldscripts/elf_l1om.xsc
-%{_libdir}/ldscripts/elf_l1om.x
-%{_libdir}/ldscripts/elf_x86_64.xsc
-%{_libdir}/ldscripts/elf_k1om.xu
-%{_libdir}/ldscripts/elf32_x86_64.xbn
-%{_libdir}/ldscripts/elf_x86_64.xu
-%{_libdir}/ldscripts/elf32_x86_64.xw
-%{_libdir}/ldscripts/elf_k1om.xs
-%{_libdir}/ldscripts/elf_x86_64.xn
-%{_libdir}/ldscripts/elf_l1om.xu
-%{_libdir}/ldscripts/elf32_x86_64.xdw
-%{_libdir}/ldscripts/elf_l1om.xsw
-%{_libdir}/ldscripts/elf_l1om.xc
-%{_libdir}/ldscripts/elf_l1om.xr
-%{_libdir}/ldscripts/i386linux.xbn
-%{_libdir}/ldscripts/elf_l1om.xn
-%{_libdir}/ldscripts/elf_i386.xsw
-%{_libdir}/ldscripts/elf32_x86_64.xd
-%{_libdir}/ldscripts/elf_k1om.xbn
-%{_libdir}/ldscripts/elf_i386.xn
-%{_libdir}/ldscripts/elf_i386.xbn
-%{_libdir}/ldscripts/i386linux.xu
-%{_libdir}/ldscripts/elf_k1om.xc
-%{_libdir}/ldscripts/elf32_x86_64.xsw
-%{_libdir}/ldscripts/elf_k1om.xr
-%{_libdir}/ldscripts/elf32_x86_64.xsc
-%{_libdir}/ldscripts/elf_k1om.xsw
-%{_libdir}/ldscripts/elf_i386.xdw
-%{_libdir}/ldscripts/elf_i386.xd
-%{_libdir}/ldscripts/elf_x86_64.xdc
-%{_libdir}/ldscripts/elf_i386.xs
-%{_libdir}/ldscripts/elf_x86_64.xs
-%{_libdir}/ldscripts/elf_x86_64.xc
-%{_libdir}/ldscripts/elf_k1om.xsc
-%{_libdir}/ldscripts/elf_l1om.xbn
-%{_libdir}/ldscripts/elf_x86_64.xbn
-%{_libdir}/ldscripts/elf_l1om.xdw
-%{_libdir}/ldscripts/elf_iamcu.x
-%{_libdir}/ldscripts/elf_iamcu.xbn
-%{_libdir}/ldscripts/elf_iamcu.xc
-%{_libdir}/ldscripts/elf_iamcu.xd
-%{_libdir}/ldscripts/elf_iamcu.xdc
-%{_libdir}/ldscripts/elf_iamcu.xdw
-%{_libdir}/ldscripts/elf_iamcu.xn
-%{_libdir}/ldscripts/elf_iamcu.xr
-%{_libdir}/ldscripts/elf_iamcu.xs
-%{_libdir}/ldscripts/elf_iamcu.xsc
-%{_libdir}/ldscripts/elf_iamcu.xsw
-%{_libdir}/ldscripts/elf_iamcu.xu
-%{_libdir}/ldscripts/elf_iamcu.xw
+%{_libdir}/ldscripts/*
 %{_mandir}/man1/readelf.1.gz
 %{_mandir}/man1/windmc.1.gz
 %{_mandir}/man1/ranlib.1.gz
 %{_mandir}/man1/gprof.1.gz
-%{_mandir}/man1/nlmconv.1.gz
 %{_mandir}/man1/strip.1.gz
 %{_mandir}/man1/c++filt.1.gz
 %{_mandir}/man1/as.1.gz
@@ -186,12 +100,34 @@ make %{?_smp_mflags} check
 %{_includedir}/ansidecl.h
 %{_includedir}/bfdlink.h
 %{_includedir}/dis-asm.h
+%{_includedir}/libiberty/*
+%{_includedir}/diagnostics.h
 %{_libdir}/libbfd.a
 %{_libdir}/libopcodes.a
 %{_libdir}/libbfd.so
 %{_libdir}/libopcodes.so
+%{_lib64dir}/libiberty.a
 
 %changelog
+*   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 2.31-1
+-   Update to version 2.31.
+*   Thu Jun 7 2018 Keerthana K <keerthanak@vmware.com> 2.30-4
+-   Fix CVE-2018-10373
+*   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 2.30-3
+-   Add libiberty to the -devel package
+*   Wed Feb 28 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-2
+-   Fix CVE-2018-6543.
+*   Mon Jan 29 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-1
+-   Update to version 2.30
+*   Mon Dec 18 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-5
+-   Fix CVEs CVE-2017-17121, CVE-2017-17122, CVE-2017-17123,
+-   CVE-2017-17124, CVE-2017-17125
+*   Mon Dec 4 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-4
+-   Fix CVEs CVE-2017-16826, CVE-2017-16827, CVE-2017-16828, CVE-2017-16829,
+-   CVE-2017-16830, CVE-2017-16831, CVE-2017-16832
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29.1-3
+-   Aarch64 support
+-   Parallel build
 *   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-2
 -   Add patch to fix CVE-2017-15020
 *   Mon Oct 2 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-1

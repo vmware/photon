@@ -2,8 +2,8 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.7.0
-Release:        9%{?dist}
+Version:        2.8.2
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -11,12 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=0f324ccfe52ae84a2b102a7f2db1411f4debacf6
-Patch0:         OVS-CVE-2017-9214.patch
-Patch1:         OVS-CVE-2017-9265.patch
-Patch2:         ovs-systemd-services.patch
-Patch3:         OVS-CVE-2017-9263.patch
-Patch4:         OVS-CVE-2017-14970.patch
+%define sha1 openvswitch=1d0e8cbf6d6e649e0f518219a599d7411f863875
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -123,10 +118,6 @@ It contains the documentation and manpages for OVN.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch3 -p1
-%patch4 -p1
 
 %build
 ./configure \
@@ -153,9 +144,14 @@ cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python3_s
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.template %{buildroot}/%{_sysconfdir}/sysconfig/openvswitch
 
-for service in openvswitch ovsdb-server ovs-vswitchd ovn-controller ovn-controller-vtep ovn-northd; do 
-	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service 
+/usr/bin/perl build-aux/dpdkstrip.pl --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
+for service in openvswitch ovsdb-server ovs-vswitchd ovn-controller ovn-controller-vtep ovn-northd; do
+	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
 done
+
+mkdir -p %{buildroot}/%{_sysconfdir}/openvswitch
+install -p -D -m 0644 rhel/etc_openvswitch_default.conf %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
+sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
@@ -208,13 +204,13 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_unitdir}/ovs-vswitchd.service
 %{_unitdir}/ovsdb-server.service
 %{_libdir}/lib*
+%{_sysconfdir}/openvswitch/default.conf
 %{_sysconfdir}/bash_completion.d/ovs-*-bashcomp.bash
 %{_datadir}/openvswitch/*.ovsschema
 %{_datadir}/openvswitch/bugtool-plugins/*
 %{_datadir}/openvswitch/python/*
 %{_datadir}/openvswitch/scripts/ovs-*
 %config(noreplace) %{_sysconfdir}/sysconfig/openvswitch
-
 
 %files -n python-openvswitch
 %{python2_sitelib}/*
@@ -244,6 +240,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/ovn-nbctl
 %{_bindir}/ovn-sbctl
 %{_bindir}/ovn-trace
+%{_bindir}/ovn-detrace
 %{_datadir}/openvswitch/scripts/ovn-ctl
 %{_datadir}/openvswitch/scripts/ovndb-servers.ocf
 %{_datadir}/openvswitch/scripts/ovn-bugtool-nbctl-show
@@ -269,6 +266,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/ovn-docker-underlay-driver
 
 %files -n ovn-doc
+%{_mandir}/man1/ovn-detrace.1.gz
 %{_mandir}/man7/ovn-architecture.7.gz
 %{_mandir}/man8/ovn-ctl.8.gz
 %{_mandir}/man8/ovn-nbctl.8.gz
@@ -281,6 +279,10 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Wed Feb 28 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-2
+-   Setup the default conf file for local ovsdb server.
+*   Tue Feb 27 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-1
+-   Update to OVS 2.8.2
 *   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-9
 -   Fix CVE-2017-14970
 *   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-8

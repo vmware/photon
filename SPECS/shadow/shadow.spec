@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.2.1
-Release:        14%{?dist}
+Release:        16%{?dist}
 URL:            http://pkg-shadow.alioth.debian.org/
 License:        BSD
 Group:          Applications/System
@@ -9,11 +9,21 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://pkg-shadow.alioth.debian.org/releases/%{name}-%{version}.tar.xz
 %define sha1    shadow=0917cbadd4ce0c7c36670e5ecd37bbed92e6d82d
-Source1:        PAM-Configuration-Files-1.5.tar.gz
-%define sha1    PAM=08052511f985e3b3072c194ac1287e036d9299fb
+Source1:        chage
+Source2:        chpasswd
+Source3:        login
+Source4:        other
+Source5:        passwd
+Source6:        sshd
+Source7:        su
+Source8:        system-account
+Source9:        system-auth
+Source10:       system-password
+Source11:       system-session
 Patch0:         chkname-allowcase.patch
 Patch1:         shadow-4.2.1-CVE-2016-6252-fix.patch
 Patch2:         shadow-4.2.1-CVE-2017-12424.patch
+Patch3:         shadow-4.2.1-CVE-2018-7169.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -41,10 +51,10 @@ These are the additional language files of shadow.
 
 %prep
 %setup -q -n %{name}-%{version}
-%setup -q -T -D -a 1
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -94,9 +104,18 @@ done
 
 sed -i "s/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/" %{buildroot}/etc/login.defs
 
-pushd PAM-Configuration-Files
-install -vm644 * %{buildroot}%{_sysconfdir}/pam.d/
-popd
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE2} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE4} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE5} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE6} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE7} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE8} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE9} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/pam.d/
+install -vm644 %{SOURCE11} %{buildroot}%{_sysconfdir}/pam.d/
+
 for PROGRAM in chfn chgpasswd chsh groupadd groupdel \
                groupmems groupmod newusers useradd userdel usermod
 do
@@ -152,6 +171,11 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Mon Jul 30 2018 Tapas Kundu <tkundu@vmware.com> 4.2.1-16
+-   Added fix for CVE-2018-7169
+*   Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-15
+-   Move pam.d config file to here for better tracking.
+-   Add pam_loginuid module as optional in a session.
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-14
 -   Added -tools subpackage
 -   Main package requires -tools or toybox

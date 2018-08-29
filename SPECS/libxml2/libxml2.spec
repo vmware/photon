@@ -3,28 +3,17 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.4
-Release:        12%{?dist}
+Version:        2.9.7
+Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
-Patch0:         libxml2-2.9.4-support-cve-2016-5131.patch
-Patch1:         libxml2-2.9.4-cve-2016-5131.patch
-# Proposed patch from https://bugzilla.gnome.org/show_bug.cgi?id=772726#c17
-# Fix for CVE-2016-9318
-Patch2:         cve-2016-9318.patch
-# Fix for CVE-2017-9047 and CVE-2017-9048
-Patch3:         libxml2-fix-buffer-size-checks.patch
-# Fix for CVE-2017-9049 and CVE-2017-9050
-Patch4:         libxml2-fix-handling-of-parameter-entity-references.patch
-Patch5:         libxml2-fix-handling-of-parameter-entity-references-test.patch
-Patch6:         CVE-2017-8872.patch
 #https://bugs.python.org/issue23524
-Patch7:         libxml2-2.9.4-remove-_PyVerify_fd-call.patch
-%define sha1    libxml2=958ae70baf186263a4bd801a81dd5d682aedd1db
+Patch0:         libxml2-2.9.4-remove-_PyVerify_fd-call.patch
+%define sha1    libxml2=ab3325e6cdda50ab2382fdfe0bdb6f7d1b9224a6
 Provides:       pkgconfig(libxml-2.0)
 
 %description
@@ -62,13 +51,6 @@ Static libraries and header files for the support library for libxml
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -132,8 +114,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
-
 %changelog
+*   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 2.9.7-1
+-   Update to version 2.9.7
+*   Wed Oct 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
+-   Update to version 2.9.6
 *   Mon Oct 2 2017 Anish Swaminathan <anishs@vmware.com> 2.9.4-12
 -   Remove call to _PyVerify_fd
 *   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.4-11

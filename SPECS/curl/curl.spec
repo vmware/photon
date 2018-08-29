@@ -1,14 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.54.1
+Version:        7.59.0
 Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.lzma
-%define sha1    curl=5e549585a3e9746bd672f52cea2a7ea4936021ef
+Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
+%define sha1    curl=1a9bd7e201e645207b23a4b4dc38a32cc494a638
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -88,6 +88,20 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Wed Apr 04 2018 Dheeraj Shetty <dheerajs@vmware.com> 7.59.0-1
+-   Update to version 7.59.0
+*   Thu Feb 08 2018 Xiaolin Li <xiaolinl@vmware.com> 7.58.0-1
+-   Fix CVE-2017-8817.
+*   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 7.56.1-2
+-   Fix CVE-2017-8818.
+*   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 7.56.1-1
+-   Update to version 7.56.1
+*   Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.1-4
+-   Fix CVE-2017-1000257
+*   Mon Nov 06 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.1-3
+-   Fix CVE-2017-1000254
+*   Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 7.54.1-2
+-   Fix CVE-2017-1000099, CVE-2017-1000100, CVE-2017-1000101
 *   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 7.54.1-1
 -   Update to 7.54.1
 *   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 7.54.0-1

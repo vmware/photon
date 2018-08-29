@@ -1,19 +1,19 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2l
-Release:        2%{?dist}
+Version:        1.0.2p
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
-%define sha1    openssl=b58d5d0e9cea20e571d903aafa853e2ccd914138
+%define sha1    openssl=f34b5322e92415755c7d58bf5d0d5cf37666382c
+Source1:        rehash_ca_certificates.sh
 Patch0:         c_rehash.patch
-Patch1:         openssl-1.0.2f-ipv6apps.patch
+Patch1:         openssl-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
-Patch4:         openssl-CVE-2017-3735.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -57,7 +57,6 @@ Perl scripts that convert certificates and keys to various formats.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -74,6 +73,7 @@ make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
+install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
 ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
@@ -115,8 +115,17 @@ rm -rf %{buildroot}/*
 
 %files c_rehash
 /%{_bindir}/c_rehash
+/%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Fri Aug 17 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.2p-1
+-   Upgrade to 1.0.2p
+*   Wed Mar 21 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.0.2n-2
+-   Add script which rehashes the certificates
+*   Tue Jan 02 2018 Xiaolin Li <xiaolinl@vmware.com> 1.0.2n-1
+-   Upgrade to 1.0.2n
+*   Tue Nov 07 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2m-1
+-   Upgrade to 1.0.2m
 *   Tue Oct 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.2l-2
 -   Fix CVE-2017-3735 OOB read.
 *   Fri Aug 11 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2l-1
@@ -139,7 +148,7 @@ rm -rf %{buildroot}/*
 -   Security bug fix, CVE-2016-2182.
 *   Tue Sep 20 2016 Kumar Kaushik <kaushikk@vmware.com> 1.0.2h-4
 -   Security bug fix, CVE-2016-6303.
-*   Fri Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
+*   Wed Jun 22 2016 Anish Swaminathan <anishs@vmware.com> 1.0.2h-3
 -   Add patches for using openssl_init under all initialization and changing default RAND
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.2h-2
 -   GA - Bump release of all rpms

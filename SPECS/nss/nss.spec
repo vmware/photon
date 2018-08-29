@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.31
-Release:        3%{?dist}
+Release:        5%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -50,7 +50,7 @@ make VERBOSE=1 BUILD_OPT=1 \
     NSPR_INCLUDE_DIR=%{_includedir}/nspr \
     USE_SYSTEM_ZLIB=1 \
     ZLIB_LIBS=-lz \
-    $([ $(uname -m) = x86_64 ] && echo USE_64=1) \
+    USE_64=1 \
     $([ -f %{_includedir}/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
 %install
 cd nss
@@ -87,7 +87,7 @@ sudo -u test ./all.sh && userdel test -r -f
 
 %files devel
 %{_includedir}/*
-%exclude %{_libdir}/*.a
+%{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
 %files libs
@@ -97,6 +97,10 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 3.31-5
+-   Add static libcrmf.a library to devel package
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.31-4
+-   Aarch64 support
 *   Fri Jul 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.31-3
 -   Fix buildrequires.
 *   Thu Jun 29 2017 Xiaolin Li <xiaolinl@vmware.com> 3.31-2

@@ -88,9 +88,9 @@ DISK_DEVICE=`losetup --show -f $VMDK_IMAGE_NAME`
 echo "Creating partition on raw disk"
 if [ $SWAP_PARTITION_SIZE -gt 0 ] 
 then
-      sgdisk -n 1::+3M -n 2::+${ROOT_PARTITION_SIZE}G -n 3: -p $DISK_DEVICE >> $LOGFILE
+      sgdisk -n 1::+8M -n 2::+${ROOT_PARTITION_SIZE}G -n 3: -p $DISK_DEVICE >> $LOGFILE
 else
-      sgdisk -n 1::+3M -n 2: -p $DISK_DEVICE >> $LOGFILE
+      sgdisk -n 1::+8M -n 2: -p $DISK_DEVICE >> $LOGFILE
 fi
 
 if [ $BOOT_FIRM_WARE = "efi" ]

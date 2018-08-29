@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2017.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1    ostree=eb3546c552849ace2f4e3701bc0b826611f569cc
 Source1:        91-ostree.preset
@@ -66,7 +66,7 @@ The %{name}-devel package includes the header files for the %{name} library
 
 %prep
 %setup -n %{name}-%{version}
-(git clone git://git.gnome.org/libglnx libglnx  && cd libglnx && git checkout 602fdd9)
+(git clone git://github.com/GNOME/libglnx libglnx && cd libglnx && git checkout 602fdd9)
 (git clone https://github.com/mendsley/bsdiff bsdiff && cd bsdiff && git checkout 1edf9f6)
 
 %build
@@ -136,6 +136,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Thu Aug 23 2018 Tapas Kundu <tkundu@vmware.com> 2017.4-3
+-   Corrected the git clone path for libglnx.
 *	Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2017.4-2
 -	Use libgsystem-devel to build instead of libgsystem.
 *   Mon Apr 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2017.4-1

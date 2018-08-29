@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+source common.inc
+
 DIST_TAG=$1
 DIST_VER=$2
 SPEC_DIR=$3
@@ -13,7 +15,7 @@ WAVEFRONT_PROXY_VER=`cat ${SPEC_DIR}/wavefront-proxy/wavefront-proxy.spec | grep
 WAVEFRONT_PROXY_VER_REL=${WAVEFRONT_PROXY_VER}-`cat ${SPEC_DIR}/wavefront-proxy/wavefront-proxy.spec | grep Release | cut -d: -f2 | tr -d ' ' | cut -d% -f1`
 WAVEFRONT_PROXY_RPM=wavefront-proxy-${WAVEFRONT_PROXY_VER_REL}${DIST_TAG}.${ARCH}.rpm
 WAVEFRONT_PROXY_RPM_FILE=${STAGE_DIR}/RPMS/${ARCH}/${WAVEFRONT_PROXY_RPM}
-WAVEFRONT_PROXY_TAR=wavefront-proxy-v${WAVEFRONT_PROXY_VER}.tar
+WAVEFRONT_PROXY_TAR=wavefront-proxy-v${WAVEFRONT_PROXY_VER_REL}.tar
 
 if [ ! -f ${WAVEFRONT_PROXY_RPM_FILE} ]
 then
@@ -21,7 +23,7 @@ then
     exit 1
 fi
 
-IMG_NAME=vmware_photon_${DIST_VER}/wavefront-proxy:v${WAVEFRONT_PROXY_VER}
+IMG_NAME=vmware/photon-${DIST_VER}-wavefront-proxy:v${WAVEFRONT_PROXY_VER}
 
 IMG_ID=`docker images -q ${IMG_NAME} 2> /dev/null`
 if [[ ! -z "${IMG_ID}" ]]; then
@@ -34,9 +36,12 @@ cp ${WAVEFRONT_PROXY_RPM_FILE} tmp/wavefront-proxy/
 pushd ./tmp/wavefront-proxy
 rpm2cpio ${WAVEFRONT_PROXY_RPM} | cpio -vid
 popd
+
+setup_repo
+
 docker build --rm -t ${IMG_NAME} -f Dockerfile.wavefront-proxy .
 docker save -o ${WAVEFRONT_PROXY_TAR} ${IMG_NAME}
 gzip ${WAVEFRONT_PROXY_TAR}
-mv -f ${WAVEFRONT_PROXY_TAR}.gz ${STAGE_DIR}/
+mv -f ${WAVEFRONT_PROXY_TAR}.gz ${STAGE_DIR}/docker_images/
 
 rm -rf ./tmp

@@ -1,16 +1,16 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.1.10
-Release:        1%{?dist}
+Version:        10.2.0
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=26ac84e86b4c862006b8de7973802e45dfd77464
-Source1:        gosc-scripts-1.0.tar.gz
-%define sha1 gosc-scripts-1.0=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
+%define sha1 open-vm-tools=adba97493c4f96db6281a6964ee26b17b5adc5c5
+Source1:        gosc-scripts-1.2.tar.gz
+%define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 Patch0:         IPv6Support.patch
@@ -18,6 +18,7 @@ Patch1:         hostnameReCustomizationFix.patch
 Patch2:         PureIPv6-hosts.patch
 Patch3:         GOSC-libDeploy.patch
 Patch4:         timezoneCust.patch
+Patch5:         gosc-post-custom.patch
 BuildRequires:  glib-devel
 BuildRequires:  xerces-c-devel
 BuildRequires:  xml-security-c-devel
@@ -54,6 +55,7 @@ It contains the libraries and header files to create applications.
 %patch2 -p0
 %patch3 -p2
 %patch4 -p0
+%patch5 -p0
 %build
 touch ChangeLog
 autoreconf -i
@@ -113,6 +115,14 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Tue Jul 10 2018 Keerthana K <keerthanak@vmware.com> 10.2.0-4
+-   Fix for post custom script failure.
+*   Mon Apr 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.2.0-3
+-   Revert regex changes to gosc scripts.
+*   Wed Mar 21 2018 Anish Swaminathan <anishs@vmware.com> 10.2.0-2
+-   Fix gosc patch to call customization
+*   Wed Jan 24 2018 Kumar Kaushik <kaushikk@vmware.com> 10.2.0-1
+-   Updating version to 10.2.0.
 *   Tue Aug 22 2017 Kumar Kaushik <kaushikk@vmware.com> 10.1.10-1
 -   Updating version to 10.1.10, removing upstream patches.
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.5-6

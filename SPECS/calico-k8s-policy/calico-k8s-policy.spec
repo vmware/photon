@@ -1,15 +1,17 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
-Version:        0.5.4
+Version:        1.0.0
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico-k8s-policy=83623f81e50d81dc1dd858c9ae340a10ba3670e3
+%define sha1 calico-k8s-policy=612eafdb2afee6ffbfc432e0110c787823b66ccc
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
+BuildRequires:  glide
+BuildRequires:  go >= 1.8
 BuildRequires:  libcalico
 BuildRequires:  libffi-devel
 BuildRequires:  openssl-devel
@@ -57,13 +59,20 @@ Requires:       python-setuptools
 Calico Network Policy enables Calico to enforce network policy on top of Calico BGP, Flannel, or GCE native.
 
 %prep
-%setup -n k8s-policy-%{version}
+%setup -n kube-controllers-%{version}
 echo "VERSION='`git describe --tags --dirty`'" > version.py
 
 %build
-pyinstaller controller.py -ayF
+mkdir -p /root/.glide
+mkdir -p ${GOPATH}/src/github.com/projectcalico/k8s-policy
+cp -r * ${GOPATH}/src/github.com/projectcalico/k8s-policy
+pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
+glide install -strip-vendor
+mkdir -p dist
+CGO_ENABLED=0 go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./main.go
 
 %install
+pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 
@@ -72,5 +81,9 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+*   Tue Nov 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.0-1
+-   Calico kubernetes policy v1.0.0.
+*   Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.0-1
+-   Calico kubernetes policy v0.7.0.
 *   Tue Aug 22 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.5.4-1
 -   Calico kubernetes policy for PhotonOS.

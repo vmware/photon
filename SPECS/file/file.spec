@@ -1,7 +1,7 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.30
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
@@ -10,9 +10,16 @@ Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %define sha1    file=276051cd2c438d4e7a321c4422a5b3bc850fd747
 Patch0:         file-5.30-keep-not-stripped-last.patch
+Requires:       %{name}-libs = %{version}-%{release}
+Conflicts:      toybox
 %description
 The package contains a utility for determining the type of a
 given file or files
+
+%package        libs
+Summary:        Library files for file
+%description    libs
+It contains the libraries to run the application.
 
 %package        devel
 Summary:        Header and development files for file
@@ -35,14 +42,18 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %check
 make %{?_smp_mflags} check
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*.so.*
 %{_mandir}/*man1/*
 %{_mandir}/*man4/*
+
+%files  libs
+%defattr(-,root,root)
+%{_libdir}/*.so.*
 %{_datarootdir}/misc/magic.mgc
 
 %files  devel
@@ -51,6 +62,9 @@ make %{?_smp_mflags} check
 %{_mandir}/*man3/*
 
 %changelog
+*   Fri Dec 15 2017 Divya Thaluru <dthaluru@vmware.com> 5.30-3
+-   Added seperate package for libraries
+-   Added toybox as conflict package
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 5.30-2
 -   Add devel package.
 *   Tue Apr 04 2017 Chang Lee <changlee@vmware.com> 5.30-1

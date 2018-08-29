@@ -1,16 +1,17 @@
-Summary:	Libraries for terminal handling of character screens
-Name:		ncurses
-Version:	6.0
-Release:	12%{?dist}
-License:	MIT
-URL:		http://invisible-island.net/ncurses/
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-%global ncursessubversion 20171007
-Source0:	ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-20171007.tgz
-%define sha1 ncurses=527be8da26f04f50c1d659e972fa7d0b762c3a80
-Requires:	ncurses-libs = %{version}-%{release}
+Summary:        Libraries for terminal handling of character screens
+Name:           ncurses
+Version:        6.0
+Release:        14%{?dist}
+License:        MIT
+URL:            http://invisible-island.net/ncurses/
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+%global ncursessubversion 20171125
+Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-20171125.tgz
+%define sha1    ncurses=179d79d707ac5040499294e3206fd558d52b604a
+Requires:       ncurses-libs = %{version}-%{release}
+Patch0:         CVE-2018-10754.patch
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
@@ -32,54 +33,55 @@ Provides: libncurses.so.5()(64bit)
 This package contains the ABI version 5 of the ncurses libraries for
 compatibility.
 
-%package	devel
-Summary:	Header and development files for ncurses
-Requires:	%{name} = %{version}-%{release}
-Provides:	pkgconfig(ncurses)
-%description	devel
+%package        devel
+Summary:        Header and development files for ncurses
+Requires:       %{name} = %{version}-%{release}
+Provides:       pkgconfig(ncurses)
+%description    devel
 It contains the libraries and header files to create applications 
 
-%package	terminfo
-Summary:	terminfo files for ncurses
-Requires:	%{name} = %{version}-%{release}
-%description	terminfo
+%package        terminfo
+Summary:        terminfo files for ncurses
+Requires:       %{name} = %{version}-%{release}
+%description    terminfo
 It contains all terminfo files
 
 %prep
 %setup -q -n %{name}-%{version}-%{ncursessubversion}
+%patch0 -p1
 
 %build
 mkdir v6
 pushd v6
 ln -s ../configure .
 ./configure \
-	--prefix=%{_prefix} \
-	--mandir=%{_mandir} \
-	--with-shared \
-	--without-debug \
-	--enable-pc-files \
-	--enable-widec \
-	--disable-lp64 \
-	--with-chtype='long' \
-	--with-mmask-t='long' \
-	--disable-silent-rules
+    --prefix=%{_prefix} \
+    --mandir=%{_mandir} \
+    --with-shared \
+    --without-debug \
+    --enable-pc-files \
+    --enable-widec \
+    --disable-lp64 \
+    --with-chtype='long' \
+    --with-mmask-t='long' \
+    --disable-silent-rules
 make %{?_smp_mflags}
 popd
 mkdir v5
 pushd v5
 ln -s ../configure .
 ./configure \
-	--prefix=%{_prefix} \
-	--mandir=%{_mandir} \
-	--with-shared \
-	--without-debug \
-	--enable-pc-files \
-	--enable-widec \
-	--disable-lp64 \
-	--with-chtype='long' \
-	--with-mmask-t='long' \
-	--disable-silent-rules \
-	--with-abi-version=5
+    --prefix=%{_prefix} \
+    --mandir=%{_mandir} \
+    --with-shared \
+    --without-debug \
+    --enable-pc-files \
+    --enable-widec \
+    --disable-lp64 \
+    --with-chtype='long' \
+    --with-mmask-t='long' \
+    --disable-silent-rules \
+    --with-abi-version=5
 make %{?_smp_mflags}
 popd
 %install
@@ -110,7 +112,7 @@ cd test
 make
 
 %post libs -p /sbin/ldconfig
-%postun	libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 %post compat -p /sbin/ldconfig
 %postun compat -p /sbin/ldconfig
 %files
@@ -183,6 +185,10 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Tue Jul 17 2018 Tapas Kundu <tkundu@vmware.com> 6.0-14
+-   Fix for CVE-2018-10754
+*   Wed Dec 06 2017 Xiaolin Li <xiaolinl@vmware.com> 6.0-13
+-   version bump to 20171007, fix CVE-2017-16879
 *   Tue Oct 10 2017 Bo Gan <ganb@vmware.com> 6.0-12
 -   version bump to 20171007
 -   Fix for CVE-2017-11112, CVE-2017-11113 and CVE-2017-13728

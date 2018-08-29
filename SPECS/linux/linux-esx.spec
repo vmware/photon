@@ -1,30 +1,27 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.53
-Release:        3%{?dist}
+Version:        4.14.54
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=b3e6e5608b6684d103fea702cd08b498162a4c96
+%define sha1 linux=434080e874f7b78c3234f22784427d4a189fb54d
 Source1:        config-esx
 Source2:        initramfs.trigger
 # common
-Patch0:         x86-vmware-read-tsc_khz-only-once-at-boot-time.patch
-Patch1:         x86-vmware-use-tsc_khz-value-for-calibrate_cpu.patch
-Patch2:         x86-vmware-add-basic-paravirt-ops-support.patch
-Patch3:         x86-vmware-add-paravirt-sched-clock.patch
-Patch4:         x86-vmware-log-kmsg-dump-on-panic.patch
-Patch5:         double-tcp_mem-limits.patch
-Patch6:         linux-4.9-sysctl-sched_weighted_cpuload_uses_rla.patch
-Patch7:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch9:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch10:        SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch11:        net-9p-vsock.patch
-Patch12:        x86-vmware-sta.patch
+Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
+Patch1:         double-tcp_mem-limits.patch
+# TODO: disable this patch, check for regressions
+#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch5:         vsock-transport-for-9p.patch
+Patch6:         x86-vmware-STA-support.patch
+
 # -esx
 Patch13:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch14:        01-clear-linux.patch
@@ -36,8 +33,6 @@ Patch19:        06-pv-ops-boot_clock.patch
 Patch20:        07-vmware-only.patch
 Patch21:        vmware-balloon-late-initcall.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix CVE-2017-11472
-Patch23:        ACPICA-Namespace-fix-operand-cache-leak.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
 
@@ -80,16 +75,10 @@ The Linux package contains the Linux kernel doc files
 %setup -q -n linux-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch7 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
@@ -100,7 +89,6 @@ The Linux package contains the Linux kernel doc files
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
-%patch23 -p1
 %patch24 -p1
 
 %build
@@ -174,7 +162,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 %include %{SOURCE2}
 
 %post
-/sbin/depmod -aq %{uname_r}
+/sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
 %files
@@ -198,6 +186,23 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
+-   Update to version 4.14.54
+*   Fri Feb 02 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-1
+-   Version update
+*   Mon Dec 19 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-2
+-   Enable audit support (CONFIG_AUDIT=y)
+*   Mon Dec 04 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.66-1
+-   Version update
+*   Tue Nov 21 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.64-1
+-   Version update
+*   Mon Nov 06 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.60-1
+-   Version update
+*   Wed Oct 25 2017 Anish Swaminathan <anishs@vmware.com> 4.9.53-5
+-   Enable x86 vsyscall emulation
+*   Tue Oct 17 2017 Alexey Makhalov <amakhalov@vmware.com> 4.9.53-4
+-   Enable vsyscall emulation
+-   Do not use deprecated -q depmod option
 *   Wed Oct 11 2017 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.9.53-3
 -   Add patch "KVM: Don't accept obviously wrong gsi values via
     KVM_IRQFD" to fix CVE-2017-1000252.

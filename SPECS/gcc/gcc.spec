@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -100,6 +100,7 @@ install -vdm 755 ../gcc-build
 # 1. "typedef struct ucontext ucontext_t" was renamed to
 #    "typedef struct ucontext_t ucontext_t"
 sed -i 's/struct ucontext/ucontext_t/g' libgcc/config/i386/linux-unwind.h
+sed -i 's/struct ucontext/ucontext_t/g' libgcc/config/aarch64/linux-unwind.h
 # 2. struct sigaltstack removed
 sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.cc
 sed -i '/struct sigaltstack;/d' libsanitizer/sanitizer_common/sanitizer_linux.h
@@ -132,13 +133,8 @@ install -vdm 755 %{buildroot}/%_lib
 ln -sv %{_bindir}/cpp %{buildroot}/%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
 install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
-%ifarch x86_64
-    mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
-    chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
-%else
-    mv -v %{buildroot}%{_libdir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
-    chmod 755 %{buildroot}/%{_lib}/libgcc_s.so.1
-%endif
+mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
 rm -rf %{buildroot}%{_infodir}
 popd
 %find_lang %{name} --all-name
@@ -164,11 +160,14 @@ make %{?_smp_mflags} check-gcc
 %{_lib}/cpp
 #   Executables
 %exclude %{_bindir}/*gfortran
-%exclude %{_libexecdir}/gcc/x86_64-pc-linux-gnu/%{version}/f951
 %{_bindir}/*
 #   Libraries
-%ifarch x86_64
 %{_lib64dir}/*
+%ifarch x86_64
+%exclude %{_libexecdir}/gcc/x86_64-pc-linux-gnu/%{version}/f951
+%endif
+%ifarch aarch64
+%exclude %{_libexecdir}/gcc/aarch64-unknown-linux-gnu/%{version}/f951
 %endif
 %{_libdir}/gcc/*
 #   Library executables
@@ -181,92 +180,61 @@ make %{?_smp_mflags} check-gcc
 %{_mandir}/man7/*.gz
 %{_datadir}/gdb/*
 
-%ifarch x86_64
 %exclude %{_lib64dir}/libgcc*
 %exclude %{_lib64dir}/libstdc++*
 %exclude %{_lib64dir}/libgomp*
-%else
-%exclude %{_libdir}/libgcc*
-%exclude %{_libdir}/libstdc++*
-%exclude %{_libdir}/libgomp*
-%endif
 
 %files -n     gfortran
 %defattr(-,root,root)
 %{_bindir}/*gfortran
 %{_mandir}/man1/gfortran.1.gz
+%ifarch x86_64
 %{_libexecdir}/gcc/x86_64-pc-linux-gnu/%{version}/f951
+%endif
+%ifarch aarch64
+%{_libexecdir}/gcc/aarch64-unknown-linux-gnu/%{version}/f951
+%endif
 
 %files -n libgcc
 %defattr(-,root,root)
-%ifarch x86_64
 %{_lib64dir}/libgcc_s.so.*
-%else
-%{_libdir}/libgcc_s.so.*
-%endif
 
 %files -n libgcc-atomic
 %defattr(-,root,root)
-%ifarch x86_64
 %{_lib64dir}/libatomic.so*
-%else
-%{_lib64dir}/libatomic.so*
-%endif
 
 %files -n libgcc-devel
 %defattr(-,root,root)
-%ifarch x86_64
 %{_lib64dir}/libgcc_s.so
-%else
-%{_libdir}/libgcc_s.so
-%endif
 
 
 %files -n libstdc++
 %defattr(-,root,root)
-%ifarch x86_64
 %{_lib64dir}/libstdc++.so.*
-%else
-%{_libdir}/libstdc++.so.*
-%endif
 %dir %{_datarootdir}/gcc-%{version}/python/libstdcxx
 %{_datarootdir}/gcc-%{version}/python/libstdcxx/*
 
 %files -n libstdc++-devel
 %defattr(-,root,root)
-%ifarch x86_64
 %{_lib64dir}/libstdc++.so
 %{_lib64dir}/libstdc++.la
-%else
-%{_libdir}/libstdc++.so
-%{_libdir}/libstdc++.la
-%endif
 
 %{_includedir}/c++/*
 
 %files -n libgomp
 %defattr(-,root,root)
-%ifarch x86_64
 %{_lib64dir}/libgomp*.so.*
-%else
-%{_libdir}/libgomp*.so.*
-%endif
 
 %files -n libgomp-devel
 %defattr(-,root,root)
-%ifarch x86_64
 %{_lib64dir}/libgomp.a
 %{_lib64dir}/libgomp.la
 %{_lib64dir}/libgomp.so
 %{_lib64dir}/libgomp.spec
-%else
-%{_libdir}/libgomp.a
-%{_libdir}/libgomp.la
-%{_libdir}/libgomp.so
-%{_libdir}/libgomp.spec
-%endif
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-7
+-   Aarch64 support
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-6
 -   Added smp_mflags for parallel build
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-5

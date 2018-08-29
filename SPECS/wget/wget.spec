@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.19.1
-Release:        2%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -9,6 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
 %define sha1    wget=cde25e99c144191644406793cbd1c69c102c6970
+Patch0:         wget-CVE-2017-13089.patch
+Patch1:         wget-CVE-2017-13090.patch
+Patch2:         wget-CVE-2017-6508.patch
 Requires:       openssl
 BuildRequires:  openssl-devel
 %if %{with_check}
@@ -20,6 +23,9 @@ The Wget package contains a utility useful for non-interactive
 downloading of files from the Web.
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 ./configure \
@@ -56,6 +62,10 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Tue Dec 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-4
+-   Fix CVE-2017-6508
+*   Mon Nov 20 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-3
+-   Fix CVE-2017-13089 and CVE-2017-13090
 *   Wed Aug 09 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.19.1-2
 -   Install HTTP::Daemon perl module for the tests to pass.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 1.19.1-1

@@ -1,14 +1,14 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.29.2
-Release:        5%{?dist}
+Version:        2.32
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
-%define sha1    util-linux=b488f185e74187a63b55baef9d3f48d5b1780118
+%define sha1    util-linux=4a21387d51f73bab44230c3bf9fe5a291e761111
 BuildRequires:  ncurses-devel
 %if %{with_check}
 BuildRequires:  ncurses-terminfo
@@ -97,6 +97,10 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Apr 09 2018 Xiaolin Li <xiaolinl@vmware.com> 2.32-1
+-   Update to version 2.32, fix CVE-2018-7738
+*   Wed Dec 27 2017 Anish Swaminathan <anishs@vmware.com> 2.31.1-1
+-   Upgrade to version 2.31.1.
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 2.29.2-5
 -   Added conflicts toybox
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 2.29.2-4

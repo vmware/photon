@@ -1,6 +1,6 @@
 Name:          crash
 Version:       7.1.8
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
@@ -12,6 +12,7 @@ Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
 Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-1.4.0.tar.gz
 %define sha1 crash-gcore=1434f787d7210516b12c2f28e5b9e5917c5b3eca
 Source2:       gdb-7.6-extra-patch.patch
+Source3:       gcore_defs.patch
 License:       GPL
 #Patch0:        gcore-support-linux-4.4.patch
 BuildRequires: binutils
@@ -44,7 +45,13 @@ This package contains libraries and header files need for development.
 cat %{SOURCE2} >> gdb-7.6.patch
 make RPMPKG=%{version}-%{release}
 cd crash-gcore-command-%{CRASH_GCORE_VERSION}
+%ifarch x86_64
 make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
+%endif
+%ifarch aarch64
+patch -p1 < %{SOURCE3}
+make -f gcore.mk ARCH=SUPPORTED TARGET=ARM64
+%endif
 
 %install
 [ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
@@ -74,6 +81,8 @@ install -pm 755 crash-gcore-command-%{CRASH_GCORE_VERSION}/gcore.so %{buildroot}
 %{_includedir}/crash/*.h
 
 %changelog
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.1.8-2
+-   Aarch64 support
 *   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 7.1.8-1
 -   Update version to 7.1.8 (it supports linux-4.9)
 -   Disable a patch - it requires a verification.

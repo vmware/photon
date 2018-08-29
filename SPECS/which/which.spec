@@ -1,7 +1,7 @@
 Summary:	Program shows full path of (shell) commands
 Name:		which
 Version:	2.21
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3+
 URL:		http://savannah.gnu.org/projects/which
 Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
@@ -15,17 +15,19 @@ Program for showing the full the path of (shell) commands.
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix}
-make %{?_smp_mflags}
+%configure
+%make_build
 %install
-make DESTDIR=%{buildroot} install
+%make_install
+rm -rf %{buildroot}%{_infodir}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-/usr/share/info/*
 %{_mandir}/man1/*
 %changelog
+* Thu Oct 19 2017 Alexey Makhalov <amakhalov@vmware.com> 2.21-5
+- Remove infodir
+- Use standard configure/build macros
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 2.21-4
 - Added conflicts toybox
 * Mon Oct 10 2016 ChangLee <changlee@vmware.com> 2.21-3

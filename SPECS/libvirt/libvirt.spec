@@ -1,14 +1,15 @@
-Summary:	Virtualization API library that supports KVM, QEMU, Xen, ESX etc
-Name:		libvirt
-Version:	3.2.0
-Release:	2%{?dist}
-License:	LGPL
-URL:		http://libvirt.org/
-Source0:	http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha1 libvirt=47d4b443fdf1e268589529018c436bbc4b413a7c
-Group:		Virtualization/Libraries
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
+Name:           libvirt
+Version:        3.2.0
+Release:        4%{?dist}
+License:        LGPL
+URL:            http://libvirt.org/
+Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
+%define sha1    libvirt=47d4b443fdf1e268589529018c436bbc4b413a7c
+Patch0:         libvirt-CVE-2017-1000256.patch
+Group:          Virtualization/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildRequires:  cyrus-sasl
 BuildRequires:  device-mapper-devel
 BuildRequires:  gnutls-devel
@@ -54,15 +55,15 @@ This contains development tools and libraries for libvirt.
 
 %prep
 %setup -q
-
+%patch0 -p1
 %build
 ./configure \
-	--disable-silent-rules \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-        --with-udev=no \
-        --with-pciaccess=no
+    --disable-silent-rules \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --libdir=%{_libdir} \
+    --with-udev=no \
+    --with-pciaccess=no
 
 make %{?_smp_mflags}
 
@@ -75,6 +76,8 @@ find %{buildroot} -name '*.la' -delete
 %{_bindir}/*
 %{_libdir}/libvirt*.so.*
 %{_libdir}/libvirt/storage-backend/*
+%{_libdir}/libvirt/connection-driver/*.so
+%{_libdir}/libvirt/lock-driver/*.so
 %{_libdir}/sysctl.d/60-libvirtd.conf
 %{_libdir}/systemd/system/*
 /usr/libexec/libvirt*
@@ -91,10 +94,7 @@ find %{buildroot} -name '*.la' -delete
 %files devel
 %{_includedir}/libvirt/*
 %{_libdir}/libvirt*.so
-%{_libdir}/libvirt/connection-driver/*.so
-%{_libdir}/libvirt/lock-driver/*.so
 %{_libdir}/pkgconfig/libvirt*
-%{_libdir}/libvirt/storage-backend/*
 
 %dir %{_datadir}/libvirt/api/
 %{_datadir}/libvirt/api/libvirt-api.xml
@@ -111,9 +111,13 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
-*    Wed Aug 23 2017 Rui Gu <ruig@vmware.com> 3.2.0-2
--    Fix missing deps in devel package 
-*    Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
--    Upgrading version to 3.2.0
-*    Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
--    Initial version of libvirt package for Photon.
+*   Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-4
+-   Move so files in folder connection-driver and lock-driver to main package.
+*   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-3
+-   Fix CVE-2017-1000256
+*   Wed Aug 23 2017 Rui Gu <ruig@vmware.com> 3.2.0-2
+-   Fix missing deps in devel package 
+*   Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
+-   Upgrading version to 3.2.0
+*   Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
+-   Initial version of libvirt package for Photon.

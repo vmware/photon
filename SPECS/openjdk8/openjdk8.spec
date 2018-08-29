@@ -2,18 +2,17 @@
 %global security_hardening none
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.141
-Release:	2%{?dist}
+Version:	1.8.0.172
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
-Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b131/openjdk-%{version}.tar.gz
-%define sha1 openjdk=e74417bc0bfcdb8f6b30a63bb26dbf35515ec562
+Source0:	http://www.java.net/download/openjdk/jdk8/promoted/b162/openjdk-%{version}.tar.gz
+%define sha1 openjdk=c159933c1432409890dcfd7dcaad516b727669c7
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
-Patch2:         remove-cups.patch
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -21,6 +20,7 @@ BuildRequires:	unzip
 BuildRequires:  zlib-devel
 BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
+BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
 Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
@@ -64,10 +64,10 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-1.8.0-141
+%setup -qn openjdk-%{version}
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
+rm jdk/src/solaris/native/sun/awt/CUPSfuncs.c
 sed -i "s#\"ft2build.h\"#<ft2build.h>#g" jdk/src/share/native/sun/font/freetypeScaler.c
 sed -i '0,/BUILD_LIBMLIB_SRC/s/BUILD_LIBMLIB_SRC/BUILD_HEADLESS_ONLY := 1\nOPENJDK_TARGET_OS := linux\n&/' jdk/make/lib/Awt2dLibraries.gmk
 
@@ -164,6 +164,7 @@ alternatives --remove javac %{_libdir}/jvm/OpenJDK-%{version}/bin/javac
 %postun -n openjre8
 alternatives --remove java %{_libdir}/jvm/OpenJDK-%{version}/jre/bin/java
 /sbin/ldconfig
+rm -rf %{_libdir}/jvm/OpenJDK-%{version}
 
 %clean
 rm -rf %{buildroot}/*
@@ -237,6 +238,14 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Mon Apr 23 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.172-1
+-   Upgraded to version 1.8.0.172
+*   Fri Jan 19 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.162-1
+-   Upgraded to version 1.8.0.162
+*   Thu Dec 21 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.152-2
+-   Reduce list of published rpms dependencies
+*   Thu Oct 19 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.152-1
+-   Upgraded to version 1.8.0.152
 *   Thu Sep 14 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-2
 -   added ldconfig in post actions.
 *   Fri Jul 21 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.0.141-1

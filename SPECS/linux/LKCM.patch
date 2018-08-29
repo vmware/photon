@@ -1,7 +1,7 @@
-diff -Naur LKCM/drv_fips_test.c LKCM.new/drv_fips_test.c
---- LKCM/drv_fips_test.c	1970-01-01 00:00:00.000000000 +0000
-+++ LKCM.new/drv_fips_test.c	2017-03-24 07:45:46.343594235 +0000
-@@ -0,0 +1,174 @@
+diff -Naur LKCM.null/drv_fips_test.c LKCM/drv_fips_test.c
+--- LKCM.null/drv_fips_test.c	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/drv_fips_test.c	2017-10-16 15:41:19.871851118 -0700
+@@ -0,0 +1,185 @@
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/init.h>
@@ -25,7 +25,7 @@ diff -Naur LKCM/drv_fips_test.c LKCM.new/drv_fips_test.c
 +
 +static test_data_v1_t *user_data;
 +static int user_data_size = sizeof(test_data_v1_t) + (1024*1024*3);
-+int g_debug_level;
++int g_debug_level = TRACE_FUNCTION;
 +
 +DEFINE_MUTEX(lock);
 +
@@ -50,13 +50,14 @@ diff -Naur LKCM/drv_fips_test.c LKCM.new/drv_fips_test.c
 +{
 +	int ret = -EINVAL;
 +	int sz;
-+	trace_debug(TRACE_FUNCTION, "Entered\n");
-+	printk("Inside IOCTL\n");
++//	trace_debug(TRACE_FUNCTION, "Entered\n");
++//	printk("Inside IOCTL\n");
++
 +
 +	mutex_lock(&lock);
 +	switch(cmd){
 +	case IOCTL_SET_VECTOR:
-+		trace_debug(TRACE_DEBUG, "Using Vector\n");
++//		trace_debug(TRACE_DEBUG, "Using Vector\n");
 +		if(copy_from_user(user_data, (test_data_v1_t*)arg, sizeof(test_data_v1_t))) {
 +			printk("Failed to copy data header from user\n");
 +			ret = -EINTR;
@@ -84,6 +85,14 @@ diff -Naur LKCM/drv_fips_test.c LKCM.new/drv_fips_test.c
 +			break;
 +		}
 +
++#if 0
++printk("test_harness_ioctl: algo: %d\n", user_data->algo);
++printk("test_harness_ioctl: mode: %d\n", user_data->mode);
++printk("test_harness_ioctl: key len: %d\n", user_data->klen);
++printk("test_harness_ioctl: data len: %d\n", user_data->data_len);
++printk("test_harness_ioctl: iv size: %d, valid range (0 to %d)\n", user_data->iv_len, MAX_IVLEN);
++#endif
++            
 +		if (is_cipher(user_data->algo)) {
 +			ret = crypt_test_cipher(user_data->algo, user_data->mode,
 +						user_data->test_key, user_data->klen,
@@ -146,7 +155,9 @@ diff -Naur LKCM/drv_fips_test.c LKCM.new/drv_fips_test.c
 +	int err;
 +
 +	g_debug_level = TRACE_ALL;
-+	err = crypt_init_module();
++    trace_debug(TRACE_FUNCTION, "Entering FIPs Test\n");
++
++    err = crypt_init_module();
 +	if (err)
 +		return err;
 +
@@ -176,10 +187,10 @@ diff -Naur LKCM/drv_fips_test.c LKCM.new/drv_fips_test.c
 +
 +MODULE_LICENSE("GPL");
 +MODULE_AUTHOR("VMware NSBU : Pravin <pshelar@vmware.com>");
-diff -Naur LKCM/fips_test.c LKCM.new/fips_test.c
---- LKCM/fips_test.c	1970-01-01 00:00:00.000000000 +0000
-+++ LKCM.new/fips_test.c	2017-03-24 08:02:12.739630602 +0000
-@@ -0,0 +1,830 @@
+diff -Naur LKCM.null/fips_test.c LKCM/fips_test.c
+--- LKCM.null/fips_test.c	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/fips_test.c	2017-10-16 15:41:33.955850507 -0700
+@@ -0,0 +1,839 @@
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/init.h>
@@ -188,7 +199,6 @@ diff -Naur LKCM/fips_test.c LKCM.new/fips_test.c
 +#include <crypto/hash.h>
 +#include <crypto/aes.h>
 +#include <crypto/algapi.h>
-+#include <crypto/skcipher.h>
 +#include <linux/crypto.h>
 +#include <linux/init.h>
 +#include <linux/types.h>
@@ -199,6 +209,7 @@ diff -Naur LKCM/fips_test.c LKCM.new/fips_test.c
 +#include <linux/vmalloc.h>
 +#include <asm/byteorder.h>
 +#include <linux/scatterlist.h>
++#include <crypto/skcipher.h>
 +
 +#include "test_harness_ioctl.h"
 +#include "fips_test.h"
@@ -313,7 +324,7 @@ diff -Naur LKCM/fips_test.c LKCM.new/fips_test.c
 +{
 +    struct ft_crypt_result *res = req->data;
 +   
-+    printk("pbs: async\n"); 
++    printk("pbs: async\n");
 +    if (err == -EINPROGRESS)
 +        return;
 +    
@@ -596,7 +607,7 @@ diff -Naur LKCM/fips_test.c LKCM.new/fips_test.c
 +    
 +    algo = crypto_tfm_alg_driver_name(crypto_blkcipher_tfm(tfm));
 +    if (algo) {
-+        trace_debug( TRACE_DEBUG, "Algo = %s\n", algo );
++//        trace_debug( TRACE_DEBUG, "Algo = %s\n", algo );
 +    } else {
 +        printk("driver not available\n");
 +        ret =  -EINVAL;
@@ -610,10 +621,20 @@ diff -Naur LKCM/fips_test.c LKCM.new/fips_test.c
 +        printk("setting cipher key err %d crt-flags %x\n", ret, crypto_blkcipher_get_flags(tfm));
 +        goto out;
 +    }
-+    if (test_vector->iv_len) {
-+       crypto_blkcipher_set_iv(tfm, test_vector->iv, test_vector->iv_len);
-+    }
 +
++    if (test_vector->iv_len) {
++        unsigned int iv_len = crypto_blkcipher_ivsize(tfm);
++        if (test_vector->iv_len > iv_len) {
++            unsigned char buf[200];
++            
++            printk(KERN_ERR "Test vector IVLEN  %d more than CIPHER IVLEN %d\n", test_vector->iv_len, iv_len);
++            text_to_pack_bin("16 bytes of Test IV", buf, test_vector->iv, 16);
++        }
++    else
++           crypto_blkcipher_set_iv(tfm, test_vector->iv, test_vector->iv_len);
++     }
++    
++    
 +    desc.tfm = tfm;
 +    desc.flags = 0;
 + 
@@ -877,8 +898,7 @@ diff -Naur LKCM/fips_test.c LKCM.new/fips_test.c
 +    struct scatterlist sgin;
 +    int err;
 +    
-+    sg_init_one(&sgin, data, data_len);
-+    
++    sg_init_one(&sgin, data, data_len);    
 +    err = __crypt_test_cipher(algo, mode, key, klen, iv, iv_len,
 +                              &sgin, data_len);
 +    if (err)
@@ -1010,9 +1030,9 @@ diff -Naur LKCM/fips_test.c LKCM.new/fips_test.c
 +{
 +    kfree(test_vector);
 +}
-diff -Naur LKCM/fips_test.h LKCM.new/fips_test.h
---- LKCM/fips_test.h	1970-01-01 00:00:00.000000000 +0000
-+++ LKCM.new/fips_test.h	2017-03-24 07:45:46.343594235 +0000
+diff -Naur LKCM.null/fips_test.h LKCM/fips_test.h
+--- LKCM.null/fips_test.h	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/fips_test.h	2016-09-14 16:03:53.000000000 -0700
 @@ -0,0 +1,18 @@
 +#ifndef CRYPT_TEST_MODULE
 +#define CRYPT_TEST_MODULE
@@ -1032,16 +1052,16 @@ diff -Naur LKCM/fips_test.h LKCM.new/fips_test.h
 +		      unsigned char test_out[], int *output_len);
 +
 +#endif
-diff -Naur LKCM/Makefile LKCM.new/Makefile
---- LKCM/Makefile	1970-01-01 00:00:00.000000000 +0000
-+++ LKCM.new/Makefile	2017-03-22 07:28:36.000000000 +0000
+diff -Naur LKCM.null/Makefile LKCM/Makefile
+--- LKCM.null/Makefile	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/Makefile	2017-10-16 15:43:14.935846124 -0700
 @@ -0,0 +1,3 @@
 +obj-m += fips_lkcm.o
 +fips_lkcm-objs :=  drv_fips_test.o fips_test.o
 +
-diff -Naur LKCM/test_harness_ioctl.h LKCM.new/test_harness_ioctl.h
---- LKCM/test_harness_ioctl.h	1970-01-01 00:00:00.000000000 +0000
-+++ LKCM.new/test_harness_ioctl.h	2017-03-24 07:45:46.343594235 +0000
+diff -Naur LKCM.null/test_harness_ioctl.h LKCM/test_harness_ioctl.h
+--- LKCM.null/test_harness_ioctl.h	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/test_harness_ioctl.h	2016-10-17 15:15:41.000000000 -0700
 @@ -0,0 +1,104 @@
 +//
 +//  test_harness_ioctl.h

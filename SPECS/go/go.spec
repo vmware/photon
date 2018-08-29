@@ -1,7 +1,11 @@
 
 %global goroot          /usr/lib/golang
 %global gopath          %{_datadir}/gocode
+%ifarch aarch64
+%global gohostarch      arm64
+%else
 %global gohostarch      amd64
+%endif
 
 # rpmbuild magic to keep from having meta dependency on libc.so.6
 %define _use_internal_dependency_generator 0
@@ -9,16 +13,17 @@
 
 Summary:        Go 
 Name:           go
-Version:        1.8.1
+Version:        1.9.4
 Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://storage.googleapis.com/golang/%{name}%{version}.src.tar.gz
-%define sha1    go=0c4b7116bd6b7cdc19bdcf8336c75eae4620907b
+Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
+%define sha1    go=12b0ecee83525cd594f4fbf30380d4832e06f189
 Patch0:         go_imports_fix.patch
+Patch1:         CVE-2018-7187.patch
 Requires:       glibc
 
 %description
@@ -27,6 +32,7 @@ Go is an open source programming language that makes it easy to build simple, re
 %prep
 %setup -qn %{name}
 %patch0 -p1
+%patch1 -p1
 
 %build
 export GOHOSTOS=linux
@@ -58,8 +64,10 @@ rm -rfv %{buildroot}%{goroot}/doc/Makefile
 # put binaries to bindir, linked to the arch we're building,
 # leave the arch independent pieces in %{goroot}
 mkdir -p %{buildroot}%{goroot}/bin/linux_%{gohostarch}
-mv %{buildroot}%{goroot}/bin/go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
-mv %{buildroot}%{goroot}/bin/gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
+ln -sfv ../go %{buildroot}%{goroot}/bin/linux_%{gohostarch}/go
+ln -sfv ../gofmt %{buildroot}%{goroot}/bin/linux_%{gohostarch}/gofmt
+ln -sfv %{goroot}/bin/gofmt %{buildroot}%{_bindir}/gofmt
+ln -sfv %{goroot}/bin/go %{buildroot}%{_bindir}/go
 
 # ensure these exist and are owned
 mkdir -p %{buildroot}%{gopath}/src/github.com/
@@ -67,11 +75,7 @@ mkdir -p %{buildroot}%{gopath}/src/bitbucket.org/
 mkdir -p %{buildroot}%{gopath}/src/code.google.com/
 mkdir -p %{buildroot}%{gopath}/src/code.google.com/p/
 
-
-ln -sfv ../../%{goroot}/bin/linux_%{gohostarch}/gofmt %{buildroot}%{_bindir}/gofmt
-ln -sfv ../../%{goroot}/bin/linux_%{gohostarch}/go %{buildroot}%{_bindir}/go
-
-install -vdm644 %{buildroot}/etc/profile.d
+install -vdm755 %{buildroot}/etc/profile.d
 cat >> %{buildroot}/etc/profile.d/go-exports.sh <<- "EOF"
 export GOROOT=%{goroot}
 export GOPATH=%{_datadir}/gocode
@@ -79,10 +83,10 @@ export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
-chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
+#chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
 
 
-%{_fixperms} %{buildroot}/*
+#%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
 
@@ -110,6 +114,14 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Mon Apr 02 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.9.4-2
+-   Fix for CVE-2018-7187
+*   Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.4-1
+-   Update to golang release v1.9.4
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.9.1-2
+-   Aarch64 support
+*   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.1-1
+-   Update to golang release v1.9.1
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 1.8.1-2
 -   Remove mercurial from buildrequires and requires.
 *   Tue Apr 11 2017 Danut Moraru <dmoraru@vmware.com> 1.8.1-1

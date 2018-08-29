@@ -1,24 +1,24 @@
-Summary:	Apache Tomcat
-Name:		apache-tomcat
-Version:	8.5.23
-Release:	2%{?dist}
-License:	Apache
-URL:		http://tomcat.apache.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        Apache Tomcat
+Name:           apache-tomcat
+Version:        8.5.31
+Release:        2%{?dist}
+License:        Apache
+URL:            http://tomcat.apache.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-Source0:    http://apache.mirrors.ionfish.org/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1 apache-tomcat=ec7417f44ada9df348f9102fe7777b44d5c2c52f
+Source0:        http://mirrors.koehn.com/apache/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
+%define sha1    apache-tomcat=c364d8814f06d1911e3dedf599fb07ab6c020c1d
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=d920d15a8d3431dd396be0d635e329bc9817c6cf
+%define sha1    base=9c954df61d7c72f6d5e7319d25351e178a84cab4
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-BuildRequires: openjre8
-BuildRequires: openjdk8
-BuildRequires: apache-ant
-Requires: openjre8
-Requires: apache-ant
+BuildRequires:  openjre8
+BuildRequires:  openjdk8
+BuildRequires:  apache-ant
+Requires:       openjre8
+Requires:       apache-ant
 
 %define _prefix /var/opt/%{name}
 %define _bindir %{_prefix}/bin
@@ -83,7 +83,16 @@ rm -rf %{buildroot}/*
 %dir %{_logsdir}
 %dir %{_tempdir}
 %{_bindir}/*
-%{_confdir}/*
+%config(noreplace) %{_confdir}/catalina.policy
+%config(noreplace) %{_confdir}/catalina.properties
+%config(noreplace) %{_confdir}/context.xml
+%config(noreplace) %{_confdir}/jaspic-providers.xml
+%config(noreplace) %{_confdir}/jaspic-providers.xsd
+%config(noreplace) %{_confdir}/logging.properties
+%config(noreplace) %{_confdir}/server.xml
+%config(noreplace) %{_confdir}/tomcat-users.xml
+%config(noreplace) %{_confdir}/tomcat-users.xsd
+%config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
 %{_webappsdir}/*
 %{_datadir}/java/tomcat/*.jar
@@ -92,6 +101,20 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu May 17 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-2
+-   Mark configuration files as config(noreplace)
+*   Mon May 07 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-1
+-   Upgraded to version 8.5.31
+*   Mon Apr 30 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.30-1
+-   Upgraded to version 8.5.30
+*   Tue Mar 20 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.29-1
+-   Upgraded to version 8.5.29
+*   Wed Feb 28 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.28-1
+-   Upgraded to version 8.5.28
+*   Fri Feb 02 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.27-1
+-   Upgraded to version 8.5.27
+*   Thu Dec 21 2017 Anish Swaminathan <anishs@vmware.com> 8.5.24-1
+-   Upgraded to version 8.5.24
 *   Mon Oct 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.5.23-2
 -   patch to keep using inmem keystore as jks.
 *   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com> 8.5.23-1
@@ -132,4 +155,4 @@ rm -rf %{buildroot}/*
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
 -   Updated dependency after repackaging openjdk. 
 *   Wed Jul 8 2015 Sriram Nambakam <snambakam@vmware.com> 7.0.63
--   Initial build.	First version
+-   Initial build.  First version

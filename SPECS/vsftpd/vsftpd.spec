@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2 with exceptions
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
@@ -19,6 +19,7 @@ Very secure and very small FTP daemon.
 %patch0
 
 %build
+sed -i 's/#undef VSF_BUILD_SSL/#define VSF_BUILD_SSL/g' builddefs.h
 sed -i -e 's|#define VSF_SYSDEP_HAVE_LIBCAP|//&|' sysdeputil.c
 make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS=""
 
@@ -82,6 +83,8 @@ fi
 %{_datadir}/*
 
 %changelog
+*   Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com> 3.0.3-4
+-   Enable ssl support.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.3-3
 -   Ensure non empty debuginfo
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.3-2

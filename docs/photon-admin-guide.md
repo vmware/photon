@@ -7,7 +7,8 @@
         Version](#looking-at-the-differences-between-the-minimal-and-the-full-version)
     -   [The Root Account and the `sudo` and `su`
         Commands](#the-root-account-and-the-sudo-and-su-commands)
--   [Quick Start](#quick-start)
+-   [Getting Started with Photon OS 2.0](#getting-started-with-photon-os-20)
+-   [Quick Start for Photon OS 1.0](#quick-start-for-photon-os-10)
     -   [Obtaining the ISO from Bintray and Creating a Photon OS VM
         in VMware
         Workstation](#obtaining-the-iso-from-bintray-and-creating-a-photon-os-vm-in-vmware-workstation)
@@ -19,8 +20,6 @@
     -   [Root Password Rules](#root-password-rules)
     -   [Permitting Root Login with
         SSH](#permitting-root-login-with-ssh)
-    -   [Deploying Photon OS on a Mac with
-        AppCatalyst](#deploying-photon-os-on-a-mac-with-appcatalyst)
     -   [PXE Boot](#pxe-boot)
     -   [Kickstart](#kickstart)
     -   [Checking the Version and Build
@@ -37,6 +36,8 @@
         Branch](#adding-the-dev-repository-to-get-new-packages-from-the-github-dev-branch)
 -   [Managing Services with
     systemd](#managing-services-with-systemd)
+    -   [Using the Photon Management Daemon](#using-the-photon-management-daemon)
+    -   [Using the Network Configuration Manager](#using-the-network-configuration-manager)
     -   [Viewing Services](#viewing-services)
     -   [Controlling Services](#controlling-services)
     -   [Creating a Startup Service](#creating-a-startup-service)
@@ -50,6 +51,8 @@
         systemd](#migrating-scripts-to-systemd)
 -   [Managing the Network
     Configuration](#managing-the-network-configuration)
+    -   [Using the Photon Management Daemon](#using-the-photon-management-daemon)
+    -   [Using the Network Configuration Manager](#using-the-network-configuration-manager)
     -   [Use `ip` and `ss` Commands Instead of `ifconfig` and
         `netstat`](#use-ip-and-ss-commands-instead-of-ifconfig-and-netstat)
     -   [Configuring Network
@@ -187,26 +190,43 @@ One notable difference between the two versions of Photon OS pertains to OpenJDK
 	openjre 	x86_64    1.8.0.92-1.ph1    95.09 M
 	openjdk 	x86_64    1.8.0.92-1.ph1    37.63 M
 
+**NOTE:** openjdk and openjre are available as openjdk8 and openjre8 in Photon OS 2.0
+
 A later section covers tdnf. 
 
 ### The Root Account and the `sudo` and `su` Commands
 
 This guide assumes that you are logged in to Photon OS with the root account and running commands as root. The sudo program comes with the full version of Photon OS. On the minimal version, you must install sudo with tdnf if you want to use it. As an alternative to installing sudo on the minimal version, you can switch users as needed with the `su` command to run commands that require root privileges. 
 
-## Quick Start
+## Getting Started with Photon OS 2.0
+
+**NOTE:** This section applies to Photon OS w.0 only.
+
+To get started with Photon OS 2.0, refer to the installation instructions for your target environment:
+- [Running Photon OS on VMware vSphere](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-vSphere)
+- [Running Photon OS on VMware Fusion](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-Fusion)
+- [Running Photon OS on VMware Workstation](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Workstation)
+- [Running Photon OS on Amazon EC2](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute)
+- [Running Photon OS on Google Compute Engine](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Google-Compute-Engine)
+- [Running Photon OS on Microsoft Azure](https://github.com/vmware/photon/wiki/Running-Photon-OS-on-Microsoft-Azure)
+
+**Note**: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in [Upgrading to Photon OS 2.0](https://github.com/vmware/photon/wiki/Upgrading-to-Photon-OS-2.0). 
+
+## Quick Start for Photon OS 1.0
+
+**NOTE:** This section applies to Photon OS 1.0 only.
 
 This section helps you get Photon OS up and running quickly and easily. There are several ways to deploy Photon OS for free within a matter of minutes:
 
 * Obtain the ISO from Bintray and use it to create a virtual machine running Photon OS.
 * Install the OVA for the minimal version of Photon OS in VMware vSphere.
 * Rapidly deploy the OVA for the minimal version of Photon OS in VMware Workstation 12 Pro. 
-* Install VMware AppCatalyst for free on a Mac and launch a virtual machine running Photon OS, which is included with AppCatalyst.
 
 ### Obtaining the ISO from Bintray and Creating a Photon OS VM in VMware Workstation
 
 The full version of Photon OS installs from an ISO in VMware Workstation and other hypervisors in a matter of minutes. Photon OS is a free download from the Bintray web site.
 
-This section demonstrates how to create a virtual machine running Photon OS in VMware Workstation 12 Pro. If you are using a different hypervisor, the example set by this section should help you install it in your system. If you work on a Mac, see the section on deploying Photon OS on a Mac with VMware AppCatalyst below. For instructions on how to install Photon OS from an ISO in VMware vSphere, see [Installing Photon OS on VMware vSphere from an ISO Image](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-vSphere).
+This section demonstrates how to create a virtual machine running Photon OS in VMware Workstation 12 Pro. If you are using a different hypervisor, the example set by this section should help you install it in your system. For instructions on how to install Photon OS from an ISO in VMware vSphere, see [Installing Photon OS on VMware vSphere from an ISO Image](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-vSphere).
 
 1. Go to the following Bintray URL and download the ISO for the general availability release of Photon OS:
 
@@ -308,63 +328,6 @@ You can then connect to the Photon OS machine with the root account over SSH:
 
 	steve@ubuntu:~$ ssh root@198.51.100.131
 
-### Deploying Photon OS on a Mac with AppCatalyst
-
-VMware AppCatalyst brings the data center to your Mac desktop. AppCatalyst furnishes a Mac computer with a free hypervisor for creating virtual machines that run Photon OS, which is bundled with AppCatalyst. 
-
-Driven by an API and a command-line interface, AppCatalyst empowers you to replicate a cluster of virtual machines on a Mac to build containerized applications with microservices on Photon OS. AppCatalyst also integrates with Vagrant. AppCatalyst is a technology preview. 
-
-AppCatalyst is optimized for cloud-native application workloads. A common use case of developers is to run a desktop hypervisor so they can install a Linux machine, and for many developers, this setup takes place on a Mac. For these developers, a common use case for the desktop hypervisor is running Docker to accelerate the development and testing of their code. 
-
-By bundling Photon OS with AppCatalyst, VMware streamlines the workflow of getting a Docker engine running on a Linux machine inside a hypervisor on a Mac. 
-
-Here's how to install AppCatalyst, create a VM running Photon OS, and run a Docker container--all in a matter of minutes. The technology preview version of AppCatalyst requires Mac OS X 10.9 or later.
-
-First, turn off Fusion if you are running it on your Mac. 
-
-Second, download AppCatalyst from the following URL and then install the `.dmg` file by following the instructions in the installation wizard: 
-
-	https://www.vmware.com/cloudnative/appcatalyst-download
-
-After the wizard finishes installing AppCatalyst, you're ready to run the application. AppCatalyst does not appear in the Applications directory. Instead, in Terminal, run the following command: 
-
-	/opt/vmware/appcatalyst/bin/appcatalyst
-
-The following command creates a VM named `photonos1` by taking advantage of the template for Photon OS that is built into AppCatalyst: 
-
-	/opt/vmware/appcatalyst/bin/appcatalyst vm create photonos1
-
-By default, the VMs that you create reside in the `AppCatalyst` subdirectory of the user's `/Documents` directory.
-
-Next, make sure that there are no machines running in VMware Fusion and that it is shut down, and then turn on the VM by running this command.  
-
-	/opt/vmware/appcatalyst/bin/appcatalyst vmpower on photonos1
-
-Obtain the IP address of the VM so you can establish an SSH connection to it: 
-
-	/opt/vmware/appcatalyst/bin/appcatalyst guest getip photonos1
-
-You can then connect to the VM with the SSH keys included with AppCatalyst by running the following command and replacing the example IP address with the IP address of your VM: 
-
-	ssh -i /opt/vmware/appcatalyst/etc/appcatalyst_insecure_ssh_key photon@198.51.100.131
-
-Photon OS includes Docker. From your SSH terminal connection to the Photon OS virtual machine, you can launch a Docker container that, for example, downloads Ubuntu from the Docker repository and runs it in the Photon OS VM in AppCatalyst on your Mac: 
-
-	systemctl start docker
-	docker run -i -t ubuntu:14.04 /bin/bash
-
-When you are done, exit the Ubuntu machine to stop the Docker container to conserve system resources.  
-
-Photon OS also gives you the option of running a Docker container that, in turn, runs an instance of Photon OS:
-
-	docker run -i -t photon /bin/bash
-
-If you need to troubleshoot, the log files for AppCatalyst reside here:  
-
-	/Users/<your_username>/Library/Logs/VMware
-
-Virtual machines in AppCatalyst can be managed through its API. For more information, see the [AppCatalyst documentation](http://getappcatalyst.com/docs/Tech_Preview_August/) and the [AppCatalyst community site](https://communities.vmware.com/community/vmtn/devops/vmware-appcatalyst).
-
 ### PXE Boot
 
 Photon OS works with the Preboot Execution Environment, or PXE, to boot by retrieving software from a PXE server over a network connection. For instructions on how to set Photon OS to boot from a PXE server, see [Network PXE Boot](https://github.com/vmware/photon/blob/master/docs/PXE-boot.md).
@@ -394,9 +357,7 @@ You can view its help information like this:
 	tdnf --help
 	tdnf -h
 
-In the minimal version of Photon OS, tdnf serves as the sole package manager to streamline the operating system. The full version of Photon OS includes yum, a common utility that checks for, downloads, and automatically installs RPM packages. On the minimal version of Photon OS, you can install yum by using tdnf if you are unconcerned with the size of the operating system: 
-
-	tdnf install yum
+**Photon OS 1.0 only**: In the minimal version of Photon OS, tdnf serves as the sole package manager to streamline the operating system. The full version of Photon OS includes yum, a common utility that checks for, downloads, and automatically installs RPM packages. On the minimal version of Photon OS, you can install yum by using tdnf if you are unconcerned with the size of the operating system: ``tdnf install yum``
 
 ### Configuration Files and Repositories
 
@@ -421,20 +382,23 @@ The repositories appear in /etc/yum.repos.d/ with `.repo` file extensions:
 	photon-updates.repo
 	photon.repo 
 
+**Note:** Photon OS 1.0 (only) also includes the lightwave.repo.
+
 You can list the the repositories by using the `tdnf repolist` command. Tdnf filters the results with `enabled`, `disabled`, and `all`. Running the command without specifying an argument returns the enabled repositories:  
 
 	tdnf repolist
 	repo id             repo name                               status
-	lightwave           VMware Lightwave 1.0(x86_64)            enabled
-	photon-updates      VMware Photon Linux 1.0(x86_64)Updates  enabled
-	photon-extras       VMware Photon Extras 1.0(x86_64)        enabled
-	photon              VMware Photon Linux 1.0(x86_64)         enabled
+	photon-updates      VMware Photon Linux 2.0(x86_64)Updates  enabled
+	photon-extras       VMware Photon Extras 2.0(x86_64)        enabled
+	photon              VMware Photon Linux 2.0(x86_64)         enabled
+
+**Note:** Photon OS 1.0 (only) also includes the lightwave repository.
 
 The photon-iso.repo, however, does not appear in the list of repositories because it is unavailable on the virtual machine from which these examples are taken. Photon-iso.repo is the default repository; it points to /media/cdrom. The contents of photon-iso.repo look like this: 
 
 	cat /etc/yum.repos.d/photon-iso.repo
 	[photon-iso]
-	name=VMWare Photon Linux 1.0(x86_64)
+	name=VMWare Photon Linux 2.0(x86_64)
 	baseurl=file:///mnt/cdrom/RPMS
 	gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 	gpgcheck=1
@@ -464,19 +428,21 @@ The command purges the repository data from the cache:
 
 You can add the following options to `tdnf` commands. If the option to override a configuration is unavailable in a command, consider adding it to the configuration file, /etc/tdnf/tdnf.conf.
 
-	OPTION 					DESCRIPTION
-	--allowerasing 			Allow erasing of installed packages to resolve dependencies
-	--assumeno 				Answer no for all questions
-	--best 					Try the best available package versions in transactions
-	--debugsolver 			Dump data aiding in dependency solver debugging info.
-	--disablerepo=<repoid> 	Disable specific repositories by an id or a glob.
-	--enablerepo=<repoid> 	Enable specific repositories
-	-h, --help 				Display help
-	--refresh 				Set metadata as expired before running command
-	--nogpgcheck 			Skip gpg check on packages
-	--rpmverbosity=<debug level name> 	Debug level for rpm
-	--version 				Print version and exit
-	-y, --assumeyes 		Answer yes to all questions
+	OPTION                     DESCRIPTION
+	--allowerasing             Allow erasing of installed packages to resolve dependencies
+	--assumeno                 Answer no for all questions
+	--best                     Try the best available package versions in transactions
+	--debugsolver              Dump data aiding in dependency solver debugging info.
+	--disablerepo=<repoid>     Disable specific repositories by an id or a glob.
+	--enablerepo=<repoid>      Enable specific repositories
+	-h, --help                 Display help
+	--refresh                  Set metadata as expired before running command
+	--nogpgcheck               Skip gpg check on packages
+	--rpmverbosity=<debug level name>
+	                           Debug level for rpm
+	--version                  Print version and exit
+	-y, --assumeyes            Answer yes to all questions
+	-q, --quiet                Quiet operation
 
 Here is an example that adds the short form of the `assumeyes` option to the install command:
 
@@ -486,6 +452,8 @@ Here is an example that adds the short form of the `assumeyes` option to the ins
 
 
 ### Commands
+
+**check**: Checks for problems in installed and available packages for all enabled repositories. Command has no arguments. You can use ``--enablerepo`` and ``--disablerepo`` to control the repos used. Supported in Photon OS 2.0 (only).
 
 **check-local**: This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not, however, recursively parse directories; it checks the RPMs only in the directory that you specify. For example, after creating a directory named `/tmp/myrpms` and placing your RPMs in it, you can run the following command to check them:  
 
@@ -911,6 +879,80 @@ Here is a healthy result of the command:
 
 Because Photon OS relies on systemd to manage services, you should employ the systemd suite of commands, not deprecated init.d commands or other deprecated commands, to manage networking. 
 
+### Using the Photon Management Daemon
+
+The Photon Management Daemon (PMD) that ships with Photon OS 2.0 provides the remote management of a Photon instance via several APIs: a command line client (pmd-cli), a REST API, and a Python API. The PMD provides the ability to manage network interfaces, packages, firewalls, users, and user groups.
+
+#### Installing the pmd Package
+
+The pmd package is included with your Photon OS 2.0 distribution. To make sure that you have the latest version, you can run:
+~~~~
+# tdnf install pmd
+# systemctl start pmd
+~~~~
+#### Available APIs
+
+##### pmd-cli
+
+The pmd-cli utility enables Photon customers to invoke API requests securely on local and remote servers. For details, see [Photon Management Daemon Command-line Interface (pmd-cli)](https://github.com/vmware/photon/blob/master/docs/pmd-cli.md).
+
+##### PMD REST API
+
+The PMD REST API is an openapi 2.0 specification. Once the pmd package is installed, you can use a Swagger UI tool to browse the REST API specifications (/etc/pmd/restapispec.json).
+You can also browse it using the copenapi_cli tool that comes with the pmd package:
+~~~~
+# copenapi_cli --apispec /etc/pmd/restapispec.json
+~~~~
+For more information about the copenapi_cli tool, refer to [github.com/vmware/copenapi](https://github.com/vmware/copenapi).
+
+##### PMD Python API
+
+Python3 is included with your Photon OS 2.0 distribution. PMD Python interfaces are available for python3 (pmd-python3) and python2 (pmd-python2). You can use tdnf to ensure that the latest version is installed:
+~~~~
+# tdnf install pmd-python3
+# systemctl start pmd
+~~~~
+To navigate the help documentation for the pmd Python packages:
+~~~~
+# python3
+>>> import pmd
+>>> net = pmd.server().net
+>>> help(pmd)
+~~~~
+To show help text for individual interfaces:
+~~~~
+>>> help(pmd.server().net)
+>>> help(pmd.server().pkg)
+>>> help(pmd.server().firewall)
+>>> help(pmd.server().user)
+~~~~
+For details about the network commands, see also the [Network Configuration Manager - Python API](https://github.com/vmware/photon/blob/master/docs/netmgr.python.md).
+
+##### PMD C Documentation
+
+PMD C APIs are defined in the header files (pmd_fwmgmt.h, pmd_netmgr.h, pmd_pkgmgmt.h, pmd_usermgmt.h) that are stored in the following location:  
+~~~~
+[https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
+~~~~
+For details about the network commands, see also the [Network Configuration Manager - C API](https://github.com/vmware/photon/blob/master/docs/netmgr.c.md).
+
+### Using the Network Configuration Manager
+
+The Network Configuration Manager library that ships with Photon OS 2.0 provides a collection of C, Python, and CLI APIs that simplify common onfiguration tasks for:
+- interfaces
+- IP addresses (IPv4 and IPv6 addresses)
+- routes
+- DNS server and domain settings
+- DHCP DUID and IAID settings
+- NTP server settings
+- service management
+- object parameters (interfaces and files)
+
+For additional details, see:
+- **CLI** - see the ``-net`` commands in the [Photon Management Daemon Command-line Interface (pmd-cli)](https://github.com/vmware/photon/blob/master/docs/pmd-cli.md)
+- **C APIs** - [Network Configuration Manager - C API](https://github.com/vmware/photon/blob/master/docs/netmgr.c.md)
+- **Python APIs** - [Network Configuration Manager - Python API](https://github.com/vmware/photon/blob/master/docs/netmgr.python.md)
+
 ### Use `ip` and `ss` Commands Instead of `ifconfig` and `netstat`
 
 Although the `ifconfig` command and the `netstat` command work on Photon OS, VMware recommends that you use the `ip` or `ss` commands. The `ipconfig` and `netstat` commands are deprecated. 
@@ -943,11 +985,11 @@ Using the `ip route` version of a command instead of the net-tools version often
 Network configuration files for systemd-networkd reside in /etc/systemd/network and /usr/lib/systemd/network. Example:
 
 	root@photon-rc [ ~ ]# ls /etc/systemd/network/
-	10-dhcp-en.network
+	99-dhcp-en.network
 
-By default, when Photon OS starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files:
+By default, when Photon OS starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files with the lowest priority filename:
 
-	cat /etc/systemd/network/10-dhcp-en.network
+	cat /etc/systemd/network/99-dhcp-en.network
 	[Match]
 	Name=e*
 
@@ -959,7 +1001,7 @@ Network configuration files can also appear in the system network directory, /us
 	root@photon-rc [ ~ ]# updatedb
 	root@photon-rc [ ~ ]# locate systemd/network
 	/etc/systemd/network
-	/etc/systemd/network/10-dhcp-en.network
+	/etc/systemd/network/99-dhcp-en.network
 	/usr/lib/systemd/network
 	/usr/lib/systemd/network/80-container-host0.network
 	/usr/lib/systemd/network/80-container-ve.network
@@ -1019,9 +1061,8 @@ For more information, see the man page for systemd-networkd: `man systemd.networ
 
 ### Turning Off DHCP
 
-By default, when Photon OS first starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files:
-
-	cat /etc/systemd/network/10-dhcp-en.network
+By default, when Photon OS first starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files with the lowest priority filename:
+	cat /etc/systemd/network/99-dhcp-en.network
 	[Match]
 	Name=e*
 
@@ -1031,6 +1072,8 @@ By default, when Photon OS first starts, it creates a DHCP network configuration
 To turn off DHCP for all Ethernet interfaces, change the value of `DHCP` from `yes` to `no`, save the changes, and then restart the `systemd-networkd` service: 
 
 	systemctl restart systemd-networkd
+
+If you create a configuration file with a higher priority filename (e.g. `10-static-en.network`), it is not necessary but still recommended to turn off DHCP.
 
 ### Adding a DNS Server 
 
@@ -1239,7 +1282,7 @@ You can then add a network link, such as the Ethernet connection, as the argumen
 	root@photon-rc [ ~ ]# networkctl status eth0
 	* 2: eth0
 	       Link File: /usr/lib/systemd/network/99-default.link
-	    Network File: /etc/systemd/network/10-dhcp-en.network
+	    Network File: /etc/systemd/network/99-dhcp-en.network
 	            Type: ether
 	           State: routable (configured)
 	            Path: pci-0000:02:01.0
@@ -1935,22 +1978,9 @@ The following technical articles and guides appear in the [Photon OS wiki](https
 * FAQ
 * Running Photon OS on vSphere
 * Running Photon OS on Fusion
-* Running Photon OS on vCloud Air
 * Install and Configure a Swarm Cluster with DNS Service on Photon OS
 * Install and Configure a Production Ready Mesos Cluster on Photon OS
 * Install and Configure Marathon for Mesos Cluster on Photon OS
 * Install and Configure DCOS CLI for Mesos
 * Install and Configure Mesos DNS on a Mesos Cluster
 * RPM OSTree Documentation
-
-
-
-
-
-
-
-
-
-
-
-

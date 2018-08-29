@@ -1,7 +1,7 @@
 Summary:       Project Calico fork of the BIRD Internet Routing Daemon
 Name:          calico-bird
 Version:       0.3.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPL
@@ -21,28 +21,24 @@ Project Calico fork of the BIRD Internet Routing Daemon.
 mkdir -p dist
 autoconf
 # IPv6 bird + bird client
-./configure \
-    --prefix=%{_prefix} \
-    --libdir=%{_libdir} \
+%configure \
     --with-protocols="bgp pipe static" \
     --enable-ipv6=yes \
     --enable-client=yes \
     --enable-pthreads=yes
-make
+make %{?_smp_mflags}
 # Remove the dynmaic binaries and rerun make to create static binaries
 rm bird birdcl
-make CC="gcc -static"
+make %{?_smp_mflags} CC="gcc -static"
 cp bird dist/bird6
 cp birdcl dist/birdcl
 # IPv4 bird
 make clean
-./configure \
-    --prefix=%{_prefix} \
-    --libdir=%{_libdir} \
+%configure \
     --with-protocols="bgp pipe static" \
     --enable-client=no \
     --enable-pthreads=yes
-make
+make %{?_smp_mflags}
 rm bird
 make CC="gcc -static"
 cp bird dist/bird
@@ -53,6 +49,9 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/bird
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/bird6
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/birdcl
 
+#%check
+# No tests available for this pkg
+
 %files
 %defattr(-,root,root)
 %{_bindir}/bird
@@ -60,5 +59,7 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/birdcl
 %{_bindir}/birdcl
 
 %changelog
-*    Wed Aug 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.1-1
--    Calico BIRD routing daemon for PhotonOS.
+*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.1-2
+-   Use standard configure macros
+*   Wed Aug 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.1-1
+-   Calico BIRD routing daemon for PhotonOS.

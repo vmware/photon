@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        8%{?dist}
+Release:        11%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -16,6 +16,7 @@ Source3:        sshd-keygen.service
 Patch0:         blfs_systemd_fixes.patch
 Patch1:         openssh-7.5p1-fips.patch
 Patch2:         openssh-7.5p1-configure-fips.patch
+Patch3:         openssh-CVE-2017-15906.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -42,6 +43,7 @@ Requires:   shadow
 Requires:   ncurses-terminfo
 Requires:   openssh-clients = %{version}-%{release}
 Requires(post): /bin/chown
+Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 %description server
 This provides the ssh server daemons, utilities, configuration and service files.
 
@@ -51,6 +53,7 @@ tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
 %patch1 -p1
 %patch2 -p1
+%patch3 -p3
 %build
 ./configure \
     CFLAGS="%{optflags}" \
@@ -178,6 +181,12 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Tue Nov 28 2017 Xiaolin Li <xiaolinl@vmware.comm> 7.5p1-11
+-   Fix CVE-2017-15906.
+*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-10
+-   Fix: openssh-server requires(pre) shadow tools
+*   Tue Nov 14 2017 Anish Swaminathan <anishs@vmware.com> 7.5p1-9
+-   Add ciphers aes128-gcm, aes256-gcm and kex dh14/16/18 in fips mode
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-8
 -   No direct toybox dependency, shadow depends on toybox
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 7.5p1-7

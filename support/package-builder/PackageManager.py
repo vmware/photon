@@ -1,9 +1,10 @@
+import os
+import threading
+import copy
 from PackageBuildDataGenerator import PackageBuildDataGenerator
 from Logger import Logger
-import threading
 from constants import constants
 import docker
-import os
 from ChrootUtils import ChrootUtils
 from CommandUtils import CommandUtils
 from PackageUtils import PackageUtils
@@ -14,95 +15,122 @@ from SpecData import SPECS
 
 class PackageManager(object):
 
-    def __init__(self,logName=None,logPath=None,pkgBuildType="chroot"):
+    def __init__(self, logName=None, logPath=None, pkgBuildType="chroot"):
         if logName is None:
             logName = "PackageManager"
         if logPath is None:
             logPath = constants.logPath
-        self.logName=logName
-        self.logPath=logPath
-        self.logger=Logger.getLogger(logName,logPath)
-        self.mapCyclesToPackageList={}
-        self.mapPackageToCycle={}
-        self.sortedPackageList=[]
-        self.listOfPackagesAlreadyBuilt = []
-        self.listThreads={}
-        self.mapOutputThread={}
-        self.mapThreadsLaunchTime={}
-        self.listAvailableCyclicPackages=[]
-        self.listBuildOptionPackages=[]
-        self.pkgBuildOptionFile=""
-        self.pkgBuildType=pkgBuildType
+        self.logName = logName
+        self.logPath = logPath
+        self.logger = Logger.getLogger(logName, logPath)
+        self.mapCyclesToPackageList = {}
+        self.mapPackageToCycle = {}
+        self.sortedPackageList = []
+        self.listOfPackagesAlreadyBuilt = set()
+        self.pkgBuildType = pkgBuildType
         if self.pkgBuildType == "container":
             self.dockerClient = docker.from_env(version="auto")
 
-    def readPackageBuildData(self, listPackages):
+    def buildToolChain(self):
+        pkgCount = 0
         try:
-            pkgBuildDataGen = PackageBuildDataGenerator(self.logName,self.logPath)
-            self.mapCyclesToPackageList,self.mapPackageToCycle,self.sortedPackageList = pkgBuildDataGen.getPackageBuildData(listPackages)
-        except:
+            tUtils = ToolChainUtils()
+            pkgCount = tUtils.buildCoreToolChainPackages()
+        except Exception as e:
+            self.logger.error("Unable to build tool chain")
+            self.logger.error(e)
+            raise e
+        return pkgCount
+
+    def buildToolChainPackages(self, buildThreads):
+        pkgCount = self.buildToolChain()
+        if self.pkgBuildType == "container":
+            # Stage 1 build container
+            #TODO image name constants.buildContainerImageName
+            if pkgCount > 0 or not self.dockerClient.images.list("photon_build_container:latest"):
+                self._createBuildContainer()
+        self._buildGivenPackages(constants.listToolChainPackages, buildThreads)
+        if self.pkgBuildType == "container":
+            # Stage 2 build container
+            #TODO: rebuild container only if anything in listToolChainPackages was built
+            self._createBuildContainer()
+
+    def buildPackages(self, listPackages, buildThreads, pkgBuildType):
+        self.pkgBuildType = pkgBuildType
+        if constants.rpmCheck:
+            constants.rpmCheck = False
+            self.buildToolChainPackages(buildThreads)
+            self._buildTestPackages(buildThreads)
+            constants.rpmCheck = True
+            self._buildGivenPackages(listPackages, buildThreads)
+        else:
+            self.buildToolChainPackages(buildThreads)
+            self._buildGivenPackages(listPackages, buildThreads)
+
+    def _readPackageBuildData(self, listPackages):
+        try:
+            pkgBuildDataGen = PackageBuildDataGenerator(self.logName, self.logPath)
+            self.mapCyclesToPackageList, self.mapPackageToCycle, self.sortedPackageList = (
+                pkgBuildDataGen.getPackageBuildData(listPackages))
+
+        except Exception as e:
+            self.logger.exception(e)
             self.logger.error("unable to get sorted list")
             return False
         return True
 
-    def readAlreadyAvailablePackages(self):
-        listAvailablePackages=[]
-        listFoundRPMPackages=[]
-        listRPMFiles=[]
-        listDirectorys=[]
-        listDirectorys.append(constants.rpmPath)
+    def _readAlreadyAvailablePackages(self):
+        listAvailablePackages = set()
+        listFoundRPMPackages = set()
+        listRPMFiles = set()
+        listDirectorys = set()
+        listDirectorys.add(constants.rpmPath)
         if constants.inputRPMSPath is not None:
-            listDirectorys.append(constants.inputRPMSPath)
+            listDirectorys.add(constants.inputRPMSPath)
 
-        while len(listDirectorys) > 0:
-            dirPath=listDirectorys.pop()
+        while listDirectorys:
+            dirPath = listDirectorys.pop()
             for dirEntry in os.listdir(dirPath):
                 dirEntryPath = os.path.join(dirPath, dirEntry)
                 if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".rpm"):
-                    listRPMFiles.append(dirEntryPath)
+                    listRPMFiles.add(dirEntryPath)
                 elif os.path.isdir(dirEntryPath):
-                    listDirectorys.append(dirEntryPath)
-        pkgUtils = PackageUtils(self.logName,self.logPath)
+                    listDirectorys.add(dirEntryPath)
+        pkgUtils = PackageUtils(self.logName, self.logPath)
         for rpmfile in listRPMFiles:
-            package,version,release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
+            package, version, release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
             if SPECS.getData().isRPMPackage(package):
-                specVersion=SPECS.getData().getVersion(package)
-                specRelease=SPECS.getData().getRelease(package)
+                specVersion = SPECS.getData().getVersion(package)
+                specRelease = SPECS.getData().getRelease(package)
                 if version == specVersion and release == specRelease:
-                    listFoundRPMPackages.append(package)
+                    listFoundRPMPackages.add(package)
         #Mark package available only if all sub packages are available
         for package in listFoundRPMPackages:
             basePkg = SPECS.getData().getSpecName(package)
             if basePkg in listAvailablePackages:
-                continue;
+                continue
             listRPMPackages = SPECS.getData().getRPMPackages(basePkg)
             packageIsAlreadyBuilt = True
             for rpmpkg in listRPMPackages:
                 if rpmpkg not in listFoundRPMPackages:
                     packageIsAlreadyBuilt = False
             if packageIsAlreadyBuilt:
-                listAvailablePackages.append(package)
+                listAvailablePackages.add(package)
         self.logger.info("List of Already built packages")
         self.logger.info(listAvailablePackages)
         return listAvailablePackages
 
-    def calculateParams(self,listPackages):
-        self.listThreads.clear()
-        self.mapOutputThread.clear()
-        self.mapThreadsLaunchTime.clear()
-        self.listAvailableCyclicPackages=[]
+    def _calculateParams(self, listPackages):
         self.mapCyclesToPackageList.clear()
         self.mapPackageToCycle.clear()
-        self.sortedPackageList=[]
+        self.sortedPackageList = []
 
-        listOfPackagesAlreadyBuilt = []
-        listOfPackagesAlreadyBuilt = self.readAlreadyAvailablePackages()
-        self.listOfPackagesAlreadyBuilt = listOfPackagesAlreadyBuilt[:]
+        self.listOfPackagesAlreadyBuilt = self._readAlreadyAvailablePackages()
 
         updateBuiltRPMSList = False
         while not updateBuiltRPMSList:
             updateBuiltRPMSList = True
-            listOfPackagesAlreadyBuilt = self.listOfPackagesAlreadyBuilt[:]
+            listOfPackagesAlreadyBuilt = list(self.listOfPackagesAlreadyBuilt)
             for pkg in listOfPackagesAlreadyBuilt:
                 listDependentRpmPackages = SPECS.getData().getRequiresAllForPackage(pkg)
                 needToRebuild = False
@@ -113,108 +141,65 @@ class PackageManager(object):
                 if needToRebuild:
                     self.listOfPackagesAlreadyBuilt.remove(pkg)
 
-        listPackagesToBuild=listPackages[:]
+        listPackagesToBuild = copy.copy(listPackages)
         for pkg in listPackages:
-            if pkg in self.listOfPackagesAlreadyBuilt and not constants.rpmCheck:
+            if (pkg in self.listOfPackagesAlreadyBuilt and
+                    not constants.rpmCheck):
                 listPackagesToBuild.remove(pkg)
 
-        if not self.readPackageBuildData(listPackagesToBuild):
+        if not self._readPackageBuildData(listPackagesToBuild):
             return False
         return True
 
-    def buildToolChain(self):
-        pkgCount = 0
-        try:
-            tUtils=ToolChainUtils()
-            pkgCount = tUtils.buildCoreToolChainPackages(self.listBuildOptionPackages, self.pkgBuildOptionFile)
-        except Exception as e:
-            self.logger.error("Unable to build tool chain")
-            self.logger.error(e)
-            raise e
-        return pkgCount
-
-    def buildToolChainPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
-        pkgCount = self.buildToolChain()
-        if self.pkgBuildType == "container":
-            # Stage 1 build container
-            #TODO image name constants.buildContainerImageName
-            if pkgCount > 0 or not self.dockerClient.images.list("photon_build_container:latest"):
-                self.createBuildContainer()
-        self.buildGivenPackages(constants.listToolChainPackages, buildThreads)
-        if self.pkgBuildType == "container":
-            # Stage 2 build container
-            #TODO: rebuild container only if anything in listToolChainPackages was built
-            self.createBuildContainer()
-
-    def buildTestPackages(self, listBuildOptionPackages, pkgBuildOptionFile, buildThreads):
+    def _buildTestPackages(self, buildThreads):
         self.buildToolChain()
-        self.buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
+        self._buildGivenPackages(constants.listMakeCheckRPMPkgtoInstall, buildThreads)
 
-    def buildPackages(self,listPackages, listBuildOptionPackages, pkgBuildOptionFile, buildThreads, pkgBuildType):
-        self.listBuildOptionPackages = listBuildOptionPackages
-        self.pkgBuildOptionFile = pkgBuildOptionFile
-        self.pkgBuildType = pkgBuildType
-        if constants.rpmCheck:
-            constants.rpmCheck=False
-            self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
-            self.buildTestPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
-            constants.rpmCheck=True
-            self.buildGivenPackages(listPackages, buildThreads)
-        else:
-            self.buildToolChainPackages(listBuildOptionPackages, pkgBuildOptionFile, buildThreads)
-            self.buildGivenPackages(listPackages, buildThreads)
-
-    def initializeThreadPool(self,statusEvent):
+    def _initializeThreadPool(self, statusEvent):
         ThreadPool.clear()
-        ThreadPool.mapPackageToCycle=self.mapPackageToCycle
-        ThreadPool.listAvailableCyclicPackages=self.listAvailableCyclicPackages
-        ThreadPool.listBuildOptionPackages=self.listBuildOptionPackages
-        ThreadPool.pkgBuildOptionFile=self.pkgBuildOptionFile
-        ThreadPool.logger=self.logger
-        ThreadPool.statusEvent=statusEvent
-        ThreadPool.pkgBuildType=self.pkgBuildType
+        ThreadPool.mapPackageToCycle = self.mapPackageToCycle
+        ThreadPool.logger = self.logger
+        ThreadPool.statusEvent = statusEvent
+        ThreadPool.pkgBuildType = self.pkgBuildType
 
-    def initializeScheduler(self,statusEvent):
+    def _initializeScheduler(self, statusEvent):
         Scheduler.setLog(self.logName, self.logPath)
         Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
         Scheduler.setEvent(statusEvent)
-        Scheduler.stopScheduling=False
+        Scheduler.stopScheduling = False
 
-    def buildGivenPackages (self, listPackages, buildThreads):
+    def _buildGivenPackages(self, listPackages, buildThreads):
         if constants.rpmCheck:
-            alreadyBuiltRPMS=self.readAlreadyAvailablePackages()
-            listPackages=list(set(listPackages)|(set(constants.listMakeCheckRPMPkgtoInstall)-set(alreadyBuiltRPMS)))
+            alreadyBuiltRPMS = self._readAlreadyAvailablePackages()
+            listPackages = (list(set(listPackages)|(set(constants.listMakeCheckRPMPkgtoInstall)-
+                                                    alreadyBuiltRPMS)))
 
-        returnVal=self.calculateParams(listPackages)
+        returnVal = self._calculateParams(listPackages)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
             raise Exception("Unable to set paramaters")
 
-        statusEvent=threading.Event()
-        self.initializeScheduler(statusEvent)
-        self.initializeThreadPool(statusEvent)
+        statusEvent = threading.Event()
+        self._initializeScheduler(statusEvent)
+        self._initializeThreadPool(statusEvent)
 
-        i=0
-        while i < buildThreads:
-            workerName="WorkerThread"+str(i)
+        for i in range(0, buildThreads):
+            workerName = "WorkerThread" + str(i)
             ThreadPool.addWorkerThread(workerName)
             ThreadPool.startWorkerThread(workerName)
-            i = i + 1
 
         statusEvent.wait()
-        Scheduler.stopScheduling=True
+        Scheduler.stopScheduling = True
         self.logger.info("Waiting for all remaining worker threads")
-        listWorkerObjs=ThreadPool.getAllWorkerObjects()
-        for w in listWorkerObjs:
-            w.join()
+        ThreadPool.join_all()
 
-        setFailFlag=False
-        allPackagesBuilt=False
+        setFailFlag = False
+        allPackagesBuilt = False
         if Scheduler.isAnyPackagesFailedToBuild():
-            setFailFlag=True
+            setFailFlag = True
 
         if Scheduler.isAllPackagesBuilt():
-            allPackagesBuilt=True
+            allPackagesBuilt = True
 
         if setFailFlag:
             self.logger.error("Some of the packages failed:")
@@ -230,7 +215,7 @@ class PackageManager(object):
 
         self.logger.info("Terminated")
 
-    def createBuildContainer(self):
+    def _createBuildContainer(self):
         self.logger.info("Generating photon build container..")
         try:
             #TODO image name constants.buildContainerImageName
@@ -240,7 +225,7 @@ class PackageManager(object):
             self.logger.debug("Photon build container image not found.")
 
         # Create toolchain chroot and install toolchain RPMs
-        chrootID=None
+        chrootID = None
         try:
             #TODO: constants.tcrootname
             chrUtils = ChrootUtils("toolchain-chroot", self.logPath)

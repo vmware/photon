@@ -63,6 +63,11 @@ else
 PHOTON_RPMCHECK_FLAGS :=
 endif
 
+# KAT build for FIPS certification
+ifdef KAT_BUILD
+PHOTON_KAT_BUILD_FLAGS := -F $(KAT_BUILD)
+endif
+
 ifeq ($(BUILDDEPS),true)
 PUBLISH_BUILD_DEPENDENCIES := -bd True
 else
@@ -77,11 +82,16 @@ endif
 
 TOOLS_BIN := $(SRCROOT)/tools/bin
 CONTAIN := $(TOOLS_BIN)/contain
+ifeq ($(ARCH),x86_64)
 VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
 IMGCONVERTER := $(TOOLS_BIN)/imgconverter
+else
+VIXDISKUTIL :=
+IMGCONVERTER :=
+endif
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
-check-tools check-docker check-bison check-g++ check-gawk check-createrepo check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
+check-tools check-docker check-bison check-g++ check-gawk check-repo-tool check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
 clean-install clean-chroot build-updated-packages check generate-yaml-files
 
 THREADS?=1
@@ -245,6 +255,7 @@ packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(
                 -w $(PHOTON_STAGE)/pkg_info.json \
                 -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                 $(PHOTON_RPMCHECK_FLAGS) \
+		$(PHOTON_KAT_BUILD_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
                 -t ${THREADS}
@@ -289,6 +300,7 @@ updated-packages: check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_P
                 -n $(PHOTON_BUILD_NUMBER) \
                 -v $(PHOTON_RELEASE_VERSION) \
                 -k $(PHOTON_INPUT_RPMS_DIR) \
+		$(PHOTON_KAT_BUILD_FLAGS) \
                 $(PHOTON_RPMCHECK_FLAGS) \
 		$(PUBLISH_BUILD_DEPENDENCIES) \
 		$(PACKAGE_WEIGHTS_PATH) \
@@ -397,19 +409,19 @@ $(PHOTON_STAGE):
 generate-dep-lists:
 	$(RMDIR) $(PHOTON_GENERATED_DATA_DIR)
 	$(MKDIR) -p $(PHOTON_GENERATED_DATA_DIR)
-	@for f in $$(ls $(PHOTON_DATA_DIR)/build_install_options*.json) ; \
-	do \
-		cp $$f $(PHOTON_GENERATED_DATA_DIR); \
-		echo "Generating the install time dependency list for " $$f; \
-		cd $(PHOTON_SPECDEPS_DIR) && \
-		$(PHOTON_SPECDEPS) \
+	cd $(PHOTON_SPECDEPS_DIR) && \
+	$(PHOTON_SPECDEPS) \
 		-s $(PHOTON_SPECS_DIR) \
 		-t $(PHOTON_STAGE) \
-		--input-type=json --file $$f -d json -a $(PHOTON_DATA_DIR); \
-	done
+		-l $(PHOTON_LOGS_DIR) \
+		-p $(PHOTON_GENERATED_DATA_DIR) \
+		--input-type=json \
+		--file "$$(ls $(PHOTON_DATA_DIR)/build_install_options*.json)" \
+		-d json \
+		-a $(PHOTON_DATA_DIR)
 
 photon-docker-image:
-	createrepo $(PHOTON_RPMS_DIR)
+	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
 		-it \
@@ -426,9 +438,11 @@ start-docker: check-docker
 	systemctl start docker
 
 k8s-docker-images: start-docker photon-docker-image
+	mkdir -p $(PHOTON_STAGE)/docker_images && \
 	cd ./support/dockerfiles/k8s-docker-images && \
 	./build-k8s-base-image.sh $(PHOTON_RELEASE_VERSION) $(PHOTON_BUILD_NUMBER) $(PHOTON_STAGE)  && \
 	./build-k8s-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
+	./build-k8s-metrics-server-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE)  && \
 	./build-k8s-dns-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
 	./build-k8s-dashboard-docker-images.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
 	./build-flannel-docker-image.sh $(PHOTON_DIST_TAG) $(PHOTON_RELEASE_VERSION) $(PHOTON_SPECS_DIR) $(PHOTON_STAGE) && \
@@ -511,7 +525,7 @@ cloud-image-all: check-kpartx $(PHOTON_STAGE) $(VIXDISKUTIL) $(IMGCONVERTER) $(P
 	$(PHOTON_CLOUD_IMAGE_BUILDER) $(PHOTON_CLOUD_IMAGE_BUILDER_DIR) ova_micro $(SRCROOT) $(PHOTON_GENERATED_DATA_DIR) $(PHOTON_STAGE) $(ADDITIONAL_RPMS_PATH)
 
 
-check-tools: check-bison check-g++ check-gawk check-createrepo check-texinfo check-sanity check-docker
+check-tools: check-bison check-g++ check-gawk check-repo-tool check-texinfo check-sanity check-docker
 
 check-docker:
 	@command -v docker >/dev/null 2>&1 || { echo "Package docker not installed. Aborting." >&2; exit 1; }
@@ -520,7 +534,7 @@ check-docker-service:
 	@docker ps >/dev/null 2>&1 || { echo "Docker service is not running. Aborting." >&2; exit 1; }
 
 check-docker-py:
-	@python -c "import docker; assert docker.__version__ == '$(PHOTON_DOCKER_PY_VER)'" >/dev/null 2>&1 || { echo "Error: Python package docker-py 2.3.0 not installed.\nPlease use: pip install docker==2.3.0" >&2; exit 1; }
+	@python3 -c "import docker; assert docker.__version__ == '$(PHOTON_DOCKER_PY_VER)'" >/dev/null 2>&1 || { echo "Error: Python3 package docker-py3 2.3.0 not installed.\nPlease use: pip3 install docker==2.3.0" >&2; exit 1; }
 
 check-bison:
 	@command -v bison >/dev/null 2>&1 || { echo "Package bison not installed. Aborting." >&2; exit 1; }
@@ -534,8 +548,8 @@ check-g++:
 check-gawk:
 	@command -v gawk >/dev/null 2>&1 || { echo "Package gawk not installed. Aborting." >&2; exit 1; }
 
-check-createrepo:
-	@command -v createrepo >/dev/null 2>&1 || { echo "Package createrepo not installed. Aborting." >&2; exit 1; }
+check-repo-tool:
+	@command -v $(PHOTON_REPO_TOOL) >/dev/null 2>&1 || { echo "Package $(PHOTON_REPO_TOOL) not installed. Aborting." >&2; exit 1; }
 
 check-kpartx:
 	@command -v kpartx >/dev/null 2>&1 || { echo "Package kpartx not installed. Aborting." >&2; exit 1; }
@@ -603,27 +617,17 @@ check: packages
                               -v $(PHOTON_RELEASE_VERSION) \
                               -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
                               $(PHOTON_RPMCHECK_FLAGS) \
+				$(PHOTON_KAT_BUILD_FLAGS) \
                               -l $(PHOTON_LOGS_DIR)
 
 generate-yaml-files: check-tools $(PHOTON_STAGE) $(PHOTON_PACKAGES)
 	@echo "Generating yaml files for packages ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
-        $(PHOTON_PACKAGE_BUILDER) -y \
-                              -b $(PHOTON_CHROOT_PATH) \
+        $(PHOTON_GENERATE_OSS_FILES) -y \
                               -s $(PHOTON_SPECS_DIR) \
-                              -r $(PHOTON_RPMS_DIR) \
                               -a $(PHOTON_SRPMS_DIR) \
-                              -x $(PHOTON_SRCS_DIR) \
-                              -p $(PHOTON_PUBLISH_RPMS_DIR) \
-                              -e $(PHOTON_PUBLISH_XRPMS_DIR) \
-                              -c $(PHOTON_PULLSOURCES_CONFIG) \
-                              -d $(PHOTON_DIST_TAG) \
-                              -n $(PHOTON_BUILD_NUMBER) \
-                              -v $(PHOTON_RELEASE_VERSION) \
-                              -g $(PHOTON_DATA_DIR)/pkg_build_options.json \
-                              $(PHOTON_RPMCHECK_OPTION) \
                               -l $(PHOTON_LOGS_DIR) \
-                              -j $(PHOTON_STAGE) \
+                              -c $(PHOTON_PULLSOURCES_CONFIG) \
                               -f $(PHOTON_PKG_BLACKLIST_FILE)
 
 $(TOOLS_BIN):

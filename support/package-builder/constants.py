@@ -1,26 +1,32 @@
 from Logger import Logger
 
 class constants(object):
-    specPath=""
-    sourcePath=""
-    rpmPath=""
-    logPath=""
-    dist=""
-    buildNumber="0000000"
-    releaseVersion="NNNnNNN"
-    topDirPath=""
-    buildRootPath="/mnt"
-    prevPublishRPMRepo=""
-    prevPublishXRPMRepo=""
-    pullsourcesConfig=""
-    buildPatch=False
-    inputRPMSPath=""
-    rpmCheck=False
-    sourceRpmPath=""
-    publishBuildDependencies=False
-    packageWeightsPath=None
+    specPath = ""
+    sourcePath = ""
+    rpmPath = ""
+    logPath = ""
+    topDirPath = ""
+    buildRootPath = "/mnt"
+    prevPublishRPMRepo = ""
+    prevPublishXRPMRepo = ""
+    pullsourcesConfig = ""
+    buildPatch = False
+    inputRPMSPath = ""
+    rpmCheck = False
+    sourceRpmPath = ""
+    publishBuildDependencies = False
+    packageWeightsPath = None
+    dockerUnixSocket = "/var/run/docker.sock"
+    userDefinedMacros = {}
+    dist = None
+    buildNumber = None
+    releaseVersion = None
+    katBuild = None
+    testForceRPMS = []
+    tmpDirPath = "/dev/shm"
+    buildOptions = {}
 
-    noDepsPackageList=[
+    noDepsPackageList = [
         "texinfo",
         "bzip2",
         "bzip2-libs",
@@ -33,7 +39,7 @@ class constants(object):
         "sqlite-libs"]
 
     # These packages will be built in first order as build-core-toolchain stage
-    listCoreToolChainPackages=[
+    listCoreToolChainPackages = [
         "filesystem",
         "linux-api-headers",
         "glibc",
@@ -53,7 +59,7 @@ class constants(object):
         "bash"]
 
     # These packages will be built in a second stage to replace publish RPMS
-    listToolChainPackages=[
+    listToolChainPackages = [
         "filesystem",
         "linux-api-headers",
         "glibc",
@@ -115,7 +121,7 @@ class constants(object):
     # package. This list should be ordered by install order. On a stage1
     # and stage2 published rpms will/might be used after stage2 only local
     # RPMS will be used
-    listToolChainRPMsToInstall=[
+    listToolChainRPMsToInstall = [
         "filesystem",
         "linux-api-headers",
         "glibc",
@@ -124,6 +130,7 @@ class constants(object):
         "glibc-tools",
         "zlib",
         "zlib-devel",
+        "file-libs",
         "file",
         "binutils",
         "binutils-devel",
@@ -212,49 +219,104 @@ class constants(object):
         "cpio",
         "go"]
 
-    perPackageToolChain = dict.fromkeys(["openjdk8", "openjdk8-doc", "openjdk8-src", "openjdk8-sample", "openjre8" ], [
-        "glib-devel",
-        "icu-devel",
-        "openjdk",
-        "openjre",
-        "icu",
-        "harfbuzz",
-        "harfbuzz-devel",
-        "freetype2",
-        "freetype2-devel",
-        "alsa-lib",
-        "alsa-lib-devel",
-        "xcb-proto",
-        "libXdmcp-devel",
-        "libXau-devel",
-        "util-macros",
-        "xtrans",
-        "libxcb-devel",
-        "fontconfig-devel",
-        "proto",
-        "libXdmcp",
-        "libxcb",
-        "libXau",
-        "fontconfig",
-        "xtrans-devel",
-        "libX11",
-        "libX11-devel",
-        "libXext",
-        "libXext-devel",
-        "libICE-devel",
-        "libSM",
-        "libICE",
-        "libSM-devel",
-        "libXt",
-        "libXmu",
-        "libXt-devel",
-        "libXmu-devel",
-        "libXrender",
-        "libXrender-devel"])
-    perPackageToolChain["apache-maven"] = ["apache-maven"]
+    perPackageToolChain = dict.fromkeys(
+        ["openjdk8",
+         "openjdk8-doc",
+         "openjdk8-src",
+         "openjdk8-sample",
+         "openjre8",
+         "openjdk9",
+         "openjdk9-doc",
+         "openjdk9-src",
+         "openjre9",
+         "openjdk10",
+         "openjdk10-doc",
+         "openjdk10-src",
+         "openjre10"],
+          {
+          "x86_64":[
+            "icu-devel",
+            "cups",
+            "cups-devel",
+            "xorg-proto-devel",
+            "libXtst",
+            "libXtst-devel",
+            "libXfixes",
+            "libXfixes-devel",
+            "libXi",
+            "libXi-devel",
+            "openjdk",
+            "openjre",
+            "icu",
+            "alsa-lib",
+            "alsa-lib-devel",
+            "xcb-proto",
+            "libXdmcp-devel",
+            "libXau-devel",
+            "util-macros",
+            "xtrans",
+            "libxcb-devel",
+            "proto",
+            "libXdmcp",
+            "libxcb",
+            "libXau",
+            "xtrans-devel",
+            "libX11",
+            "libX11-devel",
+            "libXext",
+            "libXext-devel",
+            "libICE-devel",
+            "libSM",
+            "libICE",
+            "libSM-devel",
+            "libXt",
+            "libXmu",
+            "libXt-devel",
+            "libXmu-devel",
+            "libXrender",
+            "libXrender-devel"],
+         "aarch64":[
+            "icu-devel",
+            "openjdk",
+            "openjre",
+            "icu",
+            "alsa-lib",
+            "alsa-lib-devel",
+            "xcb-proto",
+            "libXdmcp-devel",
+            "libXau-devel",
+            "util-macros",
+            "xtrans",
+            "libxcb-devel",
+            "proto",
+            "libXdmcp",
+            "libxcb",
+            "libXau",
+            "xtrans-devel",
+            "libX11",
+            "libX11-devel",
+            "libXext",
+            "libXext-devel",
+            "libICE-devel",
+            "libSM",
+            "libICE",
+            "libSM-devel",
+            "libXt",
+            "libXmu",
+            "libXt-devel",
+            "libXmu-devel",
+            "libXrender",
+            "libXrender-devel"]
+          })
+
+    perPackageToolChain["apache-maven"] = {
+          "x86_64":["apache-maven"],
+          "aarch64":["apache-maven"]
+          }
+
     # List of RPMs which are not published. They will be created during the
     # build process
-    listOfRPMsProvidedAfterBuild=[
+    listOfRPMsProvidedAfterBuild = [
         "util-linux-devel",
         "flex-devel",
         "nspr-devel",
@@ -268,11 +330,12 @@ class constants(object):
         "xz-libs",
         "sqlite",
         "sqlite-libs",
+        "file-libs",
         "rpm-libs"]
 
     # List of packages that will be installed in addition for each
     # package to make check
-    listMakeCheckRPMPkgtoInstall=[
+    listMakeCheckRPMPkgtoInstall = [
         "python2",
         "python2-devel",
         "python2-libs",
@@ -321,14 +384,14 @@ class constants(object):
         "unzip",
         "systemd-devel",
         "gnupg",
-        "ncurses-terminfo" ]
+        "ncurses-terminfo"]
 
-    listReInstallPackages=[
+    listReInstallPackages = [
         "go"]
 
     # List of packages that requires privileged docker
     # to run make check.
-    listReqPrivilegedDockerForTest=[
+    listReqPrivilegedDockerForTest = [
         "elfutils", # SYS_PTRACE
         "gdb",
         "glibc",
@@ -338,7 +401,7 @@ class constants(object):
     # Requires(post):/sbin/useradd
     # Build system should interpret it as
     # Requires: shadow
-    providedBy={
+    providedBy = {
         "/usr/sbin/useradd":"shadow",
         "/usr/sbin/groupadd":"shadow",
         "/usr/bin/which":"which",
@@ -346,8 +409,11 @@ class constants(object):
     }
 
     # list of spec files to skip for parsing for given arch
-    skipSpecsForArch={
-        "x86_64":[],
+    skipSpecsForArch = {
+        "x86_64":[
+            "u-boot-rpi3.spec",
+            "openjdk8_aarch64.spec"
+            ],
         "aarch64":[
             # fakeroot-ng does not support aarch64
             "fakeroot-ng.spec",
@@ -363,77 +429,170 @@ class constants(object):
             # only generic linux is for arm64
             "linux-esx.spec",
             "linux-secure.spec",
+            "linux-aws.spec",
             # only linux-secure supports aufs
             "aufs-util.spec",
             # open-vm-tools does not support aarch64
             "open-vm-tools.spec",
+            # syslinux does not support aarch64
+            "syslinux.spec",
             # TODO: mariadb build hangs on amd64
             "mariadb.spec",
             # TODO: mysql fails on amd64 with fpic
             "mysql.spec",
             # irqbalance for arm64 ?
             "irqbalance.spec",
-            # no X rpms to build openjdk, skip all java packages
+            # openjdk8.spec is for x86_64 arch
             "openjdk8.spec",
-            "ant-contrib.spec",
-            "apache-ant.spec",
-            "apache-maven.spec",
-            "apache-tomcat.spec",
-            "cassandra.spec",
-            "commons-daemon.spec",
-            "jna.spec",
+            # dashboard failed to build libxslt during `npm install`
             "kubernetes-dashboard.spec",
-            "lightwave.spec",
-            "mesos.spec",
-            "protobuf.spec",
+            # test issue (java null pointer exception) before compilation
             "wavefront-proxy.spec",
-            "zookeeper.spec",
-            # requires lightwave
-            "pmd.spec",
-            # requires protobuf
-            "calico-felix.spec",
-            "lightstep-tracer-cpp.spec",
-            "protobuf-c.spec",
-            "runc.spec",
-            # requires cassandra
-            "python-cqlsh.spec",
-            # requires python-pyinstaller, but it has unresolved glibc deps
-            "calico-k8s-policy.spec",
-            "libcalico.spec",
-            # pcstat requires patching for aarch64
-            "pcstat.spec",
             # sysdig for aarch64 requires luajit, skip it and falco
             # https://github.com/draios/sysdig/issues/833
             "sysdig.spec",
-            "falco.spec"
+            "falco.spec",
+            # one more fail, not investigated yet
+            "log4cpp.spec",
+
+            # VIVACE packages
+            # need to update to mono-4.5
+            "mono.spec",
+            "banshee.spec",
+            "dbus-sharp.spec",
+            "dbus-sharp-glib.spec",
+            "gnome-keyring-sharp.spec",
+            "gnome-sharp.spec",
+            "gtk-sharp2.spec",
+            "mono-addins.spec",
+            "monodevelop.spec",
+            "nuget.spec",
+            "nunit.spec",
+            "pinta.spec",
+            "taglib-sharp.spec",
+            "tomboy.spec",
+            "totem.spec",
+            "webkit-sharp.spec",
+            # compilation issues with libwebkit
+            "libwebkit.spec",
+            "xf86-video-vmware.spec",
+            "xf86-video-intel.spec",
+            "xf86-input-vmmouse.spec",
+            # does not recognize aarch64
+            "thunderbird.spec",
+            #
+            "open-vm-tools-vivace.spec"
+
         ]
     }
 
     @staticmethod
-    def initialize(options):
-        constants.dist = options.dist
-        constants.buildNumber = options.buildNumber
-        constants.releaseVersion = options.releaseVersion
-        constants.specPath = options.specPath
-        constants.sourcePath = options.sourcePath
-        constants.rpmPath = options.rpmPath
-        constants.sourceRpmPath = options.sourceRpmPath
-        constants.topDirPath = options.topDirPath
-        constants.logPath = options.logPath
-        constants.prevPublishRPMRepo = options.publishRPMSPath
-        constants.prevPublishXRPMRepo = options.publishXRPMSPath
-        constants.buildRootPath=options.buildRootPath
-        constants.pullsourcesConfig = options.pullsourcesConfig
-        constants.inputRPMSPath=options.inputRPMSPath
-        constants.testForceRPMS=[]
-        constants.rpmCheck = options.rpmCheck
-        constants.rpmCheckStopOnError = options.rpmCheckStopOnError
-        constants.publishBuildDependencies=options.publishBuildDependencies
-        constants.packageWeightsPath=options.packageWeightsPath
-        constants.tmpDirPath = "/dev/shm"
+    def setSpecPath(specPath):
+        constants.specPath = specPath
+
+    @staticmethod
+    def setSourcePath(sourcePath):
+        constants.sourcePath = sourcePath
+
+    @staticmethod
+    def setRpmPath(rpmPath):
+        constants.rpmPath = rpmPath
+
+    @staticmethod
+    def setSourceRpmPath(sourceRpmPath):
+        constants.sourceRpmPath = sourceRpmPath
+
+    @staticmethod
+    def setTopDirPath(topDirPath):
+        constants.topDirPath = topDirPath
+
+    @staticmethod
+    def setLogPath(logPath):
+        constants.logPath = logPath
+
+    @staticmethod
+    def setPrevPublishRPMRepo(prevPublishRPMRepo):
+        constants.prevPublishRPMRepo = prevPublishRPMRepo
+
+    @staticmethod
+    def setPrevPublishXRPMRepo(prevPublishXRPMRepo):
+        constants.prevPublishXRPMRepo = prevPublishXRPMRepo
+
+    @staticmethod
+    def setBuildRootPath(buildRootPath):
+        constants.buildRootPath = buildRootPath
+
+    @staticmethod
+    def setPullSourcesConfig(pullSourcesConfig):
+        constants.pullsourcesConfig = pullSourcesConfig
+
+    @staticmethod
+    def setInputRPMSPath(inputRPMSPath):
+        constants.inputRPMSPath = inputRPMSPath
+
+    @staticmethod
+    def setRPMCheck(rpmCheck):
+        constants.rpmCheck = rpmCheck
+
+    @staticmethod
+    def setRpmCheckStopOnError(rpmCheckStopOnError):
+        constants.rpmCheckStopOnError = rpmCheckStopOnError
+
+    @staticmethod
+    def setPublishBuildDependencies(publishBuildDependencies):
+        constants.publishBuildDependencies = publishBuildDependencies
+
+    @staticmethod
+    def setPackageWeightsPath(packageWeightsPath):
+        constants.packageWeightsPath = packageWeightsPath
+
+    @staticmethod
+    def setDist(dist):
+        constants.dist = dist
+
+    @staticmethod
+    def setBuildNumber(buildNumber):
+        constants.buildNumber = buildNumber
+
+    @staticmethod
+    def setReleaseVersion(releaseVersion):
+        constants.releaseVersion = releaseVersion
+
+    @staticmethod
+    def setKatBuild(katBuild):
+        constants.katBuild = katBuild
+
+    @staticmethod
+    def initialize():
         if constants.rpmCheck:
-            constants.testLogger=Logger.getLogger("MakeCheckTest",constants.logPath)
+            constants.testLogger = Logger.getLogger("MakeCheckTest", constants.logPath)
+            constants.addMacro("with_check", "1")
+        else:
+            constants.addMacro("with_check", "0")
+
+        # adding distribution rpm macro
+        if constants.dist is not None:
+            constants.addMacro("dist", constants.dist)
+
+        # adding buildnumber rpm macro
+        if constants.buildNumber is not None:
+            constants.addMacro("photon_build_number", constants.buildNumber)
+
+        # adding releasenumber rpm macro
+        if constants.releaseVersion is not None:
+            constants.addMacro("photon_release_version", constants.releaseVersion)
+
+        if constants.katBuild is not None:
+            constants.addMacro("kat_build", constants.katBuild)
 
     @staticmethod
     def setTestForceRPMS(listsPackages):
-        constants.testForceRPMS=listsPackages
+        constants.testForceRPMS = listsPackages
+
+    @staticmethod
+    def addMacro(macroName, macroValue):
+        constants.userDefinedMacros[macroName] = macroValue
+
+    @staticmethod
+    def setBuidOptions(options):
+        constants.buildOptions = options

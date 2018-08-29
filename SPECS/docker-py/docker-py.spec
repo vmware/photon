@@ -3,7 +3,7 @@
 
 Name:           docker-py
 Version:        2.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -40,6 +40,13 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-pip
 
+Requires:       python3
+Requires:       python3-libs
+Requires:       docker-pycreds3
+Requires:       python3-requests
+Requires:       python3-six
+Requires:       python3-websocket-client
+
 %description -n docker-py3
 Python3 API for docker
 
@@ -69,6 +76,9 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Dec 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.3.0-3
+-   Added docker-pycreds3, python3-requests, python3-six,
+-   python3-websocket-client to requires of docker-py3
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.3.0-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Sun Jun 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.3.0-1

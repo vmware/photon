@@ -1,57 +1,55 @@
-%define sourcever 3190300
-Summary:	A portable, high level programming interface to various calling conventions
-Name:		sqlite
-Version:	3.19.3
-Release:	1%{?dist}
-License:	Public Domain
-URL:		http://www.sqlite.org
-Group:		System Environment/GeneralLibraries
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://sqlite.org/2016/%{name}-autoconf-3190300.tar.gz
-%define sha1 sqlite=58f2cabffb3ff4761a3ac7f834d9db7b46307c1f
-#https://sqlite.org/src/vpatch?from=0db20efe201736b3&to=66de6f4a9504ec26
-Patch0:         CVE-2017-10989.patch
-Obsoletes:	sqlite-autoconf
-Requires:	sqlite-libs = %{version}-%{release}
-Provides:	sqlite3
+%define sourcever 3220000
+Summary:    A portable, high level programming interface to various calling conventions
+Name:           sqlite
+Version:        3.22.0
+Release:        1%{?dist}
+License:        Public Domain
+URL:            http://www.sqlite.org
+Group:          System Environment/GeneralLibraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://sqlite.org/2018/%{name}-autoconf-%{sourcever}.tar.gz
+%define sha1    sqlite=2fb24ec12001926d5209d2da90d252b9825366ac
+Obsoletes:      sqlite-autoconf
+Requires:       sqlite-libs = %{version}-%{release}
+Provides:       sqlite3
 %description
 This package contains most of the static files that comprise the
 www.sqlite.org website including all of the SQL Syntax and the 
 C/C++ interface specs and other miscellaneous documentation.
 
 %package devel
-Summary:	sqlite3 link library & header files
-Group:		Development/Libraries
-Requires:	%{name} = %{version}-%{release}
-%description devel
+Summary:        sqlite3 link library & header files
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+%description    devel
 The sqlite devel package include the needed library link and
 header files for development.
 
 %package libs
-Summary:	sqlite3 library
-Group:		Libraries
-Provides:	pkgconfig(sqlite3)
-Obsoletes:	libsqlite
-Obsoletes:	sqlite-autoconf
+Summary:        sqlite3 library
+Group:          Libraries
+Provides:       pkgconfig(sqlite3)
+Obsoletes:      libsqlite
+Obsoletes:      sqlite-autoconf
 %description libs
 The sqlite3 library.
 
 %prep
 %setup -q -n %{name}-autoconf-%{sourcever}
-%patch0 -p1
 
 %build
 ./configure \
-	CFLAGS="%{optflags}" \
-	CXXFLAGS="%{optflags} -DSQLITE_ENABLE_FTS3=1 \
-	-DSQLITE_ENABLE_COLUMN_METADATA=1 \
-	-DSQLITE_ENABLE_UNLOCK_NOTIFY=1 \
-	-DSQLITE_SECURE_DELETE=1" \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-	--libdir=%{_libdir} \
-	--disable-static
+    CFLAGS="%{optflags}"                \
+    CXXFLAGS="%{optflags}               \
+    -DSQLITE_ENABLE_FTS3=1              \
+    -DSQLITE_ENABLE_COLUMN_METADATA=1   \
+    -DSQLITE_ENABLE_UNLOCK_NOTIFY=1     \
+    -DSQLITE_SECURE_DELETE=1"           \
+    --prefix=%{_prefix}                 \
+    --bindir=%{_bindir}                 \
+    --libdir=%{_libdir}                 \
+    --disable-static
 make
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -67,7 +65,7 @@ make %{?_smp_mflags} check
 %post libs
 /sbin/ldconfig
 
-%postun	libs
+%postun libs
 /sbin/ldconfig
 
 %clean
@@ -90,6 +88,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0.8.6
 
 %changelog
+*   Tue Feb 20 2018 Xiaolin Li <xiaolinl@vmware.com> 3.22.0-1
+-   Upgrade to version 3.22.0
+*   Fri Nov 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.21.0-1
+-   Upgrade to version 3.21.0
 *   Fri Jul 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.19.3-1
 -   Upgrading to version 3.19.0 and adding patch for CVE-2017-10989
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.18.0-2

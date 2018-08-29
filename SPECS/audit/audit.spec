@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.7.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=7aaae7ea80f2280b25f243916e8d18b7338b5f53
 License:        GPLv2+
@@ -88,8 +88,10 @@ make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
-mkdir -p %{buildroot}/%{_var}/log/audit
+mkdir -p %{buildroot}/%{_var}/opt/audit/log
+mkdir -p %{buildroot}/%{_var}/log
 mkdir -p %{buildroot}/%{_var}/spool/audit
+ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
 make install DESTDIR=%{buildroot}
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
@@ -109,7 +111,7 @@ make %{?_smp_mflags} check
 %preun
 %systemd_preun auditd.service
 
-%files 
+%files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_sbindir}/*
@@ -120,6 +122,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
+%dir %{_var}/opt/audit/log
 %{_var}/log/audit
 %{_var}/spool/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit
@@ -158,6 +161,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-4
+-   Fixed the log file directory structure
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.7.5-3
 -   Disabled audit service by default
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.5-2
