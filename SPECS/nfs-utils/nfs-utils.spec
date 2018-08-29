@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        2.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -27,7 +27,6 @@ BuildRequires:  systemd-devel
 BuildRequires:  keyutils-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  libgssglue-devel
-BuildRequires:  librpcsecgss-devel
 BuildRequires:  libnfsidmap-devel
 BuildRequires:  e2fsprogs-devel
 Requires:       libtirpc
@@ -46,6 +45,8 @@ The nfs-utils package contains simple nfs client service
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
 find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
+# fix --with-rpcgen=internal
+sed -i 's/RPCGEN_PATH" =/rpcgen_path" =/' configure
 
 %build
 ./configure --prefix=%{_prefix}         \
@@ -54,9 +55,12 @@ find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
             --without-tcp-wrappers      \
             --enable-gss                \
             --enable-nfsv4              \
+	    --with-rpcgen=internal	\
             --disable-static
 
-make
+# fix building against new gcc
+sed -i 's/CFLAGS = -g/CFLAGS = -Wno-error=strict-prototypes/' support/nsm/Makefile
+make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 install -v -m644 utils/mount/nfsmount.conf /etc/nfsmount.conf
@@ -127,6 +131,9 @@ fi
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 2.3.3-2
+-   Fix compilation issue against glibc-2.28
+-   Use internal rpcgen, disable librpcsecgss dependency.
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.3.3-1
 -   Update to 2.3.3
 *   Thu Jun 07 2018 Anish Swaminathan <anishs@vmware.com> 2.3.1-2
