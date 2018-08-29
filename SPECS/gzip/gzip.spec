@@ -1,7 +1,7 @@
 Summary:	Programs for compressing and decompressing files
 Name:		gzip
 Version:	1.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software
 Group:		Applications/File
@@ -9,11 +9,13 @@ Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/gzip/%{name}-%{version}.tar.xz
 %define sha1 gzip=224bc2af5202eccf47f22357023d222011f9de78
+Patch0:		fflush-adjust-to-glibc-2.28-libio-h-removal.patch
 %description
 The Gzip package contains programs for compressing and
 decompressing files.
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -37,9 +39,11 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
-*	Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.8-1
--	Upgrading to version 1.8
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6-2
--	GA - Bump release of all rpms
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.6-1
--	Initial build.	First version
+* Fri Sep 07 2018 Alexey Makhalov <amakhalov@vmware.com> 1.8-2
+- Fix compilation issue against glibc-2.28
+* Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.8-1
+- Upgrading to version 1.8
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6-2
+- GA - Bump release of all rpms
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.6-1
+- Initial build. First version
