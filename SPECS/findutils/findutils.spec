@@ -1,7 +1,7 @@
 Summary:	This package contains programs to find files
 Name:		findutils
 Version:	4.6.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/findutils
 Group:		Applications/File
@@ -26,6 +26,11 @@ These are the additional language files of findutils
 %prep
 %setup -q
 %build
+#make some fixes required by glibc-2.28:
+sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' gl/lib/*.c
+sed -i '/unistd/a #include <sys/sysmacros.h>' gl/lib/mountlist.c
+echo "#define _IO_IN_BACKUP 0x100" >> gl/lib/stdio-impl.h
+
 ./configure \
 	--prefix=%{_prefix} \
 	--localstatedir=%{_sharedstatedir}/locate \
@@ -56,6 +61,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-5
+- Fix compilation issue against glibc-2.28
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-4
 - Added conflicts toybox
 * Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 4.6.0-3

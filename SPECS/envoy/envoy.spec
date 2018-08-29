@@ -1,7 +1,7 @@
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
@@ -51,6 +51,13 @@ Requires:       protobuf
 %description
 Envoy is a L7 proxy and communication bus designed for large modern service oriented architectures.
 
+%package test
+Summary: Contains envoy-test and envoy.gdb tools
+Group: Development/Tools
+Requires: envoy = %{version}-%{release}
+%description test
+Contains envoy-test and envoy.gdb tools
+
 %prep
 %setup -q
 cp %{SOURCE1} %{_builddir}/%{name}-%{version}/
@@ -61,6 +68,7 @@ git -c user.name='Envoy Builder' -c user.email='nobody@noorg.org' tag -a 'v%{ver
 git checkout 'v%{version}'
 sed -i "s#-Werror##g" common.cmake
 sed -i "s#static-libstdc++#lstdc++#g" CMakeLists.txt
+sed -i '/target_link_libraries(envoy-test gmock)/a target_link_libraries(envoy-test gtest)' test/CMakeLists.txt
 
 %build
 export CC=`which gcc`
@@ -102,11 +110,13 @@ cp ../configs/* %{buildroot}%{_sysconfdir}/envoy
 %{_bindir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
-%files debuginfo
+%files test
 %defattr(-,root,root)
 %{_bindir}/envoy-test
 %{_bindir}/envoy.dbg
 
 %changelog
-*    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
--    Initial version of envoy package for Photon.
+* Mon Sep 24 2018 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-2
+- Fix compilation issue. Add test subpackage
+* Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-1
+- Initial version of envoy package for Photon.
