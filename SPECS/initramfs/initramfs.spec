@@ -4,7 +4,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	1.0
-Release:	9%{?kernelsubrelease}%{?dist}
+Release:	10%{?kernelsubrelease}%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 Source:		photon-release-1.0.2.tar.gz
@@ -30,7 +30,7 @@ echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev x
 echo 'add_dracutmodules+="ostree systemd"' > /etc/dracut.conf.d/ostree.conf
 
 %build
-dracut --force --kver %{KERNEL_VERSION}-%{KERNEL_RELEASE} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" -a lvm initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+dracut --force --kver %{KERNEL_VERSION}-%{KERNEL_RELEASE} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" -a lvm --nostrip initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/boot
@@ -47,6 +47,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %changelog
+*   Wed Aug 29 2018 Keerthana K <keerthanak@vmware.com> 1.0-10
+-   Including nostrip option to the libraries packaged in initrd image.
 *   Wed Jul 11 2018 Dweep Advani <dadvani@vmware.com>  1.0-9
 -   Add LVM driver for root on LVM
 *   Wed Jul 12 2017 Anish Swaminathan <anishs@vmware.com>  1.0-8
