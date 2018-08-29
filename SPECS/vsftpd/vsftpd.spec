@@ -1,7 +1,7 @@
 Summary:        Very secure and very small FTP daemon.
 Name:           vsftpd
 Version:        3.0.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2 with exceptions
 URL:            https://security.appspot.com/vsftpd.html
 Group:          System Environment/Daemons
@@ -10,8 +10,8 @@ Distribution:   Photon
 Source0:        https://security.appspot.com/downloads/%{name}-%{version}.tar.gz
 %define sha1    vsftpd=d5f5a180dbecd0fbcdc92bf0ba2fc001c962b55a
 Patch0:         vsftpd-gen-debuginfo.patch
-BuildRequires:  libcap-devel Linux-PAM-devel openssl-devel
-Requires:       libcap Linux-PAM openssl
+BuildRequires:  libcap-devel Linux-PAM-devel openssl-devel libnsl-devel
+Requires:       libcap Linux-PAM openssl libnsl
 %description
 Very secure and very small FTP daemon.
 %prep
@@ -83,6 +83,8 @@ fi
 %{_datadir}/*
 
 %changelog
+*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 3.0.3-5
+-   Use libnsl instead of obsoleted nsl from glibc
 *   Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com> 3.0.3-4
 -   Enable ssl support.
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.3-3

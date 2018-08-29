@@ -23,7 +23,7 @@ diff -rup open-vm-tools-stable-10.2.0/open-vm-tools/libDeployPkg/linuxDeployment
  
 @@ -1190,6 +1194,19 @@ Deploy(const char* packageName)
        free(command);
-       deployStatus =  CloudInitSetup(tmpDirPath);
+       deployPkgStatus = CloudInitSetup(tmpDirPath);
     } else {
 +       if ((strstr(command, "scripts/Customize.pl") != NULL) || (strstr(command, "scripts/customize.sh") != NULL)) {
 +          free (command);
@@ -34,7 +34,7 @@ diff -rup open-vm-tools-stable-10.2.0/open-vm-tools/libDeployPkg/linuxDeployment
 +          command = strdup(PHOTON_OS_LAUNCH_COMMAND);
 +          if (!command) {
 +             SetDeployError("Error allocating memory.");
-+             return DEPLOY_ERROR;
++             return DEPLOYPKG_STATUS_ERROR;
 +          }
 +          _DeployPkg_SkipReboot(true);
 +      }

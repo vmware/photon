@@ -14,7 +14,6 @@
 Name:       ceph
 Version:    11.2.1
 Release:    1%{?dist}
-Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
 Group:      System/Filesystems

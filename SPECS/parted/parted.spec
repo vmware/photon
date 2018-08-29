@@ -1,7 +1,7 @@
 Summary:	GNU Parted manipulates partition tables
 Name:		parted
 Version:	3.2
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:		Applications/System
@@ -17,6 +17,8 @@ command-line frontend, parted, which can also be used in scripts.
 %prep
 %setup -q
 %build
+#Add a header to allow building with glibc-2.28 or later
+sed -i '/utsname.h/a#include <sys/sysmacros.h>' libparted/arch/linux.c &&
 ./configure \
 	--prefix=%{_prefix} \
 	--bindir=%{_bindir} \
@@ -43,13 +45,15 @@ make DESTDIR=%{buildroot} install
 %{_infodir}/%{name}-%{version}/*
 %{_datadir}/*
 %changelog
-*       Wed Aug 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-5
--       Fix summary and description
-*       Tue Jun 06 2017 ChangLee <changlee@vmware.com> 3.2-4
--       Remove %check
-*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 3.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-2
--	GA - Bump release of all rpms
-*	Thu Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.2-1
-	Initial version
+* Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 3.2-6
+- Fix compilation issue against glibc-2.28
+* Wed Aug 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-5
+- Fix summary and description
+* Tue Jun 06 2017 ChangLee <changlee@vmware.com> 3.2-4
+- Remove %check
+* Fri Oct 07 2016 ChangLee <changlee@vmware.com> 3.2-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-2
+- GA - Bump release of all rpms
+* Wed Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.2-1
+- Initial version
