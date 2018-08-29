@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -20,6 +20,8 @@ Patch1:           02-install-general-aliases.patch
 Patch2:           systemd-236-default-dns-from-env.patch
 Patch3:           systemd-macros.patch
 Patch4:           systemd-239-query-duid.patch
+# Fix glibc-2.28 build issue. Checked in upstream after v239
+Patch5:           75720bff62a84896e9a0654afc7cf9408cf89a38.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -78,6 +80,7 @@ EOF
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -240,6 +243,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 239-3
+-    Fix compilation issue against glibc-2.28
 *    Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 239-2
 -    Automatically load rdrand-rng kernel module on every boot.
 *    Tue Aug 28 2018 Anish Swaminathan <anishs@vmware.com>  239-1

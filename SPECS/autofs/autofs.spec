@@ -2,7 +2,7 @@
 Summary:        A kernel-based automounter for Linux
 Name:           autofs
 Version:        5.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/daemons/autofs
 Group:          System Environment/Daemons
@@ -13,6 +13,7 @@ Source0:        http://www.kernel.org/pub/linux/daemons/%{name}/v5/%{name}-%{ver
 
 BuildRequires:  systemd
 Requires:       systemd
+BuildRequires:  rpcsvc-proto
 %description
 Automounting is the process of automatically mounting and unmounting of file systems by a daemon. Autofs includes both a user-space daemon and code in the kernel that assists the daemon.
 
@@ -64,6 +65,8 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/autofs.service
 
 %changelog
+*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 5.1.4-2
+-   Use rpcsvc-proto to get rpcgen
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 5.1.4-1
 -   Update version to 5.1.4
 *   Thu Jul 06 2017 Xiaolin Li <xiaolinl@vmware.com> 5.1.3-1
