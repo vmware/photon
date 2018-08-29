@@ -79,57 +79,26 @@ class PackageManager(object):
             return False
         return True
 
+    # Returns list of package names which spec file has all subpackages built
+    # Since it returns _only_ package name (no version) - consider it as no
+    # multiversioning support function. It operates only with default package
+    # version and release index (0 index)
     def _readAlreadyAvailablePackages(self):
         listAvailablePackages = set()
-        listFoundRPMPackages = set()
-        listRPMFiles = set()
-        listDirectorys = set()
-        mapPackageVersion={}
-        mapPackageRelease={}
-        listDirectorys.add(constants.rpmPath)
-        if constants.inputRPMSPath is not None:
-            listDirectorys.add(constants.inputRPMSPath)
-
-        while listDirectorys:
-            dirPath = listDirectorys.pop()
-            for dirEntry in os.listdir(dirPath):
-                dirEntryPath = os.path.join(dirPath, dirEntry)
-                if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".rpm"):
-                    listRPMFiles.add(dirEntryPath)
-                elif os.path.isdir(dirEntryPath):
-                    listDirectorys.add(dirEntryPath)
         pkgUtils = PackageUtils(self.logName, self.logPath)
-        for rpmfile in listRPMFiles:
-            package, version, release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
-            if package in mapPackageVersion:
-                mapPackageVersion[package].append(version)
-                mapPackageRelease[package].append(release)
-            else:
-                mapPackageVersion[package]=[version]
-                mapPackageRelease[package]=[release]
-        for package in mapPackageVersion:
-            if SPECS.getData().isRPMPackage(package):
-                numVersions=SPECS.getData().getNumberOfVersions(package)
-                flag=True;
-                for index in range(0, numVersions):
-                        specVersion=SPECS.getData().getVersion(package,index)
-                        specRelease=SPECS.getData().getRelease(package,index)
-                        if  specVersion not in mapPackageVersion[package] and specRelease not in mapPackageRelease[package]:
-                                flag=False
-                if flag:
-                        listFoundRPMPackages.add(package)
-        #Mark package available only if all sub packages are available
-        for package in listFoundRPMPackages:
-            basePkg = SPECS.getData().getSpecName(package)
-            if basePkg in listAvailablePackages:
-                continue
-            listRPMPackages = SPECS.getData().getRPMPackages(basePkg)
-            packageIsAlreadyBuilt = True
-            for rpmpkg in listRPMPackages:
-                if rpmpkg not in listFoundRPMPackages:
-                    packageIsAlreadyBuilt = False
+        listPackages = SPECS.getData().getListPackages()
+        listPackages.sort()
+        for package in listPackages:
+            listRPMPackages = SPECS.getData().getRPMPackages(package)
+            # Mark package available only if all subpackages are available
+            packageIsAlreadyBuilt=True
+            for rpmPkg in listRPMPackages:
+                if pkgUtils.findRPMFileForGivenPackage(rpmPkg) is None:
+                    packageIsAlreadyBuilt=False
+                    break;
             if packageIsAlreadyBuilt:
                 listAvailablePackages.add(package)
+
         self.logger.info("List of Already built packages")
         self.logger.info(listAvailablePackages)
         return listAvailablePackages

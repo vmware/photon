@@ -17,6 +17,7 @@ class SpecObject(object):
         self.name = ""
         self.version = ""
         self.release = ""
+        self.buildarch = {}
         self.buildRequirePackages = []
         self.checkBuildRequirePackages = []
         self.installRequiresAllPackages = []
@@ -65,6 +66,7 @@ class SpecObjectsUtils(object):
             specObj.sourceurl = spec.getSourceURL()
             for specPkg in specObj.listPackages:
                 specObj.installRequiresPackages[specPkg] = spec.getRequires(specPkg)
+                specObj.buildarch[specPkg] = spec.getBuildArch(specPkg)
                 self.mapPackageToSpec[specPkg] = specName
                 if spec.getIsRPMPackage(specPkg):
                     specObj.listRPMPackages.append(specPkg)
@@ -126,6 +128,10 @@ class SpecObjectsUtils(object):
     def getVersion(self, package, index=0):
         specName = self.getSpecName(package)
         return self.mapSpecObjects[specName][index].version
+
+    def getBuildArch(self, package, index=0):
+        specName = self.getSpecName(package)
+        return self.mapSpecObjects[specName][index].buildarch[package]
 
     def getSpecFile(self, package, index=0):
         specName = self.getSpecName(package)

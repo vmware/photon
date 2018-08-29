@@ -150,18 +150,14 @@ class PackageUtils(object):
         if version == "*":
                 version = SPECS.getData().getVersion(package, index)
                 release = SPECS.getData().getRelease(package, index)
+        buildarch=SPECS.getData().getBuildArch(package, index)
         listFoundRPMFiles = sum([cmdUtils.findFile(package + "-" + version + "-" + release + "." +
-                                                   platform.machine()+".rpm",
-                                                   constants.rpmPath),
-                                 cmdUtils.findFile(package + "-" + version + "-" + release +
-                                                   ".noarch.rpm",
+                                                   buildarch+".rpm",
                                                    constants.rpmPath)], [])
         if constants.inputRPMSPath is not None:
             listFoundRPMFiles = sum([cmdUtils.findFile(package + "-" + version + "-" + release +
-                                                       "." + platform.machine()+".rpm",
-                                                       constants.inputRPMSPath),
-                                     cmdUtils.findFile(package + "-" + version + "-" + release +
-                                                       ".noarch.rpm", constants.inputRPMSPath)],
+                                                       "." + buildarch+".rpm",
+                                                       constants.inputRPMSPath)],
                                     listFoundRPMFiles)
         if len(listFoundRPMFiles) == 1:
             return listFoundRPMFiles[0]
@@ -171,23 +167,6 @@ class PackageUtils(object):
             self.logger.error("Found multiple rpm files for given package in rpm directory." +
                               "Unable to determine the rpm file for package:" + package)
             raise Exception("Multiple rpm files found")
-
-    def findPackageInfoFromRPMFile(self, rpmfile):
-        rpmfile = os.path.basename(rpmfile)
-        rpmfile = rpmfile.replace("." + platform.machine() + ".rpm", "")
-        rpmfile = rpmfile.replace(".noarch.rpm", "")
-        releaseindex = rpmfile.rfind("-")
-        if releaseindex == -1:
-            self.logger.error("Invalid rpm file:" + rpmfile)
-            raise Exception("Invalid RPM")
-        versionindex = rpmfile[0:releaseindex].rfind("-")
-        if versionindex == -1:
-            self.logger.error("Invalid rpm file:" + rpmfile)
-            raise Exception("Invalid RPM")
-        packageName = rpmfile[0:versionindex]
-        version = rpmfile[versionindex + 1:releaseindex]
-        release = rpmfile[releaseindex + 1:]
-        return packageName, version, release
 
     def findInstalledRPMPackages(self, chrootID):
         cmd = self.rpmBinary + " " + self.queryRpmPackageOptions

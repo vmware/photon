@@ -73,6 +73,13 @@ class Specutils(object):
             return None
         return pkg.license
 
+    def getBuildArch(self, pkgName):
+        for pkg in self.spec.packages.values():
+            if pkg.name == pkgName:
+                return pkg.buildarch
+        pkg = self.spec.packages.get('default')
+        return pkg.buildarch
+
     def getURL(self):
         pkg = self.spec.packages.get('default')
         if pkg is None:

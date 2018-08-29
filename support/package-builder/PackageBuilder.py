@@ -93,7 +93,11 @@ class PackageBuilderBase(object):
 
     def _installPackage(self, pkgUtils, package,packageVersion, instanceID, destLogPath,
                         listInstalledPackages, listInstalledRPMs):
-        specificRPM = os.path.basename(pkgUtils.findRPMFileForGivenPackage(package,packageVersion)).replace(".rpm", "")
+        rpmfile = pkgUtils.findRPMFileForGivenPackage(package,packageVersion);
+        if rpmfile is None:
+            self.logger.error("No rpm file found for package: " + package + "-" + packageVersion)
+            raise Exception("Missing rpm file")
+        specificRPM = os.path.basename(rpmfile.replace(".rpm", ""))
         if package in listInstalledPackages:
                 return
         # mark it as installed -  to avoid cyclic recursion
