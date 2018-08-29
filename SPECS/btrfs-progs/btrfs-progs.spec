@@ -1,12 +1,14 @@
 Name:       btrfs-progs
 Version:    4.10.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Userspace programs for btrfs
 Group:      System Environment/Base
 License:    GPLv2+
 URL:        http://btrfs.wiki.kernel.org/index.php/Main_Page
 Source0:    https://www.kernel.org/pub/linux/kernel/people/kdave/%{name}/%{name}-v%{version}.tar.xz
 %define sha1 btrfs-progs=c75d4ca843232a0da44e9a05aa073435ad9e4fdd
+# e2fsprogs-1.44 compatibility
+Patch0:     3a07b07b1a56f7d97390f66c01a5829abb2c5b70.patch
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildRequires:  lzo-devel
@@ -31,6 +33,7 @@ btrfs filesystem-specific programs.
 
 %prep
 %setup -q -n %{name}-v%{version}
+%patch0 -p1
 
 %build
 ./autogen.sh
@@ -67,6 +70,8 @@ rm -rf %{buildroot}
 %{_libdir}/libbtrfs.a
 
 %changelog
+*   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.10.2-2
+-   Fix compilation issue againts e2fsprogs-1.44
 *   Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  4.10.2-1
 -   Upgrade to 4.10.2
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.4-3
