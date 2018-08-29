@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        7.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -11,6 +11,7 @@ Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
 %define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
 Patch0:         PLUGIN_TYPE_CAST.patch
+Patch1:         libsanitizer-avoidustat.h-glibc-2.28.patch
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
@@ -84,6 +85,7 @@ This package contains development headers and static library for libgomp
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 # disable FORTIFY_SOURCE=2 from hardening
 sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
@@ -222,6 +224,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-3
+-   Fix compilation issue for glibc-2.28
 *   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 7.3.0-2
 -   Packaging .a files (libstdc++-static files).
 *   Wed Aug 01 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.3.0-1
