@@ -2,7 +2,7 @@
 Summary:	Simple kernel loader which boots from a FAT filesystem
 Name:		syslinux
 Version:	6.04
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.syslinux.org
 Group:		Applications/System
@@ -32,6 +32,8 @@ Headers and libraries for syslinux development.
 %setup -q -n %{name}-%{version}-pre1
 %patch0 -p1
 %build
+#make some fixes required by glibc-2.28:
+sed -i '/unistd/a #include <sys/sysmacros.h>' extlinux/main.c
 make bios clean all
 %install
 make bios install-all \
@@ -58,6 +60,8 @@ rm %{buildroot}/%{_bindir}/sha1pass
 %{_datadir}/syslinux/com32/*
 
 %changelog
+*   Wed Sep 19 2018 Alexey Makhalov <amakhalov@vmware.com> 6.04-3
+-   Fix compilation issue against glibc-2.28
 *   Wed Oct 25 2017 Alexey Makhalov <amakhalov@vmware.com> 6.04-2
 -   Remove md5pass and sha1pass tools
 *   Tue Oct 17 2017 Alexey Makhalov <amakhalov@vmware.com> 6.04-1

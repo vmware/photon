@@ -1,14 +1,14 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
-Version:        1.43.4
-Release:        2%{?dist}
+Version:        1.44.3
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
-%define sha1    e2fsprogs=f7cf8c82805103b53f89ad5da641e1085281d411
+%define sha1    e2fsprogs=bfe11b75fee61c4d3795ac27eea11f9f7843294b
 Requires:       %{name}-libs = %{version}-%{release}
 %description
 The E2fsprogs package contains the utilities for handling
@@ -118,6 +118,7 @@ make %{?_smp_mflags} check
 %{_includedir}/ext2fs/ext3_extents.h
 %{_includedir}/ext2fs/ext2_types.h
 %{_includedir}/ext2fs/ext2_ext_attr.h
+%{_includedir}/ext2fs/hashmap.h
 %{_includedir}/e2p/e2p.h
 %{_includedir}/com_err.h
 %{_libdir}/libcom_err.a
@@ -134,6 +135,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.44.3-1
+-   Version update to fix compilation issue againts glibc-2.28
 *   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.43.4-2
 -   Add lang package.
 *   Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 1.43.4-1
