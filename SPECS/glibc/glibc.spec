@@ -3,27 +3,20 @@
 
 Summary:        Main C library
 Name:           glibc
-Version:        2.26
-Release:        10%{?dist}
+Version:        2.28
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
-%define sha1    glibc=7cf7d521f5ebece5dd27cfb3ca5e5f6b84da4bfd
+%define sha1    glibc=ccb5dc9e51a9884df8488f86982439d47b283b2a
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
 Patch1:         glibc-2.24-bindrsvport-blacklist.patch
-Patch2:         0001-Fix-range-check-in-do_tunable_update_val.patch
-Patch3:         0002-malloc-arena-fix.patch
-Patch4:         glibc-fix-CVE-2017-15670.patch
-Patch5:         glibc-fix-CVE-2017-15804.patch
-Patch6:         glibc-fix-CVE-2017-17426.patch
-Patch7:         glibc-fix-CVE-2017-16997.patch
-Patch8:         glibc-fix-CVE-2018-1000001.patch
-Patch9:         glibc-fix-CVE-2018-6485.patch
+Patch2:         0002-malloc-arena-fix.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -80,13 +73,6 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -120,9 +106,7 @@ cd %{_builddir}/%{name}-build
 ../%{name}-%{version}/configure \
         --prefix=%{_prefix} \
         --disable-profile \
-        --enable-kernel=2.6.32 \
-        --enable-obsolete-rpc \
-        --enable-obsolete-nsl \
+        --enable-kernel=3.2 \
         --enable-bind-now \
         --disable-experimental-malloc \
         --disable-silent-rules
@@ -236,7 +220,6 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %exclude /usr/bin/mtrace
 %exclude /usr/bin/pcprofiledump
 %exclude /usr/bin/pldd
-%exclude /usr/bin/rpcgen
 %exclude /usr/bin/sotruss
 %exclude /usr/bin/sprof
 %exclude /usr/bin/xtrace
@@ -253,7 +236,6 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 /usr/bin/mtrace
 /usr/bin/pcprofiledump
 /usr/bin/pldd
-/usr/bin/rpcgen
 /usr/bin/sotruss
 /usr/bin/sprof
 /usr/bin/xtrace
@@ -291,7 +273,9 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
-*   Tue Jan 20 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-10
+*   Tue Aug 28 2018 Alexey Makhalov <amakhalov@vmware.com> 2.28-1
+-   Version update. Disable obsolete rpc (use libtirpc) and nsl.
+*   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-10
 -   Fix CVE-2018-1000001 and CVE-2018-6485
 *   Mon Jan 08 2018 Xiaolin Li <xiaolinl@vmware.com> 2.26-9
 -   Fix CVE-2017-16997
