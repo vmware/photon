@@ -1,7 +1,7 @@
-From 73dd46ef2f0ddd1ccf93b0d2d339a38e08b84c20 Mon Sep 17 00:00:00 2001
+From c051e02dbcd0b1ee1cb762c899932786f43797da Mon Sep 17 00:00:00 2001
 From: DheerajSShetty <dheerajs@vmware.com>
-Date: Tue, 11 Sep 2018 12:05:49 -0700
-Subject: [PATCH] VKE patch for k8s 1.9.6 (8033c471)
+Date: Tue, 11 Sep 2018 17:58:49 -0700
+Subject: [PATCH] VKE patch for k8s 1.9.10
 
 ---
  api/swagger-spec/apps_v1alpha1.json                | Bin 135734 -> 136495 bytes
@@ -559,7 +559,7 @@ index b6b570b..1d9db5e 100644
  //
  // The contents of the target ConfigMap's Data field will be presented in a
 diff --git a/pkg/apis/core/validation/validation.go b/pkg/apis/core/validation/validation.go
-index f6ab55f..2fa447d 100644
+index 5dd08c0..eb66cc9 100644
 --- a/pkg/apis/core/validation/validation.go
 +++ b/pkg/apis/core/validation/validation.go
 @@ -681,6 +681,14 @@ func validateVolumeSource(source *core.VolumeSource, fldPath *field.Path, volNam
