@@ -1,18 +1,17 @@
 Summary:	Basic system utilities
 Name:		coreutils
-Version:	8.27
-Release:	4%{?dist}
+Version:	8.30
+Release:	1%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
-%define sha1 coreutils=ee054c8a4c0c924de49e4f03266733f27f986fbb
+%define sha1 coreutils=bd5d495c162730873a2774acd1c5091fbf0c55a4
 # make this package to own serial console profile since it utilizes stty tool
 Source1:	serial-console.sh
-Patch0:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-i18n-1.patch
-Patch1:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-uname-1.patch
+Patch0:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.30-i18n-1.patch
 Requires:	gmp
 Provides:	sh-utils
 Conflicts:      toybox
@@ -30,7 +29,6 @@ These are the additional language files of coreutils.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 %build
 export FORCE_UNSAFE_CONFIGURE=1 &&  ./configure \
 	--prefix=%{_prefix} \
@@ -81,6 +79,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %defattr(-,root,root)
 
 %changelog
+* Fri Sep 07 2018 Alexey Makhalov <amakhalov@vmware.com> 8.30-1
+- Version update to support glibc-2.28
 * Tue Aug 28 2018 Alexey Makhalov <amakhalov@vmware.com> 8.27-4
 - Add serial-console profile.d script
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 8.27-3

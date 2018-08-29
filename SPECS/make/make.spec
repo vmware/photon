@@ -1,7 +1,7 @@
 Summary:	Program for compiling packages
 Name:		make
 Version:	4.2.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/make
 Group:		Development/Tools
@@ -16,6 +16,9 @@ The Make package contains a program for compiling packages.
 %prep
 %setup -q
 %build
+#work around an error caused by glibc-2.27
+sed -i '211,217 d; 219,229 d; 232 d' glob/glob.c
+
 ./configure \
 	--prefix=%{_prefix} \
 	--disable-silent-rules
@@ -37,15 +40,17 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
-*       Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.2.1-1
--       Update package version
-*       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 4.1-4
--       Modified check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1-3
--	GA - Bump release of all rpms
-*       Tue May 10 2016 Kumar Kaushik <kaushikk@vmware.com>  4.1-2
--       Fix for segfaults in chroot env.
-*       Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  4.1-1
--       Update version.
-*	Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.0-1
--	Initial build.	First version
+* Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-2
+- Fix compilation issue against glibc-2.27
+* Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.2.1-1
+- Update package version
+* Mon Oct 03 2016 ChangLee <changLee@vmware.com> 4.1-4
+- Modified check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.1-3
+- GA - Bump release of all rpms
+* Tue May 10 2016 Kumar Kaushik <kaushikk@vmware.com>  4.1-2
+- Fix for segfaults in chroot env.
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  4.1-1
+- Update version.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.0-1
+- Initial build. First version
