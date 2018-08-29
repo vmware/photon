@@ -191,38 +191,38 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, logger, singleFile=True):
         if package in blackListPkgs:
             continue
         ossname = package
-        ossversion = SPECS.getData().getVersion(package)
-        ossrelease = SPECS.getData().getRelease(package, ossversion)
+        for ossversion in SPECS.getData().getVersions(package):
+            ossrelease = SPECS.getData().getRelease(package, ossversion)
 
-        listFoundSRPMFiles = cmdUtils.findFile(ossname + "-" + ossversion + "-" + ossrelease
-                                               + ".src.rpm",
-                                               srpmPath)
-        srpmName = None
-        if len(listFoundSRPMFiles) == 1:
-            srpmFullPath = listFoundSRPMFiles[0]
-            srpmName = os.path.basename(srpmFullPath)
-            cpcmd = "cp " + srpmFullPath + " " + yamlSrpmDir + "/"
-            returnVal = cmdUtils.runCommandInShell(cpcmd)
-            if not returnVal:
-                logger.error("Copy SRPM File is failed for package:" + ossname)
-        else:
-            logger.error("SRPM file is not found:" + ossname)
+            listFoundSRPMFiles = cmdUtils.findFile(ossname + "-" + ossversion + "-" + ossrelease
+                                                   + ".src.rpm",
+                                                   srpmPath)
+            srpmName = None
+            if len(listFoundSRPMFiles) == 1:
+                srpmFullPath = listFoundSRPMFiles[0]
+                srpmName = os.path.basename(srpmFullPath)
+                cpcmd = "cp " + srpmFullPath + " " + yamlSrpmDir + "/"
+                returnVal = cmdUtils.runCommandInShell(cpcmd)
+                if not returnVal:
+                    logger.error("Copy SRPM File is failed for package:" + ossname)
+            else:
+                logger.error("SRPM file is not found:" + ossname)
 
-        if not singleFile:
-            yamlFile = open(yamlSrpmDir + "/" + ossname + "-" + ossversion + "-"
-                            + ossrelease + ".yaml", "w")
+            if not singleFile:
+                yamlFile = open(yamlSrpmDir + "/" + ossname + "-" + ossversion + "-"
+                                + ossrelease + ".yaml", "w")
 
-        yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + ossrelease + ":\n")
-        yamlFile.write("  repository: BaseOS\n")
-        yamlFile.write("  name: '" + ossname + "'\n")
-        yamlFile.write("  version: '" + ossversion + "-" + ossrelease + "'\n")
-        yamlFile.write("  url: 'http://www.vmware.com'\n")
-        yamlFile.write("  baseos-style: rpm\n")
-        yamlFile.write("  baseos-source: '" + str(srpmName) + "'\n")
-        yamlFile.write("  baseos-osname: 'photon'\n")
-        yamlFile.write("\n")
-        if not singleFile:
-            yamlFile.close()
+            yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + ossrelease + ":\n")
+            yamlFile.write("  repository: BaseOS\n")
+            yamlFile.write("  name: '" + ossname + "'\n")
+            yamlFile.write("  version: '" + ossversion + "-" + ossrelease + "'\n")
+            yamlFile.write("  url: 'http://www.vmware.com'\n")
+            yamlFile.write("  baseos-style: rpm\n")
+            yamlFile.write("  baseos-source: '" + str(srpmName) + "'\n")
+            yamlFile.write("  baseos-osname: 'photon'\n")
+            yamlFile.write("\n")
+            if not singleFile:
+                yamlFile.close()
 
     if singleFile:
         yamlFile.close()
