@@ -4,7 +4,7 @@
 Summary:        Pure Python Vi Implementation.
 Name:           python-pyvim
 Version:        2.0.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -55,7 +55,7 @@ Python 3 version.
 
 %prep
 %setup -q -n pyvim-%{version}
-tar -xf %{SOURCE1}
+tar -xf %{SOURCE1} --no-same-owner
 
 %build
 python2 setup.py build
@@ -81,6 +81,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 2.0.22-2
+-   Use --no-same-owner for tar
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0.22-1
 -   Update to version 2.0.22
 *   Mon Jul 24 2017 Divya Thaluru <dthaluru@vmware.com> 0.0.20-4
