@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -13,6 +13,8 @@ Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
+BuildRequires:  libtirpc-devel
+BuildRequires:  rpcsvc-proto-devel
 
 %description
 MySQL is a free, widely used SQL engine. It can be used as a fast database as well as a rock-solid DBMS using a modular engine architecture.
@@ -69,6 +71,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 8.0.12-2
+-   Use libtirpc instead obsoleted rpc from glibc.
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 8.0.12-1
 -   Update to version 8.0.12
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.7.23-1
