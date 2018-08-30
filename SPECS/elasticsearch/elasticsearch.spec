@@ -1,6 +1,6 @@
 %define debug_package %{nil}
 
-Summary:        Elastic Serch
+Summary:        Elastic Search
 Name:           elasticsearch
 Version:        6.3.0
 Release:        1%{?dist}
