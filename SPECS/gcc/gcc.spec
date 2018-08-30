@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        7.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -206,6 +206,7 @@ make %{?_smp_mflags} check-gcc
 %defattr(-,root,root)
 %{_lib64dir}/libstdc++.so
 %{_lib64dir}/libstdc++.la
+%{_lib64dir}/libstdc++.a
 
 %{_includedir}/c++/*
 
@@ -221,6 +222,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 7.3.0-2
+-   Packaging .a files (libstdc++-static files).
 *   Wed Aug 01 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.3.0-1
 -   Update to version 7.3.0 to get retpoline support.
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-7
