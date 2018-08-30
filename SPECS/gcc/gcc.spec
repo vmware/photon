@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        6.3.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -218,6 +218,7 @@ make %{?_smp_mflags} check-gcc
 %defattr(-,root,root)
 %{_lib64dir}/libstdc++.so
 %{_lib64dir}/libstdc++.la
+%{_lib64dir}/libstdc++.a
 
 %{_includedir}/c++/*
 
@@ -233,6 +234,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 6.3.0-8
+-   Packaging .a files (libstdc++-static files).
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-7
 -   Aarch64 support
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-6
