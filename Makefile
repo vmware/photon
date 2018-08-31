@@ -420,7 +420,13 @@ generate-dep-lists:
 		-d json \
 		-a $(PHOTON_DATA_DIR)
 
+DOCKER_ARCH := $(shell uname -m)
 photon-docker-image:
+ifeq ($(DOCKER_ARCH), aarch64)
+	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
+	$(info For ARM)
+	./support/dockerfiles/photon/make-docker-image.sh ./
+else
 	$(PHOTON_REPO_TOOL) $(PHOTON_RPMS_DIR)
 	sudo docker build --no-cache --tag photon-build ./support/dockerfiles/photon
 	sudo docker run \
@@ -433,6 +439,7 @@ photon-docker-image:
 		-v `pwd`:/workspace \
 		photon-build \
 		./support/dockerfiles/photon/make-docker-image.sh tdnf
+endif
 
 start-docker: check-docker
 	systemctl start docker
