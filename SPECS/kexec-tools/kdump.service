@@ -1,0 +1,10 @@
+[Unit]
+Description=Load dump capture kernel
+After=local-fs.target
+
+[Service]
+ExecStart=/bin/bash -c "/usr/sbin/kexec -p /boot/vmlinuz-$(uname -r) --append=\"root=/dev/sda2 1 irqpoll maxcpus=1 reset_devices\""
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

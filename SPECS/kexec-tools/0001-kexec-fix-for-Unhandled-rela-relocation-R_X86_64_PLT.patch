@@ -1,0 +1,39 @@
+From b9de21ef51a7ceab7122a707c188602eae22c4ee Mon Sep 17 00:00:00 2001
+From: Chris Clayton <chris2553@googlemail.com>
+Date: Mon, 20 Aug 2018 12:00:31 +0100
+Subject: [PATCH] kexec: fix for "Unhandled rela relocation: R_X86_64_PLT32"
+ error
+
+In response to a change in binutils, commit b21ebf2fb4c
+(x86: Treat R_X86_64_PLT32 as R_X86_64_PC32) was applied to
+the linux kernel during the 4.16 development cycle and has
+since been backported to earlier stable kernel series. The
+change results in the failure message in $SUBJECT when
+rebooting via kexec.
+
+Fix this by replicating the change in kexec.
+
+Signed-off-by: Chris Clayton <chris2553@googlemail.com>
+Acked-by: Baoquan He <bhe@redhat.com>
+Tested-by: Bhupesh Sharma <bhsharma@redhat.com>
+Acked-by: Bhupesh Sharma <bhsharma@redhat.com>
+Signed-off-by: Simon Horman <horms@verge.net.au>
+---
+ kexec/arch/x86_64/kexec-elf-rel-x86_64.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kexec/arch/x86_64/kexec-elf-rel-x86_64.c b/kexec/arch/x86_64/kexec-elf-rel-x86_64.c
+index 7fdde73..db85b44 100644
+--- a/kexec/arch/x86_64/kexec-elf-rel-x86_64.c
++++ b/kexec/arch/x86_64/kexec-elf-rel-x86_64.c
+@@ -79,6 +79,7 @@ void machine_apply_elf_rel(struct mem_ehdr *UNUSED(ehdr),
+ 			goto overflow;
+ 		break;
+ 	case R_X86_64_PC32: 
++	case R_X86_64_PLT32:
+ 		*(uint32_t *)location = value - address;
+ 		break;
+ 	default:
+-- 
+2.17.1
+
