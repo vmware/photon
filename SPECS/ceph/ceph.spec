@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 %bcond_with lowmem_builder
 %{!?_udevrulesdir: %define _udevrulesdir /lib/udev/rules.d}
 %{!?tmpfiles_create: %define tmpfiles_create systemd-tmpfiles --create}
@@ -13,7 +14,7 @@
 #################################################################################
 Name:       ceph
 Version:    11.2.0
-Release:    11%{?dist}
+Release:    12%{?dist}
 Epoch:      1
 Summary:    User space components of the Ceph file system
 License:    LGPL-2.1 and CC-BY-SA-1.0 and GPL-2.0 and BSL-1.0 and GPL-2.0-with-autoconf-exception and BSD-3-Clause and MIT
@@ -1000,6 +1001,8 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 # actually build this meta package.
 
 %changelog
+*   Wed Mar 21 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  11.2.0-12
+-   disable debuginfo
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  11.2.0-11
 -   Fixed the log file directory structure
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 11.2.0-10

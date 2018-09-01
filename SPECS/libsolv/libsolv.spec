@@ -1,19 +1,19 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.26
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
 %define sha1    libsolv=7699af00e648bf3e631246559c48ceb7f3f544b9
+Patch0:         libsolv-lmdb.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Requires:       libdb
+Requires:       lmdb
 Requires:       expat-libs
-BuildRequires:  libdb-devel
+BuildRequires:  lmdb-devel
 BuildRequires:  cmake
-BuildRequires:  rpm-devel
 BuildRequires:  expat-devel
 Provides:       pkgconfig(libsolv)
 %description
@@ -30,12 +30,13 @@ for developing applications that use libsolv.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DRPM5=ON \
-    -DENABLE_RPMDB=ON \
-    -DENABLE_COMPLEX_DEPS=ON
+    -DPHOTON=ON
+
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -62,6 +63,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Mar 21 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.26-5
+-   remove dependency on libdb and add lmdb instead
 *   Thu Mar 01 2018 Xiaolin Li <xiaolinl@vmware.com> 0.6.26-4
 -   provides pkgconfig(libsolv).
 *   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.26-3
