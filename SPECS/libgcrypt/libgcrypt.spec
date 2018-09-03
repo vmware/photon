@@ -1,11 +1,12 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
 Version:	1.8.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
 %define sha1 libgcrypt=dd35f00da45602afe81e01f4d60c40bbdd826fe6
+Patch0:         libgcrypt-CVE-2018-0495.patch
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
@@ -25,6 +26,8 @@ developing applications that use libgcrypt.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 ./configure \
 	--prefix=%{_prefix}
@@ -50,6 +53,8 @@ make %{?_smp_mflags} check
 %{_includedir}/*.h
 %{_libdir}/*.so
 %changelog
+*   Mon Sep 03 2018 Ankit Jain <ankitja@vmware.com> 1.8.1-2
+-   Fix for CVE-2018-0495
 *   Tue Oct 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
 -   Udpated to v1.8.1 to address CVE-2017-0379
 *   Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.6-1
