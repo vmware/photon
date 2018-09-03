@@ -2,17 +2,16 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.10
-Release:        8%{?dist}
+Version:        3.11.3
+Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/3.10/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=fa2bbeb62f930f5ff6fccee60cfb837d0794633a
+%define sha1    apache-cassandra=6860ef5a085429e7bd5783551304c7922d4efbc1
 Source1:        cassandra.service
-Patch0:         build-fix.patch
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
@@ -24,7 +23,6 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 
 %prep
 %setup -qn apache-%{name}-%{version}-src
-%patch0 -p1
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
 rm lib/logback-*
@@ -128,6 +126,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Mon Sep 03 2018 Keerthana K <keerthanak@vmware.com> 3.11.3-1
+-   Updated to version 3.11.3.
 *   Tue Apr 24 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-8
 -   Remove patch to build on openjdk-1.8.0.162, updated openjdk to 1.8.0.172
 *   Sat Jan 20 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-7
