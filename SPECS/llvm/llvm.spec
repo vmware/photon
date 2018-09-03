@@ -1,14 +1,14 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        4.0.0
-Release:        3%{?dist}
+Version:        6.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    llvm=aee4524e2407f9fe5afc6f70c753180b907011d0
+%define sha1    llvm=09a6316c5225cab255ba12391e7abe5ff4d28935
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
@@ -62,6 +62,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_libdir}/*.so
 %{_libdir}/*.so.*
+%exclude %{_datarootdir}/*
 
 %files devel
 %{_libdir}/*.a
@@ -69,6 +70,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Mon Sep 03 2018 Keerthana K <keerthanak@vmware.com> 6.0.1-1
+-   Updated to version 6.0.1.
 *   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-3
 -   Make check fix
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-2
