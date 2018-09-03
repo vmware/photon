@@ -3,7 +3,7 @@
 Summary:        Elastic Search
 Name:           elasticsearch
 Version:        6.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 URL:            https://artifacts.elastic.co/downloads/elasticsearch/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -117,5 +117,7 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*    Mon Sep 03 2018 Justin J. Novack <jnovack@gmail.com> 6.3.0-2
+-    Corrected typo in summary.
 *    Mon Jul 09 2018 Tapas Kundu <tkundu@vmware.com> 6.3.0-1
 -    Initial build added for Photon.
