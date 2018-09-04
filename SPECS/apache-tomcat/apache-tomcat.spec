@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.31
-Release:        2%{?dist}
+Version:        8.5.32
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -9,12 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        http://mirrors.koehn.com/apache/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=c364d8814f06d1911e3dedf599fb07ab6c020c1d
+%define sha1    apache-tomcat=92ed11618ce9a750363ff79062daf94bdbe72ee1
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=9c954df61d7c72f6d5e7319d25351e178a84cab4
+%define sha1    base=1e1f7fe54192d3bfaafc26084555458ac50e4cd8
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-Patch1:         apache-tomcat-fix-cve-2018-8014.patch
 BuildRequires:  openjre
 BuildRequires:  openjdk
 BuildRequires:  apache-ant
@@ -39,7 +38,6 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 %setup -D -b 1 -n %{name}-%{version}-src
 %patch0 -p1
-%patch1 -p1
 
 %build
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
@@ -94,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Tue Sep 04 2018 Tapas Kundu <tkundu@vmware.com> 8.5.32-1
+-   Upgraded to 8.5.32
 *   Mon Jun 25 2018 Srinidhi Rao <srinidhir@vmware.com> 8.5.31-2
 -   Fix for CVE-2018-8014
 *   Mon May 07 2018 Xiaolin Li <xiaolinl@vmware.com> 8.5.31-1
