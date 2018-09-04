@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           docker-py
-Version:        2.3.0
-Release:        3%{?dist}
+Version:        3.5.0
+Release:        1%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
 Url:            https://github.com/docker/docker-py
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    docker-py=9029528629fd0c5ebe3132acfbcb078247a905ba
+%define sha1    docker-py=d742bfa49b86502150a9cffe2e066a39eb8ab778
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -76,6 +76,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Sep 04 2018 Tapas Kundu <tkundu@vmware.com> 3.5.0-1
+-   Upgraded to 3.5.0 release.
 *   Fri Dec 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.3.0-3
 -   Added docker-pycreds3, python3-requests, python3-six,
 -   python3-websocket-client to requires of docker-py3
