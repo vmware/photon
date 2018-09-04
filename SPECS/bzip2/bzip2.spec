@@ -1,7 +1,7 @@
 Summary:	Contains programs for compressing and decompressing files
 Name:		bzip2
 Version:	1.0.6
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	BSD
 URL:		http://www.bzip.org/
 Group:		System Environment/Base
@@ -23,6 +23,12 @@ Summary:	Header and development files for bzip2
 Requires:	bzip2
 %description	devel
 It contains the libraries and header files to create applications 
+
+%package	devel-static
+Summary:	Static archives to handle compiled objects.
+Requires:	bzip2-devel
+%description	devel-static
+The bzip2-devel-static archive contains the static archives.
 
 %package libs
 Summary: Libraries for bzip2
@@ -51,7 +57,7 @@ ln -sv libbz2.so.%{version} %{buildroot}%{_lib}/libbz2.so.1
 rm -v %{buildroot}%{_bindir}/{bunzip2,bzcat}
 ln -sv bzip2 %{buildroot}/usr/bin/bunzip2
 ln -sv bzip2 %{buildroot}/usr/bin/bzcat
-find %{buildroot} -name '*.a'  -delete
+#find %{buildroot} -name '*.a' -delete
 %check
 make %{?_smp_mflags} check
 %post	-p /sbin/ldconfig
@@ -83,10 +89,15 @@ make %{?_smp_mflags} check
 %{_libdir}/libbz2.so
 %{_docdir}/*
 
+%files devel-static
+%{_libdir}/libbz2.a
+
 %files libs
 %{_lib}/libbz2.so.*
 
 %changelog
+*   Tue Aug 21 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.0.6-9
+-   Add devel-static package
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 1.0.6-8
 -   Fix symlink
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.0.6-7
