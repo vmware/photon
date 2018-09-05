@@ -2,7 +2,7 @@
 Summary:	OpenLdap-2.4.43
 Name:		openldap
 Version:	2.4.44
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -43,7 +43,7 @@ CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H" \
 %configure \
         --disable-static    \
         --disable-debug     \
-        --disable-slapd     \
+        --enable-slapd     \
         --with-tls=openssl
 
 make depend
@@ -67,6 +67,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
+%{_sbindir}/*
 %{_libdir}/*.so*
 %{_includedir}/*
 %{_mandir}/man1/*
@@ -74,10 +75,13 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 /etc/openldap/*
+/var/lib/openldap/DB_CONFIG.example
 
 %changelog
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
--   Use standard configure macros
+*	Thu Sep 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 2.4.44-4
+-	Enable slapd for sendmail
+*	Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
+- 	Use standard configure macros
 *	Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.44-2
 -	Applied patch for CVE-2017-9287
 *	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
