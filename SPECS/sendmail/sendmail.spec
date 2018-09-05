@@ -1,7 +1,7 @@
 Summary:        Commonly used Mail transport agent (MTA)
 Name:           sendmail
 Version:        8.15.2
-Release:        15%{?dist}
+Release:        16%{?dist}
 URL:            http://www.sendmail.org/
 License:        BSD and CDDL1.1 and MIT
 Group:          Email/Server/Library
@@ -11,7 +11,6 @@ Source0:        http://ftp.vim.org/pub/mail/sendmail/sendmail-r8/sendmail.8.15.2
 BuildRequires:	systemd
 BuildRequires:  openldap
 BuildRequires:  openssl-devel
-BuildRequires:  libdb-devel
 BuildRequires:  shadow
 Requires:       (coreutils or toybox)
 Requires:       systemd
@@ -21,7 +20,6 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       /bin/sed
 Requires:       (net-tools or toybox)
-Requires:       libdb
 
 %define sha1 sendmail=5801d4b06f4e38ef228a5954a44d17636eaa5a16
 
@@ -38,7 +36,8 @@ of email from systems to network and is not just a mail client.
 
 cat >> devtools/Site/site.config.m4 << "EOF"
 APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP')
-APPENDDEF(`confLIBS', `-lssl -lcrypto -lsasl2 -lldap -llber -ldb')
+APPENDDEF(`confMAPDEF', `-DLDAPMAP')
+APPENDDEF(`confLIBS', `-lssl -lcrypto -lsasl2 -lldap -llber')
 APPENDDEF(`confINCDIRS', `-I/usr/include/sasl')
 APPENDDEF(`confLIBS', `-lresolv')
 define(`confMANGRP',`root')
@@ -196,6 +195,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+*   Thu Aug 30 2018 Dheeraj Shetty <dheerajs@vmware.com> 8.15.2-16
+-   Remove dependency on libdb
 *   Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 8.15.2-15
 -   Removed duplicate configuration folder.
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 8.15.2-14
