@@ -1,8 +1,8 @@
 %global _default_patch_fuzz 2
-Summary:	OpenLdap-2.4.43
+Summary:	OpenLdap-2.4.46
 Name:		openldap
 Version:	2.4.46
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	OpenLDAP
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -13,6 +13,8 @@ Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}
 Patch0:         openldap-2.4.40-gssapi-1.patch
 Patch1:		openldap-2.4.44-consolidated-2.patch
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
 BuildRequires:	groff
@@ -41,7 +43,7 @@ CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H" \
 %configure \
         --disable-static    \
         --disable-debug     \
-        --disable-slapd     \
+        --enable-slapd     \
         --with-tls=openssl
 
 make depend
@@ -50,14 +52,48 @@ make %{?_smp_mflags}
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
+chmod 640 %{buildroot}/etc/openldap/slapd.{conf,ldif}
+install -dm700 %{buildroot}/var/lib/openldap
+install -dm700 %{buildroot}/etc/openldap/slapd.d
+install -dm755 %{buildroot}/var/run/openldap
+mkdir -p %{buildroot}/%{_lib}/tmpfiles.d
+cat << EOF >> %{buildroot}/%{_lib}/tmpfiles.d/openldap.conf
+d /var/run/openldap 0755 ldap ldap
+EOF
+
 %{_fixperms} %{buildroot}/*
 
 %check
 make %{?_smp_mflags} test
 
-%post	-p /sbin/ldconfig
+%pre
+if ! getent group ldap >/dev/null; then
+    /sbin/groupadd -g 83 ldap
+fi
+if ! getent passwd ldap >/dev/null; then
+    /sbin/useradd -c "OpenLDAP Daemon Owner" -d /var/lib/openldap -u 83 -g ldap -s /bin/false ldap
+fi
 
-%postun	-p /sbin/ldconfig
+%post
+/sbin/ldconfig
+if [ $1 -eq 1 ] ; then
+    chown root:ldap /etc/openldap/slapd.{conf,ldif}
+    chown -R ldap:ldap /var/run/%{name}
+    chown -R ldap:ldap /var/lib/openldap
+    chown -R ldap:ldap /etc/openldap/slapd.d
+fi
+
+%postun
+/sbin/ldconfig
+if [ $1 -eq 0 ] ; then
+    if getent passwd ldap >/dev/null; then
+        /sbin/userdel ldap
+    fi
+    if getent group ldap >/dev/null; then
+        /sbin/groupdel ldap
+    fi
+    rm -rf /var/run/%{name}
+fi
 
 %clean
 rm -rf %{buildroot}/*
@@ -65,15 +101,24 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
+%{_sbindir}/*
 %{_libdir}/*.so*
 %{_includedir}/*
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-/etc/openldap/*
+%{_lib}/tmpfiles.d/openldap.conf
+%dir %attr(0700, ldap, ldap) %{_sharedstatedir}/%{name}
+%{_sharedstatedir}/%{name}/*
+%{_var}/run/{%name}/
+%config(noreplace) %{_sysconfdir}/openldap/slapd.conf
+%config(noreplace) %{_sysconfdir}/openldap/ldap.conf
+%{_sysconfdir}/openldap/*
 
 %changelog
+*   Thu Sep 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 2.4.46-2
+-   Enable slapd for sendmail
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.46-1
 -   Upgrade to 2.4.46
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
