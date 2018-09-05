@@ -1,16 +1,15 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
-Version:        4.10.0
-Release:        3%{?dist}
+Version:        4.18.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
-%define sha1    iproute2=9e578675f6938359a3036d7886b91d48c0403a40
+%define sha1    iproute2=ff02c7352bae407a76d71b36558700bb489026fc
 Patch0:         replace_killall_by_pkill.patch
-Patch1:         0001-include-stdint.h-explicitly-for-UINT16_MAX.patch
 
 %description
 The IPRoute2 package contains programs for basic and advanced
@@ -29,10 +28,8 @@ you will need to install %{name}-devel.
 %setup -q
 sed -i /ARPD/d Makefile
 sed -i 's/arpd.8//' man/man8/Makefile
-rm -v doc/arpd.sgml
 sed -i 's/m_ipt.o//' tc/Makefile
 %patch0 -p1
-%patch1 -p1
 
 %build
 make VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
@@ -41,6 +38,19 @@ make    DESTDIR=%{buildroot} \
     MANDIR=%{_mandir} \
     LIBDIR=%{_libdir} \
     DOCDIR=%{_defaultdocdir}/%{name}-%{version} install
+
+%check
+cd testsuite
+# Fix linking issue in testsuite
+sed -i 's/<libnetlink.h>/\"..\/..\/include\/libnetlink.h\"/g' tools/generate_nlmsg.c
+sed -i 's/\"libnetlink.h\"/"..\/include\/libnetlink.h\"/g' ../lib/libnetlink.c
+cd tools
+make
+cd ..
+make
+make alltests
+cd ..
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 %files
@@ -59,6 +69,8 @@ make    DESTDIR=%{buildroot} \
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 4.18.0-1
+-   Updated to version 4.18.0
 *   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 4.10.0-3
 -   Fix compilation issue for glibc-2.26
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 4.10.0-2
