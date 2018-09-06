@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -28,6 +28,7 @@ Source5:        https://github.com/cpuguy83/go-md2man/tree/go-md2man-a65d4d2.tar
 Source6:        default-disable.preset
 Patch0:         remove-firewalld.patch
 Patch1:         CVE-2017-14992.patch
+Patch2:         fix-apparmor-not-being-applied-to-exec-processes.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -78,6 +79,7 @@ ln -s docker-ce/components/packaging packaging
 
 %patch0 -p2
 %patch1 -p2
+%patch2 -p2
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
@@ -225,6 +227,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 17.06.0-7
+-   Fix AppArmor not being applied to exec processes.
 *   Wed Aug 08 2018 Dweep Advani <dadvani@vmware.com> 17.06.0-6
 -   Patching for CVE-2017-14992
 *   Wed Jul 25 2018 Keerthana K <keerthanak@vmware.com> 17.06.0-5
