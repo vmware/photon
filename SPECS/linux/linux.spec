@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.152
+Version:    	4.4.153
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,7 +9,7 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=60f04d5b17f4e20f95f5060ca76aba77ca091986
+%define sha1 linux=fad45d4f6016373ee19e702517640e5c43610bd7
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -336,6 +336,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Sep 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-1
+-   Update to version 4.4.153
 *   Fri Aug 24 2018 Bo Gan <ganb@vmware.com> 4.4.152-1
 -   Update to version 4.4.152
 *   Fri Aug 17 2018 Bo Gan <ganb@vmware.com> 4.4.148-1
