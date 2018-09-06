@@ -1,6 +1,6 @@
 Summary:	Programming language
 Name:		lua
-Version:	5.3.4
+Version:	5.3.5
 Release:	1%{?dist}
 License:	MIT
 URL:		http://www.lua.org
@@ -8,7 +8,7 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://www.lua.org/ftp/%{name}-%{version}.tar.gz
-%define sha1 lua=79790cfd40e09ba796b01a571d4d63b52b1cd950
+%define sha1 lua=112eb10ff04d1b4c9898e121d6bdf54a81482447
 Patch0:		lua-5.3.4-shared_library-1.patch
 BuildRequires:	readline-devel
 Requires:	readline
@@ -81,6 +81,8 @@ rm -rf %{buildroot}
 %{_libdir}/liblua.so
 
 %changelog
+*   Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.3.5-1
+-   Update to version 5.3.5
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 5.3.4-1
 -   Update package version
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.2-2
