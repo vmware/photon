@@ -1,0 +1,121 @@
+From 8f3308ae10ec9ad0dd4edfb46fde53a0e1e19b34 Mon Sep 17 00:00:00 2001
+From: Sebastiaan van Stijn <github@gone.nl>
+Date: Fri, 2 Mar 2018 13:17:56 +0100
+Subject: [PATCH] Fix AppArmor not being applied to Exec processes
+
+Exec processes do not automatically inherit AppArmor
+profiles from the container.
+
+This patch sets the AppArmor profile for the exec
+process.
+
+Before this change:
+
+    apparmor_parser -q -r <<EOF
+    #include <tunables/global>
+    profile deny-write flags=(attach_disconnected) {
+      #include <abstractions/base>
+      file,
+      network,
+      deny /tmp/** w,
+      capability,
+    }
+    EOF
+
+    docker run -dit --security-opt "apparmor=deny-write" --name aa busybox
+
+    docker exec aa sh -c 'mkdir /tmp/test'
+    (no error)
+
+With this change applied:
+
+    docker exec aa sh -c 'mkdir /tmp/test'
+    mkdir: can't create directory '/tmp/test': Permission denied
+
+Signed-off-by: Sebastiaan van Stijn <github@gone.nl>
+---
+ daemon/exec_linux.go      |  3 +++
+ daemon/exec_linux_test.go | 53 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 56 insertions(+)
+ create mode 100644 daemon/exec_linux_test.go
+
+diff -Naurp docker-ce-17.06-orig/components/engine/daemon/exec_linux.go docker-ce-17.06-modified/components/engine/daemon/exec_linux.go
+--- docker-ce-17.06-orig/components/engine/daemon/exec_linux.go	2017-07-14 20:34:55.000000000 -0700
++++ docker-ce-17.06-modified/components/engine/daemon/exec_linux.go	2018-09-10 12:16:00.218939188 -0700
+@@ -29,6 +29,8 @@ func execSetPlatformOpt(c *container.Con
+ 		if c.AppArmorProfile != "" {
+ 			appArmorProfile = c.AppArmorProfile
+ 		} else if c.HostConfig.Privileged {
++			// `docker exec --privileged` does not currently disable AppArmor
++			// profiles. Privileged configuration of the container is inherited
+ 			appArmorProfile = "unconfined"
+ 		} else {
+ 			appArmorProfile = "docker-default"
+@@ -45,6 +47,10 @@ func execSetPlatformOpt(c *container.Con
+ 				return err
+ 			}
+ 		}
++
++		// Note that libcontainerd.Process.ApparmorProfile is
++		// a *pointer* to a string.
++		p.ApparmorProfile = &appArmorProfile
+ 	}
+ 	return nil
+ }
+diff -Naurp docker-ce-17.06-orig/components/engine/daemon/exec_linux_test.go docker-ce-17.06-modified/components/engine/daemon/exec_linux_test.go
+--- docker-ce-17.06-orig/components/engine/daemon/exec_linux_test.go	1969-12-31 16:00:00.000000000 -0800
++++ docker-ce-17.06-modified/components/engine/daemon/exec_linux_test.go	2018-09-10 11:23:39.624251028 -0700
+@@ -0,0 +1,53 @@
++// +build linux
++
++package daemon
++
++import (
++	"testing"
++
++	containertypes "github.com/docker/docker/api/types/container"
++	"github.com/docker/docker/container"
++	"github.com/docker/docker/daemon/exec"
++	"github.com/gotestyourself/gotestyourself/assert"
++	"github.com/opencontainers/runc/libcontainer/apparmor"
++	"github.com/opencontainers/runtime-spec/specs-go"
++)
++
++func TestExecSetPlatformOpt(t *testing.T) {
++	if !apparmor.IsEnabled() {
++		t.Skip("requires AppArmor to be enabled")
++	}
++	d := &Daemon{}
++	c := &container.Container{AppArmorProfile: "my-custom-profile"}
++	ec := &exec.Config{}
++	p := &specs.Process{}
++
++	err := d.execSetPlatformOpt(c, ec, p)
++	assert.NilError(t, err)
++	assert.Equal(t, "my-custom-profile", p.ApparmorProfile)
++}
++
++// TestExecSetPlatformOptPrivileged verifies that `docker exec --privileged`
++// does not disable AppArmor profiles. Exec currently inherits the `Privileged`
++// configuration of the container. See https://github.com/moby/moby/pull/31773#discussion_r105586900
++//
++// This behavior may change in future, but test for the behavior to prevent it
++// from being changed accidentally.
++func TestExecSetPlatformOptPrivileged(t *testing.T) {
++	if !apparmor.IsEnabled() {
++		t.Skip("requires AppArmor to be enabled")
++	}
++	d := &Daemon{}
++	c := &container.Container{AppArmorProfile: "my-custom-profile"}
++	ec := &exec.Config{Privileged: true}
++	p := &specs.Process{}
++
++	err := d.execSetPlatformOpt(c, ec, p)
++	assert.NilError(t, err)
++	assert.Equal(t, "my-custom-profile", p.ApparmorProfile)
++
++	c.HostConfig = &containertypes.HostConfig{Privileged: true}
++	err = d.execSetPlatformOpt(c, ec, p)
++	assert.NilError(t, err)
++	assert.Equal(t, "unconfined", p.ApparmorProfile)
++}
