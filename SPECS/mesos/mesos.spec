@@ -2,15 +2,15 @@
 
 Summary:        Mesos
 Name:           mesos
-Version:        1.4.1
-Release:        2%{?dist}
+Version:        1.6.1
+Release:        1%{?dist}
 License:        Apache
 URL:            http://mesos.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1    mesos=5a194b3ea8e1a6c30269e9e88c204ba7bfca07e5
+%define sha1    mesos=8ecb061814dffeb5f7c14a30bc09e3a3cc875c2e
 BuildRequires:  openjre8 >= 1.8.0.45
 BuildRequires:  openjdk8 >= 1.8.0.45
 BuildRequires:  curl-devel
@@ -30,6 +30,8 @@ BuildRequires:  python-xml
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  sqlite-devel
+BuildRequires:  automake
+BuildRequires:  autoconf
 Requires:       apr >= 1.5.2
 Requires:       apr-util >= 1.5.4
 Requires:       cyrus-sasl >= 2.1.26
@@ -55,7 +57,7 @@ Requires:   %{name} = %{version}
 %build
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.am
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.am
-
+autoreconf -i
 %configure \
     CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
     CXXFLAGS="%{optflags} -Wno-deprecated-declarations -Wno-strict-aliasing" \
@@ -90,6 +92,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %{_libdir}/mesos/modules/libload_qos_controller.so
 %{_libdir}/mesos/modules/liblogrotate_container_logger-*.so
 %{_libdir}/mesos/modules/liblogrotate_container_logger.so
+%{_libdir}/mesos/modules/liburi_disk_profile_adaptor-1.6.1.so
+%{_libdir}/mesos/modules/liburi_disk_profile_adaptor.so
 
 %files devel
 %{_includedir}/*
@@ -99,6 +103,8 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 1.6.1-1
+-   Update version to 1.6.1
 *   Tue Jan 30 2018 Xiaolin Li <xiaolinl@vmware.com> 1.4.1-2
 -   Add serf-devel to BuildRequires.
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.4.1-1
