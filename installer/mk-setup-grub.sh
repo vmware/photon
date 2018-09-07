@@ -46,6 +46,7 @@ grub_efi_install()
 search -n -u ${BOOT_UUID} -s
 configfile ${BOOT_DIRECTORY}grub2/grub.cfg
 EOF
+    efibootmgr --create --remove-dups --disk "$HDD" --part 1 --loader /EFI/Boot/bootx64.efi --label Photon --verbose >&2
     umount $BUILDROOT/boot/efi
 }
 
