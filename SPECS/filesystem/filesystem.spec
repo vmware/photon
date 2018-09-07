@@ -1,9 +1,11 @@
 Summary:	Default file system
 Name:		filesystem
 Version:	1.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 Group:		System Environment/Base
+Source:         filesystem-1.1-4.tar.gz
+%define sha1 filesystem=049c5d858f2cab6298ebdb83571cedd47741433a
 Vendor:		VMware, Inc.
 URL:		http://www.linuxfromscratch.org
 Distribution:	Photon
@@ -585,6 +587,8 @@ EOF
 /usr/local/lib64
 %endif
 %changelog
+*   Thu Sep 6 2018 Michelle Wang <michellew@vmware.com>  1.1-4
+-   Add source file for initramfs for OSSTP
 *   Wed Mar 28 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1-3
 -   Do not package /var/run as a folder
 *   Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.1-2
