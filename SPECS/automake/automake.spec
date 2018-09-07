@@ -1,6 +1,6 @@
 Summary:	Programs for generating Makefiles
 Name:		automake
-Version:	1.15.1
+Version:	1.16.1
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/automake/
@@ -8,7 +8,7 @@ Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
-%define sha1 automake=45632d466c16ecf18d9c18dc4be883cde59acb59
+%define sha1 automake=1012bc79956013d53da0890f8493388a6cb20831
 BuildRequires:	autoconf
 BuildArch:      noarch
 
@@ -37,11 +37,13 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_datarootdir}/aclocal/README
-%{_datarootdir}/%{name}-1.15/*
-%{_datarootdir}/aclocal-1.15/*
+%{_datarootdir}/%{name}-1.16/*
+%{_datarootdir}/aclocal-1.16/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 1.16.1-1
+-   Update version to 1.16.1
 *	Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-1
 -	Version update
 *	Fri Aug 04 2017 Danut Moraru <dmoraru@vmware.com> 1.15-4
