@@ -4,8 +4,8 @@
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 
 Name:           python-pytest
-Version:        3.0.7
-Release:        3%{?dist}
+Version:        3.8.0
+Release:        1%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
@@ -13,7 +13,7 @@ Url:            https://docs.pytest.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/00/e9/f77dcd80bdb2e52760f38dbd904016da018ab4373898945da744e5e892e9/pytest-%{version}.tar.gz
-%define sha1    pytest=16bba5707c14d0ffffe92cba2380cf3bdc227068
+%define sha1    pytest=dfe1772a9e6bf5414baf88f9b98a1f812f93a8a7
 
 BuildRequires:  python2
 BuildRequires:  python2-devel
@@ -98,6 +98,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 3.8.0-1
+-   Update to version 3.8.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.0.7-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.0.7-2

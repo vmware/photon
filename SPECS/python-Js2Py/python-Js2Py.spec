@@ -3,7 +3,7 @@
 
 Summary:        Pure Python JavaScript Translator/Interpreter.
 Name:           python-Js2Py
-Version:        0.50
+Version:        0.59
 Release:        1%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Js2Py/0.50
 Source0:        https://files.pythonhosted.org/packages/source/J/Js2Py/Js2Py-%{version}.tar.gz
-%define         sha1 Js2Py=47fd81f40a74a4752fce3fc81728740475bdd3fc
+%define sha1    js2py=828ee742021299ee7cecccb52502288b7a4fc5fe
 Patch0:         js2py-python3-print.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -82,5 +82,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 0.59-1
+-   Update to version 0.59
 *   Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 0.50-1
 -   Initial packaging for Photon

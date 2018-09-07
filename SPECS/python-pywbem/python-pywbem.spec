@@ -2,7 +2,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-pywbem
-Version:        0.10.0
+Version:        0.12.5
 Release:        1%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
@@ -12,7 +12,7 @@ Source0:        http://downloads.sourceforge.net/pywbem-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-%define sha1 pywbem=a05238eaef1db89a07faa443cc6752b3bea099ea
+%define sha1    pywbem=beae833f1b324dbd8df26ff3ce0df4c976373f0d
 BuildRequires:  python2-devel
 BuildRequires:  python-pip
 BuildRequires:  python-xml
@@ -115,5 +115,7 @@ fi
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 0.12.5-1
+-   Update to version 0.12.5
 *    Thu Jul 13 2017 Kumar Kaushik <kaushikk@vmware.com> 0.10.0-1
 -    Initial packaging

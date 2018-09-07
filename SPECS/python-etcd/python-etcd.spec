@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-etcd
-Version:        0.4.5
+Version:        2.0.8
 Release:        1%{?dist}
 Summary:        Python API for etcd
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/python-etcd
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    python-etcd=9e79ae82429cf2ffbe2b5647e14bc29571afd766
+%define sha1    etcd=61955fde080a81c36b00dfd98a2216a098baa986
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -63,5 +63,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 2.0.8-1
+-   Update to version 2.0.8
 *   Sat Aug 26 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.4.5-1
 -   Initial version of python etcd for PhotonOS.
