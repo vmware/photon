@@ -4,7 +4,7 @@
 
 Summary:        Amazon Web Services Library.
 Name:           python-botocore
-Version:        1.8.15
+Version:        1.11.9
 Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/boto/botocore
 Source0:        https://github.com/boto/botocore/archive/botocore-%{version}.tar.gz
-%define         sha1 botocore=6ecad01c8235e53d22da5e2da65704cede758550
+%define sha1    botocore=dcd0f8d1a6ce2ffcb9dd2fe6eb5c3af09091752d
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -69,5 +69,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 1.11.9-1
+-   Update to version 1.11.9
 *   Sun Jan 07 2018 Kumar Kaushik <kaushikk@vmware.com> 1.8.15-1
 -   Initial packaging for photon.

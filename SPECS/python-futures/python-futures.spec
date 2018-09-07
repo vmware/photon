@@ -1,6 +1,6 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           python-futures
-Version:        3.1.1
+Version:        3.2.0
 Release:        1%{?dist}
 Summary:        Backport of the concurrent.futures package to Python 2.6 and 2.7
 License:        PSF
@@ -37,5 +37,7 @@ easy_install py
 %{python2_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 3.2.0-1
+-   Update to version 3.2.0
 *   Thu Apr 06 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.1-1
 -   Initial version of python-fuse package for Photon.

@@ -3,15 +3,15 @@
 
 Summary:        Simple, fast, extensible JSON encoder/decoder for Python.
 Name:           python-simplejson
-Version:        3.10.0
-Release:        2%{?dist}
+Version:        3.16.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/simplejson
 Source0:        simplejson-%{version}.tar.gz
-%define sha1    simplejson=dffc85c6851430578acf138c2a1193bc89a3eb0f
+%define sha1    simplejson=b0bf0b12d4c7f7ac0ae23572184e59092bc46947
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -59,6 +59,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 3.16.0-1
+-   Update to version 3.16.0
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.10.0-2
 -   Use python2 explicitly
 *   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10.0-1
