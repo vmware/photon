@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.153
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -62,6 +62,8 @@ Patch38:        0005-xfs-sanity-check-inode-di_mode.patch
 Patch39:        0006-xfs-verify-dinode-header-first.patch
 Patch40:        0007-xfs-move-inode-fork-verifiers-to-xfs_dinode_verify.patch
 Patch41:        0008-xfs-enhance-dinode-verifier.patch
+# Fix for CVE-2018-13053
+Patch42:        0001-alarmtimer-Prevent-overflow-for-relative-nanosleep.patch
 
 # For Spectre
 Patch67: 0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -178,6 +180,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch39 -p1
 %patch40 -p1
 %patch41 -p1
+%patch42 -p1
 
 %patch67 -p1
 
@@ -336,6 +339,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Sep 07 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-2
+-   Fix CVE-2018-13053
 *   Tue Sep 04 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.4.153-1
 -   Update to version 4.4.153
 *   Fri Aug 24 2018 Bo Gan <ganb@vmware.com> 4.4.152-1
