@@ -69,7 +69,9 @@ mkdosfs ${WORKINGDIR}/${EFI_IMAGE}
 mkdir $EFI_FOLDER
 mount -o loop ${WORKINGDIR}/${EFI_IMAGE} $EFI_FOLDER
 mkdir $EFI_FOLDER/EFI
-cp -r ./EFI_$(uname -m)/BOOT $EFI_FOLDER/EFI
+mkdir ${WORKINGDIR}/EFI
+cp -r ./EFI_$(uname -m)/BOOT $EFI_FOLDER/EFI/
+cp -r ./EFI_$(uname -m)/BOOT ${WORKINGDIR}/EFI/
 ls -lR $EFI_FOLDER
 umount $EFI_FOLDER
 rm -rf $EFI_FOLDER
