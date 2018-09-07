@@ -1,11 +1,11 @@
-Summary:        Itstool-2.0.2
+Summary:        Itstool
 Name:           itstool
-Version:        2.0.2
-Release:        5%{?dist}
+Version:        2.0.4
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://itstool.org
 Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
-%define sha1 itstool=5084a2cecca8d70d184f22d2aecf5e2cb715917f
+%define sha1 itstool=5345615becb5c463c6e7f2462e387fdc327f3a35
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -30,12 +30,17 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 
+%check
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 /usr/share/%{name}/*
 %{_mandir}/man1/*
 %changelog
+*	Fri Sep 07 2018 Ankit Jain <ankitja@vmware.com> 2.0.4-1
+-	Updated to version 2.0.4
 *	Mon May 1 2017 Divya Thaluru <dthaluru@vmware.com> 2.0.2-5
 -	Added runtime dependencies for itstool
 *	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.2-4
