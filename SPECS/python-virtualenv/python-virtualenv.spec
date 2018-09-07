@@ -1,15 +1,15 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define sha1    virtualenv=33831525c360459671d25f9e5abac931c414d2f7
+%define sha1    virtualenv=33831525c360459671d25f9e5abac931c414d2f7
 
 Name:           python-virtualenv
-Version:        15.1.0
+Version:        16.0.0
 Release:        1%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/virtualenv
 Source0:        virtualenv-%{version}.tar.gz
-%define sha1    virtualenv=995ce0fa007210ac2f10258999d06813ecdd6eeb
+%define sha1    virtualenv=33831525c360459671d25f9e5abac931c414d2f7
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -74,5 +74,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 16.0.0-1
+-   Update to version 16.0.0
 *   Fri Aug 25 2017 Vinay Kulkarni <kulkarniv@vmware.com> 15.1.0-1
 -   Initial version of python-virtualenv package for Photon.

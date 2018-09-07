@@ -1,17 +1,17 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define sha1    mistune=ba1691f290b496dd12b1ad518a2c521367c7ce28
+%define sha1    mistune=ba1691f290b496dd12b1ad518a2c521367c7ce28
 
 Summary:        The fastest markdown parser in pure Python.
 Name:           python-mistune
-Version:        0.7.4
-Release:        2%{?dist}
+Version:        0.8.3
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/mistune/
 Source0:        https://files.pythonhosted.org/packages/source/m/mistune/mistune-%{version}.tar.gz
-%define         sha1 mistune=23adb8fe73662bfc0f1b21009a8df2fc9affd4aa
+%define sha1    mistune=ba1691f290b496dd12b1ad518a2c521367c7ce28
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -73,6 +73,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 0.8.3-1
+-   Update to version 0.8.3
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.4-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 20 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.4-1

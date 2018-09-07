@@ -1,17 +1,17 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define sha1    markupsafe=aed40fbcf0423f3ea005892a2e7144e44ff81745
+%define sha1    markupsafe=aed40fbcf0423f3ea005892a2e7144e44ff81745
 
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python-markupsafe
 Version:        1.0
-Release:        3%{?dist}
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/MarkupSafe
 Source0:        https://pypi.python.org/packages/4d/de/32d741db316d8fdb7680822dd37001ef7a448255de9699ab4bfcbdf4172b/MarkupSafe-%{version}.tar.gz 
-%define sha1    MarkupSafe=9072e80a7faa0f49805737a48f3d871eb1c48728
+%define sha1    markupsafe=aed40fbcf0423f3ea005892a2e7144e44ff81745
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -61,6 +61,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 1.0-1
+-   Update to version 1.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.0-2

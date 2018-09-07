@@ -1,17 +1,17 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define sha1    gevent=d703db3c5f812f8b1d922b7d36e4d535605a39e4
+%define sha1    gevent=d703db3c5f812f8b1d922b7d36e4d535605a39e4
 
 Summary:        Coroutine-based network library
 Name:           python-gevent
-Version:        1.2.1
-Release:        6%{?dist}
+Version:        1.3.6
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/gevent
 Source0:        gevent-%{version}.tar.gz
-%define sha1    gevent=30bb949c572a637341db4fe52e575d44cef937b3
+%define sha1    gevent=d703db3c5f812f8b1d922b7d36e4d535605a39e4
 Patch0:         python-gevent-makecheck.patch
 
 BuildRequires:  python2
@@ -89,6 +89,8 @@ PYTHONPATH=.. python3 testrunner.py --config known_failures.py
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 1.3.6-1
+-   Update to version 1.3.6
 *   Wed Sep 20 2017 Bo Gan <ganb@vmware.com> 1.2.1-6
 -   Fix build and make check issues
 *   Wed Sep 13 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.1-5

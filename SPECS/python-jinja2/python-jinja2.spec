@@ -1,10 +1,10 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
+%define sha1    jinja2=7776001de0269df324bd80ffeecd6e6c19382e8e
+%define sha1    jinja2=7776001de0269df324bd80ffeecd6e6c19382e8e
+%define sha1    jinja2=7776001de0269df324bd80ffeecd6e6c19382e8e
 
 Name:           python-jinja2
-Version:        2.9.5
-Release:        6%{?dist}
+Version:        2.10
+Release:        1%{?dist}
 Url:            http://jinja.pocoo.org/
 Summary:        A fast and easy to use template engine written in pure Python
 License:        BSD
@@ -12,7 +12,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/71/59/d7423bd5e7ddaf3a1ce299ab4490e9044e8dfd195420fc83a24de9e60726/Jinja2-2.9.5.tar.gz
-%define sha1    Jinja2=a3129c140d34ae565a556e48db40772df3536b23
+%define sha1    jinja2=7776001de0269df324bd80ffeecd6e6c19382e8e
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
@@ -79,6 +79,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/Jinja2-%{version}-py%{python3_version}.egg-info
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 2.10-1
+-   Update to version 2.10
 *   Tue Jun 20 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.5-6
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.9.5-5

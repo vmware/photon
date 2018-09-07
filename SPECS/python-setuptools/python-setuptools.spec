@@ -1,8 +1,8 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define sha1    setuptools=21acb1f51dc170f5d7fa49a863438def12eb1108
 
 Summary: Download, build, install, upgrade, and uninstall Python packages
 Name: python-setuptools
-Version: 36.0.1
+Version:        40.2.0
 Release: 1%{?dist}
 License: Python or ZPLv2.0
 Group: Development/Languages
@@ -11,7 +11,7 @@ Distribution: Photon
 URL: https://pypi.python.org/pypi/setuptools
 
 Source0: https://pypi.python.org/packages/a9/23/720c7558ba6ad3e0f5ad01e0d6ea2288b486da32f053c73e259f7c392042/setuptools-%{version}.zip
-%define sha1 setuptools=e1c5660030935541c08f7050939f9095cea96936
+%define sha1    setuptools=21acb1f51dc170f5d7fa49a863438def12eb1108
 
 BuildArch: noarch
 
@@ -55,6 +55,8 @@ python2 setup.py test
 %{python2_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 40.2.0-1
+-   Update to version 40.2.0
 *       Tue Jun 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 36.0.1-1
 -       Upgrade to 36.0.1 and remove the BuildRequires
 *       Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 34.3.3-2

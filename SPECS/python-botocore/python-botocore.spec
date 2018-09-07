@@ -1,10 +1,10 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
+%define sha1    botocore=11366be366c1b0e0e452bd51fa2ddcf41b781333
+%define sha1    botocore=11366be366c1b0e0e452bd51fa2ddcf41b781333
+%define sha1    botocore=11366be366c1b0e0e452bd51fa2ddcf41b781333
 
 Summary:        Amazon Web Services Library.
 Name:           python-botocore
-Version:        1.8.15
+Version:        1.11.8
 Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/boto/botocore
 Source0:        https://github.com/boto/botocore/archive/botocore-%{version}.tar.gz
-%define         sha1 botocore=6ecad01c8235e53d22da5e2da65704cede758550
+%define sha1    botocore=11366be366c1b0e0e452bd51fa2ddcf41b781333
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -69,5 +69,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 1.11.8-1
+-   Update to version 1.11.8
 *   Sun Jan 07 2018 Kumar Kaushik <kaushikk@vmware.com> 1.8.15-1
 -   Initial packaging for photon.

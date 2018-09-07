@@ -1,19 +1,19 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python2_version: %define python2_version %(python2 -c "import sys; sys.stdout.write(sys.version[:3])")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
+%define sha1    pytz=014d842f110c031bc34f651c872f391756836758
+%define sha1    pytz=014d842f110c031bc34f651c872f391756836758
+%define sha1    pytz=014d842f110c031bc34f651c872f391756836758
+%define sha1    pytz=014d842f110c031bc34f651c872f391756836758
 
 Summary:        World timezone definitions, modern and historical
 Name:           python-pytz
-Version:        2017.2
-Release:        3%{?dist}
+Version:        2018.5
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pytz/pytz-%{version}.zip
-%define sha1    pytz=c2d0024d4a6bd649290813f0a57d849accf82fa9
+%define sha1    pytz=014d842f110c031bc34f651c872f391756836758
 BuildArch:      noarch
 
 BuildRequires:  python2
@@ -87,6 +87,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 2018.5-1
+-   Update to version 2018.5
 *   Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 2017.2-3
 -   add BuildRequires for make check bug 1937039
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.2-2

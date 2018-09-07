@@ -1,17 +1,17 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define sha1    prompt_toolkit=24cbba8e71c625bb58798b3a95fadc9e14282136
+%define sha1    prompt_toolkit=24cbba8e71c625bb58798b3a95fadc9e14282136
 
 Summary:        Library for building powerful interactive command lines in Python.
 Name:           python-prompt_toolkit
-Version:        1.0.14
-Release:        4%{?dist}
+Version:        2.0.4
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/prompt_toolkit
 Source0:        https://files.pythonhosted.org/packages/source/p/prompt_toolkit/prompt_toolkit-%{version}.tar.gz
-%define         sha1 prompt_toolkit=fa723a6f33927917cc4d98a4f82b0d82970a80e7
+%define sha1    prompt_toolkit=24cbba8e71c625bb58798b3a95fadc9e14282136
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -91,6 +91,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 2.0.4-1
+-   Update to version 2.0.4
 *   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.14-4
 -   Added packages which are required during runtime
 *   Wed Jul 12 2017 Chang Lee <changlee@vmware.com> 1.0.14-3

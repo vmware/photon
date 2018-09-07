@@ -1,17 +1,17 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define sha1    pyparsing=faa4ead9cd810d54367e6c9e79f665a8440a2ff8
+%define sha1    pyparsing=faa4ead9cd810d54367e6c9e79f665a8440a2ff8
 
 Summary:        Python parsing module.
 Name:           python-pyparsing
 Version:        2.2.0
-Release:        3%{?dist}
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pyparsing/%{version}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pyparsing-%{version}.tar.gz
-%define sha1    pyparsing=f8504f4f8baa69de5b63fd2275a0ebf36a2cf74b
+%define sha1    pyparsing=faa4ead9cd810d54367e6c9e79f665a8440a2ff8
 
 BuildArch:      noarch
 
@@ -68,6 +68,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-1
+-   Update to version 2.2.0
 *   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 2.2.0-3
 -   Disabled check section as tests are not available
 *   Tue Jun 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.2.0-2

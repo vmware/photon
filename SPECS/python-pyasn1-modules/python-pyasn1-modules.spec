@@ -1,17 +1,17 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define sha1    pyasn1-modules=a01ed1546373fd113c1ddf3ad686bbdf07251a00
+%define sha1    pyasn1-modules=a01ed1546373fd113c1ddf3ad686bbdf07251a00
 
 Summary:        A collection of ASN.1-based protocols modules.
 Name:           python-pyasn1-modules
-Version:        0.0.8
-Release:        2%{?dist}
+Version:        0.2.2
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pyasn1-modules
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pyasn1-modules-%{version}.tar.gz
-%define sha1    pyasn1-modules=0ee39382b5b97c8694a3373706edc1baea2e0e71
+%define sha1    pyasn1-modules=a01ed1546373fd113c1ddf3ad686bbdf07251a00
 
 BuildArch:      noarch
 
@@ -93,6 +93,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 0.2.2-1
+-   Update to version 0.2.2
 *   Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.8-2
 -   Fixed make check.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.8-1
