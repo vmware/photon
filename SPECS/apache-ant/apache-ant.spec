@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
-Version:	1.9.6
-Release:	10%{?dist}
+Version:	1.10.1
+Release:	1%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:       noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-ant=de7c2287bca23fc32007b28e56c28f330cf7be26
+%define sha1 apache-ant=86958f1b11b74dcc31ce0514a25af5307903d52a
 Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
@@ -110,6 +110,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_bindir}/runant.pl
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 1.10.1-1
+-   Upgraded to 1.10.1 release
 *   Fri Jun 22 2018 Keerthana K <keerthanak@vmware.com> 1.9.6-10
 -   Fix for Zip Slip Vulnerability.
 *   Wed Jun 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.9.6-9

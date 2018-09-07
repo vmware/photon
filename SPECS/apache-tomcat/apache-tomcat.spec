@@ -1,6 +1,6 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.32
+Version:        8.5.33
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -8,11 +8,11 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
-Source0:        http://mirrors.koehn.com/apache/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=92ed11618ce9a750363ff79062daf94bdbe72ee1
+Source0:        http://mirrors.koehn.com/apache/tomcat/tomcat-8/v%{version}/src/%{name}-src-%{version}-src.tar.gz
+%define sha1    apache-tomcat-src=1c9f34ec4c1659eb8c11ebbaf95b6f8d85ff37ae
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=1e1f7fe54192d3bfaafc26084555458ac50e4cd8
+%define sha1    base=e49b167305a917469bc5e76df8cea141a5acfcb5
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 BuildRequires:  openjre
 BuildRequires:  openjdk
@@ -40,6 +40,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 %patch0 -p1
 
 %build
+export JAVA_HOME=/usr/lib/jvm/OpenJDK-%{JAVA_VERSION}
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
 
 %install
@@ -83,7 +84,16 @@ rm -rf %{buildroot}/*
 %dir %{_logsdir}
 %dir %{_tempdir}
 %{_bindir}/*
-%{_confdir}/*
+%config(noreplace) %{_confdir}/catalina.policy
+%config(noreplace) %{_confdir}/catalina.properties
+%config(noreplace) %{_confdir}/context.xml
+%config(noreplace) %{_confdir}/jaspic-providers.xml
+%config(noreplace) %{_confdir}/jaspic-providers.xsd
+%config(noreplace) %{_confdir}/logging.properties
+%config(noreplace) %{_confdir}/server.xml
+%config(noreplace) %{_confdir}/tomcat-users.xml
+%config(noreplace) %{_confdir}/tomcat-users.xsd
+%config(noreplace) %{_confdir}/web.xml
 %{_libdir}/*
 %{_webappsdir}/*
 %{_datadir}/java/tomcat/*.jar
@@ -92,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Fri Sep 07 2018 Tapas Kundu <tkundu@vmware.com> 8.5.33-1
+-   Updated to 8.5.33 release.
 *   Tue Sep 04 2018 Tapas Kundu <tkundu@vmware.com> 8.5.32-1
 -   Upgraded to 8.5.32
 *   Mon Jun 25 2018 Srinidhi Rao <srinidhir@vmware.com> 8.5.31-2
