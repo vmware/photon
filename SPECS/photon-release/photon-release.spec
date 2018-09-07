@@ -1,10 +1,12 @@
 Summary:    Photon release files
 Name:       photon-release
 Version:    2.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon/
+Source:     %{name}-%{version}.tar.gz
+%define sha1 photon-release=ced639518d32f9ac8ff00a71853812057db3ab3c
 Vendor:     VMware, Inc.
 Distribution:   Photon
 BuildArch:  noarch
@@ -64,6 +66,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*       Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 2.0-2
+-       Add sources file for OSSTP
 *       Thu Jul 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0-1
 -       update to 2.0
 *       Wed Nov 30 2016 Anish Swaminathan <anishs@vmware.com> 1.0-7
