@@ -1,14 +1,15 @@
 Summary:    Irqbalance daemon
 Name:       irqbalance
-Version:    1.2.0
+Version:    1.4.0
 Release:    1%{?dist}
 License:    GPLv2
 URL:        https://github.com/Irqbalance/irqbalance
 Group:      System Environment/Services
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
-%define sha1 v1=d4f77b4d21ac64effc84d8b0835431c659cdeb7b
+# https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
+Source0:    %{name}-%{version}.tar.gz
+%define sha1 %{name}-%{version}=4eb861313d6b93b3be5d5933a7f45ee7b51c7ddb
 BuildRequires:  systemd-devel
 BuildRequires:  glib-devel
 Requires:  systemd
@@ -33,6 +34,9 @@ install -D -m 0644 misc/irqbalance.env %{buildroot}/etc/sysconfig/irqbalance
 sed -i 's#/path/to/irqbalance.env#/etc/sysconfig/irqbalance#' misc/irqbalance.service
 install -D -m 0644 misc/irqbalance.service %{buildroot}%{_prefix}/lib/systemd/system/irqbalance.service
 
+%check
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post
 %systemd_post %{name}.service
 %preun
@@ -49,6 +53,8 @@ install -D -m 0644 misc/irqbalance.service %{buildroot}%{_prefix}/lib/systemd/sy
 %{_datadir}/*
 
 %changelog
+*   Fri Sep 07 2018 Ankit Jain <ankitja@vmware.com>  1.4.0-1
+-   Updated the package to version 1.4.0
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com>  1.2.0-1
 -   Updated the package to version 1.2.0
 *   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.1.0-4
