@@ -1,14 +1,14 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.2.10
+Version:        10.3.9
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
-Source0:        http://mirrors.nodesdirect.com/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=14a7d6b5c77de5235b60ffa13bf80a1dd2dda49c
+Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+%define         sha1 mariadb=51e9870847daa76f1e82ade97d9cf60a31df7656
 
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
@@ -79,7 +79,9 @@ cmake -DCMAKE_BUILD_TYPE=Release                        \
       -DSKIP_TESTS=ON                                   \
       -DTOKUDB_OK=0                                     \
       ..
-make
+
+make %{?_smp_mflags}
+
 %install
 cd build
 make DESTDIR=%{buildroot} install
@@ -134,6 +136,7 @@ rm -rf %{buildroot}
 %{_libdir}/libmysqlclient.so
 %{_libdir}/libmysqlclient_r.so
 %{_libdir}/libmariadb.so.*
+%{_libdir}/libmariadbd.so.*
 %{_bindir}/msql2mysql
 %{_bindir}/mysql
 %{_bindir}/mysql_find_rows
@@ -148,6 +151,7 @@ rm -rf %{buildroot}
 %{_bindir}/mysqlshow
 %{_bindir}/mysqlslap
 %{_bindir}/mariadb_config
+%{_bindir}/test-connect-t
 %{_bindir}/mysql_client_test
 %{_bindir}/mysql_client_test_embedded
 %{_bindir}/mysql_config
@@ -162,6 +166,7 @@ rm -rf %{buildroot}
 %{_bindir}/mytop
 %{_bindir}/perror
 %{_bindir}/sst_dump
+%{_bindir}/myrocks_hotbackup
 %{_mandir}/man1/msql2mysql.1.gz
 %{_mandir}/man1/mysql.1.gz
 %{_mandir}/man1/mysqlaccess.1.gz
@@ -207,7 +212,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/server.cnf
 %dir %attr(0750,mysql,mysql) %{_var}/lib/mysql
-%{_libdir}/libmysqld.so.*
 %{_libdir}/mysql/plugin*
 %{_bindir}/aria_chk
 %{_bindir}/aria_dump_log
@@ -238,6 +242,7 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_mariabackup
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
+%{_bindir}/wsrep_sst_rsync_wan
 %{_bindir}/wsrep_sst_xtrabackup
 %{_bindir}/wsrep_sst_xtrabackup-v2
 %{_sbindir}/*
@@ -245,11 +250,6 @@ rm -rf %{buildroot}
 %{_libdir}/systemd/system/mariadb@.service
 %{_libdir}/systemd/system-preset/50-mariadb.preset
 %{_datadir}/binary-configure
-%{_datadir}/my-huge.cnf
-%{_datadir}/my-innodb-heavy-4G.cnf
-%{_datadir}/my-large.cnf
-%{_datadir}/my-medium.cnf
-%{_datadir}/my-small.cnf
 %{_datadir}/mysql-log-rotate
 %{_datadir}/mysql.server
 %{_datadir}/mysqld_multi.server
@@ -304,6 +304,13 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
 %{_datadir}/mysql/mysql_to_mariadb.sql
+%{_datadir}/mysql/mysql_test_db.sql
+%license %{_datadir}/mysql/mroonga/AUTHORS
+%license %{_datadir}/mysql/mroonga/COPYING
+%license %{_datadir}/groonga-normalizer-mysql/lgpl-2.0.txt
+%license %{_datadir}/groonga/COPYING
+%doc %{_datadir}/groonga-normalizer-mysql/README.md
+%doc %{_datadir}/groonga/README.md
 
 
 %files server-galera
@@ -317,6 +324,7 @@ rm -rf %{buildroot}
 %{_includedir}/mysql/*
 %{_datadir}/aclocal/mysql.m4
 %{_libdir}/libmariadb.so
+%{_libdir}/libmariadbd.so
 %{_libdir}/libmysqld.so
 %{_datadir}/pkgconfig/mariadb.pc
 
@@ -348,6 +356,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.3.9-1
+-   Update to version 10.3.9
 *   Tue Nov 07 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.10-1
 -   Update to verion 10.2.10 to address CVE-2017-10378, CVE-2017-10268
 *   Wed Sep 06 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.8-1
