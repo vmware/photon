@@ -1,10 +1,12 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	2.0
-Release:	3%{?dist}
-Source0:	fscks.conf
+Release:	4%{?dist}
 License:	Apache License
 Group:		System Environment/Base
+Source0:        %{name}-%{version}.tar.gz
+%define sha1 initramfs=75a59f8f227665828c52b85d0f07fd44ebba441d
+Source1:        fscks.conf
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	initramfs
@@ -15,7 +17,7 @@ This package provides the configuration files for initrd generation.
 
 %install
 mkdir -p %{buildroot}%{_sysconfdir}/dracut.conf.d
-install -D -m644 %{SOURCE0} %{buildroot}%{_sysconfdir}/dracut.conf.d/
+install -D -m644 %{SOURCE1} %{buildroot}%{_sysconfdir}/dracut.conf.d/
 install -d -m755 %{buildroot}%{_localstatedir}/lib/initramfs/kernel
 
 %define watched_path %{_sbindir} %{_libdir}/udev/rules.d %{_libdir}/systemd/system /lib/modules %{_sysconfdir}/dracut.conf.d
@@ -111,6 +113,8 @@ echo "initramfs" %{version}-%{release} "postun" >&2
 %dir %{_localstatedir}/lib/initramfs/kernel
 
 %changelog
+*   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 2.0-4
+-   Add source for OSSTP
 *   Thu Jul 27 2017 Bo Gan <ganb@vmware.com> 2.0-3
 -   Move all states to one directory
 *   Fri May 26 2017 Bo Gan <ganb@vmware.com> 2.0-2
