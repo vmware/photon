@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.54
-Release:        6%{?kat_build:.%kat_build}%{?dist}
+Release:        7%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -18,6 +18,10 @@ Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.t
 Source4:	config_aarch64
 Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
+Source6:	config-kdump
+Source7:	kdump.service
+Source8:	kdump-save.service
+
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -124,6 +128,13 @@ Requires:       %{name} = %{version}-%{release}
 Kernel Device Tree Blob files for Raspberry Pi3
 %endif
 
+%package kdump
+Summary:        Kernel to dump core
+Group:          System Environment/Kernel
+Requires:       kexec-tools
+Requires:       makedumpfile
+%description kdump
+Small kernel to load that will dump the crash core
 
 %prep
 %setup -q -n linux-%{version}
@@ -166,6 +177,8 @@ arch="arm64"
 archdir="arm64"
 %endif
 
+cp -r ../linux-%{version} ../linux-kdump
+
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
@@ -182,6 +195,13 @@ pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
 make KERNELDIR=$bldroot %{?_smp_mflags} all
 popd
 %endif
+
+pushd ../linux-kdump
+cp %{SOURCE6} .config
+sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-kdump"/' .config
+make LC_ALL= oldconfig
+make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+popd
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -200,6 +220,8 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     %{__modules_install_post}\
 %{nil}
 
+
+
 %install
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
@@ -207,6 +229,14 @@ install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
+
+pushd ../linux-kdump
+install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-kdump
+install -vm 644 .config %{buildroot}/boot/config-kdump
+mkdir -p %{buildroot}/lib/systemd/system/
+install -m644 %{SOURCE7} %{buildroot}/lib/systemd/system/kdump.service
+install -m644 %{SOURCE8} %{buildroot}/lib/systemd/system/kdump-save.service
+popd
 
 %ifarch x86_64
 # install ENA module
@@ -289,9 +319,20 @@ make -C tools JOBS=1 DESTDIR=%{buildroot} prefix=%{_prefix} perf_install
 
 %include %{SOURCE2}
 
+%post kdump
+%systemd_post kdump.service
+
+%preun kdump
+%systemd_preun kdump.service
+
+%postun kdump
+%systemd_postun_with_restart kdump.service
+
+
 %post
 /sbin/depmod -aq %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
+
 
 %post drivers-gpu
 /sbin/depmod -aq %{uname_r}
@@ -365,7 +406,16 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /boot/dtb/bcm2837-rpi-3-b.dtb
 %endif
 
+%files kdump
+%defattr(-,root,root)
+/boot/config-kdump
+/boot/vmlinuz-kdump
+/lib/systemd/system/kdump.service
+/lib/systemd/system/kdump-save.service
+
 %changelog
+*   Fri Sep 07 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-7
+-   Add linux kdump package.
 *   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-6
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-5
