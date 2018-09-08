@@ -1,0 +1,14 @@
+[Unit]
+Description=Create dump after kernel crash
+DefaultDependencies=no
+Wants=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=idle
+ExecStart=/bin/sh -c 'mkdir -p /var/crash/ && /usr/sbin/makedumpfile -c -d 31 /proc/vmcore "/var/crash/crashdump-$(date +%%F-%%T)"'
+ExecStopPost=/usr/bin/systemctl reboot
+UMask=0077
+StandardInput=tty-force
+StandardOutput=inherit
+StandardError=inherit
