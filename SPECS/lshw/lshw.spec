@@ -3,7 +3,7 @@ Name:           lshw
 Version:        B.02.18
 Release:        1%{?dist}
 License:        GPLv2
-URL:            http://ezix.org/project/wiki/HardwareLiSter
+URL:            https://github.com/lyonel/lshw/releases
 Source0:        http://www.ezix.org/software/files/%{name}-%{version}.tar.gz
 %define sha1 lshw=c0240f5e53cf40769d52e316719e8010ea6bdea3
 Group:          Applications/System
