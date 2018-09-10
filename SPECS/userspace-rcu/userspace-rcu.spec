@@ -1,11 +1,11 @@
 Summary:        user space RCU (read-copy-update)
 Name:           userspace-rcu
-Version:        0.9.3
+Version:        0.10.1
 Release:        1%{?dist}
 License:        LGPLv2+
-URL:            http://liburcu.org
+URL:            https://github.com/urcu/userspace-rcu/releases
 Source:         %{name}-%{version}.tar.gz
-%define         sha1 userspace-rcu=469163028cc324325fc04188b2c6d266fdad6ed2
+%define         sha1 userspace-rcu=4db9940e75797f59870c30df657731ea62d0bec5
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,6 +57,8 @@ make %{?_smp_mflags} check
 
 
 %changelog
+*   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.10.1-1
+-   Updated to version 0.10.1.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 0.9.3-1
 -   Updated to version 0.9.3.
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 0.9.1-4
