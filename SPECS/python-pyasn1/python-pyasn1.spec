@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-pyasn1
-Version:        0.2.3
-Release:        3%{?dist}
+Version:        0.4.4
+Release:        1%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/p/pyasn1/pyasn1-%{version}.tar.gz
 Source0:        pyasn1-%{version}.tar.gz
-%define sha1    pyasn1=e30253a024d1388a96be8e84245a0d38f47467ff
+%define sha1    pyasn1=10f67e61e30c064301c826c6e5e461ff7bf5827d
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -68,6 +68,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.4.4-1
+-   Update to version 0.4.4
 *   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 0.2.3-1
 -   Updated to version 0.2.3.
 *   Mon Oct 04 2016 ChangLee <changlee@vmware.com> 0.1.9-3

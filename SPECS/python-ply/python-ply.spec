@@ -2,7 +2,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-ply
-Version:        3.10
+Version:        3.11
 Release:        1%{?dist}
 Summary:        Python Lex & Yacc
 License:        BSD-3-Clause
@@ -11,7 +11,7 @@ Url:            http://www.dabeaz.com/ply/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/dabeaz/ply/archive/ply-%{version}.tar.gz 
-%define sha1    ply=13b8e62584f70b2cff5a791a4af7fea793ebd580
+%define sha1    ply=10a555a32095991fbc7f7ed10c677a14e21fad1d
 BuildRequires:  python2-devel
 Requires:       python2
 BuildArch:      noarch
@@ -67,5 +67,7 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.11-1
+-   Update to version 3.11
 *   Fri Jul 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.10-1
 -   Initial packaging.

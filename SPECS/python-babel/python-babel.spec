@@ -2,8 +2,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-babel
-Version:        2.4.0
-Release:        3%{?dist}
+Version:        2.6.0
+Release:        1%{?dist}
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
@@ -11,7 +11,7 @@ Url:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/92/22/643f3b75f75e0220c5ef9f5b72b619ccffe9266170143a4821d4885198de/Babel-%{version}.tar.gz
-%define sha1    Babel=c3b247d17a34dc600c93f93f8f533029430bccb4
+%define sha1    Babel=6aed99e4fb8a2a75de7815599f610cdcbb81e3c2
 
 BuildRequires:  python2
 BuildRequires:  python2-devel
@@ -83,6 +83,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-1
+-   Update to version 2.6.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.0-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-2

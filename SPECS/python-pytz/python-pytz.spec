@@ -5,15 +5,15 @@
 
 Summary:        World timezone definitions, modern and historical
 Name:           python-pytz
-Version:        2017.2
-Release:        3%{?dist}
+Version:        2018.5
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/p/pytz/pytz-%{version}.zip
-%define sha1    pytz=c2d0024d4a6bd649290813f0a57d849accf82fa9
+Source0:        https://files.pythonhosted.org/packages/source/p/pytz/pytz-%{version}.tar.gz
+%define sha1    pytz=014d842f110c031bc34f651c872f391756836758
 BuildArch:      noarch
 
 BuildRequires:  python2
@@ -87,6 +87,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2018.5-1
+-   Update to version 2018.5
 *   Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 2017.2-3
 -   add BuildRequires for make check bug 1937039
 *   Wed Apr 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.2-2

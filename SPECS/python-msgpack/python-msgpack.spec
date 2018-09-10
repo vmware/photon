@@ -3,15 +3,15 @@
 
 Summary:        MessagePack (de)serializer.
 Name:           python-msgpack
-Version:        0.4.8
-Release:        2%{?dist}
+Version:        0.5.6
+Release:        1%{?dist}
 License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://msgpack.org/
-Source0:        https://pypi.io/packages/source/m/msgpack-python/msgpack-python-%{version}.tar.gz
-%define sha1    msgpack-python=59d4af5f0598bd31469cad7df316d70e6b492b1d
+Source0:        https://pypi.io/packages/source/m/msgpack-python/msgpack-%{version}.tar.gz
+%define sha1    msgpack=916c234864a5eaae179982dcd4b20efaa3677a30
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -30,7 +30,7 @@ Requires:       python3
 %description -n python3-msgpack
 
 %prep
-%setup -q -n msgpack-python-%{version}
+%setup -q -n msgpack-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -61,6 +61,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.5.6-1
+-   Update to version 0.5.6
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4.8-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu May 25 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4.8-1
