@@ -1,11 +1,11 @@
 Summary:	Google's C++ logging module
 Name:		glog
-Version:	0.3.4
-Release:	3%{?dist}
+Version:	0.3.5
+Release:	1%{?dist}
 License:	BSD
 URL:		https://github.com/google/glog
-Source0:	https://github.com/google/glog/archive/%{name}-v%{version}.tar.gz
-%define sha1 glog=69f91cd5a1de35ead0bc4103ea87294b0206a456
+Source0:	https://github.com/google/glog/archive/%{name}-%{version}.tar.gz
+%define sha1 glog=61067502c5f9769d111ea1ee3f74e6ddf0a5f9cc
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -59,6 +59,8 @@ find %{buildroot} -name '*.la' -delete
 %{_docdir}/*
 
 %changelog
+*   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 0.3.5-1
+-   Update version to 0.3.5.
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.4-3
 -   Use standard configure macros
 *   Thu Jun 1  2017 Bo Gan <ganb@vmware.com> 0.3.4-2
