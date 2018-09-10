@@ -1,14 +1,14 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.6.1
-Release:        3%{?dist}
+Version:        1.8.0
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1    unbound=41369fcfd37844b02b7293b37ec78e69f0db34c7
+%define sha1    unbound=52b5b4169b9adaa24cc668976b9dffcc025120d6
 Source1:        %{name}.service
 Requires:       systemd
 BuildRequires:  systemd
@@ -78,11 +78,14 @@ rm -rf %{buildroot}/*
 %files devel
 %{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/*
 
 %files docs
 %{_mandir}/*
 
 %changelog
+*  Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 1.8.0-1
+-  Update to version 1.8.0.
 *  Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.1-3
 -  Remove shadow from requires and use explicit tools for post actions
 *  Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.1-2
