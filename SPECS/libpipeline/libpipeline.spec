@@ -1,25 +1,22 @@
 Summary:	Library for manipulating pipelines
 Name:		libpipeline
-Version:	1.4.1
-Release:	2%{?dist}
+Version:	1.5.0
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://libpipeline.nongnu.org
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://download.savannah.gnu.org/releases/libpipeline/%{name}-%{version}.tar.gz
-%define sha1 libpipeline=b31cc955f22b1aa4545dc8d00ddbde831936594f
+%define sha1 libpipeline=1c885e4d5551933c905e751048abb119593c53f4
 %description
 Contains a library for manipulating pipelines of sub processes
 in a flexible and convenient way.
 %prep
 %setup -q
-sed -i -e '/gets is a/d' gnulib/lib/stdio.in.h
 %build
-PKG_CONFIG_PATH=/tools/lib/pkgconfig \
-	./configure \
-	--prefix=%{_prefix} \
-	--disable-silent-rules
+%configure --disable-static
+
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -37,7 +34,10 @@ make -C tests check
 %{_libdir}/*.so.*
 %{_libdir}/pkgconfig/libpipeline.pc
 %{_mandir}/*/*
+
 %changelog
+*       Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.5.0-1
+-       Update to 1.5.0
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.1-2
 -	GA - Bump release of all rpms
 *       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 1.4.1-1
