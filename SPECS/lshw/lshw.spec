@@ -1,11 +1,11 @@
 Summary:        Hardware lister
 Name:           lshw
-Version:        B.02.18
+Version:        T.00.07
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://ezix.org/project/wiki/HardwareLiSter
 Source0:        http://www.ezix.org/software/files/%{name}-%{version}.tar.gz
-%define sha1 lshw=c0240f5e53cf40769d52e316719e8010ea6bdea3
+%define sha1 lshw=e38265948e0be98c02dbc84939d6c6da1c86ea10
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -41,5 +41,7 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*    Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> T.00.07-1
+-    Update version to T.00.07.
 *    Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> B.02.18-1
 -    Initial version of lshw package for Photon.

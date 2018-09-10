@@ -1,14 +1,14 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2017b
-Release:        2%{?dist}
+Version:        2018e
+Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha1    tzdata=0f13bbb641f5742796609d3484006fe01fa654f1
+%define sha1    tzdata=9ab1932256674075fb74ff84792582b5ac12c476
 BuildArch:      noarch
 
 %description
@@ -42,6 +42,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 2018e-1
+-   Updated to version 2018e.
 *   Mon May 01 2017 Bo Gan <ganb@vmware.com> 2017b-2
 -   Remove (pre/post)trans, config file as noreplace.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 2017b-1
