@@ -1,15 +1,15 @@
 Summary:        Security client
 Name:           nss
-Version:        3.31
-Release:        5%{?dist}
+Version:        3.39
+Release:        1%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_31_RTM/src/%{name}-%{version}.tar.gz
+URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_39_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=006a13a5e52867c49ea1e7d986b7c02a3cd8ebfb
-Patch:          nss-3.31-standalone-1.patch
+%define sha1    nss=351e0e9607ead50174efe5f5107e2dc97e7358f2
+Patch:          nss-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -97,6 +97,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.so
 
 %changelog
+*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.39-1
+-   Upgrade to 3.39.
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 3.31-5
 -   Add static libcrmf.a library to devel package
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 3.31-4
