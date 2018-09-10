@@ -18,7 +18,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 %if %{with_check}
 BuildRequires:  shadow
 %endif
-BuildRequires:  libpipeline
+BuildRequires:  libpipeline-devel
 BuildRequires:  gdbm-devel
 BuildRequires:  xz
 BuildRequires:  groff
