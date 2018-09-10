@@ -1,19 +1,22 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
-Version:        1.6.1
-Release:        4%{?dist}
+Version:        1.8.0
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1    iptables-=b2592490ca7a6c2cd0f069e167a4337c86acdf91
+%define sha1    %{name}-%{version}=04924fd00dbaf8189f0777af90f7bdb73ac7e47c
 Source1:        iptables.service
 Source2:        iptables
 Source3:        iptables.stop
 Source4:        ip4save
 Source5:        ip6save
+BuildRequires:  jansson-devel
+BuildRequires:  libmnl-devel
+BuildRequires:  libnftnl-devel
 BuildRequires:  systemd
 Requires:       systemd
 %description
@@ -97,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 1.8.0-1
+-   Updated to version 1.8.0
 *   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-4
 -   fix ip4save script for upgrade issues.
 *   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-3
