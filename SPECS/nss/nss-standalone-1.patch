@@ -242,5 +242,5 @@ diff -Naurp nss-3.28-orig/nss/manifest.mn nss-3.28/nss/manifest.mn
  
  RELEASE = nss
  
--DIRS = coreconf lib cmd gtests
-+DIRS = coreconf lib cmd gtests config
+-DIRS = coreconf lib cmd cpputil gtests
++DIRS = coreconf lib cmd cpputil gtests config
