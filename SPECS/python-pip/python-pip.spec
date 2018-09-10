@@ -1,7 +1,7 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           python-pip
-Version:        9.0.1
-Release:        6%{?dist}
+Version:        18.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
@@ -9,12 +9,12 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/11/b6/abcb525026a4be042b486df43905d6893fb04f05aac21c32c638e939e447/pip-%{version}.tar.gz
-%define sha1 pip-%{version}=57ff41e99cb01b6a1c2b0999161589b726f0ec8b
+%define sha1    pip=337f4694bfcd4d698d9b02b38a7520fabc42a1d9
 # To get tests:
 # git clone https://github.com/pypa/pip && cd pip
 # git checkout 9.0.1 && tar -czvf ../pip-tests-9.0.1.tar.gz tests/
 Source1:        pip-tests-%{version}.tar.gz
-%define sha1 pip-tests=cffb5530dba01bc542320a5c41b0a667f5ec6f5f
+%define sha1 pip-tests=f469fa967798bbae82039151e93d696bc2abfd87
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
@@ -57,6 +57,8 @@ PYTHONPATH=%{buildroot}%{python2_sitelib} py.test -m 'not network' -k 'not svn a
 %{_bindir}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 18.0-1
+-   Update to version 18.0
 *   Thu Jul 20 2017 Divya Thaluru <dthaluru@vmware.com> 9.0.1-6
 -   Fixed make check errors
 *   Thu Jun 15 2017 Dheeraj Shetty <dheerajs@vmware.com> 9.0.1-5

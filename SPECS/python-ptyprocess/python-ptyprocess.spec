@@ -3,7 +3,7 @@
 
 Summary:        Run a subprocess in a pseudo terminal.
 Name:           python-ptyprocess
-Version:        0.5.2
+Version:        0.6.0
 Release:        1%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/ptyprocess
@@ -11,7 +11,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/ptyprocess/ptyprocess-%{version}.tar.gz
-%define sha1    ptyprocess=30b860d5509191d657397c312f2351f9559c5f4e
+%define sha1    ptyprocess=39622a2ff2cb456f17db542d60e5a0782e354128
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -62,6 +62,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.6.0-1
+-   Update to version 0.6.0
 *   Tue Sep 19 2017 Kumar Kaushik <kaushikk@vmware.com> 0.5.2-1
 -   Initial packaging for Photon
 

@@ -3,15 +3,15 @@
 
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python-psycopg2
-Version:        2.7.1
-Release:        3%{?dist}
+Version:        2.7.5
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/psycopg2/psycopg2-%{version}.tar.gz
-%define sha1    psycopg2=284ae137dc4ddf1855d47f7e92434fcd06a27ec6
+%define sha1    psycopg2=4f77e3efcf9a0970be5120352274315f7bd1c754
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -94,6 +94,8 @@ rm -r /home/postgres/data &>/dev/null ||:
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.7.5-1
+-   Update to version 2.7.5
 *   Wed Aug 09 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.1-3
 -   Fixed make check errors
 *   Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 2.7.1-2

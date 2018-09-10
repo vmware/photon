@@ -3,15 +3,15 @@
 
 Summary:        Incremental is a small library that versions your Python projects.
 Name:           python-incremental
-Version:        16.10.1
-Release:        2%{?dist}
+Version:        17.5.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/incremental
 Source0:        incremental-%{version}.tar.gz
-%define         sha1 incremental=7ec58968fd367d20856488a8991f3a586c7a8695
+%define sha1    incremental=ec60b72cf95a092931f1e83807f5d641d80ae924
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -63,6 +63,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 17.5.0-1
+-   Update to version 17.5.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 16.10.1-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 16.10.1-1
