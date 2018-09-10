@@ -5,7 +5,7 @@
 Summary:        Little IoT Agent
 Name:           liota
 Version:        0.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause License.
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ Distribution:   Photon
 Url:            https://github.com/vmware/liota
 Source0:        https://github.com/vmware/liota/archive/%{name}-%{version}.tar.gz
 %define         sha1 liota=c20239309086753e0dcc9cfa5e88e09ce63203f5
+Patch0:         fix_for_building_liota_with_pip_gr_10.patch
 BuildRequires:  python-pip
 BuildRequires:  python-pyOpenSSL
 BuildRequires:  python2
@@ -32,6 +33,7 @@ Little IoT Agent (liota) is an open source project offering some convenience for
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p1
 
 %build
 
@@ -64,5 +66,7 @@ cp -r packages/liotad/* %{buildroot}/usr/lib/%{name}/packages/liotad/
 %{python2_sitelib}/%{name}/
 
 %changelog
+*   Tue Sep 11 2018 Tapas Kundu <tkundu@vmware.com> 0.4.1-2
+-   Added fix to build with pip greater than version 10.
 *   Mon Aug 13 2018 Tapas Kundu <tkundu@vmware.com> 0.4.1-1
 -   Initial packaging for Photon

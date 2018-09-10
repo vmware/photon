@@ -3,15 +3,15 @@
 
 Summary:        Python Atomic file writes
 Name:           python-atomicwrites
-Version:        1.1.5
-Release:        2%{?dist}
+Version:        1.2.1
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/untitaker/python-atomicwrites
 Source0:        https://pypi.python.org/packages/a1/e1/2d9bc76838e6e6667fde5814aa25d7feb93d6fa471bf6816daac2596e8b2/atomicwrites-%{version}.tar.gz
-%define sha1    atomicwrites=89bfd295abb2c03e20f611a7c2205fc5c09e8509
+%define sha1    atomicwrites=fec341b1028177784ac97436c479a397ffeb20d7
 
 BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
@@ -74,6 +74,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.2.1-1
+-   Update to version 1.2.1
 *   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.1.5-2
 -   Fixed rpm check errors
 *   Fri Jul 07 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.1.5-1

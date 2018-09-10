@@ -3,15 +3,15 @@
 
 Summary:        An implementation of the OAuth request-signing logic
 Name:           python-oauthlib
-Version:        2.0.2
-Release:        3%{?dist}
+Version:        2.1.0
+Release:        1%{?dist}
 License:        BSD
 Url:            https://pypi.python.org/pypi/python-oauthlib/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://pypi.python.org/packages/fa/2e/25f25e6c69d97cf921f0a8f7d520e0ef336dd3deca0142c0b634b0236a90/oauthlib-2.0.2.tar.gz
-%define sha1    oauthlib=e9d2d2dba4526cad5db3d6a18bf2ca168087efcf
+Source0:        https://pypi.python.org/packages/fa/2e/25f25e6c69d97cf921f0a8f7d520e0ef336dd3deca0142c0b634b0236a90/oauthlib-%{version}.tar.gz
+%define sha1    oauthlib=3e7b426212fc0d9f91813a983238321ee9026d15
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -75,6 +75,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.1.0-1
+-   Update to version 2.1.0
 *   Fri Jul 07 2017 Chang Lee <changlee@vmware.com> 2.0.2-3
 -   Add  libffi-devel in BuildRequires and install mock python module in %check
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.2-2

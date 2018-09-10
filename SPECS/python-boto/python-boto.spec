@@ -4,7 +4,7 @@
 
 Summary:        Amazon Web Services Library.
 Name:           python-boto
-Version:        2.48.0
+Version:        2.49.0
 Release:        1%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/boto/2.48.0
 Source0:        https://files.pythonhosted.org/packages/source/b/boto/boto-%{version}.tar.gz
-%define         sha1 boto=9cd6fb5b28a1e2a66c4fa4715bcce251e4ea8434
+%define sha1    boto=300e6b7abd04a77a94f769e6cad6fb9e6e84ffbb
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -134,5 +134,7 @@ popd
 %{_bindir}/taskadmin-%{python3_version}
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.49.0-1
+-   Update to version 2.49.0
 *   Tue Sep 12 2017 Xiaolin Li <xiaolinl@vmware.com> 2.48.0-1
 -   Initial packaging for Photon
