@@ -1,11 +1,11 @@
 Summary:      Enhanced seccomp library
 Name:         libseccomp
-Version:      2.3.2
+Version:      2.3.3
 Release:      1%{?dist}
 License:      LGPLv2
 Group:        System Environment/Libraries
 Source0:      https://github.com/seccomp/libseccomp/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1 libseccomp=6eb7fa147008f4ae189d56c2ea801a619bb08cd0
+%define sha1 libseccomp=89b1f35447b1891a3051de979dc92ad9f7258b60
 Url:          https://github.com/seccomp/libseccomp/wiki
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -30,14 +30,11 @@ needed for developing secure applications.
 %setup -q
 
 %build
-./configure --prefix="%{_prefix}" --libdir="%{_libdir}"
-CFLAGS="%{optflags}" make V=1 %{?_smp_mflags}
+%configure
+make V=1 %{?_smp_mflags}
 
 %install
 rm -rf "%{buildroot}"
-mkdir -p "%{buildroot}/%{_libdir}"
-mkdir -p "%{buildroot}/%{_includedir}"
-mkdir -p "%{buildroot}/%{_mandir}"
 make V=1 DESTDIR="%{buildroot}" install
 
 %check
@@ -52,18 +49,20 @@ make check
 %doc CREDITS
 %doc README.md
 %{_libdir}/libseccomp.so.*
-%{_libdir}/libseccomp.a
-%{_libdir}/libseccomp.la
 
 %files devel
 %{_includedir}/seccomp.h
 %{_libdir}/libseccomp.so
+%{_libdir}/libseccomp.a
+%{_libdir}/libseccomp.la
 %{_libdir}/pkgconfig/libseccomp.pc
 %{_bindir}/scmp_sys_resolver
 %{_mandir}/man1/*
 %{_mandir}/man3/*
 
 %changelog
+*       Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 2.3.3-1
+-       Updated to version 2.3.3
 *	Tue Apr 11 2017 Harish Udaiya KUmar <hudaiyakumar@vmware.com> 2.3.2-1
 -	Updated to version 2.3.2
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.3-2
