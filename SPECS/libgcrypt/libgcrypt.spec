@@ -1,11 +1,11 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
-Version:	1.8.1
+Version:	1.8.3
 Release:	1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=dd35f00da45602afe81e01f4d60c40bbdd826fe6
+%define sha1 libgcrypt=13bd2ce69e59ab538e959911dfae80ea309636e3
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
@@ -25,33 +25,39 @@ developing applications that use libgcrypt.
 
 %prep
 %setup -q
+
 %build
-./configure \
-	--prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
-rm %{buildroot}%{_infodir}/*
+rm -rf %{buildroot}%{_infodir}
 
 %check
 make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/*.so.*
 %{_mandir}/man1/*
-%{_libdir}/*.la
-/usr/share/aclocal/libgcrypt.m4
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*.h
+%{_datadir}/aclocal/*
+%{_libdir}/*.la
 %{_libdir}/*.so
+
 %changelog
+*   Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.8.3-1
+-   Update to 1.8.3
 *   Tue Oct 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
--   Udpated to v1.8.1 to address CVE-2017-0379
+-   Updated to v1.8.1 to address CVE-2017-0379
 *   Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.6-1
 -   Udpated to version 1.7.6
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 1.6.5-3
