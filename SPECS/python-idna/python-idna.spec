@@ -3,15 +3,15 @@
 
 Summary:        Internationalized Domain Names in Applications (IDNA).
 Name:           python-idna
-Version:        2.5
-Release:        2%{?dist}
+Version:        2.7
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/idna
 License:        BSD-like
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        idna-%{version}.tar.gz
-%define sha1    idna=499531b72bf0440ded6ce7f079a1f979270ae2d0
+%define sha1    idna=9e1aec32b35423438c285ec21ee234228bedd6fb
 
 BuildArch:      noarch
 
@@ -77,6 +77,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.7-1
+-   Update to version 2.7
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
