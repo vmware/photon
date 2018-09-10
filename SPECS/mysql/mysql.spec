@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.23
+Version:        8.0.12
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=e88edced7261412e66fc5570ed375bb3a36494bf
+%define         sha1 mysql-boost=c144d6c1350a9897da31ebbd3b5492ab1f152352
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -31,15 +31,18 @@ Development headers for developing applications linking to maridb
 %build
 cmake . \
       -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_59_0 \
+      -DWITH_BOOST=boost/boost_1_67_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
       -DINSTALL_SUPPORTFILESDIR=share/support-files \
       -DCMAKE_BUILD_TYPE=RELEASE \
+      -DCMAKE_C_FLAGS=-fPIC \
+      -DCMAKE_CXX_FLAGS=-fPIC \
       -DWITH_EMBEDDED_SERVER=OFF
 
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 
@@ -48,7 +51,7 @@ make test
 
 %files
 %defattr(-,root,root)
-%doc COPYING  README
+%doc LICENSE  README
 %{_libdir}/plugin/*
 %{_libdir}/libmysqlclient.so.*
 %{_bindir}/*
@@ -66,6 +69,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 8.0.12-1
+-   Update to version 8.0.12
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.7.23-1
 -   Update to version 5.7.23 to get it to build with gcc 7.3
 *   Thu Jan 25 2018 Divya Thaluru <dthaluru@vmware.com> 5.7.20-2
