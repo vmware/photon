@@ -1,14 +1,14 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
-Version:    23
-Release:    3%{?dist}
+Version:    24
+Release:    1%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://projects.archlinux.org/mkinitcpio.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 mkinitcpio=4459418eb423b2699e798c4523a59cc07a567a98
+%define sha1 mkinitcpio=416789532960f7deecb4d5734a398da2437bbb58
 Patch0:     mkinitcpio-shutdown-ramfs.service.patch
 BuildRequires: asciidoc
 BuildRequires: python2-libs
@@ -49,6 +49,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 24-1
+-   Update to version 24
 *   Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 23-3
 -   fix directory create in shutdown service
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 23-2
