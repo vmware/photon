@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-ndg-httpsclient
-Version:        0.4.2
+Version:        0.5.1
 Release:        1%{?dist}
 Summary:        Enhanced HTTPS support for httplib and urllib2 using PyOpenSSL.
 License:        BSD
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/ndg-httpsclient
 Source0:        ndg_httpsclient-%{version}.tar.gz
-%define sha1    ndg_httpsclient=03396d0b960c414e92ff355b4fe0fe210855fd58
+%define sha1    ndg_httpsclient=aa0b3c2d8ada61fa3f4e82ed307056b14cc63cb9
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -64,5 +64,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.5.1-1
+-   Updated to 0.5.1
 *   Tue Aug 29 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.4.2-1
 -   Initial version of python ndg-httpsclient for PhotonOS.

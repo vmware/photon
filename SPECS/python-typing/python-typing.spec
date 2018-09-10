@@ -2,8 +2,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-typing
-Version:        3.6.1
-Release:        3%{?dist}
+Version:        3.6.6
+Release:        1%{?dist}
 Summary:        Type Hints for Python
 License:        PSF
 Group:          Development/Tools
@@ -11,7 +11,7 @@ Url:            https://docs.python.org/3/library/typing.html
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/17/75/3698d7992a828ad6d7be99c0a888b75ed173a9280e53dbae67326029b60e/typing-%{version}.tar.gz
-%define sha1    typing=d6ce2f6379d2594c174adb1c94643297600c979c
+%define sha1    typing=8414f7e523f1f286f72392e9f8929d346df6f6a2
 
 BuildRequires:  python2
 BuildRequires:  python2-devel
@@ -32,6 +32,7 @@ BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -74,6 +75,8 @@ PYTHONPATH=%{buildroot}%{python2_sitelib} \
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.6.6-1
+-   Update to version 3.6.6
 *   Fri Jul 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.6.1-3
 -   Adding python3 version.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-2
