@@ -1,11 +1,11 @@
 Summary:	Google's C++ gmock framework
 Name:		gmock
-Version:	1.8.0
-Release:	2%{?dist}
+Version:	1.8.1
+Release:	1%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/google/googletest
 Source0:	https://github.com/google/googletest/archive/googletest-%{version}.tar.gz
-%define sha1 googletest=e7e646a6204638fe8e87e165292b8dd9cd4c36ed
+%define sha1 googletest=152b849610d91a9dfa1401293f43230c2e0c33f8
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -43,16 +43,21 @@ make
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}/%{_includedir}/gtest
 rm -f %{buildroot}/%{_libdir}/libgtest*
-install -p -m 644 -t %{buildroot}/usr/lib googlemock/libgmock.a
-install -p -m 644 -t %{buildroot}/usr/lib googlemock/libgmock_main.a
+install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/libgmock.a
+install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/libgmock_main.a
 install -vdm 755 %{buildroot}/usr/src/gmock/src/
 cp googlemock/src/* %{buildroot}/usr/src/gmock/src/
 find %{buildroot} -name '*.la' -delete
 
 %files
 %defattr(-,root,root)
-%{_libdir}/libgmock.so
-%{_libdir}/libgmock_main.so
+%{_lib64dir}/libgmock.so
+%{_lib64dir}/libgmock_main.so
+%{_lib64dir}/cmake/*
+%{_lib64dir}/libgtest.so
+%{_lib64dir}/libgtest_main.so
+%{_lib64dir}/pkgconfig/*
+
 
 %files devel
 %defattr(-,root,root)
@@ -61,10 +66,12 @@ find %{buildroot} -name '*.la' -delete
 
 %files static
 %defattr(-,root,root)
-%{_libdir}/libgmock.a
-%{_libdir}/libgmock_main.a
+%{_lib64dir}/libgmock.a
+%{_lib64dir}/libgmock_main.a
 
 %changelog
+*    Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 1.8.1-1
+-    Update version to 1.8.1.
 *    Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 1.8.0-2
 -    Add gmock sources in devel package
 *    Mon Apr 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.0-1
