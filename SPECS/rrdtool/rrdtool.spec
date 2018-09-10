@@ -1,6 +1,6 @@
 Summary:	Round Robin Database Tool to store and display time-series data
 Name:		rrdtool
-Version:	1.6.0
+Version:	1.7.0
 Release:	1%{?dist}
 License:	LGPLv2 or MPLv1.1
 URL:		http://oss.oetiker.ch/rrdtool/
@@ -8,7 +8,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://github.com/oetiker/rrdtool-1.x/releases/download/v1.6.0/%{name}-%{version}.tar.gz
-%define sha1 rrdtool=9866b41bda9416188f236d61d24f185b173fd571
+%define sha1 rrdtool=15a2009e2ee67eb41a2598d1a0f1f7cf1a651c78
 BuildRequires:	pkg-config
 BuildRequires:	libpng-devel
 BuildRequires:	pango-devel
@@ -70,6 +70,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/*.so*
 %{_unitdir}/rrdcached.service
 %{_unitdir}/rrdcached.socket
+%exclude %{_datadir}/locale/*
 
 %files devel
 %defattr(-,root,root)
@@ -78,5 +79,7 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 1.7.0-1
+-       Updated to version 1.7.0
 *       Wed Apr 5 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.0-1
 -       Initial version
