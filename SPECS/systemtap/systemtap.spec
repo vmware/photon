@@ -7,7 +7,7 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       3.2
+Version:       3.3
 Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
@@ -15,7 +15,7 @@ Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=cd4482870015b9429f9945588ea8846d4ace20d1
+%define sha1 systemtap=cc065bb1047f75ae0255709185e1e7ba889e7e5e
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -354,6 +354,8 @@ fi
 %{_mandir}/man8/stap-server.8*
 
 %changelog
+*   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 3.3-1
+-   Updated to version 3.3
 *   Tue Jan 23 2018 Divya Thaluru <dthaluru@vmware.com>  3.2-1
 -   Updated to version 3.2
 *   Thu Dec 28 2017 Divya Thaluru <dthaluru@vmware.com>  3.1-5
