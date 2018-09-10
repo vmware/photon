@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.124
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -62,7 +62,8 @@ Patch45:        0001-xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
 Patch48:        0003-xfs-enhance-dinode-verifier.patch
-
+# Fix for CVE-2018-13053
+Patch49:        0001-alarmtimer-Prevent-overflow-for-relative-nanosleep.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -141,6 +142,7 @@ The Linux package contains the Linux kernel doc files
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+%patch49 -p1
 
 
 %build
@@ -238,6 +240,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Sep 10 2018 Srinidhi Rao <srinidhir@vmware.com> 4.9.124-2
+-   Fix for CVE-2018-13053
 *   Fri Aug 24 2018 Bo Gan <ganb@vmware.com> 4.9.124-1
 -   Update to version 4.9.124
 *   Fri Aug 17 2018 Bo Gan <ganb@vmware.com> 4.9.120-1
