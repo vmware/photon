@@ -3,7 +3,7 @@
 
 Summary:        tzinfo object for the local timezone.
 Name:           python-tzlocal
-Version:        1.4
+Version:        1.5.1
 Release:        1%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/tzlocal/1.4
 Source0:        https://files.pythonhosted.org/packages/source/t/tzlocal/tzlocal-%{version}.tar.gz
-%define         sha1 tzlocal=98da003bd7e4aba02cfb6d1d62a8b5576c666310
+%define sha1    tzlocal=98dc51724f3201f66f4ec36f22b99bd03f3059bd
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -79,5 +79,7 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.5.1-1
+-   Update to version 1.5.1
 *   Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.4-1
 -   Initial packaging for Photon

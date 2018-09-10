@@ -3,15 +3,15 @@
 
 Summary:        Lightweight in-process concurrent programming
 Name:           python-greenlet
-Version:        0.4.12
-Release:        3%{?dist}
+Version:        0.4.15
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/greenlet
 Source0:        greenlet-%{version}.tar.gz
-%define sha1    greenlet=ac7f0341cd2395e0bdef70749c4e1dc89038ba99
+%define sha1    greenlet=0da9c069c38bf297923a1da0c601ef71c07ffb6d
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -64,6 +64,8 @@ python2 setup.py test
 /usr/include/python3.6m/greenlet/greenlet.h
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.4.15-1
+-   Update to version 0.4.15
 *   Fri Aug 11 2017 Rongrong Qiu <rqiu@vmware.com> 0.4.12-3
 -   make check only support python3 for bug 1937030
 *   Thu Apr 27 2017 Siju Maliakkal <smaliakkal@vmware.com> 0.4.12-2

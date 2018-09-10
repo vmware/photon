@@ -3,15 +3,15 @@
 
 Summary:        Core utilities for Python packages
 Name:           python-packaging
-Version:        16.8
-Release:        4%{?dist}
+Version:        17.1
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        pypi.python.org/packages/source/p/packaging/packaging-%{version}.tar.gz
-%define sha1    packaging=68f9574b50683c0962ad90346879e7a2319cc6d8
+%define sha1    packaging=8dbd54a645fcc7951fcd6c06e9ac6494a0ada816
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -88,6 +88,8 @@ PYTHONPATH=./ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 17.1-1
+-   Update to version 17.1
 *   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 16.8-4
 -   Fixed rpm check errors
 -   Fixed runtime dependencies
