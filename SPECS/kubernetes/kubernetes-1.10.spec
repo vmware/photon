@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.10.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -207,6 +207,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Tue Sep 11 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.2-13
+-   Update vke patch (8033c471)
 *   Mon Aug 22 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.2-12
 -   Update vke patch (fbdcc5c)
 *   Mon Aug 06 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.2-11
