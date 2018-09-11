@@ -1,6 +1,6 @@
 Summary:	contains libraries for reading and writing PNG files.
 Name:		libpng
-Version:	1.6.29
+Version:	1.6.35
 Release:	1%{?dist}
 License:	libpng
 URL:		http://www.libpng.org/
@@ -8,7 +8,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://downloads.sourceforge.net/libpng/%{name}-%{version}.tar.xz
-%define sha1 libpng=7dbe6a5088b938545fc0857c507d4e0cf5d9023e
+%define sha1 libpng=0df1561aa1da610e892239348970d574b14deed0
 Provides:	pkgconfig(libpng)
 Provides:	pkgconfig(libpng16)
 %description
@@ -23,14 +23,11 @@ It contains the libraries and header files to create applications
 %prep
 %setup -q 
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--disable-static
+%configure
 make %{?_smp_mflags}
 
 %install
 make DESTDIR=%{buildroot} install
-find %{buildroot} -name '*.la' -delete
 
 %check
 make %{?_smp_mflags} -k check
@@ -43,17 +40,24 @@ make %{?_smp_mflags} -k check
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
+%{_bindir}/pngfix
+%{_bindir}/png-fix-itxt
 %{_libdir}/*.so.*
-%{_datadir}/*
+%{_datadir}/man/man5/*
 
 %files devel
 %defattr(-,root,root)
+%{_bindir}/*-config
 %{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/*.la
+%{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/man/man3/*
 
 %changelog
+*       Mon Sep 10 2018 Bo Gan <ganb@vmware.com> 1.6.35-1
+-       Update to 1.6.35
 *	Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.6.29-1
 -	Updated to version 1.6.29
 *       Thu Feb 23 2017 Divya Thaluru <dthaluru@vmware.com> 1.6.27-1
