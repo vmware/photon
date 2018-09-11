@@ -1,11 +1,11 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
-Version:        1.2.14
-Release:        3%{?dist}
+Version:        1.2.17
+Release:        1%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    openscap=6c2f4ff0bbbd6b80e6c99f15a2e0d052a1f9afe1
+%define sha1    openscap=588676a56b6adf389140d6fdbc6a6685ef06e7b3
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -95,6 +95,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python2.7/*
 
 %changelog
+*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1
+-   Update to 1.2.17
 *   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3
 -   Disable make check which need per-XML-XPATH for bug 1900358
 *   Fri May 5 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.14-2
