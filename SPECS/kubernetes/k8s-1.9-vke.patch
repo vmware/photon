@@ -1,7 +1,7 @@
-From 6de826b35ced3b7cadc809d7ea778ce6a50aff43 Mon Sep 17 00:00:00 2001
+From 73dd46ef2f0ddd1ccf93b0d2d339a38e08b84c20 Mon Sep 17 00:00:00 2001
 From: DheerajSShetty <dheerajs@vmware.com>
-Date: Wed, 22 Aug 2018 16:30:37 -0700
-Subject: [PATCH] VKE patch for k8s version 1.9 (fbdcc5c)
+Date: Tue, 11 Sep 2018 12:05:49 -0700
+Subject: [PATCH] VKE patch for k8s 1.9.6 (8033c471)
 
 ---
  api/swagger-spec/apps_v1alpha1.json                | Bin 135734 -> 136495 bytes
@@ -30,7 +30,7 @@ Subject: [PATCH] VKE patch for k8s version 1.9 (fbdcc5c)
  .../providers/cascade/cascade_disks.go             | 226 +++++
  .../providers/cascade/cascade_instances.go         |  91 ++
  .../providers/cascade/cascade_instances_test.go    |  43 +
- .../providers/cascade/cascade_loadbalancer.go      | 284 +++++++
+ .../providers/cascade/cascade_loadbalancer.go      | 284 ++++++
  pkg/cloudprovider/providers/cascade/client.go      | 399 +++++++++
  pkg/cloudprovider/providers/cascade/oidcclient.go  | 297 +++++++
  pkg/cloudprovider/providers/cascade/restclient.go  | 262 ++++++
@@ -50,14 +50,14 @@ Subject: [PATCH] VKE patch for k8s version 1.9 (fbdcc5c)
  .../admission/persistentvolume/label/admission.go  |  54 ++
  plugin/pkg/admission/vke/BUILD                     |  61 ++
  plugin/pkg/admission/vke/admission.go              | 587 +++++++++++++
- plugin/pkg/admission/vke/admission_test.go         | 941 +++++++++++++++++++++
+ plugin/pkg/admission/vke/admission_test.go         | 952 +++++++++++++++++++++
  plugin/pkg/auth/authorizer/vke/BUILD               |  40 +
  plugin/pkg/auth/authorizer/vke/OWNERS              |   3 +
  plugin/pkg/auth/authorizer/vke/vke_authorizer.go   | 123 +++
  .../pkg/auth/authorizer/vke/vke_authorizer_test.go | 230 +++++
  staging/src/k8s.io/api/core/v1/generated.pb.go     | Bin 1241955 -> 1248240 bytes
  staging/src/k8s.io/api/core/v1/types.go            |  26 +-
- 53 files changed, 5462 insertions(+), 8 deletions(-)
+ 53 files changed, 5473 insertions(+), 8 deletions(-)
 
 diff --git a/api/swagger-spec/apps_v1alpha1.json b/api/swagger-spec/apps_v1alpha1.json
 index aa3fbdc..0189f38 100644
@@ -4354,7 +4354,7 @@ index 0000000..7d66036
 \ No newline at end of file
 diff --git a/plugin/pkg/admission/vke/admission.go b/plugin/pkg/admission/vke/admission.go
 new file mode 100644
-index 0000000..192f384
+index 0000000..a5403d0
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission.go
 @@ -0,0 +1,587 @@
@@ -4693,7 +4693,7 @@ index 0000000..192f384
 +	// If the privileged service account tries to update taints on a node, we block. We need to do this so that a user
 +	// cannot use a privileged service account to untaint the node and run pods on a master.
 +	if a.GetResource().GroupResource() == api.Resource("nodes") {
-+		if a.GetOperation() == admission.Update {
++		if a.GetOperation() == admission.Update && strings.HasPrefix(a.GetName(), masterNodePrefix) {
 +			node, ok := a.GetObject().(*api.Node)
 +			if !ok {
 +				return admission.NewForbidden(a,
@@ -4947,10 +4947,10 @@ index 0000000..192f384
 +}
 diff --git a/plugin/pkg/admission/vke/admission_test.go b/plugin/pkg/admission/vke/admission_test.go
 new file mode 100644
-index 0000000..3fb4674
+index 0000000..c597663
 --- /dev/null
 +++ b/plugin/pkg/admission/vke/admission_test.go
-@@ -0,0 +1,941 @@
+@@ -0,0 +1,952 @@
 +package vke
 +
 +import (
@@ -5615,10 +5615,21 @@ index 0000000..3fb4674
 +			userInfo:           newTestUserBuilder().withGroup(systemNodesGroup).build(),
 +			shouldPassValidate: true,
 +		},
-+		"denied: privileged service account update node taint": {
++		"allowed: privileged service account update worker node taint": {
 +			operation:          kadmission.Update,
 +			resource:           "nodes",
 +			namespace:          "",
++			name:               "worker-guid",
++			oldObject:          newTestNodeBuilder().build(),
++			object:             newTestNodeBuilder().withTaint(nil).build(),
++			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
++			shouldPassValidate: true,
++		},
++		"denied: privileged service account update master node taint": {
++			operation:          kadmission.Update,
++			resource:           "nodes",
++			namespace:          "",
++			name:               "master-guid",
 +			oldObject:          newTestNodeBuilder().build(),
 +			object:             newTestNodeBuilder().withTaint(nil).build(),
 +			userInfo:           newTestUserBuilder().withName(privilegedServiceAccount + "default").build(),
