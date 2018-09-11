@@ -1,40 +1,17 @@
-From b7727ac11601d06e63fa67c8975994cfdbb7e62f Mon Sep 17 00:00:00 2001
-From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Sat, 20 May 2017 05:19:04 +0000
-Subject: [PATCH] Configure FIPS
-
-New parameter: FipsMode yes/no
-
-As soon as FipsMode option parsed FIPS_mode_set(1) will be called.
-See Bug #1872327 for details.
----
- readconf.c    | 38 +++++++++++++++++++++++++++++++++++++-
- readconf.h    |  1 +
- servconf.c    | 34 +++++++++++++++++++++++++++++++++-
- servconf.h    |  1 +
- ssh_config    |  1 +
- ssh_config.0  |  4 ++++
- ssh_config.5  |  4 ++++
- sshd_config   |  2 ++
- sshd_config.0 |  4 ++++
- sshd_config.5 |  4 ++++
- 10 files changed, 91 insertions(+), 2 deletions(-)
-
-diff --git a/readconf.c b/readconf.c
-index 7f401d6..2c970e2 100644
---- a/readconf.c
-+++ b/readconf.c
-@@ -171,7 +171,8 @@ typedef enum {
+diff -rup openssh-7.8p1/readconf.c openssh-7.8p1-new/readconf.c
+--- openssh-7.8p1/readconf.c	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/readconf.c	2018-09-11 09:52:10.887162188 -0700
+@@ -173,7 +173,8 @@ typedef enum {
  	oStreamLocalBindMask, oStreamLocalBindUnlink, oRevokedHostKeys,
  	oFingerprintHash, oUpdateHostkeys, oHostbasedKeyTypes,
  	oPubkeyAcceptedKeyTypes, oProxyJump,
--	oIgnoredUnknownOption, oDeprecated, oUnsupported
-+	oIgnoredUnknownOption, oDeprecated, oUnsupported,
+-	oIgnore, oIgnoredUnknownOption, oDeprecated, oUnsupported
++	oIgnore, oIgnoredUnknownOption, oDeprecated, oUnsupported,
 +	oFipsMode
  } OpCodes;
  
  /* Textual representations of the tokens. */
-@@ -291,6 +292,7 @@ static struct {
+@@ -303,6 +304,7 @@ static struct {
  	{ "streamlocalbindunlink", oStreamLocalBindUnlink },
  	{ "revokedhostkeys", oRevokedHostKeys },
  	{ "fingerprinthash", oFingerprintHash },
@@ -42,12 +19,12 @@ index 7f401d6..2c970e2 100644
  	{ "updatehostkeys", oUpdateHostkeys },
  	{ "hostbasedkeytypes", oHostbasedKeyTypes },
  	{ "pubkeyacceptedkeytypes", oPubkeyAcceptedKeyTypes },
-@@ -965,6 +967,35 @@ parse_time:
+@@ -977,6 +979,35 @@ parse_time:
  		intptr = &options->gss_deleg_creds;
  		goto parse_flag;
  
 +        case oFipsMode:
-+		if (options->ciphers != NULL || options->cipher != -1)
++		if (options->ciphers != NULL)
 +			fatal("%.200s line %d: FipsMode should be set before "
 +			    "Ciphers option", filename, linenum);
 +		intptr = &options->fips_mode;
@@ -78,7 +55,7 @@ index 7f401d6..2c970e2 100644
  	case oBatchMode:
  		intptr = &options->batch_mode;
  		goto parse_flag;
-@@ -1857,6 +1888,7 @@ initialize_options(Options * options)
+@@ -1900,6 +1931,7 @@ initialize_options(Options * options)
  	options->update_hostkeys = -1;
  	options->hostbased_key_types = NULL;
  	options->pubkey_key_types = NULL;
@@ -86,17 +63,16 @@ index 7f401d6..2c970e2 100644
  }
  
  /*
-@@ -2044,6 +2076,9 @@ fill_default_options(Options * options)
+@@ -2071,6 +2103,8 @@ fill_default_options(Options * options)
  		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
  	if (options->update_hostkeys == -1)
  		options->update_hostkeys = 0;
-+        if (options->fips_mode == -1)
-+                options->fips_mode = 0;
-+
- 	if (kex_assemble_names((FIPS_mode() ? KEX_FIPS_ENCRYPT
- 	        : KEX_CLIENT_ENCRYPT), &options->ciphers) != 0 ||
- 	    kex_assemble_names((FIPS_mode() ? KEX_FIPS_MAC
-@@ -2535,6 +2570,7 @@ dump_client_config(Options *o, const char *host)
++	if (options->fips_mode == -1)
++		options->fips_mode = 0;
+ 
+ 	/* Expand KEX name lists */
+ 	all_cipher = cipher_alg_list(',', 0);
+@@ -2593,6 +2627,7 @@ dump_client_config(Options *o, const cha
  	dump_cfg_fmtint(oVerifyHostKeyDNS, o->verify_host_key_dns);
  	dump_cfg_fmtint(oVisualHostKey, o->visual_host_key);
  	dump_cfg_fmtint(oUpdateHostkeys, o->update_hostkeys);
@@ -104,11 +80,10 @@ index 7f401d6..2c970e2 100644
  
  	/* Integer options */
  	dump_cfg_int(oCanonicalizeMaxDots, o->canonicalize_max_dots);
-diff --git a/readconf.h b/readconf.h
-index cef55f7..875931e 100644
---- a/readconf.h
-+++ b/readconf.h
-@@ -157,6 +157,7 @@ typedef struct {
+diff -rup openssh-7.8p1/readconf.h openssh-7.8p1-new/readconf.h
+--- openssh-7.8p1/readconf.h	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/readconf.h	2018-09-11 09:36:07.631115940 -0700
+@@ -153,6 +153,7 @@ typedef struct {
  	char	*revoked_host_keys;
  
  	int	 fingerprint_hash;
@@ -116,47 +91,47 @@ index cef55f7..875931e 100644
  
  	int	 update_hostkeys; /* one of SSH_UPDATE_HOSTKEYS_* */
  
-diff --git a/servconf.c b/servconf.c
-index 4e5401c..107647a 100644
---- a/servconf.c
-+++ b/servconf.c
-@@ -164,6 +164,7 @@ initialize_server_options(ServerOptions *options)
- 	options->version_addendum = NULL;
+Only in openssh-7.8p1-new: readconf.h.orig
+diff -rup openssh-7.8p1/servconf.c openssh-7.8p1-new/servconf.c
+--- openssh-7.8p1/servconf.c	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/servconf.c	2018-09-11 09:51:41.003160753 -0700
+@@ -179,6 +179,7 @@ initialize_server_options(ServerOptions
  	options->fingerprint_hash = -1;
  	options->disable_forwarding = -1;
+ 	options->expose_userauth_info = -1;
 +	options->fips_mode = -1;
  }
  
  /* Returns 1 if a string option is unset or set to "none" or 0 otherwise. */
-@@ -336,6 +337,8 @@ fill_default_server_options(ServerOptions *options)
- 		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
- 	if (options->disable_forwarding == -1)
+@@ -407,6 +408,8 @@ fill_default_server_options(ServerOption
  		options->disable_forwarding = 0;
+ 	if (options->expose_userauth_info == -1)
+ 		options->expose_userauth_info = 0;
 +	if (options->fips_mode == -1)
 +		options->fips_mode = 0;
  
  	assemble_algorithms(options);
  
-@@ -421,7 +424,8 @@ typedef enum {
- 	sAuthenticationMethods, sHostKeyAgent, sPermitUserRC,
+@@ -493,7 +496,8 @@ typedef enum {
  	sStreamLocalBindMask, sStreamLocalBindUnlink,
  	sAllowStreamLocalForwarding, sFingerprintHash, sDisableForwarding,
+ 	sExposeAuthInfo, sRDomain,
 -	sDeprecated, sIgnore, sUnsupported
 +	sDeprecated, sIgnore, sUnsupported,
 +	sFipsMode
  } ServerOpCodes;
  
  #define SSHCFG_GLOBAL	0x01	/* allowed in main section of sshd_config */
-@@ -564,6 +568,7 @@ static struct {
- 	{ "allowstreamlocalforwarding", sAllowStreamLocalForwarding, SSHCFG_ALL },
- 	{ "fingerprinthash", sFingerprintHash, SSHCFG_GLOBAL },
+@@ -640,6 +644,7 @@ static struct {
  	{ "disableforwarding", sDisableForwarding, SSHCFG_ALL },
+ 	{ "exposeauthinfo", sExposeAuthInfo, SSHCFG_ALL },
+ 	{ "rdomain", sRDomain, SSHCFG_ALL },
 +	{ "fipsmode", sFipsMode, SSHCFG_GLOBAL },
  	{ NULL, sBadOption, 0 }
  };
  
-@@ -1839,6 +1844,32 @@ process_server_config_line(ServerOptions *options, char *line,
- 			options->fingerprint_hash = value;
+@@ -2140,6 +2145,32 @@ process_server_config_line(ServerOptions
+ 			*charptr = xstrdup(arg);
  		break;
  
 +	case sFipsMode:
@@ -188,43 +163,40 @@ index 4e5401c..107647a 100644
  	case sDeprecated:
  	case sIgnore:
  	case sUnsupported:
-@@ -2280,6 +2311,7 @@ dump_config(ServerOptions *o)
- 	dump_cfg_fmtint(sAllowStreamLocalForwarding, o->allow_streamlocal_forwarding);
+@@ -2579,6 +2610,7 @@ dump_config(ServerOptions *o)
  	dump_cfg_fmtint(sStreamLocalBindUnlink, o->fwd_opts.streamlocal_bind_unlink);
  	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
+ 	dump_cfg_fmtint(sExposeAuthInfo, o->expose_userauth_info);
 +	dump_cfg_fmtint(sFipsMode, o->fips_mode);
  
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
-diff --git a/servconf.h b/servconf.h
-index 5853a97..a9ec1a2 100644
---- a/servconf.h
-+++ b/servconf.h
-@@ -189,6 +189,7 @@ typedef struct {
- 	char   *auth_methods[MAX_AUTH_METHODS];
+diff -rup openssh-7.8p1/servconf.h openssh-7.8p1-new/servconf.h
+--- openssh-7.8p1/servconf.h	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/servconf.h	2018-09-11 09:52:59.743164534 -0700
+@@ -208,6 +208,7 @@ typedef struct {
  
  	int	fingerprint_hash;
+ 	int	expose_userauth_info;
 +	int fips_mode;
+ 	u_int64_t timing_secret;
  }       ServerOptions;
  
- /* Information about the incoming connection as used by Match */
-diff --git a/ssh_config b/ssh_config
-index 90fb63f..fd6ab39 100644
---- a/ssh_config
-+++ b/ssh_config
-@@ -37,6 +37,7 @@
+diff -rup openssh-7.8p1/ssh_config openssh-7.8p1-new/ssh_config
+--- openssh-7.8p1/ssh_config	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/ssh_config	2018-09-11 09:36:07.631115940 -0700
+@@ -34,6 +34,7 @@
  #   IdentityFile ~/.ssh/id_ecdsa
  #   IdentityFile ~/.ssh/id_ed25519
  #   Port 22
 +#   FipsMode no
  #   Protocol 2
- #   Cipher 3des
- #   Ciphers aes128-ctr,aes192-ctr,aes256-ctr,arcfour256,arcfour128,aes128-cbc,3des-cbc
-diff --git a/ssh_config.0 b/ssh_config.0
-index 4ca9a5f..33ac338 100644
---- a/ssh_config.0
-+++ b/ssh_config.0
-@@ -362,6 +362,10 @@ DESCRIPTION
+ #   Ciphers aes128-ctr,aes192-ctr,aes256-ctr,aes128-cbc,3des-cbc
+ #   MACs hmac-md5,hmac-sha1,umac-64@openssh.com
+diff -rup openssh-7.8p1/ssh_config.0 openssh-7.8p1-new/ssh_config.0
+--- openssh-7.8p1/ssh_config.0	2018-08-23 00:09:17.000000000 -0700
++++ openssh-7.8p1-new/ssh_config.0	2018-09-11 09:36:07.631115940 -0700
+@@ -343,6 +343,10 @@ DESCRIPTION
               Specifies the hash algorithm used when displaying key
               fingerprints.  Valid options are: md5 and sha256 (the default).
  
@@ -235,11 +207,11 @@ index 4ca9a5f..33ac338 100644
       ForwardAgent
               Specifies whether the connection to the authentication agent (if
               any) will be forwarded to the remote machine.  The argument must
-diff --git a/ssh_config.5 b/ssh_config.5
-index 591365f..df46e0d 100644
---- a/ssh_config.5
-+++ b/ssh_config.5
-@@ -658,6 +658,10 @@ Valid options are:
+Only in openssh-7.8p1-new: ssh_config.0.orig
+diff -rup openssh-7.8p1/ssh_config.5 openssh-7.8p1-new/ssh_config.5
+--- openssh-7.8p1/ssh_config.5	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/ssh_config.5	2018-09-11 09:36:07.631115940 -0700
+@@ -628,6 +628,10 @@ Valid options are:
  and
  .Cm sha256
  (the default).
@@ -250,11 +222,12 @@ index 591365f..df46e0d 100644
  .It Cm ForwardAgent
  Specifies whether the connection to the authentication agent (if any)
  will be forwarded to the remote machine.
-diff --git a/sshd_config b/sshd_config
-index 9f09e4a..1a0d68a 100644
---- a/sshd_config
-+++ b/sshd_config
-@@ -105,6 +105,8 @@ AuthorizedKeysFile	.ssh/authorized_keys
+Only in openssh-7.8p1-new: ssh_config.5.orig
+Only in openssh-7.8p1-new: ssh_config.orig
+diff -rup openssh-7.8p1/sshd_config openssh-7.8p1-new/sshd_config
+--- openssh-7.8p1/sshd_config	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/sshd_config	2018-09-11 09:36:07.631115940 -0700
+@@ -102,6 +102,8 @@ AuthorizedKeysFile	.ssh/authorized_keys
  #ChrootDirectory none
  #VersionAddendum none
  
@@ -263,11 +236,10 @@ index 9f09e4a..1a0d68a 100644
  # no default banner path
  #Banner none
  
-diff --git a/sshd_config.0 b/sshd_config.0
-index 022c052..af813b2 100644
---- a/sshd_config.0
-+++ b/sshd_config.0
-@@ -331,6 +331,10 @@ DESCRIPTION
+diff -rup openssh-7.8p1/sshd_config.0 openssh-7.8p1-new/sshd_config.0
+--- openssh-7.8p1/sshd_config.0	2018-08-23 00:09:17.000000000 -0700
++++ openssh-7.8p1-new/sshd_config.0	2018-09-11 09:36:07.631115940 -0700
+@@ -338,6 +338,10 @@ DESCRIPTION
               Specifies the hash algorithm used when logging key fingerprints.
               Valid options are: md5 and sha256.  The default is sha256.
  
@@ -278,11 +250,11 @@ index 022c052..af813b2 100644
       ForceCommand
               Forces the execution of the command specified by ForceCommand,
               ignoring any command supplied by the client and ~/.ssh/rc if
-diff --git a/sshd_config.5 b/sshd_config.5
-index 32b29d2..c618359 100644
---- a/sshd_config.5
-+++ b/sshd_config.5
-@@ -578,6 +578,10 @@ and
+Only in openssh-7.8p1-new: sshd_config.0.orig
+diff -rup openssh-7.8p1/sshd_config.5 openssh-7.8p1-new/sshd_config.5
+--- openssh-7.8p1/sshd_config.5	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/sshd_config.5	2018-09-11 09:36:07.631115940 -0700
+@@ -592,6 +592,10 @@ and
  .Cm sha256 .
  The default is
  .Cm sha256 .
@@ -293,6 +265,5 @@ index 32b29d2..c618359 100644
  .It Cm ForceCommand
  Forces the execution of the command specified by
  .Cm ForceCommand ,
--- 
-2.8.1
-
+Only in openssh-7.8p1-new: sshd_config.5.orig
+Only in openssh-7.8p1-new: sshd_config.orig
