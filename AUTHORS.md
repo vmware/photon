@@ -1,5 +1,5 @@
 ### Project Manager
-* [Sharath George, @sharathg](https://github.com/sharathg)
+* [Sharath George, @sharathjg](https://github.com/sharathjg)
 
 ### Developers
 * [Ajay Kaher, @akaher](https://github.com/akaher)
