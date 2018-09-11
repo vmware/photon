@@ -1,14 +1,14 @@
 Summary:	A 2D graphics library.
 Name:		cairo
-Version:	1.14.8
-Release:	3%{?dist}
+Version:	1.14.12
+Release:	1%{?dist}
 License:	LGPLv2 or MPLv1.1
 URL:		http://cairographics.org
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://cairographics.org/releases/%{name}-%{version}.tar.xz
-%define sha1 cairo=c6f7b99986f93c9df78653c3e6a3b5043f65145e
+%define sha1 cairo=490025a0ba0622a853010f49fb6343f29fb70b9b
 Patch0:         CVE-2017-9814.patch
 BuildRequires:	pkg-config
 BuildRequires:	libpng-devel
@@ -72,6 +72,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Tue Sep 11 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.14.12-1
+-       Update to version 1.14.12
 *       Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.14.8-3
 -       Fix CVE-2017-9814
 *       Tue Jun 06 2017 Chang Lee <changlee@vmware.com> 1.14.8-2
