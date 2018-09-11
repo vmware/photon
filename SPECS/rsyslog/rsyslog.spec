@@ -1,16 +1,14 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.26.0
-Release:        5%{?dist}
+Version:        8.37.0
+Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=9c5e253fbf1c6992ac5d1eefe17587d4da2cdbfd
+%define sha1    rsyslog=7541e3cf6facbab19792ff8d9d7f4cd3fbb1c634
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
-#Patch taken from https://github.com/rsyslog/rsyslog/pull/1565
-Patch0:         CVE-2017-12588.patch
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -22,6 +20,7 @@ BuildRequires:  liblogging-devel
 BuildRequires:  librelp-devel
 BuildRequires:  autogen
 BuildRequires:  gnutls-devel
+BuildRequires:  curl-devel
 Requires:       gnutls
 Requires:       systemd
 Requires:       libestr
@@ -34,7 +33,7 @@ RSYSLOG is the rocket-fast system for log processing.
 It offers high-performance, great security features and a modular design. While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging, being able to accept inputs from a wide variety of sources, transform them, and output to the results to diverse destinations.
 %prep
 %setup -q
-%patch0 -p1
+autoreconf -fvi
 %build
 sed -i 's/libsystemd-journal/libsystemd/' configure
 ./configure \
@@ -47,6 +46,7 @@ sed -i 's/libsystemd-journal/libsystemd/' configure
     --enable-imptcp
 
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -vd %{buildroot}%{_libdir}/systemd/system/
@@ -81,6 +81,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/systemd/journald.conf.d/*
 %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Mon Sep 10 2018 Keerthana K <keerthanak@vmware.com> 8.37.0-1
+-   Updated to version 8.37.0
 *   Thu Apr 12 2018 Xiaolin Li <xiaolinl@vmware.com> 8.26.0-5
 -   Add $IncludeConfig /etc/rsyslog.d/ to rsyslog.conf
 *   Fri Dec 15 2017 Anish Swaminathan <anishs@vmware.com>  8.26.0-4
