@@ -1,14 +1,14 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.8.20p2
-Release:        5%{?dist}
+Version:        1.8.23
+Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    sudo=7aa187518735312a82c5fcb3d253ed700cb8c68e
+%define sha1    sudo=8db5a01eda3a14e8b40af7ee1ed6d38660463430
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
@@ -82,6 +82,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/sudo/*.so
 %{_libdir}/sudo/*.so.*
 %{_sbindir}/*
+%{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_docdir}/%{name}-%{version}/*
@@ -90,6 +91,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 1.8.23-1
+-   Update to version 1.8.23.
 *   Thu Mar 01 2018 Anish Swaminathan <anishs@vmware.com> 1.8.20p2-5
 -   Move includedir sudoers.d to end of sudoers file
 *   Tue Oct 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.20p2-4
