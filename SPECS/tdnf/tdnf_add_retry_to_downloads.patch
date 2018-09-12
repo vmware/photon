@@ -1,0 +1,196 @@
+From cd08feba10c857f3e1a097968578b7df1a0a3aff Mon Sep 17 00:00:00 2001
+From: Priyesh Padmavilasom <ppadmavilasom@vmware.com>
+Date: Mon, 10 Sep 2018 15:33:23 +0000
+Subject: [PATCH] add retry for downloads
+
+Change-Id: I911bad2dbf90c30fe158e756a38316bcc6ae1db6
+---
+
+diff --git a/client/prototypes.h b/client/prototypes.h
+index c6d09ed..489bc3e 100644
+--- a/client/prototypes.h
++++ b/client/prototypes.h
+@@ -791,6 +791,12 @@
+ 
+ //utils.c
+ uint32_t
++TDNFGetOptValue(
++    PTDNF pTdnf,
++    const char *pszKey,
++    char **ppszValue
++    );
++uint32_t
+ TDNFIsSystemError(
+     uint32_t dwError
+     );
+diff --git a/client/remoterepo.c b/client/remoterepo.c
+index d5bccf0..94d5e33 100644
+--- a/client/remoterepo.c
++++ b/client/remoterepo.c
+@@ -85,8 +85,9 @@
+     goto cleanup;
+ }
+ 
++static
+ uint32_t
+-TDNFDownloadFile(
++_TDNFDownloadFile(
+     PTDNF pTdnf,
+     const char *pszRepo,
+     const char *pszFileUrl,
+@@ -209,6 +210,57 @@
+ }
+ 
+ uint32_t
++TDNFDownloadFile(
++    PTDNF pTdnf,
++    const char *pszRepo,
++    const char *pszFileUrl,
++    const char *pszFile,
++    const char *pszProgressData
++    )
++{
++    uint32_t dwError = 0;
++    int nRetriesLeft = 10;
++    char *pszRetry = NULL;
++
++    if(!pTdnf ||
++       !pTdnf->pArgs ||
++       IsNullOrEmptyString(pszFileUrl) ||
++       IsNullOrEmptyString(pszFile))
++    {
++        dwError = ERROR_TDNF_INVALID_PARAMETER;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
++    dwError = TDNFGetOptValue(pTdnf, "retry", &pszRetry);
++    BAIL_ON_TDNF_ERROR(dwError);
++
++    if (!IsNullOrEmptyString(pszRetry))
++    {
++        nRetriesLeft = atoi(pszRetry);
++    }
++
++retry:
++    dwError = _TDNFDownloadFile(
++                  pTdnf,
++                  pszRepo,
++                  pszFileUrl,
++                  pszFile,
++                  pszProgressData);
++    if (TDNFIsCurlError(dwError) && nRetriesLeft > 0)
++    {
++        fprintf(stdout, "Download error: %d. Retrying\n", dwError);
++        sleep(1);
++        --nRetriesLeft;
++        goto retry;
++    }
++    BAIL_ON_TDNF_ERROR(dwError);
++
++error:
++    TDNF_SAFE_FREE_MEMORY(pszRetry);
++    return dwError;
++}
++
++uint32_t
+ TDNFDownloadPackage(
+     PTDNF pTdnf,
+     HyPackage hPkg,
+diff --git a/client/utils.c b/client/utils.c
+index 8e0d5ec..70d93d7 100644
+--- a/client/utils.c
++++ b/client/utils.c
+@@ -611,3 +611,53 @@
+     TDNF_SAFE_FREE_MEMORY(pszPath);
+     goto cleanup;
+ }
++
++uint32_t
++TDNFGetOptValue(
++    PTDNF pTdnf,
++    const char *pszKey,
++    char **ppszValue
++    )
++{
++    uint32_t dwError = 0;
++    char *pszValue = NULL;
++    PTDNF_CMD_OPT pSetOpt = NULL;
++
++    if (!pTdnf || IsNullOrEmptyString(pszKey) || !ppszValue)
++    {
++        dwError = ERROR_TDNF_INVALID_PARAMETER;
++        BAIL_ON_TDNF_ERROR(dwError);
++    }
++
++    pSetOpt = pTdnf->pArgs->pSetOpt;
++
++    while(pSetOpt)
++    {
++        if(pSetOpt->nType == CMDOPT_KEYVALUE &&
++           !strcasecmp(pSetOpt->pszOptName, pszKey))
++        {
++            dwError = TDNFAllocateString(pSetOpt->pszOptValue, &pszValue);
++            BAIL_ON_TDNF_ERROR(dwError);
++
++            break;
++        }
++
++        pSetOpt = pSetOpt->pNext;
++    }
++
++    if (pszValue)
++    {
++        *ppszValue = pszValue;
++    }
++
++cleanup:
++    return dwError;
++
++error:
++    if(ppszValue)
++    {
++        *ppszValue = NULL;
++    }
++    TDNF_SAFE_FREE_MEMORY(pszValue);
++    goto cleanup;
++}
+diff --git a/tools/cli/defines.h b/tools/cli/defines.h
+index 58b9f42..05c759d 100644
+--- a/tools/cli/defines.h
++++ b/tools/cli/defines.h
+@@ -24,6 +24,7 @@
+ 
+ #define ENABLEREPO        "enablerepo"
+ #define DISABLEREPO       "disablerepo"
++#define RETRY             "retry"
+ 
+ #define IsNullOrEmptyString(str) (!(str) || !(*str))
+ 
+diff --git a/tools/cli/lib/parseargs.c b/tools/cli/lib/parseargs.c
+index 2a618fb..40cb73b 100644
+--- a/tools/cli/lib/parseargs.c
++++ b/tools/cli/lib/parseargs.c
+@@ -53,6 +53,7 @@
+     {"exclude",       required_argument, 0, 0},            //--exclude
+     {"security",      no_argument, 0, 0},                  //--security
+     {"sec-severity",  required_argument, 0, 0},            //--sec-severity
++    {"retry",         required_argument, 0, 0},            //--retry
+     {0, 0, 0, 0}
+ };
+ 
+@@ -347,6 +348,15 @@
+         dwError = AddSetOpt(pCmdArgs, optarg);
+         BAIL_ON_CLI_ERROR(dwError);
+     }
++    else if(!strcasecmp(pszName, RETRY))
++    {
++        dwError = AddSetOptWithValues(
++                      pCmdArgs,
++                      CMDOPT_KEYVALUE,
++                      pszName,
++                      optarg);
++        BAIL_ON_CLI_ERROR(dwError);
++    }
+ cleanup:
+     if(pszCopyArgs)
+     {
