@@ -1,11 +1,11 @@
 Summary:	A fast malloc tool for threads
 Name:		gperftools
-Version:	2.5
-Release:	2%{?dist}
+Version:	2.7
+Release:	1%{?dist}
 License:	BSD
 URL:		https://github.com/gperftools/gperftools
 Source0:	https://github.com/gperftools/gperftools/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 gperftools=1e7069f23f926df84a541938a8e6078b0aedf218
+%define sha1 gperftools=89e3e1df674bc4ba1a9e97246b58a26a4e92d0a3
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -61,6 +61,8 @@ TCMALLOC_SAMPLE_PARAMETER=128 && make check
 %{_mandir}/man1/*
 
 %changelog
+*    Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 2.7-1
+-    Update version to 2.7
 *    Mon Jul 31 2017 Vinay Chang Lee <changlee@vmware.com> 2.5-2
 -    Fix %check
 *    Mon Feb 06 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.5-1
