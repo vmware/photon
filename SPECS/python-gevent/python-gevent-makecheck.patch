@@ -1,8 +1,6 @@
-diff --git a/src/greentest/known_failures.py b/src/greentest/known_failures.py
-index fadd664..774fbe0 100644
---- a/src/greentest/known_failures.py
-+++ b/src/greentest/known_failures.py
-@@ -33,6 +33,15 @@ FAILING_TESTS = [
+--- a/src/greentest/known_failures.py	2018-09-12 19:55:45.319933452 +0530
++++ b/src/greentest/known_failures.py	2018-09-12 19:57:29.339937959 +0530
+@@ -30,6 +30,15 @@ FAILING_TESTS = [
      # we don't have that option without a new commit---and sometimes we really need a build
      # to succeed in order to get a release wheel
      'FLAKY test__issue6.py',
@@ -18,16 +16,14 @@ index fadd664..774fbe0 100644
  ]
  
  
-diff --git a/src/greentest/test__ssl.py b/src/greentest/test__ssl.py
-index 66dc548..1ab443c 100644
---- a/src/greentest/test__ssl.py
-+++ b/src/greentest/test__ssl.py
-@@ -36,7 +36,7 @@ class TestSSL(test__socket.TestTCP):
+--- a/src/greentest/test__ssl.py	2018-09-12 19:57:43.891938590 +0530
++++ b/src/greentest/test__ssl.py	2018-09-12 19:58:14.939939935 +0530
+@@ -37,7 +37,7 @@ class TestSSL(test__socket.TestTCP):
  
-         # The SSL layer has extra buffering, so test_sendall needs
-         # to send a very large amount to make it timeout
--        _test_sendall_data = data_sent = b'hello' * 100000000
-+        _test_sendall_data = data_sent = b'hello' * 1000000000
+     # The SSL layer has extra buffering, so test_sendall needs
+     # to send a very large amount to make it timeout
+-    _test_sendall_data = data_sent = b'hello' * 100000000
++    _test_sendall_data = data_sent = b'hello' * 1000000000
  
-         def test_ssl_sendall_timeout0(self):
-             # Issue #317: SSL_WRITE_PENDING in some corner cases
+     @greentest.skipOnWindows("Not clear why we're skipping")
+     def test_ssl_sendall_timeout0(self):
