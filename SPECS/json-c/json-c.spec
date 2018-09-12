@@ -1,11 +1,11 @@
 Summary:    A JSON implementation in C
 Name:       json-c
-Version:    0.12.1
+Version:    0.13.1
 Release:    1%{?dist}
 License:    MIT
 URL:        https://github.com/json-c/json-c/wiki
-Source0:    https://s3.amazonaws.com/json-c_releases/releases/json-c-0.12.1.tar.gz 
-%define sha1 json-c=e7fcdbe41f1f3307c036f4e9e04b715de533896e
+Source0:    https://s3.amazonaws.com/json-c_releases/releases/%{name}-%{version}.tar.gz
+%define sha1 %{name}-%{version}=00e049ffc9878b9c2e3c3dcb6b58c4ce9e65024b
 Group:		System Environment/Base
 Vendor:	    VMware, Inc.
 Distribution:	Photon
@@ -14,7 +14,7 @@ JSON-C implements a reference counting object model that allows you to easily co
 
 %package devel
 Summary:	Development libraries and header files for json-c
-Requires:	json-c
+Requires:	%{name} = %{version}-%{release}
 
 %description devel
 The package contains libraries and header files for
@@ -22,7 +22,7 @@ developing applications that use json-c.
 
 %prep
 %setup -q
-sed -i 's|-Werror ||g' Makefile.am.inc
+
 %build
 autoreconf -fiv
 ./configure \
@@ -36,17 +36,21 @@ make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
-%{_libdir}/libjson-c.so.*
+%{_libdir}/lib%{name}.so.*
 %{_libdir}/*.a
 %{_libdir}/*.la
 %files devel
 %defattr(-,root,root)
-%{_includedir}/json-c/*
-%{_libdir}/libjson-c.so
-%{_libdir}/pkgconfig/json-c.pc
+%{_includedir}/%{name}/*
+%{_libdir}/lib%{name}.so
+%{_libdir}/pkgconfig/%{name}.pc
+
 %changelog
+*	Wed Sep 12 2018 Ankit Jain <ankitja@vmware.com> 0.13.1-1
+-	Updated package to version 0.13.1
 *	Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
 -	Updated package to version 0.12.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.12-2
