@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.13.8
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -38,7 +38,9 @@ popd
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
-    --with-stream
+    --with-stream \
+    --with-http_auth_request_module \
+    --with-http_sub_module
 
 make %{?_smp_mflags}
 %install
@@ -70,6 +72,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %dir %{_var}/log/nginx
 
 %changelog
+*   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-5
+-   Adding http_auth_request_module and http_sub_module.
 *   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-4
 -   Restarting nginx service on failure.
 *   Fri Jun 08 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.13.8-3
