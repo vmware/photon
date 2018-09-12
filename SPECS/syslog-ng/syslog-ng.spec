@@ -2,15 +2,15 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
-Version:        3.11.1
-Release:        3%{?dist}
+Version:        3.17.2
+Release:        1%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/balabit/%{name}/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1    syslog-ng=81bb726c9823a3af9701a4297311e71f68050ccb
+%define sha1    syslog-ng=75d7881d2cf258017c3b98fd37ceb3322c1855ad
 Source1:        60-syslog-ng-journald.conf
 Source2:        syslog-ng.service
 Patch0:         disable-pylint-test.patch
@@ -26,6 +26,9 @@ BuildRequires:  systemd-devel
 BuildRequires:  python2-devel
 BuildRequires:  python2
 BuildRequires:  python2-libs
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 %if %{with_check}
 BuildRequires:  curl-devel
 %endif
@@ -39,9 +42,6 @@ Obsoletes:	eventlog
 
 %package -n     python2-syslog-ng
 Summary:        python2-syslog-ng
-BuildRequires:  python2
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Requires:       python2
 Requires:       python2-libs
 
@@ -50,9 +50,6 @@ Python 2 version.
 
 %package -n     python3-syslog-ng
 Summary:        python3-syslog-ng
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 
@@ -61,7 +58,7 @@ Python 3 version.
 
 %package        devel
 Summary:        Header and development files for syslog-ng
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 %description    devel
  syslog-ng-devel package contains header files, pkfconfig files, and libraries
  needed to build applications using syslog-ng APIs.
@@ -73,14 +70,10 @@ rm -rf ../p3dir
 cp -a . ../p3dir
 %build
 
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
     --sysconfdir=/etc/syslog-ng \
     --enable-systemd \
     --with-systemdsystemunitdir=%{_libdir}/systemd/system \
@@ -92,14 +85,10 @@ cp -a . ../p3dir
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 make %{?_smp_mflags}
 pushd ../p3dir
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --includedir=%{_includedir} \
-    --libdir=%{_libdir} \
     --sysconfdir=/etc/syslog-ng \
     --enable-systemd \
     --with-systemdsystemunitdir=%{_libdir}/systemd/system \
@@ -118,8 +107,6 @@ popd
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name "*.la" -exec rm -f {} \;
-rm %{buildroot}/%{_libdir}/pkgconfig/syslog-ng-test.pc
-rm %{buildroot}/%{_libdir}/syslog-ng/libtest/libsyslog-ng-test.a
 rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
 rm -rf %{buildroot}/%{_infodir}
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
@@ -128,8 +115,6 @@ install -p -m 644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/
 %{_fixperms} %{buildroot}/*
 pushd ../p3dir
 make DESTDIR=%{buildroot} install
-rm %{buildroot}/%{_libdir}/pkgconfig/syslog-ng-test.pc
-rm %{buildroot}/%{_libdir}/syslog-ng/libtest/libsyslog-ng-test.a
 rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
 rm -rf %{buildroot}/%{_infodir}
 sed -i 's/eventlog//g'  %{buildroot}%{_libdir}/pkgconfig/syslog-ng.pc
@@ -181,8 +166,12 @@ rm -rf %{buildroot}/*
 /usr/sbin/syslog-ng
 /usr/sbin/syslog-ng-ctl
 /usr/sbin/syslog-ng-debun
-%{_libdir}/libsyslog-ng-3.11.so.*
-%{_libdir}/libevtlog-3.11.so.*
+%{_libdir}/libsyslog-ng-3.17.so.*
+%{_libdir}/libevtlog-3.17.so.*
+%{_libdir}/libloggen_helper*
+%{_libdir}/libloggen_plugin*
+%{_libdir}/libsecret-storage*
+%{_libdir}/%{name}/loggen/*
 %{_libdir}/syslog-ng/lib*.so
 /usr/share/syslog-ng/*
 
@@ -203,6 +192,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 3.17.2-1
+-   Update to version 3.17.2
 *   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-3
 -   Obsolete eventlog.
 *   Mon Sep 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-2
