@@ -1,15 +1,15 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller 
 Name:           keepalived
-Version:        1.3.5
-Release:        2%{?dist}
+Version:        2.0.7
+Release:        1%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.keepalived.org/software/%{name}-%{version}.tar.gz
-%define sha1    keepalived=5a373d8f5d382700cf53b827947a92a7f4cef148
-Source1:        keepalived.service
+%define sha1    %{name}-%{version}=e7c18b719f5c6ff4d8c93429044dbb07f89326a2
+Source1:        %{name}.service
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel
 BuildRequires:  libmnl-devel
@@ -19,6 +19,7 @@ BuildRequires:  libnfnetlink-devel
 BuildRequires:  net-snmp-devel
 BuildRequires:  systemd
 Requires:       systemd
+Requires:       libnl-devel
 
 %description
 The main goal of the keepalived project is to add a strong & robust keepalive
@@ -48,8 +49,8 @@ make %{?_smp_mflags} STRIP=/bin/true
 
 %install
 make install DESTDIR=%{buildroot}
-install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/keepalived.service
-rm -rf %{buildroot}%{_sysconfdir}/keepalived/samples/*
+install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
+rm -rf %{buildroot}%{_sysconfdir}/%{name}/samples/*
 
 %check
 # A build could silently have LVS support disabled if the kernel includes can't
@@ -72,19 +73,22 @@ fi
 
 %files
 %defattr(-,root,root)
-%{_sbindir}/keepalived
+%doc %{_docdir}/%{name}/README
+%{_sbindir}/%{name}
 %{_bindir}/genhash
-%{_unitdir}/keepalived.service
-%config(noreplace) %{_sysconfdir}/sysconfig/keepalived
-%config(noreplace) %{_sysconfdir}/keepalived/keepalived.conf
+%{_unitdir}/%{name}.service
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/%{name}.conf
 %{_datadir}/snmp/mibs/KEEPALIVED-MIB.txt
 %{_datadir}/snmp/mibs/VRRP-MIB.txt
 %{_datadir}/snmp/mibs/VRRPv3-MIB.txt
 %{_mandir}/man1/genhash.1*
-%{_mandir}/man5/keepalived.conf.5*
-%{_mandir}/man8/keepalived.8*
+%{_mandir}/man5/%{name}.conf.5*
+%{_mandir}/man8/%{name}.8*
 
 %changelog
+*   Wed Sep 12 2018 Ankit Jain <ankitja@vmware.com> 2.0.7-1
+-   Updated to version 2.0.7
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.3.5-2
 -   Add iptables-devel to BuildRequires
 *   Thu Apr 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.3.5-1
