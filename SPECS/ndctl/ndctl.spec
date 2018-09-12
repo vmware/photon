@@ -1,14 +1,15 @@
+%{!?_udevdir: %define _udevdir /lib/udev/}
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
-Version:        56
-Release:        3%{?dist}
+Version:        62
+Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
 Url:            https://github.com/pmem/ndctl
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    ndctl=99dbdae3609c85270dae0530aec0206e6ad36e88
+%define sha1    ndctl=0f906e39f1af10fe60748b8862e761fe36abd985
 
 BuildRequires:  asciidoc
 BuildRequires:  which
@@ -85,6 +86,10 @@ make check
 %{_bindir}/ndctl
 %{_libdir}/libndctl.so.*
 %{_datadir}/bash-completion/
+%{_sysconfdir}/ndctl/monitor.conf
+%{_unitdir}/ndctl-monitor.service
+%{_udevrulesdir}/80-ndctl.rules
+%{_udevdir}/ndctl-udev
 
 %files devel
 %defattr(-,root,root)
@@ -107,6 +112,8 @@ make check
 %{_libdir}/pkgconfig/libdaxctl.pc
 
 %changelog
+*   Wed Sep 12 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 62-1
+-   Upgrade to v62
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 56-3
 -   Add kmod-devel to BuildRequires
 *   Mon Apr 24 2017 Dheeraj Shetty <dheerajs@vmware.com> 56-2

@@ -1,11 +1,11 @@
 Summary:	Program for modifying or creating files
 Name:		patch
-Version:	2.7.5
-Release:	4%{?dist}
+Version:	2.7.6
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	ftp://ftp.gnu.org/gnu/patch/%{name}-%{version}.tar.gz
-%define sha1 patch=04d23f6e48e95efb07d12ccf44d1f35fb210f457
+%define sha1 patch=0ed8f3e49d84964f27e27c712fc8780e291dfa60
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -29,6 +29,8 @@ make  %{?_smp_mflags} check
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.7.6-1
+-   Upgrade to 2.7.6
 *   Fri Apr 28 2017 Divya Thaluru <dthaluru@vmware.com> 2.7.5-4
 -   Fixed ulimit in test script
 *   Fri Oct 07 2016 ChangLee <changlee@vmware.com> 2.7.5-3
