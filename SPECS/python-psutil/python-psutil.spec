@@ -4,15 +4,15 @@
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python-psutil
-Version:        5.2.2
-Release:        2%{?dist}
+Version:        5.4.7
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/psutil/psutil-%{version}.tar.gz
-%define sha1    psutil=e22e2f6abdff051d438626f9a59a8782ace1a63e
+%define sha1    psutil=4c7c8cb5a4915eb7148a1080030f9097be87d3e4
 Patch0:         disable-tests-python-psutil.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -95,6 +95,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Sep 12 2018 Tapas Kundu <tkundu@vmware.com> 5.4.7-1
+-   Updated to version 5.4.7
 *   Fri Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 5.2.2-2
 -   Fixed make check error.
 *   Wed Apr 26 2017 Xialin Li <xiaolinl@vmware.com> 5.2.2-1
