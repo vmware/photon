@@ -1,18 +1,14 @@
 Summary:	software font engine.
 Name:		freetype2
-Version:	2.7.1
-Release:	4%{?dist}
+Version:	2.9.1
+Release:	1%{?dist}
 License:	BSD/GPL
 URL:		http://www.freetype.org/
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
-%define sha1 freetype=60fb8097901a887b8e8f6e7f777ef0516ae68022
-Patch0:         CVE-2017-7857-and-CVE-2017-7858.patch
-Patch1:         CVE-2017-7864.patch
-Patch2:         CVE-2017-8287.patch
-Patch3:         CVE-2018-6942.patch
+%define sha1 freetype=7498739e34e5dca4c61d05efdde6191ba69a2df0
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
 
@@ -27,10 +23,6 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q -n freetype-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %build
 ./configure \
@@ -54,7 +46,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
 %{_libdir}/*.so*
 %{_datadir}/*
 
@@ -65,6 +56,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*	Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.9.1-1
+-	version bump to 2.9.1
 *       Thu Jun 14 2018 Tapas Kundu <tkundu@vmware.com> 2.7.1-4
 -       CVE-2018-6942
 *       Mon May 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.1-3
