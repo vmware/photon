@@ -1,15 +1,16 @@
 Summary:        Utilities for loading kernel modules
 Name:           kmod
-Version:        24
-Release:        3%{?dist}
-License:        GPLv2+
+Version:        25
+Release:        1%{?dist}
+License:        LGPLv2.1+ and GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/kernel/kmod
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/utils/kernel/kmod/%{name}-%{version}.tar.xz
-%define sha1    kmod=ca506c529cb66ebe12cecb85844ebebf95eb6fa6
+%define sha1    %{name}-%{version}=761ee76bc31f5db10d470dad607a5f9d68acef68
 BuildRequires:  xz-devel
+BuildRequires:  zlib-devel
 Requires:       xz
 %description
 The Kmod package contains libraries and utilities for loading kernel modules
@@ -58,6 +59,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/*.so
 
 %changelog
+*   Wed Sep 12 2018 Ankit Jain <ankitja@vmware.com> 25-1
+-   Updated to version 25
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 24-3
 -   Add devel package.
 *   Tue Jun 06 2017 Chang Lee <changlee@vmware.com> 24-2
