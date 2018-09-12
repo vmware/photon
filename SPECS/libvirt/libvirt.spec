@@ -1,12 +1,11 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        3.2.0
-Release:        4%{?dist}
+Version:        4.7.0
+Release:        1%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha1    libvirt=47d4b443fdf1e268589529018c436bbc4b413a7c
-Patch0:         libvirt-CVE-2017-1000256.patch
+%define sha1    libvirt=57d116782f5b6ef3371d6bb29c06df019fe9ec57
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -23,6 +22,7 @@ BuildRequires:  systemd-devel
 BuildRequires:  parted
 BuildRequires:  python2-devel
 BuildRequires:  readline-devel
+BuildRequires:  libxslt
 Requires:       cyrus-sasl
 Requires:       device-mapper
 Requires:       gnutls
@@ -55,7 +55,6 @@ This contains development tools and libraries for libvirt.
 
 %prep
 %setup -q
-%patch0 -p1
 %build
 ./configure \
     --disable-silent-rules \
@@ -71,10 +70,14 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
+%check
+make check
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/libvirt*.so.*
+%{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
 %{_libdir}/libvirt/storage-backend/*
 %{_libdir}/libvirt/connection-driver/*.so
 %{_libdir}/libvirt/lock-driver/*.so
@@ -111,6 +114,8 @@ find %{buildroot} -name '*.la' -delete
 %{_mandir}/*
 
 %changelog
+*   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 4.7.0-1
+-   Update to version 4.7.0
 *   Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-4
 -   Move so files in folder connection-driver and lock-driver to main package.
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-3
