@@ -4,7 +4,7 @@
 Summary:        initramfs
 Name:           initramfs
 Version:        1.0
-Release:        10%{?kernelsubrelease}%{?dist}
+Release:        11%{?kernelsubrelease}%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 Source:        %{name}-%{version}.tar.gz
@@ -29,7 +29,7 @@ echo 'add_drivers+="tmem xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev x
 echo 'add_dracutmodules+="ostree systemd"' > /etc/dracut.conf.d/ostree.conf
 
 %build
-dracut --force --kver %{KERNEL_VERSION}-%{KERNEL_RELEASE} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" -a lvm initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
+dracut --force --kver %{KERNEL_VERSION}-%{KERNEL_RELEASE} --fscks "e2fsck fsck fsck.ext2 fsck.ext3 fsck.ext4" -a lvm --nostrip initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT/boot
@@ -46,6 +46,8 @@ rm -rf $RPM_BUILD_ROOT
 /boot/initrd.img-%{KERNEL_VERSION}-%{KERNEL_RELEASE}
 
 %changelog
+*   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.0-11
+-   Including nostrip option to the libraries packaged in initrd image.
 *   Thu Sep 6 2018 Michelle Wang <michellew@vmware.com>  1.0-10
 -   Add source file for initramfs for OSSTP
 *   Wed Jul 11 2018 Dweep Advani <dadvani@vmware.com>  1.0-9
