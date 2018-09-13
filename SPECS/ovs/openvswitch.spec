@@ -2,8 +2,8 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.8.2
-Release:        2%{?dist}
+Version:        2.10.0
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=1d0e8cbf6d6e649e0f518219a599d7411f863875
+%define sha1 openvswitch=fde37563b6ff74e5d60b23f19220d5c703030569
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -144,7 +144,7 @@ cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs/* %{buildroot}/%{python3_s
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -p -D -m 0644 rhel/usr_share_openvswitch_scripts_systemd_sysconfig.template %{buildroot}/%{_sysconfdir}/sysconfig/openvswitch
 
-/usr/bin/perl build-aux/dpdkstrip.pl --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
+/usr/bin/python build-aux/dpdkstrip.py --nodpdk < rhel/usr_lib_systemd_system_ovs-vswitchd.service.in > rhel/usr_lib_systemd_system_ovs-vswitchd.service
 for service in openvswitch ovsdb-server ovs-vswitchd ovn-controller ovn-controller-vtep ovn-northd; do
 	install -p -D -m 0644 rhel/usr_lib_systemd_system_${service}.service %{buildroot}/%{_unitdir}/${service}.service
 done
@@ -232,6 +232,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man1/ovsdb-*.1.gz
 %{_mandir}/man5/ovs-vswitchd.conf.db.5.gz
 %{_mandir}/man5/vtep.5.gz
+%{_mandir}/man5/ovsdb-*.5.gz
 %{_mandir}/man7/ovs-fields.7.gz
 %{_mandir}/man8/ovs-*.8.gz
 %{_mandir}/man8/vtep-ctl.8.gz
@@ -279,6 +280,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Thu Sep 13 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.10.0-1
+-   Update to 2.10.0
 *   Wed Feb 28 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-2
 -   Setup the default conf file for local ovsdb server.
 *   Tue Feb 27 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-1
