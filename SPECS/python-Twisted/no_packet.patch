@@ -1,6 +1,5 @@
-diff -rupr a/src/twisted/test/test_udp.py b/src/twisted/test/test_udp.py
---- a/src/twisted/test/test_udp.py	2017-06-04 07:32:04.000000000 +0000
-+++ b/src/twisted/test/test_udp.py	2017-08-30 00:42:08.265978139 +0000
+--- a/src/twisted/test/test_udp.py	2018-09-13 19:26:34.203601284 +0530
++++ b/src/twisted/test/test_udp.py	2018-09-13 19:27:35.423603937 +0530
 @@ -553,7 +553,7 @@ class MulticastTests(unittest.TestCase):
          joined.addCallback(cbPacket)
  
