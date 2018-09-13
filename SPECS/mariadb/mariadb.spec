@@ -1,7 +1,7 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
 Version:        10.2.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -79,7 +79,7 @@ cmake -DCMAKE_BUILD_TYPE=Release                        \
       -DSKIP_TESTS=ON                                   \
       -DTOKUDB_OK=0                                     \
       ..
-make
+make %{?_smp_mflags}
 %install
 cd build
 make DESTDIR=%{buildroot} install
@@ -348,6 +348,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Thu Sep 13 2018 Dheeraj Shetty <dheerajs@vmware.com> 10.2.10-2
+-   Make parallel build 
 *   Tue Nov 07 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.10-1
 -   Update to verion 10.2.10 to address CVE-2017-10378, CVE-2017-10268
 *   Wed Sep 06 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.8-1
