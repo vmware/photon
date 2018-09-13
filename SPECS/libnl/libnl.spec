@@ -1,12 +1,12 @@
 Summary:	Netlink Protocol Library Suite
 Name:		libnl
-Version:	3.2.29
+Version:	3.4.0
 Release:	1%{?dist}
 License: 	LGPLv2+
 Group: 		System Environment/Libraries
 URL:		http://www.infradead.org/~tgr/libnl/
 Source0:	http://www.infradead.org/~tgr/libnl/files/%{name}-%{version}.tar.gz
-%define sha1 libnl=0129a2428b6437558c260324e6ace60eec558053
+%define sha1 libnl=4fc4c3b6812dc7e68ef8acb69287583685266a0b
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	glib-devel
@@ -28,11 +28,9 @@ Headers and static libraries for the libnl
 %prep
 %setup -q
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--sysconfdir=%{_sysconfdir} \
- 
+%configure
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 
@@ -41,20 +39,21 @@ make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %files 
 %defattr(-,root,root)
 %{_sysconfdir}/*
 %{_bindir}/*
 %{_libdir}/*.so.*
-%{_libdir}/*.la
-%{_libdir}/*.a
-%{_libdir}//libnl/*
 %{_mandir}/man8/*
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/libnl3/*
+%{_includedir}/*
+%{_libdir}/libnl/*
 %{_libdir}/*.so
+%{_libdir}/*.la
+%{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
