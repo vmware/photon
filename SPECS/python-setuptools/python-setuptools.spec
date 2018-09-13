@@ -3,8 +3,8 @@
 Summary: Download, build, install, upgrade, and uninstall Python packages
 Name: python-setuptools
 Version:        40.2.0
-Release: 1%{?dist}
-License: Python or ZPLv2.0
+Release: 2%{?dist}
+License: MIT
 Group: Development/Languages
 Vendor: VMware, Inc.
 Distribution: Photon
@@ -55,6 +55,8 @@ python2 setup.py test
 %{python2_sitelib}/*
 
 %changelog
+*   Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 40.2.0-2
+-   Updated the license
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 40.2.0-1
 -   Update to version 40.2.0
 *       Tue Jun 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 36.0.1-1
