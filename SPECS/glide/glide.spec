@@ -1,11 +1,11 @@
 Summary:        Vendor Package Management for Goland
 Name:           glide
-Version:        0.12.3
+Version:        0.13.1
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/Masterminds/glide
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 glide=259cfe5a4d598434865c9bb95ed5a98bfd2d8e77
+%define sha1 glide=c471dbae8556c8594a042b612fe569b3df0a1991
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -36,5 +36,7 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
 %{_bindir}/glide
 
 %changelog
+*   Thu Sep 13 2018 Michelle Wang <michellew@vmware.com> 0.13.1-1
+-   Update version to 0.13.1.
 *   Mon Aug 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.12.3-1
 -   glide for PhotonOS.
