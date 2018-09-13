@@ -1,6 +1,6 @@
 Summary:    Provides API to packets queued by kernel packet filter
 Name:       libnetfilter_queue
-Version:    1.0.2
+Version:    1.0.3
 Release:    1%{?dist}
 License:    GPLv2
 URL:        http://www.netfilter.org/projects/libnetfilter_queue/index.html
@@ -8,7 +8,7 @@ Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1 libnetfilter_queue=8cc0b8ed33162281bc9fa8bcfa8c9dcb08848ff9
+%define sha1 libnetfilter_queue=3d182e3211b633d0a0f8a2b12ef80dc2621f53cb
 
 BuildRequires:  libmnl-devel
 BuildRequires:  libnfnetlink-devel
@@ -38,7 +38,6 @@ make %{?_smp_mflags}
 
 %install
 %make_install
-find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -51,8 +50,11 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/*.la
 
 %changelog
+*   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 1.0.3-1
+-   Update to 1.0.3
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2-1
 -   Initial packaging
 
