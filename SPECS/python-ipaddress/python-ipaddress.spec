@@ -2,9 +2,9 @@
 
 Name:           python-ipaddress
 Version:        1.0.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
-License:        MIT
+License:        Python Software Foundation License (Python Software Foundation License)
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/ipaddress
 Vendor:		VMware, Inc.
@@ -41,6 +41,8 @@ python2 setup.py test
 %{python2_sitelib}/*
 
 %changelog
+*   Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 1.0.22-2
+-   Updated the license
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.0.22-1
 -   Update to version 1.0.22
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.0.18-2
