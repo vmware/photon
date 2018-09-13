@@ -1,7 +1,7 @@
 Summary:    A minimalistic user-space library oriented to Netlink developers.
 Name:       libmnl
 Version:    1.0.4
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    LGPLv2.1+
 URL:        http://netfilter.org/projects/libmnl
 Group:      System Environment/libraries
@@ -24,16 +24,11 @@ Libraries and header files for libnml library.
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --enable-static=no
+%configure --enable-static=no
 make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
-find %{buildroot} -name '*.la' -delete
 
 %check
 make %{?_smp_mflags} -k check
@@ -55,9 +50,12 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/libmnl.so
-%{_libdir}/pkgconfig/libmnl.pc
+%{_libdir}/libmnl.la
+%{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 1.0.4-3
+-   Cleanup spec file
 *   Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 1.0.4-2
 -   Added obsoletes for libmnl-static package which is deprecated
 *   Wed Aug 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.4-1
