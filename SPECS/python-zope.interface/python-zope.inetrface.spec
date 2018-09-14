@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-zope.interface
-Version:        4.3.3
-Release:        2%{?dist}
+Version:        4.5.0
+Release:        1%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
 Group:          Development/Languages/Python
 Source0:        https://pypi.python.org/packages/source/z/zope.interface/zope.interface-%{version}.tar.gz
-%define sha1    zope.interface=66bd8e4af0f16468914fefc90ba9cca23e66cd9d
+%define sha1    zope.interface=c580dead9e8afa8f602c1e1613bb22c2060cc700
 
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
@@ -71,6 +71,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 4.5.0-1
+-   Updated to release 4.5.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
