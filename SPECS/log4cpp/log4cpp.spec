@@ -1,6 +1,6 @@
 Summary:        Log for C++
 Name:           log4cpp
-Version:        1.1.1
+Version:        1.1.3
 Release:        1%{?dist}
 License:        LGPL
 Group:          Development/Libraries
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://log4cpp.sourceforge.net/
 Source:         ftp://download.sourceforge.net/pub/sourceforge/log4cpp/%{name}-%{version}.tar.gz
-%define sha1    log4cpp=23aa5bd7d6f79992c92bad3e1c6d64a34f8fcf68
+%define sha1    log4cpp=74f0fea7931dc1bc4e5cd34a6318cd2a51322041
 
 %description
 Log for C++ is a library of classes for flexible logging to files, syslog,
@@ -59,5 +59,7 @@ make DESTDIR=%{buildroot} install
 %_prefix/share/aclocal/*.m4
 
 %changelog
+*   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.1.3-1
+-   Upgrade to latest version
 *   Mon Oct 23 2017 Benson Kwok <bkwok@vmware.com> 1.1.1-1
 -   Initial build. First version

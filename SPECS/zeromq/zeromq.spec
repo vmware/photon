@@ -1,14 +1,14 @@
 Summary:        library for fast, message-based applications
 Name:           zeromq
-Version:        4.1.4
-Release:        3%{?dist}
+Version:        4.2.3
+Release:        1%{?dist}
 URL:            http://www.zeromq.org
 License:        LGPLv3+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://archive.org/download/zeromq_4.1.4/%{name}-%{version}.tar.gz
-%define sha1 zeromq=b632a4b6f8a14390dc17824e37ff7b10831ce2b4
+%define sha1 zeromq=a4d00313d11f0fe38fd7a24a65c2363c80675494
 Requires:       libstdc++
 
 %description
@@ -57,6 +57,8 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.2.3-1
+-   Updated to latest version
 *   Fri Sep 15 2017 Bo Gan <ganb@vmware.com> 4.1.4-3
 -   Remove devpts mount
 *   Mon Aug 07 2017 Chang Lee <changlee@vmware.com> 4.1.4-2
