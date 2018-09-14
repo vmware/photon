@@ -1,11 +1,11 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
-Version:	1.25
-Release:	2%{?dist}
+Version:	1.29
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.25/%{name}-%{version}.tar.xz
-%define sha1 gtk-doc=bd93ff19403805b4faddcd86b58a6f338ce1fd6d
+%define sha1 gtk-doc=c3dc579d84221c43ce2b0b5f523c46b13525416b
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -19,9 +19,9 @@ BuildRequires:	libxslt >= 1.1.28
 BuildRequires:	itstool
 BuildRequires:	cmake
 BuildRequires:	check
-BuildRequires:	python2
-BuildRequires:	python2-libs
-Requires:	python2
+BuildRequires:	python3-devel
+BuildRequires:	python3-libs
+Requires:	python3
 Provides:	perl(gtkdoc-common.pl)
 BuildArch:      noarch
 
@@ -46,6 +46,8 @@ cd tests && make check-TESTS
 %{_libdir}/cmake/
 
 %changelog
+*   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  1.29-1
+-   Upgrade to 1.29
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.25-2
 -   Fix arch
 * 	Fri Mar 24 2017 Dheeraj Shetty <dheerajs@vmware.com>  1.25-1
@@ -54,7 +56,7 @@ cd tests && make check-TESTS
 -	GA - Bump release of all rpms
 * 	Thu Feb 25 2016 Anish Swaminathan <anishs@vmware.com>  1.24-1
 - 	Upgrade to 1.24
-*   	Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.21.1-2
--   	Updated group.
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.21.1-2
+-   Updated group.
 *	Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 1.21-1
 -	Initial build. First version
