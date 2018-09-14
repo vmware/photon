@@ -1,11 +1,11 @@
 Summary:	Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:		heapster
-Version:        1.4.2
-Release:        1%{?dist}
+Version:    1.5.4
+Release:    1%{?dist}
 License:	Apache 2.0
 URL:		https://github.com/wavefrontHQ/cadvisor
 Source0:	https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
-%define sha1 heapster=e7c22e3f6c5223345259cabb761571b815a587e6
+%define sha1 heapster=102b8f21ecebc695987701b1d97f87dda1ea5645
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -40,5 +40,7 @@ make test-unit
 %{_bindir}/eventer
 
 %changelog
+*   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 1.5.4-1
+-   Update to version 1.5.4
 *   Thu Aug 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.2-1
 -   Initial heapster package
