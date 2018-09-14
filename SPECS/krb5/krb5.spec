@@ -1,6 +1,6 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
-Version:        1.16
+Version:        1.16.1
 Release:        1%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
@@ -8,8 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.16/%{name}-%{version}.tar.gz
-%define sha1    krb5=e1bd68d9121c337faf5dbd478d0a2b6998114fc7
-Patch0:         krb5-1.15-never-unload-mechanisms.patch
+%define sha1    %{name}=8353f2d900a7d52499c7c2605d5e295f71dd5e67
 Requires:       openssl
 Requires:       e2fsprogs-libs
 BuildRequires:  openssl-devel
@@ -36,13 +35,9 @@ These are the additional language files of krb5.
 
 %prep
 %setup -q
-%patch0 -p1
-%build
 
+%build
 cd src &&
-sed -e "s@python2.5/Python.h@& python2.7/Python.h@g" \
-    -e "s@-lpython2.5]@&,\n  AC_CHECK_LIB(python2.7,main,[PYTHON_LIB=-lpython2.7])@g" \
-    -i configure.in &&
 sed -e 's@\^u}@^u cols 300}@' \
     -i tests/dejagnu/config/default.exp &&
 CPPFLAGS="-D_GNU_SOURCE" \
@@ -61,6 +56,7 @@ autoconf &&
         --enable-shared          \
         --without-tcl
 make %{?_smp_mflags}
+
 %install
 cd src
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -91,8 +87,10 @@ make check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -118,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Fri Sep 14 2018 Ankit Jain <ankitja@vmware.com> 1.16.1-1
+-   Update to version 1.16.1
 *   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16-1
 -   Update to version 1.16 to address CVE-2017-15088
 *   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
