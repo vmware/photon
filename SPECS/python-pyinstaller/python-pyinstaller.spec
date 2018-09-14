@@ -3,15 +3,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python-pyinstaller
-Version:        3.3.1
+Version:        3.4
 Release:        1%{?dist}
-Url:            https://pypi.python.org/pypi/PyInstaller/3.3.1
+Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.gz
-%define sha1    PyInstaller=578324d2dfb4edbfca34903dbde404c95a211663
+%define sha1    PyInstaller=218c99be6886c6fddfb10f9892b19df906821652
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -130,6 +130,8 @@ LANG=en_US.UTF-8 py.test2 tests/unit tests/functional \
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.4-1
+-   Updated to release 3.4
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.1-1
 -   Version update. Build bootloader from sources
 *   Mon Sep 25 2017 Bo Gan <ganb@vmware.com> 3.2.1-2
