@@ -1,11 +1,11 @@
 Summary:	GNU Ubiquitous Intelligent Language for Extensions
 Name:		guile
-Version:	2.0.13
-Release:	2%{?dist}
+Version:	2.2.4
+Release:	1%{?dist}
 License: 	LGPLv3+
 URL:		http://www.gnu.org/software/guile/
 Source0: 	ftp://ftp.gnu.org/pub/gnu/guile/%{name}-%{version}.tar.gz
-%define sha1 guile=efd3f9769d04b51803ea4ebcbfd7b6add1d419e6
+%define sha1 guile=4b01c7f6985857ee9f7c4cc463288f2391bfe669
 Group: 		Development/Languages
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -61,19 +61,21 @@ make  %{?_smp_mflags} check
 %{_libdir}/*.la
 %files devel
 %defattr(-,root,root)
-%{_includedir}/guile/2.0/*.h
-%{_includedir}/guile/2.0/libguile/*.h
+%{_includedir}/guile/2.2/*.h
+%{_includedir}/guile/2.2/libguile/*.h
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
-*       Wed May 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-2
--       Adding glibc-iconv to Requires section
-*       Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-1
--       Bumped to latest version 2.0.13 to handle CVE-2016-8606
-*       Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.0.11-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.11-2
--	GA - Bump release of all rpms
-*	Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.0.11-1
--	Initial build. First version
+*  Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 2.2.4-1
+-  Update to version 2.2.4
+*  Wed May 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-2
+-  Adding glibc-iconv to Requires section
+*  Wed Jan 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.0.13-1
+-  Bumped to latest version 2.0.13 to handle CVE-2016-8606
+*  Thu Oct 06 2016 ChangLee <changlee@vmware.com> 2.0.11-3
+-  Modified %check
+*  Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.0.11-2
+-  GA - Bump release of all rpms
+*  Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 2.0.11-1
+-  Initial build. First version
 
