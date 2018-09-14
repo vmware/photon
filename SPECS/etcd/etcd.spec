@@ -1,14 +1,14 @@
-Summary:        Etcd-3.1.5
+Summary:        Etcd-3.1.19
 Name:           etcd
-Version:        3.1.5
-Release:        4%{?dist}
-License:        Apache License
-URL:            https://github.com/coreos/etcd
+Version:        3.1.19
+Release:        1%{?dist}
+License:        Apache License Version 2.0
+URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=a020efbd8bc7777e77b960b461886d26b2cedecd
+%define sha1 etcd=3a567f058f66c1ccb8267f2dc54912ae661ab03b
 Source1:        etcd.service
 BuildRequires:  go >= 1.7
 
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.1.19-1
+-   Updated to release 3.1.19
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 3.1.5-4
 -   Remove shadow requires
 *   Sun Aug 27 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1.5-3
