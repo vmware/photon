@@ -1,0 +1,22 @@
+diff --git a/client/remoterepo.c b/client/remoterepo.c
+index 94d5e33..7829722 100644
+--- a/client/remoterepo.c
++++ b/client/remoterepo.c
+@@ -99,7 +99,7 @@ _TDNFDownloadFile(
+     CURL *pCurl = NULL;
+     FILE *fp = NULL;
+     char *pszUserPass = NULL;
+-    uint32_t nStatus = 0;
++    long nStatus = 0;
+ 
+     if(!pTdnf ||
+        !pTdnf->pArgs ||
+@@ -169,7 +169,7 @@ _TDNFDownloadFile(
+     if(nStatus >= 400)
+     {
+         fprintf(stderr,
+-                "Error: %d when downloading %s\n. Please check repo url.\n",
++                "Error: %ld when downloading %s\n. Please check repo url.\n",
+                 nStatus,
+                 pszFileUrl);
+         dwError = ERROR_TDNF_INVALID_PARAMETER;

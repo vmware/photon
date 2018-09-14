@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -28,6 +28,7 @@ Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
 Patch0:         tdnf_add_retry_to_downloads.patch
+Patch1:         tdnf_fix_curl_getinfo_type.patch
 
 %description
 tdnf is a yum/dnf equivalent
@@ -52,6 +53,7 @@ Library providing cli libs for tdnf like clients.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 sed -i 's/tdnf, 1.2.0/tdnf, 1.2.3/' configure.ac
@@ -153,6 +155,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Fri Sep 14 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.3-4
+-   fix bug in download status type
 *   Wed Sep 12 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.3-3
 -   retry option for downloads. default retry on download failures to 10
 *   Fri Apr 27 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.3-2
