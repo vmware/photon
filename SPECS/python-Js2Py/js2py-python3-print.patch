@@ -1,8 +1,6 @@
-diff --git a/js2py/internals/byte_trans.py b/js2py/internals/byte_trans.py
-index eb042fb..8842fdb 100644
---- a/js2py/internals/byte_trans.py
-+++ b/js2py/internals/byte_trans.py
-@@ -682,19 +682,19 @@ def main():
+--- a/js2py/internals/byte_trans.py	2018-09-14 22:37:33.103841506 +0530
++++ b/js2py/internals/byte_trans.py	2018-09-14 22:40:16.219848573 +0530
+@@ -717,20 +717,19 @@ def main():
      #
      # }
      a.emit(d)
@@ -23,15 +21,13 @@ index eb042fb..8842fdb 100644
  
  
 -    print a.exe.run(a.exe.space.GlobalObj)
+-
 +    print(a.exe.run(a.exe.space.GlobalObj))
  
- 
  if __name__=='__main__':
-
-diff --git a/js2py/internals/speed.py b/js2py/internals/speed.py
-index 82f9e62..02c59a3 100644
---- a/js2py/internals/speed.py
-+++ b/js2py/internals/speed.py
+     main()
+--- a/js2py/internals/speed.py	2018-09-14 22:40:29.707849158 +0530
++++ b/js2py/internals/speed.py	2018-09-14 22:43:42.123857495 +0530
 @@ -47,7 +47,7 @@ t = []
  
  Type = None
@@ -51,26 +47,9 @@ index 82f9e62..02c59a3 100644
 -    raise
 \ No newline at end of file
 +    raise
-
-diff --git a/js2py/internals/opcodes.py b/js2py/internals/opcodes.py
-index 686bca1..184d39e 100644
---- a/js2py/internals/opcodes.py
-+++ b/js2py/internals/opcodes.py
-@@ -650,7 +650,7 @@ class WITH(OP_CODE):
- 
-         val, typ, spec = status
-         if typ!=3:
--            print typ
-+            print(typ)
-             ctx.stack.pop()
- 
-         if typ == 0:  # normal
-
-diff --git a/js2py/internals/constructors/jsfunction.py b/js2py/internals/constructors/jsfunction.py
-index bfe631c..ef39b44 100644
---- a/js2py/internals/constructors/jsfunction.py
-+++ b/js2py/internals/constructors/jsfunction.py
-@@ -65,5 +65,5 @@ def _eval(this, args):
+--- a/js2py/internals/constructors/jsfunction.py	2018-09-14 22:45:43.027862734 +0530
++++ b/js2py/internals/constructors/jsfunction.py	2018-09-14 22:47:02.891866195 +0530
+@@ -66,5 +66,5 @@ def _eval(this, args):
      return executable_code(code_str, args.space, global_context=True)()
  
  def log(this, args):
@@ -79,11 +58,8 @@ index bfe631c..ef39b44 100644
 \ No newline at end of file
 +    print(' '.join(map(to_string, args)))
 +    return undefined
-
-diff --git a/js2py/test_internals.py b/js2py/test_internals.py
-index 12cf4ad..546ae18 100644
---- a/js2py/test_internals.py
-+++ b/js2py/test_internals.py
+--- a/js2py/test_internals.py	2018-09-14 22:47:17.159866813 +0530
++++ b/js2py/test_internals.py	2018-09-14 22:47:46.339868077 +0530
 @@ -6,4 +6,4 @@ x = r'''
  function g() {var h123 = 11; return [function g1() {return h123}, new Function('return h123')]}
  g()[1]()
