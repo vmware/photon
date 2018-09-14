@@ -12,6 +12,7 @@ from ToolChainUtils import ToolChainUtils
 from Scheduler import Scheduler
 from ThreadPool import ThreadPool
 from SpecData import SPECS
+from SpecStructures import *
 
 class PackageManager(object):
 
@@ -84,8 +85,8 @@ class PackageManager(object):
         listFoundRPMPackages = set()
         listRPMFiles = set()
         listDirectorys = set()
-        mapPackageVersion={}
-        mapPackageRelease={}
+        mapPackageVersionRelease={}
+        pkgVerRel = dependentPackageData()
         listDirectorys.add(constants.rpmPath)
         if constants.inputRPMSPath is not None:
             listDirectorys.add(constants.inputRPMSPath)
@@ -101,21 +102,25 @@ class PackageManager(object):
         pkgUtils = PackageUtils(self.logName, self.logPath)
         for rpmfile in listRPMFiles:
             package, version, release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
-            if package in mapPackageVersion:
-                mapPackageVersion[package].append(version)
-                mapPackageRelease[package].append(release)
+            pkgVerRel.package = package
+            pkgVerRel.version = version
+            pkgVerRel.release = release
+            if package in mapPackageVersionRelease:
+                mapPackageVersionRelease[package].append(pkgVerRel)
             else:
-                mapPackageVersion[package]=[version]
-                mapPackageRelease[package]=[release]
-        for package in mapPackageVersion:
+                mapPackageVersionRelease[package]=[pkgVerRel]
+        for package in mapPackageVersionRelease:
             if SPECS.getData().isRPMPackage(package):
                 numVersions=SPECS.getData().getNumberOfVersions(package)
-                flag=True;
                 for index in range(0, numVersions):
+                        flag=False;
                         specVersion=SPECS.getData().getVersion(package,index)
                         specRelease=SPECS.getData().getRelease(package,index)
-                        if  specVersion not in mapPackageVersion[package] and specRelease not in mapPackageRelease[package]:
-                                flag=False
+                        for i in range(0,len(mapPackageVersionRelease[package])):
+                                if specVersion == mapPackageVersionRelease[package][i].version and specRelease == mapPackageVersionRelease[package][i].release:
+                                        flag=True
+                        if flag == False:
+                                break
                 if flag:
                         listFoundRPMPackages.add(package)
         #Mark package available only if all sub packages are available
