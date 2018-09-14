@@ -11,6 +11,7 @@ from ToolChainUtils import ToolChainUtils
 from Scheduler import Scheduler
 from ThreadPool import ThreadPool
 from SpecData import SPECS
+from SpecStructures import *
 
 class PackageManager(object):
 
@@ -50,6 +51,8 @@ class PackageManager(object):
         listFoundRPMPackages=[]
         listRPMFiles=[]
         listDirectorys=[]
+        mapPackageVersionRelease={}
+        pkgVerRel = dependentPackageData()
         listDirectorys.append(constants.rpmPath)
         if constants.inputRPMSPath is not None:
             listDirectorys.append(constants.inputRPMSPath)
@@ -65,11 +68,27 @@ class PackageManager(object):
         pkgUtils = PackageUtils(self.logName,self.logPath)
         for rpmfile in listRPMFiles:
             package,version,release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
+            pkgVerRel.package = package
+            pkgVerRel.version = version
+            pkgVerRel.release = release
+            if package in mapPackageVersionRelease:
+                mapPackageVersionRelease[package].append(pkgVerRel)
+            else:
+                mapPackageVersionRelease[package]=[pkgVerRel]
+        for package in mapPackageVersionRelease:
             if SPECS.getData().isRPMPackage(package):
-                specVersion=SPECS.getData().getVersion(package)
-                specRelease=SPECS.getData().getRelease(package)
-                if version == specVersion and release == specRelease:
-                    listFoundRPMPackages.append(package)
+                numVersions=SPECS.getData().getNumberOfVersions(package)
+                for index in range(0, numVersions):
+                        flag=False;
+                        specVersion=SPECS.getData().getVersion(package,index)
+                        specRelease=SPECS.getData().getRelease(package,index)
+                        for i in range(0,len(mapPackageVersionRelease[package])):
+                                if specVersion == mapPackageVersionRelease[package][i].version and specRelease == mapPackageVersionRelease[package][i].release:
+                                        flag=True
+                        if flag == False:
+                                break
+                if flag:
+                        listFoundRPMPackages.append(package)
         #Mark package available only if all sub packages are available
         for package in listFoundRPMPackages:
             basePkg = SPECS.getData().getSpecName(package)
