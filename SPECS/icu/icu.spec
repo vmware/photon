@@ -1,14 +1,14 @@
 Summary:	International Components for Unicode.
 Name:		icu
-Version:	55.1
+Version:	61.1
 Release:	1%{?dist}
 License:	MIT and UCD and Public Domain
 URL:		http://www.icu-project.org
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://download.icu-project.org/files/%{name}4c/%{version}/%{name}4c-55_1-src.tgz
-%define sha1 icu=3bb301c11be0e239c653e8aa2925c53f6f4dc88d
+Source0:	http://download.icu-project.org/files/%{name}4c/%{version}/%{name}4c-61_1-src.tgz
+%define sha1 icu=06ca7b1e64c28e07d5633a2e0257380884ea486b
 %description
 The International Components for Unicode (ICU) package is a mature, widely used set of C/C++ libraries providing Unicode and Globalization support for software applications.
 %package	devel
@@ -37,5 +37,7 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 61.1-1
+-   Update to latest version
 *   Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 55.1-1
 -   Initial build for photon

@@ -2,18 +2,17 @@
 
 Summary:      Z shell
 Name:         zsh
-Version:      5.3.1
-Release:      5%{?dist}
+Version:      5.6.1
+Release:      1%{?dist}
 License:      MIT
 URL:          http://zsh.sourceforge.net/
 Group:        System Environment/Shells
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://www.zsh.org/pub/%{name}-%{version}.tar.xz
-%define sha1  zsh=ec2a98c080f213c1c6c465c0c64662b5eae6818f
+%define sha1  zsh=6caa65c72b2f8f52aecce9064e223139d3a37d85
 Source1:      zprofile.rhs
 Source2:      zshrc
-Patch0:       zsh-CVE-2018-7548.patch
 
 BuildRequires: coreutils
 BuildRequires: tar
@@ -59,7 +58,6 @@ This package contains the Zsh manual in html format.
 %prep
 
 %setup -q
-%patch0 -p1
 
 %build
 # make loading of module's dependencies work again (#1277996)
@@ -146,6 +144,8 @@ fi
 %doc Doc/*.html
 
 %changelog
+*   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 5.6.1-1
+-   Upgrading to latest
 *   Mon Mar 19 2018 Xiaolin Li <xiaolinl@vmware.com> 5.3.1-5
 -   Fix CVE-2018-7548
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 5.3.1-4
