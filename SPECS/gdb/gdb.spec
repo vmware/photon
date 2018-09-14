@@ -1,11 +1,11 @@
 Summary:        C debugger
 Name:           gdb
-Version:        7.12.1
-Release:        8%{?dist}
+Version:        8.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
-%define sha1    gdb=ef77c5345d6f9fdcdf7a5d8503301242b701936e
+%define sha1    gdb=ee66294d87a109f88a459d0da5d0bb2da5135f45
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -80,6 +80,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 8.2-1
+-   Update to version 8.2
 *   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-8
 -   Enable LZMA support
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 7.12.1-7

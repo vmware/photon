@@ -20,6 +20,7 @@ BuildRequires:	unzip
 BuildRequires:  zlib-devel
 BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
+BuildRequires:	icu
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel
 Requires:       openjre8 = %{version}-%{release}
 Requires:       chkconfig

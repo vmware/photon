@@ -21,8 +21,6 @@ x86_64/glib-2.48.2-1.ph1.x86_64.rpm
 x86_64/glib-devel-2.48.2-1.ph1.x86_64.rpm
 x86_64/harfbuzz-0.9.40-1.x86_64.rpm
 x86_64/harfbuzz-devel-0.9.40-1.x86_64.rpm
-x86_64/icu-55.1-1.x86_64.rpm
-x86_64/icu-devel-55.1-1.x86_64.rpm
 x86_64/libICE-1.0.9-1.x86_64.rpm
 x86_64/libICE-devel-1.0.9-1.x86_64.rpm
 x86_64/libSM-1.2.2-1.x86_64.rpm
