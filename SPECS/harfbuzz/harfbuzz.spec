@@ -1,14 +1,14 @@
 Summary:	opentype text shaping engine
 Name:		harfbuzz
-Version:	1.4.5
-Release:	2%{?dist}
+Version:	1.9.0
+Release:	1%{?dist}
 License:	MIT
 URL:		http://harfbuzz.org
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	https://www.freedesktop.org/software/harfbuzz/release/%{name}-%{version}.tar.bz2
-%define sha1 harfbuzz=e979eb20b789c1fc47107ef93a584924e34dd195
+%define sha1 harfbuzz=b1b607216af1ee16d2f86c8427ecc36b6f2fd9dd
 BuildRequires:	glib-devel
 BuildRequires:	freetype2
 BuildRequires:	freetype2-devel
@@ -22,13 +22,12 @@ Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 Requires:	glib-devel
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q 
+%setup -q
 %build
-./configure \
-	--prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
 
 %install
@@ -56,8 +55,11 @@ make %{?_smp_mflags} -k check
 %{_includedir}/%{name}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_libdir}/cmake/harfbuzz/harfbuzz-config.cmake
 
 %changelog
+*       Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 1.9.0-1
+-       Update to version 1.9.0
 *       Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 1.4.5-2
 -       Add glib requirement
 *       Wed Apr 05 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.5-1
