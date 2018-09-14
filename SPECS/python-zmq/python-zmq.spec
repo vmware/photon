@@ -3,15 +3,15 @@
 
 Summary:        Software library for fast, message-based applications
 Name:           python-zmq
-Version:        16.0.2
-Release:        2%{?dist}
+Version:        17.1.2
+Release:        1%{?dist}
 License:        LGPLv3+ and BSD3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Url:            http://zeromq.org/bindings:python
+Url:            https://pypi.org/project/pyzmq
 Source0:        https://pypi.python.org/packages/af/37/8e0bf3800823bc247c36715a52e924e8f8fd5d1432f04b44b8cd7a5d7e55/pyzmq-%{version}.tar.gz
-%define sha1	pyzmq=ad91c8d50f4c85e2e321511914d2420ad3603c49
+%define sha1	pyzmq=d0e5d7dd59f2398345fc4bacf5ee91241d857f0d
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -62,6 +62,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/zmq
 
 %changelog
+*   Sat Sep 15 2018 Tapas Kundu <tkundu@vmware.com> 17.1.2-1
+-   Updated to release 17.1.2
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 16.0.2-2
 -   Add python3-libs to BuildRequires
 *   Fri Apr 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 16.0.2-1

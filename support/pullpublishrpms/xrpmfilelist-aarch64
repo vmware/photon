@@ -4,8 +4,6 @@ aarch64/openjdk8-1.8.0.151-1.ph2.aarch64.rpm
 aarch64/openjre8-1.8.0.151-1.ph2.aarch64.rpm
 aarch64/alsa-lib-1.1.5-1.aarch64.rpm
 aarch64/alsa-lib-devel-1.1.5-1.aarch64.rpm
-aarch64/icu-55.1-1.aarch64.rpm
-aarch64/icu-devel-55.1-1.aarch64.rpm
 aarch64/libICE-1.0.9-1.aarch64.rpm
 aarch64/libICE-devel-1.0.9-1.aarch64.rpm
 aarch64/libSM-1.2.2-1.aarch64.rpm
