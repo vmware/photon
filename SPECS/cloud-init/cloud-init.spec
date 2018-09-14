@@ -1,8 +1,8 @@
-%define python3_sitelib /usr/lib/python3.6/site-packages
+%define python3_sitelib /usr/lib/python3.7/site-packages
 
 Name:           cloud-init
 Version:        0.7.9
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -138,6 +138,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Sat Sep 15 2018 Tapas Kundu <tkundu@vmware.com> 0.7.9-15
+-   Updated the macro to latest python3.
 *   Wed Feb 28 2018 Anish Swaminathan <anishs@vmware.com> 0.7.9-14
 -   Add support for systemd constructs for azure DS
 *   Mon Oct 16 2017 Vinay Kulkarni <kulakrniv@vmware.com> 0.7.9-13
