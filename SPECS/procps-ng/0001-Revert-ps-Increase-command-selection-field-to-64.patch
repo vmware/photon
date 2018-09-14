@@ -1,0 +1,53 @@
+From 381fc107393c6e71ac16704bb9120a92fdcf7fca Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Fri, 14 Sep 2018 19:20:19 +0000
+Subject: [PATCH] Revert "ps: Increase command selection field to 64"
+
+This reverts commit 14005a371e5c14289e96a4927ffd1a827d3c9d85.
+---
+ NEWS        | 1 -
+ ps/common.h | 2 +-
+ ps/select.c | 2 +-
+ 3 files changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/NEWS b/NEWS
+index 1ca7c03..562240d 100644
+--- a/NEWS
++++ b/NEWS
+@@ -10,7 +10,6 @@ procps-ng-3.3.15
+   * pgrep: Fix stack-based buffer overflow                 CVE-2018-1125
+   * pgrep: Remove >15 warning as comm can be longer        issue #92
+   * ps: Fix buffer overflow in output buffer, causing DOS  CVE-2018-1123
+-  * ps: Increase command name selection field to 64
+   * top: Don't use cwd for location of config              CVE-2018-1122
+ 
+ procps-ng-3.3.14
+diff --git a/ps/common.h b/ps/common.h
+index 905d320..fc4d3a8 100644
+--- a/ps/common.h
++++ b/ps/common.h
+@@ -189,7 +189,7 @@ typedef union sel_union {
+   uid_t uid;
+   gid_t gid;
+   dev_t tty;
+-  char  cmd[64];  /* this is _not_ \0 terminated */
++  char  cmd[16];  /* this is _not_ \0 terminated */
+ } sel_union;
+ 
+ typedef struct selection_node {
+diff --git a/ps/select.c b/ps/select.c
+index f58ca25..e12982d 100644
+--- a/ps/select.c
++++ b/ps/select.c
+@@ -117,7 +117,7 @@ static int proc_was_listed(proc_t *buf){
+     break; case SEL_SESS: return_if_match(session,pid);
+ 
+     break; case SEL_COMM: i=sn->n; while(i--)
+-    if(!strncmp( buf->cmd, (*(sn->u+i)).cmd, 63 )) return 1;
++    if(!strncmp( buf->cmd, (*(sn->u+i)).cmd, 15 )) return 1;
+ 
+ 
+ 
+-- 
+2.17.1
+

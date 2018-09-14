@@ -1,7 +1,7 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        3.3.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://procps.sourceforge.net/
 Group:          Applications/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
 %define sha1    procps-ng=2929bc64f0cf7b2db997eef79b7187658e47230d
+Patch0:		0001-Revert-ps-Increase-command-selection-field-to-64.patch
 BuildRequires:  ncurses-devel
 Requires:       ncurses
 Conflicts:      toybox
@@ -29,6 +30,7 @@ These are the additional language files of procps-ng
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -100,6 +102,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Fri Sep 14 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.3.15-2
+-   Revert ps-Increase-command-selection-field-to-64
 *   Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1
 -   Upgrade version to 3.3.15.
 -   Fix for CVE-2018-1122 CVE-2018-1123 CVE-2018-1124 CVE-2018-1125
