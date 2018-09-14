@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           PyYAML
-Version:        3.12
-Release:        2%{?dist}
+Version:        3.13
+Release:        1%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/%{name}-%{version}.tar.gz
-%define sha1 PyYAML=cb7fd3e58c129494ee86e41baedfec69eb7dafbe
+%define sha1 PyYAML=22f95fe2f5ef29ab17110f92c7186e2cfde6b419
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -90,6 +90,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Sat Sep 15 2018 Tapas Kundu <tkundu@vmware.com> 3.13-1
+-   Updated to release 3.13
 *   Tue May 16 2017 Kumar Kaushik <kaushikk@vmware.com> 3.12-2
 -   Adding python3 support.
 *   Tue Apr 18 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.12-1
