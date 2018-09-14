@@ -3,21 +3,19 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.13.0.1
-Release:        7%{?dist}
+Version:        4.14.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=2119489397d7e4da19320ef9330ab717ac05587d
+%define sha1    rpm=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
-Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
-Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch2:         rpm-CVE-2017-7501.patch
+Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -88,14 +86,9 @@ Python3 rpm.
 %prep
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
-# pass -L opts to gcc as well to prioritize it over standard libs
-sed -i 's/-Wl,-L//g' python/setup.py.in
-sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
 ./autogen.sh --noconfigure
 ./configure \
@@ -154,7 +147,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-/bin/rpm
+%{_bindir}/rpm
 %{_bindir}/gendiff
 %{_bindir}/rpm2archive
 %{_bindir}/rpm2cpio
@@ -173,11 +166,15 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/tgpg
 %{_libdir}/rpm/platform
 %{_libdir}/rpm-plugins/*
+%{_libdir}/rpm/python-macro-helper
+%{_libdir}/rpm/pythondistdeps.py
 %{_mandir}/man8/rpm.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
+%{_mandir}/man8/rpm-misc.8.gz
+%{_mandir}/man8/rpm-plugin-systemd-inhibit.8.gz
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -260,6 +257,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 14 2018 Keerthana K <keerthanak@vmware.com> 4.14.2-1
+-   Update to version 4.14.2
 *   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
 -   Fix CVE-2017-7501
 *   Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
