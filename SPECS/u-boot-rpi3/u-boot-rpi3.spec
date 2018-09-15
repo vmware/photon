@@ -2,13 +2,14 @@
 %global debug_package %{nil}
 Summary:        U-Boot EFI firmware for the rpi3
 Name:		u-boot-rpi3
-Version:	2018.07
+Version:	2018.09
 Release:	1%{?dist}
 License:	GPLv2
 Url:            http://www.denx.de/wiki/U-Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        ftp://ftp.denx.de/pub/u-boot/u-boot-%{version}.tar.bz2
+%define sha1 u-boot=e43d4fc09395f8cde29d655d35b2bb773e89b444
 Patch0:		0001-XXX-openSUSE-XXX-Load-dtb-from-part.patch
 Patch1:		0004-Fix-MMC1-external-SD-slot-on-Samsun.patch
 BuildRequires:  bc
@@ -16,7 +17,6 @@ BuildRequires:  openssl-devel
 BuildRequires:  python2-devel
 BuildRequires:  swig
 
-%define sha1 u-boot=4101e8694a8d666c6f460c090e01460bb9178ee7
 %description
 Das U-Boot (or just "U-Boot" for short) is Open Source Firmware for
 Embedded PowerPC, ARM, MIPS and x86 processors.
@@ -60,6 +60,8 @@ install -D -m 0644 u-boot.bin %{buildroot}/boot/esp/u-boot.bin
 %doc doc/README.ARM-memory-map
 
 %changelog
+*   Thu Sep 13 2018 Michelle Wang <michellew@vmware.com> 2018.09-1
+-   Version update to 2018.09
 *   Wed Jul 25 2018 Ajay Kaher <akaher@vmware.com> 2018.07-1
 -   Version update to u-boot-rpi3-2018.07-1
 *   Fri Dec 15 2017 Alexey Makhalov <amakhalov@vmware.com> 2017.11-1
