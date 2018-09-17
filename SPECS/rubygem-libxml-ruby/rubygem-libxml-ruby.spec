@@ -2,8 +2,8 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name libxml-ruby
 Name:           rubygem-libxml-ruby
-Version:        3.0.0
-Release:        4%{?dist}
+Version:        3.1.0
+Release:        1%{?dist}
 Summary:        Provides Ruby language bindings for the GNOME Libxml2 XML toolkit
 Group:          Applications/Programming
 License:        BSD
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/%{gem_name}
 Source0:        https://rubygems.org/downloads/libxml-ruby-%{version}.gem
-%define sha1    libxml-ruby=9a4f28d019da0aef73773d676f9ba3ce9294b6bb
+%define sha1    libxml-ruby=fb9e56fa6d6c9574613f4f0e3563b5f0e32eaca7
 BuildRequires:  ruby >= 2.4.0
 BuildRequires:  libxml2-devel 
 Requires:       ruby >= 2.4.0
@@ -36,6 +36,8 @@ LANG=en_US.UTF-8 rake test
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 3.1.0-1
+-   Update to version 3.1.0
 *   Wed Nov 01 2017 Rui Gu <ruig@vmware.com> 3.0.0-4
 -   Remove segfault test tc_node_copy. Upstream had labeled it. Add expected locale.
 *   Thu Sep 05 2017 Chang Lee <changlee@vmware.com> 3.0.0-3
