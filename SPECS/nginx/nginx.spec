@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.15.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -38,7 +38,9 @@ popd
     --with-http_ssl_module \
     --with-pcre \
     --with-ipv6 \
-    --with-stream
+    --with-stream \
+    --with-http_auth_request_module \
+    --with-http_sub_module
 
 make %{?_smp_mflags}
 %install
@@ -58,6 +60,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Mon Sep 17 2018 Keerthana K <keerthanak@vmware.com> 1.15.3-2
+-   Adding http_auth_request_module and http_sub_module.
 *   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.15.3-1
 -   Upgrade to version 1.15.3
 *   Fri Jul 20 2018 Keerthana K <keerthanak@vmware.com> 1.13.8-3
