@@ -1,19 +1,14 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
-Version:          5.5.2
-Release:          5%{?dist}
+Version:          5.6.3
+Release:          1%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org/
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha1      strongswan=0f181715fd25a98a9e0d3227b594c6fc8ed429c2
-Patch0:           CVE-2017-9022.patch
-Patch1:           CVE-2017-9023.patch
-Patch2:           CVE-2017-11185.patch
-Patch3:           CVE-2018-5388.patch
-Patch4:           CVE-2018-10811.patch
+%define sha1      strongswan=749e8b5ad0c9480c2303bc6caf4c9c6452ce00ed
 
 BuildRequires:    autoconf
 
@@ -22,11 +17,6 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
 
 %build
 ./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
@@ -38,6 +28,9 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
+
+%check
+make check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -56,6 +49,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/strongswan/*
 
 %changelog
+*   Mon Sep 17 2018 Tapas Kundu <tkundu@vmware.com> 5.6.3-1
+-   Updated to 5.6.3 release
 *   Thu Aug 16 2018 Tapas Kundu <tkundu@vmware.com> 5.5.2-5
 -   Fix for CVE-2018-10811
 *   Mon Jul 23 2018 Ajay Kaher <akaher@vmware.com> 5.5.2-4

@@ -1,14 +1,14 @@
 Summary:        The Sysstat package contains utilities to monitor system performance and usage activity
 Name:           sysstat
-Version:        11.4.3
-Release:        2%{?dist}
+Version:        12.0.1
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://sebastien.godard.pagesperso-orange.fr/
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://perso.wanadoo.fr/sebastien.godard/%{name}-%{version}.tar.xz
-%define sha1    sysstat=805002b2bef00cd9ab44c5037d09b29cb71a17f8
+%define sha1    sysstat=5bb0000f838e744c306f7bb826c5ca41040c7297
 BuildRequires:  cronie
 Requires:       cronie
 %description
@@ -26,6 +26,7 @@ Requires:       cronie
             --mandir=%{_mandir} \
             --disable-stripping
 make %{?_smp_mflags}
+
 %install
 make install
 mkdir -p %{buildroot}/usr/lib/systemd/system/
@@ -36,6 +37,10 @@ install -D -m 0644 %{_builddir}/%{name}-%{version}/cron/sysstat-collect.timer %{
 install -D -m 0644 %{_builddir}/%{name}-%{version}/cron/sysstat-collect.service %{buildroot}/usr/lib/systemd/system/
 
 %find_lang %{name}
+
+%check
+make test
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -52,6 +57,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon Sep 17 2018 Tapas Kundu <tkundu@vmware.com> 12.0.1-1
+-   Updated to 12.0.1 release
 *   Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 11.4.3-2
 -   Ensure debuginfo
 *   Tue Apr 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 11.4.3-1
