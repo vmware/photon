@@ -3,14 +3,14 @@
 %global gem_name fluentd
 
 Name: rubygem-fluentd
-Version:        1.2.3
-Release:        2%{?dist}
+Version:        1.2.5
+Release:        1%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 License:        Apache 2
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/fluentd-%{version}.gem
-%define sha1    fluentd=715fc88e66d0e2686b18a5c3c4787924c9281f40
+%define sha1    fluentd=72dda3e02de688565e9e15f15847a42bc8d571d7
 BuildRequires:  ruby >= 2.1
 
 Requires(post): systemd
@@ -53,6 +53,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 1.2.5-1
+-   Update to version 1.2.5
 *   Thu Aug 16 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-2
 -   Added dependency on rubygem-bundler
 *   Tue Jul 24 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.3-1
