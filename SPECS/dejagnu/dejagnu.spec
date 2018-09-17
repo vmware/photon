@@ -1,11 +1,11 @@
 Summary:        DejaGnu test framework
 Name:           dejagnu
-Version:        1.5.3
+Version:        1.6
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
-Source0:         https://ftp.gnu.org/pub/gnu/dejagnu/dejagnu-1.5.3.tar.gz
-%define sha1    dejagnu=d81288e7d7bd38e74b7fee8e570ebfa8c21508d9
+Source0:         https://ftp.gnu.org/pub/gnu/dejagnu/%{name}-%{version}.tar.gz
+%define sha1    dejagnu=03a40e5bf964383af3fb56a07cc7605cb9aaab97
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -62,5 +62,7 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 
 %changelog
+*   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 1.6-1
+-   Upgraded to version 1.6
 *   Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.5.3-1
 -   Initial build. First version
