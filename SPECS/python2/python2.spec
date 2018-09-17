@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python2
 Version:        2.7.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -188,6 +188,7 @@ make test
 %exclude %{_libdir}/python2.7/bsddb/test
 %exclude %{_libdir}/python2.7/ctypes/test
 %exclude %{_libdir}/python2.7/distutils/tests
+%exclude %{_libdir}/python2.7/distutils/command/wininst*exe
 %exclude %{_libdir}/python2.7/email/test
 %exclude %{_libdir}/python2.7/json/tests
 %exclude %{_libdir}/python2.7/sqlite3/test
@@ -233,6 +234,8 @@ make test
 %{_libdir}/python2.7/test/*
 
 %changelog
+*   Mon Sep 17 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-2
+-   Remove vulnerable Windows installers from python-libs rpm
 *   Mon Aug 20 2018 Dweep Advani <dadvani@vmware.com> 2.7.15-1
 -   Update to version 2.7.15
 *   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.13-12
