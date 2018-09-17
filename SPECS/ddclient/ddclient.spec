@@ -1,12 +1,12 @@
 Name:           ddclient
-Version:        3.8.3
-Release:        3%{?dist}
+Version:        3.9.0
+Release:        1%{?dist}
 Url:            https://sourceforge.net/p/ddclient/wiki/Home/
 Summary:        Perl client used to update dynamic DNS entries for accounts on Dynamic DNS Network Service Provider
 License:        GPLv2
 Group:          Applications
-Source0:        http://downloads.sourceforge.net/project/ddclient/ddclient/ddclient-3.8.3.tar.bz2
-%define sha1 ddclient=8668d8828a74ef4e7bca90890d7bbe414c37c3ff
+Source0:        http://downloads.sourceforge.net/project/ddclient/ddclient/ddclient-%{version}.tar.gz
+%define sha1 ddclient=e8764e3c330f8c0a64afdbd5560bd5806cffdd29
 
 Requires:       perl
 Requires:       perl-IO-Socket-SSL
@@ -52,6 +52,8 @@ EOF
 %dir /var/cache/ddclient
 
 %changelog
+* Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 3.9.0-1
+- Upgraded to version 3.9.0
 * Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 3.8.3-3
 - Remove BuildArch
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.8.3-2
