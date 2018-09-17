@@ -1,6 +1,6 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.59.0
+Version:        7.61.1
 Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
@@ -8,7 +8,7 @@ Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    curl=1a9bd7e201e645207b23a4b4dc38a32cc494a638
+%define sha1    curl=1f0732185e13d71d35a700f8314c3d5790968bb3
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -88,6 +88,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 7.61.1-1
+-   Upgraded to version 7.61.1
 *   Wed Apr 04 2018 Dheeraj Shetty <dheerajs@vmware.com> 7.59.0-1
 -   Update to version 7.59.0
 *   Thu Feb 08 2018 Xiaolin Li <xiaolinl@vmware.com> 7.58.0-1
