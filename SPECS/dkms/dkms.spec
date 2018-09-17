@@ -1,15 +1,15 @@
 %global commit 7c3e7c52a3816c82fc8a0ef4bed9cebedc9dd02d
 Summary:	Dynamic Kernel Module Support
 Name:		dkms
-Version:	2.2.0.3
-Release:	4%{?dist}
+Version:	2.6.1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://linux.dell.com/dkms/
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
-Source0:	http://linux.dell.com/cgi-bin/cgit.cgi/%{name}.git/snapshot/%{name}-7c3e7c52a3816c82fc8a0ef4bed9cebedc9dd02d.tar.bz2
-%define sha1 dkms-7c3e7c52a3816c82fc8a0ef4bed9cebedc9dd02d=400db7ea7eda72ef650053ed2c2c82a53a82217d
+Source0:	https://github.com/dell/dkms/archive/%{name}-%{version}.tar.gz
+%define sha1 dkms=9cdfecc29116d578e693cf3273ea9695d9471cf2
 BuildArch:	noarch
 BuildRequires:	systemd
 Requires:	systemd
@@ -17,7 +17,7 @@ Requires:	systemd
 Dynamic Kernel Module Support (DKMS) is a program/framework that enables generating Linux kernel modules whose sources generally reside outside the kernel source tree. The concept is to have DKMS modules automatically rebuilt when a new kernel is installed.
 
 %prep
-%setup -q -n %{name}-%{commit}
+%setup -q -n %{name}-%{version}
 %build
 %install
 make install-redhat-systemd DESTDIR=%{buildroot} \
@@ -57,6 +57,8 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 %{_localstatedir}/lib/dkms/dkms_dbversion
 
 %changelog
+*   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 2.6.1-1
+-   Upgraded to version 2.6.1
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.2.0.3-4
 -   Fixed logic to restart the active services after upgrade 
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.2.0.3-3
