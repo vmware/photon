@@ -2,14 +2,14 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %define gem_name trollop
 Name: rubygem-trollop
-Version: 2.1.2
-Release: 3%{?dist}
+Version: 2.9.9
+Release: 1%{?dist}
 Summary: Commandline option parser for Ruby
 Group: Applications/Programming
 License: BSD
 URL: https://rubygems.org/gems/%{gem_name}
 Source0: https://rubygems.org/downloads/trollop-%{version}.gem
-%define sha1 trollop=87a11bff3e9d08702487108cb18e01299112df44
+%define sha1 trollop=744730e58c4c56b5d652e210cb36974593eb1556
 BuildRequires: ruby
 Requires: ruby
 %description
@@ -23,6 +23,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %defattr(-,root,root,-)
 %{gemdir}
 %changelog
+*   Tue Sep 11 2018 srinidhira0 <srinidhir@vmware.com> 2.9.9-1
+-   Update to version 2.9.9
 * Wed Jan 25 2017 Anish Swaminathan <anishs@vmware.com> 2.1.2-3
 - Bump up release number to reflect ruby upgrade
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.2-2

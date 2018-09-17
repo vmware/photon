@@ -29,7 +29,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %files
 %defattr(-,root,root,-)
 %{gemdir}
-%exclude /usr/lib/ruby/gems/2.4.0/gems/ffi-1.9.25/ext/ffi_c/libffi-x86_64-linux/include/ffitarget.h
+%exclude /usr/lib/ruby/gems/2.5.0/gems/ffi-1.9.25/ext/ffi_c/libffi-x86_64-linux/include/ffitarget.h
 
 %changelog
 *   Mon Aug 13 2018 Srinidhi Rao <srinidhir@vmware.com> 1.9.25-1
