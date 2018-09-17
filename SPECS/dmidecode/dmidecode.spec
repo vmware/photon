@@ -1,12 +1,12 @@
 Summary:	Tool to analyze BIOS DMI data
 Name:		dmidecode
-Version:	3.0
-Release:	2%{?dist}
+Version:	3.1
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.nongnu.org/dmidecode/
 Group:		System Environment/Base
 Source0:	http://download.savannah.gnu.org/releases/dmidecode/%{name}-%{version}.tar.gz
-%define sha1 dmidecode=1bc5e9a400729f50aba5b441d14131aaa1ed42dd
+%define sha1 dmidecode=3d61096a25fe55798faa882bff32f3bf6eb6366e
 Vendor:		VMware, Inc.
 Distribution:	Photon
 %description
@@ -25,6 +25,8 @@ make DESTDIR=%{buildroot} prefix=%{_prefix} install
 %{_mandir}/man8/*
 
 %changelog
+*	Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 3.1-1
+-	Upgraded to version 3.1
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-2
 -	GA - Bump release of all rpms
 *	Mon Nov 02 2015 Divya Thaluru <dthaluru@vmware.com> 3.0-1
