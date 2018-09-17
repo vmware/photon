@@ -1,13 +1,13 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        C extensions for Python
 Name:           cython
-Version:        0.25.2
-Release:        2%{?dist}
+Version:        0.28.5
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        Apache License
 URL:            http://cython.org/
-Source0:        http://cython.org/release/Cython-%{version}.tar.gz
-%define sha1 Cython=e73f5afe89792df3467cc7bccd29fc01467fc28b
+Source0:         https://github.com/cython/cython/archive/Cython-%{version}.tar.gz
+%define sha1 Cython=fc813f1cbc931ac230bbd6142b30f792af2db390
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildRequires:	python2-devel
@@ -43,6 +43,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+*	Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 0.28.5-1
+-	Upgraded to version 0.28.5
 *       Thu Jul 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.25.2-2
 -       Build using python2 explicity
 *       Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 0.25.2-1
