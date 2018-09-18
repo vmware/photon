@@ -1,14 +1,14 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
-Version:    1.5.4
-Release:    12%{?dist}
+Version:    1.6.1
+Release:    1%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution: Photon
 Source0:    http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha1 apr-util=72cc3ac693b52fb831063d5c0de18723bc8e0095
+%define sha1 %{name}=5bae4ff8f1dad3d7091036d59c1c0b2e76903bf4
 %define     apuver    1
 
 BuildRequires:   apr-devel
@@ -86,7 +86,7 @@ make DESTDIR=%{buildroot} install
 make check
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 
@@ -121,6 +121,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+*   Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 1.6.1-1
+-   Updated to version 1.6.1
 *   Mon Sep 18 2017 Rui Gu <ruig@vmware.com> 1.5.4-12
 -   Disable smp_flag on make check because of race condition
 *   Thu Jul 6 2017 Divya Thaluru <dthaluru@vmware.com> 1.5.4-11
