@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.14.54
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        6%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -41,6 +41,9 @@ Patch24:        Allow-some-algo-tests-for-FIPS.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
+# Out-of-tree patches from AppArmor:
+Patch29:        0001-apparmor-add-base-infastructure-for-socket-mediation.patch
+Patch30:        0002-apparmor-af_unix-mediation.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -141,6 +144,9 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %patch24 -p1
 %patch26 -p1
 %patch28 -p1
+%patch29 -p1
+%patch30 -p1
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -360,6 +366,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-6
+-   Add full retpoline support by building with retpoline-enabled gcc.
+*   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-5
+-   Apply out-of-tree patches needed for AppArmor.
 *   Wed Aug 22 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.54-4
 -   Fix overflow kernel panic in rsi driver.
 -   .config: enable BT stack, enable GPIO sysfs.

@@ -7,18 +7,19 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.10.2
+Version:        1.10.7
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=e1cef85820ff16265788c96a6fd31056bfaf247c
+%define sha1    kubernetes-%{version}.tar.gz=39c24846730ae3902a9ce5b49ec9fce7336441d4
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
+Patch0:         k8s-1.10-vke.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-BuildRequires:  go
+BuildRequires:  go = 1.9.4
 BuildRequires:  rsync
 BuildRequires:  which
 Requires:       cni
@@ -42,6 +43,12 @@ Requires:       %{name} = %{version}
 %description    kubeadm
 kubeadm is a tool that enables quick and easy deployment of a kubernetes cluster.
 
+%package	kubectl-extras
+Summary:	kubectl binaries for extra platforms
+Group:		Development/Tools
+%description	kubectl-extras
+Contains kubectl binaries for additional platforms.
+
 %package        pause
 Summary:        pause binary
 Group:          Development/Tools
@@ -54,6 +61,7 @@ cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 cd %{name}-%{version}
+%patch0 -p1
 
 %build
 make
@@ -62,10 +70,15 @@ mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
 strip bin/pause-%{archname}
 popd
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}"
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/linux/%{archname}
+install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
 
 binaries=(cloud-controller-manager hyperkube kube-aggregator kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
@@ -73,6 +86,11 @@ for bin in "${binaries[@]}"; do
   install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/${bin}
 done
 install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
+
+# kubectl-extras
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}/ _output/local/bin/darwin/%{archname}/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/%{archname}/ _output/local/bin/linux/%{archname}/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _output/local/bin/windows/%{archname}/kubectl.exe
 
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
@@ -189,7 +207,16 @@ fi
 %defattr(-,root,root)
 %{_bindir}/pause-%{archname}
 
+%files kubectl-extras
+%defattr(-,root,root)
+/opt/vmware/kubernetes/darwin/%{archname}/kubectl
+/opt/vmware/kubernetes/linux/%{archname}/kubectl
+/opt/vmware/kubernetes/windows/%{archname}/kubectl.exe
+
 %changelog
+*   Wed Aug 29 2018 Dheeraj Shetty <dheerajs@vmware.com> 1.10.7-1
+-   Update to k8s version 1.10.7 with VKE patch (fbdcc5c) and add
+-   kubectl-extras package
 *   Thu May 03 2018 Xiaolin Li <xiaolinl@vmware.com> 1.10.2-1
 -   Add kubernetes 1.10.2.
 *   Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-6

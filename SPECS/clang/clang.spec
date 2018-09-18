@@ -1,14 +1,14 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
-Version:        4.0.0
-Release:        2%{?dist}
+Version:        6.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/cfe-%{version}.src.tar.xz
-%define sha1    cfe=e2762800c93d9335781ea6a45af3f80845542ef5
+%define sha1    cfe=d93d8f3e3d7eb549ac58507383f7fcbdd78804d7
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  ncurses-devel
@@ -76,6 +76,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
+-   Update to version 6.0.1 to get it to build with gcc 7.3
 *   Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 4.0.0-2
 -   Updated %check
 *   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1

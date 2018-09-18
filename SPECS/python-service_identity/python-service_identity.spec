@@ -3,15 +3,15 @@
 
 Summary:        Service identity verification for pyOpenSSL.
 Name:           python-service_identity
-Version:        16.0.0
-Release:        3%{?dist}
+Version:        17.0.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/service_identity
 Source0:        service_identity-%{version}.tar.gz
-%define         sha1 service_identity=42617f5abbd917c663aea58c4628b82e80d245ce
+%define sha1    service_identity=63408ac8b2cfd70f3b31fdcfefc1414b5b965cbc
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -89,6 +89,8 @@ PYTHONPATH="%{buildroot}%{python3_sitelib}" py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 17.0.0-1
+-   Update to version 17.0.0
 *   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 16.0.0-3
 -   Fixed runtime dependencies
 -   Fixed make check errors

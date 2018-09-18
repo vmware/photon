@@ -1,15 +1,15 @@
 Summary:        Tool Command Language - the language and library.
 Name:           tcl
-Version:        8.6.6
+Version:        8.6.8
 %define majorver 8.6
-Release:        2%{?dist}
+Release:        1%{?dist}
 URL:            http://tcl.sourceforge.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
-%define sha1    tcl-core=6a1bc424faeef44fed5e44d32198c7ff4ff05658
+%define sha1    tcl-core=e13199c76a7d1eae02f35cc9a20fabded6f815f5
 
 BuildRequires:  cmake
 
@@ -24,7 +24,7 @@ powerful command languages for applications.
 %package devel
 Summary: Headers and development libraries for tcl
 Group: Development/Libraries
-Requires: %{name} = %{version}
+Requires: %{name} = %{version}-%{release}
 
 %description devel
 Headers and development libraries for tcl
@@ -98,6 +98,8 @@ make test
 
 
 %changelog
+*   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 8.6.8-1
+-   Update version to 8.6.8.
 *   Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com>  8.6.6-2
 -   Package more files (private headers, etc). Took install section from
     Fedora: http://pkgs.fedoraproject.org/cgit/rpms/tcl.git/tree/tcl.spec

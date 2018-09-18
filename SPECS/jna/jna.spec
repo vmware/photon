@@ -3,16 +3,15 @@
 
 Summary:        Java Native Access
 Name:           jna
-Version:        4.4.0
-Release:        9%{?dist}
+Version:        4.5.2
+Release:        1%{?dist}
 License:        Apache
-URL:            http://github.com/twall/jna
+URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha1 jna=d9b54e98393a696f458468bc8f3167f701a9ea9f
-Patch0:         jna_remove_clover_jar.patch
+%define sha1 %{name}-%{version}=a75cfa8690861e535f391eca9820da548c921252
 BuildRequires: openjre8
 BuildRequires: openjdk8
 BuildRequires: apache-ant
@@ -26,14 +25,13 @@ The JNA package contains libraries for interop from Java to native libraries.
 %package devel
 Summary:    Sources for JNA
 Group:      Development/Libraries
-Requires:   jna = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 
 %description devel
 Sources for JNA
 
 %prep
 %setup -q
-%patch0 -p1
 
 %clean
 rm -rf %{buildroot}
@@ -83,6 +81,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 4.5.2-1
+-   Updated to version 4.5.2
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4.0-9
 -   Remove BuildArch
 *   Thu Sep 14 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4.0-8

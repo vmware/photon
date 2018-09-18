@@ -2,8 +2,8 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-M2Crypto
-Version:        0.26.0
-Release:        2%{?dist}
+Version:        0.30.1
+Release:        1%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
@@ -11,7 +11,7 @@ URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
 Source0:        https://pypi.python.org/packages/11/29/0b075f51c38df4649a24ecff9ead1ffc57b164710821048e3d997f1363b9/M2Crypto-%{version}.tar.gz
 Vendor:         VMware, Inc.
 Distribution:   Photon
-%define sha1 M2Crypto=1583782298a635c0634377e4037b1708c12ce426
+%define sha1    M2Crypto=8e2eb23196afbac08ad566ecb3378de9f35c5f12
 BuildRequires:  python2-devel
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
@@ -74,6 +74,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.30.1-1
+-   Update to version 0.30.1
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.26.0-2
 -   Remove BuildArch
 *   Fri Jul 14 2017 Kumar Kaushik <kaushikk@vmware.com> 0.26.0-1

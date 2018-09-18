@@ -3,15 +3,15 @@
 
 Summary:        Library to implement a well-behaved Unix daemon process.
 Name:           python-daemon
-Version:        2.1.2
-Release:        4%{?dist}
+Version:        2.2.0
+Release:        1%{?dist}
 License:        Apache-2
 Url:            https://pypi.python.org/pypi/python-daemon/
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://files.pythonhosted.org/packages/source/p/python-daemon/python-daemon-2.1.2.tar.gz
-%define sha1    python-daemon=e333e9031424611b8974d2b2d2804dd26c4fae8e
+Source0:        https://files.pythonhosted.org/packages/source/p/python-daemon/%{name}-%{version}.tar.gz
+%define sha1    python-daemon=9135b7edafa5bcd457d88bb2c0dfae024b3d8778
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -87,6 +87,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-1
+-   Updated to 2.2.0
 *   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.2-4
 -   Fixed check command to run unit tests
 -   Added packages required to run tests

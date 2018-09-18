@@ -1,0 +1,116 @@
+From c2ffeee34166f53334e5ad599e38e65397070bfb Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+Date: Mon, 13 Aug 2018 15:04:13 -0700
+Subject: [PATCH] likewise-open: Fix build warnings/errors with gcc 7.3
+
+           [compile] lwreg/utils/fileutils.c (host/x86_64)
+../lwreg/utils/fileutils.c: In function 'RegGetMatchingFilePathsInFolder':
+../lwreg/utils/fileutils.c:869:7: warning: typedef 'PATHNODE' locally defined but not used [-Wunused-local-typedefs]
+     } PATHNODE, *PPATHNODE;
+       ^~~~~~~~
+
+          [compile] lwreg/server/providers/sqlite/sqliteapi.c (host/x86_64)
+../lwreg/server/providers/sqlite/sqliteapi.c: In function 'SqliteDeleteTreeInternal_inlock_inDblock':
+../lwreg/server/providers/sqlite/sqliteapi.c:1654:9: error: 'memset' used with length equal to number of elements without multiplication by element size [-Werror=memset-elt-size]
+         memset(psubKeyName, 0, MAX_KEY_LENGTH);
+         ^~~~~~
+
+           [compile] lwreg/shell/export.c (host/x86_64)
+../lwreg/shell/export.c: In function 'ProcessExportedKeyInfo':
+../lwreg/shell/export.c:349:9: error: 'memset' used with length equal to number of elements without multiplication by element size [-Werror=memset-elt-size]
+         memset(pwszValueName, 0, MAX_KEY_LENGTH);
+         ^~~~~~
+
+           [compile] dcerpc/ncklib/cnxfer.c (host/x86_64)
+../dcerpc/ncklib/cnxfer.c: In function 'rpc__cn_add_new_iovector_elmt':
+../dcerpc/ncklib/cnxfer.c:367:73: error: ?: using integer constants in boolean context, the expression will always evaluate to 'true' [-Werror=int-in-bool-context]
+         if (RPC_CN_CREP_IOVLEN (call_rep) > (call_rep->sec != NULL) ? 3 : 2)
+
+           [compile] lsass/server/auth-providers/ad-open-provider/join/join.c (host/x86_64)
+../lsass/server/auth-providers/ad-open-provider/join/join.c: In function 'LsaJoinDomainInternal':
+../lsass/server/auth-providers/ad-open-provider/join/join.c:735:32: error: comparison between pointer and zero character constant [-Werror=pointer-compare]
+     if (pwszMachinePassword[0] == '\0')
+                                ^~
+../lsass/server/auth-providers/ad-open-provider/join/join.c:735:9: note: did you mean to dereference the pointer?
+     if (pwszMachinePassword[0] == '\0')
+         ^
+
+cc1: all warnings being treated as errors
+
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ dcerpc/ncklib/cnxfer.c                                   | 2 +-
+ lsass/server/auth-providers/ad-open-provider/join/join.c | 2 +-
+ lwreg/server/providers/sqlite/sqliteapi.c                | 2 +-
+ lwreg/shell/export.c                                     | 2 +-
+ lwreg/utils/fileutils.c                                  | 2 +-
+ 5 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/dcerpc/ncklib/cnxfer.c b/dcerpc/ncklib/cnxfer.c
+index cb8a6fd..dda5670 100644
+--- a/dcerpc/ncklib/cnxfer.c
++++ b/dcerpc/ncklib/cnxfer.c
+@@ -364,7 +364,7 @@ PRIVATE void rpc__cn_add_new_iovector_elmt
+          * Then adjust iovector so that we have only 2 elements:
+          * the header plus the current stub data.
+          */
+-        if (RPC_CN_CREP_IOVLEN (call_rep) > (call_rep->sec != NULL) ? 3 : 2)
++        if (RPC_CN_CREP_IOVLEN (call_rep) > ((call_rep->sec != NULL) ? 3 : 2))
+         {
+             /*
+              * rpc__cn_dealloc_buffered_data will always skip the
+diff --git a/lsass/server/auth-providers/ad-open-provider/join/join.c b/lsass/server/auth-providers/ad-open-provider/join/join.c
+index 971ddf3..cfaab80 100644
+--- a/lsass/server/auth-providers/ad-open-provider/join/join.c
++++ b/lsass/server/auth-providers/ad-open-provider/join/join.c
+@@ -732,7 +732,7 @@ LsaJoinDomainInternal(
+                sizeof(pwszMachinePassword)/sizeof(pwszMachinePassword[0]));
+     BAIL_ON_LSA_ERROR(dwError);
+ 
+-    if (pwszMachinePassword[0] == '\0')
++    if (pwszMachinePassword[0] == NULL || *pwszMachinePassword[0] == '\0')
+     {
+         BAIL_ON_NT_STATUS(STATUS_INTERNAL_ERROR);
+     }
+diff --git a/lwreg/server/providers/sqlite/sqliteapi.c b/lwreg/server/providers/sqlite/sqliteapi.c
+index 4e50fa1..1008a66 100644
+--- a/lwreg/server/providers/sqlite/sqliteapi.c
++++ b/lwreg/server/providers/sqlite/sqliteapi.c
+@@ -1651,7 +1651,7 @@ SqliteDeleteTreeInternal_inlock_inDblock(
+     for (iCount = 0; iCount < subKeyCount.dwSubKeyCount; iCount++)
+     {
+         dwSubKeyLen = MAX_KEY_LENGTH;
+-        memset(psubKeyName, 0, MAX_KEY_LENGTH);
++        memset(psubKeyName, 0, MAX_KEY_LENGTH * sizeof(psubKeyName[0]));
+ 
+         status = SqliteEnumKeyEx_inDblock(Handle,
+                                   hKey,
+diff --git a/lwreg/shell/export.c b/lwreg/shell/export.c
+index d641684..a0c08ce 100644
+--- a/lwreg/shell/export.c
++++ b/lwreg/shell/export.c
+@@ -346,7 +346,7 @@ ProcessExportedKeyInfo(
+ 
+     for (iCount = 0; iCount < dwValuesCount; iCount++)
+     {
+-        memset(pwszValueName, 0, MAX_KEY_LENGTH);
++        memset(pwszValueName, 0, MAX_KEY_LENGTH * sizeof(pwszValueName[0]));
+         dwValueNameLen = MAX_KEY_LENGTH;
+         memset(value, 0, dwValueLenMax);
+         dwValueLen = dwValueLenMax;
+diff --git a/lwreg/utils/fileutils.c b/lwreg/utils/fileutils.c
+index 99b0765..f744239 100644
+--- a/lwreg/utils/fileutils.c
++++ b/lwreg/utils/fileutils.c
+@@ -866,7 +866,7 @@ RegGetMatchingFilePathsInFolder(
+     {
+         PSTR pszPath;
+         struct __PATHNODE *pNext;
+-    } PATHNODE, *PPATHNODE;
++    } *PPATHNODE;
+ 
+     DWORD dwError = 0;
+     DIR* pDir = NULL;
+-- 
+2.7.4
+

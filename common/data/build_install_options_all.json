@@ -18,12 +18,6 @@
         "visible" : true,
         "include" : ["minimal"]
     },
-    "ostree_server" : {
-        "title" : "3. Photon OSTree Server",
-        "file" : "packages_ostree_server.json",
-        "visible" : true,
-        "include" : ["minimal"]
-    },
     "appliance" : {
         "title" : "Minimal packages to support appliances.",
         "file" : "packages_appliance.json",

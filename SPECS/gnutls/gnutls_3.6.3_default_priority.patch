@@ -1,0 +1,29 @@
+diff -rup gnutls-3.6.3-orig/lib/priority.c gnutls-3.6.3/lib/priority.c
+--- gnutls-3.6.3-orig/lib/priority.c	2018-09-06 01:14:34.395975850 -0700
++++ gnutls-3.6.3/lib/priority.c	2018-09-06 01:22:02.125042563 -0700
+@@ -1577,6 +1577,7 @@ gnutls_priority_init(gnutls_priority_t *
+ 	rmadd_func *fn;
+ 	bulk_rmadd_func *bulk_fn;
+ 	bulk_rmadd_func *bulk_given_fn;
++    unsigned int default_set = 0;
+ 	const cipher_entry_st *centry;
+ 
+ 	if (err_pos)
+@@ -1597,9 +1598,16 @@ gnutls_priority_init(gnutls_priority_t *
+ 	gnutls_atomic_init(&(*priority_cache)->usage_cnt);
+ 
+ 	if (priorities == NULL)
+-		priorities = DEFAULT_PRIORITY_STRING;
++    {
++        priorities = "@SYSTEM";
++        default_set = 1;
++    }
+ 
+ 	darg = _gnutls_resolve_priorities(priorities);
++    if (darg == NULL && default_set == 1) {
++        priorities = "NORMAL";
++        darg = _gnutls_resolve_priorities(priorities);
++    }
+ 	if (darg == NULL) {
+ 		gnutls_assert();
+ 		goto error;

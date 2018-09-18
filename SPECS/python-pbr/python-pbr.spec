@@ -3,15 +3,15 @@
 
 Summary:        Python Build Reasonableness
 Name:           python-pbr
-Version:        2.1.0
-Release:        5%{?dist}
+Version:        4.2.0
+Release:        1%{?dist}
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://docs.openstack.org/developer/pbr/
 Source0:        https://pypi.io/packages/source/p/pbr/pbr-%{version}.tar.gz
-%define sha1    pbr=cb5278676a96b429e491435ac04cfaf97b41d1c5
+%define sha1    pbr=10165d4998cbe252676ee95306d8f2c843ad2fe6
 Patch0:         disable-test-wsgi.patch
 BuildRequires:  python-docutils
 BuildRequires:  python-setuptools
@@ -103,6 +103,8 @@ popd
 %{python3_sitelib}/pbr
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.2.0-1
+-   Update to version 4.2.0
 *   Wed Jul 19 2017 Divya Thaluru <dthaluru@vmware.com> 2.1.0-5
 -   Fixed make check failure
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.0-4

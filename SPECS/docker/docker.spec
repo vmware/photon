@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -43,6 +43,9 @@ BuildRequires:  sed
 BuildRequires:  cmake
 BuildRequires:  findutils
 BuildRequires:  git
+BuildRequires:  libapparmor
+BuildRequires:  libapparmor-devel
+Requires:       libapparmor
 Requires:       libltdl
 Requires:       libgcc
 Requires:       glibc
@@ -100,8 +103,8 @@ git config --global http.proxy http://localhost:0
 export GOPATH="/go"
 export PATH="$PATH:$GOPATH/bin"
 
-export DOCKER_BUILDTAGS="pkcs11 seccomp exclude_graphdriver_aufs"
-export RUNC_BUILDTAGS="seccomp"
+export DOCKER_BUILDTAGS="pkcs11 seccomp apparmor exclude_graphdriver_aufs"
+export RUNC_BUILDTAGS="seccomp apparmor"
 
 cd /go/src/github.com
 
@@ -220,6 +223,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 17.06.0-5
+-   Updated BuildTags to include apparmor.
 *   Fri Sep 22 2017 Bo Gan <ganb@vmware.com> 17.06.0-4
 -   disable docker service by default
 *   Fri Sep 08 2017 Bo Gan <ganb@vmware.com> 17.06.0-3

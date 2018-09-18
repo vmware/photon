@@ -3,15 +3,15 @@
 
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
-Version:        1.12.1
-Release:        5%{?dist}
+Version:        1.15.1
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
 Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip 
-%define sha1    numpy=50d8a6dc5d95c914119d21b0c047b9761bbccd59 
+%define sha1    numpy=2e7548d4972e5366dd8b30ca3639e243dae96af9
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -80,6 +80,8 @@ rm -rf test
 %{_bindir}/f2py3
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.15.1-1
+-   Update to version 1.15.1
 *   Fri Aug 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.12.1-5
 -   Fix compilation issue for glibc-2.26
 *   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.12.1-4

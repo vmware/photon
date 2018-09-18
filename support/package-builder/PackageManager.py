@@ -84,6 +84,8 @@ class PackageManager(object):
         listFoundRPMPackages = set()
         listRPMFiles = set()
         listDirectorys = set()
+        mapPackageVersion={}
+        mapPackageRelease={}
         listDirectorys.add(constants.rpmPath)
         if constants.inputRPMSPath is not None:
             listDirectorys.add(constants.inputRPMSPath)
@@ -99,11 +101,23 @@ class PackageManager(object):
         pkgUtils = PackageUtils(self.logName, self.logPath)
         for rpmfile in listRPMFiles:
             package, version, release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
+            if package in mapPackageVersion:
+                mapPackageVersion[package].append(version)
+                mapPackageRelease[package].append(release)
+            else:
+                mapPackageVersion[package]=[version]
+                mapPackageRelease[package]=[release]
+        for package in mapPackageVersion:
             if SPECS.getData().isRPMPackage(package):
-                specVersion = SPECS.getData().getVersion(package)
-                specRelease = SPECS.getData().getRelease(package)
-                if version == specVersion and release == specRelease:
-                    listFoundRPMPackages.add(package)
+                numVersions=SPECS.getData().getNumberOfVersions(package)
+                flag=True;
+                for index in range(0, numVersions):
+                        specVersion=SPECS.getData().getVersion(package,index)
+                        specRelease=SPECS.getData().getRelease(package,index)
+                        if  specVersion not in mapPackageVersion[package] and specRelease not in mapPackageRelease[package]:
+                                flag=False
+                if flag:
+                        listFoundRPMPackages.add(package)
         #Mark package available only if all sub packages are available
         for package in listFoundRPMPackages:
             basePkg = SPECS.getData().getSpecName(package)

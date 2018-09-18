@@ -1,28 +1,28 @@
-diff -rup systemd-232/src/core/macros.systemd.in systemd-232-new/src/core/macros.systemd.in
---- systemd-232/src/core/macros.systemd.in	2016-11-03 10:16:42.000000000 -0700
-+++ systemd-232-new/src/core/macros.systemd.in	2016-11-18 11:40:03.883181197 -0800
-@@ -47,7 +47,9 @@ OrderWithRequires(postun): systemd \
+diff -rup systemd-239/src/core/macros.systemd.in systemd-239-new/src/core/macros.systemd.in
+--- systemd-239/src/core/macros.systemd.in	2018-06-22 04:11:49.000000000 -0700
++++ systemd-239-new/src/core/macros.systemd.in	2018-08-28 16:23:44.354412088 -0700
+@@ -41,7 +41,9 @@ OrderWithRequires(postun): systemd \
  %systemd_post() \
  if [ $1 -eq 1 ] ; then \
          # Initial installation \
--        systemctl --no-reload preset %{?*} >/dev/null 2>&1 || : \
+-        systemctl --no-reload preset %{?*} &>/dev/null || : \
 +        systemctl preset %{?*} >/dev/null 2>&1 || : \
 +elif [ $1 -eq 2 ] ; then \
 +        systemctl daemon-reload >/dev/null 2>&1 || : \
  fi \
  %{nil}
  
-@@ -56,7 +58,8 @@ fi \
+@@ -50,7 +52,8 @@ fi \
  %systemd_preun() \
  if [ $1 -eq 0 ] ; then \
          # Package removal, not upgrade \
--        systemctl --no-reload disable --now %{?*} > /dev/null 2>&1 || : \
+-        systemctl --no-reload disable --now %{?*} &>/dev/null || : \
 +        systemctl --no-reload disable %{?*} > /dev/null 2>&1 || : \
 +        systemctl stop %{?*} > /dev/null 2>&1 || : \
  fi \
  %{nil}
  
-@@ -67,11 +70,14 @@ if [ $1 -eq 0 ] ; then \
+@@ -61,11 +64,14 @@ if [ $1 -eq 0 ] ; then \
  fi \
  %{nil}
  
@@ -37,4 +37,4 @@ diff -rup systemd-232/src/core/macros.systemd.in systemd-232-new/src/core/macros
 +systemctl daemon-reload >/dev/null 2>&1 || : \
  if [ $1 -ge 1 ] ; then \
          # Package upgrade, not uninstall \
-         systemctl try-restart %{?*} >/dev/null 2>&1 || : \
+         systemctl try-restart %{?*} &>/dev/null || : \

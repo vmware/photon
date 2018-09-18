@@ -3,15 +3,15 @@
 
 Summary:        A port of the caching algorithms in httplib2 for use with requests session object.
 Name:           python-CacheControl
-Version:        0.12.3
-Release:        2%{?dist}
+Version:        0.12.5
+Release:        1%{?dist}
 License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/ionrock/cachecontrol/archive/v%{version}.tar.gz
-Source0:        cachecontrol-%{version}.tar.gz
-%define sha1    cachecontrol=c0f8287d821a51e570487ca0d67aafac4fe73b0e
+Source0:        CacheControl-%{version}.tar.gz
+%define sha1    CacheControl=ccc7d5ff074b5c1a5ea96db1fcd322e9d2f67668
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -35,7 +35,7 @@ Requires:       python3-msgpack
 %description -n python3-CacheControl
 
 %prep
-%setup -q -n cachecontrol-%{version}
+%setup -q -n CacheControl-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -69,6 +69,8 @@ popd
 %{_bindir}/doesitcache3
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.12.5-1
+-   Update to version 0.12.5
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.12.3-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu May 25 2017 Xiaolin Li <xiaolinl@vmware.com> 0.12.3-1

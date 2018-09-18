@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-websocket-client
-Version:        0.44.0
+Version:        0.53.0
 Release:        1%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/pypi/websocket-client
 Source0:        websocket_client-%{version}.tar.gz
-%define sha1    websocket_client=736908072e36c1f3dc5714b685e246d8090ee1df
+%define sha1    websocket_client=09bd8914944646fde9d2672392579a982ea0f031
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -58,6 +58,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 0.53.0-1
+-   Updated to release 0.53.0
 *   Thu Nov 30 2017 Xiaolin Li <xiaolinl@vmware.com> 0.44.0-1
 -   Update websocket_client to version 0.44.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.7.0-2

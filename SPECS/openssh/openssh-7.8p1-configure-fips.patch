@@ -1,0 +1,269 @@
+diff -rup openssh-7.8p1/readconf.c openssh-7.8p1-new/readconf.c
+--- openssh-7.8p1/readconf.c	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/readconf.c	2018-09-11 09:52:10.887162188 -0700
+@@ -173,7 +173,8 @@ typedef enum {
+ 	oStreamLocalBindMask, oStreamLocalBindUnlink, oRevokedHostKeys,
+ 	oFingerprintHash, oUpdateHostkeys, oHostbasedKeyTypes,
+ 	oPubkeyAcceptedKeyTypes, oProxyJump,
+-	oIgnore, oIgnoredUnknownOption, oDeprecated, oUnsupported
++	oIgnore, oIgnoredUnknownOption, oDeprecated, oUnsupported,
++	oFipsMode
+ } OpCodes;
+ 
+ /* Textual representations of the tokens. */
+@@ -303,6 +304,7 @@ static struct {
+ 	{ "streamlocalbindunlink", oStreamLocalBindUnlink },
+ 	{ "revokedhostkeys", oRevokedHostKeys },
+ 	{ "fingerprinthash", oFingerprintHash },
++	{ "fipsmode", oFipsMode },
+ 	{ "updatehostkeys", oUpdateHostkeys },
+ 	{ "hostbasedkeytypes", oHostbasedKeyTypes },
+ 	{ "pubkeyacceptedkeytypes", oPubkeyAcceptedKeyTypes },
+@@ -977,6 +979,35 @@ parse_time:
+ 		intptr = &options->gss_deleg_creds;
+ 		goto parse_flag;
+ 
++        case oFipsMode:
++		if (options->ciphers != NULL)
++			fatal("%.200s line %d: FipsMode should be set before "
++			    "Ciphers option", filename, linenum);
++		intptr = &options->fips_mode;
++		multistate_ptr = multistate_flag;
++		arg = strdelim(&s);
++		if (!arg || *arg == '\0')
++			fatal("%s line %d: missing argument.",
++			    filename, linenum);
++		value = -1;
++		for (i = 0; multistate_ptr[i].key != NULL; i++) {
++			if (strcasecmp(arg, multistate_ptr[i].key) == 0) {
++				value = multistate_ptr[i].value;
++				break;
++			}
++		}
++		if (value == -1)
++			fatal("%s line %d: unsupported option \"%s\".",
++			    filename, linenum, arg);
++		if (*activep && *intptr == -1) {
++			*intptr = value;
++			/* Call FIPS_mode_set as soon as possible */
++			if (*intptr == 1)
++				if (!FIPS_mode_set(1))
++					fatal("FIPS mode could not be set");
++		}
++		break;
++
+ 	case oBatchMode:
+ 		intptr = &options->batch_mode;
+ 		goto parse_flag;
+@@ -1900,6 +1931,7 @@ initialize_options(Options * options)
+ 	options->update_hostkeys = -1;
+ 	options->hostbased_key_types = NULL;
+ 	options->pubkey_key_types = NULL;
++	options->fips_mode = -1;
+ }
+ 
+ /*
+@@ -2071,6 +2103,8 @@ fill_default_options(Options * options)
+ 		options->fingerprint_hash = SSH_FP_HASH_DEFAULT;
+ 	if (options->update_hostkeys == -1)
+ 		options->update_hostkeys = 0;
++	if (options->fips_mode == -1)
++		options->fips_mode = 0;
+ 
+ 	/* Expand KEX name lists */
+ 	all_cipher = cipher_alg_list(',', 0);
+@@ -2593,6 +2627,7 @@ dump_client_config(Options *o, const cha
+ 	dump_cfg_fmtint(oVerifyHostKeyDNS, o->verify_host_key_dns);
+ 	dump_cfg_fmtint(oVisualHostKey, o->visual_host_key);
+ 	dump_cfg_fmtint(oUpdateHostkeys, o->update_hostkeys);
++	dump_cfg_fmtint(oFipsMode, o->fips_mode);
+ 
+ 	/* Integer options */
+ 	dump_cfg_int(oCanonicalizeMaxDots, o->canonicalize_max_dots);
+diff -rup openssh-7.8p1/readconf.h openssh-7.8p1-new/readconf.h
+--- openssh-7.8p1/readconf.h	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/readconf.h	2018-09-11 09:36:07.631115940 -0700
+@@ -153,6 +153,7 @@ typedef struct {
+ 	char	*revoked_host_keys;
+ 
+ 	int	 fingerprint_hash;
++	int	 fips_mode;
+ 
+ 	int	 update_hostkeys; /* one of SSH_UPDATE_HOSTKEYS_* */
+ 
+Only in openssh-7.8p1-new: readconf.h.orig
+diff -rup openssh-7.8p1/servconf.c openssh-7.8p1-new/servconf.c
+--- openssh-7.8p1/servconf.c	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/servconf.c	2018-09-11 09:51:41.003160753 -0700
+@@ -179,6 +179,7 @@ initialize_server_options(ServerOptions
+ 	options->fingerprint_hash = -1;
+ 	options->disable_forwarding = -1;
+ 	options->expose_userauth_info = -1;
++	options->fips_mode = -1;
+ }
+ 
+ /* Returns 1 if a string option is unset or set to "none" or 0 otherwise. */
+@@ -407,6 +408,8 @@ fill_default_server_options(ServerOption
+ 		options->disable_forwarding = 0;
+ 	if (options->expose_userauth_info == -1)
+ 		options->expose_userauth_info = 0;
++	if (options->fips_mode == -1)
++		options->fips_mode = 0;
+ 
+ 	assemble_algorithms(options);
+ 
+@@ -493,7 +496,8 @@ typedef enum {
+ 	sStreamLocalBindMask, sStreamLocalBindUnlink,
+ 	sAllowStreamLocalForwarding, sFingerprintHash, sDisableForwarding,
+ 	sExposeAuthInfo, sRDomain,
+-	sDeprecated, sIgnore, sUnsupported
++	sDeprecated, sIgnore, sUnsupported,
++	sFipsMode
+ } ServerOpCodes;
+ 
+ #define SSHCFG_GLOBAL	0x01	/* allowed in main section of sshd_config */
+@@ -640,6 +644,7 @@ static struct {
+ 	{ "disableforwarding", sDisableForwarding, SSHCFG_ALL },
+ 	{ "exposeauthinfo", sExposeAuthInfo, SSHCFG_ALL },
+ 	{ "rdomain", sRDomain, SSHCFG_ALL },
++	{ "fipsmode", sFipsMode, SSHCFG_GLOBAL },
+ 	{ NULL, sBadOption, 0 }
+ };
+ 
+@@ -2140,6 +2145,32 @@ process_server_config_line(ServerOptions
+ 			*charptr = xstrdup(arg);
+ 		break;
+ 
++	case sFipsMode:
++		if (options->ciphers != NULL)
++			fatal("%.200s line %d: FipsMode should be set before "
++			    "Ciphers option", filename, linenum);
++		intptr = &options->fips_mode;
++		arg = strdelim(&cp);
++		if (!arg || *arg == '\0')
++			fatal("%s line %d: missing yes/no argument.",
++			    filename, linenum);
++		value = 0;	/* silence compiler */
++		if (strcmp(arg, "yes") == 0)
++			value = 1;
++		else if (strcmp(arg, "no") == 0)
++			value = 0;
++		else
++			fatal("%s line %d: Bad yes/no argument: %s",
++				filename, linenum, arg);
++		if (*activep && *intptr == -1) {
++			*intptr = value;
++			/* Call FIPS_mode_set as soon as possible */
++			if (*intptr == 1)
++				if (!FIPS_mode_set(1))
++					fatal("FIPS mode could not be set");
++		}
++		break;
++
+ 	case sDeprecated:
+ 	case sIgnore:
+ 	case sUnsupported:
+@@ -2579,6 +2610,7 @@ dump_config(ServerOptions *o)
+ 	dump_cfg_fmtint(sStreamLocalBindUnlink, o->fwd_opts.streamlocal_bind_unlink);
+ 	dump_cfg_fmtint(sFingerprintHash, o->fingerprint_hash);
+ 	dump_cfg_fmtint(sExposeAuthInfo, o->expose_userauth_info);
++	dump_cfg_fmtint(sFipsMode, o->fips_mode);
+ 
+ 	/* string arguments */
+ 	dump_cfg_string(sPidFile, o->pid_file);
+diff -rup openssh-7.8p1/servconf.h openssh-7.8p1-new/servconf.h
+--- openssh-7.8p1/servconf.h	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/servconf.h	2018-09-11 09:52:59.743164534 -0700
+@@ -208,6 +208,7 @@ typedef struct {
+ 
+ 	int	fingerprint_hash;
+ 	int	expose_userauth_info;
++	int fips_mode;
+ 	u_int64_t timing_secret;
+ }       ServerOptions;
+ 
+diff -rup openssh-7.8p1/ssh_config openssh-7.8p1-new/ssh_config
+--- openssh-7.8p1/ssh_config	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/ssh_config	2018-09-11 09:36:07.631115940 -0700
+@@ -34,6 +34,7 @@
+ #   IdentityFile ~/.ssh/id_ecdsa
+ #   IdentityFile ~/.ssh/id_ed25519
+ #   Port 22
++#   FipsMode no
+ #   Protocol 2
+ #   Ciphers aes128-ctr,aes192-ctr,aes256-ctr,aes128-cbc,3des-cbc
+ #   MACs hmac-md5,hmac-sha1,umac-64@openssh.com
+diff -rup openssh-7.8p1/ssh_config.0 openssh-7.8p1-new/ssh_config.0
+--- openssh-7.8p1/ssh_config.0	2018-08-23 00:09:17.000000000 -0700
++++ openssh-7.8p1-new/ssh_config.0	2018-09-11 09:36:07.631115940 -0700
+@@ -343,6 +343,10 @@ DESCRIPTION
+              Specifies the hash algorithm used when displaying key
+              fingerprints.  Valid options are: md5 and sha256 (the default).
+ 
++     FipsMode
++             Enables or disables FIPS mode. Requires FIPS capable ssl modules.
++             The default is no.
++
+      ForwardAgent
+              Specifies whether the connection to the authentication agent (if
+              any) will be forwarded to the remote machine.  The argument must
+Only in openssh-7.8p1-new: ssh_config.0.orig
+diff -rup openssh-7.8p1/ssh_config.5 openssh-7.8p1-new/ssh_config.5
+--- openssh-7.8p1/ssh_config.5	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/ssh_config.5	2018-09-11 09:36:07.631115940 -0700
+@@ -628,6 +628,10 @@ Valid options are:
+ and
+ .Cm sha256
+ (the default).
++.It Cm FipsMode
++Enables or disables FIPS mode. Requires FIPS capable ssl modules.
++The default is
++.Cm no .
+ .It Cm ForwardAgent
+ Specifies whether the connection to the authentication agent (if any)
+ will be forwarded to the remote machine.
+Only in openssh-7.8p1-new: ssh_config.5.orig
+Only in openssh-7.8p1-new: ssh_config.orig
+diff -rup openssh-7.8p1/sshd_config openssh-7.8p1-new/sshd_config
+--- openssh-7.8p1/sshd_config	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/sshd_config	2018-09-11 09:36:07.631115940 -0700
+@@ -102,6 +102,8 @@ AuthorizedKeysFile	.ssh/authorized_keys
+ #ChrootDirectory none
+ #VersionAddendum none
+ 
++#FipsMode no
++
+ # no default banner path
+ #Banner none
+ 
+diff -rup openssh-7.8p1/sshd_config.0 openssh-7.8p1-new/sshd_config.0
+--- openssh-7.8p1/sshd_config.0	2018-08-23 00:09:17.000000000 -0700
++++ openssh-7.8p1-new/sshd_config.0	2018-09-11 09:36:07.631115940 -0700
+@@ -338,6 +338,10 @@ DESCRIPTION
+              Specifies the hash algorithm used when logging key fingerprints.
+              Valid options are: md5 and sha256.  The default is sha256.
+ 
++     FipsMode
++             Enables or disables FIPS mode. Requires FIPS capable ssl modules.
++             The default is no.
++
+      ForceCommand
+              Forces the execution of the command specified by ForceCommand,
+              ignoring any command supplied by the client and ~/.ssh/rc if
+Only in openssh-7.8p1-new: sshd_config.0.orig
+diff -rup openssh-7.8p1/sshd_config.5 openssh-7.8p1-new/sshd_config.5
+--- openssh-7.8p1/sshd_config.5	2018-08-22 22:41:42.000000000 -0700
++++ openssh-7.8p1-new/sshd_config.5	2018-09-11 09:36:07.631115940 -0700
+@@ -592,6 +592,10 @@ and
+ .Cm sha256 .
+ The default is
+ .Cm sha256 .
++.It Cm FipsMode
++Enables or disables FIPS mode. Requires FIPS capable ssl modules.
++The default is
++.Cm no .
+ .It Cm ForceCommand
+ Forces the execution of the command specified by
+ .Cm ForceCommand ,
+Only in openssh-7.8p1-new: sshd_config.5.orig
+Only in openssh-7.8p1-new: sshd_config.orig

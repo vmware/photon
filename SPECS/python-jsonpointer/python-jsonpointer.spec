@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-jsonpointer
-Version:        1.10
-Release:        6%{?dist}
+Version:        2.0
+Release:        1%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/j/jsonpointer/jsonpointer-%{version}.tar.gz
 Source0:        jsonpointer-%{version}.tar.gz
-%define sha1 jsonpointer=74db9372f71d8af9cd380e34fe1a0e274e6cd7cc
+%define sha1    jsonpointer=f0733349a44b0c777ef9b8e0256d628e2530624b
 
 BuildRequires: python2
 BuildRequires: python2-libs
@@ -70,6 +70,8 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/jsonpointer3
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0-1
+-   Update to version 2.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.10-6
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Wed Apr 26 2017 Sarah Choi <sarahc@vmware.com> 1.10-5

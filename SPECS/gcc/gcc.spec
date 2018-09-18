@@ -1,15 +1,15 @@
 %define _use_internal_dependency_generator 0
 Summary:        Contains the GNU compiler collection
 Name:           gcc
-Version:        6.3.0
-Release:        7%{?dist}
+Version:        7.3.0
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.bz2
-%define sha1 gcc=928ab552666ee08eed645ff20ceb49d139205dea
+Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}.tar.xz
+%define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
 Patch0:         PLUGIN_TYPE_CAST.patch
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
@@ -94,20 +94,6 @@ sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 install -vdm 755 ../gcc-build
 %build
 
-# Fix compilation issue for glibc-2.26.
-# TODO: remove these lines after gcc update to 7.2+
-#
-# 1. "typedef struct ucontext ucontext_t" was renamed to
-#    "typedef struct ucontext_t ucontext_t"
-sed -i 's/struct ucontext/ucontext_t/g' libgcc/config/i386/linux-unwind.h
-sed -i 's/struct ucontext/ucontext_t/g' libgcc/config/aarch64/linux-unwind.h
-# 2. struct sigaltstack removed
-sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.cc
-sed -i '/struct sigaltstack;/d' libsanitizer/sanitizer_common/sanitizer_linux.h
-sed -i 's/struct sigaltstack/void/g' libsanitizer/sanitizer_common/sanitizer_linux.h
-sed -i 's/struct sigaltstack/stack_t/g' libsanitizer/sanitizer_common/sanitizer_stoptheworld_linux_libcdep.cc
-sed -i 's/__res_state/struct __res_state/g' libsanitizer/tsan/tsan_platform_linux.cc
-
 export glibcxx_cv_c99_math_cxx98=yes glibcxx_cv_c99_math_cxx11=yes
 
 cd ../gcc-build
@@ -174,6 +160,8 @@ make %{?_smp_mflags} check-gcc
 %{_libexecdir}/gcc/*
 #   Man pages
 %{_mandir}/man1/gcov.1.gz
+%{_mandir}/man1/gcov-dump.1.gz
+%{_mandir}/man1/gcov-tool.1.gz
 %{_mandir}/man1/gcc.1.gz
 %{_mandir}/man1/g++.1.gz
 %{_mandir}/man1/cpp.1.gz
@@ -218,6 +206,7 @@ make %{?_smp_mflags} check-gcc
 %defattr(-,root,root)
 %{_lib64dir}/libstdc++.so
 %{_lib64dir}/libstdc++.la
+%{_lib64dir}/libstdc++.a
 
 %{_includedir}/c++/*
 
@@ -233,6 +222,10 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 7.3.0-2
+-   Packaging .a files (libstdc++-static files).
+*   Wed Aug 01 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.3.0-1
+-   Update to version 7.3.0 to get retpoline support.
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-7
 -   Aarch64 support
 *   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 6.3.0-6

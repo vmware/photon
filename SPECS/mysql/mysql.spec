@@ -1,15 +1,14 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.20
-Release:        2%{?dist}
+Version:        5.7.23
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=1fcbaea0d75d71a8a868f518b5b0afaaa18c5cda
-Patch0:         Fix-CVE-2018-2696.patch
+%define         sha1 mysql-boost=e88edced7261412e66fc5570ed375bb3a36494bf
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -28,7 +27,6 @@ Development headers for developing applications linking to maridb
 
 %prep
 %setup -q %{name}-boost-%{version}
-%patch0 -p1
 
 %build
 cmake . \
@@ -68,6 +66,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.7.23-1
+-   Update to version 5.7.23 to get it to build with gcc 7.3
 *   Thu Jan 25 2018 Divya Thaluru <dthaluru@vmware.com> 5.7.20-2
 -   Added patch for CVE-2018-2696
 *   Wed Oct 25 2017 Xiaolin Li <xiaolinl@vmware.com> 5.7.20-1

@@ -3,15 +3,15 @@
 
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python-automat
-Version:        0.5.0
-Release:        4%{?dist}
+Version:        0.7.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Automat
 Source0:        https://files.pythonhosted.org/packages/source/A/Automat/Automat-%{version}.tar.gz
-%define         sha1 Automat=2fa7c1db2d1dab6cbb74ff5537e0f5be2782c637
+%define sha1    Automat=b96a67647f5c1650f0e4cc39bed762fdc2ac90b4
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -101,6 +101,8 @@ popd
 %{_bindir}/automat-visualize3
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.7.0-1
+-   Update to version 0.7.0
 *   Mon Jul 17 2017 Divya Thaluru <dthaluru@vmware.com> 0.5.0-4
 -   Fixed run time dependencies
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.5.0-3

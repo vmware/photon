@@ -3,7 +3,7 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.7
+Version:        2.9.8
 Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
@@ -11,9 +11,7 @@ Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
-#https://bugs.python.org/issue23524
-Patch0:         libxml2-2.9.4-remove-_PyVerify_fd-call.patch
-%define sha1    libxml2=ab3325e6cdda50ab2382fdfe0bdb6f7d1b9224a6
+%define sha1    libxml2=66bcefd98a6b7573427cf66f9d3841b59eb5b8c3
 Provides:       pkgconfig(libxml-2.0)
 
 %description
@@ -50,7 +48,6 @@ Static libraries and header files for the support library for libxml
 
 %prep
 %setup -q
-%patch0 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -115,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Tue Sep 11 2018 Keerthana K <keerthanak@vmware.com> 2.9.8-1
+-   Update to version 2.9.8
 *   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 2.9.7-1
 -   Update to version 2.9.7
 *   Wed Oct 18 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1

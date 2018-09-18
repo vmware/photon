@@ -3,13 +3,13 @@
 
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
-Version:        1.52.1
-Release:        5%{?dist}
+Version:        1.58.0
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/gobject-introspection/1.52/%{name}-%{version}.tar.xz
-%define sha1 gobject-introspection=2a0c86bd23d27df0588b79404cfc5619ed6171e8
+%define sha1 gobject-introspection=4edc652656af31127988b125537d4f1994cdf7f2
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  gettext
@@ -17,11 +17,12 @@ BuildRequires:  intltool
 BuildRequires:  flex
 BuildRequires:  bison
 BuildRequires:  which
-BuildRequires:  glib-devel
+BuildRequires:  glib-devel >= 2.58.0
 BuildRequires:  libffi-devel
 BuildRequires:  go
+BuildRequires:  autoconf-archive
 Requires:       libffi
-Requires:       glib >= 2.52.1
+Requires:       glib >= 2.58.0
 Patch0:         disableFaultyTest.patch
 %description
 GObject Introspection can scan C header and source files in order to
@@ -136,6 +137,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 1.58.0-1
+-   Update version to 1.58.0
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.52.1-5
 -   Add autoreconf to support automake-1.15.1
 *   Mon Aug 28 2017 Kumar Kaushik <kaushikk@vmware.com> 1.52.1-4

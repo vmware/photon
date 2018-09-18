@@ -3,15 +3,15 @@
 
 Summary:       Python documentation generator
 Name:          python-sphinx
-Version:       1.5.3
-Release:       5%{?dist}
+Version:        1.7.9
+Release:       1%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
 URL:           http://www.vmware.com
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       https://pypi.python.org/packages/a7/df/4487783152b14f2b7cd0b0c9afb119b262c584bf972b90ab544b61b74c62/Sphinx-%{version}.tar.gz
-%define sha1 Sphinx=e296be1f697ba5eda7941570d718544df8182648
+%define sha1    Sphinx=3182158c8e532bfc7d7a1c856c19b0648c06b0ff
 BuildRequires: python2
 BuildRequires: python2-libs
 BuildRequires: python2-devel
@@ -128,6 +128,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.7.9-1
+-   Update to version 1.7.9
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.3-5
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.5.3-4

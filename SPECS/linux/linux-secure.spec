@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.14.54
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -32,6 +32,9 @@ Patch24:        Allow-some-algo-tests-for-FIPS.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch31:        kvm-dont-accept-wrong-gsi-values.patch
+# Out-of-tree patches from AppArmor:
+Patch32:        0001-apparmor-add-base-infastructure-for-socket-mediation.patch
+Patch33:        0002-apparmor-af_unix-mediation.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 
@@ -95,6 +98,8 @@ The Linux package contains the Linux kernel doc files
 %patch24 -p1
 %patch26 -p1
 %patch31 -p1
+%patch32 -p1
+%patch33 -p1
 
 pushd ..
 %patch99 -p0
@@ -222,6 +227,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
+-   Add full retpoline support by building with retpoline-enabled gcc.
+*   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
+-   Apply out-of-tree patches needed for AppArmor.
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1
 -   Update to version 4.14.54
 *   Mon Mar 19 2018 Alexey Makhalov <amakhalov@vmware.com> 4.14.8-2

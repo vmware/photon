@@ -2,15 +2,15 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Userland logical volume management tools 
 Name:           lvm2
-Version:        2.02.171
-Release:        3%{?dist}
-License:        GPLv2
+Version:        2.02.181
+Release:        1%{?dist}
+License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1    LVM2=134498350084fe1371e48e1bdcf558913a112a78
+%define sha1    LVM2=2802799c60ef4f61534df1e40bcc29e4e043b29b
 Source1:        lvm2-activate.service
 Patch0:         lvm2-set-default-preferred_names.patch
 BuildRequires:  libselinux-devel, libsepol-devel
@@ -18,6 +18,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
 BuildRequires:  systemd-devel
 BuildRequires:  thin-provisioning-tools
+BuildRequires:  libaio-devel
 Requires:       device-mapper-libs = %{version}-%{release}
 Requires:       device-mapper-event-libs = %{version}-%{release}
 Requires:       device-mapper-event = %{version}-%{release}
@@ -260,11 +261,13 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %{_libdir}/device-mapper/libdevmapper-event-lvm2mirror.so
 %{_libdir}/device-mapper/libdevmapper-event-lvm2snapshot.so
 %{_libdir}/device-mapper/libdevmapper-event-lvm2raid.so
+%{_libdir}/device-mapper/libdevmapper-event-lvm2thin.so
+%{_libdir}/device-mapper/libdevmapper-event-lvm2vdo.so
 %{_libdir}/libdevmapper-event-lvm2mirror.so
 %{_libdir}/libdevmapper-event-lvm2snapshot.so
 %{_libdir}/libdevmapper-event-lvm2raid.so
 %{_libdir}/libdevmapper-event-lvm2thin.so
-%{_libdir}/device-mapper/libdevmapper-event-lvm2thin.so
+%{_libdir}/libdevmapper-event-lvm2vdo.so
 
 %files  python-libs
 %{python2_sitelib}/*
@@ -342,6 +345,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 
 
 %changelog
+*   Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.02.181-1
+-   Update to version 2.02.181
 *   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.02.171-3
 -   Disabled all lvm services by default
 *   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.02.171-2

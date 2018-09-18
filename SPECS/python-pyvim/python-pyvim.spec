@@ -3,20 +3,20 @@
 
 Summary:        Pure Python Vi Implementation.
 Name:           python-pyvim
-Version:        0.0.20
-Release:        4%{?dist}
+Version:        2.0.22
+Release:        1%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/service_identity
 Source0:        pyvim-%{version}.tar.gz
-%define         sha1 pyvim-%{version}=0bcda6d5f01be0b334f8bdf974b23c3f65e023ae
+%define sha1    pyvim=b44c9e78755b1f13ee45a2903758386425e9a2ba
 # To get tests:
 # git clone https://github.com/jonathanslenders/pyvim.git && cd pyvim
 # git checkout 6860c413 && tar -czvf ../pyvim-tests-0.0.20.tar.gz tests/
 Source1:        pyvim-tests-%{version}.tar.gz
-%define sha1 pyvim-tests=480cec56514ea5ff0387e72c53bbddb951d95954
+%define sha1 pyvim-tests=57c48d48d1e20ae997975a99504be26191b2a662
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -81,6 +81,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0.22-1
+-   Update to version 2.0.22
 *   Mon Jul 24 2017 Divya Thaluru <dthaluru@vmware.com> 0.0.20-4
 -   Fixed runtime dependencies and make check errors
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.0.20-3

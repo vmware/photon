@@ -3,15 +3,15 @@
 
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python-pexpect
-Version:        4.2.1
-Release:        2%{?dist}
+Version:        4.6.0
+Release:        1%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/pexpect/pexpect/archive/pexpect-4.2.1.tar.gz
-%define sha1    pexpect=9941c99b7f1501c0210dbb98f8b26940a4429565
+Source0:        https://github.com/pexpect/pexpect/archive/pexpect-%{version}.tar.gz
+%define sha1    pexpect=3d79bb7de5436cd0a8417a6249c765595a33abcf
 
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
@@ -66,6 +66,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 4.6.0-1
+-   Update to version 4.6.0
 *   Tue Sep 19 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-2
 -   Adding requires on ptyprocess
 *   Mon Sep 11 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1

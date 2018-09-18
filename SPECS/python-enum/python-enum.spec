@@ -1,8 +1,8 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-enum
-Version:        0.4.6
-Release:        2%{?dist}
+Version:        0.4.7
+Release:        1%{?dist}
 Summary:        Robust enumerated type support in Python
 License:        MIT
 Group:          Development/Languages/Python
@@ -10,7 +10,7 @@ Url:            http://pypi.python.org/packages/source/e/enum/enum-%{version}.ta
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:        enum-%{version}.tar.gz
-%define sha1    enum=b8868b1370181e92bbffbcd18b3ccd2be1f0438d
+%define sha1    enum=dccaa3ebd20ecba27192b6fb2462a197e1df7864
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -41,6 +41,8 @@ python2 setup.py test
 %{python2_sitelib}/*
 
 %changelog
+*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 0.4.7-1
+-   Update to version 0.4.7
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.4.6-2
 -   Changed python to python2
 *   Thu Feb 16 2017 Xiaolin Li <xiaolinl@vmware.com> 0.4.6-1
