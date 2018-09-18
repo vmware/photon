@@ -1,16 +1,12 @@
-#dont terminate build for unpackaged files.
-%define _unpackaged_files_terminate_build 0
-%define librepo_name %{name}-%{name}
-
 Summary:        Repodata downloading library
 Name:           librepo
-Version:        1.7.20
-Release:        2%{?dist}
+Version:        1.9.1
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/Tojaj/librepo/
 Group:          System Environment/Libraries
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    librepo=8aff436081320acf50b8d32a9982d02062e56bd6
+%define sha1    %{name}=195d4b74bca7c761ab890e9af254c53dba8f16b2
 Source1:        pygpgme-0.3.tar.gz
 %define sha1    pygpgme=f8df35bd2705ac2e1642209fba732e6a42d03fd4
 Vendor:         VMware, Inc.
@@ -19,6 +15,7 @@ Requires:       curl-libs, gpgme, libassuan, libgpg-error
 Requires:       expat-libs
 Requires:       glib
 Requires:       openssl
+Requires:       curl-devel
 
 BuildRequires:  cmake
 BuildRequires:  glib-devel
@@ -31,6 +28,7 @@ BuildRequires:  python2-tools
 BuildRequires:  gpgme-devel
 BuildRequires:  openssl-devel
 BuildRequires:  attr-devel
+BuildRequires:  libxml2-devel
 
 %description
 A library providing C and Python (libcURL like) API for downloading
@@ -46,7 +44,7 @@ Provides: pkgconfig(librepo)
 Package config and headers for librepo.
 
 %prep
-%setup -q -n %{librepo_name}-%{version}
+%setup -q
 tar xf %{SOURCE1} --no-same-owner
 
 %build
@@ -59,9 +57,9 @@ make %{?_smp_mflags}
 mkdir -p %{buildroot}%{_libdir}
 mkdir -p %{buildroot}%{_includedir}/librepo
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
-cp %{_builddir}/%{librepo_name}-%{version}/build/librepo/librepo.so* %{buildroot}%{_libdir}
-cp %{_builddir}/%{librepo_name}-%{version}/build/librepo.pc %{buildroot}%{_libdir}/pkgconfig
-cp %{_builddir}/%{librepo_name}-%{version}/librepo/*.h %{buildroot}%{_includedir}/librepo
+cp %{_builddir}/%{name}-%{version}/build/librepo/librepo.so* %{buildroot}%{_libdir}
+cp %{_builddir}/%{name}-%{version}/build/librepo.pc %{buildroot}%{_libdir}/pkgconfig
+cp %{_builddir}/%{name}-%{version}/librepo/*.h %{buildroot}%{_includedir}/librepo
 
 %check
 pushd build/tests
@@ -83,6 +81,8 @@ popd
 %{_includedir}/librepo/*.h
 
 %changelog
+*   Fri Sep 21 2018 Ankit Jain <ankitja@vmware.com> 1.9.1-1
+-   Updated to version 1.9.1
 *   Thu Jun 08 2017 Chang Lee <changlee@vmware.com> 1.7.20-2
 -   Updated %check
 *   Thu Apr 20 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.20-1
