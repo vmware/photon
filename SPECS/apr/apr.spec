@@ -1,27 +1,25 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
-Version:        1.5.2
-Release:        7%{?dist}
+Version:        1.6.5
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://archive.apache.org/dist/apr/%{name}-%{version}.tar.gz
-%define sha1    apr=2ef2ac9a8de7f97f15ef32cddf1ed7325163d84c
+Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
+%define sha1    %{name}=ebf4f15fa5003b1490550e260f5a57dc8a2ff0ac
 %define         aprver  1
-Patch0:         apr-CVE-2017-12613.patch
 %description
 The Apache Portable Runtime.
 %package        devel
 Summary:        Header and development files
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications 
 
 %prep
 %setup -q
-%patch0 -p4
 %build
 ./configure --prefix=/usr \
         --includedir=%{_includedir}/apr-%{aprver} \
@@ -35,10 +33,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 
 %check
-cd test
-sed -i 's/abts_run_test(suite, test_serv_by_name, NULL);/ /g' testsock.c
-make %{?_smp_mflags}
-./testall
+make %{?_smp_mflags} check
 
 %post
 
@@ -61,6 +56,8 @@ make %{?_smp_mflags}
 %{_libdir}/pkgconfig
 
 %changelog
+*   Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 1.6.5-1
+-   Updated to version 1.6.5
 *   Fri Dec 08 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-7
 -   Fix CVE-2017-12613
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-6
