@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.7
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -13,7 +13,7 @@ Patch1:        lightwave-aarch64-support.patch
 Distribution:  Photon
 
 Requires:  apache-tomcat >= 8.5.8
-Requires:  boost = 1.63.0
+Requires:  boost = 1.66.0
 Requires:  commons-daemon >= 1.0.15
 Requires:  (coreutils >= 8.22 or toybox)
 Requires:  cyrus-sasl >= 2.1
@@ -27,7 +27,7 @@ Requires:  lightwave-client = %{version}
 
 BuildRequires: ant-contrib >= 1.0
 BuildRequires: apache-maven >= 3.3.9
-BuildRequires: boost-devel = 1.63.0
+BuildRequires: boost-devel = 1.66.0
 BuildRequires: c-rest-engine-devel >= 1.1
 BuildRequires: commons-daemon >= 1.0.15
 BuildRequires: copenapi-devel
@@ -105,7 +105,7 @@ Requires: jansson
 Requires: krb5 >= 1.14
 Requires: likewise-open >= 6.2.9
 Requires: openjdk8 >= %{JAVA8_VERSION}
-Requires: boost = 1.63.0
+Requires: boost = 1.66.0
 Requires: lightwave-client-libs = %{version}-%{release}
 
 %description client
@@ -1143,6 +1143,8 @@ fi
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.3.1.7-3
+-   Use boost version 1.66.0
 *   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.7-2
 -   Aarch64 support
 *   Thu Nov 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.7-1
