@@ -1,0 +1,138 @@
+From 0fd09a9a3418124e59cded88699d4c6bcdb811b2 Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
+Date: Tue, 18 Sep 2018 18:33:06 -0700
+Subject: [PATCH] hwrng: rdrand - Add RNG driver based on x86 rdrand
+ instruction
+
+Add a Hardware Random Number Generator driver, which uses the
+rdrand/rdseed instructions available on modern Intel and AMD CPUs.
+
+This can be used to feed the kernel's entropy pool on entropy-starved
+virtual machines.
+
+Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
+---
+ drivers/char/hw_random/Kconfig      | 14 ++++++++
+ drivers/char/hw_random/Makefile     |  1 +
+ drivers/char/hw_random/rdrand-rng.c | 72 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 87 insertions(+)
+ create mode 100644 drivers/char/hw_random/rdrand-rng.c
+
+diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
+index 95a031e..c7e7ce7 100644
+--- a/drivers/char/hw_random/Kconfig
++++ b/drivers/char/hw_random/Kconfig
+@@ -60,6 +60,20 @@ config HW_RANDOM_AMD
+ 
+ 	  If unsure, say Y.
+ 
++config HW_RANDOM_RDRAND
++	tristate "x86 rdrand Random Number Generator support"
++	depends on (X86_32 || X86_64) && ARCH_RANDOM
++	default HW_RANDOM
++	---help---
++	  This driver provides kernel-side support for a Random Number
++	  Generator that uses the RDRAND/RDSEED instructions on modern Intel
++	  and AMD CPUs.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called rdrand-rng.
++
++	  If unsure, say N.
++
+ config HW_RANDOM_ATMEL
+ 	tristate "Atmel Random Number Generator support"
+ 	depends on ARCH_AT91 && HAVE_CLK && OF
+diff --git a/drivers/char/hw_random/Makefile b/drivers/char/hw_random/Makefile
+index f3728d0..c677d3a 100644
+--- a/drivers/char/hw_random/Makefile
++++ b/drivers/char/hw_random/Makefile
+@@ -8,6 +8,7 @@ rng-core-y := core.o
+ obj-$(CONFIG_HW_RANDOM_TIMERIOMEM) += timeriomem-rng.o
+ obj-$(CONFIG_HW_RANDOM_INTEL) += intel-rng.o
+ obj-$(CONFIG_HW_RANDOM_AMD) += amd-rng.o
++obj-$(CONFIG_HW_RANDOM_RDRAND) += rdrand-rng.o
+ obj-$(CONFIG_HW_RANDOM_ATMEL) += atmel-rng.o
+ obj-$(CONFIG_HW_RANDOM_BCM63XX)	+= bcm63xx-rng.o
+ obj-$(CONFIG_HW_RANDOM_GEODE) += geode-rng.o
+diff --git a/drivers/char/hw_random/rdrand-rng.c b/drivers/char/hw_random/rdrand-rng.c
+new file mode 100644
+index 0000000..ba017f3
+--- /dev/null
++++ b/drivers/char/hw_random/rdrand-rng.c
+@@ -0,0 +1,72 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * RNG driver that uses the RDRAND/RDSEED instructions (found on modern
++ * Intel and AMD CPUs).
++ *
++ * Author: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
++ *
++ */
++
++#include <linux/hw_random.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <asm/archrandom.h>
++
++#define PFX	KBUILD_MODNAME ": "
++
++static int rdrand_rng_read(struct hwrng *rng, void *buf, size_t max_bytes, bool wait)
++{
++	char *p = buf;
++	size_t read_bytes = 0;
++
++	while (max_bytes) {
++		unsigned long v;
++		size_t chunk = min(max_bytes, (int)sizeof(unsigned long));
++
++		if (unlikely(!arch_get_random_seed_long(&v)) &&
++		    unlikely(!arch_get_random_long(&v))) {
++			break;
++		}
++
++		memcpy(p, &v, chunk);
++		p += chunk;
++		max_bytes -= chunk;
++		read_bytes += chunk;
++	}
++
++	return read_bytes;
++}
++
++static struct hwrng rdrand_rng = {
++	.name		= KBUILD_MODNAME,
++	.quality	= 1000,
++	.read		= rdrand_rng_read,
++};
++
++static int __init mod_init(void)
++{
++	int err = -ENODEV;
++
++	if (!arch_has_random_seed() && !arch_has_random()) {
++		pr_err(PFX "Neither RDSEED nor RDRAND is available.\n");
++		return err;
++	}
++
++	err = hwrng_register(&rdrand_rng);
++	if (err)
++		pr_err(PFX "RNG registration failed (%d)\n", err);
++
++	return err;
++}
++
++static void __exit mod_exit(void)
++{
++	hwrng_unregister(&rdrand_rng);
++}
++
++module_init(mod_init);
++module_exit(mod_exit);
++
++MODULE_AUTHOR("Srivatsa S. Bhat <srivatsa@csail.mit.edu>");
++MODULE_DESCRIPTION("H/W RNG driver for x86 CPUs that support RDRAND/RDSEED");
++MODULE_LICENSE("GPL");
+-- 
+2.7.4
+

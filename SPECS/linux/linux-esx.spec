@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.14.54
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -35,6 +35,7 @@ Patch21:        vmware-balloon-late-initcall.patch
 Patch22:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch24:        kvm-dont-accept-wrong-gsi-values.patch
+Patch25:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 
 BuildRequires: bc
@@ -90,6 +91,7 @@ The Linux package contains the Linux kernel doc files
 %patch21 -p1
 %patch22 -p1
 %patch24 -p1
+%patch25 -p1
 
 %build
 # patch vmw_balloon driver
@@ -186,6 +188,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
+-   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Mon Jul 09 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.14.54-1

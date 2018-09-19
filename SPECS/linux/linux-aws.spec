@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.14.54
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -36,6 +36,7 @@ Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
 Patch29:        0001-apparmor-add-base-infastructure-for-socket-mediation.patch
 Patch30:        0002-apparmor-af_unix-mediation.patch
+Patch31:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -124,6 +125,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
+%patch31 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -311,6 +313,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
+-   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2

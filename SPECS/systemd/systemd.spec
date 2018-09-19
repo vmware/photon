@@ -1,7 +1,7 @@
 Summary:          Systemd-239
 Name:             systemd
 Version:          239
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -13,6 +13,7 @@ Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
 Source4:          99-dhcp-en.network
+Source5:          10-rdrand-rng.conf
 
 Patch0:           01-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           02-install-general-aliases.patch
@@ -133,6 +134,7 @@ rm %{buildroot}/lib/systemd/system/default.target
 ln -sfv multi-user.target %{buildroot}/lib/systemd/system/default.target
 install -dm 0755 %{buildroot}/%{_sysconfdir}/systemd/network
 install -m 0644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/systemd/network
+install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
 %find_lang %{name} ../%{name}.lang
 
 %post
@@ -173,6 +175,7 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/systemd/coredump.conf
 %config(noreplace) %{_sysconfdir}/systemd/timesyncd.conf
 %config(noreplace) %{_sysconfdir}/pam.d/systemd-user
+%config(noreplace) %{_sysconfdir}/modules-load.d/10-rdrand-rng.conf
 %config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 
 %dir %{_sysconfdir}/udev
@@ -237,6 +240,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 239-2
+-    Automatically load rdrand-rng kernel module on every boot.
 *    Tue Aug 28 2018 Anish Swaminathan <anishs@vmware.com>  239-1
 -    Update systemd to 239
 *    Wed Apr 11 2018 Xiaolin Li <xiaolinl@vmware.com>  236-3
