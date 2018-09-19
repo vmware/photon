@@ -1,14 +1,14 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.9.7
-Release:        2%{?dist}
+Version:        1.10.2
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    subversion=874b81749cdc3e88152d103243c3623ac6338388
+%define sha1    %{name}=bc52ef2e671f821998ac9a5f7ebecbbcaaef83b8
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
@@ -19,6 +19,8 @@ BuildRequires:  sqlite-devel
 BuildRequires:  libtool
 BuildRequires:  expat-devel
 BuildRequires:  serf-devel
+BuildRequires:  lz4
+BuildRequires:  utf8proc-devel
 
 %description
 The Apache version control system.
@@ -36,7 +38,8 @@ Requires:   %{name} = %{version}
 ./configure --prefix=%{_prefix}         \
         --disable-static                \
         --with-apache-libexecdir        \
-        --with-serf=%{_prefix}
+        --with-serf=%{_prefix}		\
+        --with-lz4=internal
 
 make %{?_smp_mflags}
 
@@ -65,6 +68,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Wed Sep 19 2018 Ankit Jain <ankitja@vmware.com> 1.10.2-1
+-   Updated to version 1.10.2
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.7-2
 -   Compile subversion with https repository access module support
 *   Mon Aug 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.9.7-1
