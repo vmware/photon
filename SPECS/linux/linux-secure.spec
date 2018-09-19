@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.14.54
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -35,6 +35,7 @@ Patch31:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
 Patch32:        0001-apparmor-add-base-infastructure-for-socket-mediation.patch
 Patch33:        0002-apparmor-af_unix-mediation.patch
+Patch34:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 
@@ -100,6 +101,7 @@ The Linux package contains the Linux kernel doc files
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%patch34 -p1
 
 pushd ..
 %patch99 -p0
@@ -227,6 +229,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
+-   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
 -   Add full retpoline support by building with retpoline-enabled gcc.
 *   Thu Aug 30 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-2
