@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.14.54
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:        4.14.67
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=434080e874f7b78c3234f22784427d4a189fb54d
+%define sha1 linux=4a6aa8d8a5190dbf1a835a5171609f02b27809e1
 Source1:	config-aws
 Source2:	initramfs.trigger
 %define ena_version 1.5.0
@@ -313,6 +313,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
+-   Update to version 4.14.67
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-4
 -   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-3
