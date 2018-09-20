@@ -1,6 +1,6 @@
 Summary:	An XML parser library
 Name:		expat
-Version:	2.2.4
+Version:	2.2.6
 Release:	1%{?dist}
 License:	MIT
 URL:		http://expat.sourceforge.net/
@@ -8,7 +8,7 @@ Group:		System Environment/GeneralLibraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 expat=3394d6390c041a8f5dec1d5fe7c4af0a23ae4504
+%define sha1 expat=c8947fc3119a797b55485f2f7bdaaeb49cc9df01
 Requires:       expat-libs = %{version}-%{release}
 %description
 The Expat package contains a stream oriented C library for parsing XML.
@@ -28,10 +28,9 @@ This package contains minimal set of shared expat libraries.
 %prep
 %setup -q
 %build
-./configure \
+%configure \
 	CFLAGS="%{optflags}" \
 	CXXFLAGS="%{optflags}" \
-	--prefix=%{_prefix} \
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
 	--disable-static
@@ -65,6 +64,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libexpat.so.*
 
 %changelog
+*   Thu Sep 20 2018 Sujay G <gsujay@vmware.com> 2.2.6-1
+-   Bump expat version to 2.2.6
 *   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 2.2.4-1
 -   Updating version, fixes CVE-2017-9233,  CVE-2016-9063, CVE-2016-0718
 *   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 2.2.0-2
