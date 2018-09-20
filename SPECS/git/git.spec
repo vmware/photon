@@ -1,14 +1,14 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.14.2
-Release:        2%{?dist}
+Version:        2.19.0
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1    git=9515fd4a068027f2c3d6ea9b8a8a298e990123a0
+%define sha1    git=17f92df56588c58d2ebaacc5a47f677c8d8e7c61
 BuildRequires:  curl-devel
 BuildRequires:  python2
 Requires:       openssl
@@ -73,9 +73,8 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/perl5/*
+%{_datarootdir}/perl5/*
 %{_libexecdir}/git-core/*
-%{_mandir}/man3/*
 %{_datarootdir}/git-core/*
 %{_datarootdir}/git-gui/*
 %{_datarootdir}/gitk/*
@@ -83,7 +82,6 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/bash-completion/
 #excluding git svn files
 %exclude %{_libexecdir}/git-core/*svn*
-%exclude %{_mandir}/man3/*:SVN:*
 %exclude %{perl_sitelib}/Git/SVN
 %exclude %{perl_sitelib}/Git/SVN.pm
 %exclude /usr/lib/perl5/5.24.1/*/perllocal.pod
@@ -92,6 +90,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Mon Sep 17 2018 Siju Maliakkal <smaliakkal@vmware.com> 2.19.0-1
+-   Update to latest version
 *   Tue Jul 31 2018 Ajay Kaher <akaher@vmware.com> 2.14.2-2
 -   Excluded the perllocal.pod for aarch64.
 *   Thu Oct 12 2017 Anish Swaminathan <anishs@vmware.com> 2.14.2-1
@@ -100,7 +100,7 @@ rm -rf %{buildroot}/*
 -   Fix make check with non-root mode.
 *   Wed May 31 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.3-3
 -   Remove python2 from requires.
-*   Tue Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
+*   Mon Apr 17 2017 Robert Qi <qij@vmware.com> 2.9.3-2
 -   Update since perl version got updated.
 *   Mon Apr 10 2017 Danut Moraru <dmoraru@vmware.com> 2.9.3-1
 -   Updated to version 2.9.3
