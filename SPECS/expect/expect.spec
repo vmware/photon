@@ -1,11 +1,11 @@
 Summary:        Expect is a tool for automating interactive applications
 Name:           expect
-Version:        5.45
-Release:        3%{?dist}
+Version:        5.45.4
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://sourceforge.net/projects/expect
-Source0:        http://prdownloads.sourceforge.net/expect/expect5.45.tar.gz
-%define sha1    expect=e634992cab35b7c6931e1f21fbb8f74d464bd496
+Source0:        https://sourceforge.net/projects/%{name}/files/Expect/%{version}/%{name}%{version}.tar.gz
+%define sha1    expect=a97b2f377c6a799928d6728c2ada55beb7f57d96
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,6 +51,8 @@ make %{?_smp_mflags} test
 
 
 %changelog
+*   Thu Sep 20 2018 Sujay G <gsujay@vmware.com> 5.45.4-1
+-   Bump expect version to 5.45.4
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 5.45-3
 -   Use standard configure macros
 *   Tue Aug 8 2017 Alexey Makhalov <amakhalov@vmware.com> 5.45-2
