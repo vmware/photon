@@ -1,15 +1,15 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.14.54
-Release:        7%{?kat_build:.%kat_build}%{?dist}
+Version:        4.14.67
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=434080e874f7b78c3234f22784427d4a189fb54d
+%define sha1 linux=4a6aa8d8a5190dbf1a835a5171609f02b27809e1
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.5.0
@@ -27,7 +27,6 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         x86-vmware-STA-support.patch
-Patch9:         1-2-rsi-fix-nommu_map_sg-overflow-kernel-panic.patch
 # rpi3 dts
 Patch10:	arm-dts-add-vchiq-entry.patch
 # ttyXRUSB support
@@ -139,7 +138,6 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch9 -p1
 %patch10 -p1
 %patch11 -p1
 %patch13 -p1
@@ -369,6 +367,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
+-   Update to version 4.14.67
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-7
 -   Add rdrand-based RNG driver to enhance kernel entropy.
 *   Sun Sep 02 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-6
