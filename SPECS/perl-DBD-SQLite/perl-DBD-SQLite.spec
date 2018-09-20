@@ -1,13 +1,13 @@
 # Got the intial spec from Fedora and modified it
 Summary:        SQLite DBI Driver
 Name:           perl-DBD-SQLite
-Version:        1.54
-Release:        2%{?dist}
+Version:        1.58
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        (GPL+ or Artistic) and Public Domain
 URL:            http://search.cpan.org/dist/DBD-SQLite/
-Source0:        http://search.cpan.org/CPAN/authors/id/I/IS/ISHIGAKI/DBD-SQLite-%{version}.tar.gz
-%define sha1    DBD-SQLite=b9fc3e565899c67beffad2e290a816cbb69b03f2
+Source0:        https://cpan.metacpan.org/authors/id/I/IS/ISHIGAKI/DBD-SQLite-%{version}.tar.gz
+%define sha1    DBD-SQLite=060575ccf965a80e02b4caed40c1ef589532cf52
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  sqlite-devel >= 3.22.0
@@ -45,6 +45,8 @@ make test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Sep 20 2018 Dweep Advani <dadvani@vmware.com> 1.58-1
+-   Update to version 1.58
 *   Tue Feb 20 2018 Xiaolin Li <xiaolinl@vmware.com> 1.54-2
 -   Build perl-DBD-SQLite with sqlite-autoconf-3.22.0.
 *   Mon Apr 3 2017 Robert Qi <qij@vmware.com> 1.54-1

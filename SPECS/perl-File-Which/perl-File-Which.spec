@@ -1,12 +1,12 @@
 Summary:        File-Which
 Name:           perl-File-Which
-Version:        1.21
-Release:        2%{?dist}
+Version:        1.22
+Release:        1%{?dist}
 License:        The Perl 5 License (Artistic 1 & GPL 1)
 Group:          Development/Libraries
 URL:            http://search.cpan.org/dist/File-Which/
-Source0:        http://search.cpan.org/CPAN/authors/id/P/PL/PLICEASE/File-Which-1.21.tar.gz
-%define sha1 File-Which=4e683d461ff4f1e0882cd06f47ad84b5eecfbabf
+Source0:        https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/File-Which-%{version}.tar.gz
+%define sha1 File-Which=770ebe5dfa4076abc9923d8c4993d90dd6d2db9a
 Vendor:		VMware, Inc.
 Distribution:	Photon
 BuildArch:      noarch
@@ -52,6 +52,8 @@ make test
 
 
 %changelog
+*	Thu Sep 20 2018 Dweep Advani <dadvani@vmware.com> 1.22-1
+-	Update to version 1.22
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
 -	GA - Bump release of all rpms
 *	Thu Mar 3 2016 Xiaolin Li <xiaolinl@vmware.com> 1.21-1
