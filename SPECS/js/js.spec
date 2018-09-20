@@ -1,21 +1,22 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          js
-Version:       1.8.5
-Release:       2%{?dist}
+Version:       45.0.2
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
-License:       GPLv2+ or LGPLv2+ or MPLv1.1
-URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Releases/1.8.5
-Source0:       https://archive.mozilla.org/pub/js/js185-1.0.0.tar.gz
-Patch0:        mozjs-aarch64-support.patch
+License:       MPLv2.0
+URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Releases/45
+Source0:       https://archive.mozilla.org/pub/spidermonkey/releases/%{version}/moz%{name}-%{version}.tar.bz2
+%define sha1 moz%{name}-%{version}=68a0fbb9c3f988ab28ea3817e0669ee6fe6c93ed
 Distribution:  Photon
+Patch0:        configure-icu-version-num-fix.patch
 BuildRequires: autoconf
 BuildRequires: ncurses-devel
 BuildRequires: nspr-devel >= 4.7
 BuildRequires: zip
+BuildRequires: python-pip
 Requires:      ncurses
 Requires:      nspr
-%define sha1 js185=52a01449c48d7a117b35f213d3e4263578d846d6
 
 %description
 Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
@@ -24,30 +25,25 @@ JavaScript to machine code, for a significant speed increase.
 %package devel
 Summary:        js devel
 Group:          Development/Tools
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 %description devel
 This contains development tools and libraries for SpiderMonkey.
 
 %prep
-%setup -q
+%setup -q -n moz%{name}-%{version}
 %patch0 -p1
 
 %build
 cd js/src
-%configure \
-    --datadir=%{_datarootdir} \
-    --with-system-nspr \
-    --enable-threadsafe \
-    --enable-readline
-make CXX=g++ CXXFLAGS='-std=gnu++98 -DXP_UNIX=1 -DJS_THREADSAFE=1 -DENABLE_ASSEMBLER=1 -DENABLE_JIT=1'
+mkdir obj
+cd obj
+../configure \
+    --prefix=%{_prefix}
+make %{?_smp_mflags}
 
 %install
-cd js/src
+cd js/src/obj
 make DESTDIR=%{buildroot} install
-pushd %{buildroot}/%{_libdir}
-ln -fs libmozjs185.so.1.0.0 libmozjs185.so.1.0
-ln -fs libmozjs185.so.1.0 libmozjs185.so
-popd
 find %{buildroot} -name '*.la' -delete
 
 %post
@@ -58,17 +54,19 @@ find %{buildroot} -name '*.la' -delete
 
 %files
 %defattr(-,root,root)
+%{_bindir}/%{name}
 %{_bindir}/js-config
-%{_libdir}/libmozjs185.so.*
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/%{name}/*
-%{_libdir}/libmozjs185-1.0.a
-%{_libdir}/libmozjs185.so
-%{_libdir}/pkgconfig/mozjs185.pc
+%{_includedir}/moz%{name}-45/*
+%{_libdir}/libjs_static.ajs
+%{_libdir}/libmozjs-45.so
+%{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Thu Sep 20 2018 Ankit Jain <ankitja@vmware.com> 45.0.2-1
+-   Updated to version 45.0.2
 *   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.8.5-2
 -   Aarch64 support
 *   Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.5-1
