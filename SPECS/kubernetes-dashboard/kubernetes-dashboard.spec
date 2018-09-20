@@ -1,11 +1,14 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.8.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    kubernetes-dashboard=d0e85648129f6b480773539dc2a83e04f85c76f1
+Source1:        node_modules.tar.gz
+%define sha1    node_modules=5cf6cd08179c0f81242acdcdb947f3a1294d43ac
+Source2:        package-lock.json 
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -29,7 +32,9 @@ Kubernetes Dashboard UI.
 
 %build
 export PATH=${PATH}:/usr/bin
-npm install --unsafe-perm
+tar xf %{SOURCE1} --no-same-owner
+cp %{SOURCE2} .
+#npm install --unsafe-perm
 #Remove the lines which strips the debuginfo. 
 sed -i '/https:\/\/golang.org\/cmd\/link\//,+2d' ./build/backend.js
 ./node_modules/.bin/gulp build
@@ -50,6 +55,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*    Wed Sep 19 2018 Tapas Kundu <tkundu@vmware.com> 1.8.3-2
+-    Using sources instead of doing npm install.
 *    Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.8.3-1
 -    kubernetes-dashboard 1.8.3.
 *    Tue Apr 03 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.6.3-2
