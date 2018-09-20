@@ -39,12 +39,12 @@ cc1: all warnings being treated as errors
 
 Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
 ---
- dcerpc/ncklib/cnxfer.c                                   | 2 +-
- lsass/server/auth-providers/ad-open-provider/join/join.c | 2 +-
- lwreg/server/providers/sqlite/sqliteapi.c                | 2 +-
- lwreg/shell/export.c                                     | 2 +-
- lwreg/utils/fileutils.c                                  | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+ dcerpc/ncklib/cnxfer.c                                   |  2 +-
+ lsass/server/auth-providers/ad-open-provider/join/join.c | 12 ++++++------
+ lwreg/server/providers/sqlite/sqliteapi.c                |  2 +-
+ lwreg/shell/export.c                                     |  2 +-
+ lwreg/utils/fileutils.c                                  |  2 +-
+ 5 files changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/dcerpc/ncklib/cnxfer.c b/dcerpc/ncklib/cnxfer.c
 index cb8a6fd..dda5670 100644
@@ -60,18 +60,51 @@ index cb8a6fd..dda5670 100644
              /*
               * rpc__cn_dealloc_buffered_data will always skip the
 diff --git a/lsass/server/auth-providers/ad-open-provider/join/join.c b/lsass/server/auth-providers/ad-open-provider/join/join.c
-index 971ddf3..cfaab80 100644
+index 971ddf3..048a3dd 100644
 --- a/lsass/server/auth-providers/ad-open-provider/join/join.c
 +++ b/lsass/server/auth-providers/ad-open-provider/join/join.c
-@@ -732,7 +732,7 @@ LsaJoinDomainInternal(
-                sizeof(pwszMachinePassword)/sizeof(pwszMachinePassword[0]));
+@@ -627,7 +627,7 @@ LsaJoinDomainInternal(
+     LsaPolicyInformation *pLsaPolicyInfo = NULL;
+     PWSTR pwszMachineName = NULL;
+     PWSTR pwszMachineAcctName = NULL;
+-    PWSTR pwszMachinePassword[MACHPASS_LEN+1] = {0};
++    WCHAR wszMachinePassword[MACHPASS_LEN+1] = {0};
+     PWSTR pwszDomainName = NULL;
+     PSID pDomainSid = NULL;
+     PWSTR pwszDnsDomainName = NULL;
+@@ -728,11 +728,11 @@ LsaJoinDomainInternal(
+     }
+ 
+     dwError = LsaGenerateMachinePassword(
+-               (PWSTR)pwszMachinePassword,
+-               sizeof(pwszMachinePassword)/sizeof(pwszMachinePassword[0]));
++               wszMachinePassword,
++               sizeof(wszMachinePassword)/sizeof(wszMachinePassword[0]));
      BAIL_ON_LSA_ERROR(dwError);
  
 -    if (pwszMachinePassword[0] == '\0')
-+    if (pwszMachinePassword[0] == NULL || *pwszMachinePassword[0] == '\0')
++    if (wszMachinePassword[0] == '\0')
      {
          BAIL_ON_NT_STATUS(STATUS_INTERNAL_ERROR);
      }
+@@ -740,7 +740,7 @@ LsaJoinDomainInternal(
+     ntStatus = LsaCreateMachineAccount(pwszDCName,
+                                        pCreds,
+                                        pwszMachineAcctName,
+-                                       (PWSTR)pwszMachinePassword,
++                                       wszMachinePassword,
+                                        dwJoinFlags,
+                                        &pwszDomainName,
+                                        &pDomainSid);
+@@ -774,7 +774,7 @@ LsaJoinDomainInternal(
+               pwszDnsDomainName,
+               pwszDCName,
+               pwszSidStr,
+-              (PWSTR)pwszMachinePassword);
++              wszMachinePassword);
+     BAIL_ON_LSA_ERROR(dwError);
+ 
+     /*
 diff --git a/lwreg/server/providers/sqlite/sqliteapi.c b/lwreg/server/providers/sqlite/sqliteapi.c
 index 4e50fa1..1008a66 100644
 --- a/lwreg/server/providers/sqlite/sqliteapi.c
