@@ -1,15 +1,14 @@
 Summary:        Contains a utility for determining file types
 Name:           file
-Version:        5.30
-Release:        3%{?dist}
+Version:        5.34
+Release:        1%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
-%define sha1    file=276051cd2c438d4e7a321c4422a5b3bc850fd747
-Patch0:         file-5.30-keep-not-stripped-last.patch
+%define sha1    file=509e30ad0e0d74fa4040a28ce4667486cfe2170c
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox
 %description
@@ -29,7 +28,6 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
-%patch0 -p1
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -62,6 +60,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*man3/*
 
 %changelog
+*   Thu Sep 20 2018 Sujay G <gsujay@vmware.com> 5.34-1
+-   Bump file version to 5.34
 *   Fri Dec 15 2017 Divya Thaluru <dthaluru@vmware.com> 5.30-3
 -   Added seperate package for libraries
 -   Added toybox as conflict package
