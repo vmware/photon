@@ -1,14 +1,14 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
-Version:        4.2.1
-Release:        16%{?dist}
-URL:            http://pkg-shadow.alioth.debian.org/
+Version:        4.6
+Release:        1%{?dist}
+URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://pkg-shadow.alioth.debian.org/releases/%{name}-%{version}.tar.xz
-%define sha1    shadow=0917cbadd4ce0c7c36670e5ecd37bbed92e6d82d
+Source0:        https://github.com/shadow-maint/shadow/releases/download/4.6/%{name}-%{version}.tar.xz
+%define sha1    shadow=0b84eb1010fda5edca2a9d1733f9480200e02de6
 Source1:        chage
 Source2:        chpasswd
 Source3:        login
@@ -20,10 +20,7 @@ Source8:        system-account
 Source9:        system-auth
 Source10:       system-password
 Source11:       system-session
-Patch0:         chkname-allowcase.patch
-Patch1:         shadow-4.2.1-CVE-2016-6252-fix.patch
-Patch2:         shadow-4.2.1-CVE-2017-12424.patch
-Patch3:         shadow-4.2.1-CVE-2018-7169.patch
+Patch1:         chkname-allowcase.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -51,10 +48,7 @@ These are the additional language files of shadow.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -171,6 +165,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 4.6-1
+-   Upgrading the version to 4.6
 *   Mon Jul 30 2018 Tapas Kundu <tkundu@vmware.com> 4.2.1-16
 -   Added fix for CVE-2018-7169
 *   Fri Apr 20 2018 Alexey Makhalov <amakhalov@vmware.com> 4.2.1-15
