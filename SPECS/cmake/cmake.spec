@@ -1,12 +1,13 @@
-Summary:	Cmake-3.8.0
+Summary:	Cmake-3.12.1
 Name:		cmake
-Version:	3.8.0
-Release:	4%{?dist}
+Version:	3.12.1
+Release:	1%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
-Source0:	http://www.cmake.org/files/v3.8/%{name}-%{version}.tar.gz
+Source0:	http://www.cmake.org/files/v3.12/%{name}-%{version}.tar.gz
+%define sha1 cmake=5359cd2e36051b0746580298d42518b0aef27979
+Source1:	macros.cmake
 Patch0:         disableUnstableUT.patch
-%define sha1 cmake=660ec06a46b46dc5d675371a2256ec739f8bb8b7
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -34,6 +35,7 @@ make
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
+install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.cmake
 
 %check
 make  %{?_smp_mflags} test
@@ -44,7 +46,12 @@ make  %{?_smp_mflags} test
 %{_bindir}/*
 /usr/doc/%{name}-*/*
 /usr/share/aclocal/*
+%{_libdir}/rpm/macros.d/macros.cmake
+
 %changelog
+*       Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 3.12.1-1
+-       Upgrading version to 3.12.1
+-       Adding macros.cmake
 *       Fri Sep 29 2017 Kumar Kaushik <kaushikk@vmware.com> 3.8.0-4
 -       Building using system expat libs.
 *       Thu Aug 17 2017 Kumar Kaushik <kaushikk@vmware.com> 3.8.0-3

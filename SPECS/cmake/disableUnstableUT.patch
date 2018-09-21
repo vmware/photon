@@ -1,18 +1,18 @@
-diff -ru cmake-3.8.0/Source/kwsys/CMakeLists.txt cmake-3.8.0-modified/Source/kwsys/CMakeLists.txt
---- cmake-3.8.0/Source/kwsys/CMakeLists.txt	2017-04-10 08:23:07.000000000 -0700
-+++ cmake-3.8.0-modified/Source/kwsys/CMakeLists.txt	2017-08-09 15:48:48.735319709 -0700
-@@ -924,7 +924,6 @@
+diff -ru cmake-3.12.1/Source/kwsys/CMakeLists.txt cmake-3.12.1-new/Source/kwsys/CMakeLists.txt
+--- cmake-3.12.1/Source/kwsys/CMakeLists.txt	2018-08-09 17:44:08.000000000 +0530
++++ cmake-3.12.1-new/Source/kwsys/CMakeLists.txt	2018-09-21 09:11:46.011100539 +0530
+@@ -1074,7 +1074,6 @@
      ENDIF()
      SET(KWSYS_CXX_TESTS ${KWSYS_CXX_TESTS}
-       testIOS
--      testSystemTools
-       testCommandLineArguments
-       testCommandLineArguments1
-       )
-diff -ru cmake-3.8.0/Tests/CMakeLists.txt cmake-3.8.0-modified/Tests/CMakeLists.txt
---- cmake-3.8.0/Tests/CMakeLists.txt	2017-04-10 08:23:07.000000000 -0700
-+++ cmake-3.8.0-modified/Tests/CMakeLists.txt	2017-08-14 14:00:30.832201561 -0700
-@@ -2537,21 +2537,7 @@
+       testConfigure.cxx
+-      testSystemTools.cxx
+       testCommandLineArguments.cxx
+       testCommandLineArguments1.cxx
+       testDirectory.cxx
+diff -ru cmake-3.12.1/Tests/CMakeLists.txt cmake-3.12.1-new/Tests/CMakeLists.txt
+--- cmake-3.12.1/Tests/CMakeLists.txt	2018-08-09 17:44:08.000000000 +0530
++++ cmake-3.12.1-new/Tests/CMakeLists.txt	2018-09-21 09:14:05.907096799 +0530
+@@ -2636,21 +2636,7 @@
      )
    set_tests_properties(CTestTestUpload PROPERTIES
      PASS_REGULAR_EXPRESSION "Upload\\.xml")
@@ -35,7 +35,7 @@ diff -ru cmake-3.8.0/Tests/CMakeLists.txt cmake-3.8.0-modified/Tests/CMakeLists.
    configure_file(
      "${CMake_SOURCE_DIR}/Tests/CTestTestEmptyBinaryDirectory/test.cmake.in"
      "${CMake_BINARY_DIR}/Tests/CTestTestEmptyBinaryDirectory/test.cmake"
-@@ -2916,18 +2902,6 @@
+@@ -3014,18 +3000,6 @@
      PASS_REGULAR_EXPRESSION "The stop time has been passed")
  
    configure_file(
@@ -54,3 +54,4 @@ diff -ru cmake-3.8.0/Tests/CMakeLists.txt cmake-3.8.0-modified/Tests/CMakeLists.
      "${CMake_SOURCE_DIR}/Tests/CTestTestTimeout/test.cmake.in"
      "${CMake_BINARY_DIR}/Tests/CTestTestTimeout/test.cmake"
      @ONLY ESCAPE_QUOTES)
+Only in cmake-3.12.1-new/Tests: CMakeLists.txt.orig
