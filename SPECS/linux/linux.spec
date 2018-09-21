@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.14.67
+Version:        4.18.9
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -9,12 +9,12 @@ Group:        	System Environment/Kernel
 Vendor:         VMware, Inc.
 Distribution: 	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4a6aa8d8a5190dbf1a835a5171609f02b27809e1
+%define sha1 linux=229ed4bedc5b8256bdd761845b1d7e20e1df12d7
 Source1:	config
 Source2:	initramfs.trigger
-%define ena_version 1.5.0
+%define ena_version 1.6.0
 Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
-%define sha1 ena_linux=cbbbe8a3bbab6d01a4e38417cb0ead2f7cb8b2ee
+%define sha1 ena_linux=c8ec9094f9db8d324d68a13b0b3dcd2c5271cbc0
 Source4:	config_aarch64
 Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
@@ -27,8 +27,6 @@ Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         x86-vmware-STA-support.patch
-# rpi3 dts
-Patch10:	arm-dts-add-vchiq-entry.patch
 # ttyXRUSB support
 Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
@@ -36,14 +34,15 @@ Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
 #Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 #FIPS patches - allow some algorithms
-Patch24:        Allow-some-algo-tests-for-FIPS.patch
-Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+Patch24:        4.18-Allow-some-algo-tests-for-FIPS.patch
+Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
-Patch29:        0001-apparmor-add-base-infastructure-for-socket-mediation.patch
-Patch30:        0002-apparmor-af_unix-mediation.patch
-Patch31:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
+Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
+Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 
 
 %if 0%{?kat_build:1}
@@ -74,7 +73,7 @@ Summary:        Kernel Dev
 Group:          System Environment/Kernel
 Obsoletes:      linux-dev
 Requires:       %{name} = %{version}-%{release}
-Requires:       python2 gawk
+Requires:       python3 gawk
 %description devel
 The Linux package contains the Linux kernel dev files
 
@@ -95,7 +94,7 @@ The Linux package contains the Linux kernel sound support
 %package docs
 Summary:        Kernel docs
 Group:          System Environment/Kernel
-Requires:       python2
+Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
@@ -138,7 +137,6 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-%patch10 -p1
 %patch11 -p1
 %patch13 -p1
 %patch24 -p1
@@ -147,6 +145,7 @@ Kernel Device Tree Blob files for Raspberry Pi3
 %patch29 -p1
 %patch30 -p1
 %patch31 -p1
+%patch32 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -359,6 +358,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /etc/bash_completion.d/*
 /usr/share/perf-core/strace/groups/file
 /usr/share/doc/*
+%{_libdir}/perf/examples/bpf/5sec.c
+%{_libdir}/perf/examples/bpf/empty.c
+%{_libdir}/perf/include/bpf/bpf.h
 
 %ifarch aarch64
 %files dtb-rpi3
@@ -367,6 +369,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Sep 20 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.18.9-1
+-   Update to version 4.18.9
 *   Wed Sep 19 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.67-1
 -   Update to version 4.14.67
 *   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.14.54-7

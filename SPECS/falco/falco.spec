@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.8.1
+Version:        0.12.1
 Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
@@ -9,9 +9,9 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    falco=7873d34769656349678584502296b147aa5445fa
-Source1:        https://github.com/draios/sysdig/archive/sysdig-0.19.1.tar.gz
-%define sha1    sysdig=425ea9fab8e831274626a9c9e65f0dfb4f9bc019
+%define sha1    falco=f0b18777d990bd325c712ceca67fe49d6b71b0e9
+Source1:        https://github.com/draios/sysdig/archive/sysdig-0.23.1.tar.gz
+%define sha1    sysdig=8d1ce894c8fcd8a1939c28adbfb661ad82110bde
 Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
 %define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
 BuildRequires:  cmake
@@ -50,7 +50,7 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
 tar xf %{SOURCE2} --no-same-owner
 
 %build
-mv sysdig-0.19.1 ../sysdig
+mv sysdig-0.23.1 ../sysdig
 sed -i 's|../falco/rules|rules|g' userspace/engine/CMakeLists.txt
 sed -i 's|../falco/userspace|userspace|g' userspace/engine/config_falco_engine.h.in
 cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} CMakeLists.txt
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
 
 %changelog
+*   Mon Sep 24 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.12.1-1
+-   Update falco and sysdig versions to fix build error with linux 4.18
 *   Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 0.8.1-1
 -   Version update to build against linux-4.14.y kernel
 *   Thu Aug 24 2017 Rui Gu <ruig@vmware.com> 0.6.0-3
