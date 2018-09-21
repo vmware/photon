@@ -138,7 +138,6 @@
         "nss-altfiles",
         "apache-maven",
         "subversion",
-        "mesos",
         "python3",
         "python3-libs",
         "python3-tools",
