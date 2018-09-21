@@ -1,6 +1,6 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
-Version:        2.31
+Version:        2.31.1
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
@@ -8,7 +8,7 @@ Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
-%define sha1 binutils=e1a564cd356d2126d2e9a59e8587757634e731aa
+%define sha1 binutils=3b031410897fe224412f3a6a1b052402d2fbcc6a
 %description
 The Binutils package contains a linker, an assembler,
 and other tools for handling object files.
@@ -21,10 +21,7 @@ for handling compiled objects.
 %prep
 %setup -q
 %build
-install -vdm 755 ../binutils-build
-cd ../binutils-build
-../%{name}-%{version}/configure \
-            --prefix=%{_prefix} \
+%configure \
             --enable-gold       \
             --enable-ld=default \
             --enable-plugins    \
@@ -35,16 +32,13 @@ cd ../binutils-build
             --disable-silent-rules
 make %{?_smp_mflags} tooldir=%{_prefix}
 %install
-pushd ../binutils-build
 make %{?_smp_mflags} DESTDIR=%{buildroot} tooldir=%{_prefix} install
 find %{buildroot} -name '*.la' -delete
 # Don't remove libiberity.a
 rm -rf %{buildroot}/%{_infodir}
-popd
 %find_lang %{name} --all-name
 
 %check
-cd ../binutils-build
 sed -i 's/testsuite/ /g' gold/Makefile
 make %{?_smp_mflags} check
 
@@ -109,6 +103,8 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Fri Sep 21 2018 Keerthana K <keerthanak@vmware.com> 2.31.1-1
+-   Update to version 2.31.1
 *   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 2.31-1
 -   Update to version 2.31.
 *   Thu Jun 7 2018 Keerthana K <keerthanak@vmware.com> 2.30-4
