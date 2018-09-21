@@ -25,6 +25,8 @@ class constants(object):
     testForceRPMS = []
     tmpDirPath = "/dev/shm"
     buildOptions = {}
+    # will be extended later from listMakeCheckRPMPkgtoInstall
+    listMakeCheckRPMPkgWithVersionstoInstall = None
 
     noDepsPackageList = [
         "texinfo",

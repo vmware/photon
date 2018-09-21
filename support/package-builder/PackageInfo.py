@@ -24,8 +24,8 @@ class PackageInfo(object):
         listRPMFiles = []
         cmdUtils = CommandUtils()
         for package in listPackages:
-            release = SPECS.getData().getRelease(package)
             version = SPECS.getData().getVersion(package)
+            release = SPECS.getData().getRelease(package, version)
             listRPMPackages = SPECS.getData().getRPMPackages(package)
             srpmFileName = package + "-" + version + "-" + release + ".src.rpm"
             srpmFiles = cmdUtils.findFile(srpmFileName, constants.sourceRpmPath)

@@ -8,6 +8,7 @@ from Logger import Logger
 from PackageUtils import PackageUtils
 from constants import constants
 from SpecData import SPECS
+from StringUtils import StringUtils
 
 class ToolChainUtils(object):
 
@@ -83,7 +84,8 @@ class ToolChainUtils(object):
         try:
             pkgUtils = PackageUtils(self.logName, self.logPath)
             for package in constants.listCoreToolChainPackages:
-                rpmPkg = pkgUtils.findRPMFileForGivenPackage(package)
+                version = SPECS.getData().getHighestVersion(package)
+                rpmPkg = pkgUtils.findRPMFileForGivenPackage(package, version)
                 if rpmPkg is not None:
                     continue
                 self.logger.info("Building core toolchain package: " + package)
@@ -97,9 +99,9 @@ class ToolChainUtils(object):
                 if not returnVal:
                     self.logger.error("Creating chroot failed")
                     raise Exception("creating chroot failed")
-                self.installToolChainRPMS(chrootID, package, destLogPath)
-                pkgUtils.adjustGCCSpecs(package, chrootID, destLogPath)
-                pkgUtils.buildRPMSForGivenPackage(package, chrootID, destLogPath)
+                self.installToolChainRPMS(package, version, chrootID, destLogPath)
+                pkgUtils.adjustGCCSpecs(package, version, chrootID, destLogPath)
+                pkgUtils.buildRPMSForGivenPackage(package, version, chrootID, destLogPath)
                 pkgCount += 1
                 chrUtils.destroyChroot(chrootID)
                 chrootID = None
@@ -113,13 +115,12 @@ class ToolChainUtils(object):
             raise e
         return pkgCount
 
-    def getListDependentPackageLineContent(self, index):
-        listBuildRequiresPkgLineContent=SPECS.getData().getBuildRequiresForPackage(self.package, index)
-        listBuildRequiresPkgLineContent.extend(SPECS.getData().getCheckBuildRequiresForPackage(self.package, index))
-        listBuildRequiresPkgLineContent=list(set(listBuildRequiresPkgLineContent))
-        return listBuildRequiresPkgLineContent
+    def getListDependentPackages(self, package, version):
+        listBuildRequiresPkg=SPECS.getData().getBuildRequiresForPackage(package, version)
+        listBuildRequiresPkg.extend(SPECS.getData().getCheckBuildRequiresForPackage(package, version))
+        return listBuildRequiresPkg
 
-    def installToolChainRPMS(self, chrootID, packageName, logPath=None,index=0):
+    def installToolChainRPMS(self, packageName, packageVersion, chrootID, logPath=None):
         if logPath is None:
             logPath = self.logPath
         cmdUtils = CommandUtils()
@@ -127,15 +128,15 @@ class ToolChainUtils(object):
         self.logger.info("Installing Tool Chain RPMS.......")
         rpmFiles = ""
         packages = ""
-        self.package=packageName
-        listBuildRequiresPackageLineContent = self.getListDependentPackageLineContent(index)
+        listBuildRequiresPackages = self.getListDependentPackages(packageName, packageVersion)
         for package in constants.listToolChainRPMsToInstall:
             pkgUtils = PackageUtils(self.logName, self.logPath)
             rpmFile = None
             version = "*"
-            for depPkg in listBuildRequiresPackageLineContent:
-                if depPkg.package == package:
-                        version=pkgUtils._getProperVersion(package,depPkg)
+            for depPkg in listBuildRequiresPackages:
+                depPkgName, depPkgVersion = StringUtils.splitPackageNameAndVersion(depPkg)
+                if depPkgName == package:
+                        version=depPkgVersion
             if constants.rpmCheck:
                 rpmFile = pkgUtils.findRPMFileForGivenPackage(package, version)
             else:
@@ -157,9 +158,9 @@ class ToolChainUtils(object):
                                       " in current and previous versions")
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile
-            packages += " " + package
+            packages += " " + package+"-"+version
 
-        self.logger.debug("Installing toolchain rpms:" + packages)
+        self.logger.debug(packages)
         cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +
                chrootID +" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles)
         retVal = cmdUtils.runCommandInShell(cmd, logPath + "/install_toolchain_rpms.log")
@@ -218,7 +219,8 @@ class ToolChainUtils(object):
         packages = ""
         pkgUtils = PackageUtils(self.logName, self.logPath)
         for package in constants.listToolChainRPMPkgsToInstall:
-            rpmFile = pkgUtils.findRPMFileForGivenPackage(package)
+            version = SPECS.getData().getHighestVersion(package)
+            rpmFile = pkgUtils.findRPMFileForGivenPackage(package, version)
             if rpmFile is None:
                 # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
 #                if (package == "sqlite") and (platform.machine() == "x86_64"):

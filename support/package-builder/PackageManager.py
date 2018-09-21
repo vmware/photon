@@ -12,6 +12,7 @@ from ToolChainUtils import ToolChainUtils
 from Scheduler import Scheduler
 from ThreadPool import ThreadPool
 from SpecData import SPECS
+from StringUtils import StringUtils
 
 class PackageManager(object):
 
@@ -79,57 +80,25 @@ class PackageManager(object):
             return False
         return True
 
+    # Returns list of package names which spec file has all subpackages built
+    # Returns set of package name and version like
+    # ["name1-vers1", "name2-vers2",..]
     def _readAlreadyAvailablePackages(self):
         listAvailablePackages = set()
-        listFoundRPMPackages = set()
-        listRPMFiles = set()
-        listDirectorys = set()
-        mapPackageVersion={}
-        mapPackageRelease={}
-        listDirectorys.add(constants.rpmPath)
-        if constants.inputRPMSPath is not None:
-            listDirectorys.add(constants.inputRPMSPath)
-
-        while listDirectorys:
-            dirPath = listDirectorys.pop()
-            for dirEntry in os.listdir(dirPath):
-                dirEntryPath = os.path.join(dirPath, dirEntry)
-                if os.path.isfile(dirEntryPath) and dirEntryPath.endswith(".rpm"):
-                    listRPMFiles.add(dirEntryPath)
-                elif os.path.isdir(dirEntryPath):
-                    listDirectorys.add(dirEntryPath)
         pkgUtils = PackageUtils(self.logName, self.logPath)
-        for rpmfile in listRPMFiles:
-            package, version, release = pkgUtils.findPackageInfoFromRPMFile(rpmfile)
-            if package in mapPackageVersion:
-                mapPackageVersion[package].append(version)
-                mapPackageRelease[package].append(release)
-            else:
-                mapPackageVersion[package]=[version]
-                mapPackageRelease[package]=[release]
-        for package in mapPackageVersion:
-            if SPECS.getData().isRPMPackage(package):
-                numVersions=SPECS.getData().getNumberOfVersions(package)
-                flag=True;
-                for index in range(0, numVersions):
-                        specVersion=SPECS.getData().getVersion(package,index)
-                        specRelease=SPECS.getData().getRelease(package,index)
-                        if  specVersion not in mapPackageVersion[package] and specRelease not in mapPackageRelease[package]:
-                                flag=False
-                if flag:
-                        listFoundRPMPackages.add(package)
-        #Mark package available only if all sub packages are available
-        for package in listFoundRPMPackages:
-            basePkg = SPECS.getData().getSpecName(package)
-            if basePkg in listAvailablePackages:
-                continue
-            listRPMPackages = SPECS.getData().getRPMPackages(basePkg)
-            packageIsAlreadyBuilt = True
-            for rpmpkg in listRPMPackages:
-                if rpmpkg not in listFoundRPMPackages:
-                    packageIsAlreadyBuilt = False
-            if packageIsAlreadyBuilt:
-                listAvailablePackages.add(package)
+        listPackages = SPECS.getData().getListPackages()
+        for package in listPackages:
+            for version in SPECS.getData().getVersions(package):
+                # Mark package available only if all subpackages are available
+                packageIsAlreadyBuilt=True
+                listRPMPackages = SPECS.getData().getRPMPackages(package, version)
+                for rpmPkg in listRPMPackages:
+                    if pkgUtils.findRPMFileForGivenPackage(rpmPkg) is None:
+                        packageIsAlreadyBuilt=False
+                        break;
+                if packageIsAlreadyBuilt:
+                    listAvailablePackages.add(package+"-"+version)
+
         self.logger.info("List of Already built packages")
         self.logger.info(listAvailablePackages)
         return listAvailablePackages
@@ -139,14 +108,15 @@ class PackageManager(object):
         self.mapPackageToCycle.clear()
         self.sortedPackageList = []
 
-        self.listOfPackagesAlreadyBuilt = self._readAlreadyAvailablePackages()
+        self.listOfPackagesAlreadyBuilt = list(self._readAlreadyAvailablePackages())
 
         updateBuiltRPMSList = False
         while not updateBuiltRPMSList:
             updateBuiltRPMSList = True
-            listOfPackagesAlreadyBuilt = list(self.listOfPackagesAlreadyBuilt)
+            listOfPackagesAlreadyBuilt = self.listOfPackagesAlreadyBuilt
             for pkg in listOfPackagesAlreadyBuilt:
-                listDependentRpmPackages = SPECS.getData().getRequiresAllForPackage(pkg)
+                packageName, packageVersion = StringUtils.splitPackageNameAndVersion(pkg)
+                listDependentRpmPackages = SPECS.getData().getRequiresAllForPackage(packageName, packageVersion)
                 needToRebuild = False
                 for dependentPkg in listDependentRpmPackages:
                     if dependentPkg not in self.listOfPackagesAlreadyBuilt:
@@ -178,17 +148,26 @@ class PackageManager(object):
 
     def _initializeScheduler(self, statusEvent):
         Scheduler.setLog(self.logName, self.logPath)
-        Scheduler.setParams(self.sortedPackageList, self.listOfPackagesAlreadyBuilt)
+        Scheduler.setParams(self.sortedPackageList, set(self.listOfPackagesAlreadyBuilt))
         Scheduler.setEvent(statusEvent)
         Scheduler.stopScheduling = False
 
     def _buildGivenPackages(self, listPackages, buildThreads):
+        # Extend listPackages from ["name1", "name2",..] to ["name1-vers1", "name2-vers2",..]
+        listPackageNamesAndVersions=[]
+        for pkg in listPackages:
+            for version in SPECS.getData().getVersions(pkg):
+                listPackageNamesAndVersions.append(pkg+"-"+version)
+            
         if constants.rpmCheck:
+            listMakeCheckPackages=set()
+            for pkg in listPackages:
+                version = SPECS.getData().getHighestVersion(pkg)
+                listMakeCheckPackages.add(pkg+"-"+version)
             alreadyBuiltRPMS = self._readAlreadyAvailablePackages()
-            listPackages = (list(set(listPackages)|(set(constants.listMakeCheckRPMPkgtoInstall)-
-                                                    alreadyBuiltRPMS)))
+            listPackageNamesAndVersions = (list(set(listPackageNamesAndVersions)|(listMakeCheckPackages-alreadyBuiltRPMS)))
 
-        returnVal = self._calculateParams(listPackages)
+        returnVal = self._calculateParams(listPackageNamesAndVersions)
         if not returnVal:
             self.logger.error("Unable to set paramaters. Terminating the package manager.")
             raise Exception("Unable to set paramaters")

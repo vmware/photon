@@ -39,3 +39,12 @@ class StringUtils(object):
             return inputstring
         name = m.group(2)
         return name.replace("_", ".")
+
+    @staticmethod
+    def splitPackageNameAndVersion(pkg):
+        versionindex = pkg.rfind("-")
+        if versionindex == -1:
+            raise Exception("Invalid argument")
+        packageName = pkg[:versionindex]
+        packageVersion = pkg[versionindex+1:]
+        return packageName, packageVersion
