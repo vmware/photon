@@ -1,0 +1,96 @@
+From 6cf100df51539210b9115fe74f27ff5b139a5cfc Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 22 Dec 2017 15:54:02 -0800
+Subject: [PATCH] Allow some algo tests for FIPS
+
+---
+ crypto/testmgr.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index a1d4224..1591de7 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -2439,6 +2439,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(md5),ecb(cipher_null))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = __VECS(hmac_md5_ecb_cipher_null_enc_tv_template),
+@@ -2457,6 +2458,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = __VECS(hmac_sha1_des_cbc_enc_tv_temp)
+@@ -2478,6 +2480,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha1),ecb(cipher_null))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = __VECS(hmac_sha1_ecb_cipher_null_enc_tv_temp),
+@@ -2517,6 +2520,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha256),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = __VECS(hmac_sha256_des_cbc_enc_tv_temp)
+@@ -2542,6 +2546,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha384),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = __VECS(hmac_sha384_des_cbc_enc_tv_temp)
+@@ -2576,6 +2581,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "authenc(hmac(sha512),cbc(des))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = __VECS(hmac_sha512_des_cbc_enc_tv_temp)
+@@ -3188,6 +3194,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 		.alg = "jitterentropy_rng",
+ 		.fips_allowed = 1,
+ 		.test = alg_test_null,
++                .fips_allowed = 1,
+ 	}, {
+ 		.alg = "kw(aes)",
+ 		.test = alg_test_skcipher,
+@@ -3366,6 +3373,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "rfc4543(gcm(aes))",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = __VECS(aes_gcm_rfc4543_enc_tv_template),
+@@ -3384,6 +3392,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "rfc7539esp(chacha20,poly1305)",
+ 		.test = alg_test_aead,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.aead = {
+ 				.enc = __VECS(rfc7539esp_enc_tv_template),
+@@ -3591,6 +3600,7 @@ static const struct alg_test_desc alg_test_descs[] = {
+ 	}, {
+ 		.alg = "xts(twofish)",
+ 		.test = alg_test_skcipher,
++                .fips_allowed = 1,
+ 		.suite = {
+ 			.cipher = __VECS(tf_xts_tv_template)
+ 		}
+-- 
+2.11.0
+
