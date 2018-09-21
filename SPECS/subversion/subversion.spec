@@ -21,6 +21,7 @@ BuildRequires:  expat-devel
 BuildRequires:  serf-devel
 BuildRequires:  lz4
 BuildRequires:  utf8proc-devel
+Requires:       utf8proc
 
 %description
 The Apache version control system.
