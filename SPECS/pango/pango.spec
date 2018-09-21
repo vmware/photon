@@ -1,14 +1,14 @@
 Summary:	library for laying out and rendering of text.
 Name:		pango
-Version:	1.40.4
+Version:	1.42.4
 Release:	1%{?dist}
 License:	LGPLv2 or MPLv1.1
 URL:		http://pango.org
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	https://download.gnome.org/sources/pango/1.40/%{name}-%{version}.tar.xz
-%define sha1 pango=761458faab28cb70ba62e01ec9379d03bc5339c0
+Source0:	https://download.gnome.org/sources/pango/1.42/%{name}-%{version}.tar.xz
+%define sha1 pango=240942b1307eaa3819e6e534596271c57cd75457
 BuildRequires:	glib-devel
 BuildRequires:	cairo
 BuildRequires:	cairo-devel
@@ -18,6 +18,8 @@ BuildRequires:	fontconfig-devel
 BuildRequires:	harfbuzz
 BuildRequires:	harfbuzz-devel
 BuildRequires:	freetype2
+BuildRequires:  fribidi-devel
+Requires:	fribidi-devel
 Requires:	harfbuzz-devel
 %description
 Pango is a library for laying out and rendering of text, with an emphasis on internationalization. Pango can be used anywhere that text layout is needed, though most of the work on Pango so far has been done in the context of the GTK+ widget toolkit.
@@ -61,5 +63,7 @@ make %{?_smp_mflags} -k check || exit 0
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*       Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.40.4-1
--       Initial version
+*   Tue Sep 11  2018 Him Kalyan Bordoloi <bordoloi@vmware.com> 1.42.4-1
+-   Upgrade version
+*   Tue Apr 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.40.4-1
+-   Initial version
