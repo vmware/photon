@@ -1,28 +1,24 @@
 Summary:	Displays information about running processes
 Name:		psmisc
-Version:	22.21
-Release:	5%{?dist}
+Version:	23.2
+Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://psmisc.sourceforge.net/
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
-Source0:	http://prdownloads.sourceforge.net/psmisc/%{name}-%{version}.tar.gz
-%define sha1 psmisc=09fabbef4539b58b6b8738a73da3d21d5daa1a58
+Source0:	https://sourceforge.net/projects/%{name}/files/%{name}/%{name}-%{version}.tar.xz
+%define sha1 psmisc=778a19a1d55c36daa11007dce2833e62667b129e
 BuildRequires:	ncurses-devel
 Requires:	ncurses
-Patch0:         fuser_typo.patch
-Patch1:         psmisc-22.21-incorrect-fclose.patch
 %description
 The Psmisc package contains programs for displaying information
 about running processes.
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
 %build
 ./configure \
-	--prefix=%{_prefix} 
+	--prefix=%{_prefix}
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -40,6 +36,8 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*       Fri Sep 21 2018 Sujay G <gsujay@vmware.com> 23.2-1
+-       Bump psmisc version to 23.2
 *       Mon Oct 03 2016 ChangLee <changLee@vmware.com> 22.21-5
 -       Modified %check
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 22.21-4
