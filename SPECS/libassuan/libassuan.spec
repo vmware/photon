@@ -1,6 +1,6 @@
 Summary:	Provides IPC between GnuPG Components
 Name:		libassuan
-Version:	2.4.3
+Version:	2.5.1
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		https://www.gnupg.org/(fr)/related_software/libassuan/index.html
@@ -8,15 +8,20 @@ Group:		Development/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	ftp://ftp.gnupg.org/gcrypt/%{name}/%{name}-%{version}.tar.bz2
-%define sha1 libassuan=27391cf4a820b5350ea789c30661830c9a271518
+%define sha1 libassuan=c8432695bf1daa914a92f51e911881ed93d50604
 Requires:	libgpg-error >= 1.21
 BuildRequires:	libgpg-error-devel >= 1.21
 %description
-The libassuan package contains an inter process communication library used by some of the other GnuPG related packages. libassuan's primary use is to allow a client to interact with a non-persistent server. libassuan is not, however, limited to use with GnuPG servers and clients. It was designed to be flexible enough to meet the demands of many transaction based environments with non-persistent servers. 
+The libassuan package contains an inter process communication library
+used by some of the other GnuPG related packages. libassuan's primary use
+is to allow a client to interact with a non-persistent server.
+libassuan is not, however, limited to use with GnuPG servers and clients.
+It was designed to be flexible enough to meet the demands
+of many transaction based environments with non-persistent servers.
 %prep
 %setup -q
 %build
-./configure --prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -28,13 +33,15 @@ make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
-%files 
+%files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_includedir}/*.h
 %{_libdir}/*.so*
 %{_datadir}/aclocal/*
 %changelog
+*   Fri Sep 21 2018 Keerthana K <keerthanak@vmware.com> 2.5.1-1
+-   Update to version 2.5.1
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.3-1
 -   Upgrade version to 2.4.3
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 2.4.2-3
