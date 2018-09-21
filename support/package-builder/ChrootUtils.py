@@ -44,5 +44,4 @@ class ChrootUtils(object):
         if not returnVal:
             self.logger.error("Unable to destroy chroot:" + chrootID + ".Unknown error.")
             return False
-        self.logger.info("Successfully destroyed chroot:" + chrootID)
         return True

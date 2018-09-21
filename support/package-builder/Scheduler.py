@@ -71,7 +71,6 @@ class Scheduler(object):
 
     @staticmethod
     def getNextPackageToBuild():
-        Scheduler.logger.info("Waiting to acquire scheduler lock")
         with Scheduler.lock:
             if Scheduler.stopScheduling:
                 return None
@@ -89,7 +88,6 @@ class Scheduler(object):
             packageTup = Scheduler.listOfPackagesNextToBuild.get()
 
             package = packageTup[1]
-            Scheduler.logger.info("PackagesNextToBuild " + str(packageTup))
             if Scheduler.listOfPackagesNextToBuild.qsize() > 0:
                 ThreadPool.activateWorkerThreads(
                     Scheduler.listOfPackagesNextToBuild.qsize())
@@ -98,14 +96,14 @@ class Scheduler(object):
             return package
 
     @staticmethod
-    def _getBuildRequiredPackages(package):
+    def _getBuildRequiredPackages(pkg):
         listRequiredRPMPackages = []
-        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
+        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPkg(pkg))
 
         listRequiredPackages = []
 
-        for pkg in listRequiredRPMPackages:
-            basePkg = SPECS.getData().getSpecName(pkg.package)
+        for reqPkg in listRequiredRPMPackages:
+            basePkg = SPECS.getData().getBasePkg(reqPkg)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
 
@@ -208,15 +206,15 @@ class Scheduler(object):
 
 
     @staticmethod
-    def _getRequiredPackages(package):
+    def _getRequiredPackages(pkg):
         listRequiredRPMPackages = []
-        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPackage(package))
-        listRequiredRPMPackages.extend(SPECS.getData().getRequiresAllForPackage(package))
+        listRequiredRPMPackages.extend(SPECS.getData().getBuildRequiresForPkg(pkg))
+        listRequiredRPMPackages.extend(SPECS.getData().getRequiresAllForPkg(pkg))
 
         listRequiredPackages = []
 
-        for pkg in listRequiredRPMPackages:
-            basePkg = SPECS.getData().getSpecName(pkg.package)
+        for reqPkg in listRequiredRPMPackages:
+            basePkg = SPECS.getData().getBasePkg(reqPkg)
             if basePkg not in listRequiredPackages:
                 listRequiredPackages.append(basePkg)
 
@@ -224,7 +222,6 @@ class Scheduler(object):
 
     @staticmethod
     def _getListNextPackagesReadyToBuild():
-        Scheduler.logger.info("Checking for next possible packages to build")
         for pkg in Scheduler.listOfPackagesToBuild:
             if pkg in Scheduler.listOfPackagesCurrentlyBuilding:
                 continue
@@ -236,4 +233,4 @@ class Scheduler(object):
                     break
             if canBuild:
                 Scheduler.listOfPackagesNextToBuild.put((-Scheduler._getPriority(pkg), pkg))
-                Scheduler.logger.info("Adding " + pkg + " to the schedule list")
+#                Scheduler.logger.info("Adding " + pkg + " to the schedule list")

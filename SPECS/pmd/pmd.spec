@@ -21,7 +21,7 @@ Requires:       jansson
 Requires:       likewise-open >= 6.2.9
 Requires:       netmgmt
 Requires:       systemd
-Requires:       tdnf >= 2.2.0
+Requires:       tdnf >= 2.0.0
 Requires:       lightwave-client-libs
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow

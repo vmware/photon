@@ -314,18 +314,8 @@ class SpecParser(object):
                     else:
                         continue
                 if i + 2 < len(listContents):
-                    if listContents[i+1] == ">=":
-                        compare = "gte"
-                    elif listContents[i+1] == "<=":
-                        compare = "lte"
-                    elif listContents[i+1] == "==":
-                        compare = "eq"
-                    elif listContents[i+1] == "<":
-                        compare = "lt"
-                    elif listContents[i+1] == ">":
-                        compare = "gt"
-                    elif listContents[i+1] == "=":
-                        compare = "eq"
+                    if listContents[i+1] in (">=", "<=", "=", "<", ">"):
+                        compare = listContents[i+1]
 
                 if compare is not None:
                     dpkg.package = packageName

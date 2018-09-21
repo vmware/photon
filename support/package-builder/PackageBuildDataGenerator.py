@@ -4,6 +4,7 @@ from collections import OrderedDict
 from Logger import Logger
 from constants import constants
 from SpecData import SPECS
+from StringUtils import StringUtils
 
 def removeDuplicateEntries(myList):
     myListCopy = list(OrderedDict.fromkeys(myList))
@@ -27,10 +28,9 @@ class PackageBuildDataGenerator(object):
         self.__sortedBuildDependencyGraph = {}
 
     def getPackageBuildData(self, listPackages):
-        basePackages = set()
+        basePackages = []
         for pkg in listPackages:
-            basePackage = SPECS.getData().getSpecName(pkg)
-            basePackages.add(basePackage)
+            basePackages.append(SPECS.getData().getBasePkg(pkg))
 
         self._readDependencyGraphAndCyclesForGivenPackages(basePackages)
         self._getSortedBuildOrderList()
@@ -46,7 +46,7 @@ class PackageBuildDataGenerator(object):
         sortListForPkg = []
 
         for p in runTimeDepPkgList:
-            basePkg = SPECS.getData().getSpecName(p)
+            basePkg = SPECS.getData().getBasePkg(p)
             for bPkg in self.__sortedBuildDependencyGraph[basePkg]:
                 if bPkg not in sortListForPkg:
                     sortListForPkg.append(bPkg)
@@ -118,7 +118,7 @@ class PackageBuildDataGenerator(object):
         self.logger.info("Removing duplicates in sorted list")
         sortedList = removeDuplicateEntries(sortedList)
 
-        self.logger.info("Sorted list:")
+        self.logger.info("Sorted list: ")
         self.logger.info(sortedList)
         self.__sortedPackageList = sortedList
 
@@ -129,28 +129,25 @@ class PackageBuildDataGenerator(object):
             addBuildTimeGraph = False
         if basePackage in self.__runTimeDependencyGraph:
             addRunTimeGraph = False
-
+        
         nextPackagesToConstructGraph = set()
         if addBuildTimeGraph:
-            dependentRpmPackages = SPECS.getData().getBuildRequiresForPackage(basePackage)
+            dependentRpmPackages = SPECS.getData().getBuildRequiresForPkg(basePackage)
             dependentPackages = set()
-            for rpmPkg in dependentRpmPackages:
-                basePkg = SPECS.getData().getSpecName(rpmPkg.package)
-                dependentPackages.add(basePkg)
+            for dependentPkg in dependentRpmPackages:
+                dependentPackages.add(SPECS.getData().getBasePkg(dependentPkg))
             self.__buildDependencyGraph[basePackage] = dependentPackages
             nextPackagesToConstructGraph.update(dependentPackages)
 
         if addRunTimeGraph:
-            rpmPackages = SPECS.getData().getPackages(basePackage)
+            packageName, packageVersion = StringUtils.splitPackageNameAndVersion(basePackage)
+            rpmPackages = SPECS.getData().getPackages(packageName, packageVersion)
             dependentPackages = set()
-            dependentRpmPackagesNames= set()
             for rpmPkg in rpmPackages:
-                dependentRpmPackages = SPECS.getData().getRequiresAllForPackage(rpmPkg)
-                for pkgName in dependentRpmPackages:
-                    dependentRpmPackagesNames.add(pkgName.package)
-                self.__runTimeDependencyGraph[rpmPkg] = copy.copy(dependentRpmPackagesNames)
-                for pkg in dependentRpmPackagesNames:
-                    dependentPackages.add(SPECS.getData().getSpecName(pkg))
+                dependentRpmPackages = SPECS.getData().getRequiresAllForPackage(rpmPkg, packageVersion)
+                self.__runTimeDependencyGraph[rpmPkg+"-"+packageVersion] = copy.copy(set(dependentRpmPackages))
+                for pkg in dependentRpmPackages:
+                    dependentPackages.add(SPECS.getData().getBasePkg(pkg))
             nextPackagesToConstructGraph.update(dependentPackages)
 
         for pkg in nextPackagesToConstructGraph:

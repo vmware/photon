@@ -23,7 +23,6 @@ class WorkerThread(threading.Thread):
             pkg = Scheduler.Scheduler.getNextPackageToBuild()
             if pkg is None:
                 break
-            self.logger.info("Thread " + self.name + " is building package:" + pkg)
             if self.pkgBuildType == "chroot":
                 pkgBuilder = PackageBuilderChroot(self.mapPackageToCycle,
                                                   self.pkgBuildType)
@@ -39,7 +38,6 @@ class WorkerThread(threading.Thread):
                 self.logger.info("Thread " + self.name + " stopped building package:" + pkg)
                 self.statusEvent.set()
                 break
-            self.logger.info("Thread " + self.name + " finished building package:" + pkg)
             Scheduler.Scheduler.notifyPackageBuildCompleted(pkg)
 
         ThreadPool.ThreadPool.makeWorkerThreadInActive(self.name)
