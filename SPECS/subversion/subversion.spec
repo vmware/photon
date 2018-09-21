@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.10.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -21,6 +21,7 @@ BuildRequires:  expat-devel
 BuildRequires:  serf-devel
 BuildRequires:  lz4
 BuildRequires:  utf8proc-devel
+Requires:       utf8proc
 
 %description
 The Apache version control system.
@@ -68,6 +69,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Fri Sep 21 2018 Ankit Jain <ankitja@vmware.com> 1.10.2-2
+-   Added utf8proc as Requires.
 *   Wed Sep 19 2018 Ankit Jain <ankitja@vmware.com> 1.10.2-1
 -   Updated to version 1.10.2
 *   Mon Jan 22 2018 Xiaolin Li <xiaolinl@vmware.com> 1.9.7-2
