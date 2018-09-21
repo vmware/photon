@@ -1,14 +1,14 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
-Version:        3.4.10
-Release:        7%{?dist}
+Version:        3.4.13
+Release:        1%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source:         http://mirrors.ocf.berkeley.edu/apache/zookeeper/zookeeper-3.4.9/%{name}-%{version}.tar.gz
-%define sha1 zookeeper=eb2145498c5f7a0d23650d3e0102318363206fba
+Source:         http://apache.claz.org/zookeeper/zookeeper/zookeeper-%{version}/%{name}-%{version}.tar.gz
+%define sha1 zookeeper=a989b527f3f990d471e6d47ee410e57d8be7620b
 Source1:        zookeeper.service
 Source2:        zkEnv.sh
 Patch0:	        zookeeper-3.4.8-server.patch
@@ -86,6 +86,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Wed Sep 19 2018 Siju Maliakkal <smaliakkal@vmware.com> 3.4.13-1
+-   Update to latest version
 *   Wed Sep 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-7
 -   Remove the update script for zookeeper.
 *   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 3.4.10-6
