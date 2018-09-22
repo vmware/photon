@@ -1,32 +1,28 @@
-diff -rup cloud-init-0.7.9/systemd/cloud-final.service cloud-init-0.7.9-new/systemd/cloud-final.service
---- cloud-init-0.7.9/systemd/cloud-final.service	2016-12-23 08:37:45.000000000 -0800
-+++ cloud-init-0.7.9-new/systemd/cloud-final.service	2017-04-28 15:25:39.195559535 -0700
-@@ -1,6 +1,6 @@
- [Unit]
- Description=Execute cloud user/final scripts
--After=network-online.target cloud-config.service rc-local.service multi-user.target
-+After=network-online.target cloud-config.service rc-local.service
- Wants=network-online.target cloud-config.service
- 
- [Service]
-diff -rup cloud-init-0.7.9/systemd/cloud-init.service cloud-init-0.7.9-new/systemd/cloud-init.service
---- cloud-init-0.7.9/systemd/cloud-init.service	2016-12-23 08:37:45.000000000 -0800
-+++ cloud-init-0.7.9-new/systemd/cloud-init.service	2017-04-28 15:26:05.703558936 -0700
-@@ -1,6 +1,5 @@
+diff -rup cloud-init-18.3/systemd/cloud-init.service.tmpl cloud-init-18.3-new/systemd/cloud-init.service.tmpl
+--- cloud-init-18.3/systemd/cloud-init.service.tmpl	2018-06-20 05:49:26.000000000 +0530
++++ cloud-init-18.3-new/systemd/cloud-init.service.tmpl	2018-09-20 20:13:57.640348280 +0530
+@@ -1,7 +1,6 @@
+ ## template:jinja
  [Unit]
  Description=Initial cloud-init job (metadata service crawler)
 -DefaultDependencies=no
  Wants=cloud-init-local.service
  Wants=sshd-keygen.service
  Wants=sshd.service
-@@ -9,9 +8,8 @@ After=networking.service
+@@ -21,15 +20,9 @@ After=wicked.service
+ After=dbus.service
+ {% endif %}
  Before=network-online.target
 +After=systemd-networkd-wait-online.service
  Before=sshd-keygen.service
  Before=sshd.service
+-{% if variant in ["ubuntu", "unknown", "debian"] %}
 -Before=sysinit.target
- Before=systemd-user-sessions.service
 -Conflicts=shutdown.target
+-{% endif %}
+-{% if variant in ["suse"] %}
+-Conflicts=shutdown.target
+-{% endif %}
+ Before=systemd-user-sessions.service
  
  [Service]
- Type=oneshot

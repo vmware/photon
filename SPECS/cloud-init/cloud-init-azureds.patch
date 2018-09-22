@@ -1,81 +1,31 @@
-diff -rup cloud-init-0.7.9/cloudinit/sources/DataSourceAzure.py cloud-init-0.7.9-1/cloudinit/sources/DataSourceAzure.py
---- cloud-init-0.7.9/cloudinit/sources/DataSourceAzure.py	2016-12-23 08:37:45.000000000 -0800
-+++ cloud-init-0.7.9-1/cloudinit/sources/DataSourceAzure.py	2018-02-20 01:21:12.844575653 -0800
-@@ -23,12 +23,18 @@ LOG = logging.getLogger(__name__)
+diff -rup cloud-init-18.3/cloudinit/sources/DataSourceAzure.py cloud-init-18.3-new/cloudinit/sources/DataSourceAzure.py
+--- cloud-init-18.3/cloudinit/sources/DataSourceAzure.py	2018-06-20 05:49:26.000000000 +0530
++++ cloud-init-18.3-new/cloudinit/sources/DataSourceAzure.py	2018-09-20 21:06:26.700264085 +0530
+@@ -27,7 +27,7 @@ LOG = logging.getLogger(__name__)
  
  DS_NAME = 'Azure'
  DEFAULT_METADATA = {"instance-id": "iid-AZURE-NODE"}
 -AGENT_START = ['service', 'walinuxagent', 'start']
 +AGENT_START = ['systemctl', 'start', 'waagent']
  AGENT_START_BUILTIN = "__builtin__"
- BOUNCE_COMMAND = [
+ BOUNCE_COMMAND_IFUP = [
      'sh', '-xc',
-     "i=$interface; x=0; ifdown $i || x=$?; ifup $i || x=$?; exit $x"
- ]
-+
-+BOUNCE_COMMAND_PHOTON = [
-+    'sh', '-xc',
-+    ("i=$interface; x=0; ifconfig $i down || x=$?; "
-+     "ifconfig $i up || x=$?; exit $x")
-+]
- # azure systems will always have a resource disk, and 66-azure-ephemeral.rules
- # ensures that it gets linked to this path.
- RESOURCE_DISK_PATH = '/dev/disk/cloud/azure_resource'
-@@ -40,7 +46,7 @@ BUILTIN_DS_CONFIG = {
-     'hostname_bounce': {
-         'interface': 'eth0',
-         'policy': True,
--        'command': BOUNCE_COMMAND,
-+        'command': 'builtin',
-         'hostname_command': 'hostname',
-     },
-     'disk_aliases': {'ephemeral0': RESOURCE_DISK_PATH},
-@@ -154,7 +160,7 @@ class DataSourceAzureNet(sources.DataSou
- 
-             missing = util.log_time(logfunc=LOG.debug, msg="waiting for files",
-                                     func=wait_for_files,
--                                    args=(fp_files,))
-+                                    args=(fp_files,180))
-         if len(missing):
-             LOG.warn("Did not find files, but going on: %s", missing)
- 
-@@ -362,7 +368,9 @@ def perform_hostname_bounce(hostname, cf
-     env['old_hostname'] = prev_hostname
- 
-     if command == "builtin":
--        command = BOUNCE_COMMAND
-+        LOG.debug(
-+                "Skipping network bounce: ifupdown utils aren't present.")
-+        return
- 
-     LOG.debug("pubhname: publishing hostname [%s]", msg)
-     shell = not isinstance(command, (list, tuple))
-@@ -396,7 +404,7 @@ def pubkeys_from_crt_files(flist):
-     return pubkeys
- 
- 
--def wait_for_files(flist, maxwait=60, naplen=.5, log_pre=""):
-+def wait_for_files(flist, maxwait, naplen=.5, log_pre=""):
-     need = set(flist)
-     waited = 0
-     while True:
- 
-diff -rup cloud-init-0.7.9/cloudinit/sources/helpers/azure.py cloud-init-0.7.9-1/cloudinit/sources/helpers/azure.py
---- cloud-init-0.7.9/cloudinit/sources/helpers/azure.py	2016-12-23 08:37:45.000000000 -0800
-+++ cloud-init-0.7.9-1/cloudinit/sources/helpers/azure.py	2018-02-20 01:13:25.885641372 -0800
-@@ -8,16 +8,18 @@ import socket
+diff -rup cloud-init-18.3/cloudinit/sources/helpers/azure.py cloud-init-18.3-new/cloudinit/sources/helpers/azure.py
+--- cloud-init-18.3/cloudinit/sources/helpers/azure.py	2018-06-20 05:49:26.000000000 +0530
++++ cloud-init-18.3-new/cloudinit/sources/helpers/azure.py	2018-09-20 22:29:32.376130787 +0530
+@@ -7,6 +7,7 @@ import re
+ import socket
  import struct
- import tempfile
  import time
 +import configobj
  
+ from cloudinit.net import dhcp
  from cloudinit import stages
- from contextlib import contextmanager
- from xml.etree import ElementTree
+@@ -16,9 +17,10 @@ from xml.etree import ElementTree
  
+ from cloudinit import url_helper
  from cloudinit import util
 +from io import StringIO
- 
  
  LOG = logging.getLogger(__name__)
 -
@@ -83,7 +33,7 @@ diff -rup cloud-init-0.7.9/cloudinit/sources/helpers/azure.py cloud-init-0.7.9-1
  
  @contextmanager
  def cd(newdir):
-@@ -264,6 +266,32 @@ class WALinuxAgentShim(object):
+@@ -281,6 +283,32 @@ class WALinuxAgentShim(object):
          return dhcp_options
  
      @staticmethod
@@ -116,34 +66,15 @@ diff -rup cloud-init-0.7.9/cloudinit/sources/helpers/azure.py cloud-init-0.7.9-1
      def _get_value_from_dhcpoptions(dhcp_options):
          if dhcp_options is None:
              return None
-@@ -277,13 +305,28 @@ class WALinuxAgentShim(object):
-         return _value
- 
-     @staticmethod
-+    def networkd_get_option_from_leases(keyname, leases_d=None):
-+        if leases_d is None:
-+            leases_d = NETWORKD_LEASES_DIR
-+        leases = WALinuxAgentShim.networkd_load_leases(leases_d=leases_d)
-+        for ifindex, data in sorted(leases.items()):
-+            if data.get(keyname):
-+                return data[keyname]
-+        return None
+@@ -306,8 +334,9 @@ class WALinuxAgentShim(object):
+             # Option-245 stored in /run/cloud-init/dhclient.hooks/<ifc>.json
+             # a dhclient exit hook that calls cloud-init-dhclient-hook
+             LOG.debug('Finding Azure endpoint from hook json...')
+-            dhcp_options = WALinuxAgentShim._load_dhclient_json()
+-            value = WALinuxAgentShim._get_value_from_dhcpoptions(dhcp_options)
++            value = WALinuxAgentShim._networkd_get_value_from_leases()
++            LOG.debug('networkd value from lease %s', value)
 +
-+    @staticmethod
-+    def _networkd_get_value_from_leases(leases_d=None):
-+        return WALinuxAgentShim.networkd_get_option_from_leases(
-+            'OPTION_245', leases_d=leases_d)
-+
-+    @staticmethod
-     def find_endpoint(fallback_lease_file=None):
-         LOG.debug('Finding Azure endpoint...')
-         value = None
-         # Option-245 stored in /run/cloud-init/dhclient.hooks/<ifc>.json
-         # a dhclient exit hook that calls cloud-init-dhclient-hook
--        dhcp_options = WALinuxAgentShim._load_dhclient_json()
--        value = WALinuxAgentShim._get_value_from_dhcpoptions(dhcp_options)
-+        value = WALinuxAgentShim._networkd_get_value_from_leases()
-+        LOG.debug('networkd value from lease %s', value)
          if value is None:
              # Fallback and check the leases file if unsuccessful
              LOG.debug("Unable to find endpoint in dhclient logs. "

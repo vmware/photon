@@ -1,12 +1,12 @@
-diff -uNr cloud-init-0.7.9-orig/cloudinit/config/cc_resolv_conf.py cloud-init-0.7.9/cloudinit/config/cc_resolv_conf.py
---- cloud-init-0.7.9-orig/cloudinit/config/cc_resolv_conf.py	2017-10-16 18:28:37.374850375 +0000
-+++ cloud-init-0.7.9/cloudinit/config/cc_resolv_conf.py	2017-10-17 22:46:50.411709013 +0000
+diff -uNr cloud-init-18.3/cloudinit/config/cc_resolv_conf.py cloud-init-18.3-new/cloudinit/config/cc_resolv_conf.py
+--- cloud-init-18.3/cloudinit/config/cc_resolv_conf.py	2018-06-20 05:49:26.000000000 +0530
++++ cloud-init-18.3-new/cloudinit/config/cc_resolv_conf.py	2018-09-20 20:33:38.368316711 +0530
 @@ -55,10 +55,10 @@
  
  frequency = PER_INSTANCE
  
--distros = ['fedora', 'rhel', 'sles']
-+distros = ['fedora', 'rhel', 'sles', 'photon']
+-distros = ['fedora', 'opensuse', 'rhel', 'sles']
++distros = ['fedora', 'opensuse', 'rhel', 'sles', 'photon']
  
  
 -def generate_resolv_conf(template_fn, params, target_fname="/etc/resolv.conf"):
@@ -30,9 +30,9 @@ diff -uNr cloud-init-0.7.9-orig/cloudinit/config/cc_resolv_conf.py cloud-init-0.
      return
  
  # vi: ts=4 expandtab
-diff -uNr cloud-init-0.7.9-orig/templates/systemd.resolved.conf.tmpl cloud-init-0.7.9/templates/systemd.resolved.conf.tmpl
---- cloud-init-0.7.9-orig/templates/systemd.resolved.conf.tmpl	1970-01-01 00:00:00.000000000 +0000
-+++ cloud-init-0.7.9/templates/systemd.resolved.conf.tmpl	2017-10-17 21:35:37.291505255 +0000
+diff -uNr cloud-init-18.3/templates/systemd.resolved.conf.tmpl cloud-init-18.3-new/templates/systemd.resolved.conf.tmpl
+--- cloud-init-18.3/templates/systemd.resolved.conf.tmpl	1970-01-01 05:30:00.000000000 +0530
++++ cloud-init-18.3-new/templates/systemd.resolved.conf.tmpl	2018-09-20 20:35:54.672313067 +0530
 @@ -0,0 +1,15 @@
 +## template:jinja
 +# Your system has been configured with 'manage-resolv-conf' set to true.
